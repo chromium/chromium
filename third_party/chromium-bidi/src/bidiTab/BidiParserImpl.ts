@@ -20,6 +20,7 @@ import type {
   BrowsingContext,
   Cdp,
   Input,
+  Network,
   Script,
   Session,
 } from '../protocol/protocol';
@@ -82,6 +83,43 @@ export class BidiParserImpl implements BidiParser {
   }
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return Parser.Input.parseReleaseActionsParams(params);
+  }
+  // keep-sorted end
+
+  // Network domain
+  // keep-sorted start block=yes
+  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
+    return Parser.Network.parseAddInterceptParameters(
+      params
+    ) as Network.AddInterceptParameters;
+  }
+  parseContinueRequestParams(
+    params: unknown
+  ): Network.ContinueRequestParameters {
+    return Parser.Network.parseContinueRequestParameters(params);
+  }
+  parseContinueResponseParams(
+    params: unknown
+  ): Network.ContinueResponseParameters {
+    return Parser.Network.parseContinueResponseParameters(params);
+  }
+  parseContinueWithAuthParams(
+    params: unknown
+  ): Network.ContinueWithAuthParameters {
+    return Parser.Network.parseContinueWithAuthParameters(params);
+  }
+  parseFailRequestParams(params: unknown): Network.FailRequestParameters {
+    return Parser.Network.parseFailRequestParameters(params);
+  }
+  parseProvideResponseParams(
+    params: unknown
+  ): Network.ProvideResponseParameters {
+    return Parser.Network.parseProvideResponseParameters(params);
+  }
+  parseRemoveInterceptParams(
+    params: unknown
+  ): Network.RemoveInterceptParameters {
+    return Parser.Network.parseRemoveInterceptParameters(params);
   }
   // keep-sorted end
 

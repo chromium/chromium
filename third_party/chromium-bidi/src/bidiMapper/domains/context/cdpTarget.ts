@@ -26,6 +26,7 @@ import {NetworkManager} from '../network/NetworkManager.js';
 import type {ChannelProxy} from '../script/channelProxy.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {Result} from '../../../utils/result.js';
 
 export class CdpTarget {
@@ -34,6 +35,7 @@ export class CdpTarget {
   readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
   readonly #preloadScriptStorage: PreloadScriptStorage;
+  readonly #networkStorage: NetworkStorage;
 
   readonly #targetUnblocked = new Deferred<Result<void>>();
 
@@ -43,18 +45,20 @@ export class CdpTarget {
     cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
     eventManager: EventManager,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    networkStorage: NetworkStorage
   ): CdpTarget {
     const cdpTarget = new CdpTarget(
       targetId,
       cdpClient,
       cdpSessionId,
       eventManager,
-      preloadScriptStorage
+      preloadScriptStorage,
+      networkStorage
     );
 
     LogManager.create(cdpTarget, realmStorage, eventManager);
-    NetworkManager.create(cdpClient, eventManager);
+    NetworkManager.create(cdpTarget, networkStorage);
 
     cdpTarget.#setEventListeners();
 
@@ -70,13 +74,15 @@ export class CdpTarget {
     cdpClient: ICdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
-    preloadScriptStorage: PreloadScriptStorage
+    preloadScriptStorage: PreloadScriptStorage,
+    networkStorage: NetworkStorage
   ) {
     this.#targetId = targetId;
     this.#cdpClient = cdpClient;
     this.#cdpSessionId = cdpSessionId;
     this.#eventManager = eventManager;
     this.#preloadScriptStorage = preloadScriptStorage;
+    this.#networkStorage = networkStorage;
   }
 
   /** Returns a promise that resolves when the target is unblocked. */
@@ -92,11 +98,35 @@ export class CdpTarget {
     return this.#cdpClient;
   }
 
-  /**
-   * Needed for CDP escape path.
-   */
+  /** Needed for CDP escape path. */
   get cdpSessionId(): Protocol.Target.SessionID {
     return this.#cdpSessionId;
+  }
+
+  /** Calls `Fetch.enable` with the added network intercepts. */
+  async fetchEnable() {
+    await this.#cdpClient.sendCommand(
+      'Fetch.enable',
+      this.#networkStorage.getFetchEnableParams()
+    );
+  }
+
+  /** Calls `Fetch.disable`. */
+  async fetchDisable() {
+    await this.#cdpClient.sendCommand('Fetch.disable');
+  }
+
+  /**
+   * Calls `Fetch.disable` followed by `Fetch.enable`.
+   * The order is important. Do not use `Promise.all`.
+   *
+   * This is necessary because `Fetch.disable` removes all intercepts.
+   * In a situation where there are two or more intercepts and one of them is
+   * removed, the `Fetch.enable` call will restore the remaining intercepts.
+   */
+  async fetchApply() {
+    await this.fetchDisable();
+    await this.fetchEnable();
   }
 
   /**
@@ -117,6 +147,7 @@ export class CdpTarget {
         // XXX: #1080: Do not always enable the network domain globally.
         // TODO: enable Network domain for OOPiF targets.
         this.#cdpClient.sendCommand('Network.enable'),
+        this.fetchApply(),
         this.#cdpClient.sendCommand('Target.setAutoAttach', {
           autoAttach: true,
           waitForDebuggerOnStart: true,

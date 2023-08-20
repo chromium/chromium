@@ -40,6 +40,7 @@ async def test_network_before_request_sent_event_emitted(
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
+            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -131,6 +132,7 @@ async def test_network_before_request_sent_event_with_cookies_emitted(
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
+            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -188,6 +190,7 @@ async def test_network_network_response_completed_event_emitted(
         'type': 'event',
         "method": "network.responseCompleted",
         "params": {
+            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -243,6 +246,7 @@ async def test_network_bad_ssl(websocket, context_id):
         'type': 'event',
         "method": "network.fetchError",
         "params": {
+            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,
@@ -281,6 +285,7 @@ async def test_network_before_request_sent_event_with_data_url_emitted(
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
+            "isBlocked": False,
             "context": context_id,
             "navigation": ANY_STR,
             "redirectCount": 0,

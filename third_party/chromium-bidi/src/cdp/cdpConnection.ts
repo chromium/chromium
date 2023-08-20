@@ -37,15 +37,19 @@ export interface ICdpConnection {
 
 /**
  * Represents a high-level CDP connection to the browser backend.
- * Manages a CdpClient instance for each active CDP session.
+ *
+ * Manages all CdpClients (each backed by a Session ID) instance for each active
+ * CDP session.
  */
 export class CdpConnection implements ICdpConnection {
   readonly #transport: ITransport;
 
   /** The CdpClient object attached to the root browser session. */
   readonly #browserCdpClient: CdpClient;
+
   /** Map from session ID to CdpClient. */
   readonly #sessionCdpClients = new Map<Protocol.Target.SessionID, CdpClient>();
+
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
@@ -79,7 +83,7 @@ export class CdpConnection implements ICdpConnection {
   getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
-      throw new Error('Unknown CDP session ID');
+      throw new Error(`Unknown CDP session ID: ${sessionId}`);
     }
     return cdpClient;
   }

@@ -31,6 +31,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {Result} from '../../../utils/result.js';
 
+/** Abstracts one individual network request. */
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
 
@@ -197,6 +198,8 @@ export class NetworkRequest {
 
   #getBaseEventParams(): Network.BaseParameters {
     return {
+      // TODO: implement.
+      isBlocked: false,
       context: this.#requestWillBeSentEvent?.frameId ?? null,
       navigation: this.#getNavigationId(),
       // TODO: implement.

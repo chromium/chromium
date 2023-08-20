@@ -19,6 +19,7 @@ import type {
   BrowsingContext,
   Cdp,
   Input,
+  Network,
   Script,
   Session,
 } from '../protocol/protocol.js';
@@ -109,6 +110,41 @@ export class BidiNoOpParser implements IBidiParser {
   }
   parseReleaseActionsParams(params: unknown): Input.ReleaseActionsParameters {
     return params as Input.ReleaseActionsParameters;
+  }
+  // keep-sorted end
+
+  // Network domain
+  // keep-sorted start block=yes
+  parseAddInterceptParams(params: unknown): Network.AddInterceptParameters {
+    return params as Network.AddInterceptParameters;
+  }
+  parseContinueRequestParams(
+    params: unknown
+  ): Network.ContinueRequestParameters {
+    return params as Network.ContinueRequestParameters;
+  }
+  parseContinueResponseParams(
+    params: unknown
+  ): Network.ContinueResponseParameters {
+    return params as Network.ContinueResponseParameters;
+  }
+  parseContinueWithAuthParams(
+    params: unknown
+  ): Network.ContinueWithAuthParameters {
+    return params as Network.ContinueWithAuthParameters;
+  }
+  parseFailRequestParams(params: unknown): Network.FailRequestParameters {
+    return params as Network.FailRequestParameters;
+  }
+  parseProvideResponseParams(
+    params: unknown
+  ): Network.ProvideResponseParameters {
+    return params as Network.ProvideResponseParameters;
+  }
+  parseRemoveInterceptParams(
+    params: unknown
+  ): Network.RemoveInterceptParameters {
+    return params as Network.RemoveInterceptParameters;
   }
   // keep-sorted end
 

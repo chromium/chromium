@@ -38,7 +38,9 @@ import {InputProcessor} from './domains/input/InputProcessor.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
 import type {RealmStorage} from './domains/script/realmStorage.js';
+import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
+import {NetworkStorage} from './domains/network/NetworkStorage.js';
 
 export const enum CommandProcessorEvents {
   Response = 'response',
@@ -57,6 +59,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
   #inputProcessor: InputProcessor;
+  #networkProcessor: NetworkProcessor;
   #scriptProcessor: ScriptProcessor;
   #sessionProcessor: SessionProcessor;
   // keep-sorted end
@@ -76,6 +79,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
     super();
     this.#parser = parser;
     this.#logger = logger;
+
+    const networkStorage = new NetworkStorage(eventManager);
     const preloadScriptStorage = new PreloadScriptStorage();
 
     // keep-sorted start block=yes
@@ -86,6 +91,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       eventManager,
       browsingContextStorage,
       realmStorage,
+      networkStorage,
       preloadScriptStorage,
       logger
     );
@@ -94,6 +100,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       cdpConnection
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
+    this.#networkProcessor = new NetworkProcessor(
+      browsingContextStorage,
+      networkStorage
+    );
     this.#scriptProcessor = new ScriptProcessor(
       browsingContextStorage,
       realmStorage,
@@ -184,6 +194,38 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       case 'input.releaseActions':
         return this.#inputProcessor.releaseActions(
           this.#parser.parseReleaseActionsParams(command.params)
+        );
+      // keep-sorted end
+
+      // Network domain
+      // keep-sorted start block=yes
+      case 'network.addIntercept':
+        return this.#networkProcessor.addIntercept(
+          this.#parser.parseAddInterceptParams(command.params)
+        );
+      case 'network.continueRequest':
+        return this.#networkProcessor.continueRequest(
+          this.#parser.parseContinueRequestParams(command.params)
+        );
+      case 'network.continueResponse':
+        return this.#networkProcessor.continueResponse(
+          this.#parser.parseContinueResponseParams(command.params)
+        );
+      case 'network.continueWithAuth':
+        return this.#networkProcessor.continueWithAuth(
+          this.#parser.parseContinueWithAuthParams(command.params)
+        );
+      case 'network.failRequest':
+        return this.#networkProcessor.failRequest(
+          this.#parser.parseFailRequestParams(command.params)
+        );
+      case 'network.provideResponse':
+        return this.#networkProcessor.provideResponse(
+          this.#parser.parseProvideResponseParams(command.params)
+        );
+      case 'network.removeIntercept':
+        return this.#networkProcessor.removeIntercept(
+          this.#parser.parseRemoveInterceptParams(command.params)
         );
       // keep-sorted end
 

@@ -45,6 +45,58 @@ export function parseObject<T extends ZodType>(
   throw new InvalidArgumentException(errorMessage);
 }
 
+/** @see https://w3c.github.io/webdriver-bidi/#module-network */
+export namespace Network {
+  export function parseAddInterceptParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.AddInterceptParametersSchema
+    );
+  }
+
+  export function parseContinueRequestParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueRequestParametersSchema
+    );
+  }
+
+  export function parseContinueResponseParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueResponseParametersSchema
+    );
+  }
+
+  export function parseContinueWithAuthParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ContinueWithAuthParametersSchema
+    );
+  }
+
+  export function parseFailRequestParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.FailRequestParametersSchema
+    );
+  }
+
+  export function parseProvideResponseParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.ProvideResponseParametersSchema
+    );
+  }
+
+  export function parseRemoveInterceptParameters(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Network.RemoveInterceptParametersSchema
+    );
+  }
+}
+
 /** @see https://w3c.github.io/webdriver-bidi/#module-script */
 export namespace Script {
   export function parseGetRealmsParams(

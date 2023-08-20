@@ -27,6 +27,7 @@ import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
+import type {NetworkStorage} from '../network/NetworkStorage.js';
 
 import {BrowsingContextImpl} from './browsingContextImpl.js';
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
@@ -38,6 +39,7 @@ export class BrowsingContextProcessor {
   readonly #eventManager: EventManager;
 
   readonly #browsingContextStorage: BrowsingContextStorage;
+  readonly #networkStorage: NetworkStorage;
   readonly #preloadScriptStorage: PreloadScriptStorage;
   readonly #realmStorage: RealmStorage;
 
@@ -49,6 +51,7 @@ export class BrowsingContextProcessor {
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
+    networkStorage: NetworkStorage,
     preloadScriptStorage: PreloadScriptStorage,
     logger?: LoggerFn
   ) {
@@ -57,6 +60,7 @@ export class BrowsingContextProcessor {
     this.#eventManager = eventManager;
     this.#browsingContextStorage = browsingContextStorage;
     this.#preloadScriptStorage = preloadScriptStorage;
+    this.#networkStorage = networkStorage;
     this.#realmStorage = realmStorage;
     this.#logger = logger;
 
@@ -336,7 +340,8 @@ export class BrowsingContextProcessor {
       sessionId,
       this.#realmStorage,
       this.#eventManager,
-      this.#preloadScriptStorage
+      this.#preloadScriptStorage,
+      this.#networkStorage
     );
 
     if (maybeContext) {

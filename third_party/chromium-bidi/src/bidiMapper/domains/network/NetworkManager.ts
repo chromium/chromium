@@ -22,129 +22,120 @@
  */
 import type Protocol from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/cdpClient.js';
-import type {EventManager} from '../events/EventManager.js';
-import {DefaultMap} from '../../../utils/DefaultMap.js';
 import type {Network} from '../../../protocol/protocol.js';
+import type {CdpTarget} from '../context/cdpTarget.js';
 
-import {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkRequest} from './NetworkRequest.js';
+import type {NetworkStorage} from './NetworkStorage.js';
 
+/** Maps 1:1 to CdpTarget. */
 export class NetworkManager {
-  readonly #eventManager: EventManager;
+  readonly #cdpTarget: CdpTarget;
+  readonly #networkStorage: NetworkStorage;
 
-  /**
-   * Map of request ID to NetworkRequest objects. Needed as long as information
-   * about requests comes from different events.
-   */
-  readonly #requestMap: DefaultMap<Network.Request, NetworkRequest>;
+  private constructor(cdpTarget: CdpTarget, networkStorage: NetworkStorage) {
+    this.#cdpTarget = cdpTarget;
+    this.#networkStorage = networkStorage;
+  }
 
-  private constructor(eventManager: EventManager) {
-    this.#eventManager = eventManager;
-
-    this.#requestMap = new DefaultMap(
-      (requestId) => new NetworkRequest(requestId, this.#eventManager)
-    );
+  /** Returns the CDP Target associated with this NetworkManager instance. */
+  get cdpTarget(): CdpTarget {
+    return this.#cdpTarget;
   }
 
   static create(
-    cdpClient: ICdpClient,
-    eventManager: EventManager
+    cdpTarget: CdpTarget,
+    networkStorage: NetworkStorage
   ): NetworkManager {
-    const networkProcessor = new NetworkManager(eventManager);
+    const networkManager = new NetworkManager(cdpTarget, networkStorage);
 
-    cdpClient
+    // XXX: This will work if a single page is open but what if we open 2 pages?
+    // Investigate further.
+    cdpTarget.cdpClient
       .browserClient()
       .on(
         'Target.detachedFromTarget',
         (params: Protocol.Target.DetachedFromTargetEvent) => {
-          if (cdpClient.sessionId === params.sessionId) {
-            networkProcessor.dispose();
+          if (cdpTarget.cdpClient.sessionId === params.sessionId) {
+            networkManager.#networkStorage.disposeRequestMap();
           }
         }
       );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestWillBeSent',
       (params: Protocol.Network.RequestWillBeSentEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onRequestWillBeSentEvent(params);
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestWillBeSentExtraInfo',
       (params: Protocol.Network.RequestWillBeSentExtraInfoEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onRequestWillBeSentExtraInfoEvent(params);
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.responseReceived',
       (params: Protocol.Network.ResponseReceivedEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedEvent(params);
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.responseReceivedExtraInfo',
       (params: Protocol.Network.ResponseReceivedExtraInfoEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onResponseReceivedEventExtraInfo(params);
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.requestServedFromCache',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onServedFromCache();
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.loadingFailed',
       (params: Protocol.Network.LoadingFailedEvent) => {
-        networkProcessor
+        networkManager
           .#getOrCreateNetworkRequest(params.requestId)
           .onLoadingFailedEvent(params);
-        networkProcessor.#forgetRequest(params.requestId);
+        networkManager.#forgetRequest(params.requestId);
       }
     );
 
-    cdpClient.on(
+    cdpTarget.cdpClient.on(
       'Network.loadingFinished',
       (params: Protocol.Network.RequestServedFromCacheEvent) => {
-        networkProcessor.#forgetRequest(params.requestId);
+        networkManager.#forgetRequest(params.requestId);
       }
     );
 
-    return networkProcessor;
-  }
-
-  dispose() {
-    for (const request of this.#requestMap.values()) {
-      request.dispose();
-    }
-
-    this.#requestMap.clear();
-  }
-
-  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
-    return this.#requestMap.get(requestId);
+    return networkManager;
   }
 
   #forgetRequest(requestId: Network.Request): void {
-    const request = this.#requestMap.get(requestId);
+    const request = this.#networkStorage.requestMap.get(requestId);
     if (request) {
       request.dispose();
-      this.#requestMap.delete(requestId);
+      this.#networkStorage.requestMap.delete(requestId);
     }
+  }
+
+  #getOrCreateNetworkRequest(requestId: Network.Request): NetworkRequest {
+    return this.#networkStorage.requestMap.get(requestId);
   }
 }
