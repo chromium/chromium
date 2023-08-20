@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/resource_context.h"
+#include "wolvic/browser/downloads/wolvic_download_manager_delegate.h"
 
 class SimpleFactoryKey;
 
@@ -61,6 +62,8 @@ class WolvicBrowserContext : public BrowserContext {
   std::unique_ptr<ContentIndexProvider> content_index_provider_;
   std::unique_ptr<ReduceAcceptLanguageControllerDelegate>
       reduce_accept_lang_controller_delegate_;
+  std::unique_ptr<wolvic::WolvicDownloadManagerDelegate>
+      download_manager_delegate_;
 
  private:
   // Performs initialization of the WolvicBrowserContext while IO is still

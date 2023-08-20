@@ -29,6 +29,8 @@ shared_library("libcontent_native") {
     "../content/shell/browser/shell_platform_delegate_android.cc",
     "../content/shell/common/shell_switches.cc",
     "../content/shell/common/shell_switches.h",
+    "browser/downloads/wolvic_download_manager_delegate.cc",
+    "browser/downloads/wolvic_download_manager_delegate.h",
     "browser/session_settings.cc",
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
@@ -193,6 +195,7 @@ jinja_template("content_manifest") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/org/chromium/wolvic/DownloadManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/VRManager.java",
@@ -202,6 +205,7 @@ generate_jni("jni_headers") {
 
 android_library("wolvic_java") {
   sources = [
+    "java/org/chromium/wolvic/DownloadManagerBridge.java",
     "java/org/chromium/wolvic/SessionSettings.java",
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/TabCompositorView.java",
@@ -262,6 +266,7 @@ dist_aar("content_aar") {
     "org/chromium/blink/mojom/*.class",
     "org/chromium/build/*.class",
     "org/chromium/components/browser_ui/media/*.class",
+    "org/chromium/components/download/*.class",
     "org/chromium/components/embedder_support/delegate/*.class",
     "org/chromium/components/embedder_support/view/*.class",
     "org/chromium/components/metrics/*.class",
