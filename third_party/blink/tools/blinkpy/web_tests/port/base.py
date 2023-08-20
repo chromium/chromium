@@ -2610,12 +2610,6 @@ class Port(object):
                 return suite.args.copy()
         return []
 
-    @memoized
-    def _get_blocked_tests_for_threaded_compositing_testing(self):
-        path = self._filesystem.join(self.web_tests_dir(), 'TestLists',
-                                     'SingleThreadedTests')
-        return set(self._filesystem.read_text_file(path).split('\n'))
-
     def build_path(self, *comps: str, target: Optional[str] = None):
         """Returns a path from the build directory."""
         return self._filesystem.join(
