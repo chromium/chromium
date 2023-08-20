@@ -1565,7 +1565,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     const std::u16string name =
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_ICLOUD_KEYCHAIN);
     mechanisms_.emplace_back(
-        Mechanism::ICloudKeychain(), name, name, vector_icons::kPasskeyIcon,
+        Mechanism::ICloudKeychain(), name, name, kIcloudKeychainIcon,
         base::BindRepeating(
             &AuthenticatorRequestDialogModel::StartICloudKeychain,
             base::Unretained(this)));

@@ -270,6 +270,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/passkey_phone_dark.icon",
     "webauthn/passkey_usb.icon",
     "webauthn/passkey_usb_dark.icon",
+    "webauthn/icloud_keychain.icon",
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_dark.icon",
     "zoom_in.icon",
