@@ -197,6 +197,8 @@ public class UrlOverridingTest {
             BASE_PATH + "subframe_navigation_parent.html";
     private static final String SUBFRAME_NAVIGATION_PARENT_SANDBOX =
             BASE_PATH + "subframe_navigation_parent_sandbox.html";
+    private static final String SUBFRAME_NAVIGATION_PARENT_CSP_SANDBOX =
+            BASE_PATH + "subframe_navigation_parent_csp_sandbox.html";
     private static final String SUBFRAME_NAVIGATION_CHILD =
             BASE_PATH + "subframe_navigation_child.html";
     private static final String NAVIGATION_FROM_RENAVIGATE_FRAME =
@@ -220,6 +222,14 @@ public class UrlOverridingTest {
         int SELF = 0;
         int BLANK = 1;
         int TOP = 2;
+    }
+
+    @IntDef({SandboxType.NONE, SandboxType.FRAME, SandboxType.CSP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SandboxType {
+        int NONE = 0;
+        int FRAME = 1;
+        int CSP = 2;
     }
 
     @Mock
@@ -639,8 +649,8 @@ public class UrlOverridingTest {
         Assert.assertNotNull(message.get(MessageBannerProperties.ICON));
     }
 
-    private String getSubframeNavigationUrl(
-            String subframeTargetUrl, @NavigationType int navigationType, boolean sandbox) {
+    private String getSubframeNavigationUrl(String subframeTargetUrl,
+            @NavigationType int navigationType, @SandboxType int sandboxType) {
         // The replace_text parameters for SUBFRAME_NAVIGATION_CHILD, which is loaded in
         // the iframe in SUBFRAME_NAVIGATION_PARENT, have to go through the
         // embedded test server twice and, as such, have to be base64-encoded twice.
@@ -655,7 +665,12 @@ public class UrlOverridingTest {
         byte[] valBlank = ApiCompatibilityUtils.getBytesUtf8("_blank");
         byte[] valTop = ApiCompatibilityUtils.getBytesUtf8("_top");
 
-        String url = sandbox ? SUBFRAME_NAVIGATION_PARENT_SANDBOX : SUBFRAME_NAVIGATION_PARENT;
+        String url = SUBFRAME_NAVIGATION_PARENT;
+        if (sandboxType == SandboxType.FRAME) {
+            url = SUBFRAME_NAVIGATION_PARENT_SANDBOX;
+        } else if (sandboxType == SandboxType.CSP) {
+            url = SUBFRAME_NAVIGATION_PARENT_CSP_SANDBOX;
+        }
 
         String navType = "";
         if (navigationType == NavigationType.BLANK) {
@@ -795,7 +810,8 @@ public class UrlOverridingTest {
         String fallbackUrl = mTestServer.getURL(FALLBACK_LANDING_PATH);
         String subframeUrl = "intent://test/#Intent;scheme=badscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, false);
+        String originalUrl =
+                getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, SandboxType.NONE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1521,7 +1537,8 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.SELF, false);
+        String originalUrl =
+                getSubframeNavigationUrl(subframeTarget, NavigationType.SELF, SandboxType.NONE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1562,7 +1579,8 @@ public class UrlOverridingTest {
         String subframeUrl =
                 "intent://test/#Intent;scheme=externalappscheme;S.browser_fallback_url="
                 + fallbackUrl + ";end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, false);
+        String originalUrl =
+                getSubframeNavigationUrl(subframeUrl, NavigationType.SELF, SandboxType.NONE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1674,7 +1692,8 @@ public class UrlOverridingTest {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String subframeUrl = "intent://test/#Intent;scheme=externalappscheme;end";
-        String originalUrl = getSubframeNavigationUrl(subframeUrl, NavigationType.TOP, false);
+        String originalUrl =
+                getSubframeNavigationUrl(subframeUrl, NavigationType.TOP, SandboxType.NONE);
 
         loadUrlAndWaitForIntentUrl(originalUrl, true, false, true, null, true);
     }
@@ -1714,7 +1733,8 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, false);
+        String originalUrl =
+                getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, SandboxType.NONE);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1744,12 +1764,7 @@ public class UrlOverridingTest {
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_NAVIGATE_TAB, result.getResultType());
     }
 
-    // Ensures that for a sandboxed main frame, we block both intents to ourself, and fallback URLs
-    // that would escape the sandbox by clobbering the main frame.
-    @Test
-    @LargeTest
-    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
-    public void testIntentToSelfWithFallback_Sandboxed() throws Exception {
+    private void doTestIntentToSelfWithFallback_Sandboxed(boolean useCSP) {
         mActivityTestRule.startMainActivityOnBlankPage();
 
         String targetUrl = mTestServer.getURL(HELLO_PAGE);
@@ -1760,7 +1775,10 @@ public class UrlOverridingTest {
                 + "https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.android.chrome"
                 + ";end";
 
-        String originalUrl = getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, true);
+        @SandboxType
+        int sandboxType = useCSP ? SandboxType.CSP : SandboxType.FRAME;
+        String originalUrl =
+                getSubframeNavigationUrl(subframeTarget, NavigationType.BLANK, sandboxType);
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
 
@@ -1795,5 +1813,22 @@ public class UrlOverridingTest {
             Assert.assertEquals(subframeTarget, newTab.getUrl().getSpec());
             Assert.assertFalse(newTab.getWebContents().isLoading());
         });
+    }
+
+    // Ensures that for a sandboxed main frame, we block both intents to ourself, and fallback URLs
+    // that would escape the sandbox by clobbering the main frame.
+    @Test
+    @LargeTest
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void testIntentToSelfWithFallback_Sandboxed() throws Exception {
+        doTestIntentToSelfWithFallback_Sandboxed(false);
+    }
+
+    // Same as testIntentToSelfWithFallback_Sandboxed but with CSP sandbox.
+    @Test
+    @LargeTest
+    @EnableFeatures({ExternalIntentsFeatures.BLOCK_INTENTS_TO_SELF_NAME})
+    public void testIntentToSelfWithFallback_CSPSandboxed() throws Exception {
+        doTestIntentToSelfWithFallback_Sandboxed(true);
     }
 }
