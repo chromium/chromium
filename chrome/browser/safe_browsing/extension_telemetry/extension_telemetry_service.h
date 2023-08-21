@@ -44,10 +44,11 @@ class ExtensionTelemetryPersister;
 class ExtensionTelemetryReportRequest;
 class ExtensionTelemetryReportRequest_ExtensionInfo;
 class ExtensionTelemetryReportRequest_ExtensionInfo_FileInfo;
+class ExtensionTelemetryReportResponse;
 class ExtensionTelemetryUploader;
 class SafeBrowsingTokenFetcher;
 
-// This class process extension signals and reports telemetry for a given
+// This class processes extension signals and reports telemetry for a given
 // profile (regular profile only). It is used exclusively on the UI thread.
 // Lifetime:
 // The service is instantiated when the associated profile is instantiated. It
@@ -55,10 +56,16 @@ class SafeBrowsingTokenFetcher;
 // Enable/Disable state:
 // The service is enabled/disabled based on kEnhancedSafeBrowsing. The service
 // subscribes to the SB preference change notification to update its state.
-// When enabled, the service receives and stores signal information. It also
-// periodically creates telemetry reports and uploads them to the SB servers.
-// When disabled, any previously stored signal information is cleared, incoming
-// signals are ignored and no reports are sent to the SB servers.
+//
+// When enabled, the service receives/stores signal information, and collects
+// file data for off-store extensions. Periodically, the service creates
+// telemetry reports and uploads them to the SB servers. In the upload response,
+// the CRX telemetry server includes unsafe off-store extension verdicts that
+// the service can take action on.
+//
+// When disabled, any previously stored signal information is
+// cleared, incoming signals are ignored and no reports are sent to the SB
+// servers.
 class ExtensionTelemetryService : public KeyedService {
  public:
   ExtensionTelemetryService(
@@ -106,7 +113,7 @@ class ExtensionTelemetryService : public KeyedService {
   // Creates and uploads telemetry reports.
   void CreateAndUploadReport();
 
-  void OnUploadComplete(bool success);
+  void OnUploadComplete(bool success, const std::string& response_data);
 
   // Returns a bool that represents if there is any signal processor
   // information to report.
@@ -204,6 +211,12 @@ class ExtensionTelemetryService : public KeyedService {
   // if available.
   absl::optional<OffstoreExtensionFileData> RetrieveOffstoreFileDataForReport(
       const extensions::ExtensionId& extension_id);
+
+  // Validates offending off-store extension verdicts received in a telemetry
+  // report response, and converts them into a blocklist state map for the
+  // ExtensionService to act on.
+  void ProcessOffstoreExtensionVerdicts(
+      const ExtensionTelemetryReportResponse& response);
 
   // The persister object is bound to the threadpool. This prevents the
   // the read/write operations the `persister_` runs from blocking

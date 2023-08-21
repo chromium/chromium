@@ -161,6 +161,10 @@ BASE_DECLARE_FEATURE(kExtensionTelemetryCookiesGetSignal);
 // the updateDynamicRules()/updateSessionRules() APIs.
 BASE_DECLARE_FEATURE(kExtensionTelemetryDeclarativeNetRequestSignal);
 
+// Enables remotely disabling of malicious off-store extensions identified in
+// Extension Telemetry service reports.
+BASE_DECLARE_FEATURE(kExtensionTelemetryDisableOffstoreExtensions);
+
 // Determines the tag to pass to Omaha to get a file type policy.
 BASE_DECLARE_FEATURE(kFileTypePoliciesTag);
 

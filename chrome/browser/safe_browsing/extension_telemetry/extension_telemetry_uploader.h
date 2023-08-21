@@ -34,7 +34,8 @@ class ExtensionTelemetryUploader {
   virtual ~ExtensionTelemetryUploader();
 
   // A callback run by the uploader upon success or failure.
-  using OnUploadCallback = base::OnceCallback<void(bool success)>;
+  using OnUploadCallback =
+      base::OnceCallback<void(bool success, const std::string& response_data)>;
 
   ExtensionTelemetryUploader(
       OnUploadCallback callback,
@@ -60,7 +61,9 @@ class ExtensionTelemetryUploader {
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
   // Called by OnURLLoaderComplete to handle successful/failed upload.
-  void RetryOrFinish(int net_error, int response_code);
+  void RetryOrFinish(int net_error,
+                     int response_code,
+                     const std::string& response_data);
 
   OnUploadCallback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

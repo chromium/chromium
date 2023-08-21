@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal_processor.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_signal_processor.h"
@@ -42,8 +43,10 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
@@ -54,6 +57,8 @@ using ::extensions::mojom::ManifestLocation;
 using ::google::protobuf::RepeatedPtrField;
 using ExtensionInfo =
     ::safe_browsing::ExtensionTelemetryReportRequest_ExtensionInfo;
+using OffstoreExtensionVerdict =
+    ::safe_browsing::ExtensionTelemetryReportResponse_OffstoreExtensionVerdict;
 
 // The ExtensionTelemetryService saves offstore extensions file data such as
 // filenames and hashes in Prefs. This information is stored in the following
@@ -190,6 +195,18 @@ ExtensionInfo::BlocklistState GetBlocklistState(
       return ExtensionInfo::BLOCKLISTED_POTENTIALLY_UNWANTED;
     default:
       return ExtensionInfo::BLOCKLISTED_UNKNOWN;
+  }
+}
+
+extensions::BlocklistState ConvertTelemetryResponseVerdictToBlocklistState(
+    OffstoreExtensionVerdict::OffstoreExtensionVerdictType type) {
+  switch (type) {
+    case OffstoreExtensionVerdict::NONE:
+      return extensions::BlocklistState::NOT_BLOCKLISTED;
+    case OffstoreExtensionVerdict::MALWARE:
+      return extensions::BlocklistState::BLOCKLISTED_MALWARE;
+    default:
+      return extensions::BlocklistState::BLOCKLISTED_UNKNOWN;
   }
 }
 
@@ -451,11 +468,20 @@ void ExtensionTelemetryService::CreateAndUploadReport() {
   UploadReport(std::move(upload_data));
 }
 
-void ExtensionTelemetryService::OnUploadComplete(bool success) {
+void ExtensionTelemetryService::OnUploadComplete(
+    bool success,
+    const std::string& response_data) {
   // TODO(https://crbug.com/1408126): Add `config_manager_` implementation
   // to check server response and update config.
   if (success) {
     SetLastUploadTimeForExtensionTelemetry(*pref_service_, base::Time::Now());
+
+    ExtensionTelemetryReportResponse response;
+    if (base::FeatureList::IsEnabled(
+            kExtensionTelemetryDisableOffstoreExtensions) &&
+        response.ParseFromString(response_data)) {
+      ProcessOffstoreExtensionVerdicts(response);
+    }
   }
   if (base::FeatureList::IsEnabled(kExtensionTelemetryPersistence) &&
       enabled_ && !persister_.is_null()) {
@@ -1068,6 +1094,42 @@ void ExtensionTelemetryService::StopOffstoreFileDataCollection() {
   offstore_file_data_collection_timer_.Stop();
   offstore_extension_dirs_.clear();
   offstore_extension_file_data_contexts_.clear();
+}
+
+void ExtensionTelemetryService::ProcessOffstoreExtensionVerdicts(
+    const ExtensionTelemetryReportResponse& response) {
+  if (response.offstore_extension_verdicts_size() == 0) {
+    return;
+  }
+
+  std::map<std::string, extensions::BlocklistState> blocklist_states;
+  for (const auto& verdict : response.offstore_extension_verdicts()) {
+    const auto& extension_id = verdict.extension_id();
+    const extensions::Extension* extension =
+        extension_registry_->GetInstalledExtension(extension_id);
+
+    // Ignore the verdict if the extension is not an off-store extension. This
+    // should not happen and is just a sanity check.
+    if (!extension || extension->from_webstore() ||
+        extensions::Manifest::IsComponentLocation(extension->location())) {
+      continue;
+    }
+
+    blocklist_states[extension_id] =
+        ConvertTelemetryResponseVerdictToBlocklistState(verdict.verdict_type());
+  }
+
+  auto* extension_system = extensions::ExtensionSystem::Get(profile_);
+  if (!extension_system) {
+    return;
+  }
+  extensions::ExtensionService* extension_service =
+      extension_system->extension_service();
+  if (!extension_service) {
+    return;
+  }
+  extension_service->PerformActionBasedOnExtensionTelemetryServiceVerdicts(
+      blocklist_states);
 }
 
 }  // namespace safe_browsing
