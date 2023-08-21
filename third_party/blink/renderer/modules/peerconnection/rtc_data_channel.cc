@@ -212,12 +212,17 @@ RTCDataChannel::Observer::Observer(
 }
 
 RTCDataChannel::Observer::~Observer() {
-  DCHECK(!blink_channel_) << "Reference to blink channel hasn't been released.";
+  CHECK(!is_registered()) << "Reference to blink channel hasn't been released.";
 }
 
 const rtc::scoped_refptr<webrtc::DataChannelInterface>&
 RTCDataChannel::Observer::channel() const {
   return webrtc_channel_;
+}
+
+bool RTCDataChannel::Observer::is_registered() const {
+  DCHECK(main_thread_->BelongsToCurrentThread());
+  return blink_channel_ != nullptr;
 }
 
 void RTCDataChannel::Observer::Unregister() {
@@ -303,7 +308,10 @@ RTCDataChannel::RTCDataChannel(
   IncrementCounters(*channel().get());
 }
 
-RTCDataChannel::~RTCDataChannel() = default;
+RTCDataChannel::~RTCDataChannel() {
+  // `Dispose()` must have been called to clear up webrtc references.
+  CHECK(!observer_->is_registered());
+}
 
 String RTCDataChannel::label() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
