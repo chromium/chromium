@@ -340,7 +340,7 @@ namespace {
 class DetachChrome : public StubChrome {
  public:
   DetachChrome() : quit_called_(false) {}
-  ~DetachChrome() override {}
+  ~DetachChrome() override = default;
 
   // Overridden from Chrome:
   Status Quit() override {
@@ -605,7 +605,7 @@ TEST(SessionCommandsTest, ConfigureSession_allSet) {
   ASSERT_NE(desired_caps_out, nullptr);
   ASSERT_TRUE(capabilities_out.logging_prefs["driver"]);
   // Verify session settings are correct
-  ASSERT_EQ(kAccept, session.unhandled_prompt_behavior);
+  ASSERT_EQ(::prompt_behavior::kAccept, session.unhandled_prompt_behavior);
   ASSERT_EQ(base::Seconds(57), session.implicit_wait);
   ASSERT_EQ(base::Seconds(29), session.page_load_timeout);
   ASSERT_EQ(base::Seconds(21), session.script_timeout);
@@ -640,7 +640,8 @@ TEST(SessionCommandsTest, ConfigureSession_defaults) {
   ASSERT_FALSE(session.strict_file_interactability);
   ASSERT_EQ(Log::Level::kWarning, session.driver_log.get()->min_level());
   // w3c values:
-  ASSERT_EQ(kDismissAndNotify, session.unhandled_prompt_behavior);
+  ASSERT_EQ(::prompt_behavior::kDismissAndNotify,
+            session.unhandled_prompt_behavior);
 }
 
 TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
@@ -666,5 +667,5 @@ TEST(SessionCommandsTest, ConfigureSession_legacyDefault) {
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_NE(desired_caps_out, nullptr);
   // legacy values:
-  ASSERT_EQ(kIgnore, session.unhandled_prompt_behavior);
+  ASSERT_EQ(::prompt_behavior::kIgnore, session.unhandled_prompt_behavior);
 }

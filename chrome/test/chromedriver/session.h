@@ -23,12 +23,6 @@
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/command_listener.h"
 
-static const char kAccept[] = "accept";
-static const char kAcceptAndNotify[] = "accept and notify";
-static const char kDismiss[] = "dismiss";
-static const char kDismissAndNotify[] = "dismiss and notify";
-static const char kIgnore[] = "ignore";
-
 // Controls whether ChromeDriver operates in W3C mode (when true) by default
 // or legacy mode (when false).
 static const bool kW3CDefault = true;
@@ -37,6 +31,14 @@ class Chrome;
 class Status;
 class WebDriverLog;
 class WebView;
+
+namespace prompt_behavior {
+static const char kAccept[] = "accept";
+static const char kAcceptAndNotify[] = "accept and notify";
+static const char kDismiss[] = "dismiss";
+static const char kDismissAndNotify[] = "dismiss and notify";
+static const char kIgnore[] = "ignore";
+}  // namespace prompt_behavior
 
 struct FrameInfo {
   FrameInfo(const std::string& parent_frame_id,

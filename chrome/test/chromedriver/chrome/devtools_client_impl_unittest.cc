@@ -223,6 +223,7 @@ class SocketHolder {
 struct SessionState {
   bool handshake_add_script_handled = false;
   bool handshake_runtime_eval_handled = false;
+  bool handshake_page_enable_handled_ = false;
   bool connect_complete = false;
 };
 
@@ -333,6 +334,13 @@ class MultiSessionMockSyncWebSocket : public SyncWebSocket {
       EXPECT_FALSE(session_state->handshake_runtime_eval_handled);
       if (!session_state->handshake_runtime_eval_handled) {
         session_state->handshake_runtime_eval_handled = true;
+      } else {
+        return false;
+      }
+    } else if (method == "Page.enable") {
+      EXPECT_FALSE(session_state->handshake_page_enable_handled_);
+      if (!session_state->handshake_page_enable_handled_) {
+        session_state->handshake_page_enable_handled_ = true;
       } else {
         return false;
       }
@@ -458,6 +466,13 @@ class MockSyncWebSocket : public SyncWebSocket {
       } else {
         return;
       }
+    } else if (method == "Page.enable") {
+      EXPECT_FALSE(handshake_page_enable_handled_);
+      if (!handshake_page_enable_handled_) {
+        handshake_page_enable_handled_ = true;
+      } else {
+        return;
+      }
     } else {
       // Unexpected handshake command
       VLOG(0) << "unexpected handshake method: " << method;
@@ -490,6 +505,7 @@ class MockSyncWebSocket : public SyncWebSocket {
   bool connected_ = false;
   bool handshake_add_script_handled_ = false;
   bool handshake_runtime_eval_handled_ = false;
+  bool handshake_page_enable_handled_ = false;
   bool connect_complete_ = false;
   std::queue<std::string> queued_response_;
 };

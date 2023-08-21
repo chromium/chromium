@@ -498,12 +498,15 @@ Status ParseUnhandledPromptBehavior(const base::Value& option,
                   "'unhandledPromptBehavior' must be a string");
   }
   capabilities->unhandled_prompt_behavior = option.GetString();
-  if (capabilities->unhandled_prompt_behavior == kDismiss ||
-      capabilities->unhandled_prompt_behavior == kAccept ||
-      capabilities->unhandled_prompt_behavior == kDismissAndNotify ||
-      capabilities->unhandled_prompt_behavior == kAcceptAndNotify ||
-      capabilities->unhandled_prompt_behavior == kIgnore)
+  if (capabilities->unhandled_prompt_behavior == prompt_behavior::kDismiss ||
+      capabilities->unhandled_prompt_behavior == prompt_behavior::kAccept ||
+      capabilities->unhandled_prompt_behavior ==
+          prompt_behavior::kDismissAndNotify ||
+      capabilities->unhandled_prompt_behavior ==
+          prompt_behavior::kAcceptAndNotify ||
+      capabilities->unhandled_prompt_behavior == prompt_behavior::kIgnore) {
     return Status(kOk);
+  }
   return Status(kInvalidArgument, "invalid 'unhandledPromptBehavior'");
 }
 

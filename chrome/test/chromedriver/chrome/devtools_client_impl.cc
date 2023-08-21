@@ -485,6 +485,15 @@ Status DevToolsClientImpl::OnConnected() {
 Status DevToolsClientImpl::SetUpDevTools() {
   if (id_ != kBrowserwideDevToolsClientId &&
       (GetOwner() == nullptr || !GetOwner()->IsServiceWorker())) {
+    // The method Page.addScriptToEvaluateOnNewDocument used below has no effect
+    // until Page domain is enabled.
+    // In majority of cases the event listeners like NavigationTracker enable
+    // this domain quickly enough to mask the problem.
+    // In rare occasions (2% of cases) they kick in too late and therefore the
+    // tests like testExecuteScriptWithDeletedGlobalJSON can fail.
+    // To avoid such flakiness we enable the Page domain first.
+    SendCommandAndIgnoreResponse("Page.enable", base::Value::Dict());
+
     // This is a page or frame level DevToolsClient
     base::Value::Dict params;
     std::string script =

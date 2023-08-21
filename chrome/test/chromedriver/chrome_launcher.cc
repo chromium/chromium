@@ -137,16 +137,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
                            program.value().c_str()));
   }
   base::CommandLine command(program);
-  Switches switches;
-
-  for (auto* common_switch : kCommonSwitches)
-    switches.SetUnparsedSwitch(common_switch);
-  for (auto* desktop_switch : kDesktopSwitches)
-    switches.SetUnparsedSwitch(desktop_switch);
-#if BUILDFLAG(IS_WIN)
-  for (auto* win_desktop_switch : kWindowsDesktopSwitches)
-    switches.SetUnparsedSwitch(win_desktop_switch);
-#endif
+  Switches switches = GetDesktopSwitches();
 
   // Chrome logs are normally sent to a file (whose location can be controlled
   // via the logPath capability). We expose a flag, --enable-chrome-logs, that
@@ -884,6 +875,22 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
 }
 
 }  // namespace
+
+Switches GetDesktopSwitches() {
+  Switches switches;
+  for (auto* common_switch : kCommonSwitches) {
+    switches.SetUnparsedSwitch(common_switch);
+  }
+  for (auto* desktop_switch : kDesktopSwitches) {
+    switches.SetUnparsedSwitch(desktop_switch);
+  }
+#if BUILDFLAG(IS_WIN)
+  for (auto* win_desktop_switch : kWindowsDesktopSwitches) {
+    switches.SetUnparsedSwitch(win_desktop_switch);
+  }
+#endif
+  return switches;
+}
 
 Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
                     const SyncWebSocketFactory& socket_factory,

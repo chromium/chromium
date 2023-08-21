@@ -574,6 +574,34 @@ test("chromedriver_unittests") {
   ]
 }
 
+if (is_win || is_posix) {
+  test("chromedriver_integrationtests") {
+    sources = [
+      "devtools_client_impl_integrationtest.cc",
+      "navigation_tracker_integrationtest.cc",
+      "net/test_http_server.cc",
+      "net/test_http_server.h",
+    ]
+
+    data_deps = [ "//chrome:chrome" ]
+
+    deps = [
+      ":automation_client_lib",
+      ":lib",
+      "//base",
+      "//base/test:run_all_unittests",
+      "//base/test:test_support",
+      "//chrome/common",
+      "//net",
+      "//net/server:http_server",
+      "//net/traffic_annotation:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}
+
 # Generate LICENSE file by recursively joining all dependent licenses.
 action("generate_chromedriver_license") {
   testonly = true

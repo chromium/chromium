@@ -30,6 +30,8 @@ class Chrome;
 class DeviceManager;
 class Status;
 
+Switches GetDesktopSwitches();
+
 Status LaunchChrome(network::mojom::URLLoaderFactory* factory,
                     const SyncWebSocketFactory& socket_factory,
                     DeviceManager& device_manager,

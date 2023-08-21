@@ -435,7 +435,8 @@ Status ConfigureSession(Session* session,
     // shows the default behavior to be dismiss and notify. For backward
     // compatibility, in legacy mode default behavior is not handling prompt.
     session->unhandled_prompt_behavior =
-        session->w3c_compliant ? kDismissAndNotify : kIgnore;
+        session->w3c_compliant ? ::prompt_behavior::kDismissAndNotify
+                               : ::prompt_behavior::kIgnore;
   }
 
   session->implicit_wait = capabilities->implicit_wait_timeout;
@@ -760,18 +761,23 @@ Status ExecuteClose(Session* session,
     // before returning an error, so that subsequent commands do not fail.
     const std::string& prompt_behavior = session->unhandled_prompt_behavior;
 
-    if (prompt_behavior == kAccept || prompt_behavior == kAcceptAndNotify)
+    if (prompt_behavior == ::prompt_behavior::kAccept ||
+        prompt_behavior == ::prompt_behavior::kAcceptAndNotify) {
       status = dialog_manager->HandleDialog(true, session->prompt_text.get());
-    else if (prompt_behavior == kDismiss ||
-             prompt_behavior == kDismissAndNotify)
+    } else if (prompt_behavior == ::prompt_behavior::kDismiss ||
+               prompt_behavior == ::prompt_behavior::kDismissAndNotify) {
       status = dialog_manager->HandleDialog(false, session->prompt_text.get());
+    }
     if (status.IsError())
       return status;
 
     // For backward compatibility, in legacy mode we always notify.
-    if (!session->w3c_compliant || prompt_behavior == kAcceptAndNotify ||
-        prompt_behavior == kDismissAndNotify || prompt_behavior == kIgnore)
+    if (!session->w3c_compliant ||
+        prompt_behavior == ::prompt_behavior::kAcceptAndNotify ||
+        prompt_behavior == ::prompt_behavior::kDismissAndNotify ||
+        prompt_behavior == ::prompt_behavior::kIgnore) {
       return Status(kUnexpectedAlertOpen, "{Alert text : " + alert_text + "}");
+    }
   }
 
   status = session->chrome->CloseWebView(web_view->GetId());
