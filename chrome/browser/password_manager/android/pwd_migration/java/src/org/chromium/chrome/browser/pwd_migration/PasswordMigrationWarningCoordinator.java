@@ -52,8 +52,8 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
             SettingsLauncher settingsLauncher, Class<? extends Fragment> syncSettingsFragment,
             ExportFlowInterface exportFlow,
             Callback<PasswordListObserver> passwordListObserverCallback,
-            PasswordStoreBridge passwordStoreBridge,
-            @PasswordMigrationWarningTriggers int referrer) {
+            PasswordStoreBridge passwordStoreBridge, @PasswordMigrationWarningTriggers int referrer,
+            Callback<Throwable> exceptionReporter) {
         mContext = context;
         mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         mSettingsLauncher = settingsLauncher;
@@ -66,7 +66,7 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
         mMediator.initializeModel(model);
         passwordListObserverCallback.onResult(mMediator);
         mView = new PasswordMigrationWarningView(
-                context, sheetController, () -> { mExportFlow.onResume(); });
+                context, sheetController, () -> { mExportFlow.onResume(); }, exceptionReporter);
         setUpModelChangeProcessors(model, mView);
     }
 

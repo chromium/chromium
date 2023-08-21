@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.pwd_migration;
 
+import static org.junit.Assert.fail;
+
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.CURRENT_SCREEN;
 import static org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.VISIBLE;
@@ -101,8 +103,8 @@ public class PasswordMigrationWarningRenderTest {
         runOnUiThreadBlocking(() -> {
             mModel = PasswordMigrationWarningProperties.createDefaultModel(
                     () -> {}, mDismissCallback, mOnClickHandler);
-            mView = new PasswordMigrationWarningView(
-                    mActivityTestRule.getActivity(), mBottomSheetController, () -> {});
+            mView = new PasswordMigrationWarningView(mActivityTestRule.getActivity(),
+                    mBottomSheetController, () -> {}, (Throwable exception) -> fail());
             PropertyModelChangeProcessor.create(mModel, mView,
                     PasswordMigrationWarningViewBinder::bindPasswordMigrationWarningView);
         });
