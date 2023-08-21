@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Network from 'devtools/panels/network/network.js';
+
 (async function() {
   TestRunner.addResult(`Tests doamin filter.\n`);
   await TestRunner.showPanel('network');
@@ -12,11 +14,11 @@ import {NetworkTestRunner} from 'network_test_runner';
   function checkSubdomains(domain) {
     TestRunner.addResult('');
     TestRunner.addResult('Domain: ' + domain);
-    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView.subdomains(domain)));
+    TestRunner.addResult('Subdomains: ' + JSON.stringify(Network.NetworkLogView.NetworkLogView.subdomains(domain)));
   }
 
   function checkFilter(value, domains) {
-    var filter = Network.NetworkLogView.createRequestDomainFilter(value);
+    var filter = Network.NetworkLogView.NetworkLogView.createRequestDomainFilter(value);
     TestRunner.addResult('');
     TestRunner.addResult('Filter: ' + value);
     for (var i = 0; i < domains.length; ++i)
