@@ -184,6 +184,10 @@ class GaiaScreenHandler
   // NetworkStateInformer::NetworkStateInformerObserver:
   void UpdateState(NetworkError::ErrorReason reason) override;
 
+  // Returns the initial mode of the Gaia signin screen for a given user email
+  // address. Note this also affects which Gaia endpoint is used.
+  static GaiaScreenMode GetGaiaScreenMode(const std::string& email);
+
   void SetNextSamlChallengeKeyHandlerForTesting(
       std::unique_ptr<SamlChallengeKeyHandler> handler_for_test);
 

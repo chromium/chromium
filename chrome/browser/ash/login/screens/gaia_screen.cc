@@ -63,7 +63,7 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
 }
 
 bool ShouldUseReauthEndpoint(const AccountId& account_id) {
-  if (account_id.empty()) {
+  if (!account_id.is_valid()) {
     return false;
   }
   auto* user = user_manager::UserManager::Get()->FindUser(account_id);
@@ -72,13 +72,16 @@ bool ShouldUseReauthEndpoint(const AccountId& account_id) {
   if (user && user->IsChild()) {
     return true;
   }
-  // Use reauth endpoint for potential recovery use cases (exclude cases where
-  // reauth enforced by policy).
-  if (features::IsGaiaReauthEndpointEnabled() &&
-      ShouldPrepareForRecovery(account_id)) {
-    return true;
+
+  // Do not use the reauth endpoint when non-Gaia authentication (SAML) is used.
+  // This is to ensure the "Enter Google Account Info" button on the SAML screen
+  // uses an endpoint that allows changing of email address.
+  if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) !=
+      GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_DEFAULT) {
+    return false;
   }
-  return false;
+
+  return features::IsGaiaReauthEndpointEnabled();
 }
 
 }  // namespace
