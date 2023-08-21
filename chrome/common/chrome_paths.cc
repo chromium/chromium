@@ -30,6 +30,10 @@
 #include "base/apple/foundation_util.h"
 #endif
 
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OPENBSD)
+#include "components/policy/core/common/policy_paths.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #endif
@@ -502,11 +506,7 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_OPENBSD)
     case chrome::DIR_POLICY_FILES: {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      cur = base::FilePath(FILE_PATH_LITERAL("/etc/opt/chrome/policies"));
-#else
-      cur = base::FilePath(FILE_PATH_LITERAL("/etc/chromium/policies"));
-#endif
+      cur = base::FilePath(policy::kPolicyPath);
       break;
     }
 #endif

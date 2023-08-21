@@ -18,6 +18,7 @@
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_paths.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "headless/lib/browser/policy/headless_prefs.h"
@@ -151,17 +152,10 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #elif BUILDFLAG(IS_POSIX)
-  // The following should match chrome::DIR_POLICY_FILES definition in
-  // chrome/common/chrome_paths.cc
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  base::FilePath config_dir_path(FILE_PATH_LITERAL("/etc/opt/chrome/policies"));
-#else
-  base::FilePath config_dir_path(FILE_PATH_LITERAL("/etc/chromium/policies"));
-#endif
   std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      config_dir_path, POLICY_SCOPE_MACHINE));
+      base::FilePath(policy::kPolicyPath), POLICY_SCOPE_MACHINE));
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
 #else

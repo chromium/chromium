@@ -510,6 +510,17 @@ source_set("common_constants") {
   }
 }
 
+source_set("policy_path_constants") {
+  sources = [
+    "policy_paths.cc",
+    "policy_paths.h",
+  ]
+
+  # NOTE: This target is intentionally separated from other targets, with
+  # minimal dependencies.
+  deps = [ "//build:branding_buildflags" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

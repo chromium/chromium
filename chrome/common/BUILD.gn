@@ -630,6 +630,7 @@ static_library("constants") {
     "//components/bookmarks/common",
     "//components/nacl/common:switches",
     "//components/offline_pages/buildflags",
+    "//components/policy/core/common:policy_path_constants",
     "//extensions/buildflags",
     "//media:media_buildflags",
     "//ppapi/buildflags",

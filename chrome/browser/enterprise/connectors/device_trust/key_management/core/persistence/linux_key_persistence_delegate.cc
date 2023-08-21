@@ -24,11 +24,11 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/metrics_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/shared_command_constants.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/signing_key_pair.h"
+#include "components/policy/core/common/policy_paths.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/unexportable_key.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -47,18 +47,6 @@ constexpr int kMaxBufferSize = 2048;
 constexpr char kSigningKeyName[] = "signingKey";
 constexpr char kSigningKeyTrustLevel[] = "trustLevel";
 
-// The path to the policy directory should be the same as
-// `chrome::DIR_POLICY_FILES`. This file duplicates those constants, as it runs
-// in the chrome-management-service binary and thus cannot directly use
-// `chrome::DIR_POLICY_FILES`.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-base::FilePath::CharType kDirPolicyPath[] =
-    FILE_PATH_LITERAL("/etc/opt/chrome/policies");
-#else
-base::FilePath::CharType kDirPolicyPath[] =
-    FILE_PATH_LITERAL("/etc/chromium/policies");
-#endif
-
 absl::optional<base::FilePath>& GetTestFilePathStorage() {
   static base::NoDestructor<absl::optional<base::FilePath>> storage;
   return *storage;
@@ -69,7 +57,7 @@ base::FilePath GetSigningKeyFilePath() {
   if (storage) {
     return storage.value();
   }
-  base::FilePath path(kDirPolicyPath);
+  base::FilePath path(policy::kPolicyPath);
   return path.Append(constants::kSigningKeyFilePath);
 }
 
