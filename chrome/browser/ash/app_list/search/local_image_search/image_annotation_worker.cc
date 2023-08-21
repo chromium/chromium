@@ -17,6 +17,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
+#include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -31,6 +33,9 @@
 
 namespace app_list {
 namespace {
+
+using TokenizedString = ::ash::string_matching::TokenizedString;
+using Mode = ::ash::string_matching::TokenizedString::Mode;
 
 // ~ 20MiB
 constexpr int kMaxFileSizeBytes = 2e+7;
@@ -349,10 +354,11 @@ void ImageAnnotationWorker::OnPerformOcr(
     screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
   DVLOG(1) << "OnPerformOcr";
   for (const auto& text_line : visual_annotation->lines) {
-    for (const auto& word : text_line->words) {
-      DVLOG(1) << word->word;
-      auto lower_case_word = base::ToLowerASCII(word->word);
-      if (lower_case_word.size() > 3 && !IsStopWord(lower_case_word) &&
+    TokenizedString tokens(base::UTF8ToUTF16(text_line->text_line),
+                           Mode::kWords);
+    for (const auto& word : tokens.tokens()) {
+      std::string lower_case_word = base::UTF16ToUTF8(word);
+      if (word.size() > 3 && !IsStopWord(lower_case_word) &&
           base::IsAsciiAlpha(lower_case_word[0])) {
         image_info.annotations.insert(std::move(lower_case_word));
       }
@@ -395,14 +401,16 @@ void ImageAnnotationWorker::OnPerformIca(
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
-    if (a->confidence < kConfidenceThreshold) {
-      break;
+    if (a->confidence < kConfidenceThreshold || !a->name.has_value() ||
+        a->name->empty()) {
+      continue;
     }
-    DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
-             << " Confidence: " << (int)a->confidence
-             << " Name: " << a->name.value_or("null");
-    if (a->name.has_value() && !a->name->empty()) {
-      image_info.annotations.insert(a->name.value());
+
+    TokenizedString tokens(base::UTF8ToUTF16(a->name.value()), Mode::kWords);
+    for (const auto& word : tokens.tokens()) {
+      DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
+               << " Confidence: " << (int)a->confidence << " Name: " << word;
+      image_info.annotations.insert(base::UTF16ToUTF8(word));
     }
   }
   if (!image_info.annotations.empty()) {
