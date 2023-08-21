@@ -49,15 +49,7 @@ async def test_nestedBrowsingContext_navigateWaitNone_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    result = await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "none",
-                "context": iframe_id
-            }
-        })
+    result = await goto_url(websocket, iframe_id, url, 'none')
     navigation_id = result["navigation"]
 
     assert result == {"navigation": navigation_id, "url": url}
@@ -94,15 +86,7 @@ async def test_nestedBrowsingContext_navigateWaitInteractive_navigated(
         websocket,
         ["browsingContext.domContentLoaded", "browsingContext.load"])
 
-    result = await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "interactive",
-                "context": iframe_id
-            }
-        })
+    result = await goto_url(websocket, iframe_id, url, 'interactive')
     navigation_id = result["navigation"]
 
     assert result == {"navigation": navigation_id, "url": url}

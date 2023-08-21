@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import (ANY_TIMESTAMP, execute_command, read_JSON_message,
+from test_helpers import (ANY_TIMESTAMP, goto_url, read_JSON_message,
                           send_JSON_command, subscribe)
 
 
@@ -23,15 +23,7 @@ async def test_browsingContext_fragmentNavigated_event(websocket, context_id):
 
     await subscribe(websocket, ["browsingContext.fragmentNavigated"])
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": url,
-                "wait": "complete",
-            }
-        })
+    await goto_url(websocket, context_id, url)
 
     await send_JSON_command(
         websocket, {

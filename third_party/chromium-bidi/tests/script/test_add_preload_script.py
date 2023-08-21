@@ -15,7 +15,7 @@
 
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_UUID, AnyExtending, execute_command,
+from test_helpers import (ANY_UUID, AnyExtending, execute_command, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
@@ -31,15 +31,7 @@ async def test_preloadScript_add_setGlobalVariable(websocket, context_id,
         })
     assert result == {'script': ANY_UUID}
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -114,15 +106,7 @@ async def test_preloadScript_add_multipleScripts(websocket, context_id, html):
             }
         })
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -167,15 +151,7 @@ async def test_preloadScript_add_sameScript_multipleTimes(
     # Same script added twice should result in different ids.
     assert id1 != id2
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -365,15 +341,7 @@ async def test_preloadScript_add_loadedInMultipleContexts(
             }
         })
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     response = await execute_command(
         websocket, {
@@ -401,15 +369,7 @@ async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
             }
         })
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -490,15 +450,7 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
             }
         })
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -530,15 +482,7 @@ async def test_preloadScript_add_loadedInNewContexts(websocket, context_id,
         })
     assert result["result"] == {"type": "string", "value": 'bar'}
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": new_context_id
-            }
-        })
+    await goto_url(websocket, new_context_id, html())
 
     result = await execute_command(
         websocket, {
@@ -567,15 +511,7 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
         })
     assert result == {'script': ANY_UUID}
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     # Evaluate in the standard sandbox, script takes no effect.
     result = await execute_command(
@@ -614,15 +550,8 @@ async def test_preloadScript_add_sandbox(websocket, context_id, html):
                          ids=["with reload", "without reload"])
 async def test_preloadScript_add_runImmediately(websocket, html, context_id,
                                                 with_reload):
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+
+    await goto_url(websocket, context_id, html())
 
     await execute_command(
         websocket, {
@@ -687,15 +616,7 @@ async def test_preloadScript_add_withUserGesture_blankTargetLink(
             }
         })
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": LINK_WITH_BLANK_TARGET,
-                "wait": "complete",
-            }
-        })
+    await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
     await subscribe(websocket, ["log.entryAdded"])
 

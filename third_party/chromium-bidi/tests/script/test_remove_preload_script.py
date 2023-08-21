@@ -14,7 +14,7 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import execute_command
+from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
@@ -53,15 +53,7 @@ async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
     })
     assert result == {}
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": html(),
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, html())
 
     result = await execute_command(
         websocket, {

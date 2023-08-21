@@ -14,9 +14,8 @@
 # limitations under the License.
 import pytest
 from anys import ANY_DICT, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          get_tree, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import (ANY_TIMESTAMP, AnyExtending, get_tree, goto_url,
+                          read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
@@ -180,15 +179,7 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
     LINK_WITH_BLANK_TARGET = html(
         f'''<a href="{blank_url}" target="_blank">new tab</a>''')
 
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "context": context_id,
-                "url": LINK_WITH_BLANK_TARGET,
-                "wait": "complete",
-            }
-        })
+    await goto_url(websocket, context_id, LINK_WITH_BLANK_TARGET)
 
     await subscribe(websocket, [
         "browsingContext.contextCreated",
