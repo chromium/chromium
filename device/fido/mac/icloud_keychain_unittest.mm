@@ -124,7 +124,7 @@ static const uint8_t kCredentialID[] = {
 class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
  public:
   void SetUp() override {
-    if (@available(macOS 13.3, *)) {
+    if (@available(macOS 13.5, *)) {
       NSWindow* window = [[NSWindow alloc] init];
       window.releasedWhenClosed = NO;  // Required by ARC.
 
@@ -143,7 +143,7 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
   }
 
   void TearDown() override {
-    if (@available(macOS 13.3, *)) {
+    if (@available(macOS 13.5, *)) {
       SetSystemInterfaceForTesting(nullptr);
     }
   }
@@ -178,7 +178,7 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
 };
 
 TEST_F(iCloudKeychainTest, RequestAuthorization) {
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     PublicKeyCredentialParams public_key_params(
         {PublicKeyCredentialParams::CredentialInfo()});
     CtapMakeCredentialRequest make_credential_request(
@@ -233,7 +233,7 @@ TEST_F(iCloudKeychainTest, RequestAuthorization) {
 }
 
 TEST_F(iCloudKeychainTest, MakeCredential) {
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     PublicKeyCredentialParams public_key_params(
         {PublicKeyCredentialParams::CredentialInfo()});
     CtapMakeCredentialRequest request("{}", {{1, 2, 3, 4}, "rp.id"},
@@ -331,7 +331,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   static const uint8_t kSignature[] = {1, 2, 3, 4};
   static const uint8_t kUserID[] = {5, 6, 7, 8};
 
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     CtapGetAssertionRequest request("rp.id", "{}");
     CtapGetAssertionOptions options;
 
@@ -382,7 +382,7 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
 }
 
 TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
@@ -409,7 +409,7 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
 }
 
 TEST_F(iCloudKeychainTest, FetchCredentialMetadataNoPermission) {
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
 
     test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,

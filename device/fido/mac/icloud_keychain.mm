@@ -363,14 +363,19 @@ class API_AVAILABLE(macos(13.3)) Discovery : public FidoDiscoveryBase {
 }  // namespace
 
 bool IsSupported() {
-  if (@available(macOS 13.3, *)) {
+  // Here, and in `NewDiscovery`, macOS 13.5 is required. But the rest of the
+  // version tests in this code are only for 13.3. That's because the
+  // functions used are available in 13.3 but we don't want to launch for
+  // 13.3 and 13.4 so that we can updated to require 13.5 in the future without
+  // removing functionality for anyone.
+  if (@available(macOS 13.5, *)) {
     return GetSystemInterface()->IsAvailable();
   }
   return false;
 }
 
 std::unique_ptr<FidoDiscoveryBase> NewDiscovery(uintptr_t ns_window) {
-  if (@available(macOS 13.3, *)) {
+  if (@available(macOS 13.5, *)) {
     NSWindow* window = (__bridge NSWindow*)(void*)ns_window;
     static_assert(sizeof(window) == sizeof(ns_window));
 

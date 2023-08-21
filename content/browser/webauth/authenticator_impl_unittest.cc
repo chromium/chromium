@@ -9102,7 +9102,7 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
 };
 
 TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
-  if (__builtin_available(macOS 13.3, *)) {
+  if (__builtin_available(macOS 13.5, *)) {
     for (const bool feature_enabled : {false, true}) {
       SCOPED_TRACE(feature_enabled);
 
