@@ -42,6 +42,8 @@ class RectF;
 namespace autofill {
 
 class AutofillField;
+class AutofillProfile;
+class CreditCard;
 class CreditCardAccessManager;
 struct FormData;
 struct FormFieldData;
@@ -137,7 +139,21 @@ class AutofillManager
                                         FormGlobalId form,
                                         FieldTypeSource source) {}
 
-    virtual void OnFormSubmitted(AutofillManager& manager, FormGlobalId) {}
+    // Fired when form is filled.
+    // 'filled_fields' represents the fields that were actually sent to the
+    // renderer to be filled. `profile_or_credit_card` gives the information for
+    // which values were used to fill the form, being those either from credit
+    // card or an autofill profile.
+    // TODO(crbug.com/1331312): Get rid of FormFieldData.
+    virtual void OnAutofillProfileOrCreditCardFormFilled(
+        AutofillManager& manager,
+        autofill::FormGlobalId form,
+        base::span<const std::pair<const FormFieldData*, const AutofillField*>>
+            filled_fields,
+        absl::variant<const AutofillProfile*, const CreditCard*>
+            profile_or_credit_card) {}
+
+    virtual void OnFormSubmitted(AutofillManager& manager, FormGlobalId form) {}
   };
 
   // TODO(crbug.com/1151542): Move to anonymous namespace once
@@ -290,6 +306,15 @@ class AutofillManager
   virtual void OnContextMenuShownInField(
       const FormGlobalId& form_global_id,
       const FieldGlobalId& field_global_id) = 0;
+
+  // Notifies observers about a form being filled with an autofill address
+  // profile or credit card.
+  void OnAutofillProfileOrCreditCardFormFilled(
+      autofill::FormGlobalId form,
+      base::span<const std::pair<const FormFieldData*, const AutofillField*>>
+          filled_fields,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card);
 
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(

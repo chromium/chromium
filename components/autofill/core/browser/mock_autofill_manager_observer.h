@@ -12,6 +12,9 @@
 
 namespace autofill {
 
+class AutofillProfile;
+class CreditCard;
+
 class MockAutofillManagerObserver : public AutofillManager::Observer {
  public:
   MockAutofillManagerObserver();
@@ -101,6 +104,16 @@ class MockAutofillManagerObserver : public AutofillManager::Observer {
   MOCK_METHOD(void,
               OnFieldTypesDetermined,
               (AutofillManager&, FormGlobalId, FieldTypeSource),
+              (override));
+
+  MOCK_METHOD(void,
+              OnAutofillProfileOrCreditCardFormFilled,
+              (AutofillManager&,
+               FormGlobalId,
+               (base::span<const std::pair<const FormFieldData*,
+                                           const AutofillField*>>),
+               (absl::variant<const AutofillProfile*, const CreditCard*>
+                    profile_or_credit_card)),
               (override));
 
   MOCK_METHOD(void,

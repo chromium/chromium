@@ -233,7 +233,8 @@ void AndroidAutofillManager::FillOrPreviewForm(
     const url::Origin& triggered_origin) {
   DCHECK_EQ(action_persistence, mojom::AutofillActionPersistence::kFill);
   driver().FillOrPreviewForm(action_persistence, form, triggered_origin, {});
-
+  // We do not call OnAutofillProfileOrCreditCardFormFilled() because WebView
+  // doesn't have AutofillProfile or CreditCard.
   if (auto* logger = GetEventFormLogger(field_type_group)) {
     logger->OnDidFillSuggestion();
   }

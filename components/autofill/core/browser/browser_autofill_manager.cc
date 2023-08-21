@@ -2697,6 +2697,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   if (action_persistence == mojom::AutofillActionPersistence::kFill) {
     form_autofill_history_.AddFormFillEntry(safe_newly_filled_fields,
                                             field.origin, is_refill);
+    OnAutofillProfileOrCreditCardFormFilled(
+        form.global_id(), safe_newly_filled_fields, profile_or_credit_card);
   }
 
   LOG_AF(buffer) << CTag{"table"};

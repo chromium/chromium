@@ -545,6 +545,12 @@ BASE_FEATURE(kAutofillGranularFillingAvailable,
              "AutofillGranularFillingAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether testing forms using devtools will be available.
+// TODO(crbug.com/1459990): Clean up when launched.
+BASE_FEATURE(kAutofillTestFormWithDevtools,
+             "AutofillTestFormWithDevtools",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows silent profile updates even when the profile import requirements are
 // not met.
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,

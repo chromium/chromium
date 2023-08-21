@@ -315,6 +315,16 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
   OnFormSubmittedImpl(form, known_success, source);
 }
 
+void AutofillManager::OnAutofillProfileOrCreditCardFormFilled(
+    autofill::FormGlobalId form,
+    base::span<const std::pair<const FormFieldData*, const AutofillField*>>
+        filled_fields,
+    absl::variant<const AutofillProfile*, const CreditCard*>
+        profile_or_credit_card) {
+  NotifyObservers(&Observer::OnAutofillProfileOrCreditCardFormFilled, form,
+                  filled_fields, profile_or_credit_card);
+}
+
 void AutofillManager::OnFormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {

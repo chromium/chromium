@@ -32,9 +32,12 @@ using testing::Eq;
 using testing::Field;
 using testing::Invoke;
 using testing::NiceMock;
+using testing::Pair;
+using testing::Property;
 using testing::Ref;
 using testing::Return;
 using testing::UnorderedElementsAreArray;
+using testing::VariantWith;
 
 namespace autofill {
 
@@ -372,6 +375,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   auto f = Eq(form.global_id());
   auto g = Eq(other_form.global_id());
   auto ff = Eq(field.global_id());
+  auto ff_property = Property(&FormFieldData::global_id, field.global_id());
   auto heuristics = Eq(FieldTypeSource::kHeuristicsOrAutocomplete);
 
   MockAutofillManagerObserver observer;
@@ -401,6 +405,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnBeforeLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer, OnAfterLoadedServerPredictions).Times(0);
   EXPECT_CALL(observer, OnFieldTypesDetermined).Times(0);
+  EXPECT_CALL(observer, OnAutofillProfileOrCreditCardFormFilled).Times(0);
   EXPECT_CALL(observer, OnFormSubmitted).Times(0);
 
   EXPECT_CALL(*manager_, ShouldParseForms)
@@ -473,6 +478,14 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnBeforeJavaScriptChangedAutofilledValue(m, f, ff));
   EXPECT_CALL(observer, OnAfterJavaScriptChangedAutofilledValue(m, f, ff));
   manager_->OnJavaScriptChangedAutofilledValue(form, field, {});
+
+  AutofillProfile profile;
+  EXPECT_CALL(observer, OnAutofillProfileOrCreditCardFormFilled(
+                            m, f, ElementsAre(Pair(ff_property, ff_property)),
+                            VariantWith<const AutofillProfile*>(&profile)));
+  manager_->OnAutofillProfileOrCreditCardFormFilled(
+      form.global_id(),
+      {{{&field, std::make_unique<AutofillField>(field).get()}}}, &profile);
 
   EXPECT_CALL(observer, OnFormSubmitted(m, f));
   manager_->OnFormSubmitted(form, true,
