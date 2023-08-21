@@ -988,3 +988,85 @@ testcase.checkPolicyAssignedDefaultHasManagedIcon = async () => {
     chrome.test.assertFalse(nonDefaultTaskItem.attributes['class'].includes('change-default'));
   }
 };
+
+/*
+ * Test that the "copy" context menu item is disabled for Google Drive CSE
+ * files.
+ */
+testcase.checkEncryptedCopyDisabled = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+
+  await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
+
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden]) [command="#copy"][disabled]:not([hidden])');
+};
+
+/*
+ * Test that a Google Drive CSE files can be moved (using cut+paste) within
+ * Google Drive.
+ */
+testcase.checkEncryptedMoveEnabled = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.testCSEFile, ENTRIES.photos]);
+
+  await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
+
+  // Check that the cut command is available for the user.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden]) [command="#cut"]:not([disabled]):not([hidden])');
+
+  await remoteCall.waitUntilSelected(appId, ENTRIES.testCSEFile.nameText);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']),
+      'execCommand failed');
+
+  // Navigate to a folder, ENTRIES.photos appears to be just a writeable test
+  // folder.
+  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+
+  // Right-click inside the file list.
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseRightClick', appId, ['#file-list']));
+
+  // Wait for the command option to appear.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden]) [command="#paste"]:not([disabled]):not([hidden])');
+};
+
+/*
+ * Test that a Google Drive CSE files can not be moved (using cut+paste) outside
+ * of Google Drive.
+ */
+testcase.checkEncryptedCrossVolumeMoveDisabled = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+
+  await remoteCall.showContextMenuFor(appId, ENTRIES.testCSEFile.nameText);
+
+  // Check that the cut command is available for the user.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden]) [command="#cut"]:not([disabled]):not([hidden])');
+
+  await remoteCall.waitUntilSelected(appId, ENTRIES.testCSEFile.nameText);
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['cut']),
+      'execCommand failed');
+
+  // Navigate to a folder, “My files“ is just an example of a writeable one.
+  await navigateWithDirectoryTree(appId, '/My files');
+
+  // Right-click inside the file list.
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'fakeMouseRightClick', appId, ['#file-list']));
+
+  // Wait for the command option to appear.
+  await remoteCall.waitForElement(
+      appId,
+      '#file-context-menu:not([hidden]) [command="#paste"][disabled]:not([hidden])');
+};

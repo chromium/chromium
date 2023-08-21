@@ -1468,7 +1468,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("checkGoToFileLocationEnabledInRecents"),
         TestCase("checkGoToFileLocationDisabledInMultipleSelection"),
         TestCase("checkDefaultTask"),
-        TestCase("checkPolicyAssignedDefaultHasManagedIcon")));
+        TestCase("checkPolicyAssignedDefaultHasManagedIcon"),
+        TestCase("checkEncryptedCopyDisabled"),
+        TestCase("checkEncryptedCrossVolumeMoveDisabled"),
+        TestCase("checkEncryptedMoveEnabled")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */

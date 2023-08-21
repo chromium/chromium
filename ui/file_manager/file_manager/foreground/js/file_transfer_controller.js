@@ -452,6 +452,22 @@ export class FileTransferController {
   }
 
   /**
+   * @param {!DataTransfer} clipboardData DataTransfer object from the event.
+   * @return {boolean} Returns true when some file under action is encrypted.
+   * @private
+   */
+  isEncrypted_(clipboardData) {
+    let data = clipboardData.getData(`fs/${ENCRYPTED}`);
+    if (!data) {
+      // |clipboardData| in protected mode.
+      const globalData = this.getDragAndDropGlobalData_();
+      if (globalData) {
+        data = globalData.encrypted;
+      }
+    }
+    return data === 'true';
+  }
+  /**
    * Calls executePaste with |pastePlan| if paste is allowed by Data Leak
    * Prevention policy. If paste is not allowed, it shows a toast to the
    * user.
@@ -1192,6 +1208,14 @@ export class FileTransferController {
         return false;
       }
     }
+    // Don't allow copy of encrypted files.
+    if (this.metadataModel_.getCache(entries, ['contentMimeType'])
+            .some(
+                (metadata, i) => FileType.isEncrypted(
+                    entries[i], metadata.contentMimeType))) {
+      return false;
+    }
+
     // Check if canCopy is true or undefined, but not false (see
     // https://crbug.com/849999).
     return this.metadataModel_.getCache(entries, ['canCopy'])
@@ -1323,6 +1347,11 @@ export class FileTransferController {
         destinationLocationInfo.volumeInfo.fileSystem.root.toURL()) {
       // Copying between different sources requires all files to be available.
       if (this.isMissingFileContents_(clipboardData)) {
+        return false;
+      }
+
+      // Moving an encrypted files outside of Google Drive is not supported.
+      if (this.isEncrypted_(clipboardData)) {
         return false;
       }
 
