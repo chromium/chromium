@@ -65,7 +65,6 @@ import './os_bluetooth_page/os_bluetooth_true_wireless_images.js';
 import './os_bluetooth_page/os_bluetooth_pairing_dialog.js';
 import './os_bluetooth_page/os_bluetooth_page.js';
 import './os_bluetooth_page/os_bluetooth_summary.js';
-import './os_bluetooth_page/os_paired_bluetooth_list.js';
 import './os_bluetooth_page/os_paired_bluetooth_list_item.js';
 import './os_bluetooth_page/os_saved_devices_list.js';
 import './os_bluetooth_page/os_saved_devices_list_item.js';
@@ -119,6 +118,7 @@ export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse
 export {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 export {LacrosExtensionControlBrowserProxy, LacrosExtensionControlBrowserProxyImpl} from './common/lacros_extension_control_browser_proxy.js';
 export {LacrosExtensionControlledIndicatorElement} from './common/lacros_extension_controlled_indicator.js';
 export {SettingsAudioElement} from './device_page/audio.js';

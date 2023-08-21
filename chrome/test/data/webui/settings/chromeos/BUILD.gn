@@ -56,7 +56,6 @@ build_webui_tests("build") {
     "onc_mojo_test.ts",
     "os_about_page_tests.js",
     "os_paired_bluetooth_list_item_tests.js",
-    "os_paired_bluetooth_list_tests.js",
     "os_page_availability_test.ts",
     "os_reset_page_test.js",
     "os_saved_devices_list_tests.js",
@@ -209,6 +208,7 @@ build_webui_tests("build") {
     "os_bluetooth_page/os_bluetooth_pairing_dialog_tests.js",
     "os_bluetooth_page/os_bluetooth_summary_tests.js",
     "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js",
+    "os_bluetooth_page/os_paired_bluetooth_list_test.ts",
     "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",
 
     "os_files_page/google_drive_page_test.ts",

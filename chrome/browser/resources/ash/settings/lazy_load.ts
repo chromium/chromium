@@ -87,6 +87,7 @@ import './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_detail_view.
 import './os_apps_page/app_management_page/pwa_detail_view.js';
 import './os_apps_page/app_management_page/sub_apps_item.js';
 import './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
+import './os_bluetooth_page/os_paired_bluetooth_list.js';
 import './os_files_page/google_drive_subpage.js';
 import './os_files_page/google_drive_confirmation_dialog.js';
 import './os_files_page/google_drive_subpage.js';
@@ -198,6 +199,7 @@ export {AppManagementResizeLockItemElement} from './os_apps_page/app_management_
 export {AppManagementSubAppsItemElement} from './os_apps_page/app_management_page/sub_apps_item.js';
 export {AppNotificationsSubpage} from './os_apps_page/app_notifications_page/app_notifications_subpage.js';
 export {SettingsBluetoothChangeDeviceNameDialogElement} from './os_bluetooth_page/os_bluetooth_change_device_name_dialog.js';
+export {SettingsPairedBluetoothListElement} from './os_bluetooth_page/os_paired_bluetooth_list.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';
