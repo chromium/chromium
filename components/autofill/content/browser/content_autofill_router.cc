@@ -342,10 +342,9 @@ void ContentAutofillRouter::FocusNoLongerOnForm(
     void (*callback)(ContentAutofillDriver* target, bool had_interacted_form)) {
   // Suppresses FocusNoLongerOnForm() if the focus has already moved to a
   // different frame.
-  LocalFrameToken frame_token(
-      source->render_frame_host()->GetFrameToken().value());
-  if (focused_frame_ != frame_token)
+  if (focused_frame_ != source->GetFrameToken()) {
     return;
+  }
 
   // Prevents FocusOnFormField() from calling FocusNoLongerOnForm().
   focus_no_longer_on_form_has_fired_ = true;
@@ -374,14 +373,13 @@ void ContentAutofillRouter::FocusOnFormField(
 
   // Calls FocusNoLongerOnForm() if the focus has already moved from a
   // different frame and FocusNoLongerOnForm() hasn't been called yet.
-  LocalFrameToken frame_token(
-      source->render_frame_host()->GetFrameToken().value());
-  if (focused_frame_ != frame_token && !focus_no_longer_on_form_has_fired_) {
+  if (focused_frame_ != source->GetFrameToken() &&
+      !focus_no_longer_on_form_has_fired_) {
     ForEachFrame(form_forest_, focus_no_longer_on_form);
   }
 
   // Suppresses late FocusNoLongerOnForm().
-  focused_frame_ = frame_token;
+  focused_frame_ = source->GetFrameToken();
   focus_no_longer_on_form_has_fired_ = false;
 
   TriggerFormExtractionExcept(source);
