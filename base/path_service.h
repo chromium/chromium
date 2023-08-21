@@ -57,6 +57,9 @@ class BASE_EXPORT PathService {
                                         bool is_absolute,
                                         bool create);
 
+  // Returns whether an override is present for a special directory or file.
+  static bool IsOverriddenForTesting(int key);
+
   // To extend the set of supported keys, you can register a path provider,
   // which is just a function mirroring PathService::Get.  The ProviderFunc
   // returns false if it cannot provide a non-empty path for the given key.
@@ -83,9 +86,6 @@ class BASE_EXPORT PathService {
   // Removes an override for a special directory or file. Returns true if there
   // was an override to remove or false if none was present.
   static bool RemoveOverrideForTests(int key);
-
-  // Returns whether an override is present for a special directory or file.
-  static bool IsOverriddenForTests(int key);
 };
 
 }  // namespace base

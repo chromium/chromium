@@ -321,7 +321,7 @@ bool PathService::RemoveOverrideForTests(int key) {
 }
 
 // static
-bool PathService::IsOverriddenForTests(int key) {
+bool PathService::IsOverriddenForTesting(int key) {
   PathData* path_data = GetPathData();
   DCHECK(path_data);
 
