@@ -33,14 +33,6 @@ component("libavif") {
     "src/src/utils.c",
   ]
 
-  # CFI builds fail when C code tries to access, via a function pointer, a C++
-  # function that contains a "struct YuvConstants *" parameter. The reason for
-  # this is that libyuv adds a namespace definition when compiled with a C++
-  # compiler and thus CFI sees a mismatch: "struct YuvConstants *" vs "struct
-  # libyuv::YuvConstants *". To work around this problem, we add
-  # "-fsanitize-cfi-icall-generalize-pointers" to libavif build. The only
-  # libavif source file with this issue is reformat_libyuv.c.
-  configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
   include_dirs = [ "src/include/" ]
   defines = [ "AVIF_LIBYUV_ENABLED" ]
   if (is_component_build) {
