@@ -72,6 +72,7 @@ bool ShouldShowIph(PrefService* pref_service, const AppId& app_id);
 extern const char kLastTimeMlInstallIgnored[];
 extern const char kLastTimeMlInstallDismissed[];
 extern const char kConsecutiveMlInstallNotAcceptedCount[];
+extern const char kMLPromotionGuardrailBlockReason[];
 
 // The user has ignored the installation dialog and it went away due to
 // another interaction (e.g. the tab was changed, page navigated, etc).
