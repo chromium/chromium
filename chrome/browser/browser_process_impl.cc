@@ -429,8 +429,6 @@ void BrowserProcessImpl::StartTearDown() {
   tearing_down_ = true;
   DCHECK(IsShuttingDown());
 
-  platform_part()->BeginStartTearDown();
-
 #if BUILDFLAG(IS_ANDROID)
   accessibility_prefs_controller_.reset();
 #endif

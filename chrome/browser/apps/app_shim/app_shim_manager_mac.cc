@@ -414,7 +414,7 @@ AppShimManager::~AppShimManager() {
   AppShimHostBootstrap::SetClient(nullptr);
 }
 
-void AppShimManager::OnBeginTearDown() {
+void AppShimManager::OnProfileManagerDestroying() {
   avatar_menu_.reset();
   if (profile_manager_)
     profile_manager_->RemoveObserver(this);

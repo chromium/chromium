@@ -142,10 +142,6 @@ class AppShimManager
   AppShimManager& operator=(const AppShimManager&) = delete;
   ~AppShimManager() override;
 
-  // Called at the beginning of browser shut down. Is used to remove |this| as
-  // a ProfileManager and AvatarMenuObserver observer.
-  void OnBeginTearDown();
-
   // Get the host corresponding to a profile and app id, or null if there is
   // none.
   AppShimHost* FindHost(Profile* profile, const web_app::AppId& app_id);
@@ -222,6 +218,7 @@ class AppShimManager
   // ProfileManagerObserver overrides:
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
 
   // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;
@@ -425,7 +422,7 @@ class AppShimManager
 
   std::unique_ptr<Delegate> delegate_;
 
-  // Weak, reset during OnBeginTearDown.
+  // Weak, reset during OnProfileManagerDestroying.
   raw_ptr<ProfileManager> profile_manager_ = nullptr;
 
   // Map from extension id to the state for that app.
