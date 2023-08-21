@@ -1770,7 +1770,7 @@ class RequestCallbackReceiver {
  public:
   base::RepeatingCallback<void(const std::string&)> Callback() {
     return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
-                               base::Unretained(this));
+                               weak_factory_.GetWeakPtr());
   }
 
   std::string WaitForResult() {
@@ -1790,6 +1790,7 @@ class RequestCallbackReceiver {
   }
   absl::optional<std::string> authenticator_id_;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+  base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
 };
 
 TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
@@ -1834,41 +1835,91 @@ TEST_F(MultiplePlatformAuthenticatorsTest, Dispatch) {
       device::kWebAuthnICloudKeychain};
 
   for (const bool should_create_in_icloud_keychain : {false, true}) {
-    SCOPED_TRACE(should_create_in_icloud_keychain);
+    for (const bool platform_attachment : {false, true}) {
+      if (!platform_attachment && should_create_in_icloud_keychain) {
+        // Without `platform_attachment`, `should_create_in_icloud_keychain` is
+        // moot.
+        continue;
+      }
 
-    TransportAvailabilityInfo transports_info;
-    transports_info.has_icloud_keychain = true;
-    transports_info.available_transports = {AuthenticatorTransport::kInternal};
-    transports_info.request_type = device::FidoRequestType::kMakeCredential;
-    transports_info.make_credential_attachment =
-        device::AuthenticatorAttachment::kPlatform;
+      SCOPED_TRACE(testing::Message() << "should_create_in_icloud_keychain: "
+                                      << should_create_in_icloud_keychain);
+      SCOPED_TRACE(testing::Message()
+                   << "platform_attachment: " << platform_attachment);
 
-    AuthenticatorRequestDialogModel model(main_rfh());
-    model.set_allow_icloud_keychain(true);
-    model.set_should_create_in_icloud_keychain(
-        should_create_in_icloud_keychain);
+      TransportAvailabilityInfo transports_info;
+      transports_info.has_icloud_keychain = true;
+      transports_info.available_transports = {
+          AuthenticatorTransport::kInternal,
+          AuthenticatorTransport::kUsbHumanInterfaceDevice};
+      transports_info.request_type = device::FidoRequestType::kMakeCredential;
+      transports_info.resident_key_requirement =
+          device::ResidentKeyRequirement::kRequired;
+      transports_info.make_credential_attachment =
+          platform_attachment ? device::AuthenticatorAttachment::kPlatform
+                              : device::AuthenticatorAttachment::kAny;
 
-    RequestCallbackReceiver request_callback;
-    model.SetRequestCallback(request_callback.Callback());
+      AuthenticatorRequestDialogModel model(main_rfh());
+      model.set_allow_icloud_keychain(true);
+      model.set_should_create_in_icloud_keychain(
+          should_create_in_icloud_keychain);
 
-    const std::string kProfileAuthenticatorId = "platauth";
-    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-        kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
-        device::AuthenticatorType::kTouchID));
-    const std::string kICloudKeychainId = "ickc";
-    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-        kICloudKeychainId, AuthenticatorTransport::kInternal,
-        device::AuthenticatorType::kICloudKeychain));
+      RequestCallbackReceiver request_callback;
+      model.SetRequestCallback(request_callback.Callback());
 
-    model.StartFlow(std::move(transports_info),
-                    /*is_conditional_mediation=*/false);
-    if (should_create_in_icloud_keychain) {
-      EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
-    } else {
-      EXPECT_EQ(model.current_step(),
-                AuthenticatorRequestDialogModel::Step::kCreatePasskey);
-      model.HideDialogAndDispatchToPlatformAuthenticator();
-      EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
+      const std::string kProfileAuthenticatorId = "platauth";
+      model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+          kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
+          device::AuthenticatorType::kTouchID));
+      const std::string kICloudKeychainId = "ickc";
+      model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+          kICloudKeychainId, AuthenticatorTransport::kInternal,
+          device::AuthenticatorType::kICloudKeychain));
+
+      model.StartFlow(std::move(transports_info),
+                      /*is_conditional_mediation=*/false);
+      if (platform_attachment) {
+        if (should_create_in_icloud_keychain) {
+          EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
+        } else {
+          EXPECT_EQ(model.current_step(),
+                    AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+          model.HideDialogAndDispatchToPlatformAuthenticator();
+          EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
+        }
+      } else {
+        EXPECT_EQ(model.current_step(),
+                  AuthenticatorRequestDialogModel::Step::kMechanismSelection);
+      }
+
+      if (!platform_attachment) {
+        // Dispatch to iCloud Keychain to check that canceling doesn't show
+        // a Chrome error dialog.
+        base::ranges::find_if(
+            model.mechanisms(),
+            [](const AuthenticatorRequestDialogModel::Mechanism& m) -> bool {
+              return absl::holds_alternative<
+                  AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain>(
+                  m.type);
+            })
+            ->callback.Run();
+      }
+
+      model.OnUserConsentDenied();
+
+      if (platform_attachment) {
+        EXPECT_EQ(
+            model.current_step(),
+            should_create_in_icloud_keychain
+                ? AuthenticatorRequestDialogModel::Step::kMechanismSelection
+                : AuthenticatorRequestDialogModel::Step::
+                      kErrorInternalUnrecognized);
+      } else {
+        // Canceling after a non-automatic dispatch to iCloud Keychain should
+        // end the request.
+        EXPECT_EQ(model.current_step(),
+                  AuthenticatorRequestDialogModel::Step::kNotStarted);
+      }
     }
   }
 }

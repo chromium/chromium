@@ -683,6 +683,10 @@ class AuthenticatorRequestDialogModel {
     // creds_ contains possible credentials to select between before or after an
     // authenticator has responded to a request.
     std::vector<device::DiscoverableCredentialMetadata> creds_;
+
+    // did_dispatch_to_icloud_keychain_ is true if iCloud Keychain has been
+    // triggered.
+    bool did_dispatch_to_icloud_keychain_ = false;
   };
 
   void ResetEphemeralState();

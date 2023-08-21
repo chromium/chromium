@@ -702,6 +702,24 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
     Cancel();
     return;
   }
+
+  if (ephemeral_state_.did_dispatch_to_icloud_keychain_) {
+    // If we dispatched automatically to iCloud Keychain for a create(), and the
+    // user clicked cancel, give them the option to create in the profile
+    // authenticator.
+    if (transport_availability_.request_type ==
+            device::FidoRequestType::kMakeCredential &&
+        priority_mechanism_index_.has_value() &&
+        absl::holds_alternative<Mechanism::ICloudKeychain>(
+            mechanisms_[*priority_mechanism_index_].type)) {
+      StartOver();
+      return;
+    }
+    // Otherwise, respect the "Cancel" button in macOS UI as if it were our own.
+    Cancel();
+    return;
+  }
+
   SetCurrentStep(Step::kErrorInternalUnrecognized);
 }
 
@@ -1912,6 +1930,11 @@ void AuthenticatorRequestDialogModel::
 
   if (platform_authenticator_it == authenticators.end()) {
     return;
+  }
+
+  if (platform_authenticator_it->type ==
+      device::AuthenticatorType::kICloudKeychain) {
+    ephemeral_state_.did_dispatch_to_icloud_keychain_ = true;
   }
 
   DispatchRequestAsync(&*platform_authenticator_it);
