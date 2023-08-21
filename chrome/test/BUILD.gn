@@ -10375,7 +10375,7 @@ if (!is_android && !is_chromeos_device) {
     if (include_js_tests) {
       deps += [ "//chrome/test/data/webui:interactive_ui_tests" ]
     }
-    if (include_js2gtest_tests) {
+    if (include_js2gtest_tests && (is_chromeos_ash || enable_print_preview)) {
       deps += [ "//chrome/test/data/webui:interactive_ui_tests_js_webui" ]
     }
 
