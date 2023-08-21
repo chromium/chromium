@@ -16,15 +16,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -52,15 +50,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -90,15 +86,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -126,15 +120,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -167,15 +159,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "idempotent": false,
           "io_timeout": 3600,
           "named_caches": [
@@ -206,15 +196,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -247,15 +235,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "idempotent": false,
           "named_caches": [
             {
@@ -284,15 +270,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -327,15 +311,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -363,15 +345,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -399,15 +379,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -435,15 +413,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -471,15 +447,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -508,15 +482,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -544,15 +516,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -580,15 +550,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -630,15 +598,13 @@
               "revision": "git_revision:0f694cdc06ba054b9960aa1ae9766e45b53d02c1"
             }
           ],
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -668,15 +634,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -705,15 +669,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -741,15 +703,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -777,15 +737,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -815,15 +773,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -851,15 +807,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -887,15 +841,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -931,15 +883,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "named_caches": [
             {
               "name": "cros_vm",
@@ -980,15 +930,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "idempotent": false,
           "named_caches": [
             {
@@ -1028,15 +976,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests"
+          },
           "idempotent": false,
           "named_caches": [
             {
@@ -1076,15 +1022,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "idempotent": false,
           "named_caches": [
             {
@@ -1128,15 +1072,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86",
-              "gce": "1",
-              "kvm": "1",
-              "os": "Ubuntu-18.04",
-              "pool": "chrome.tests.finch"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86",
+            "gce": "1",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.finch"
+          },
           "named_caches": [
             {
               "name": "cros_vm",

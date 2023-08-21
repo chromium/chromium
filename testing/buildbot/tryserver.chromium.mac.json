@@ -13,16 +13,14 @@
         "name": "gles2_conform_test 1002:67ef",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -39,14 +37,12 @@
         "name": "gles2_conform_test 8086:3e9b",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gles2_conform_test",
@@ -60,16 +56,14 @@
         "name": "gpu_unittests 1002:67ef",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -83,14 +77,12 @@
         "name": "gpu_unittests 8086:3e9b",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -108,16 +100,14 @@
         "name": "services_unittests 1002:67ef",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -135,14 +125,12 @@
         "name": "services_unittests 8086:3e9b",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -173,16 +161,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -211,14 +197,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -247,16 +231,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -285,14 +267,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -321,16 +301,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -359,14 +337,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -399,16 +375,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -441,14 +415,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -486,16 +458,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -533,14 +503,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -569,16 +537,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -607,14 +573,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -652,16 +616,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -699,14 +661,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -736,16 +696,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -775,14 +733,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -812,16 +768,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -851,14 +805,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -887,16 +839,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -925,14 +875,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -964,16 +912,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1006,14 +952,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
@@ -1045,16 +989,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -1086,14 +1028,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
@@ -1125,16 +1065,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1166,14 +1104,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
@@ -1205,16 +1141,14 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "1002:67ef",
-              "hidpi": "1",
-              "os": "Mac-13.2.1",
-              "pool": "chromium.tests.gpu"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "1002:67ef",
+            "hidpi": "1",
+            "os": "Mac-13.2.1",
+            "pool": "chromium.tests.gpu"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1245,14 +1179,12 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "display_attached": "1",
-              "gpu": "8086:3e9b",
-              "os": "Mac-13.3.1"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "display_attached": "1",
+            "gpu": "8086:3e9b",
+            "os": "Mac-13.3.1"
+          },
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },

@@ -31,13 +31,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "output_links": [
             {
               "link": [
@@ -73,13 +71,11 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "output_links": [
             {
               "link": [
@@ -117,13 +113,11 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "output_links": [
             {
               "link": [
@@ -159,13 +153,11 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "output_links": [
             {
               "link": [
@@ -209,12 +201,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -232,12 +222,10 @@
         "name": "browser_tests_functional",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -252,12 +240,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -275,12 +261,10 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -299,12 +283,10 @@
         "name": "content_browsertests_stress",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -319,12 +301,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -339,12 +319,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -378,12 +356,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -401,12 +377,10 @@
         "name": "browser_tests_functional",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -421,12 +395,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -444,12 +416,10 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -468,12 +438,10 @@
         "name": "content_browsertests_stress",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -488,12 +456,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -508,12 +474,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -547,12 +511,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -570,12 +532,10 @@
         "name": "browser_tests_functional",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "browser_tests",
@@ -590,12 +550,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -613,12 +571,10 @@
         "name": "content_browsertests_sequential",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -637,12 +593,10 @@
         "name": "content_browsertests_stress",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_browsertests",
@@ -657,12 +611,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -677,12 +629,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10-19045"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -723,12 +673,10 @@
               "revision": "git_revision:0ecab437ae2532a879b1203efc48f54bc6cadb77"
             }
           ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "named_caches": [
             {
               "name": "xcode_ios_14c18",
@@ -774,12 +722,10 @@
               "revision": "git_revision:0ecab437ae2532a879b1203efc48f54bc6cadb77"
             }
           ],
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "named_caches": [
             {
               "name": "xcode_ios_14c18",

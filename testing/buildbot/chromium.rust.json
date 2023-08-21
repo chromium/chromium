@@ -13,14 +13,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -35,14 +33,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -54,14 +50,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -73,14 +67,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -92,14 +84,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -112,14 +102,12 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -132,14 +120,12 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -159,14 +145,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -181,14 +165,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -200,14 +182,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -219,14 +199,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -238,14 +216,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -258,14 +234,12 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -278,14 +252,12 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -305,14 +277,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -327,14 +297,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -346,14 +314,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -365,14 +331,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -384,14 +348,12 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -404,14 +366,12 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -424,14 +384,12 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "PQ3A.190801.002",
+            "device_os_flavor": "google",
+            "device_type": "walleye",
+            "os": "Android"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -453,11 +411,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -472,11 +428,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -488,11 +442,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -504,11 +456,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -520,11 +470,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -537,11 +485,9 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -554,11 +500,9 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -574,11 +518,9 @@
         "name": "build_rust_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_rust_tests",
@@ -600,11 +542,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -619,11 +559,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -635,11 +573,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -651,11 +587,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -667,11 +601,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -684,11 +616,9 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -701,11 +631,9 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -721,11 +649,9 @@
         "name": "build_rust_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-22.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_rust_tests",
@@ -747,12 +673,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -767,12 +691,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -784,12 +706,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -801,12 +721,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -818,12 +736,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -836,12 +752,10 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -854,12 +768,10 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -875,12 +787,10 @@
         "name": "build_rust_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Mac-13"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-13"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_rust_tests",
@@ -902,12 +812,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -922,12 +830,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -939,12 +845,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -956,12 +860,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -973,12 +875,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -991,12 +891,10 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -1009,12 +907,10 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -1030,12 +926,10 @@
         "name": "build_rust_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_rust_tests",
@@ -1057,12 +951,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -1077,12 +969,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -1094,12 +984,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_integration_unittests",
@@ -1111,12 +999,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_rust_unittests",
@@ -1128,12 +1014,10 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "rust_gtest_interop_unittests",
@@ -1146,12 +1030,10 @@
         "name": "test_cpp_including_rust_unittests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_cpp_including_rust_unittests",
@@ -1164,12 +1046,10 @@
         "name": "test_serde_json_lenient",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "test_serde_json_lenient",
@@ -1185,12 +1065,10 @@
         "name": "build_rust_tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10"
-            }
-          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Windows-10"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "build_rust_tests",

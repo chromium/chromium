@@ -19,12 +19,10 @@
         "name": "accessibility_content_browsertests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "kvm": "1",
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -59,11 +57,9 @@
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -90,11 +86,9 @@
         "results_handler": "layout tests",
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Ubuntu-18.04"
-            }
-          ],
+          "dimensions": {
+            "os": "Ubuntu-18.04"
+          },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 7
         },

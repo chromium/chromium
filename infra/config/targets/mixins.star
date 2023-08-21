@@ -235,14 +235,12 @@ targets.mixin(
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
     swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "cpu": "x86",
-                "kvm": "1",
-                "os": "Ubuntu-18.04",
-                "pool": "chromium.tests",
-            },
-        ],
+        dimensions = {
+            "cpu": "x86",
+            "kvm": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chromium.tests",
+        },
         optional_dimensions = {
             60: {
                 "caches": "cros_vm",
@@ -268,15 +266,13 @@ targets.mixin(
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
     swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "cpu": "x86",
-                "kvm": "1",
-                "gce": "1",
-                "os": "Ubuntu-18.04",
-                "pool": "chrome.tests",
-            },
-        ],
+        dimensions = {
+            "cpu": "x86",
+            "kvm": "1",
+            "gce": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests",
+        },
         optional_dimensions = {
             60: {
                 "caches": "cros_vm",
@@ -299,15 +295,13 @@ targets.mixin(
         "--magic-vm-cache=magic_cros_vm_cache",
     ],
     swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "cpu": "x86",
-                "kvm": "1",
-                "gce": "1",
-                "os": "Ubuntu-18.04",
-                "pool": "chrome.tests.finch",
-            },
-        ],
+        dimensions = {
+            "cpu": "x86",
+            "kvm": "1",
+            "gce": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests.finch",
+        },
         optional_dimensions = {
             60: {
                 "caches": "cros_vm",
@@ -361,15 +355,13 @@ targets.mixin(
         "--magic-vm-cache=magic_cros_reven_vm_cache",
     ],
     swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "cpu": "x86",
-                "kvm": "1",
-                "gce": "1",
-                "os": "Ubuntu-18.04",
-                "pool": "chrome.tests",
-            },
-        ],
+        dimensions = {
+            "cpu": "x86",
+            "kvm": "1",
+            "gce": "1",
+            "os": "Ubuntu-18.04",
+            "pool": "chrome.tests",
+        },
         optional_dimensions = {
             60: {
                 "caches": "cros_reven_vm",
@@ -1083,12 +1075,10 @@ targets.mixin(
 targets.mixin(
     name = "mac_x64",
     swarming = targets.swarming(
-        dimension_sets = [
-            {
-                "os": "Mac-12",
-                "cpu": "x86-64",
-            },
-        ],
+        dimensions = {
+            "os": "Mac-12",
+            "cpu": "x86-64",
+        },
     ),
 )
 

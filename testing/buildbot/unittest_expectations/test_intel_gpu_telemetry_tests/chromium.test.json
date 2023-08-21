@@ -25,12 +25,10 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "gpu": "8086:5912-24.20.100.6286",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "gpu": "8086:5912-24.20.100.6286",
+            "os": "Linux"
+          },
           "idempotent": false
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"

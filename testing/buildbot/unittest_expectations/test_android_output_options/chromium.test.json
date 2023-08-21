@@ -21,15 +21,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "KTU84P",
-              "device_os_type": "userdebug",
-              "device_type": "hammerhead",
-              "integrity": "high",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "KTU84P",
+            "device_os_type": "userdebug",
+            "device_type": "hammerhead",
+            "integrity": "high",
+            "os": "Android"
+          },
           "expiration": 120,
           "output_links": [
             {
@@ -58,15 +56,13 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_os": "LMY41U",
-              "device_os_type": "user",
-              "device_type": "hammerhead",
-              "integrity": "high",
-              "os": "Android"
-            }
-          ],
+          "dimensions": {
+            "device_os": "LMY41U",
+            "device_os_type": "user",
+            "device_type": "hammerhead",
+            "integrity": "high",
+            "os": "Android"
+          },
           "expiration": 120
         },
         "test": "foo_test"
