@@ -79,8 +79,6 @@ component("ash") {
     "accessibility/accessibility_delegate.h",
     "accessibility/accessibility_event_handler_manager.cc",
     "accessibility/accessibility_event_handler_manager.h",
-    "accessibility/accessibility_notification_controller.cc",
-    "accessibility/accessibility_notification_controller.h",
     "accessibility/accessibility_observer.h",
     "accessibility/autoclick/autoclick_controller.cc",
     "accessibility/autoclick/autoclick_controller.h",

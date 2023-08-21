@@ -342,13 +342,6 @@ chrome.accessibilityPrivate.DictationBubbleProperties;
 /**
  * @enum {string}
  */
-chrome.accessibilityPrivate.ToastType = {
-  DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
-};
-
-/**
- * @enum {string}
- */
 chrome.accessibilityPrivate.DlcType = {
   TTS_BN_BD: 'ttsBnBd',
   TTS_CS_CZ: 'ttsCsCz',
@@ -663,13 +656,6 @@ chrome.accessibilityPrivate.getDlcContents = function(dlc, callback) {};
  *     result is returned.
  */
 chrome.accessibilityPrivate.isLacrosPrimary = function(callback) {};
-
-/**
- * Displays an accessibility-related toast.
- * @param {!chrome.accessibilityPrivate.ToastType} type The type of toast to
- *     show.
- */
-chrome.accessibilityPrivate.showToast = function(type) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

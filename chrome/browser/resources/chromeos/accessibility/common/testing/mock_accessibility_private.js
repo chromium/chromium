@@ -73,10 +73,6 @@ class MockAccessibilityPrivate {
 
     this.SyntheticKeyboardEventType = {KEYDOWN: 'keydown', KEYUP: 'keyup'};
 
-    this.ToastType = {
-      DICTATION_NO_FOCUSED_TEXT_FIELD: 'dictationNoFocusedTextField',
-    };
-
     /** @private {function<number, number>} */
     this.boundsListener_ = null;
 
@@ -488,7 +484,4 @@ class MockAccessibilityPrivate {
         await getFileBytes(`${pumpkinDir}/es_es/pumpkin_config.binarypb`);
     MockAccessibilityPrivate.pumpkinData_ = data;
   }
-
-  /** @param {!chrome.accessibilityPrivate.ToastType} type */
-  showToast(type) {}
 }
