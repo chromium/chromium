@@ -148,13 +148,15 @@ const std::vector<MatchTest> kMatchTests = {
     MatchTest{"1PPropHost", "bbco-pb.co.uk", "bbco-pb.co.uk", false},
     MatchTest{"1POtherHost", "somehost.com", "somehost.com", false},
 
-    // "First-party" is defined by having the same hostname, possibly with
-    // a "www" prefix.
-    // TODO: Use SchemefulSite to compare instead of stripping `www.`.
+    // "First-party" is defined as schemefully same-site.
     MatchTest{"1PSameSiteOther1", "www.somehost.com", "somehost.com", false},
     MatchTest{"1PSameSiteOther2", "somehost.com", "www.somehost.com", false},
     MatchTest{"1PSameSiteRsrc1", "www.acme-ra.com", "acme-ra.com", false},
     MatchTest{"1PSameSiteRsrc2", "acme-ra.com", "www.acme-ra.com", false},
+    MatchTest{"1PSameSiteRsrcSub1", "sub.sub.acme-ra.com", "acme-ra.com",
+              false},
+    MatchTest{"1PSameSiteRsrcSub2", "acme-ra.com", "sub.sub.acme-ra.com",
+              false},
     MatchTest{"1PSameSiteProp1", "www.bbco-pb.co.uk", "bbco-pb.co.uk", false},
     MatchTest{"1PSameSiteProp2", "bbco-pb.co.uk", "www.bbco-pb.co.uk", false},
 

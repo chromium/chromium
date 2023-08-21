@@ -9,18 +9,12 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/schemeful_site.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
 
 namespace network {
-namespace {
-
-std::string NormalizeHost(std::string s) {
-  return s.substr(0, 4) == "www." ? s.substr(4) : s;
-}
-
-}  // namespace
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
   custom_proxy_config_ = network::mojom::CustomProxyConfig::New();
@@ -125,18 +119,19 @@ bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
     return false;
   }
 
-  std::string resource_host = NormalizeHost(request_url.host());
+  net::SchemefulSite request_site(request_url);
+  net::SchemefulSite top_site(top_frame_url);
 
-  // Same site requests should not be proxied.
-  if (resource_host == NormalizeHost(top_frame_url.host())) {
+  // First-party requests should not be proxied.
+  if (request_site == top_site) {
     return false;
   }
 
-  auto resource_host_suffix = PartitionMapKey(resource_host);
+  auto partition_map_key = PartitionMapKey(request_url.host());
 
-  if (allow_list_with_bypass_map_.contains(resource_host_suffix)) {
+  if (allow_list_with_bypass_map_.contains(partition_map_key)) {
     for (const auto& [rule, bypass_rules] :
-         allow_list_with_bypass_map_.at(resource_host_suffix)) {
+         allow_list_with_bypass_map_.at(partition_map_key)) {
       auto result = rule->Evaluate(request_url);
       if (result == net::SchemeHostPortMatcherResult::kInclude) {
         return bypass_rules.Matches(top_frame_url, true);
