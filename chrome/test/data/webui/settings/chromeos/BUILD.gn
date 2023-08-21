@@ -62,7 +62,6 @@ build_webui_tests("build") {
     "os_saved_devices_list_tests.js",
     "os_saved_devices_subpage_tests.js",
     "os_settings_main_test.js",
-    "os_settings_search_box_test.js",
     "people_page_account_manager_subpage_test.js",
     "personalization_page_with_personalization_hub_test.js",
     "search_engine_test.js",
@@ -77,7 +76,6 @@ build_webui_tests("build") {
     "test_os_languages_metrics_proxy.js",
     "test_os_lifetime_browser_proxy.js",
     "test_os_reset_browser_proxy.js",
-    "test_os_settings_search_box_browser_proxy.js",
     "test_os_sync_browser_proxy.ts",
     "test_personalization_hub_browser_proxy.js",
     "test_profile_info_browser_proxy.js",
@@ -266,6 +264,10 @@ build_webui_tests("build") {
 
     "os_settings_menu/os_settings_menu_test.ts",
     "os_settings_menu/os_settings_menu_revamp_test.ts",
+
+    "os_settings_search_box/os_settings_search_box_test.ts",
+    "os_settings_search_box/test_open_window_proxy.ts",
+    "os_settings_search_box/test_os_settings_search_box_browser_proxy.ts",
 
     "os_settings_ui/os_settings_ui_about_page_test.ts",
     "os_settings_ui/os_settings_ui_menu_test.js",

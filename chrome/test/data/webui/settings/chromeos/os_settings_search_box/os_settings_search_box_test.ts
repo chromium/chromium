@@ -2,93 +2,51 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/os_settings.js';
+
+import {CrToolbarSearchFieldElement, IronDropdownElement, IronListElement, OpenWindowProxyImpl, OsSettingsSearchBoxBrowserProxyImpl, OsSettingsSearchBoxElement, OsToolbarElement, personalizationSearchMojom, Router, routes, routesMojom, searchMojom, searchResultIconMojom, setPersonalizationSearchHandlerForTesting, setSettingsSearchHandlerForTesting, settingMojom, setUserActionRecorderForTesting} from 'chrome://os-settings/os_settings.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {FakePersonalizationSearchHandler} from './fake_personalization_search_handler.js';
-import {FakeSettingsSearchHandler} from './fake_settings_search_handler.js';
-import {FakeUserActionRecorder} from './fake_user_action_recorder.js';
+import {FakePersonalizationSearchHandler} from '../fake_personalization_search_handler.js';
+import {FakeSettingsSearchHandler} from '../fake_settings_search_handler.js';
+import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
+
+import {TestOpenWindowProxy} from './test_open_window_proxy.js';
 import {TestOsSettingsSearchBoxBrowserProxy} from './test_os_settings_search_box_browser_proxy.js';
 
-/** @fileoverview Runs tests for the OS settings search box. */
-
-/**
- * @implements {OpenWindowProxy}
- */
-class TestOpenWindowProxy extends TestBrowserProxy {
-  constructor() {
-    super([
-      'openUrl',
-    ]);
-  }
-
-  /** @override */
-  openUrl(url) {
-    this.methodCalled('openUrl', url);
-  }
-}
-
-suite('OSSettingsSearchBox', () => {
+suite('<os-settings-search-box>', () => {
   // TODO(hsuregan): Keep count and add getters for metrics.
   class MockMetricsPrivate {
-    recordEnumerationValue(metricName, value, enumSize) {}
-
-    recordSparseValue(metricName, value) {}
-
-    recordTime(metricName, value) {}
-
-    recordSparseValueWithHashMetricName(metricName, value) {}
-
-    recordSparseValueWithPersistentHash(metricName, value) {}
+    recordEnumerationValue() {}
+    recordSparseValue() {}
+    recordTime() {}
+    recordSparseValueWithHashMetricName() {}
+    recordSparseValueWithPersistentHash() {}
   }
 
-  /** @const {number} */
-  const DEFAULT_RELEVANCE_SCORE = 0.5;
+  const DEFAULT_RELEVANCE_SCORE: number = 0.5;
+  const DEFAULT_PAGE_HIERARCHY: String16[] = [];
+  let toolbar: OsToolbarElement;
+  let searchBox: OsSettingsSearchBoxElement;
+  let field: CrToolbarSearchFieldElement;
+  let dropDown: IronDropdownElement;
+  let resultList: IronListElement;
+  let personalizationSearchHandler: FakePersonalizationSearchHandler;
+  let settingsSearchHandler: FakeSettingsSearchHandler;
+  let userActionRecorder: FakeUserActionRecorder;
+  let noResultsSection: HTMLElement;
+  let openWindowProxy: TestOpenWindowProxy;
 
-  /** @const {!Array<mojoBase.mojom.String16>} */
-  const DEFAULT_PAGE_HIERARCHY = [];
-
-  /** @type {?OsToolbar} */
-  let toolbar;
-
-  /** @type {?OsSettingsSearchBox} */
-  let searchBox;
-
-  /** @type {?CrSearchFieldElement} */
-  let field;
-
-  /** @type {?IronDropdownElement} */
-  let dropDown;
-
-  /** @type {?IronListElement} */
-  let resultList;
-
-  /** @type {FakePersonalizationSearchHandler} */
-  let personalizationSearchHandler;
-
-  /** @type {*} */
-  let settingsSearchHandler;
-
-  /** @type {?userActionRecorderMojom.UserActionRecorderInterface} */
-  let userActionRecorder;
-
-  /** @type {?HTMLElement} */
-  let noResultsSection;
-
-  /** @type {?TestOpenWindowProxy} */
-  let openWindowProxy = null;
-
-  function isTextSelected() {
+  function isTextSelected(): boolean {
     const input = field.$.searchInput;
     return input.selectionStart === 0 &&
         input.selectionEnd === input.value.length;
   }
 
-  /** @param {string} term */
-  async function simulateSearch(term) {
+  async function simulateSearch(term: string): Promise<void> {
     field.$.searchInput.value = term;
     field.onSearchTermInput();
     field.onSearchTermSearch();
@@ -99,40 +57,31 @@ suite('OSSettingsSearchBox', () => {
     flush();
   }
 
-  async function waitForListUpdate() {
+  async function waitForListUpdate(): Promise<void> {
     // Wait for iron-list to complete resizing.
     await eventToPromise('iron-resize', resultList);
     flush();
   }
 
-  async function waitForResultsFetched() {
+  async function waitForResultsFetched(): Promise<void> {
     // Wait for search results to be fetched.
     await eventToPromise('search-results-fetched', searchBox);
     flush();
   }
 
-  /**
-   * @param {string} text Exact string of the result to be displayed.
-   * @param {string} path Url path with optional params.
-   * @param {?searchResultIconMojom.SearchResultIcon} icon Result
-   *     icon enum.
-   * @param {?Boolean} wasGeneratedFromTextMatch If result was generated by
-   *     text match, defaults to true.
-   * @param {?number} relevanceScore the score of this search result, defaults
-   *     to |DEFAULT_RELEVANCE_SCORE|
-   * @return {!searchMojom.SearchResult} A search result.
-   */
   function fakeSettingsResult(
-      text, urlPathWithParameters, icon, wasGeneratedFromTextMatch,
-      relevanceScore) {
-    return /** @type {!mojom.SearchResult} */ ({
+      text: string, urlPathWithParameters: string = '',
+      icon?: searchResultIconMojom.SearchResultIcon,
+      wasGeneratedFromTextMatch?: boolean,
+      relevanceScore?: number): searchMojom.SearchResult {
+    return {
       text: {
-        data: Array.from(text, c => c.charCodeAt()),
+        data: Array.from(text, c => c.charCodeAt(0)),
       },
       canonicalText: {
-        data: Array.from(text, c => c.charCodeAt()),
+        data: Array.from(text, c => c.charCodeAt(0)),
       },
-      urlPathWithParameters: urlPathWithParameters,
+      urlPathWithParameters,
       icon: icon ? icon : searchResultIconMojom.SearchResultIcon.MIN_VALUE,
       wasGeneratedFromTextMatch: wasGeneratedFromTextMatch === undefined ?
           true :
@@ -147,29 +96,27 @@ suite('OSSettingsSearchBox', () => {
           relevanceScore :
           DEFAULT_RELEVANCE_SCORE,
       settingsPageHierarchy: DEFAULT_PAGE_HIERARCHY,
-    });
+      defaultRank: 0,
+    };
   }
 
-  /**
-   * @param {string} text
-   * @param {string} relativeUrl
-   * @param {number} relevanceScore
-   * @return {!personalizationSearchMojom.SearchResult}
-   */
   function fakePersonalizationResult(
-      text, relativeUrl = '', relevanceScore = DEFAULT_RELEVANCE_SCORE) {
-    return /** @type {!personalizationSearchMojom.SearchResult} */ ({
+      text: string, relativeUrl: string = '',
+      relevanceScore: number =
+          DEFAULT_RELEVANCE_SCORE): personalizationSearchMojom.SearchResult {
+    return ({
       searchConceptId: personalizationSearchMojom.SearchConceptId.MIN_VALUE,
       text: {
-        data: Array.from(text, c => c.charCodeAt()),
+        data: Array.from(text, c => c.charCodeAt(0)),
       },
       relativeUrl,
       relevanceScore,
     });
   }
 
-  function setupSearchBox() {
-    chrome.metricsPrivate = new MockMetricsPrivate();
+  function setupSearchBox(): void {
+    chrome.metricsPrivate =
+        new MockMetricsPrivate() as unknown as typeof chrome.metricsPrivate;
 
     personalizationSearchHandler = new FakePersonalizationSearchHandler();
     setPersonalizationSearchHandlerForTesting(personalizationSearchHandler);
@@ -185,20 +132,27 @@ suite('OSSettingsSearchBox', () => {
     document.body.appendChild(toolbar);
     flush();
 
-    searchBox = toolbar.shadowRoot.querySelector('os-settings-search-box');
-    assertTrue(!!searchBox);
-    field = searchBox.shadowRoot.querySelector('cr-toolbar-search-field');
-    assertTrue(!!field);
-    dropDown = searchBox.shadowRoot.querySelector('iron-dropdown');
-    assertTrue(!!dropDown);
-    resultList = searchBox.shadowRoot.querySelector('iron-list');
-    assertTrue(!!resultList);
-    noResultsSection =
-        searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
-    assertTrue(!!noResultsSection);
+    const element = toolbar.shadowRoot!.querySelector('os-settings-search-box');
+    assertTrue(!!element);
+    searchBox = element;
+    const searchField =
+        searchBox.shadowRoot!.querySelector('cr-toolbar-search-field');
+    assertTrue(!!searchField);
+    field = searchField;
+    const ironDropDown = searchBox.shadowRoot!.querySelector('iron-dropdown');
+    assertTrue(!!ironDropDown);
+    dropDown = ironDropDown;
+    const ironList = searchBox.shadowRoot!.querySelector('iron-list');
+    assertTrue(!!ironList);
+    resultList = ironList;
+    const noSearchResultsContainer =
+        searchBox.shadowRoot!.querySelector<HTMLElement>(
+            '#noSearchResultsContainer');
+    assertTrue(!!noSearchResultsContainer);
+    noResultsSection = noSearchResultsContainer;
   }
 
-  setup(function() {
+  setup(() => {
     Router.getInstance().navigateTo(routes.BASIC);
 
     openWindowProxy = new TestOpenWindowProxy();
@@ -208,9 +162,9 @@ suite('OSSettingsSearchBox', () => {
   teardown(async () => {
     // Clear search field for next test.
     await simulateSearch('');
-    setPersonalizationSearchHandlerForTesting(null);
-    setSettingsSearchHandlerForTesting(null);
-    setUserActionRecorderForTesting(null);
+    toolbar.remove();
+    openWindowProxy.reset();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Search availability changed', async () => {
@@ -218,30 +172,30 @@ suite('OSSettingsSearchBox', () => {
     settingsSearchHandler.setFakeResults([fakeSettingsResult('result')]);
     await simulateSearch('test query');
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 1);
+    assertEquals(1, searchBox.get('searchResults_').length);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('1'), fakeSettingsResult('2')]);
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 1);
+    assertEquals(1, searchBox.get('searchResults_').length);
 
     // Check that the list updates when the dropdown is open, and the dropdown
     // remains open.
     settingsSearchHandler.simulateSearchResultsChanged();
     await waitForResultsFetched();
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 2);
+    assertEquals(2, searchBox.get('searchResults_').length);
 
     // Personalization search results should also result in a new search.
     personalizationSearchHandler.setFakeResults(
         [fakePersonalizationResult('personalization')]);
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 2);
+    assertEquals(2, searchBox.get('searchResults_').length);
 
     personalizationSearchHandler.simulateSearchResultsChanged();
     await waitForResultsFetched();
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 3);
+    assertEquals(3, searchBox.get('searchResults_').length);
 
     // User clicks outside the search box, closing the dropdown.
     searchBox.blur();
@@ -249,14 +203,14 @@ suite('OSSettingsSearchBox', () => {
 
     settingsSearchHandler.setFakeResults([fakeSettingsResult('result')]);
     assertFalse(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 3);
+    assertEquals(3, searchBox.get('searchResults_').length);
 
     // Check that the list updates when the dropdown is closed, and the dropdown
     // remains closed.
     settingsSearchHandler.simulateSearchResultsChanged();
     await waitForResultsFetched();
     assertFalse(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 2);
+    assertEquals(2, searchBox.get('searchResults_').length);
 
     // The first item should be selected immediately when the search results
     // change even if the change occurred while the dropdown was closed.
@@ -264,17 +218,17 @@ suite('OSSettingsSearchBox', () => {
     await waitForListUpdate();
     assertTrue(dropDown.opened);
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().searchResult.resultText,
-        searchBox.selectedItem_.resultText);
+        searchBox.get('selectedItem_').resultText,
+        searchBox['getSelectedOsSearchResultRow_']().searchResult.resultText);
   });
 
   test('User action search event', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults([]);
 
-    assertEquals(userActionRecorder.searchCount, 0);
+    assertEquals(0, userActionRecorder.searchCount);
     await simulateSearch('query');
-    assertEquals(userActionRecorder.searchCount, 1);
+    assertEquals(1, userActionRecorder.searchCount);
   });
 
   test(
@@ -289,7 +243,10 @@ suite('OSSettingsSearchBox', () => {
 
         assertFalse(dropDown.opened);
         assertFalse(isTextSelected());
-        field.$.icon.click();
+        const icon =
+            field.shadowRoot!.querySelector<HTMLButtonElement>('#icon');
+        assertTrue(!!icon);
+        icon.click();
         assertTrue(isTextSelected());
         assertTrue(dropDown.opened);
       });
@@ -302,16 +259,16 @@ suite('OSSettingsSearchBox', () => {
     assertFalse(dropDown.opened);
     await simulateSearch('query 1');
     assertTrue(dropDown.opened);
-    assertEquals(searchBox.searchResults_.length, 0);
+    assertEquals(0, searchBox.get('searchResults_').length);
     assertFalse(noResultsSection.hidden);
 
-    assertEquals(userActionRecorder.searchCount, 1);
+    assertEquals(1, userActionRecorder.searchCount);
 
     // Show result list if results are returned, and hide no results div.
     settingsSearchHandler.setFakeResults([fakeSettingsResult('result')]);
     personalizationSearchHandler.setFakeResults([]);
     await simulateSearch('query 2');
-    assertNotEquals(searchBox.searchResults_.length, 0);
+    assertNotEquals(0, searchBox.get('searchResults_').length);
     assertTrue(noResultsSection.hidden);
 
     // Show result list if personalization search results are returned, and hide
@@ -320,7 +277,7 @@ suite('OSSettingsSearchBox', () => {
     personalizationSearchHandler.setFakeResults(
         [fakePersonalizationResult('personalization')]);
     await simulateSearch('query 3');
-    assertNotEquals(searchBox.searchResults_.length, 0);
+    assertNotEquals(0, searchBox.get('searchResults_').length);
     assertTrue(noResultsSection.hidden);
   });
 
@@ -331,8 +288,8 @@ suite('OSSettingsSearchBox', () => {
         [fakePersonalizationResult('personalization')]);
     await simulateSearch('query');
     assertTrue(dropDown.opened);
-    assertEquals(2, resultList.items.length);
-    const [firstResult, secondResult] = resultList.items;
+    assertEquals(2, resultList.items!.length);
+    const [firstResult, secondResult] = resultList.items!;
 
     // Child blur elements except field should not trigger closing of dropdown.
     resultList.blur();
@@ -350,8 +307,8 @@ suite('OSSettingsSearchBox', () => {
     assertTrue(dropDown.opened);
 
     // The same result rows exist.
-    assertEquals(firstResult, resultList.items[0]);
-    assertEquals(secondResult, resultList.items[1]);
+    assertEquals(firstResult, resultList.items![0]);
+    assertEquals(secondResult, resultList.items![1]);
 
     // Search field is blurred, closing the dropdown.
     field.$.searchInput.blur();
@@ -363,8 +320,8 @@ suite('OSSettingsSearchBox', () => {
     assertTrue(dropDown.opened);
 
     // The same result rows exist.
-    assertEquals(firstResult, resultList.items[0]);
-    assertEquals(secondResult, resultList.items[1]);
+    assertEquals(firstResult, resultList.items![0]);
+    assertEquals(secondResult, resultList.items![1]);
   });
 
   test('Search result rows are selected correctly', async () => {
@@ -376,10 +333,10 @@ suite('OSSettingsSearchBox', () => {
     await waitForListUpdate();
 
     assertTrue(dropDown.opened);
-    assertEquals(resultList.items.length, 2);
+    assertEquals(2, resultList.items!.length);
 
     // The first row should be selected when results are fetched.
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
 
     // Test ArrowUp and ArrowDown interaction with selecting.
     const arrowUpEvent = new KeyboardEvent(
@@ -389,19 +346,19 @@ suite('OSSettingsSearchBox', () => {
 
     // ArrowDown event should select next row.
     searchBox.dispatchEvent(arrowDownEvent);
-    assertEquals(resultList.selectedItem, resultList.items[1]);
+    assertEquals(resultList.selectedItem, resultList.items![1]);
 
     // If last row selected, ArrowDown brings select back to first row.
     searchBox.dispatchEvent(arrowDownEvent);
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
 
     // If first row selected, ArrowUp brings select back to last row.
     searchBox.dispatchEvent(arrowUpEvent);
-    assertEquals(resultList.selectedItem, resultList.items[1]);
+    assertEquals(resultList.selectedItem, resultList.items![1]);
 
     // ArrowUp should bring select previous row.
     searchBox.dispatchEvent(arrowUpEvent);
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
 
     // Test that ArrowLeft and ArrowRight do nothing.
     const arrowLeftEvent = new KeyboardEvent(
@@ -411,11 +368,11 @@ suite('OSSettingsSearchBox', () => {
 
     // No change on ArrowLeft
     searchBox.dispatchEvent(arrowLeftEvent);
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
 
     // No change on ArrowRight
     searchBox.dispatchEvent(arrowRightEvent);
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
   });
 
   test('Keydown Enter on search box can cause route change', async () => {
@@ -434,9 +391,9 @@ suite('OSSettingsSearchBox', () => {
     flush();
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
-    assertEquals(router.getQueryParameters().get('search'), 'fake query');
-    assertEquals(router.currentRoute.path, '/networks');
-    assertEquals(router.getQueryParameters().get('type'), 'WiFi');
+    assertEquals('fake query', router.getQueryParameters().get('search'));
+    assertEquals('/networks', router.currentRoute.path);
+    assertEquals('WiFi', router.getQueryParameters().get('type'));
   });
 
   test(
@@ -449,7 +406,7 @@ suite('OSSettingsSearchBox', () => {
         await simulateSearch('fake query 1');
         await waitForListUpdate();
 
-        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+        const selectedOsRow = searchBox['getSelectedOsSearchResultRow_']();
         assertTrue(!!selectedOsRow);
         assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
 
@@ -473,7 +430,7 @@ suite('OSSettingsSearchBox', () => {
         await simulateSearch('fake query 1');
         await waitForListUpdate();
 
-        const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+        const selectedOsRow = searchBox['getSelectedOsSearchResultRow_']();
         assertTrue(!!selectedOsRow);
         assertEquals('cr:open-in-new', selectedOsRow.getActionTypeIcon_());
 
@@ -492,7 +449,7 @@ suite('OSSettingsSearchBox', () => {
     await simulateSearch('fake query 1');
     await waitForListUpdate();
 
-    const selectedOsRow = searchBox.getSelectedOsSearchResultRow_();
+    const selectedOsRow = searchBox['getSelectedOsSearchResultRow_']();
     assertTrue(!!selectedOsRow);
 
     // Keypress with Enter key on any row specifically causes navigation to
@@ -502,9 +459,9 @@ suite('OSSettingsSearchBox', () => {
     selectedOsRow.$.searchResultContainer.dispatchEvent(enterEvent);
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
-    assertEquals(router.getQueryParameters().get('search'), 'fake query 1');
-    assertEquals(router.currentRoute.path, '/networks');
-    assertEquals(router.getQueryParameters().get('type'), 'WiFi');
+    assertEquals('fake query 1', router.getQueryParameters().get('search'));
+    assertEquals('/networks', router.currentRoute.path);
+    assertEquals('WiFi', router.getQueryParameters().get('type'));
   });
 
   test('Route change when result row is clicked', async () => {
@@ -514,7 +471,7 @@ suite('OSSettingsSearchBox', () => {
     await simulateSearch('fake query 2');
     await waitForListUpdate();
 
-    const searchResultRow = searchBox.getSelectedOsSearchResultRow_();
+    const searchResultRow = searchBox['getSelectedOsSearchResultRow_']();
 
     // Clicking on the searchResultContainer of the row correctly changes the
     // route and dropdown to close.
@@ -522,9 +479,9 @@ suite('OSSettingsSearchBox', () => {
 
     assertFalse(dropDown.opened);
     const router = Router.getInstance();
-    assertEquals(router.getQueryParameters().get('search'), 'fake query 2');
-    assertEquals(router.currentRoute.path, '/networks');
-    assertEquals(router.getQueryParameters().get('type'), 'WiFi');
+    assertEquals('fake query 2', router.getQueryParameters().get('search'));
+    assertEquals('/networks', router.currentRoute.path);
+    assertEquals('WiFi', router.getQueryParameters().get('type'));
   });
 
   test('Selecting result a second time does not deselect it.', async () => {
@@ -535,9 +492,9 @@ suite('OSSettingsSearchBox', () => {
     await waitForListUpdate();
 
     // Clicking a selected item does not deselect it.
-    const searchResultRow = searchBox.getSelectedOsSearchResultRow_();
+    const searchResultRow = searchBox['getSelectedOsSearchResultRow_']();
     searchResultRow.$.searchResultContainer.click();
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
     assertFalse(dropDown.opened);
 
     // Open search drop down again.
@@ -546,7 +503,7 @@ suite('OSSettingsSearchBox', () => {
 
     // Clicking again does not deslect the row.
     searchResultRow.$.searchResultContainer.click();
-    assertEquals(resultList.selectedItem, resultList.items[0]);
+    assertEquals(resultList.selectedItem, resultList.items![0]);
   });
 
   test('Test no bolding if not generated from text match', async () => {
@@ -554,119 +511,119 @@ suite('OSSettingsSearchBox', () => {
     settingsSearchHandler.setFakeResults([fakeSettingsResult(
         'Search and Assistant', undefined, undefined,
         /*wasGeneratedFromTextMatch=*/ false)]);
-    await simulateSearch(`Search`);
+    await simulateSearch('Search');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Search and Assistant`);
+        'Search and Assistant',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Tokenize and match result text to query text', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Search and Assistant')]);
-    await simulateSearch(`Assistant Search`);
+    await simulateSearch('Assistant Search');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>Search</b> and <b>Assistant</b>`);
+        '<b>Search</b> and <b>Assistant</b>',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Bold result text to matching query', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Search and Assistant')]);
-    await simulateSearch(`a`);
+    await simulateSearch('a');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Se<b>a</b>rch <b>a</b>nd <b>A</b>ssist<b>a</b>nt`);
+        'Se<b>a</b>rch <b>a</b>nd <b>A</b>ssist<b>a</b>nt',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Bold result including ignored characters', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Turn on Wi-Fi')]);
-    await simulateSearch(`wif`);
+    await simulateSearch('wif');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Turn on <b>Wi-F</b>i`);
-    await simulateSearch(`wi f`);
+        'Turn on <b>Wi-F</b>i',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
+    await simulateSearch('wi f');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Turn on <b>Wi-F</b>i`);
-    await simulateSearch(`wi-f`);
+        'Turn on <b>Wi-F</b>i',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
+    await simulateSearch('wi-f');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Turn on <b>Wi-F</b>i`);
+        'Turn on <b>Wi-F</b>i',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Touchpad tap-to-click')]);
-    await simulateSearch(`tap to cli`);
+    await simulateSearch('tap to cli');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Touchpad <b>tap-to-cli</b>ck`);
+        'Touchpad <b>tap-to-cli</b>ck',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
-    await simulateSearch(`taptocli`);
+    await simulateSearch('taptocli');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Touchpad <b>tap-to-cli</b>ck`);
-    await simulateSearch(`tap-to-cli`);
+        'Touchpad <b>tap-to-cli</b>ck',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
+    await simulateSearch('tap-to-cli');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Touchpad <b>tap-to-cli</b>ck`);
+        'Touchpad <b>tap-to-cli</b>ck',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Touchpad tap-to-click')]);
-    await simulateSearch(`tap top cli`);
+    await simulateSearch('tap top cli');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Touchpad <b>tap-to-cli</b>ck`);
+        'Touchpad <b>tap-to-cli</b>ck',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('wxyz Tap-To-Click')]);
-    await simulateSearch(`tap toxy cli`);
+    await simulateSearch('tap toxy cli');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `w<b>xy</b>z <b>Tap-To</b>-Click`);
+        'w<b>xy</b>z <b>Tap-To</b>-Click',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('Tap-to-click Tips Title')]);
-    await simulateSearch(`tap ti`);
+    await simulateSearch('tap ti');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>Tap</b>-to-click <b>Ti</b>ps <b>Ti</b>tle`);
+        '<b>Tap</b>-to-click <b>Ti</b>ps <b>Ti</b>tle',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Test query longer than result blocks', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Turn on Wi-Fi')]);
-    await simulateSearch(`onwifi`);
+    await simulateSearch('onwifi');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Turn <b>on</b> <b>Wi-Fi</b>`);
+        'Turn <b>on</b> <b>Wi-Fi</b>',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Test bolding of accented characters', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Crème Brûlée')]);
-    await simulateSearch(`E U`);
+    await simulateSearch('E U');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Cr<b>è</b>me Br<b>û</b>l<b>é</b>e`);
+        'Cr<b>è</b>me Br<b>û</b>l<b>é</b>e',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Test no spaces nor characters that have upper/lower case', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('キーボード設定---')]);
-    await simulateSearch(`キー設`);
+    await simulateSearch('キー設');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>キ</b><b>ー</b>ボ<b>ー</b>ド<b>設</b>定---`);
+        '<b>キ</b><b>ー</b>ボ<b>ー</b>ド<b>設</b>定---',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Test blankspace types in result maintained', async () => {
@@ -674,51 +631,51 @@ suite('OSSettingsSearchBox', () => {
     const resultText = 'Turn\xa0on  \xa0Wi-Fi ';
 
     settingsSearchHandler.setFakeResults([fakeSettingsResult(resultText)]);
-    await simulateSearch(`wif`);
+    await simulateSearch('wif');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `Turn&nbsp;on  &nbsp;<b>Wi-F</b>i `);
+        'Turn&nbsp;on  &nbsp;<b>Wi-F</b>i ',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
   test('Test longest common substring for mispellings', async () => {
     setupSearchBox();
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Linux')]);
-    await simulateSearch(`Linuux`);
+    await simulateSearch('Linuux');
     await waitForListUpdate();
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>Linu</b>x`);
+        '<b>Linu</b>x',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Linux')]);
-    await simulateSearch(`Llinuc`);
+    await simulateSearch('Llinuc');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>Linu</b>x`);
+        '<b>Linu</b>x',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults([fakeSettingsResult('Display')]);
-    await simulateSearch(`Dispplay`);
+    await simulateSearch('Dispplay');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>Disp</b>lay`);
+        '<b>Disp</b>lay',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
 
     settingsSearchHandler.setFakeResults(
         [fakeSettingsResult('ABCDEF GHIJK LMNO')]);
-    await simulateSearch(`MCDEMMM LM EF CDEABCDEFADBCDABDCEF`);
+    await simulateSearch('MCDEMMM LM EF CDEABCDEFADBCDABDCEF');
     assertEquals(
-        searchBox.getSelectedOsSearchResultRow_().$.resultText.innerHTML,
-        `<b>ABCDEF</b> GHIJK <b>LM</b>NO`);
+        '<b>ABCDEF</b> GHIJK <b>LM</b>NO',
+        searchBox['getSelectedOsSearchResultRow_']().$.resultText.innerHTML);
   });
 
-  test('Focus search input behavior on attached', async () => {
-    PolymerTest.clearBody();
+  test('Focus search input behavior on attached', () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     Router.getInstance().navigateTo(routes.BASIC);
     setupSearchBox();
-    assertEquals(field.root.activeElement, field.$.searchInput);
+    assertEquals(field.$.searchInput, field.shadowRoot!.activeElement);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     Router.getInstance().navigateTo(routes.KEYBOARD);
-    assertEquals(field.root.activeElement, null);
+    assertNull(field.shadowRoot!.activeElement);
   });
 
   test('search results sorted descending', async () => {
@@ -749,7 +706,7 @@ suite('OSSettingsSearchBox', () => {
     await simulateSearch('fake query');
     await waitForListUpdate();
 
-    assertEquals(5, resultList.items.length, 'results cut to show top 5');
+    assertEquals(5, resultList.items!.length, 'results cut to show top 5');
 
     assertDeepEquals(
         [
@@ -759,9 +716,10 @@ suite('OSSettingsSearchBox', () => {
           {text: 'four', relevanceScore: 0.55},
           {text: 'five', relevanceScore: 0.35},
         ],
-        resultList.items.map(item => {
+        resultList.items!.map((item: searchMojom.SearchResult) => {
           return {
-            text: item.text.data.map(ch => String.fromCodePoint(ch)).join(''),
+            text: item.text.data.map((ch: number) => String.fromCodePoint(ch))
+                      .join(''),
             relevanceScore: item.relevanceScore,
           };
         }),
@@ -769,8 +727,7 @@ suite('OSSettingsSearchBox', () => {
   });
 
   suite('SearchFeedback_OfficialBuild', () => {
-    /** @type {?TestOsSettingsSearchBoxBrowserProxy} */
-    let browserProxy = null;
+    let browserProxy: TestOsSettingsSearchBoxBrowserProxy;
 
     setup(() => {
       browserProxy = new TestOsSettingsSearchBoxBrowserProxy();
@@ -780,7 +737,7 @@ suite('OSSettingsSearchBox', () => {
     });
 
     teardown(() => {
-      PolymerTest.clearBody();
+      browserProxy.reset();
     });
 
     test(
@@ -789,10 +746,11 @@ suite('OSSettingsSearchBox', () => {
           settingsSearchHandler.setFakeResults(['assistant']);
           await simulateSearch('a');
           assertTrue(dropDown.opened);
-          assertEquals(1, searchBox.searchResults_.length);
+          assertEquals(1, searchBox.get('searchResults_').length);
           assertTrue(noResultsSection.hidden);
           const feedbackReportResults =
-              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+              searchBox.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#reportSearchResultButton');
           assertTrue(!!feedbackReportResults);
           assertTrue(feedbackReportResults.hidden);
         });
@@ -803,11 +761,12 @@ suite('OSSettingsSearchBox', () => {
           settingsSearchHandler.setFakeResults([]);
           await simulateSearch('query 1');
           assertTrue(dropDown.opened);
-          assertEquals(0, searchBox.searchResults_.length);
+          assertEquals(0, searchBox.get('searchResults_').length);
           assertFalse(noResultsSection.hidden);
           // feedback button appears when no search results have been found
           const feedbackReportResults =
-              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+              searchBox.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#reportSearchResultButton');
           assertTrue(!!feedbackReportResults);
           assertFalse(feedbackReportResults.hidden);
         });
@@ -817,7 +776,9 @@ suite('OSSettingsSearchBox', () => {
       const searchQuery = 'query 1';
       await simulateSearch(searchQuery);
       const feedbackReportResults =
-          searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+          searchBox.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#reportSearchResultButton');
+      assertTrue(!!feedbackReportResults);
       feedbackReportResults.click();
       const descriptionTemplate =
           searchBox
@@ -825,7 +786,7 @@ suite('OSSettingsSearchBox', () => {
                 substitutions: [searchQuery],
               })
               .toString();
-      return browserProxy.whenCalled(
+      await browserProxy.methodCalled(
           'openSearchFeedbackDialog', descriptionTemplate);
     });
 
@@ -835,10 +796,12 @@ suite('OSSettingsSearchBox', () => {
           settingsSearchHandler.setFakeResults(['']);
           await simulateSearch('    ');
           const noSearchResult =
-              searchBox.shadowRoot.querySelector('#noSearchResultsContainer');
+              searchBox.shadowRoot!.querySelector('#noSearchResultsContainer');
           assertTrue(!!noSearchResult);
           const feedbackReportResults =
-              searchBox.shadowRoot.querySelector('#reportSearchResultButton');
+              searchBox.shadowRoot!.querySelector<HTMLButtonElement>(
+                  '#reportSearchResultButton');
+          assertTrue(!!feedbackReportResults);
           assertTrue(feedbackReportResults.hidden);
         });
   });

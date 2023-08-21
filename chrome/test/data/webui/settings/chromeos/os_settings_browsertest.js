@@ -755,6 +755,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_settings_menu/os_settings_menu_revamp_test.js',
    {enabled: ['ash::features::kOsSettingsRevampWayfinding']},
  ],
+ [
+   'OsSettingsSearchBox',
+   'os_settings_search_box/os_settings_search_box_test.js'
+ ],
  ['OsSettingsUi', 'os_settings_ui/os_settings_ui_test.js'],
  [
    'OsSettingsUiAboutPage',
@@ -787,7 +791,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'os_settings_ui/user_action_recorder_test.js'
  ],
  ['OsSettingsMain', 'os_settings_main_test.js'],
- ['OsSettingsSearchBox', 'os_settings_search_box_test.js'],
  [
    'ParentalControlsPage',
    'parental_controls_page/parental_controls_page_test.js'
@@ -881,7 +884,9 @@ function registerTest(testName, module, featureList) {
     GEN('#endif');
   } else if (testName === 'OsSettingsSearchBox') {
     TEST_F(className, 'AllBuilds' || 'All', () => {
-      mocha.grep('/^(?!(OSSettingsSearchBox SearchFeedback_OfficialBuild)).*$/')
+      mocha
+          .grep(
+              '/^(?!(<os-settings-search-box> SearchFeedback_OfficialBuild)).*$/')
           .run();
     });
 
