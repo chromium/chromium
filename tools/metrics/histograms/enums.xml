@@ -37573,6 +37573,7 @@ Called by update_extension_histograms.py.-->
   <int value="1817" label="USERSCRIPTS_REGISTER"/>
   <int value="1818" label="OS_DIAGNOSTICS_RUNBLUETOOTHSCANNINGROUTINE"/>
   <int value="1819" label="OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE"/>
+  <int value="1820" label="ACCESSIBILITY_PRIVATE_SHOWTOAST"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -77750,6 +77751,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="18" label="Scalable IPH Bubble"/>
   <int value="19"
       label="Video Conference Tray Camera And Microphone Use While Disabled"/>
+  <int value="20" label="Multitask Menu Clamshell"/>
+  <int value="21" label="Multitask Menu Tablet"/>
 </enum>
 
 <enum name="NukeProfileResult">
@@ -104430,6 +104433,7 @@ would be helpful to identify which type is being sent.
   <int value="41" label="Video Conference Tray Speak-On-Mute Detected"/>
   <int value="42" label="Copy Gif To Clipboard Action"/>
   <int value="44" label="Battery Saver Disabled"/>
+  <int value="45" label="Dictation No Focused Text Field"/>
 </enum>
 
 <enum name="TokenBinding.KeyMatch">

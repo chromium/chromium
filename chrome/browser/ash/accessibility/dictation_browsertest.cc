@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/accessibility/dictation_button_tray.h"
@@ -315,6 +316,8 @@ class DictationTestBase : public InProcessBrowserTest,
   void set_wait_for_accessibility_common_extension_load_(bool use) {
     utils_->set_wait_for_accessibility_common_extension_load_(use);
   }
+
+  DictationTestUtils* utils() { return utils_.get(); }
 
  private:
   std::unique_ptr<DictationTestUtils> utils_;
@@ -2238,6 +2241,104 @@ IN_PROC_BROWSER_TEST_P(DictationFormattedContentEditableTest,
   SendFinalResultAndWait("highlight everything between is and a");
   WaitForSelection(5, 9);
   SendFinalResultAndWaitForEditableValue("was one", "This was one test");
+}
+
+class AccessibilityToastCallbackManager {
+ public:
+  void OnToastShown() { run_loop_.Quit(); }
+  void WaitForToastShown() { run_loop_.Run(); }
+
+ private:
+  base::RunLoop run_loop_;
+};
+
+class DictationKeyboardImprovementsTest : public DictationTestBase {
+ public:
+  DictationKeyboardImprovementsTest() = default;
+  ~DictationKeyboardImprovementsTest() override = default;
+  DictationKeyboardImprovementsTest(const DictationKeyboardImprovementsTest&) =
+      delete;
+  DictationKeyboardImprovementsTest& operator=(
+      const DictationKeyboardImprovementsTest&) = delete;
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationTestBase::SetUpCommandLine(command_line);
+
+    std::vector<base::test::FeatureRef> enabled_features{
+        ::features::kAccessibilityDictationKeyboardImprovements};
+    scoped_feature_list_.InitWithFeatures(
+        enabled_features, std::vector<base::test::FeatureRef>());
+  }
+
+  void SetUpOnMainThread() override {
+    DictationTestBase::SetUpOnMainThread();
+    test_api_ = AccessibilityControllerTestApi::Create();
+    callback_manager_ = std::make_unique<AccessibilityToastCallbackManager>();
+    test_api_->AddShowToastCallbackForTesting(
+        base::BindRepeating(&AccessibilityToastCallbackManager::OnToastShown,
+                            base::Unretained(callback_manager_.get())));
+
+    // Tab away from the editable.
+    ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        /*window=*/nullptr, /*key=*/ui::KeyboardCode::VKEY_TAB,
+        /*control=*/false,
+        /*shift=*/false, /*alt=*/false, /*command=*/false)));
+    // Reduce the no focused IME timeout so that the nudge will be shown
+    // promptly.
+    ExecuteAccessibilityCommonScript(
+        "testSupport.setNoFocusedImeTimeout(500);");
+  }
+
+  void WaitForToastShown() { callback_manager_->WaitForToastShown(); }
+
+ private:
+  std::unique_ptr<AccessibilityControllerTestApi> test_api_;
+  std::unique_ptr<AccessibilityToastCallbackManager> callback_manager_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkDictationKeyboardImprovementsTest,
+    DictationKeyboardImprovementsTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kInput)));
+
+// Verifies that a nudge is shown in the system UI when Dictation is toggled
+// when there is no focused editable.
+IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
+                       ToggledWithNoFocusShowsNudge) {
+  // Disable the console observer because toggling Dictation in the following
+  // manner will cause an error to be emitted to the console.
+  utils()->DisableConsoleObserver();
+  ToggleDictationWithKeystroke();
+  WaitForToastShown();
+  WaitForRecognitionStopped();
+}
+
+// Verifies that ChromeVox announces a message when when Dictation is toggled
+// when there is no focused editable.
+IN_PROC_BROWSER_TEST_P(DictationKeyboardImprovementsTest,
+                       ToggledWithNoFocusTriggersSpeech) {
+  // Setup ChromeVox.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+  EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  // Disable the console observer because toggling Dictation in the following
+  // manner will cause an error to be emitted to the console.
+  utils()->DisableConsoleObserver();
+  ToggleDictationWithKeystroke();
+  WaitForToastShown();
+  WaitForRecognitionStopped();
+
+  // Assert speech from ChromeVox.
+  sm.ExpectSpeechPattern("*Go to a text field to use Dictation*");
+  sm.Replay();
 }
 
 }  // namespace ash

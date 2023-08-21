@@ -240,6 +240,14 @@ class AccessibilityPrivateSetVirtualKeyboardVisibleFunction
                              ACCESSIBILITY_PRIVATE_SETVIRTUALKEYBOARDVISIBLE)
 };
 
+// API function that displays an accessibility-related toast.
+class AccessibilityPrivateShowToastFunction : public ExtensionFunction {
+  ~AccessibilityPrivateShowToastFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.showToast",
+                             ACCESSIBILITY_PRIVATE_SHOWTOAST)
+};
+
 // API function that shows a confirmation dialog, with callbacks for
 // confirm/cancel.
 class AccessibilityPrivateShowConfirmationDialogFunction

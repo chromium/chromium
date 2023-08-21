@@ -293,6 +293,13 @@
         }
       },
       {
+        "id": "ToastType",
+        "type": "string",
+        "enum": [
+          "dictationNoFocusedTextField"
+        ]
+      },
+      {
         "id": "DlcType",
         "type": "string",
         "enum": [
@@ -894,6 +901,16 @@
             }
           ]
         }
+      },
+      {
+        "name": "showToast",
+        "type": "function",
+        "description": "Displays an accessibility-related toast.",
+        "parameters": [{
+          "name": "type",
+          "$ref": "ToastType",
+          "description": "The type of toast to show."
+        }]
       }
     ],
     "events": [

@@ -273,7 +273,8 @@ enum class ToastCatalogName {
   kCopyGifToClipboardAction = 42,
   // [Deprecated] kVideoConferenceTrayUseWhileDisabled = 43,
   kBatterySaverDisabled = 44,
-  kMaxValue = kBatterySaverDisabled
+  kDictationNoFocusedTextField = 45,
+  kMaxValue = kDictationNoFocusedTextField
 };
 
 }  // namespace ash

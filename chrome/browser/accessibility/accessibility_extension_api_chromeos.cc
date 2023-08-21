@@ -67,6 +67,17 @@ namespace {
 namespace accessibility_private = ::extensions::api::accessibility_private;
 using ::ash::AccessibilityManager;
 
+ash::AccessibilityToastType ConvertToastType(
+    accessibility_private::ToastType type) {
+  switch (type) {
+    case accessibility_private::ToastType::
+        TOAST_TYPE_DICTATIONNOFOCUSEDTEXTFIELD:
+      return ash::AccessibilityToastType::kDictationNoFocusedTextField;
+    case accessibility_private::ToastType::TOAST_TYPE_NONE:
+      NOTREACHED_NORETURN();
+  }
+}
+
 ash::DictationBubbleHintType ConvertDictationHintType(
     accessibility_private::DictationBubbleHintType hint_type) {
   switch (hint_type) {
@@ -779,6 +790,15 @@ AccessibilityPrivateSetVirtualKeyboardVisibleFunction::Run() {
   ash::AccessibilityController::Get()->SetVirtualKeyboardVisible(
       params->is_visible);
 
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction AccessibilityPrivateShowToastFunction::Run() {
+  absl::optional<accessibility_private::ShowToast::Params> params(
+      accessibility_private::ShowToast::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  ash::AccessibilityController::Get()->ShowToast(
+      ConvertToastType(params->type));
   return RespondNow(NoArguments());
 }
 

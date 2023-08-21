@@ -179,7 +179,7 @@ void DictationTestUtils::EnableDictation(Browser* browser) {
 
   // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
   // builds.
-  std::string script = "testSupport.increaseNoFocusedImeTimeout();";
+  std::string script = "testSupport.setNoFocusedImeTimeout(20 * 1000);";
   ExecuteAccessibilityCommonScript(script);
 
   // Dictation will request a Pumpkin install when it starts up. Wait for

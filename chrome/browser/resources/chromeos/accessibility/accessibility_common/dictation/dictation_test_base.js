@@ -116,7 +116,7 @@ DictationE2ETestBase = class extends E2ETestBase {
     accessibilityCommon.dictation_.disablePumpkinForTesting();
     // Increase Dictation's NO_FOCUSED_IME timeout to reduce flakiness on slower
     // builds.
-    accessibilityCommon.dictation_.increaseNoFocusedImeTimeoutForTesting();
+    accessibilityCommon.dictation_.setNoFocusedImeTimeoutForTesting(20 * 1000);
   }
 
   /** @override */

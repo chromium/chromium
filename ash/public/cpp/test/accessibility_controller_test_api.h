@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "base/functional/callback_forward.h"
 
 namespace ash {
 
@@ -27,6 +28,8 @@ class ASH_EXPORT AccessibilityControllerTestApi {
   virtual bool IsDictationKeboardDialogShowing() const = 0;
   virtual void AcceptDictationKeyboardDialog() = 0;
   virtual void DismissDictationKeyboardDialog() = 0;
+  virtual void AddShowToastCallbackForTesting(
+      base::RepeatingClosure callback) const = 0;
 };
 
 }  // namespace ash
