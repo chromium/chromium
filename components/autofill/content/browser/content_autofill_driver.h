@@ -197,7 +197,6 @@ class ContentAutofillDriver : public AutofillDriver,
   void UnsetKeyPressHandler();
 
   // Callbacks that are called also in other functions by ContentAutofillRouter.
-  void FocusNoLongerOnFormCallback(bool had_interacted_form);
   void UnsetKeyPressHandlerCallback();
 
  private:

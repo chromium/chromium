@@ -529,11 +529,6 @@ void ContentAutofillDriver::HidePopup() {
   });
 }
 
-void ContentAutofillDriver::FocusNoLongerOnFormCallback(
-    bool had_interacted_form) {
-  autofill_manager_->OnFocusNoLongerOnForm(had_interacted_form);
-}
-
 void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
   if (!bad_message::CheckFrameNotPrerendering(render_frame_host())) {
     return;
@@ -541,7 +536,7 @@ void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
   autofill_router().FocusNoLongerOnForm(
       this, had_interacted_form,
       [](ContentAutofillDriver* target, bool had_interacted_form) {
-        target->FocusNoLongerOnFormCallback(had_interacted_form);
+        target->autofill_manager_->OnFocusNoLongerOnForm(had_interacted_form);
       });
 }
 
@@ -561,6 +556,9 @@ void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
          const FormFieldData& field, const gfx::RectF& bounding_box) {
         target->autofill_manager_->OnFocusOnFormField(WithNewVersion(form),
                                                       field, bounding_box);
+      },
+      [](ContentAutofillDriver* target) {
+        target->autofill_manager_->OnFocusNoLongerOnForm(true);
       });
 }
 

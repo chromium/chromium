@@ -236,14 +236,16 @@ class ContentAutofillRouter {
                            bool had_interacted_form,
                            void (*callback)(ContentAutofillDriver* target,
                                             bool had_interacted_form));
-  void FocusOnFormField(ContentAutofillDriver* source,
-                        FormData form,
-                        const FormFieldData& field,
-                        const gfx::RectF& bounding_box,
-                        void (*callback)(ContentAutofillDriver* target,
-                                         const FormData& form,
-                                         const FormFieldData& field,
-                                         const gfx::RectF& bounding_box));
+  void FocusOnFormField(
+      ContentAutofillDriver* source,
+      FormData form,
+      const FormFieldData& field,
+      const gfx::RectF& bounding_box,
+      void (*callback)(ContentAutofillDriver* target,
+                       const FormData& form,
+                       const FormFieldData& field,
+                       const gfx::RectF& bounding_box),
+      void (*focus_no_longer_on_form)(ContentAutofillDriver* target));
   void DidFillAutofillFormData(ContentAutofillDriver* source,
                                FormData form,
                                base::TimeTicks timestamp,

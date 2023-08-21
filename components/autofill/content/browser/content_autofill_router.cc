@@ -367,7 +367,8 @@ void ContentAutofillRouter::FocusOnFormField(
     void (*callback)(ContentAutofillDriver* target,
                      const FormData& form,
                      const FormFieldData& field,
-                     const gfx::RectF& bounding_box)) {
+                     const gfx::RectF& bounding_box),
+    void (*focus_no_longer_on_form)(ContentAutofillDriver* target)) {
   FormGlobalId form_id = form.global_id();
   form_forest_.UpdateTreeOfRendererForm(std::move(form), source);
 
@@ -376,9 +377,7 @@ void ContentAutofillRouter::FocusOnFormField(
   LocalFrameToken frame_token(
       source->render_frame_host()->GetFrameToken().value());
   if (focused_frame_ != frame_token && !focus_no_longer_on_form_has_fired_) {
-    ForEachFrame(form_forest_, [&](ContentAutofillDriver* some_driver) {
-      some_driver->FocusNoLongerOnFormCallback(true);
-    });
+    ForEachFrame(form_forest_, focus_no_longer_on_form);
   }
 
   // Suppresses late FocusNoLongerOnForm().
