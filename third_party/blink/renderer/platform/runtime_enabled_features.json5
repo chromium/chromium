@@ -1037,7 +1037,7 @@
     {
       // https://drafts.csswg.org/css-cascade-6/#scoped-styles
       name: "CSSScope",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2

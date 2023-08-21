@@ -682,6 +682,11 @@ interface CSSScale : CSSTransformComponent
     setter x
     setter y
     setter z
+interface CSSScopeRule : CSSConditionRule
+    attribute @@toStringTag
+    getter end
+    getter start
+    method constructor
 interface CSSSkew : CSSTransformComponent
     attribute @@toStringTag
     getter ax
