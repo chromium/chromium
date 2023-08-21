@@ -18,6 +18,7 @@ blink_modules_sources("v8") {
       generated_dictionary_sources_in_modules +
       generated_enumeration_sources_in_modules +
       generated_interface_sources_in_modules +
+      generated_interface_extra_sources_in_modules +
       generated_namespace_sources_in_modules +
       generated_observable_array_sources_in_modules +
       generated_sync_iterator_sources_in_modules +
@@ -41,7 +42,8 @@ source_set("testing") {
     "//third_party/blink/renderer:inside_blink",
   ]
 
-  sources = generated_interface_sources_for_testing_in_modules
+  sources = generated_interface_sources_for_testing_in_modules +
+            generated_interface_extra_sources_for_testing_in_modules
 
   deps = [
     ":generated",

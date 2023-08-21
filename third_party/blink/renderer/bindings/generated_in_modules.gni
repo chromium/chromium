@@ -3167,8 +3167,6 @@ generated_interface_extra_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer.h",
 ]
-generated_interface_sources_in_modules +=
-    generated_interface_extra_sources_in_modules
 
 # Generated sources for testing
 
@@ -3183,6 +3181,3 @@ generated_interface_extra_sources_for_testing_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer_for_testing.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer_for_testing.h",
 ]
-
-generated_interface_sources_for_testing_in_modules +=
-    generated_interface_extra_sources_for_testing_in_modules

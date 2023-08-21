@@ -209,8 +209,10 @@ generate_bindings("generate_bindings_all") {
   targets += [ "interface" ]
   outputs += generated_interface_sources_in_core +
              generated_interface_sources_in_modules +
+             generated_interface_extra_sources_in_modules +
              generated_interface_sources_for_testing_in_core +
-             generated_interface_sources_for_testing_in_modules
+             generated_interface_sources_for_testing_in_modules +
+             generated_interface_extra_sources_for_testing_in_modules
   if (use_blink_extensions_chromeos) {
     outputs += generated_interface_sources_in_extensions_chromeos
   }
@@ -293,8 +295,7 @@ action_with_pydeps("check_generated_file_list") {
     "interface",
   ]
   file_list += generated_interface_sources_in_core +
-               generated_interface_sources_in_modules -
-               generated_interface_extra_sources_in_modules
+               generated_interface_sources_in_modules
   if (use_blink_extensions_chromeos) {
     file_list += generated_interface_sources_in_extensions_chromeos
   }
@@ -343,8 +344,7 @@ action_with_pydeps("check_generated_file_list") {
     "interface",
   ]
   file_list += generated_interface_sources_for_testing_in_core +
-               generated_interface_sources_for_testing_in_modules -
-               generated_interface_extra_sources_for_testing_in_modules
+               generated_interface_sources_for_testing_in_modules
   file_list += [
     "--kind",
     "union",
