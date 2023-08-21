@@ -4237,8 +4237,9 @@ crbug.com/1003055 external/wpt/css/css-scroll-snap/scroll-target-snap-002.html [
 # Sheriff 2019-09-30
 crbug.com/1003715 [ Win ] http/tests/notifications/serviceworker-notification-properties.html [ Failure Pass Timeout ]
 
-
-
+# Temporarily disabled to land https://crrev.com/c/4797648
+crbug.com/1468875 http/tests/devtools/network/network-search.js [ Failure Pass ]
+crbug.com/1468875 http/tests/devtools/search/sources-search-scope-in-files.js [ Failure Pass ]
 
 # Sheriff 2019-10-18
 crbug.com/1015975 media/video-currentTime.html [ Failure Pass ]
