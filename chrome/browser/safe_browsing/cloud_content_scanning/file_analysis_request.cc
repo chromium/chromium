@@ -226,7 +226,7 @@ void FileAnalysisRequest::OnGotFileData(
   if (IsZipFile(ext, mime_type)) {
     zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
         path_,
-        /*password=*/"",
+        /*password=*/password(),
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),
@@ -235,7 +235,7 @@ void FileAnalysisRequest::OnGotFileData(
   } else if (IsRarFile(ext, mime_type)) {
     rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
         path_,
-        /*password=*/"",
+        /*password=*/password(),
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),
@@ -251,9 +251,9 @@ void FileAnalysisRequest::OnGotFileData(
 void FileAnalysisRequest::OnCheckedForEncryption(
     Data data,
     const ArchiveAnalyzerResults& analyzer_result) {
-  bool encrypted = base::ranges::any_of(
-      analyzer_result.archived_binary,
-      [](const auto& binary) { return binary.is_encrypted(); });
+  bool encrypted = analyzer_result.encryption_info.is_encrypted &&
+                   analyzer_result.encryption_info.password_status ==
+                       EncryptionInfo::kKnownIncorrect;
 
   BinaryUploadService::Result result =
       encrypted ? BinaryUploadService::Result::FILE_ENCRYPTED
