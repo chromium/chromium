@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1807 tests; 1642 PASS, 165 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1807 tests; 1644 PASS, 163 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -1314,7 +1314,7 @@ PASS SVGImageElement interface: attribute y
 PASS SVGImageElement interface: attribute width
 PASS SVGImageElement interface: attribute height
 PASS SVGImageElement interface: attribute preserveAspectRatio
-FAIL SVGImageElement interface: attribute crossOrigin assert_true: The prototype object must have a property "crossOrigin" expected true got false
+PASS SVGImageElement interface: attribute crossOrigin
 PASS SVGImageElement interface: attribute href
 PASS SVGImageElement must be primary interface of objects.image
 PASS Stringification of objects.image
@@ -1323,7 +1323,7 @@ PASS SVGImageElement interface: objects.image must inherit property "y" with the
 PASS SVGImageElement interface: objects.image must inherit property "width" with the proper type
 PASS SVGImageElement interface: objects.image must inherit property "height" with the proper type
 PASS SVGImageElement interface: objects.image must inherit property "preserveAspectRatio" with the proper type
-FAIL SVGImageElement interface: objects.image must inherit property "crossOrigin" with the proper type assert_inherits: property "crossOrigin" not found in prototype chain
+PASS SVGImageElement interface: objects.image must inherit property "crossOrigin" with the proper type
 PASS SVGImageElement interface: objects.image must inherit property "href" with the proper type
 PASS SVGGraphicsElement interface: objects.image must inherit property "transform" with the proper type
 PASS SVGGraphicsElement interface: objects.image must inherit property "getBBox(optional SVGBoundingBoxOptions)" with the proper type

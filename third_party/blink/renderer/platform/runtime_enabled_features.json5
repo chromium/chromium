@@ -3543,6 +3543,10 @@
       base_feature: "none",
     },
     {
+      name: "SvgCrossOriginAttribute",
+      status: "experimental",
+    },
+    {
       name: "SvgMapLocalToAncestorFix",
       status: "stable",
     },

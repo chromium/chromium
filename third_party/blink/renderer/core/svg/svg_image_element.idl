@@ -35,6 +35,8 @@
     [MeasureAs=SVG1DOMImageElement] readonly attribute SVGAnimatedLength height;
     [MeasureAs=SVG1DOMImageElement] readonly attribute SVGAnimatedPreserveAspectRatio preserveAspectRatio;
     [CEReactions, Reflect, ReflectOnly=("async", "sync", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString decoding;
+    [CEReactions, Reflect, ReflectOnly=("anonymous","use-credentials"), ReflectEmpty="anonymous", ReflectInvalid="anonymous", RuntimeEnabled=SvgCrossOriginAttribute] attribute DOMString? crossOrigin;
+
     // Follow HTMLImageElement's spec
     [CallWith=ScriptState, RaisesException] Promise<void> decode();
 };

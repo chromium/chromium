@@ -8508,6 +8508,7 @@ interface SVGGraphicsElement : SVGElement
     method getScreenCTM
 interface SVGImageElement : SVGGraphicsElement
     attribute @@toStringTag
+    getter crossOrigin
     getter decoding
     getter height
     getter href
@@ -8517,6 +8518,7 @@ interface SVGImageElement : SVGGraphicsElement
     getter y
     method constructor
     method decode
+    setter crossOrigin
     setter decoding
 interface SVGLength
     attribute @@toStringTag

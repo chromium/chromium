@@ -2010,6 +2010,7 @@ svg element g
     property systemLanguage
     property transform
 svg element image
+    property crossOrigin
     property decode
     property decoding
     property farthestViewportElement
