@@ -5,9 +5,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/media_session.h"
+#include "content/public/browser/media_session_client.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/cpp/test/mock_media_session.h"
 
 class MediaSessionBrowserTest : public InProcessBrowserTest {
  public:
@@ -22,21 +25,7 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
 
   ~MediaSessionBrowserTest() override = default;
 
-  void PlayVideoAndCheckHideMediaMetadataValue(Browser* browser,
-                                               bool expected_hide_metadata) {
-    MediaControlsObserver media_controls_observer;
-    mojo::Receiver<media_session::mojom::MediaControllerObserver>
-        observer_receiver_(&media_controls_observer);
-    mojo::Remote<media_session::mojom::MediaControllerManager>
-        controller_manager_remote;
-    mojo::Remote<media_session::mojom::MediaController> media_controller_remote;
-    content::GetMediaSessionService().BindMediaControllerManager(
-        controller_manager_remote.BindNewPipeAndPassReceiver());
-    controller_manager_remote->CreateActiveMediaController(
-        media_controller_remote.BindNewPipeAndPassReceiver());
-    media_controller_remote->AddObserver(
-        observer_receiver_.BindNewPipeAndPassRemote());
-
+  void PlayVideoWithMetadata(Browser* browser) {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Navigate to a test page with some media on it.
@@ -48,49 +37,94 @@ class MediaSessionBrowserTest : public InProcessBrowserTest {
 
     // Start playback.
     ASSERT_EQ(nullptr, content::EvalJs(web_contents, "play()"));
-
-    media_controls_observer.run_loop.Run();
-
-    EXPECT_EQ(media_controls_observer.hide_metadata, expected_hide_metadata);
   }
 
-  class MediaControlsObserver
-      : public media_session::mojom::MediaControllerObserver {
-   public:
-    void MediaSessionInfoChanged(
-        media_session::mojom::MediaSessionInfoPtr info) override {
-      if (info) {
-        hide_metadata = info->hide_metadata;
-        if (run_loop.IsRunningOnCurrentThread()) {
-          run_loop.Quit();
-        }
-      }
-    }
-    void MediaSessionMetadataChanged(
-        const absl::optional<media_session::MediaMetadata>& metadata) override {
-    }
-    void MediaSessionActionsChanged(
-        const std::vector<media_session::mojom::MediaSessionAction>& action)
-        override {}
-    void MediaSessionChanged(
-        const absl::optional<base::UnguessableToken>& request_id) override {}
-    void MediaSessionPositionChanged(
-        const absl::optional<media_session::MediaPosition>& position) override {
-    }
+  media_session::MediaMetadata GetExpectedMetadata() {
+    media_session::MediaMetadata expected_metadata;
 
-    bool hide_metadata;
-    base::RunLoop run_loop;
-  };
+    expected_metadata.title = u"Big Buck Bunny";
+    expected_metadata.source_title = base::ASCIIToUTF16(base::StringPrintf(
+        "%s:%u", embedded_test_server()->GetIPLiteralString().c_str(),
+        embedded_test_server()->port()));
+
+    expected_metadata.album = u"";
+    expected_metadata.artist = u"Blender Foundation";
+
+    return expected_metadata;
+  }
+
+  media_session::MediaMetadata GetExpectedHiddenMetadata() {
+    media_session::MediaMetadata expected_metadata;
+
+    content::MediaSessionClient* media_session_client =
+        content::MediaSessionClient::Get();
+
+    expected_metadata.title = media_session_client->GetTitlePlaceholder();
+    expected_metadata.source_title =
+        media_session_client->GetSourceTitlePlaceholder();
+    expected_metadata.album = media_session_client->GetAlbumPlaceholder();
+    expected_metadata.artist = media_session_client->GetArtistPlaceholder();
+
+    return expected_metadata;
+  }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        MediaSessionInfoDontHideMetadataByDefault) {
-  PlayVideoAndCheckHideMediaMetadataValue(browser(), false);
+  Browser* test_browser = browser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          test_browser->tab_strip_model()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(test_browser);
+
+  observer.WaitForExpectedHideMetadata(false);
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        MediaSessionInfoHideMetadataIfInIncognito) {
-  PlayVideoAndCheckHideMediaMetadataValue(CreateIncognitoBrowser(), true);
+  Browser* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->tab_strip_model()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedHideMetadata(true);
 }
+
+// We hide the media metadata from CrOS' media controls by replacing the
+// metadata in the MediaSessionImpl with some placeholder metadata. These
+// changes are gated to only affect ChromeOS, hence why the testing for this is
+// also ChromeOS only.
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
+                       MediaSessionInfoIsHiddenInCrOSIncognito) {
+  Browser* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->tab_strip_model()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedMetadata(GetExpectedHiddenMetadata());
+}
+#else  // !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
+                       MediaSessionInfoIsNotHiddenInNonCrOSIncognito) {
+  Browser* browser = CreateIncognitoBrowser();
+
+  media_session::test::MockMediaSessionMojoObserver observer(
+      *content::MediaSession::Get(
+          browser->tab_strip_model()->GetActiveWebContents()));
+
+  PlayVideoWithMetadata(browser);
+
+  observer.WaitForExpectedMetadata(GetExpectedMetadata());
+}
+#endif

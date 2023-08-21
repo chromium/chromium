@@ -19,6 +19,7 @@ class ChromeMediaSessionClient : public content::MediaSessionClient {
       content::BrowserContext* browser_context) const override;
 
   std::u16string GetTitlePlaceholder() const override;
+  std::u16string GetSourceTitlePlaceholder() const override;
   std::u16string GetArtistPlaceholder() const override;
   std::u16string GetAlbumPlaceholder() const override;
   SkBitmap GetThumbnailPlaceholder() const override;

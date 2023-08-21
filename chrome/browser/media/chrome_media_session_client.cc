@@ -32,12 +32,16 @@ std::u16string ChromeMediaSessionClient::GetTitlePlaceholder() const {
       IDS_MEDIA_CONTROLS_TITLE_PLACEHOLDER_INCOGNITO);
 }
 
+std::u16string ChromeMediaSessionClient::GetSourceTitlePlaceholder() const {
+  return std::u16string();
+}
+
 std::u16string ChromeMediaSessionClient::GetArtistPlaceholder() const {
-  return u"";
+  return std::u16string();
 }
 
 std::u16string ChromeMediaSessionClient::GetAlbumPlaceholder() const {
-  return u"";
+  return std::u16string();
 }
 
 SkBitmap ChromeMediaSessionClient::GetThumbnailPlaceholder() const {

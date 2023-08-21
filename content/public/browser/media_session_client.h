@@ -36,6 +36,7 @@ class CONTENT_EXPORT MediaSessionClient {
   virtual bool ShouldHideMetadata(BrowserContext* browser_context) const = 0;
 
   virtual std::u16string GetTitlePlaceholder() const = 0;
+  virtual std::u16string GetSourceTitlePlaceholder() const = 0;
   virtual std::u16string GetArtistPlaceholder() const = 0;
   virtual std::u16string GetAlbumPlaceholder() const = 0;
   virtual SkBitmap GetThumbnailPlaceholder() const = 0;

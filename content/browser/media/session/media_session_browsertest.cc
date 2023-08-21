@@ -23,6 +23,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/media_start_stop_observer.h"
+#include "content/public/test/test_media_session_client.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "media/base/media_switches.h"
@@ -32,6 +33,10 @@
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+int hidden_metadata_placeholder_thumbnail_size = 42;
+}  // namespace
 
 namespace content {
 
@@ -138,20 +143,24 @@ class MediaSessionBrowserTestBase : public ContentBrowserTest {
     return base::Contains(visited_urls_, url);
   }
 
-  MediaSession* SetupMediaImageTest() {
+  MediaSession* SetupMediaImageTest(bool expect_media_image = true) {
     EXPECT_TRUE(NavigateToURL(
         shell(), embedded_test_server()->GetURL(kMediaSessionImageTestURL)));
     StartPlaybackAndWait(shell(), kMediaSessionImageTestPageVideoElement);
 
     MediaSession* media_session = MediaSession::Get(shell()->web_contents());
 
-    std::vector<media_session::MediaImage> expected_images;
-    expected_images.push_back(CreateTestImageWithSize(1));
-    expected_images.push_back(CreateTestImageWithSize(10));
+    if (expect_media_image) {
+      std::vector<media_session::MediaImage> expected_images;
 
-    media_session::test::MockMediaSessionMojoObserver observer(*media_session);
-    observer.WaitForExpectedImagesOfType(
-        media_session::mojom::MediaSessionImageType::kArtwork, expected_images);
+      expected_images.push_back(CreateTestImageWithSize(1));
+      expected_images.push_back(CreateTestImageWithSize(10));
+      media_session::test::MockMediaSessionMojoObserver observer(
+          *media_session);
+      observer.WaitForExpectedImagesOfType(
+          media_session::mojom::MediaSessionImageType::kArtwork,
+          expected_images);
+    }
 
     return media_session;
   }
@@ -187,6 +196,23 @@ class MediaSessionBrowserTest : public MediaSessionBrowserTestBase {
   MediaSessionBrowserTest() {
     feature_list_.InitAndEnableFeature(media::kInternalMediaSession);
   }
+
+  void SetUp() override {
+    SetupMediaSessionClient();
+
+    MediaSessionBrowserTestBase::SetUp();
+  }
+
+ protected:
+  void SetupMediaSessionClient() {
+    SkBitmap placeholder_bitmap;
+    placeholder_bitmap.allocN32Pixels(
+        hidden_metadata_placeholder_thumbnail_size,
+        hidden_metadata_placeholder_thumbnail_size);
+    client_.SetThumbnailPlaceholder(placeholder_bitmap);
+  }
+
+  TestMediaSessionClient client_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -342,10 +368,55 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
   MediaSession* media_session = SetupMediaImageTest();
   ASSERT_NE(nullptr, media_session);
 
-  media_session::MediaImage image;
-  image.src = embedded_test_server()->GetURL("/media/session/test_image.jpg");
-  image.type = u"image/jpeg";
-  image.sizes.push_back(gfx::Size(1, 1));
+  MediaImageGetterHelper helper(media_session, CreateTestImageWithSize(1), 0,
+                                10);
+  helper.Wait();
+
+  // The test image is a 1x1 test image.
+  EXPECT_EQ(1, helper.bitmap().width());
+  EXPECT_EQ(1, helper.bitmap().height());
+  EXPECT_EQ(kRGBA_8888_SkColorType, helper.bitmap().colorType());
+
+  EXPECT_TRUE(WasURLVisited(GetTestImageURL()));
+}
+
+// We hide the media image from CrOS' media controls by replacing the image in
+// the MediaSessionImpl with a placeholder image. These changes are gated to
+// only affect ChromeOS, hence why the testing for this is also ChromeOS only.
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, HideMediaMetadataImageInCrOS) {
+  client_.SetShouldHideMetadata(true);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // We don't expect a media image because of the way the image will be replaced
+  // with its placeholder in MediaSessionImpl.
+  MediaSession* media_session =
+      SetupMediaImageTest(/*expect_media_image=*/false);
+  ASSERT_NE(nullptr, media_session);
+
+  MediaImageGetterHelper helper(media_session, CreateTestImageWithSize(1), 0,
+                                10);
+
+  helper.Wait();
+
+  EXPECT_EQ(hidden_metadata_placeholder_thumbnail_size,
+            helper.bitmap().width());
+  EXPECT_EQ(hidden_metadata_placeholder_thumbnail_size,
+            helper.bitmap().height());
+
+  // As we are replacing the image, we should not visit the original's URL.
+  EXPECT_FALSE(WasURLVisited(GetTestImageURL()));
+}
+#else  // !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
+                       DontHideMediaMetadataImageInNonCrOS) {
+  client_.SetShouldHideMetadata(true);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  MediaSession* media_session = SetupMediaImageTest();
+  ASSERT_NE(nullptr, media_session);
 
   MediaImageGetterHelper helper(media_session, CreateTestImageWithSize(1), 0,
                                 10);
@@ -358,6 +429,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
 
   EXPECT_TRUE(WasURLVisited(GetTestImageURL()));
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
                        GetMediaImageBitmap_ImageTooSmall) {

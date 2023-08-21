@@ -456,6 +456,13 @@ class MediaSessionImpl : public MediaSession,
   // changed.
   void RebuildAndNotifyMetadataChanged();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void BuildPlaceholderMetadata(media_session::MediaMetadata&);
+#endif
+
+  void BuildMetadata(media_session::MediaMetadata& metadata,
+                     std::vector<media_session::MediaImage>& artwork);
+
   bool IsPictureInPictureAvailable() const;
 
   // Returns the device ID for the audio output device being used by all of the

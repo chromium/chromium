@@ -24,12 +24,14 @@ class TestMediaSessionClient : public content::MediaSessionClient {
       content::BrowserContext* browser_context) const override;
 
   std::u16string GetTitlePlaceholder() const override;
+  std::u16string GetSourceTitlePlaceholder() const override;
   std::u16string GetArtistPlaceholder() const override;
   std::u16string GetAlbumPlaceholder() const override;
   SkBitmap GetThumbnailPlaceholder() const override;
 
   void SetShouldHideMetadata(bool value);
   void SetTitlePlaceholder(std::u16string title);
+  void SetSourceTitlePlaceholder(std::u16string source_title);
   void SetArtistPlaceholder(std::u16string artist);
   void SetAlbumPlaceholder(std::u16string album);
   void SetThumbnailPlaceholder(SkBitmap thumbnail);
@@ -37,6 +39,7 @@ class TestMediaSessionClient : public content::MediaSessionClient {
  private:
   bool should_hide_metadata_ = false;
   std::u16string placeholder_title_;
+  std::u16string placeholder_source_title_;
   std::u16string placeholder_artist_;
   std::u16string placeholder_album_;
   SkBitmap placeholder_thumbnail_;

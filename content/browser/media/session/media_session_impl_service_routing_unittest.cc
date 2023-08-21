@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,6 +15,7 @@
 #include "base/time/time.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
+#include "content/public/test/test_media_session_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
@@ -32,6 +34,14 @@ using ::testing::NiceMock;
 using media_session::mojom::MediaAudioVideoState;
 using media_session::mojom::MediaSessionAction;
 using media_session::mojom::MediaSessionImageType;
+
+namespace {
+std::u16string hidden_metadata_placeholder_title = u"placeholder_title";
+std::u16string hidden_metadata_placeholder_source_title =
+    u"placeholder_source_title";
+std::u16string hidden_metadata_placeholder_artist = u"placeholder_artist";
+std::u16string hidden_metadata_placeholder_album = u"placeholder_album";
+}  // namespace
 
 namespace content {
 
@@ -145,6 +155,8 @@ class MediaSessionImplServiceRoutingTest
     empty_metadata_.source_title = u"example.com";
 
     GetMediaSession()->SetShouldThrottleDurationUpdateForTest(false);
+
+    SetupMediaSessionClient();
   }
 
   void TearDown() override {
@@ -154,6 +166,13 @@ class MediaSessionImplServiceRoutingTest
   }
 
  protected:
+  void SetupMediaSessionClient() {
+    client_.SetTitlePlaceholder(hidden_metadata_placeholder_title);
+    client_.SetSourceTitlePlaceholder(hidden_metadata_placeholder_source_title);
+    client_.SetArtistPlaceholder(hidden_metadata_placeholder_artist);
+    client_.SetAlbumPlaceholder(hidden_metadata_placeholder_album);
+  }
+
   void CreateServiceForFrame(TestRenderFrameHost* frame) {
     services_[frame] =
         std::make_unique<NiceMock<MockMediaSessionServiceImpl>>(frame);
@@ -238,6 +257,8 @@ class MediaSessionImplServiceRoutingTest
   using PlayerMap = std::map<TestRenderFrameHost*,
                              std::unique_ptr<MockMediaSessionPlayerObserver>>;
   PlayerMap players_;
+
+  TestMediaSessionClient client_;
 
  private:
   media_session::MediaMetadata empty_metadata_;
@@ -742,6 +763,68 @@ TEST_F(MediaSessionImplServiceRoutingTest,
     observer.WaitForExpectedMetadata(expected_metadata);
   }
 }
+
+// We hide the media metadata from CrOS' media controls by replacing the
+// metadata in the MediaSessionImpl with some placeholder metadata. These
+// changes are gated to only affect ChromeOS, hence why the testing for this is
+// also ChromeOS only.
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(MediaSessionImplServiceRoutingTest, HideMediaMetadataInCrOS) {
+  client_.SetShouldHideMetadata(true);
+
+  media_session::MediaMetadata expected_metadata;
+  expected_metadata.title = hidden_metadata_placeholder_title;
+  expected_metadata.artist = hidden_metadata_placeholder_artist;
+  expected_metadata.album = hidden_metadata_placeholder_album;
+  expected_metadata.source_title = hidden_metadata_placeholder_source_title;
+
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    blink::mojom::SpecMediaMetadataPtr spec_metadata(
+        blink::mojom::SpecMediaMetadata::New());
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
+
+    services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+}
+#else  // !BUILDFLAG(IS_CHROMEOS)
+TEST_F(MediaSessionImplServiceRoutingTest, DontHideMediaMetadataInNonCrOS) {
+  client_.SetShouldHideMetadata(true);
+
+  media_session::MediaMetadata expected_metadata;
+  expected_metadata.title = u"title";
+  expected_metadata.artist = u"artist";
+  expected_metadata.album = u"album";
+  expected_metadata.source_title = GetSourceTitleForNonEmptyMetadata();
+
+  CreateServiceForFrame(main_frame_);
+  StartPlayerForFrame(main_frame_);
+
+  {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *GetMediaSession());
+
+    blink::mojom::SpecMediaMetadataPtr spec_metadata(
+        blink::mojom::SpecMediaMetadata::New());
+    spec_metadata->title = u"title";
+    spec_metadata->artist = u"artist";
+    spec_metadata->album = u"album";
+
+    services_[main_frame_]->SetMetadata(std::move(spec_metadata));
+
+    observer.WaitForExpectedMetadata(expected_metadata);
+  }
+}
+#endif
 
 TEST_F(MediaSessionImplServiceRoutingTest,
        NotifyObserverMetadataEmptyWhenControllable) {

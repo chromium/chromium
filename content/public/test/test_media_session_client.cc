@@ -19,6 +19,10 @@ std::u16string TestMediaSessionClient::GetTitlePlaceholder() const {
   return placeholder_title_;
 }
 
+std::u16string TestMediaSessionClient::GetSourceTitlePlaceholder() const {
+  return placeholder_source_title_;
+}
+
 std::u16string TestMediaSessionClient::GetArtistPlaceholder() const {
   return placeholder_artist_;
 }
@@ -36,15 +40,20 @@ void TestMediaSessionClient::SetShouldHideMetadata(bool value) {
 }
 
 void TestMediaSessionClient::SetTitlePlaceholder(std::u16string title) {
-  placeholder_title_ = title;
+  placeholder_title_ = std::move(title);
+}
+
+void TestMediaSessionClient::SetSourceTitlePlaceholder(
+    std::u16string source_title) {
+  placeholder_source_title_ = std::move(source_title);
 }
 
 void TestMediaSessionClient::SetArtistPlaceholder(std::u16string artist) {
-  placeholder_artist_ = artist;
+  placeholder_artist_ = std::move(artist);
 }
 
 void TestMediaSessionClient::SetAlbumPlaceholder(std::u16string album) {
-  placeholder_album_ = album;
+  placeholder_album_ = std::move(album);
 }
 
 void TestMediaSessionClient::SetThumbnailPlaceholder(SkBitmap thumbnail) {

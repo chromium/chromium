@@ -59,6 +59,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
       const std::vector<mojom::MediaAudioVideoState>& wanted_states);
 
   void WaitForControllable(bool is_controllable);
+  void WaitForExpectedHideMetadata(bool hide_metadata);
 
   void WaitForEmptyMetadata();
   void WaitForExpectedMetadata(const MediaMetadata& metadata);
@@ -114,6 +115,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP)
   absl::optional<MediaMetadata> expected_metadata_;
   absl::optional<std::set<mojom::MediaSessionAction>> expected_actions_;
   absl::optional<bool> expected_controllable_;
+  absl::optional<bool> expected_hide_metadata_;
   absl::optional<
       std::pair<mojom::MediaSessionImageType, std::vector<MediaImage>>>
       expected_images_of_type_;

@@ -1275,6 +1275,15 @@ void MediaSessionImpl::GetMediaImageBitmap(
     int minimum_size_px,
     int desired_size_px,
     GetMediaImageBitmapCallback callback) {
+// We want to hide the media image from ChromeOS' media controls.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (session_info_ && session_info_->hide_metadata) {
+    std::move(callback).Run(
+        MediaSessionClient::Get()->GetThumbnailPlaceholder());
+    return;
+  }
+#endif
+
   // We should make sure |image| is in |images_|.
   bool found = false;
   bool source_icon = false;
@@ -1695,6 +1704,69 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   std::vector<media_session::MediaImage> artwork;
   media_session::MediaMetadata metadata;
 
+  bool images_changed = false;
+
+  // We may want to hide metadata only from ChromeOS' media controls here. For
+  // other platforms, metadata is hidden in the SystemMediaControlsNotifier. We
+  // can't hide the metadata for other platforms here because it would affect
+  // their respective global media controls, which we don't want to do.
+#if BUILDFLAG(IS_CHROMEOS)
+  if (session_info_ && session_info_->hide_metadata) {
+    BuildPlaceholderMetadata(metadata);
+
+    // If hiding the image metadata, we need to manually notify the observers
+    // that the image has changed. This is because we aren't directly changing
+    // the artwork, but instead it's being changed in the
+    // MediaSessionImpl::GetMediaImageBitmap method.
+    images_changed = true;
+  } else {
+    BuildMetadata(metadata, artwork);
+  }
+#else
+  BuildMetadata(metadata, artwork);
+#endif
+
+  // If we have no artwork in |images_| or the arwork has changed then we should
+  // update it with the latest artwork from the routed service.
+  auto it = images_.find(MediaSessionImageType::kArtwork);
+  images_changed =
+      images_changed || it == images_.end() || it->second != artwork;
+  if (images_changed) {
+    images_.insert_or_assign(MediaSessionImageType::kArtwork, artwork);
+  }
+  bool metadata_changed = metadata_ != metadata;
+  if (metadata_changed) {
+    metadata_ = metadata;
+  }
+
+  if (!images_changed && !metadata_changed) {
+    return;
+  }
+  for (auto& observer : observers_) {
+    if (metadata_changed) {
+      observer->MediaSessionMetadataChanged(this->metadata_);
+    }
+
+    if (images_changed) {
+      observer->MediaSessionImagesChanged(this->images_);
+    }
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+void MediaSessionImpl::BuildPlaceholderMetadata(
+    media_session::MediaMetadata& metadata) {
+  MediaSessionClient* media_session_client = MediaSessionClient::Get();
+  metadata.title = media_session_client->GetTitlePlaceholder();
+  metadata.artist = media_session_client->GetArtistPlaceholder();
+  metadata.album = media_session_client->GetAlbumPlaceholder();
+  metadata.source_title = media_session_client->GetSourceTitlePlaceholder();
+}
+#endif
+
+void MediaSessionImpl::BuildMetadata(
+    media_session::MediaMetadata& metadata,
+    std::vector<media_session::MediaImage>& artwork) {
   if (routed_service_ && routed_service_->metadata()) {
     metadata.title = routed_service_->metadata()->title;
     metadata.artist = routed_service_->metadata()->artist;
@@ -1702,14 +1774,15 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
     artwork = routed_service_->metadata()->artwork;
   }
 
-  if (metadata.title.empty())
+  if (metadata.title.empty()) {
     metadata.title = SanitizeMediaTitle(web_contents()->GetTitle());
+  }
 
   ContentClient* content_client = content::GetContentClient();
   const GURL& url = web_contents()->GetLastCommittedURL();
 
-  // If |url| wraps a chrome extension ID or System Web App, we can display the
-  // extension or app name instead, which is more human-readable.
+  // If |url| wraps a chrome extension ID or System Web App, we can display
+  // the extension or app name instead, which is more human-readable.
   std::u16string source_title;
   WebContentsDelegate* delegate = web_contents()->GetDelegate();
   if (delegate) {
@@ -1731,27 +1804,6 @@ void MediaSessionImpl::RebuildAndNotifyMetadataChanged() {
   }
 
   metadata.source_title = source_title;
-
-  // If we have no artwork in |images_| or the arwork has changed then we should
-  // update it with the latest artwork from the routed service.
-  auto it = images_.find(MediaSessionImageType::kArtwork);
-  bool images_changed = it == images_.end() || it->second != artwork;
-  if (images_changed)
-    images_.insert_or_assign(MediaSessionImageType::kArtwork, artwork);
-
-  bool metadata_changed = metadata_ != metadata;
-  if (metadata_changed)
-    metadata_ = metadata;
-
-  if (!images_changed && !metadata_changed)
-    return;
-  for (auto& observer : observers_) {
-    if (metadata_changed)
-      observer->MediaSessionMetadataChanged(this->metadata_);
-
-    if (images_changed)
-      observer->MediaSessionImagesChanged(this->images_);
-  }
 }
 
 bool MediaSessionImpl::IsPictureInPictureAvailable() const {
