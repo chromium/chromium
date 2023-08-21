@@ -209,6 +209,7 @@
 //components/test/data/viz/rotated_filter_sw.png
 //components/test/data/viz/rounded_corner_multi_quad.png
 //components/test/data/viz/rounded_corner_multi_radii.png
+//components/test/data/viz/rounded_corner_render_pass_graphite.png
 //components/test/data/viz/rounded_corner_render_pass_skia.png
 //components/test/data/viz/rounded_corner_render_pass_software.png
 //components/test/data/viz/rounded_corner_simple.png
