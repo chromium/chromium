@@ -1126,6 +1126,20 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
       source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.cache_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example_cache_name";
+      source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
     rules.rules.push_back(rule);
   }
   ASSERT_EQ(1U, rules.rules.size());
@@ -1183,6 +1197,12 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
         sources.Append("network");
         sources.Append("race-network-and-fetch-handler");
         sources.Append("fetch-event");
+        sources.Append("cache");
+        {
+          base::Value::Dict source;
+          source.Set("cache_name", "example_cache_name");
+          sources.Append(std::move(source));
+        }
         rule.Set("source", std::move(sources));
       }
     }

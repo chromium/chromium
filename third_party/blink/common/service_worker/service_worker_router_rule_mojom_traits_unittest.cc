@@ -90,6 +90,20 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       source.fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.cache_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example cache name";
+      source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
     rules.rules.push_back(rule);
   }
   TestRoundTrip(rules);

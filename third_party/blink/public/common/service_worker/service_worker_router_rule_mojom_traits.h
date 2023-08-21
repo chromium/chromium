@@ -163,6 +163,19 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ServiceWorkerRouterCacheSourceDataView,
+                 blink::ServiceWorkerRouterCacheSource> {
+  static const absl::optional<std::string>& cache_name(
+      const blink::ServiceWorkerRouterCacheSource& data) {
+    return data.cache_name;
+  }
+
+  static bool Read(blink::mojom::ServiceWorkerRouterCacheSourceDataView data,
+                   blink::ServiceWorkerRouterCacheSource* out);
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
                 blink::ServiceWorkerRouterSource> {
   static blink::mojom::ServiceWorkerRouterSourceDataView::Tag GetTag(
@@ -181,6 +194,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::ServiceWorkerRouterFetchEventSource& fetch_event_source(
       const blink::ServiceWorkerRouterSource& data) {
     return *data.fetch_event_source;
+  }
+
+  static const blink::ServiceWorkerRouterCacheSource& cache_source(
+      const blink::ServiceWorkerRouterSource& data) {
+    return *data.cache_source;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterSourceDataView data,

@@ -101,6 +101,16 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterFetchEventSource {
   }
 };
 
+// Cache source structure.
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterCacheSource {
+  // A name of the Cache object.
+  // If the field is not set, any of the Cache objects that the CacheStorage
+  // tracks are used for matching as if CacheStorage.match().
+  absl::optional<std::string> cache_name;
+
+  bool operator==(const ServiceWorkerRouterCacheSource& other) const;
+};
+
 // This represents a source of the router rule.
 // TODO(crbug.com/1371756): implement other sources in the proposal.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
@@ -114,14 +124,17 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
     kRace = 1,
     // Fetch Event is used as a source.
     kFetchEvent = 2,
+    // Cache is used as a source.
+    kCache = 3,
 
-    kMaxValue = kFetchEvent,
+    kMaxValue = kCache,
   };
   SourceType type;
 
   absl::optional<ServiceWorkerRouterNetworkSource> network_source;
   absl::optional<ServiceWorkerRouterRaceSource> race_source;
   absl::optional<ServiceWorkerRouterFetchEventSource> fetch_event_source;
+  absl::optional<ServiceWorkerRouterCacheSource> cache_source;
 
   bool operator==(const ServiceWorkerRouterSource& other) const;
 };

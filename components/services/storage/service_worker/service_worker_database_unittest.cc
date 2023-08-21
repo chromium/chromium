@@ -3786,18 +3786,38 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     condition.url_pattern = std::move(url_pattern);
     rule.conditions.emplace_back(condition);
 
-    blink::ServiceWorkerRouterSource source;
-    source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-    source.network_source.emplace();
-    rule.sources.push_back(source);
-    blink::ServiceWorkerRouterSource source2;
-    source2.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
-    source2.race_source.emplace();
-    rule.sources.push_back(source2);
-    blink::ServiceWorkerRouterSource source3;
-    source3.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
-    source3.fetch_event_source.emplace();
-    rule.sources.push_back(source3);
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
+      source.network_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.race_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
+      source.fetch_event_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {  // cache source without cache_name.
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      source.cache_source.emplace();
+      rule.sources.push_back(source);
+    }
+    {  // cache source with cache_name.
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+      blink::ServiceWorkerRouterCacheSource cache_source;
+      cache_source.cache_name = "example_cache_name";
+      source.cache_source = cache_source;
+      rule.sources.push_back(source);
+    }
     router_rules.rules.emplace_back(rule);
 
     store_and_restore(router_rules);

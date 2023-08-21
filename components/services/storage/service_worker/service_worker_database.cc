@@ -2406,6 +2406,15 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
                 blink::ServiceWorkerRouterSource::SourceType::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kCacheSource:
+            source.type = blink::ServiceWorkerRouterSource::SourceType::kCache;
+            blink::ServiceWorkerRouterCacheSource cache_source;
+            if (s.cache_source().has_cache_name()) {
+              cache_source.cache_name = s.cache_source().cache_name();
+            }
+            source.cache_source = cache_source;
+            break;
         }
         router_rule.sources.emplace_back(source);
       }
@@ -2851,6 +2860,12 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             break;
           case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
             source->mutable_fetch_event_source();
+            break;
+          case blink::ServiceWorkerRouterSource::SourceType::kCache:
+            auto* cache_source = source->mutable_cache_source();
+            if (s.cache_source->cache_name) {
+              cache_source->set_cache_name(*s.cache_source->cache_name);
+            }
             break;
         }
       }

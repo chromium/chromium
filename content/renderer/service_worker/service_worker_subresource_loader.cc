@@ -374,6 +374,9 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
       case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
         race_network_request_mode = kSkipped;
         break;
+      case blink::ServiceWorkerRouterSource::SourceType::kCache:
+        NOTIMPLEMENTED();
+        break;
     }
   }
 

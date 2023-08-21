@@ -211,6 +211,13 @@ bool IsValidSources(
           return false;
         }
         break;
+      case blink::ServiceWorkerRouterSource::SourceType::kCache:
+        if (!s.cache_source) {
+          RecordSetupError(
+              ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -537,6 +544,15 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           break;
         case blink::ServiceWorkerRouterSource::SourceType::kFetchEvent:
           source.Append("fetch-event");
+          break;
+        case blink::ServiceWorkerRouterSource::SourceType::kCache:
+          if (s.cache_source->cache_name) {
+            base::Value::Dict out_s;
+            out_s.Set("cache_name", *s.cache_source->cache_name);
+            source.Append(std::move(out_s));
+          } else {
+            source.Append("cache");
+          }
           break;
       }
     }

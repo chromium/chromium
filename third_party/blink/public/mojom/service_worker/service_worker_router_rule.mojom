@@ -84,6 +84,15 @@ struct ServiceWorkerRouterRaceSource {
 struct ServiceWorkerRouterFetchEventSource {
 };
 
+// This source is used when the response should be retrieved from the cache
+// storage.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+struct ServiceWorkerRouterCacheSource {
+  // The Cache object's name to be used. Unspecified means looking up from
+  // all Cache objects in the Cache Storage.
+  string? cache_name;
+};
+
 // This represents a source of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other sources in the full picture.
@@ -91,6 +100,7 @@ union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
   ServiceWorkerRouterRaceSource race_source;
   ServiceWorkerRouterFetchEventSource fetch_event_source;
+  ServiceWorkerRouterCacheSource cache_source;
 };
 
 // This represents a ServiceWorker static routing API's router rule.

@@ -29,6 +29,11 @@ bool ServiceWorkerRouterCondition::operator==(
   }
 }
 
+bool ServiceWorkerRouterCacheSource::operator==(
+    const ServiceWorkerRouterCacheSource& other) const {
+  return cache_name == other.cache_name;
+}
+
 bool ServiceWorkerRouterSource::operator==(
     const ServiceWorkerRouterSource& other) const {
   if (type != other.type) {
@@ -41,6 +46,8 @@ bool ServiceWorkerRouterSource::operator==(
       return race_source == other.race_source;
     case SourceType::kFetchEvent:
       return fetch_event_source == other.fetch_event_source;
+    case SourceType::kCache:
+      return cache_source == other.cache_source;
   }
 }
 

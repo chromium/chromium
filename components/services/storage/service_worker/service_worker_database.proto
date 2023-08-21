@@ -189,10 +189,14 @@ message ServiceWorkerRegistrationData {
         message NetworkSource {}
         message RaceSource {}
         message FetchEventSource {}
+        message CacheSource {
+          optional string cache_name = 1;
+        }
         oneof source {
           NetworkSource network_source = 1;
           RaceSource race_source = 2;
           FetchEventSource fetch_event_source = 3;
+          CacheSource cache_source = 4;
         }
       }
       repeated Condition condition = 1;
