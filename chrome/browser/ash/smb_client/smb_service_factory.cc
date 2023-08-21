@@ -65,7 +65,8 @@ bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-KeyedService* SmbServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SmbServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Check if service is enabled by feature flag, via policy, and if profile has
   // a user. Lock screen is the example of a profile that doesn't have a user -
@@ -75,7 +76,8 @@ KeyedService* SmbServiceFactory::BuildServiceInstanceFor(
       IsAllowedByPolicy(profile) && DoesProfileHaveUser(profile);
   if (!service_should_run)
     return nullptr;
-  return new SmbService(profile, std::make_unique<base::DefaultTickClock>());
+  return std::make_unique<SmbService>(
+      profile, std::make_unique<base::DefaultTickClock>());
 }
 
 void SmbServiceFactory::RegisterProfilePrefs(
