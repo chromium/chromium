@@ -68,6 +68,12 @@ class Time;
 - (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
                          toIDs:(NSArray<NSString*>*)newIDs;
 
+// Moves the on-disk tab snapshot from the receiver cache to the destination
+// on-disk cache. If the snapshot was also in-memory, it is moved as well. The
+// grey image is handled as well if present.
+- (void)migrateImageWithSnapshotID:(NSString*)snapshotID
+                   toSnapshotCache:(SnapshotCache*)destinationCache;
+
 // Hints that the snapshot for `snapshotID` will likely be saved to disk when
 // the application is backgrounded.  The snapshot is then saved in memory, so it
 // does not need to be read off disk.

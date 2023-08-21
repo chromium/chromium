@@ -300,7 +300,7 @@ void RenameSnapshots(const base::FilePath& cache_directory,
       const base::FilePath new_image_path = ImagePath(
           new_ids[index], image_type, snapshot_scale, cache_directory);
 
-      // Only migrate snapshots which are needed.
+      // Only migrate snapshots that are needed.
       if (!base::PathExists(old_image_path) ||
           base::PathExists(new_image_path)) {
         continue;
@@ -311,6 +311,19 @@ void RenameSnapshots(const base::FilePath& cache_directory,
                     << " to: " << new_image_path.AsUTF8Unsafe();
       }
     }
+  }
+}
+
+void CopyImageFile(const base::FilePath& old_image_path,
+                   const base::FilePath& new_image_path) {
+  // Only migrate files that are needed.
+  if (!base::PathExists(old_image_path) || base::PathExists(new_image_path)) {
+    return;
+  }
+
+  if (!base::CopyFile(old_image_path, new_image_path)) {
+    DLOG(ERROR) << "Error copying file: " << old_image_path.AsUTF8Unsafe()
+                << " to: " << new_image_path.AsUTF8Unsafe();
   }
 }
 
@@ -544,6 +557,39 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   _taskRunner->PostTask(
       FROM_HERE, base::BindOnce(&RenameSnapshots, _cacheDirectory, oldIDs,
                                 newIDs, _snapshotsScale));
+}
+
+- (void)migrateImageWithSnapshotID:(NSString*)snapshotID
+                   toSnapshotCache:(SnapshotCache*)destinationCache {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  // Copy to the destination cache.
+  if (UIImage* image = [_lruCache objectForKey:snapshotID]) {
+    // Copy both on-disk and in-memory versions.
+    [destinationCache setImage:image withSnapshotID:snapshotID];
+    // Copy the grey scale version, if available.
+    if (UIImage* greyImage = [_greyImageDictionary objectForKey:snapshotID]) {
+      [destinationCache->_greyImageDictionary setObject:greyImage
+                                                 forKey:snapshotID];
+    }
+  } else {
+    // Only copy on-disk.
+    if (_taskRunner) {
+      _taskRunner->PostTask(
+          FROM_HERE,
+          base::BindOnce(&CopyImageFile,
+                         [self imagePathForSnapshotID:snapshotID],
+                         [destinationCache imagePathForSnapshotID:snapshotID]));
+      _taskRunner->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &CopyImageFile, [self greyImagePathForSnapshotID:snapshotID],
+              [destinationCache greyImagePathForSnapshotID:snapshotID]));
+    }
+  }
+
+  // Remove the snapshot from this cache.
+  [self removeImageWithSnapshotID:snapshotID];
 }
 
 - (void)willBeSavedGreyWhenBackgrounding:(NSString*)snapshotID {
