@@ -30,6 +30,7 @@ component("util") {
     "//ash/assistant/model",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//base:i18n",
     "//chromeos/ash/services/assistant/public/cpp",

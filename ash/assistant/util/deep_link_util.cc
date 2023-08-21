@@ -7,6 +7,7 @@
 #include <set>
 
 #include "ash/assistant/util/i18n_util.h"
+#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/contains.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,9 +17,7 @@
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace assistant {
-namespace util {
+namespace ash::assistant::util {
 
 namespace {
 
@@ -429,12 +428,11 @@ GURL GetChromeSettingsUrl(const absl::optional<std::string>& page) {
   // top-level Chrome OS Settings. We may wish to allow deep linking into
   // Browser Settings at some point in the future at which point we will define
   // an analogous collection of |kAllowedBrowserPages|.
-  // These values are copied from
-  // ash/webui/settings/public/constants/routes.mojom.
-  // TODO(b/168138594): use generated defines, now it's ready to use.
   static const std::map<std::string, std::string> kAllowedOsPages = {
-      {/*page=*/"googleAssistant", /*os_page=*/"googleAssistant"},
-      {/*page=*/"languages", /*os_page=*/"osLanguages/languages"}};
+      {/*page=*/"googleAssistant",
+       /*os_page=*/chromeos::settings::mojom::kAssistantSubpagePath},
+      {/*page=*/"languages",
+       /*os_page=*/chromeos::settings::mojom::kLanguagesSubpagePath}};
 
   return page && base::Contains(kAllowedOsPages, page.value())
              ? GURL(kChromeOsSettingsUrl + kAllowedOsPages.at(page.value()))
@@ -497,6 +495,4 @@ bool IsWebDeepLinkType(DeepLinkType type,
   return base::Contains(kWebDeepLinks, type);
 }
 
-}  // namespace util
-}  // namespace assistant
-}  // namespace ash
+}  // namespace ash::assistant::util

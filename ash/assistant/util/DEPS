@@ -4,6 +4,7 @@ include_rules = [
   "+ash/assistant/util",
   "+ash/constants",
   "+ash/public/cpp",
+  "+ash/webui/settings/public/constants",
   "+net",
   "+ui/base",
   "+ui/gfx",
