@@ -117,6 +117,7 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
                                const DistillablePageDetector* detector,
                                const DistillablePageDetector* long_page,
                                bool is_last,
+                               bool& is_long_article,
                                bool& is_mobile_friendly,
                                content::RenderFrame* render_frame,
                                bool dump_info) {
@@ -133,22 +134,23 @@ bool IsDistillablePageAdaboost(blink::WebDocument& doc,
   double score = detector->Score(derived) - detector->GetThreshold();
   double long_score = long_page->Score(derived) - long_page->GetThreshold();
   bool distillable = score > 0;
-  bool long_article = long_score > 0;
+  is_long_article = long_score > 0;
   bool filtered = IsFiltered(parsed_url);
 
   if (dump_info) {
     DumpDistillability(render_frame, features, derived, score, distillable,
-                       long_score, long_article, filtered);
+                       long_score, is_long_article, filtered);
   }
 
   if (filtered) {
     return false;
   }
-  return distillable && long_article;
+  return distillable && is_long_article;
 }
 
 bool IsDistillablePage(blink::WebDocument& doc,
                        bool is_last,
+                       bool& is_long_article,
                        bool& is_mobile_friendly,
                        content::RenderFrame* render_frame,
                        bool dump_info) {
@@ -161,7 +163,7 @@ bool IsDistillablePage(blink::WebDocument& doc,
     case DistillerHeuristicsType::ALL_ARTICLES:
       return IsDistillablePageAdaboost(
           doc, DistillablePageDetector::GetNewModel(),
-          DistillablePageDetector::GetLongPageModel(), is_last,
+          DistillablePageDetector::GetLongPageModel(), is_last, is_long_article,
           is_mobile_friendly, render_frame, dump_info);
     case DistillerHeuristicsType::NONE:
     default:
@@ -203,11 +205,13 @@ void DistillabilityAgent::DidMeaningfulLayout(
       distillability_service.BindNewPipeAndPassReceiver());
   if (!distillability_service.is_bound())
     return;
+  bool is_long_article = false;
   bool is_mobile_friendly = false;
-  bool is_distillable = IsDistillablePage(doc, is_last, is_mobile_friendly,
-                                          render_frame(), dump_info_);
-  distillability_service->NotifyIsDistillable(is_distillable, is_last,
-                                              is_mobile_friendly);
+  bool is_distillable =
+      IsDistillablePage(doc, is_last, is_long_article, is_mobile_friendly,
+                        render_frame(), dump_info_);
+  distillability_service->NotifyIsDistillable(
+      is_distillable, is_last, is_long_article, is_mobile_friendly);
 }
 
 DistillabilityAgent::~DistillabilityAgent() {}

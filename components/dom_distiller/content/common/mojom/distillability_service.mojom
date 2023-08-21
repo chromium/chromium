@@ -6,9 +6,14 @@ module dom_distiller.mojom;
 
 // This service is implemented in the browser process and is used by the
 // renderer to notify the Reader Mode UI whether a page is distillable.
-// |is_mobile_friendly| is only valid when the heuristics is ADABOOST_MODEL
-// or ALL_ARTICLES.
 interface DistillabilityService {
+  // Notifies the Reader Mode UI when the distillability is determined.
+  // |is_distillable| indicates whether the page is distillable.
+  // |is_last_update| indicates whether it is the last update to the page.
+  // |is_long_article| indicates whether the page is classified as a long-form
+  // article.
+  // |is_mobile_friendly| indicates whether the page is mobile friendly and is
+  // only valid when the heuristic is ADABOOST_MODEL or ALL_ARTICLES.
   NotifyIsDistillable(bool page_is_distillable, bool is_last_update,
-      bool is_mobile_friendly);
+      bool is_long_article, bool is_mobile_friendly);
 };

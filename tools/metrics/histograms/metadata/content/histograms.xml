@@ -53,6 +53,18 @@ chromium-metrics-reviews@google.com.
   <variant name=".WebFeedListContents" summary="WebFeedListContents"/>
 </variants>
 
+<histogram name="Content.Classification" enum="ContentClassification"
+    expires_after="2024-01-31">
+  <owner>sophey@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    Whether the webpage is a long-form article or not. This is logged when the
+    user navigates away from the current page (via loading a different webpage
+    or native page). It is only logged if the distillability of the page had
+    been determined.
+  </summary>
+</histogram>
+
 <histogram name="ContentCapture.GetBoundingBox" units="microseconds"
     expires_after="2022-12-01">
   <owner>michaelbai@chromium.org</owner>
