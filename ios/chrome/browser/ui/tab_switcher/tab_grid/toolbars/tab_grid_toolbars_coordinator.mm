@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
@@ -22,7 +21,6 @@
 
 - (void)start {
   _mediator = [[TabGridToolbarsMediator alloc] init];
-  _mediator.delegateWrangler = self.delegateWrangler;
 
   [self setupTopToolbar];
   [self setupBottomToolbar];
@@ -34,12 +32,6 @@
 #pragma mark - Property Implementation.
 
 - (id<GridToolbarsMutator>)toolbarsMutator {
-  CHECK(_mediator)
-      << "TabGridToolbarsCoordinator's -start should be called before.";
-  return _mediator;
-}
-
-- (id<TabGridToolbarsCommandsWrangler>)commandsWrangler {
   CHECK(_mediator)
       << "TabGridToolbarsCoordinator's -start should be called before.";
   return _mediator;

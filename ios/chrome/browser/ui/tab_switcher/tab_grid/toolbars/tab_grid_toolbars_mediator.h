@@ -8,18 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 
 @class TabGridBottomToolbar;
-@protocol TabGridToolbarsDelegateWrangler;
 @class TabGridTopToolbar;
 
 // Mediates between model layer and top and bottom toolbar UI layer.
-@interface TabGridToolbarsMediator
-    : NSObject <GridToolbarsMutator, TabGridToolbarsCommandsWrangler>
-
-// TODO(crbug.com/1456659): Remove it.
-@property(nonatomic, weak) id<TabGridToolbarsDelegateWrangler> delegateWrangler;
+@interface TabGridToolbarsMediator : NSObject <GridToolbarsMutator>
 
 // The toolbars consumer.
 // TODO(crbug.com/1456659): Modify it to be consumers instead of being the full

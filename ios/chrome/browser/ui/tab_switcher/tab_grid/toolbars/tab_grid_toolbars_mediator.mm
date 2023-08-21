@@ -5,12 +5,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_mediator.h"
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_delegate_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
 @implementation TabGridToolbarsMediator {
@@ -35,35 +33,6 @@
   self.bottomToolbarConsumer.buttonsDelegate = delegate;
 }
 
-#pragma mark - TabGridToolbarsCommandsWrangler
-
-// TODO(crbug.com/1457146): To refactor. This function should not be needed as
-// `_configuration` should have the info on which button should be added, the
-// logic itself will be implemented directly in the grid object itself.
-- (void)updateToolbarButtons {
-  ActionFactory* actionFactory = [[ActionFactory alloc]
-      initWithScenario:MenuScenarioHistogram::kTabGridEdit];
-  __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
-      _buttonsDelegate;
-  NSMutableArray<UIMenuElement*>* menuElements =
-      [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
-        [weakButtonDelegate closeAllButtonTapped:nil];
-      }] ] mutableCopy];
-  // Disable the "Select All" option from the edit button when there are no tabs
-  // in the regular tab grid. "Close All" can still be called if there are
-  // inactive tabs.
-  BOOL disabledSelectAll = [self.delegateWrangler isCurrentGridEmpty];
-  if (!disabledSelectAll) {
-    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
-                    [weakButtonDelegate selectTabsButtonTapped:nil];
-                  }]];
-  }
-
-  UIMenu* menu = [UIMenu menuWithChildren:menuElements];
-  [self.topToolbarConsumer setEditButtonMenu:menu];
-  [self.bottomToolbarConsumer setEditButtonMenu:menu];
-}
-
 #pragma mark - Private
 
 // Helpers to determine which button should be selected between "Edit" or "Undo"
@@ -84,8 +53,35 @@
 
   BOOL shouldEnableEditButton =
       _configuration.closeAllButton || _configuration.selectTabsButton;
+  if (shouldEnableEditButton) {
+    [self configureEditButtons];
+  }
   [self.bottomToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
   [self.topToolbarConsumer setEditButtonEnabled:shouldEnableEditButton];
+}
+
+// Configures buttons that are available under the edit menu.
+- (void)configureEditButtons {
+  ActionFactory* actionFactory = [[ActionFactory alloc]
+      initWithScenario:MenuScenarioHistogram::kTabGridEdit];
+  __weak id<TabGridToolbarsButtonsDelegate> weakButtonDelegate =
+      _buttonsDelegate;
+  NSMutableArray<UIMenuElement*>* menuElements =
+      [@[ [actionFactory actionToCloseAllTabsWithBlock:^{
+        [weakButtonDelegate closeAllButtonTapped:nil];
+      }] ] mutableCopy];
+  // Disable the "Select All" option from the edit button when there are no tabs
+  // in the regular tab grid. "Close All" can still be called if there are
+  // inactive tabs.
+  if (_configuration.selectTabsButton) {
+    [menuElements addObject:[actionFactory actionToSelectTabsWithBlock:^{
+                    [weakButtonDelegate selectTabsButtonTapped:nil];
+                  }]];
+  }
+
+  UIMenu* menu = [UIMenu menuWithChildren:menuElements];
+  [self.topToolbarConsumer setEditButtonMenu:menu];
+  [self.bottomToolbarConsumer setEditButtonMenu:menu];
 }
 
 @end

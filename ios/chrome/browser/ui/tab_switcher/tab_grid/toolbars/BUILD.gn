@@ -30,8 +30,6 @@ source_set("toolbars_ui") {
     "tab_grid_page_control.mm",
     "tab_grid_toolbars_action_wrangler.h",
     "tab_grid_toolbars_buttons_delegate.h",
-    "tab_grid_toolbars_commands_wrangler.h",
-    "tab_grid_toolbars_delegate_wrangler.h",
     "tab_grid_toolbars_utils.h",
     "tab_grid_toolbars_utils.mm",
     "tab_grid_top_toolbar.h",

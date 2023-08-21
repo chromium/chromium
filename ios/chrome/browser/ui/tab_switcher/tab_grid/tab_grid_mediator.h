@@ -34,6 +34,7 @@ class PrefService;
 @property(nonatomic, weak) id<TabGridPageMutator> incognitoPageMutator;
 // Mutator for remote Tabs.
 @property(nonatomic, weak) id<TabGridPageMutator> remotePageMutator;
+
 // Consumer for state changes in tab grid.
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
 // Delegate allowing the mediator to update the incognito tab grid.

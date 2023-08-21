@@ -731,14 +731,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
                                                              browser:nil];
   _toolbarsCoordinator.searchDelegate = self.baseViewController;
   _toolbarsCoordinator.actionWrangler = self.baseViewController;
-  _toolbarsCoordinator.delegateWrangler = self.baseViewController;
   [_toolbarsCoordinator start];
   self.baseViewController.topToolbar = _toolbarsCoordinator.topToolbar;
   self.baseViewController.bottomToolbar = _toolbarsCoordinator.bottomToolbar;
-  // TODO(crbug.com/1457146): To remove when -updateToolbarButtons function call
-  // is not needed anymore.
-  self.baseViewController.toolbarCommandsWrangler =
-      _toolbarsCoordinator.commandsWrangler;
 
   self.regularTabsMediator = [[RegularGridMediator alloc]
       initWithConsumer:baseViewController.regularTabsConsumer];

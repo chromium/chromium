@@ -50,7 +50,6 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_commands_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -701,12 +700,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self updateSelectionModeToolbars];
 }
 
-#pragma mark - TabGridToolbarsDelegateWrangler
-
-- (BOOL)isCurrentGridEmpty {
-  return [self gridViewControllerForPage:self.currentPage].gridEmpty;
-}
-
 #pragma mark - Private
 
 // Records the idle page status for the current `currentPage`.
@@ -983,7 +976,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self.pinnedTabsViewController pinnedTabsAvailable:pinnedTabsAvailable];
   }
   [self updateToolbarsAppearance];
-  [self.toolbarCommandsWrangler updateToolbarButtons];
   // Make sure the current page becomes the first responder, so that it can
   // register and handle key commands.
   [self.currentPageViewController becomeFirstResponder];
@@ -2148,7 +2140,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     crash_keys::SetIncognitoTabCount(count);
     [self handleTabCountChangeWithTabCount:count];
   }
-  [self.toolbarCommandsWrangler updateToolbarButtons];
 }
 
 - (void)gridViewController:(GridViewController*)gridViewController
