@@ -29,18 +29,18 @@
 
 namespace {
 
-constexpr base::TimeDelta kOpenPageAndShowHelpBubbleTimeout = base::Seconds(30);
+constexpr base::TimeDelta kShowPromoInPageTimeout = base::Seconds(30);
 
-class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
+class ShowPromoInPageImpl : public ShowPromoInPage {
  public:
-  explicit OpenPageAndShowHelpBubbleImpl(Browser* browser, Params params)
+  explicit ShowPromoInPageImpl(Browser* browser, Params params)
       : browser_(browser->AsWeakPtr()), callback_(std::move(params.callback)) {
     DCHECK(callback_);
     DCHECK(browser_);
     DCHECK(!params.bubble_text.empty());
 
-    base::TimeDelta timeout = params.timeout_override_for_testing.value_or(
-        kOpenPageAndShowHelpBubbleTimeout);
+    base::TimeDelta timeout =
+        params.timeout_override_for_testing.value_or(kShowPromoInPageTimeout);
     DCHECK(timeout.is_positive());
 
     bubble_params_.body_text = params.bubble_text;
@@ -55,9 +55,8 @@ class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
         ui::ElementTracker::GetElementTracker()
             ->AddElementShownInAnyContextCallback(
                 params.bubble_anchor_id,
-                base::BindRepeating(
-                    &OpenPageAndShowHelpBubbleImpl::OnAnchorShown,
-                    base::Unretained(this)));
+                base::BindRepeating(&ShowPromoInPageImpl::OnAnchorShown,
+                                    base::Unretained(this)));
 
     if (params.target_url.has_value()) {
       NavigateParams navigate_params(browser, params.target_url.value(),
@@ -78,15 +77,15 @@ class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
     }
 
     timeout_.Start(FROM_HERE, timeout,
-                   base::BindOnce(&OpenPageAndShowHelpBubbleImpl::OnTimeout,
+                   base::BindOnce(&ShowPromoInPageImpl::OnTimeout,
                                   base::Unretained(this)));
   }
 
-  ~OpenPageAndShowHelpBubbleImpl() override {
+  ~ShowPromoInPageImpl() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
 
-  base::WeakPtr<OpenPageAndShowHelpBubbleImpl> GetWeakPtr() {
+  base::WeakPtr<ShowPromoInPageImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -119,9 +118,8 @@ class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
       delete this;
       return;
     }
-    help_bubble_closed_subscription_ =
-        help_bubble_->AddOnCloseCallback(base::BindOnce(
-            &OpenPageAndShowHelpBubbleImpl::OnBubbleClosed, GetWeakPtr()));
+    help_bubble_closed_subscription_ = help_bubble_->AddOnCloseCallback(
+        base::BindOnce(&ShowPromoInPageImpl::OnBubbleClosed, GetWeakPtr()));
     std::move(callback_).Run(this, true);
   }
 
@@ -144,7 +142,7 @@ class OpenPageAndShowHelpBubbleImpl : public ShowPromoInPage {
   base::CallbackListSubscription anchor_subscription_;
   base::OneShotTimer timeout_;
   THREAD_CHECKER(thread_checker_);
-  base::WeakPtrFactory<OpenPageAndShowHelpBubbleImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ShowPromoInPageImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -160,6 +158,5 @@ ShowPromoInPage::~ShowPromoInPage() = default;
 
 base::WeakPtr<ShowPromoInPage> ShowPromoInPage::Start(Browser* browser,
                                                       Params params) {
-  return (new OpenPageAndShowHelpBubbleImpl(browser, std::move(params)))
-      ->GetWeakPtr();
+  return (new ShowPromoInPageImpl(browser, std::move(params)))->GetWeakPtr();
 }
