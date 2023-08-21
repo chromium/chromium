@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.privacy_guide;
 import android.content.Context;
 import android.content.Intent;
 
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
@@ -41,6 +42,11 @@ class PrivacyGuideUtils {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
                 Profile.getLastUsedRegularProfile());
         return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
+    }
+
+    static boolean isSearchSuggestionsEnabled() {
+        return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                .getBoolean(Pref.SEARCH_SUGGEST_ENABLED);
     }
 
     static @SafeBrowsingState int getSafeBrowsingState() {

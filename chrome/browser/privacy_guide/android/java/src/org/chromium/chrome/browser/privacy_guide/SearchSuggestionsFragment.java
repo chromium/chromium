@@ -9,7 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
+
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /**
  * Controls the behaviour of the search suggestions privacy guide page.
@@ -19,5 +24,16 @@ public class SearchSuggestionsFragment extends Fragment {
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.privacy_guide_search_suggestions_step, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        SwitchCompat searchSuggestionsSwitch = view.findViewById(R.id.search_suggestions_switch);
+        searchSuggestionsSwitch.setChecked(PrivacyGuideUtils.isSearchSuggestionsEnabled());
+
+        searchSuggestionsSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                    .setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
+        });
     }
 }

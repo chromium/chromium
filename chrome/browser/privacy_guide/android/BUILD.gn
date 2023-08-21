@@ -71,6 +71,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuideMetricsDelegateTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/PrivacyGuidePagerAdapterTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/SafeBrowsingFragmentTest.java",
+    "junit/src/org/chromium/chrome/browser/privacy_guide/SearchSuggestionsFragmentTest.java",
     "junit/src/org/chromium/chrome/browser/privacy_guide/StepDisplayHandlerImplTest.java",
   ]
   deps = [
@@ -81,6 +82,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:jni_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/privacy_sandbox/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/safe_browsing/android:java",
