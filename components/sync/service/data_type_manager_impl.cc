@@ -164,9 +164,7 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(ModelType type) {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncAvoidReconfigurationIfAlreadyStopping) &&
-      state_ == STOPPING) {
+  if (state_ == STOPPING) {
     // Configuration should not be set while stopping.
     LOG(ERROR) << "Precondition changed while stopping.";
     return;

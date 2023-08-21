@@ -176,9 +176,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // Feature flag to replace all sync-related UI with sign-in ones.
 BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 
-// Flag to stop call to reconfiguration of datatypes if it's already stopping.
-BASE_DECLARE_FEATURE(kSyncAvoidReconfigurationIfAlreadyStopping);
-
 // If enabled, there will be two different BookmarkModel instances per profile:
 // one instance for "profile" bookmarks and another instance for "account"
 // bookmarks. See https://crbug.com/1404250 for details.

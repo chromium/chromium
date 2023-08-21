@@ -547,6 +547,39 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   ASSERT_EQ(GetPrefs(0)->GetList(kHistorySensitiveListPrefName), local_value);
 }
 
+// Regression test for crbug.com/1456872.
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldHandleWalletSideEffectsWhenSyncDisabled) {
+  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  InjectPreferenceToFakeServer(syncer::PREFERENCES,
+                               autofill::prefs::kAutofillCreditCardEnabled,
+                               base::Value(false));
+
+  // Enable Sync.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Fake server value is synced to the account store and overrides local value.
+  ASSERT_FALSE(
+      GetPrefs(0)->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled));
+
+  // kAutofillCreditCardEnabled prevents AUTOFILL_WALLET from running.
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+      syncer::AUTOFILL_WALLET_DATA));
+
+  // Disable sync, the data and metadata should be gone, without crashes.
+  GetClient(0)->StopSyncServiceAndClearData();
+
+  ASSERT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
+
+  // Enabling sync again should work, without crashes.
+  EXPECT_TRUE(SetupSync());
+}
+
 // TODO(crbug.com/1416480): Consider making other fixtures parameterized with
 // `kSyncEnablePersistentStorageForAccountPreferences` flag enabled and disabled
 // both.
@@ -1030,50 +1063,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageMergeSyncTest,
   // The local store remains unchanged.
   EXPECT_EQ(GetPrefs(0)->GetList(prefs::kURLsToRestoreOnStartup),
             updated_value);
-}
-
-class SingleClientPreferencesWithAvoidReconfigurationFlagEnabledSyncTest
-    : public SingleClientPreferencesWithAccountStorageSyncTest {
- public:
-  SingleClientPreferencesWithAvoidReconfigurationFlagEnabledSyncTest()
-      : feature_list_(syncer::kSyncAvoidReconfigurationIfAlreadyStopping) {}
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Regression test for crbug.com/1456872.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithAvoidReconfigurationFlagEnabledSyncTest,
-    ShouldHandleWalletSideEffectsWhenSyncDisabled) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  ASSERT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-
-  InjectPreferenceToFakeServer(syncer::PREFERENCES,
-                               autofill::prefs::kAutofillCreditCardEnabled,
-                               base::Value(false));
-
-  // Enable Sync.
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-
-  // Fake server value is synced to the account store and overrides local value.
-  ASSERT_FALSE(
-      GetPrefs(0)->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled));
-
-  // kAutofillCreditCardEnabled prevents AUTOFILL_WALLET from running.
-  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-
-  // Disable sync, the data and metadata should be gone, without crashes.
-  GetClient(0)->StopSyncServiceAndClearData();
-
-  ASSERT_FALSE(
-      GetSyncService(0)->GetActiveDataTypes().Has(syncer::PREFERENCES));
-
-  // Enabling sync again should work, without crashes.
-  EXPECT_TRUE(SetupSync());
 }
 
 }  // namespace
