@@ -74,12 +74,12 @@ clang-format differences by choosing patchset 1 as the base for the gerrit diff.
 # use old clang-format
 find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
 git commit -a
-git cl upload
+git cl upload --bypass-hooks
 ## New patchset on gerrit CL with results of new clang-format.
 # update to new clang-format
 find base -name '*.cc' -o -name '*.c' -o -name '*.h' -o -name '*.mm' | xargs ./buildtools/linux64/clang-format -i
 git commit -a --amend --no-edit
-git cl upload
+git cl upload --bypass-hooks
 ```
 
 If there are any unexpected diffs, file a bug upstream (and fix it if you can :)).
