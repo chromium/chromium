@@ -6,6 +6,7 @@ include_rules = [
   "+third_party/skia",
   "+ui/events",
   "+ui/base/x",
+  "+ui/base/moving_max.h",
   "+ui/gfx",
   "+ui/ozone/buildflags.h",
   "+third_party/angle/src/gpu_info_util/SystemInfo.h",

@@ -25,9 +25,8 @@
 
 namespace gl {
 namespace {
-bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
-  return gfx::Rect(a).Contains(gfx::Rect(b));
-}
+
+constexpr size_t kVideoProcessorDimensionsWindowSize = 100;
 
 bool NeedSwapChainPresenter(const DCLayerOverlayParams* overlay) {
   if (overlay->background_color.has_value()) {
@@ -87,6 +86,10 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
       force_dcomp_triple_buffer_video_swap_chain_(
           force_dcomp_triple_buffer_video_swap_chain),
       no_downscaled_overlay_promotion_(no_downscaled_overlay_promotion),
+      max_video_processor_input_height_(kVideoProcessorDimensionsWindowSize),
+      max_video_processor_input_width_(kVideoProcessorDimensionsWindowSize),
+      max_video_processor_output_height_(kVideoProcessorDimensionsWindowSize),
+      max_video_processor_output_width_(kVideoProcessorDimensionsWindowSize),
       ink_renderer_(std::make_unique<DelegatedInkRenderer>()) {}
 
 DCLayerTree::~DCLayerTree() = default;
@@ -153,40 +156,52 @@ bool DCLayerTree::Initialize(
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     const gfx::Size& input_size,
-    const gfx::Size& output_size,
-    bool is_hdr_output) {
-  VideoProcessorWrapper& video_processor_wrapper =
-      GetOrCreateVideoProcessor(is_hdr_output);
-
-  if (!video_processor_wrapper.video_device) {
+    const gfx::Size& output_size) {
+  if (!video_processor_wrapper_.video_device) {
     // This can fail if the D3D device is "Microsoft Basic Display Adapter".
-    if (FAILED(d3d11_device_.As(&video_processor_wrapper.video_device))) {
+    if (FAILED(d3d11_device_.As(&video_processor_wrapper_.video_device))) {
       DLOG(ERROR) << "Failed to retrieve video device from D3D11 device";
       DCHECK(false);
       DisableDirectCompositionOverlays();
       return nullptr;
     }
-    DCHECK(video_processor_wrapper.video_device);
+    DCHECK(video_processor_wrapper_.video_device);
 
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     d3d11_device_->GetImmediateContext(&context);
     DCHECK(context);
-    context.As(&video_processor_wrapper.video_context);
-    DCHECK(video_processor_wrapper.video_context);
+    context.As(&video_processor_wrapper_.video_context);
+    DCHECK(video_processor_wrapper_.video_context);
   }
 
-  if (video_processor_wrapper.video_processor &&
-      SizeContains(video_processor_wrapper.video_input_size, input_size) &&
-      SizeContains(video_processor_wrapper.video_output_size, output_size))
-    return &video_processor_wrapper;
+  // Calculate input and output size to be maximum in a sliding window.
+  max_video_processor_input_width_.Put(input_size.width());
+  max_video_processor_input_height_.Put(input_size.height());
+  max_video_processor_output_width_.Put(output_size.width());
+  max_video_processor_output_height_.Put(output_size.height());
+  gfx::Size effective_input_size(max_video_processor_input_width_.Max(),
+                                 max_video_processor_input_height_.Max());
+  gfx::Size effective_output_size(max_video_processor_output_width_.Max(),
+                                  max_video_processor_output_height_.Max());
+
+  // Reuse existing video processor only if it has exactly the computed size.
+  // Even if it may have bigger dimensions and may be reusable for requested
+  // sizes we will recreate it to reduce resource usage. Sliding window max
+  // above guarantees that this reduction will only happen after prolonged usage
+  // with smaller texture sizes.
+  if (video_processor_wrapper_.video_processor &&
+      video_processor_wrapper_.video_input_size == effective_input_size &&
+      video_processor_wrapper_.video_output_size == effective_output_size) {
+    return &video_processor_wrapper_;
+  }
 
   TRACE_EVENT2("gpu", "DCLayerTree::InitializeVideoProcessor", "input_size",
                input_size.ToString(), "output_size", output_size.ToString());
-  video_processor_wrapper.video_input_size = input_size;
-  video_processor_wrapper.video_output_size = output_size;
 
-  video_processor_wrapper.video_processor.Reset();
-  video_processor_wrapper.video_processor_enumerator.Reset();
+  video_processor_wrapper_.video_input_size = effective_input_size;
+  video_processor_wrapper_.video_output_size = effective_output_size;
+  video_processor_wrapper_.video_processor.Reset();
+  video_processor_wrapper_.video_processor_enumerator.Reset();
   D3D11_VIDEO_PROCESSOR_CONTENT_DESC desc = {};
   desc.InputFrameFormat = D3D11_VIDEO_FRAME_FORMAT_PROGRESSIVE;
   desc.InputFrameRate.Numerator = 60;
@@ -199,8 +214,8 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
   desc.OutputHeight = output_size.height();
   desc.Usage = D3D11_VIDEO_USAGE_PLAYBACK_NORMAL;
   HRESULT hr =
-      video_processor_wrapper.video_device->CreateVideoProcessorEnumerator(
-          &desc, &video_processor_wrapper.video_processor_enumerator);
+      video_processor_wrapper_.video_device->CreateVideoProcessorEnumerator(
+          &desc, &video_processor_wrapper_.video_processor_enumerator);
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateVideoProcessorEnumerator failed with error 0x"
                 << std::hex << hr;
@@ -209,9 +224,9 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     DisableDirectCompositionOverlays();
     return nullptr;
   }
-  hr = video_processor_wrapper.video_device->CreateVideoProcessor(
-      video_processor_wrapper.video_processor_enumerator.Get(), 0,
-      &video_processor_wrapper.video_processor);
+  hr = video_processor_wrapper_.video_device->CreateVideoProcessor(
+      video_processor_wrapper_.video_processor_enumerator.Get(), 0,
+      &video_processor_wrapper_.video_processor);
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateVideoProcessor failed with error 0x" << std::hex
                 << hr;
@@ -221,18 +236,10 @@ VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
     return nullptr;
   }
   // Auto stream processing (the default) can hurt power consumption.
-  video_processor_wrapper.video_context
+  video_processor_wrapper_.video_context
       ->VideoProcessorSetStreamAutoProcessingMode(
-          video_processor_wrapper.video_processor.Get(), 0, FALSE);
-  return &video_processor_wrapper;
-}
-
-VideoProcessorWrapper& DCLayerTree::GetOrCreateVideoProcessor(bool is_hdr) {
-  VideoProcessorType video_processor_type =
-      is_hdr ? VideoProcessorType::kHDR : VideoProcessorType::kSDR;
-  return video_processor_map_
-      .try_emplace(video_processor_type, VideoProcessorWrapper())
-      .first->second;
+          video_processor_wrapper_.video_processor.Get(), 0, FALSE);
+  return &video_processor_wrapper_;
 }
 
 Microsoft::WRL::ComPtr<IDXGISwapChain1>

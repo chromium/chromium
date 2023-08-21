@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "ui/base/moving_max.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dc_layer_overlay_params.h"
@@ -32,8 +33,6 @@ namespace gl {
 
 class DirectCompositionChildSurfaceWin;
 class SwapChainPresenter;
-
-enum class VideoProcessorType { kSDR, kHDR };
 
 // Cache video processor and its size.
 struct VideoProcessorWrapper {
@@ -63,8 +62,6 @@ struct VideoProcessorWrapper {
 // CommitAndClearPendingOverlays().
 class GL_EXPORT DCLayerTree {
  public:
-  using VideoProcessorMap =
-      base::flat_map<VideoProcessorType, VideoProcessorWrapper>;
   using DelegatedInkRenderer =
       DelegatedInkPointRendererGpu<IDCompositionInkTrailDevice,
                                    IDCompositionDelegatedInkTrail,
@@ -99,8 +96,7 @@ class GL_EXPORT DCLayerTree {
   // layers so the same one can be reused if it's large enough.  Returns true on
   // success.
   VideoProcessorWrapper* InitializeVideoProcessor(const gfx::Size& input_size,
-                                                  const gfx::Size& output_size,
-                                                  bool is_hdr_output);
+                                                  const gfx::Size& output_size);
 
   bool disable_nv12_dynamic_textures() const {
     return disable_nv12_dynamic_textures_;
@@ -121,8 +117,6 @@ class GL_EXPORT DCLayerTree {
   bool no_downscaled_overlay_promotion() const {
     return no_downscaled_overlay_promotion_;
   }
-
-  VideoProcessorWrapper& GetOrCreateVideoProcessor(bool is_hdr);
 
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
       size_t index) const;
@@ -454,9 +448,16 @@ class GL_EXPORT DCLayerTree {
   // A IDCompositionSurface cleared to white, used for solid color overlays.
   Microsoft::WRL::ComPtr<IDCompositionSurface> solid_color_texture_;
 
-  // Store video processor for SDR/HDR mode separately, which could avoid
-  // problem in (http://crbug.com/1121061).
-  VideoProcessorMap video_processor_map_;
+  // Store the largest video processor to avoid problems in
+  // (http://crbug.com/1121061) and (http://crbug.com/1472975).
+  VideoProcessorWrapper video_processor_wrapper_;
+  // To reduce resource usage, we keep track of the largest input/output
+  // dimensions for several last VideoProcessor usages. All 4 dimensions must be
+  // tracked separately.
+  ui::MovingMax max_video_processor_input_height_;
+  ui::MovingMax max_video_processor_input_width_;
+  ui::MovingMax max_video_processor_output_height_;
+  ui::MovingMax max_video_processor_output_width_;
 
   // Current video processor input and output colorspace.
   gfx::ColorSpace video_input_color_space_;

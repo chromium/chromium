@@ -1738,8 +1738,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
   gfx::ColorSpace output_color_space =
       GetOutputColorSpace(src_color_space, is_yuv_swapchain);
   VideoProcessorWrapper* video_processor_wrapper =
-      layer_tree_->InitializeVideoProcessor(
-          content_rect.size(), swap_chain_size_, output_color_space.IsHDR());
+      layer_tree_->InitializeVideoProcessor(content_rect.size(),
+                                            swap_chain_size_);
   if (!video_processor_wrapper)
     return false;
 
