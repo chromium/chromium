@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -136,6 +137,10 @@ GURL SchemefulSite::GetURL() const {
 
 const url::Origin& SchemefulSite::GetInternalOriginForTesting() const {
   return site_as_origin_;
+}
+
+size_t SchemefulSite::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(site_as_origin_);
 }
 
 bool SchemefulSite::operator==(const SchemefulSite& other) const {

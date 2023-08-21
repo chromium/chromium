@@ -329,6 +329,10 @@ class COMPONENT_EXPORT(URL) Origin {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
  private:
   friend class blink::SecurityOrigin;
   friend class blink::SecurityOriginTest;

@@ -143,6 +143,10 @@ class NET_EXPORT SchemefulSite {
     return registrable_domain_or_host();
   }
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
   bool operator==(const SchemefulSite& other) const;
 
   bool operator!=(const SchemefulSite& other) const;

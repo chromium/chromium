@@ -139,6 +139,10 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   // For example, see crrev.com/c/3637099/comments/782360d0_e14757be.
   GURL GetURL() const;
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
   // Two SchemeHostPort objects are "equal" iff their schemes, hosts, and ports
   // are exact matches.
   //

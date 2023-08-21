@@ -259,6 +259,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest, LoadAttestationsFile) {
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
   histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
   ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
@@ -327,6 +328,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   WriteAttestationsFileAndWaitForLoading(base::Version("1.2.3"),
                                          serialized_proto);
   histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
   ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
@@ -347,6 +349,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
   histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The attestations map should still be the old one.
   ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
@@ -383,6 +386,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.1"),
                                          serialized_proto);
   histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 1);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 1);
 
   // The site should be attested for the API.
   ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()
@@ -403,6 +407,7 @@ TEST_F(PrivacySandboxAttestationsFeatureEnabledTest,
   WriteAttestationsFileAndWaitForLoading(base::Version("0.0.2"),
                                          serialized_proto);
   histogram_tester.ExpectTotalCount(kAttestationsFileParsingUMA, 2);
+  histogram_tester.ExpectTotalCount(kAttestationsMapMemoryUsageUMA, 2);
 
   // The newer version should override the existing attestations map.
   ASSERT_TRUE(PrivacySandboxAttestations::GetInstance()

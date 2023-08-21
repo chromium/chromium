@@ -689,6 +689,16 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap"
+    units="KB" expires_after="M122">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    Records the estimated dynamic memory usage by the parsed attestations map.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
     units="ms" expires_after="M122">
   <owner>shivanisha@chromium.org</owner>

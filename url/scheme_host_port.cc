@@ -16,6 +16,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
@@ -227,6 +228,11 @@ GURL SchemeHostPort::GetURL() const {
   parsed.path = Component(serialized.length(), 1);
   serialized.append("/");
   return GURL(std::move(serialized), parsed, true);
+}
+
+size_t SchemeHostPort::EstimateMemoryUsage() const {
+  return base::trace_event::EstimateMemoryUsage(scheme_) +
+         base::trace_event::EstimateMemoryUsage(host_);
 }
 
 bool SchemeHostPort::operator<(const SchemeHostPort& other) const {

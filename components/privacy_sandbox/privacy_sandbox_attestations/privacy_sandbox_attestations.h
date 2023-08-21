@@ -29,6 +29,9 @@ namespace privacy_sandbox {
 constexpr char kAttestationsFileParsingUMA[] =
     "PrivacySandbox.Attestations.InitializationDuration.Parsing";
 
+constexpr char kAttestationsMapMemoryUsageUMA[] =
+    "PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap";
+
 using PrivacySandboxAttestationsGatedAPISet =
     base::EnumSet<PrivacySandboxAttestationsGatedAPI,
                   PrivacySandboxAttestationsGatedAPI::kTopics,

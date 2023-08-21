@@ -21,6 +21,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
@@ -251,10 +252,15 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
     return;
   }
+
   // For an attestations file with 10,000 entries, the average parsing time is
   // around 240 milliseconds as per local testing on a n2-standard-128 with 128
-  // vCPUs and 512 GB memory.
+  // vCPUs and 512 GB memory. The estimated dynamic memory usage is around 880
+  // KB.
   base::UmaHistogramTimes(kAttestationsFileParsingUMA, parsing_timer.Elapsed());
+  base::UmaHistogramMemoryKB(
+      kAttestationsMapMemoryUsageUMA,
+      base::trace_event::EstimateMemoryUsage(attestations_map.value()) / 1024);
 
   // Queries on Privacy Sandbox APIs attestation status may happen on the UI
   // thread. The final assignment of the attestations map and its version is
