@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/manual_testing_import.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
@@ -130,6 +131,9 @@ bool ShouldDedupeDuplicateCard(autofill::CreditCard* original_card,
 }  // namespace
 
 namespace autofill {
+
+using autofill_metrics::LogMandatoryReauthOfferOptInDecision;
+using autofill_metrics::MandatoryReauthOfferOptInDecision;
 
 namespace {
 
@@ -2051,7 +2055,35 @@ bool PersonalDataManager::IsPaymentMethodsMandatoryReauthEnabled() {
 }
 
 bool PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo() {
-  return prefs::ShouldShowPaymentMethodsMandatoryReauthPromo(pref_service_);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnablePaymentsMandatoryReauth)) {
+    return false;
+  }
+
+  // If the user has made a decision on this feature previously, then we should
+  // not show the opt-in promo.
+  if (prefs::IsPaymentMethodsMandatoryReauthSetExplicitly(pref_service_)) {
+    LogMandatoryReauthOfferOptInDecision(
+        prefs::IsPaymentMethodsMandatoryReauthEnabled(pref_service_)
+            ? MandatoryReauthOfferOptInDecision::kAlreadyOptedIn
+            : MandatoryReauthOfferOptInDecision::kAlreadyOptedOut);
+    return false;
+  }
+
+  // We should only show the opt-in promo if we have not reached the maximum
+  // number of shows for the promo.
+  bool allowed_by_strike_database =
+      prefs::IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
+          pref_service_);
+  if (!allowed_by_strike_database) {
+    LogMandatoryReauthOfferOptInDecision(
+        MandatoryReauthOfferOptInDecision::kBlockedByStrikeDatabase);
+  }
+  return allowed_by_strike_database;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 }
 
 void PersonalDataManager::

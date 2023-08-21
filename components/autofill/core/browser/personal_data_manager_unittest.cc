@@ -37,6 +37,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_test_base.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
@@ -944,28 +945,60 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
+  base::HistogramTester histogram_tester;
   for (int i = 0; i < prefs::kMaxValueForMandatoryReauthPromoShownCounter;
        i++) {
+    // This also verifies that ShouldShowPaymentMethodsMandatoryReauthPromo()
+    // works as expected when below the max cap.
     EXPECT_TRUE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
     personal_data_->IncrementPaymentMethodsMandatoryReauthPromoShownCounter();
   }
 
   EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
+      "ReauthOfferOptInDecision",
+      autofill_metrics::MandatoryReauthOfferOptInDecision::
+          kBlockedByStrikeDatabase,
+      1);
 }
 
 // Test that
 // `PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
-// returns that we should not show the promo if the user has already made a
-// decision.
-TEST_F(
-    PersonalDataManagerTest,
-    ShouldShowPaymentMethodsMandatoryReauthPromo_UserHasMadeADecisionAlready) {
+// returns that we should not show the promo if the user already opted in.
+TEST_F(PersonalDataManagerTest,
+       ShouldShowPaymentMethodsMandatoryReauthPromo_UserOptedInAlready) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillEnablePaymentsMandatoryReauth);
+  base::HistogramTester histogram_tester;
+  // Simulate user is already opted in.
   personal_data_->SetPaymentMethodsMandatoryReauthEnabled(true);
 
   EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
+      "ReauthOfferOptInDecision",
+      autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedIn, 1);
+}
+
+// Test that
+// `PersonalDataManager::ShouldShowPaymentMethodsMandatoryReauthPromo()`
+// returns that we should not show the promo if the user has already opted out.
+TEST_F(PersonalDataManagerTest,
+       ShouldShowPaymentMethodsMandatoryReauthPromo_UserOptedOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillEnablePaymentsMandatoryReauth);
+  base::HistogramTester histogram_tester;
+  // Simulate user is already opted out.
+  personal_data_->SetPaymentMethodsMandatoryReauthEnabled(false);
+
+  EXPECT_FALSE(personal_data_->ShouldShowPaymentMethodsMandatoryReauthPromo());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
+      "ReauthOfferOptInDecision",
+      autofill_metrics::MandatoryReauthOfferOptInDecision::kAlreadyOptedOut, 1);
 }
 
 // Test that

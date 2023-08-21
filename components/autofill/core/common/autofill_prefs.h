@@ -98,9 +98,15 @@ void SetAutofillProfileEnabled(PrefService* prefs, bool enabled);
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs);
 
+// Returns true if the user has ever made an explicit decision for
+// this pref. Note that this function returns whether the user has set the pref,
+// not the value of the pref itself.
+bool IsPaymentMethodsMandatoryReauthSetExplicitly(const PrefService* prefs);
+
 void SetPaymentMethodsMandatoryReauthEnabled(PrefService* prefs, bool enabled);
 
-bool ShouldShowPaymentMethodsMandatoryReauthPromo(const PrefService* prefs);
+bool IsPaymentMethodsMandatoryReauthPromoShownCounterBelowMaxCap(
+    const PrefService* prefs);
 
 void IncrementPaymentMethodsMandatoryReauthPromoShownCounter(
     PrefService* prefs);

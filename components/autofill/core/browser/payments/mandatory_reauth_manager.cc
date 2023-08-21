@@ -67,6 +67,7 @@ bool MandatoryReauthManager::ShouldOfferOptin(
 
   // If the user prefs denote that we should not display the re-auth opt-in
   // bubble, return that we should not offer mandatory re-auth opt-in.
+  // Pref-related decision logging also occurs within this function call.
   if (!client_->GetPersonalDataManager()
            ->ShouldShowPaymentMethodsMandatoryReauthPromo()) {
     return false;
