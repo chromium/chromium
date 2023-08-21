@@ -1,0 +1,34 @@
+From 20635c0907ff1b75481855a7328393287e22d3ba Mon Sep 17 00:00:00 2001
+From: John Abd-El-Malek <jam@chromium.org>
+Date: Mon, 21 Aug 2023 14:15:30 -0700
+Subject: [PATCH] Fix gn check in sentencepiece.
+
+---
+ third_party/sentencepiece/src/src/error.cc | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/third_party/sentencepiece/src/src/error.cc b/third_party/sentencepiece/src/src/error.cc
+index a23c462698922..91282df7c0438 100644
+--- a/third_party/sentencepiece/src/src/error.cc
++++ b/third_party/sentencepiece/src/src/error.cc
+@@ -18,17 +18,6 @@
+ #include "init.h"
+ #include "sentencepiece_processor.h"
+ 
+-#ifdef _USE_EXTERNAL_ABSL
+-// Naive workaround to define minloglevel on external absl package.
+-// We want to define them in other cc file.
+-#include "absl/flags/flag.h"
+-#include "absl/flags/parse.h"
+-ABSL_FLAG(int32,
+-          minloglevel,
+-          0,
+-          "Messages logged at a lower level than this don't actually.");
+-#endif
+-
+ namespace sentencepiece {
+ namespace error {
+ int gTestCounter = 0;
+-- 
+2.39.1.windows.1
+

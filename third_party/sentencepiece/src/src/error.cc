@@ -18,17 +18,6 @@
 #include "init.h"
 #include "sentencepiece_processor.h"
 
-#ifdef _USE_EXTERNAL_ABSL
-// Naive workaround to define minloglevel on external absl package.
-// We want to define them in other cc file.
-#include "absl/flags/flag.h"
-#include "absl/flags/parse.h"
-ABSL_FLAG(int32,
-          minloglevel,
-          0,
-          "Messages logged at a lower level than this don't actually.");
-#endif
-
 namespace sentencepiece {
 namespace error {
 int gTestCounter = 0;
