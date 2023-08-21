@@ -6,7 +6,6 @@
       flex-direction: column;
   }
 </style>
-<!-- TODO:(saphiap): Update to include this.pendingProfileProperties_ -->
 <iron-pages attr-for-selected="id" selected="[[selectedESimPageName_]]">
   <setup-loading-page id="profileLoadingPage" loading-message="[[getLoadingMessage_(hasHadActiveCellularNetwork_)]]">
   </setup-loading-page>
@@ -32,7 +31,7 @@
   </template>
   <activation-code-page id="activationCodePage" is-from-qr-code="{{isActivationCodeFromQrCode_}}"
       activation-code="{{activationCode_}}"
-      show-no-profiles-found="[[noProfilesFound_(pendingProfiles_)]]"
+      show-no-profiles-found="[[noProfilesFound_(pendingProfiles_, pendingProfileProperties_)]]"
       show-error="{{showError_}}"
       show-busy="[[shouldShowSubpageBusy_(state_)]]">
   </activation-code-page>

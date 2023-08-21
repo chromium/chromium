@@ -286,9 +286,6 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_MESSAGE" desc="Message, informing the user that device information will be shared with third parties.">
     By continuing, you allow third parties to verify information that identifies this device on the network
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_ENTER_MANUALLY" desc="Label for button that allows the user to manually scan for profiles.">
-    Enter manually
-  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_SCAN" desc="Label for button to trigger automatic scanning.">
     Scan
   </message>

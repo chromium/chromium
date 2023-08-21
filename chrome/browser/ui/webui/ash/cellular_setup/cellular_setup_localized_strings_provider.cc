@@ -96,8 +96,6 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_TITLE},
     {"profileDiscoveryConsentMessage",
      IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_MESSAGE},
-    {"profileDiscoveryConsentEnterManually",
-     IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_ENTER_MANUALLY},
     {"profileDiscoveryConsentScan",
      IDS_CELLULAR_SETUP_ESIM_PAGE_PROFILE_DISCOVERY_CONSENT_SCAN},
     {"profileDiscoveryConsentCancel",

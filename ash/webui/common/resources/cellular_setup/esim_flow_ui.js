@@ -883,7 +883,8 @@ Polymer({
    */
   noProfilesFound_() {
     if (this.smdsSupportEnabled_) {
-      return this.pendingProfileProperties_ &&
+      return this.hasConsentedForDiscovery_ &&
+          !!this.pendingProfileProperties_ &&
           this.pendingProfileProperties_.length === 0;
     } else {
       return (this.pendingProfiles_ && this.pendingProfiles_.length === 0);
@@ -893,7 +894,8 @@ Polymer({
   /** @private*/
   profilesFound_() {
     if (this.smdsSupportEnabled_) {
-      return this.pendingProfileProperties_ &&
+      return this.hasConsentedForDiscovery_ &&
+          !!this.pendingProfileProperties_ &&
           this.pendingProfileProperties_.length > 0;
     } else {
       return (this.pendingProfiles_ && this.pendingProfiles_.length > 0);
