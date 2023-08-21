@@ -33,7 +33,7 @@ class SystemLiveCaptionServiceFactory : public ProfileKeyedServiceFactory {
   ~SystemLiveCaptionServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
