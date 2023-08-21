@@ -4,6 +4,9 @@
 
 source_set("coordinators") {
   sources = [
+    "features.h",
+    "features.mm",
+    "infobar_coordinator+internal.h",
     "infobar_coordinator+subclassing.h",
     "infobar_coordinator.h",
     "infobar_coordinator.mm",
@@ -38,4 +41,15 @@ source_set("translate_public") {
     "infobar_translate_modal_consumer.mm",
   ]
   deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "infobar_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinators",
+    "//base/test:test_support",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/infobars:constants",
+  ]
 }
