@@ -1309,6 +1309,7 @@ los nombres de host o patrones de nombre de host específicos.</translation>
 
           Si se inhabilita o no se establece, no se agregarán cuentas a la configuración de cuentas de Kerberos y se quitarán todas las cuentas que haya agregado anteriormente esta política. Los usuarios podrán seguir agregando cuentas manualmente si se habilita la política "Los usuarios pueden agregar cuentas de Kerberos".</translation>
 <translation id="2104418465060359056">Enviar información de extensiones y complementos</translation>
+<translation id="210652463860415362">Aceptar contenido web que use la función Compression Dictionary Transport</translation>
 <translation id="2106627642643925514">Anula el modo de impresión con PIN predeterminado. Si el modo no está disponible, se ignorará esta política.</translation>
 <translation id="2107563874993284076">Si habilitas la política, los usuarios usarán la función Network File Shares para <ph name="PRODUCT_NAME" />. Si inhabilitas la política, los usuarios no podrán usar esta función.</translation>
 <translation id="2107601598727098402">
@@ -5516,6 +5517,7 @@ Si inhabilitas esta política, se inhabilitará la protección para extensiones 
       Si la inhabilitas o no la estableces, no se enviarán registros del sistema.</translation>
 <translation id="5861856285460256766">Configuración del código de acceso parental</translation>
 <translation id="5868414965372171132">Configuración de red de usuario</translation>
+<translation id="5871786561822073630">No permitir el uso de la función Compression Dictionary Transport</translation>
 <translation id="587242272905978723">Permite que <ph name="PLUGIN_VM_NAME" /> recopile datos de uso de <ph name="PLUGIN_VM_NAME" />.
 
       Si estableces la política como falsa o no la estableces, no se permitirá que <ph name="PLUGIN_VM_NAME" /> recopile datos.
@@ -6486,6 +6488,7 @@ Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos
       - Si la inhabilitas, las funciones del navegador estarán limitadas.
 
       - Si la inhabilitas, los administradores deberán comunicárselo a los usuarios finales del dispositivo.</translation>
+<translation id="6605778633186421420">Habilitar la compatibilidad con la función Compression Dictionary Transport</translation>
 <translation id="6607983779935460461">Compatibilidad de las URLs de datos con SVGUseElement.</translation>
 <translation id="6609867253856597039">Establece la experiencia del usuario de las funciones inhabilitadas</translation>
 <translation id="6614557704487944013">Permitir que los usuarios usen el navegador <ph name="LACROS_NAME" /></translation>
@@ -8162,6 +8165,10 @@ también es seguro.</translation>
 <translation id="8078297389450285582">Si habilitas la política o no la estableces, se activará el modelo de atenuación inteligente y podrá extenderse el tiempo indicado para la atenuación de la pantalla. Si se cambia el tiempo de espera, se modificarán el apagado de la pantalla, el bloqueo de pantalla y los tiempos de espera de inactividad a fin de mantener las mismas distancias con respecto al tiempo de espera para la atenuación de la pantalla según la configuración original.
 
       Si inhabilitas la política, el modelo de atenuación inteligente no influenciará la atenuación de la pantalla.</translation>
+<translation id="8078540622602481084">Esta función habilita el uso de codificaciones de contenido específicas de diccionarios en el encabezado de solicitud Accept-Encoding ("sbr" y "zst-d") cuando hay diccionarios disponibles.
+
+Si habilitas la política o no la estableces, <ph name="PRODUCT_NAME" /> aceptará contenido web que use la función Compression Dictionary Transport.
+Si inhabilitas la política, se desactivará la función Compression Dictionary Transport.</translation>
 <translation id="8079544387901313374">Ten en cuenta que esta política dejará de estar disponible y se quitará en la versión 88 de <ph name="PRODUCT_OS_NAME" />. Ya no se admiten las sesiones públicas. En su lugar, utiliza <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> para configurar las sesiones de invitado administradas.
       Si estableces esta política como falsa, las sesiones de invitado administradas se comportarán como se indica en https://support.google.com/chrome/a/answer/3017014, la "sesión pública" estándar.
 

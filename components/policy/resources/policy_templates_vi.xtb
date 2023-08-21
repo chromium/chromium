@@ -7292,6 +7292,15 @@ Trường <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> cho biết lượ
       Nếu bạn không đặt chính sách này, tùy chọn cài đặt mặc định sẽ là không được phép đối với người dùng do doanh nghiệp quản lý và được phép đối với người dùng không được quản lý.</translation>
 <translation id="7295019613773647480">Bật người dùng được giám sát</translation>
 <translation id="7297476773981993405">Cho phép chạy thuật toán User-Agent GREASE mới cập nhật.</translation>
+<translation id="7297765841046240459">Khi bạn đặt chính sách này thành bật, thì <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ tích hợp sẵn cùng với Chrome Root Store là nguồn tin cậy công khai để xác minh chứng chỉ máy chủ.
+
+Khi bạn đặt chính sách này thành tắt, <ph name="PRODUCT_NAME" /> sẽ sử dụng trình xác minh chứng chỉ hệ thống và chứng chỉ gốc của hệ thống.
+
+Nếu bạn không đặt chính sách này, Chrome Root Store hoặc gốc do hệ thống cung cấp có thể được sử dụng.
+
+Chúng tôi dự định loại bỏ chính sách này khỏi <ph name="PRODUCT_OS_NAME" /> phiên bản 120, <ph name="PRODUCT_NAME" /> cho <ph name="LINUX_OS_NAME" /> phiên bản 120 và <ph name="PRODUCT_NAME" /> cho <ph name="ANDROID_NAME" /> phiên bản 121 khi có kế hoạch ngừng hỗ trợ việc sử dụng gốc do nền tảng cung cấp.
+
+Chính sách này đã bị loại bỏ khỏi <ph name="PRODUCT_NAME" /> cho <ph name="MS_WIN_NAME" /> và <ph name="MAC_OS_NAME" /> phiên bản 113 khi chúng tôi ngừng hỗ trợ việc sử dụng trình xác minh chứng chỉ và gốc do nền tảng cung cấp.</translation>
 <translation id="7298197471363105063">Ghi đè First-Party Set.</translation>
 <translation id="7302043767260300182">Độ trễ khóa màn hình khi chạy trên nguồn AC</translation>
 <translation id="7303902834678570827">Người dùng Phiên khách được quản lý không thể lưu trữ các chế độ cài đặt hiển thị trên toàn thiết bị</translation>
