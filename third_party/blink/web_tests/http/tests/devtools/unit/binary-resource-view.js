@@ -1,5 +1,7 @@
 
 import {TestRunner} from 'test_runner';
+
+import * as Common from 'devtools/core/common/common.js';
 (async function() {
   TestRunner.addResult(
       'Verifies that BinaryResourceViewFactory interprets base64 data correctly');
@@ -9,7 +11,7 @@ import {TestRunner} from 'test_runner';
   const base64content =
       'c2VuZGluZyB0aGlzIHV0Zi04IHN0cmluZyBhcyBhIGJpbmFyeSBtZXNzYWdlLi4u';
   const factory = new SourceFrame.BinaryResourceViewFactory(
-      base64content, 'http://example.com', Common.resourceTypes.WebSocket);
+      base64content, 'http://example.com', Common.ResourceType.resourceTypes.WebSocket);
 
   TestRunner.addResult('Base64View:');
   TestRunner.addResult((await factory.createBase64View().lazyContent()).content);

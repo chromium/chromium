@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests to make sure the proper view is used for the data that is received in network panel.\n`);
@@ -33,7 +35,7 @@ import {NetworkTestRunner} from 'network_test_runner';
 
   async function testPreviewer(mimeType, content, statusCode) {
     var testResourceTypes = [
-      Common.resourceTypes.XHR, Common.resourceTypes.Fetch, Common.resourceTypes.Document, Common.resourceTypes.Other
+      Common.ResourceType.resourceTypes.XHR, Common.ResourceType.resourceTypes.Fetch, Common.ResourceType.resourceTypes.Document, Common.ResourceType.resourceTypes.Other
     ];
     TestRunner.addResult('Testing with MimeType: ' + mimeType + ', and StatusCode: ' + statusCode);
     TestRunner.addResult('Content: ' + content.replace(/\0/g, '**NULL**'));

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);
   await TestRunner.loadLegacyModule('source_frame');
@@ -91,7 +93,7 @@ import {NetworkTestRunner} from 'network_test_runner';
     var url = 'data:' + contentType + ',' + encodeURIComponent(content);
     NetworkTestRunner.makeSimpleXHR('GET', url, true, function() {
       var request = NetworkTestRunner.findRequestsByURLPattern(new RegExp(Platform.StringUtilities.escapeForRegExp(url)))[0];
-      request.setResourceType(Common.resourceTypes.Document);
+      request.setResourceType(Common.ResourceType.resourceTypes.Document);
       trySearches(request, searches, callback);
     });
   }

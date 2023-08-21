@@ -4,12 +4,14 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   await TestRunner.showPanel('network');
 
   var panel = UI.panels.network;
   var target = panel.networkLogView;
-  var types = Common.resourceTypes;
+  var types = Common.ResourceType.resourceTypes;
 
   var requestFoo = SDK.NetworkRequest.create('', '', '', '', '');
   requestFoo.setResourceType(types.XHR);

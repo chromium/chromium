@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -24,8 +26,8 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
   function dumpUISourceCode(uiSourceCode, callback) {
     TestRunner.addResult('UISourceCode: ' + uiSourceCode.url().replace(/.*(LayoutTests|web_tests)./, ''));
-    if (uiSourceCode.contentType() === Common.resourceTypes.Script ||
-        uiSourceCode.contentType() === Common.resourceTypes.Document)
+    if (uiSourceCode.contentType() === Common.ResourceType.resourceTypes.Script ||
+        uiSourceCode.contentType() === Common.ResourceType.resourceTypes.Document)
       TestRunner.addResult(
           'UISourceCode is content script: ' +
           (uiSourceCode.project().type() === Workspace.projectTypes.ContentScripts));
@@ -143,7 +145,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
     },
 
     function testExcludesSettings(next) {
-      Common.settings.createLocalSetting('workspaceExcludedFolders', {}).set({'file:///var/www2': ['/html/']});
+      Common.Settings.Settings.instance().createLocalSetting('workspaceExcludedFolders', {}).set({'file:///var/www2': ['/html/']});
       createFileSystem('/var/www2', dumpExcludes);
 
       function dumpExcludes(fs) {

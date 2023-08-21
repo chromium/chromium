@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests UISourceCode class.\n`);
   await TestRunner.showPanel('sources');
@@ -34,7 +36,7 @@ import {TestRunner} from 'test_runner';
   };
 
   TestRunner.runTestSuite([function testUISourceCode(next) {
-    var uiSourceCode = new Workspace.UISourceCode(new MockProject(), 'url', Common.resourceTypes.Script);
+    var uiSourceCode = new Workspace.UISourceCode(new MockProject(), 'url', Common.ResourceType.resourceTypes.Script);
     function didRequestContent(callNumber, { content, error, isEncoded }) {
       TestRunner.addResult('Callback ' + callNumber + ' is invoked.');
       TestRunner.assertEquals('text/javascript', uiSourceCode.mimeType());

@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests workspace mappings\n`);
 
@@ -20,7 +22,7 @@ import {TestRunner} from 'test_runner';
       workspace.addProject(project);
       projects[projectId] = project;
     }
-    var uiSourceCode = project.createUISourceCode(projectId + '/' + relativePath, Common.resourceTypes.Script);
+    var uiSourceCode = project.createUISourceCode(projectId + '/' + relativePath, Common.ResourceType.resourceTypes.Script);
     project.addUISourceCode(uiSourceCode);
   }
 

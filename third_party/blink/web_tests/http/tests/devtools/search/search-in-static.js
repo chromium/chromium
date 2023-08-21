@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests static content provider search.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -24,7 +26,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   async function step3() {
-    staticContentProvider = TextUtils.StaticContentProvider.fromString('', Common.resourceTypes.Script, resource.content);
+    staticContentProvider = TextUtils.StaticContentProvider.fromString('', Common.ResourceType.resourceTypes.Script, resource.content);
     TestRunner.addResult(resource.url);
 
     var text = 'searchTestUniqueString';
