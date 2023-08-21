@@ -875,6 +875,18 @@ a debug build of chrome with the following command line arguments:
 --vmodule=tracker_impl*=2,event_model_impl*=2,persistent_availability_store*=2,chrome_variations_configuration*=3
 ```
 
+## Automated External Testing (Tast)
+
+If you want to restrict the IPH that can show when launching Chrome as an
+external process as part of a test, use the `--propagate-iph-for-testing`
+switch:
+
+ * `chrome --propagate-iph-for-testing`
+   - disables all IPH
+ * `chrome --propagate-iph-for-testing=IPH_GoatTeleportationFeature,IPH_FlyingCowFeature`
+   - disables all IPH except for "IPH_GoatTeleportationFeature" and
+   "IPH_FlyingCowFeature".
+
 ## Development of `//components/feature_engagement`
 
 ### Testing
