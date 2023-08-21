@@ -285,10 +285,21 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
     public void testRenderMSBBCard() throws IOException {
         launchPrivacyGuide();
         navigateFromWelcomeToMSBBCard();
         mRenderTestRule.render(getRootView(), "privacy_guide_msbb");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testRenderMSBBCardPG3() throws IOException {
+        launchPrivacyGuide();
+        navigateFromWelcomeToMSBBCard();
+        mRenderTestRule.render(getRootView(), "privacy_guide_msbb_v3");
     }
 
     @Test
