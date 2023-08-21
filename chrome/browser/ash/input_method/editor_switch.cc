@@ -31,12 +31,21 @@ constexpr std::string_view kInputMethodEngineAllowlist[] = {
     "xkb:us::eng",              // US
 };
 
+constexpr AppType kAppTypeAllowlist[] = {
+    AppType::BROWSER,
+    AppType::LACROS,
+};
+
 bool IsInputTypeAllowed(ui::TextInputType type) {
   return base::Contains(kTextInputTypeAllowlist, type);
 }
 
 bool IsInputMethodEngineAllowed(std::string_view engine_id) {
   return base::Contains(kInputMethodEngineAllowlist, engine_id);
+}
+
+bool IsAppTypeAllowed(AppType app_type) {
+  return base::Contains(kAppTypeAllowlist, app_type);
 }
 
 }  // namespace
@@ -58,8 +67,10 @@ bool EditorSwitch::CanBeTriggered() {
 }
 
 void EditorSwitch::OnInputContextUpdated(
-    const TextInputMethod::InputContext& input_context) {
+    const TextInputMethod::InputContext& input_context,
+    const TextFieldContextualInfo& text_field_contextual_info) {
   input_type_ = input_context.type;
+  app_type_ = text_field_contextual_info.app_type;
   UpdateTriggerableCache();
 }
 
@@ -69,9 +80,9 @@ void EditorSwitch::OnActivateIme(std::string_view engine_id) {
 }
 
 void EditorSwitch::UpdateTriggerableCache() {
-  can_be_triggered_ = is_allowed_for_use_ &&
-                      IsInputMethodEngineAllowed(active_engine_id_) &&
-                      IsInputTypeAllowed(input_type_);
+  can_be_triggered_ =
+      is_allowed_for_use_ && IsInputMethodEngineAllowed(active_engine_id_) &&
+      IsInputTypeAllowed(input_type_) && IsAppTypeAllowed(app_type_);
 }
 
 }  // namespace ash::input_method

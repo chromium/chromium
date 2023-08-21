@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_SWITCH_H_
 
+#include "ash/constants/app_types.h"
+#include "chrome/browser/ash/input_method/text_field_contextual_info_fetcher.h"
 #include "ui/base/ime/ash/text_input_method.h"
 
 namespace ash::input_method {
@@ -28,7 +30,8 @@ class EditorSwitch {
 
   // Handles the change in input context.
   void OnInputContextUpdated(
-      const TextInputMethod::InputContext& input_context);
+      const TextInputMethod::InputContext& input_context,
+      const TextFieldContextualInfo& text_field_contextual_info);
 
   void OnActivateIme(std::string_view engine_id);
 
@@ -40,6 +43,7 @@ class EditorSwitch {
 
   std::string active_engine_id_;
   ui::TextInputType input_type_ = ui::TEXT_INPUT_TYPE_NONE;
+  ash::AppType app_type_ = ash::AppType::NON_APP;
 };
 
 }  // namespace ash::input_method

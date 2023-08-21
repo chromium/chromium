@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_ui.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 
 namespace ash {
 namespace input_method {
@@ -42,6 +43,10 @@ void EditorMediator::HandleTrigger() {
 }
 
 void EditorMediator::OnFocus(int context_id) {
+  GetTextFieldContextualInfo(
+      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   text_actuator_.OnFocus(context_id);
 }
 
@@ -64,6 +69,12 @@ void EditorMediator::CommitEditorResult(std::string_view text) {
     mako_page_handler_->CloseUI();
     mako_page_handler_ = nullptr;
   }
+}
+
+void EditorMediator::OnTextFieldContextualInfoChanged(
+    const TextFieldContextualInfo& info) {
+  editor_switch_.OnInputContextUpdated(
+      IMEBridge::Get()->GetCurrentInputContext(), info);
 }
 
 }  // namespace input_method

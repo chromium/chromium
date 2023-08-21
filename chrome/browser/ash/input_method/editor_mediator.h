@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 #define CHROME_BROWSER_ASH_INPUT_METHOD_EDITOR_MEDIATOR_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/editor_event_sink.h"
 #include "chrome/browser/ash/input_method/editor_instance_impl.h"
 #include "chrome/browser/ash/input_method/editor_switch.h"
@@ -47,6 +48,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   void CommitEditorResult(std::string_view text) override;
 
  private:
+  void OnTextFieldContextualInfoChanged(const TextFieldContextualInfo& info);
+
   EditorInstanceImpl editor_instance_impl_;
   EditorTextActuator text_actuator_;
   EditorSwitch editor_switch_;
@@ -54,6 +57,8 @@ class EditorMediator : public EditorInstanceImpl::Delegate,
   // May contain an instance of MakoPageHandler. This is used to control the
   // lifetime of the Mako WebUI.
   std::unique_ptr<ash::MakoPageHandler> mako_page_handler_;
+
+  base::WeakPtrFactory<EditorMediator> weak_ptr_factory_{this};
 };
 
 }  // namespace input_method

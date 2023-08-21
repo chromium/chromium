@@ -15,6 +15,13 @@
 namespace ash::input_method {
 namespace {
 
+TextFieldContextualInfo CreateFakeTextFieldContextualInfo(
+    ash::AppType app_type) {
+  auto text_field_contextual_info = TextFieldContextualInfo();
+  text_field_contextual_info.app_type = app_type;
+  return text_field_contextual_info;
+}
+
 class EditorSwitchTest : public ::testing::Test {
  public:
   EditorSwitchTest() = default;
@@ -61,7 +68,8 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredOnAPasswordField) {
 
   editor_switch.OnActivateIme("nacl_mozc_jp");
   editor_switch.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD));
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_PASSWORD),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editor_switch.IsAllowedForUse());
   EXPECT_FALSE(editor_switch.CanBeTriggered());
@@ -76,14 +84,14 @@ TEST_F(EditorSwitchTest, FeatureCannotBeTriggeredWithNonEnglishInputMethod) {
 
   editorSwitch.OnActivateIme("nacl_mozc_jp");
   editorSwitch.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editorSwitch.IsAllowedForUse());
   EXPECT_FALSE(editorSwitch.CanBeTriggered());
 }
 
-TEST_F(EditorSwitchTest,
-       FeatureCanBeTriggeredOnANormalTextFieldAndWithEnglishInputMethod) {
+TEST_F(EditorSwitchTest, FeatureCanNotBeTriggeredOnArcApps) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{chromeos::features::kOrca},
@@ -92,7 +100,26 @@ TEST_F(EditorSwitchTest,
   EditorSwitch editorSwitch(/*is_managed=*/false);
   editorSwitch.OnActivateIme("xkb:us::eng");
   editorSwitch.OnInputContextUpdated(
-      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT));
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::ARC_APP));
+
+  EXPECT_TRUE(editorSwitch.IsAllowedForUse());
+  EXPECT_FALSE(editorSwitch.CanBeTriggered());
+}
+
+TEST_F(
+    EditorSwitchTest,
+    FeatureCanBeTriggeredOnANormalTextFieldOnABrowserWindowAndWithEnglishInputMethod) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{chromeos::features::kOrca},
+      /*disabled_features=*/{});
+
+  EditorSwitch editorSwitch(/*is_managed=*/false);
+  editorSwitch.OnActivateIme("xkb:us::eng");
+  editorSwitch.OnInputContextUpdated(
+      TextInputMethod::InputContext(ui::TEXT_INPUT_TYPE_TEXT),
+      CreateFakeTextFieldContextualInfo(AppType::BROWSER));
 
   EXPECT_TRUE(editorSwitch.IsAllowedForUse());
   EXPECT_TRUE(editorSwitch.CanBeTriggered());
