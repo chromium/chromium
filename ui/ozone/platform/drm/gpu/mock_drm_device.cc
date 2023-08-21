@@ -50,6 +50,9 @@ constexpr uint32_t kSeamlessModesetFlags = 0;
 
 const std::vector<uint32_t> kBlobProperyIds = {kEdidBlobPropId};
 
+const ResolutionAndRefreshRate kStandardMode =
+    ResolutionAndRefreshRate{gfx::Size(1920, 1080), 60u};
+
 const std::map<uint32_t, std::string> kCrtcRequiredPropertyNames = {
     {kActivePropId, "ACTIVE"},
     {kModePropId, "MODE_ID"},
@@ -227,7 +230,15 @@ MockDrmDevice::MockDrmState::CreateStateWithDefaultObjects(
   MockDrmState state = CreateStateWithAllProperties();
   std::vector<uint32_t> crtc_ids;
   for (size_t i = 0; i < crtc_count; ++i) {
-    const auto& crtc = state.AddCrtcAndConnector().first;
+    const auto& props = state.AddCrtcAndConnector();
+
+    // Add at least one mode, so the connector is not sterile.
+    ConnectorProperties& connector = props.second;
+    connector.connection = true;
+    connector.modes = std::vector<ResolutionAndRefreshRate>{kStandardMode};
+
+    // Add CRTC planes.
+    CrtcProperties& crtc = props.first;
     crtc_ids.push_back(crtc.id);
 
     state.AddPlane(crtc.id, DRM_PLANE_TYPE_PRIMARY);
@@ -249,6 +260,7 @@ MockDrmDevice::MockDrmState::AddConnector() {
   uint32_t next_connector_id =
       GetNextId(connector_properties, kConnectorIdBase);
   auto& connector_property = connector_properties.emplace_back();
+  connector_property.connection = false;
   connector_property.id = next_connector_id;
   for (const auto& pair : kConnectorRequiredPropertyNames) {
     connector_property.properties.push_back({.id = pair.first, .value = 0});
@@ -389,10 +401,28 @@ bool MockDrmDevice::InitializeStateWithResult(MockDrmState& state,
   }
   SetCapability(DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 
-  MaybeSetEdidBlobsForConnectors(state);
+  UpdateConnectors(state);
   UpdateStateBesidesPlaneManager(state);
 
   return plane_manager_->Initialize();
+}
+
+void MockDrmDevice::UpdateConnectors(MockDrmState& state) {
+  UpdateConnectorsLinkStatus(state);
+  MaybeSetEdidBlobsForConnectors(state);
+}
+
+void MockDrmDevice::UpdateConnectorsLinkStatus(MockDrmState& state) {
+  for (MockDrmDevice::ConnectorProperties& connector :
+       state.connector_properties) {
+    if (connector.connection && connector.modes.empty()) {
+      DrmWrapper::Property* connector_link_status =
+          FindObjectById(kLinkStatusPropId, connector.properties);
+      if (connector_link_status) {
+        connector_link_status->value = DRM_MODE_LINK_STATUS_BAD;
+      }
+    }
+  }
 }
 
 void MockDrmDevice::MaybeSetEdidBlobsForConnectors(MockDrmState& state) {

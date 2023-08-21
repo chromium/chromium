@@ -98,16 +98,23 @@ bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
     uint32_t crtc_id) {
   auto connector_index = LookupConnectorIndex(connector_id);
   DCHECK(connector_index.has_value());
+  ScopedDrmConnectorPtr connector = drm_->GetConnector(connector_id);
+  DCHECK(connector);
   // Only making a copy here to retrieve the the props IDs. The state will be
   // updated only after a successful modeset.
   ConnectorProperties connector_props = connectors_props_[*connector_index];
   connector_props.crtc_id.value = crtc_id;
-  // Always set link-status to DRM_MODE_LINK_STATUS_GOOD. In case a link
-  // training has failed and link-status is now BAD, the kernel expects the
-  // userspace to reset it to GOOD; otherwise, it will ignore modeset requests
-  // which have the same mode as the reported bad status.
+  // Set link-status to DRM_MODE_LINK_STATUS_GOOD when a connector is connected
+  // and has modes. In case a link training has failed and link-status is now
+  // BAD, the kernel expects the userspace to reset it to GOOD; otherwise, it
+  // will ignore modeset requests which have the same mode as the reported bad
+  // status. If a connector is marked connected but has no modes, it is most
+  // likely in a bad state.
   // https://www.kernel.org/doc/html/latest/gpu/drm-kms.html#standard-connector-properties
-  connector_props.link_status.value = DRM_MODE_LINK_STATUS_GOOD;
+  if (connector->connection == DRM_MODE_CONNECTED &&
+      connector->count_modes != 0) {
+    connector_props.link_status.value = DRM_MODE_LINK_STATUS_GOOD;
+  }
 
   bool status =
       AddPropertyIfValid(atomic_request, connector_id, connector_props.crtc_id);

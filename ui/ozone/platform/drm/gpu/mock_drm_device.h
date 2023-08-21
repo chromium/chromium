@@ -237,6 +237,13 @@ class MockDrmDevice : public DrmDevice {
   void InitializeState(MockDrmState& state, bool use_atomic);
   bool InitializeStateWithResult(MockDrmState& state, bool use_atomic);
 
+  // Runs all connector update utility functions on |state|.
+  void UpdateConnectors(MockDrmState& state);
+
+  // Update a connector's link status to bad if it has no modes (probably due
+  // to unsuccessful link-training.
+  void UpdateConnectorsLinkStatus(MockDrmState& state);
+
   // Sets EDID blobs as property blobs so they can be fetched when needed via
   // GetPropertyBlob().
   void MaybeSetEdidBlobsForConnectors(MockDrmState& state);
