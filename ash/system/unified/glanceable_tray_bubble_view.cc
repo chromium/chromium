@@ -189,6 +189,12 @@ bool GlanceableTrayBubbleView::CanActivate() const {
   return true;
 }
 
+void GlanceableTrayBubbleView::OnDisplayConfigurationChanged() {
+  int max_height = CalculateMaxTrayBubbleHeight(shelf_->GetWindow());
+  SetMaxHeight(max_height);
+  ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
+}
+
 template <typename T>
 void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
     raw_ptr<T, ExperimentalAsh>* view,

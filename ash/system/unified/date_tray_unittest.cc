@@ -890,4 +890,39 @@ TEST_P(GlanceablesDateTrayTest,
       assignment_selector->GetBoundsInScreen()));
 }
 
+TEST_P(GlanceablesDateTrayTest,
+       TrayBubbleUpdatesBoundsOnDisplayConfigurationUpdate) {
+  LeftClickOn(GetDateTray());
+  ASSERT_TRUE(IsBubbleShown());
+  ASSERT_TRUE(GetGlanceableTrayBubble());
+
+  glanceables_classroom_client()->RespondToPendingIsStudentRoleEnabledCallbacks(
+      /*is_active=*/true);
+
+  UpdateDisplay("1240x700");
+  const auto old_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const auto old_view_bounds =
+      GetGlanceableTrayBubble()->GetBubbleView()->GetBoundsInScreen();
+
+  UpdateDisplay("800x480");
+  const auto new_work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  const auto new_view_bounds =
+      GetGlanceableTrayBubble()->GetBubbleView()->GetBoundsInScreen();
+
+  // Constant `kRevampedTrayMenuWidth`.
+  EXPECT_EQ(old_view_bounds.width(), new_view_bounds.width());
+
+  // Margins between the top, right and bottom edges of the view and the
+  // corresponding work area edges are the same, meaning that the view is
+  // correctly repositioned (including changing its height) after changing
+  // display configuration / zoom level.
+  EXPECT_EQ(old_view_bounds.y(), new_view_bounds.y());
+  EXPECT_EQ(old_work_area.width() - old_view_bounds.right(),
+            new_work_area.width() - new_view_bounds.right());
+  EXPECT_EQ(old_work_area.height() - old_view_bounds.bottom(),
+            new_work_area.height() - new_view_bounds.bottom());
+}
+
 }  // namespace ash

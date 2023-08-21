@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_BUBBLE_VIEW_H_
 
+#include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "base/memory/weak_ptr.h"
 
@@ -18,7 +19,8 @@ class Shelf;
 
 // The bubble associated with the `GlanceableTrayBubble`. This bubble is the
 // container for the child `tasks` and `classroom` glanceables.
-class GlanceableTrayBubbleView : public TrayBubbleView {
+class GlanceableTrayBubbleView : public TrayBubbleView,
+                                 public ScreenLayoutObserver {
  public:
   GlanceableTrayBubbleView(const InitParams& init_params, Shelf* shelf);
   GlanceableTrayBubbleView(const GlanceableTrayBubbleView&) = delete;
@@ -38,6 +40,9 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
 
   // TrayBubbleView:
   bool CanActivate() const override;
+
+  // ScreenLayoutObserver:
+  void OnDisplayConfigurationChanged() override;
 
  private:
   // Creates classroom student or teacher view if needed (if the corresponding
