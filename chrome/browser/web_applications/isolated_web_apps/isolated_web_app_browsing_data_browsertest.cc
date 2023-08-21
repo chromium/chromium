@@ -56,6 +56,14 @@
 using ::testing::Eq;
 
 namespace web_app {
+namespace {
+
+struct TestCookie {
+  base::Time time;
+  std::string data;
+};
+
+}  // namespace
 
 // Evaluates to true if the test value is within 5% of the given value.
 MATCHER_P(IsApproximately, approximate_value, "") {
@@ -189,7 +197,7 @@ class IsolatedWebAppBrowsingDataClearingTest
         base::DoNothing());
   }
 
-  void ClearAllTimeData() {
+  void ClearTimeRangedData(browsing_data::TimePeriod time_period) {
     base::RunLoop run_loop;
 
     auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
@@ -218,12 +226,16 @@ class IsolatedWebAppBrowsingDataClearingTest
     base::Value::List list_args;
     list_args.Append("webui_callback_id");
     list_args.Append(std::move(data_types));
-    list_args.Append(static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
+    list_args.Append(static_cast<int>(time_period));
 
     rfh->GetWebUI()->ProcessWebUIMessage(
         rfh->GetLastCommittedURL(), "clearBrowsingData", std::move(list_args));
 
     run_loop.Run();
+  }
+
+  void ClearAllTimeData() {
+    ClearTimeRangedData(browsing_data::TimePeriod::ALL_TIME);
   }
 
   void Uninstall(const IsolatedWebAppUrlInfo& url_info) {
@@ -271,6 +283,7 @@ class IsolatedWebAppBrowsingDataClearingTest
   bool SetCookie(
       content::StoragePartition* storage_partition,
       const GURL& url,
+      const base::Time time,
       const std::string& cookie_line,
       const absl::optional<net::CookiePartitionKey>& cookie_partition_key) {
     mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -278,7 +291,7 @@ class IsolatedWebAppBrowsingDataClearingTest
         cookie_manager.BindNewPipeAndPassReceiver());
 
     auto cookie_obj = net::CanonicalCookie::Create(
-        url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+        url, cookie_line, time, /*server_time=*/absl::nullopt,
         cookie_partition_key);
 
     base::test::TestFuture<net::CookieAccessResult> future;
@@ -407,11 +420,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
-    ASSERT_TRUE(
-        SetCookie(partition, GURL("http://a.com"), "A=0", absl::nullopt));
+    ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
+                          "A=0", absl::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
-        partition, GURL("https://c.com"), "A=0; secure; partitioned",
+        partition, GURL("https://c.com"), base::Time::Now(),
+        "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
   }
 
@@ -463,11 +477,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
-    ASSERT_TRUE(
-        SetCookie(partition, GURL("http://a.com"), "A=0", absl::nullopt));
+    ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
+                          "A=0", absl::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
-        partition, GURL("https://c.com"), "A=0; secure; partitioned",
+        partition, GURL("https://c.com"), base::Time::Now(),
+        "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
   }
 
@@ -565,11 +580,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
         profile()->GetStoragePartition(config, false);
     ASSERT_TRUE(partition);
     // Unpartitioned Cookie
-    ASSERT_TRUE(
-        SetCookie(partition, GURL("http://a.com"), "A=0", absl::nullopt));
+    ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), base::Time::Now(),
+                          "A=0", absl::nullopt));
     // Partitioned Cookie
     ASSERT_TRUE(SetCookie(
-        partition, GURL("https://c.com"), "A=0; secure; partitioned",
+        partition, GURL("https://c.com"), base::Time::Now(),
+        "A=0; secure; partitioned",
         net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
   }
 
@@ -598,6 +614,107 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   }
   EXPECT_THAT(GetIwaUsage(url_info1), 0);
   EXPECT_THAT(GetIwaUsage(url_info2), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
+                       ClearBrowserDataTimeRanged) {
+  auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
+  cache_test_server->AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+  ASSERT_TRUE(cache_test_server->Start());
+
+  IsolatedWebAppUrlInfo url_info1 = InstallIsolatedWebApp();
+  Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
+  content::WebContents* web_contents1 =
+      browser1->tab_strip_model()->GetActiveWebContents();
+  // Create both a persistent and a non-persistent partitions.
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents1,
+      cache_test_server->GetURL("/page_with_cached_subresource.html"),
+      "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents1,
+      cache_test_server->GetURL("/page_with_cached_subresource.html"),
+      "partition_name_1"));
+
+  std::vector<content::StoragePartitionConfig> storage_partition_configs{
+      url_info1.storage_partition_config(profile()),
+      url_info1.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_0", /*in_memory=*/false),
+      url_info1.GetStoragePartitionConfigForControlledFrame(
+          profile(), "partition_name_1", /*in_memory=*/true)};
+
+  // Set cookies for: Now, 3 days ago, 10 days ago.
+  const std::vector<TestCookie> cookietest_cases{
+      {base::Time::Now(), "A=0"},
+      {base::Time::Now() - base::Days(3), "b=1"},
+      {base::Time::Now() - base::Days(10), "c=2"}};
+  for (const auto& cookie : cookietest_cases) {
+    for (const auto& config : storage_partition_configs) {
+      SCOPED_TRACE("partition_name: " + config.partition_name());
+      content::StoragePartition* partition =
+          profile()->GetStoragePartition(config, false);
+      ASSERT_TRUE(partition);
+      // Set a partitioned and an unpartitioned cookie for each storage
+      // partition. Unpartitioned Cookie
+      ASSERT_TRUE(SetCookie(partition, GURL("http://a.com"), cookie.time,
+                            cookie.data, absl::nullopt));
+      // Partitioned Cookie
+      ASSERT_TRUE(SetCookie(
+          partition, GURL("https://c.com"), cookie.time,
+          cookie.data + "; secure; partitioned",
+          net::CookiePartitionKey::FromURLForTesting(GURL("https://d.com"))));
+    }
+  }
+
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // Each partition should have 6 cookies.
+    ASSERT_EQ(GetAllCookies(partition).size(), 6UL);
+  }
+
+  ClearTimeRangedData(browsing_data::TimePeriod::LAST_HOUR);
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // 2 cookies should be cleared, 4 left.
+    EXPECT_EQ(GetAllCookies(partition).size(), 4UL);
+  }
+
+  ClearTimeRangedData(browsing_data::TimePeriod::LAST_DAY);
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // No cookie cleared, 4 left.
+    EXPECT_EQ(GetAllCookies(partition).size(), 4UL);
+  }
+
+  ClearTimeRangedData(browsing_data::TimePeriod::LAST_WEEK);
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // 2 cookies should be cleared, 2 left.
+    EXPECT_EQ(GetAllCookies(partition).size(), 2UL);
+  }
+
+  ClearTimeRangedData(browsing_data::TimePeriod::ALL_TIME);
+  for (const auto& config : storage_partition_configs) {
+    SCOPED_TRACE("partition_name: " + config.partition_name());
+    content::StoragePartition* partition =
+        profile()->GetStoragePartition(config, false);
+    ASSERT_TRUE(partition);
+    // All cookies should be cleared, 0 left.
+    EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
+  }
 }
 
 }  // namespace web_app
