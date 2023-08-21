@@ -35,10 +35,11 @@ bool VolumeManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* VolumeManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+VolumeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  VolumeManager* instance = new VolumeManager(
+  std::unique_ptr<VolumeManager> instance = std::make_unique<VolumeManager>(
       profile, drive::DriveIntegrationServiceFactory::GetForProfile(profile),
       chromeos::PowerManagerClient::Get(),
       ash::disks::DiskMountManager::GetInstance(),
