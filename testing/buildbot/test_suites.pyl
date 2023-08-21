@@ -3146,71 +3146,6 @@
       },
     },
 
-    'gpu_gl_passthrough_graphite_telemetry_tests': {
-      'context_lost_gl_passthrough_graphite': {
-        'name': 'context_lost_gl_passthrough_graphite_tests',
-        'telemetry_test_name': 'context_lost',
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'expected_color_gl_passthrough_graphite': {
-        'name': 'expected_color_pixel_gl_passthrough_graphite_test',
-        'telemetry_test_name': 'expected_color',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
-        ],
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-      },
-      'gpu_process': {
-        'name': 'gpu_process_launch_tests',
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'hardware_accelerated_feature': {
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-      'pixel_skia_gl_passthrough_graphite': {
-        'name': 'pixel_skia_gold_gl_passthrough_graphite_test',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
-        ],
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-        ],
-        'telemetry_test_name': 'pixel',
-      },
-      'screenshot_sync_gl_passthrough_graphite': {
-        'name': 'screenshot_sync_gl_passthrough_graphite_tests',
-        'telemetry_test_name': 'screenshot_sync',
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --enable-features=SkiaGraphite',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
-      },
-    },
-
     'gpu_gles2_conform_gtests': {
       # The gles2_conform_tests are closed-source and deliberately only
       # run on the FYI waterfall and the optional tryservers.
@@ -6661,9 +6596,9 @@
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],
 
-    'gpu_common_gl_passthrough_graphite_telemetry_tests': [
+    'gpu_common_gl_passthrough_ganesh_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_graphite_telemetry_tests',
+      'gpu_gl_passthrough_ganesh_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
     ],
 
@@ -6873,7 +6808,7 @@
 
     'gpu_fyi_mac_nvidia_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
-      'gpu_gl_passthrough_graphite_telemetry_tests',
+      'gpu_gl_passthrough_ganesh_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
@@ -6899,8 +6834,8 @@
 
     'gpu_fyi_mac_release_telemetry_tests': [
       'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
+      'gpu_metal_passthrough_graphite_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',
@@ -6911,9 +6846,9 @@
     'gpu_fyi_only_mac_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_gl_passthrough_graphite_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_metal_passthrough_ganesh_telemetry_tests',
+      'gpu_metal_passthrough_graphite_telemetry_tests',
       'gpu_webcodecs_telemetry_test',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_metal_passthrough_telemetry_tests',

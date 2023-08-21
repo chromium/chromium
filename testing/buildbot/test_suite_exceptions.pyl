@@ -2315,13 +2315,13 @@
       },
     },
   },
-  'context_lost_gl_passthrough_graphite_tests': {
+  'context_lost_metal_passthrough_ganesh_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'context_lost_metal_passthrough_ganesh_tests': {
+  'context_lost_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -2522,7 +2522,7 @@
       },
     },
   },
-  'expected_color_pixel_gl_passthrough_graphite_test': {
+  'expected_color_pixel_metal_passthrough_ganesh_test': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -2535,7 +2535,7 @@
       },
     },
   },
-  'expected_color_pixel_metal_passthrough_ganesh_test': {
+  'expected_color_pixel_metal_passthrough_graphite_test': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -3788,58 +3788,10 @@
       },
     },
   },
-  'pixel_skia_gold_gl_passthrough_graphite_test': {
-    # crbug.com/1469875 Remove when failing tests are fixed on Graphite
-    'modifications': {
-      'Mac FYI Experimental Release (Apple M1)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Experimental Release (Intel)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Experimental Retina Release (AMD)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Release (Apple M1)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Release (Intel)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Retina Release (AMD)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac FYI Retina Release (Apple M2)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'Mac V8 FYI Release (Intel)': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
+  'pixel_skia_gold_metal_passthrough_ganesh_test': {
     'remove_from': [
-      # crbug.com/1469875 Too slow on Debug, ASAN and NVIDIA
-      'Mac FYI ASAN (Intel)',
-      'Mac FYI Debug (Intel)',
-      'Mac FYI Experimental Retina Release (NVIDIA)',
-      'Mac FYI Retina ASAN (AMD)', # Also affected by crbug.com/1458020
-      'Mac FYI Retina Debug (AMD)',
-      'Mac FYI Retina Release (NVIDIA)',
+      # crbug.com/1458020 for Mac Retina ASAN removal
+      'Mac FYI Retina ASAN (AMD)',
     ],
     'replacements': {
       'Mac V8 FYI Release (Intel)': {
@@ -3849,7 +3801,7 @@
       },
     },
   },
-  'pixel_skia_gold_metal_passthrough_ganesh_test': {
+  'pixel_skia_gold_metal_passthrough_graphite_test': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
@@ -3993,13 +3945,13 @@
       },
     },
   },
-  'screenshot_sync_gl_passthrough_graphite_tests': {
+  'screenshot_sync_metal_passthrough_ganesh_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'screenshot_sync_metal_passthrough_ganesh_tests': {
+  'screenshot_sync_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',

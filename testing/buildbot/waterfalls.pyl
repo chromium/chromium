@@ -4596,7 +4596,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_graphite_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_ganesh_telemetry_tests',
         },
       },
       'Mac FYI Experimental Release (Apple M1)': {
@@ -4700,7 +4700,7 @@
         ],
         'test_suites': {
           'gtest_tests': 'gpu_fyi_mac_debug_gtests',
-          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_graphite_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_common_gl_passthrough_ganesh_telemetry_tests',
         },
       },
       'Mac FYI Retina Release (AMD)': {
