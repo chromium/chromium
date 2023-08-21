@@ -81,6 +81,21 @@
             ]
         }
     ],
+    "AlignWakeUps": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "AlignWakeUps"
+                    ]
+                }
+            ]
+        }
+    ],
     "AllowBypassRenderPassQuads": [
         {
             "platforms": [
