@@ -108,6 +108,7 @@ class PDFWebContentsHelperTest : public content::ContentBrowserTest {
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
 
+    content::NavigateToURL(shell(), GURL("about:blank"));
     auto client = std::make_unique<TestPDFWebContentsHelperClient>();
     client_ = client.get();
     PDFWebContentsHelper::CreateForWebContentsWithClient(
@@ -139,8 +140,6 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SetListenerTwice) {
 // Tests that select-changed on a pdf text brings up selection handles and the
 // quick menu in the reasonable position.
 IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
-  content::NavigateToURL(shell(), GURL());
-
   gfx::SelectionBound initial_start = client()->GetSelectionBoundStart();
   gfx::SelectionBound initial_end = client()->GetSelectionBoundEnd();
 
@@ -166,8 +165,9 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
 #else
   gfx::PointF origin_f;
   content::RenderWidgetHostView* view = GetRenderWidgetHostView();
-  if (view)
+  if (view) {
     origin_f = view->TransformPointToRootCoordSpaceF(gfx::PointF());
+  }
 
   gfx::SelectionBound expected_start;
   {
@@ -213,8 +213,6 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
 // When selecting something, only the copy command id should be enabled.
 IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
                        IsCommandIdEnabledCopyEnabled) {
-  content::NavigateToURL(shell(), GURL());
-
   EXPECT_FALSE(
       pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
   EXPECT_FALSE(
@@ -242,8 +240,6 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
 
 // Test that the copy command executes.
 IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, ExecuteCommandCopy) {
-  content::NavigateToURL(shell(), GURL());
-
   base::UserActionTester action_tester;
   EXPECT_EQ(0, action_tester.GetActionCount("Copy"));
 
