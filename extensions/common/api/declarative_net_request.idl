@@ -689,7 +689,7 @@ namespace declarativeNetRequest {
     // |callback|: Called once the update is complete. In case of an error,
     // $(ref:runtime.lastError) will be set and no change will be made to the
     // enabled static rules.
-    [nodoc, supportsPromises] static void updateStaticRules(
+    [supportsPromises] static void updateStaticRules(
         UpdateStaticRulesOptions options,
         optional EmptyCallback callback);
 
@@ -698,7 +698,7 @@ namespace declarativeNetRequest {
     // |options|: Specifies the ruleset to query.
     // |callback|: Called with a list of ids that correspond to the disabled
     // rules in that ruleset.
-    [nodoc, supportsPromises] static void getDisabledRuleIds(
+    [supportsPromises] static void getDisabledRuleIds(
         GetDisabledRuleIdsOptions options,
         GetDisabledRuleIdsCallback callback);
 
