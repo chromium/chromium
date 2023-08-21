@@ -7,7 +7,7 @@ License: Public Domain
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
-CPEPrefix: cpe:2.3:a:7-zip:7-zip:22.01:
+CPEPrefix: cpe:2.3:a:7-zip:7-zip:22.01:*:*:*:*:*:*:*
 
 Description:
 This contains a part of LZMA SDK 22.01.
