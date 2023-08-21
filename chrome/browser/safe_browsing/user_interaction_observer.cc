@@ -34,27 +34,6 @@ namespace safe_browsing {
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
 
-namespace {
-
-bool IsUrlElisionDisabled(Profile* profile,
-                          const char* suspicious_site_reporter_extension_id) {
-  if (profile &&
-      profile->GetPrefs()->GetBoolean(omnibox::kPreventUrlElisionsInOmnibox)) {
-    return true;
-  }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  DCHECK(suspicious_site_reporter_extension_id);
-  if (profile && extensions::ExtensionRegistry::Get(profile)
-                     ->enabled_extensions()
-                     .Contains(suspicious_site_reporter_extension_id)) {
-    return true;
-  }
-#endif
-  return false;
-}
-
-}  // namespace
-
 // static
 const char* SafeBrowsingUserInteractionObserver::
     suspicious_site_reporter_extension_id_ = kPreventElisionExtensionId;
