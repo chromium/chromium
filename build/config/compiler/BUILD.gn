@@ -1755,7 +1755,7 @@ config("default_warnings") {
 
       if (is_fuchsia && llvm_force_head_revision) {
         # TODO(https://crbug.com/1474032): fix and reenable
-        cflags += [ "-Wno-deprecated-literal-operator" ]
+        cflags_cc += [ "-Wno-deprecated-literal-operator" ]
       }
 
       cflags += [
