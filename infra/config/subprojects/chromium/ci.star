@@ -72,6 +72,7 @@ luci.bucket(
             roles = "role/buildbucket.creator",
             groups = [
                 "mdb/chrome-troopers",
+                "chromium-led-users",
             ],
             users = [
                 ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
