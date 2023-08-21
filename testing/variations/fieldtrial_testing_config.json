@@ -6057,9 +6057,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "MatchPresentationIndexAndReportOnRealPaint_V2",
                     "enable_features": [
-                        "EventTimingMatchPresentationIndex"
+                        "EventTimingMatchPresentationIndex",
+                        "MatchPresentationIndexAndReportOnRealPaint"
                     ]
                 }
             ]
