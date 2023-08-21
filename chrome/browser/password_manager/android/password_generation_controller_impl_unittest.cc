@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/password_manager/android/password_generation_controller_impl.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 
 #include <map>
 #include <memory>

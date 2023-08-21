@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

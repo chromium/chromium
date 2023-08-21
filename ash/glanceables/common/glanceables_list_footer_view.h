@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/flex_layout_view.h"
 

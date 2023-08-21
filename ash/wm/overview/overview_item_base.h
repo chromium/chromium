@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "ash/wm/overview/overview_types.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 
 namespace aura {
 class Window;

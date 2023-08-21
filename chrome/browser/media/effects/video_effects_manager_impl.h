@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
 #define CHROME_BROWSER_MEDIA_EFFECTS_VIDEO_EFFECTS_MANAGER_IMPL_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/video_capture/public/mojom/video_effects_manager.mojom.h"

@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"

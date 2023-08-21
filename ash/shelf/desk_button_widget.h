@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf_component.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {

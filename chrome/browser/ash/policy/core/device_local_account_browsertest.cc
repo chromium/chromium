@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/system/session/logout_confirmation_controller.h"
 #include "ash/system/session/logout_confirmation_dialog.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

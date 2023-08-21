@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_INTEGRITY_MISCONFIGURED_USER_CLEANER_H_
 #define CHROMEOS_ASH_COMPONENTS_LOGIN_INTEGRITY_MISCONFIGURED_USER_CLEANER_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"

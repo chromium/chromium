@@ -6,8 +6,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"

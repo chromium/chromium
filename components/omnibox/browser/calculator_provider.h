@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"

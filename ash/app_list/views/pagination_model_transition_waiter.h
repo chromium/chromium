@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 namespace base {

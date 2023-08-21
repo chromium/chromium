@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_WINDOW_EXPERIMENT_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_WINDOW_EXPERIMENT_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"

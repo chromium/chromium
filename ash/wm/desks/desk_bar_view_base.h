@@ -17,7 +17,6 @@
 #include "ash/wm/desks/scroll_arrow_button.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"

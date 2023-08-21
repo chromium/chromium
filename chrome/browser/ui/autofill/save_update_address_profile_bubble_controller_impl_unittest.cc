@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"

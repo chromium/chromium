@@ -10,10 +10,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/overloaded.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/task_traits.h"

@@ -7,9 +7,9 @@
 
 #include <map>
 #include <queue>
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/supports_user_data.h"

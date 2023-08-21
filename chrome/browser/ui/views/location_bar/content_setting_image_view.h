@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"

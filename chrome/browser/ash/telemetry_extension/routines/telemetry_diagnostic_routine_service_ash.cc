@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_control.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"

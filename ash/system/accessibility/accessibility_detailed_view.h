@@ -11,7 +11,6 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "components/soda/soda_installer.h"
 #include "ui/gfx/font.h"

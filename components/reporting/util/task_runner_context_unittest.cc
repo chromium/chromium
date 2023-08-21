@@ -8,10 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"

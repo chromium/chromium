@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_CONTROLLER_H_
 
 #include <string>
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_element_data.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"

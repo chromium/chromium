@@ -15,7 +15,7 @@
 #include "ash/wm/desks/desk_button/desk_button.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"

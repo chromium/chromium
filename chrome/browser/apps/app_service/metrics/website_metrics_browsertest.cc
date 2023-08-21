@@ -5,7 +5,6 @@
 #include <memory>
 #include <set>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"

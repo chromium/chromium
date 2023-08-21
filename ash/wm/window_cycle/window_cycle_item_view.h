@@ -7,7 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_mini_view.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"

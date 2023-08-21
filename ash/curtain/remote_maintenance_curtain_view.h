@@ -6,7 +6,7 @@
 #define ASH_CURTAIN_REMOTE_MAINTENANCE_CURTAIN_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace ash {

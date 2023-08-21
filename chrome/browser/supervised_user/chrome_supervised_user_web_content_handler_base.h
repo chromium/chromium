@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_
 #define CHROME_BROWSER_SUPERVISED_USER_CHROME_SUPERVISED_USER_WEB_CONTENT_HANDLER_BASE_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/supervised_user/core/browser/web_content_handler.h"
 
 namespace content {

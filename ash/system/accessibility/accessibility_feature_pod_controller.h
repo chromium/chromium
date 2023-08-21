@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 

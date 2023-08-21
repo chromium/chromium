@@ -18,7 +18,7 @@
 #include "ash/system/unified/classroom_bubble_student_view.h"
 #include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"

@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "url/gurl.h"
 

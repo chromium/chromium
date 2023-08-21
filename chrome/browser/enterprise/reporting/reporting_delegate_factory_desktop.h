@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"

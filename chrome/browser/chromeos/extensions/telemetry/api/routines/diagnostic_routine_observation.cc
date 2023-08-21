@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/uuid.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/routines/diagnostic_routine_converters.h"

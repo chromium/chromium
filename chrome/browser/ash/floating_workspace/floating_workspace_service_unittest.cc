@@ -7,7 +7,6 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"

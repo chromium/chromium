@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/values.h"
 #include "build/build_config.h"

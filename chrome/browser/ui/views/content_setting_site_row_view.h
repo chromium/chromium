@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_SITE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_SITE_ROW_VIEW_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "net/base/schemeful_site.h"
 #include "ui/base/metadata/metadata_header_macros.h"

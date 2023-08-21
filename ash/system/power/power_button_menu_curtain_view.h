@@ -7,8 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/style/system_shadow.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/check_deref.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/controls/image_view.h"

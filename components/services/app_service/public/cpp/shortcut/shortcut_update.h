@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

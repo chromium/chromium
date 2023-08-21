@@ -5,7 +5,7 @@
 #ifndef ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TOGGLE_EFFECTS_VIEW_H_
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_TOGGLE_EFFECTS_VIEW_H_
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"

@@ -7,7 +7,6 @@
 #include <memory>
 #include <sstream>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"

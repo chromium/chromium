@@ -15,7 +15,7 @@
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_base.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"

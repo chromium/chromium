@@ -7,8 +7,8 @@
 
 #include <cstdint>
 
-#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "base/check_deref.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 

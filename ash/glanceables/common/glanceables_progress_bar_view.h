@@ -6,7 +6,7 @@
 #define ASH_GLANCEABLES_COMMON_GLANCEABLES_PROGRESS_BAR_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace views {

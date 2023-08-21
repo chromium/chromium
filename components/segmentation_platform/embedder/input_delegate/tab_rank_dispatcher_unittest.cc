@@ -5,8 +5,8 @@
 #include "components/segmentation_platform/embedder/input_delegate/tab_rank_dispatcher.h"
 #include <memory>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"

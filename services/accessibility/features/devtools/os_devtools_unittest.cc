@@ -5,11 +5,11 @@
 #include <memory>
 #include <string>
 
-#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
