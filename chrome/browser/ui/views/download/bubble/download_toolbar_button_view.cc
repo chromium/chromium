@@ -75,6 +75,8 @@
 
 namespace {
 
+using offline_items_collection::ContentId;
+
 using GetBadgeTextCallback = base::RepeatingCallback<gfx::RenderText&()>;
 
 constexpr int kProgressRingRadius = 9;
@@ -455,7 +457,7 @@ void DownloadToolbarButtonView::OpenPrimaryDialog() {
   if (!bubble_delegate_) {
     return;
   }
-  bubble_contents_->ShowPage(DownloadBubbleContentsView::Page::kPrimary);
+  bubble_contents_->ShowPrimaryPage();
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->set_margins(GetPrimaryViewMargin());
@@ -463,12 +465,11 @@ void DownloadToolbarButtonView::OpenPrimaryDialog() {
 }
 
 void DownloadToolbarButtonView::OpenSecurityDialog(
-    DownloadBubbleRowView* download_row_view) {
+    const ContentId& content_id) {
   if (!bubble_delegate_) {
     return;
   }
-  bubble_contents_->UpdateSecurityView(download_row_view);
-  bubble_contents_->ShowPage(DownloadBubbleContentsView::Page::kSecurity);
+  bubble_contents_->ShowSecurityPage(content_id);
   bubble_delegate_->set_margins(GetSecurityViewMargin());
   ResizeDialog();
 }

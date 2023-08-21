@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -688,7 +689,7 @@ void DownloadBubbleRowView::OnMainButtonPressed() {
         model_->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_MAINPAGE,
         DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
-    navigation_handler_->OpenSecurityDialog(this);
+    navigation_handler_->OpenSecurityDialog(model_->GetContentId());
   } else {
     RecordDownloadOpenButtonPressed(model_->IsDone());
     model_->OpenDownload();

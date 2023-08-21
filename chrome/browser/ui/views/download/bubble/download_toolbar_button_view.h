@@ -9,17 +9,19 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_display.h"
-#include "chrome/browser/download/bubble/download_icon_state.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/animation/throb_animation.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace gfx {
 class RenderText;
+}
+
+namespace offline_items_collection {
+struct ContentId;
 }
 
 class Browser;
@@ -27,13 +29,13 @@ class BrowserView;
 class DownloadDisplayController;
 class DownloadBubbleContentsView;
 class DownloadBubbleUIController;
-class DownloadBubbleRowView;
 
 class DownloadBubbleNavigationHandler {
  public:
   // Primary dialog is either main or partial view.
   virtual void OpenPrimaryDialog() = 0;
-  virtual void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) = 0;
+  virtual void OpenSecurityDialog(
+      const offline_items_collection::ContentId& content_id) = 0;
   virtual void CloseDialog(views::Widget::ClosedReason reason) = 0;
   virtual void ResizeDialog() = 0;
   // Callback invoked when the dialog has been interacted with by hovering over
@@ -84,7 +86,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // DownloadBubbleNavigationHandler:
   void OpenPrimaryDialog() override;
-  void OpenSecurityDialog(DownloadBubbleRowView* download_row_view) override;
+  void OpenSecurityDialog(
+      const offline_items_collection::ContentId& content_id) override;
   void CloseDialog(views::Widget::ClosedReason reason) override;
   void ResizeDialog() override;
   void OnDialogInteracted() override;
@@ -107,6 +110,10 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   void DisableAutoCloseTimerForTesting();
   void DisableDownloadStartedAnimationForTesting();
+
+  DownloadBubbleContentsView* bubble_contents_for_testing() {
+    return bubble_contents_;
+  }
 
  private:
   // Max download count to show in the badge. Any higher number of downloads

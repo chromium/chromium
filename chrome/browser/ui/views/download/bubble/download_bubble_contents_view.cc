@@ -6,18 +6,24 @@
 
 #include <utility>
 
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/download/bubble/download_bubble_prefs.h"
+#include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
+#include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_list_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_security_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
+#include "components/offline_items_collection/core/offline_item.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
+
+using offline_items_collection::ContentId;
 
 DownloadBubbleContentsView::DownloadBubbleContentsView(
     base::WeakPtr<Browser> browser,
@@ -25,7 +31,8 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     base::WeakPtr<DownloadBubbleNavigationHandler> navigation_handler,
     bool primary_view_is_partial_view,
     std::vector<DownloadUIModel::DownloadUIModelPtr> primary_view_models,
-    views::BubbleDialogDelegate* bubble_delegate) {
+    views::BubbleDialogDelegate* bubble_delegate)
+    : bubble_controller_(bubble_controller) {
   CHECK(!primary_view_models.empty());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -45,14 +52,15 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
 
   primary_view_ = AddChildView(std::move(primary_view));
   security_view_ = AddChildView(std::make_unique<DownloadBubbleSecurityView>(
-      bubble_controller, navigation_handler, bubble_delegate));
+      /*delegate=*/this, navigation_handler, bubble_delegate,
+      download::IsDownloadBubbleV2Enabled(browser->profile())));
 
   // Starts on the primary page.
-  SwitchToCurrentPage();
+  SwitchToCurrentPage(absl::nullopt);
 }
 
 DownloadBubbleContentsView::~DownloadBubbleContentsView() {
-  security_view_->UpdateSecurityView(nullptr);
+  security_view_->Reset();
 }
 
 DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
@@ -60,13 +68,21 @@ DownloadBubbleRowView* DownloadBubbleContentsView::GetPrimaryViewRowForTesting(
   return primary_view_->GetRowForTesting(index);  // IN-TEST
 }
 
-void DownloadBubbleContentsView::ShowPage(Page page) {
-  if (page_ == page) {
+void DownloadBubbleContentsView::ShowPrimaryPage() {
+  if (page_ == Page::kPrimary) {
     return;
   }
-  page_ = page;
-  CHECK(page != Page::kSecurity || security_view_->IsInitialized());
-  SwitchToCurrentPage();
+  page_ = Page::kPrimary;
+  SwitchToCurrentPage(absl::nullopt);
+}
+
+void DownloadBubbleContentsView::ShowSecurityPage(const ContentId& id) {
+  CHECK(id != ContentId());
+  if (page_ == Page::kSecurity && security_view_->content_id() == id) {
+    return;
+  }
+  page_ = Page::kSecurity;
+  SwitchToCurrentPage(id);
 }
 
 DownloadBubbleContentsView::Page DownloadBubbleContentsView::VisiblePage()
@@ -74,24 +90,72 @@ DownloadBubbleContentsView::Page DownloadBubbleContentsView::VisiblePage()
   return page_;
 }
 
-void DownloadBubbleContentsView::UpdateSecurityView(
-    DownloadBubbleRowView* row) {
-  security_view_->UpdateSecurityView(row);
+void DownloadBubbleContentsView::InitializeSecurityView(const ContentId& id) {
+  CHECK(id != ContentId());
+  if (security_view_->content_id() == id) {
+    return;
+  }
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    security_view_->InitializeForDownload(*model);
+    return;
+  }
+  NOTREACHED();
 }
 
-void DownloadBubbleContentsView::SwitchToCurrentPage() {
+bool DownloadBubbleContentsView::ProcessSecuritySubpageButtonPressWithClose(
+    const offline_items_collection::ContentId& id,
+    DownloadCommands::Command command) {
+  CHECK(security_view_->IsInitialized());
+  if (!bubble_controller_) {
+    // If the bubble controller has gone away, close the dialog.
+    return true;
+  }
+  return bubble_controller_->ProcessDownloadButtonPressWithClose(
+      GetDownloadModel(id), command, /*is_main_view=*/false);
+}
+
+void DownloadBubbleContentsView::AddSecuritySubpageWarningActionEvent(
+    const offline_items_collection::ContentId& id,
+    DownloadItemWarningData::WarningAction action) {
+  CHECK(security_view_->IsInitialized());
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    DownloadItemWarningData::AddWarningActionEvent(
+        model->GetDownloadItem(),
+        DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE, action);
+  }
+}
+
+void DownloadBubbleContentsView::SwitchToCurrentPage(
+    absl::optional<ContentId> id) {
   primary_view_->SetVisible(false);
   security_view_->SetVisible(false);
 
   switch (page_) {
-    case Page::kPrimary:
+    case Page::kPrimary: {
+      // It is invalid to pass a specific download id to open the primary view.
+      // TODO(chlily): This will become valid when Lacros SysUI integration
+      // makes it possible to open the primary view to a specific download.
+      CHECK(!id);
       primary_view_->SetVisible(true);
+      security_view_->Reset();
       break;
-    case Page::kSecurity:
+    }
+    case Page::kSecurity: {
+      CHECK(id);
+      InitializeSecurityView(*id);
       security_view_->UpdateAccessibilityTextAndFocus();
       security_view_->SetVisible(true);
       break;
+    }
   }
+}
+
+DownloadUIModel* DownloadBubbleContentsView::GetDownloadModel(
+    const ContentId& id) {
+  if (DownloadBubbleRowView* row = primary_view_->GetRow(id); row) {
+    return row->model();
+  }
+  return nullptr;
 }
 
 BEGIN_METADATA(DownloadBubbleContentsView, views::View)

@@ -38,6 +38,11 @@ class DownloadBubbleRowListView : public views::FlexLayoutView {
   // row to the caller.
   std::unique_ptr<DownloadBubbleRowView> RemoveRow(DownloadBubbleRowView* row);
 
+  // Gets the row for the download with the given id. Returns nullptr if not
+  // found.
+  DownloadBubbleRowView* GetRow(
+      const offline_items_collection::ContentId& id) const;
+
   // Returns the number of rows.
   size_t NumRows() const;
 

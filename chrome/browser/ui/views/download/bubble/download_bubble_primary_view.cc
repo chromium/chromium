@@ -140,6 +140,11 @@ int DownloadBubblePrimaryView::DefaultPreferredWidth() const {
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
 }
 
+DownloadBubbleRowView* DownloadBubblePrimaryView::GetRow(
+    const offline_items_collection::ContentId& id) {
+  return row_list_view_->GetRow(id);
+}
+
 DownloadBubbleRowView* DownloadBubblePrimaryView::GetRowForTesting(
     size_t index) {
   return static_cast<DownloadBubbleRowView*>(row_list_view_->children()[index]);

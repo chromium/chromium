@@ -25,6 +25,10 @@ bool ContentId::operator==(const ContentId& content_id) const {
   return name_space == content_id.name_space && id == content_id.id;
 }
 
+bool ContentId::operator!=(const ContentId& content_id) const {
+  return !(content_id == *this);
+}
+
 bool ContentId::operator<(const ContentId& content_id) const {
   return std::tie(name_space, id) <
          std::tie(content_id.name_space, content_id.id);

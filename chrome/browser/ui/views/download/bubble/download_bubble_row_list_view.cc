@@ -43,6 +43,14 @@ std::unique_ptr<DownloadBubbleRowView> DownloadBubbleRowListView::RemoveRow(
   return RemoveChildViewT(row);
 }
 
+DownloadBubbleRowView* DownloadBubbleRowListView::GetRow(
+    const offline_items_collection::ContentId& id) const {
+  if (const auto it = rows_by_id_.find(id); it != rows_by_id_.end()) {
+    return it->second;
+  }
+  return nullptr;
+}
+
 size_t DownloadBubbleRowListView::NumRows() const {
   size_t num_rows = children().size();
   CHECK_EQ(num_rows, rows_by_id_.size());
