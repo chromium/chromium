@@ -15,6 +15,9 @@ BASE_DECLARE_FEATURE(kFeature);
 // label. Defaults to generic Lorem Ipsum as strings are not yet determined.
 extern const base::FeatureParam<std::string>
     kEnterprisePlusAddressLabelOverride;
+
+// Used to control the enterprise plus address feature's OAuth scope.
+extern const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope;
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_
