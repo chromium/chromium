@@ -973,13 +973,15 @@ void ChromeAutofillClient::UpdatePopup(
 }
 
 void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
-  if (popup_controller_.get())
+  if (popup_controller_.get()) {
     popup_controller_->Hide(reason);
+  }
 }
 
 void ChromeAutofillClient::UpdateOfferNotification(
     const AutofillOfferData* offer,
-    bool notification_has_been_shown) {
+    bool notification_has_been_shown,
+    bool expand_notification_icon) {
   DCHECK(offer);
   CreditCard* card =
       offer->GetEligibleInstrumentIds().empty()
@@ -1005,7 +1007,8 @@ void ChromeAutofillClient::UpdateOfferNotification(
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
   controller->ShowOfferNotificationIfApplicable(
-      offer, card, /*should_show_icon_only_=*/notification_has_been_shown);
+      offer, card, /*should_show_icon_only_=*/notification_has_been_shown,
+      expand_notification_icon);
 #endif
 }
 

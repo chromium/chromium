@@ -770,11 +770,14 @@ class AutofillClient : public RiskDataLoader {
   // TODO(crbug.com/1093057): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
-  // Notifies the client to update the offer notification when the |offer| is
-  // available. |notification_has_been_shown| indicates whether this
+  // Notifies the client to update the offer notification when the `offer` is
+  // available. `notification_has_been_shown` indicates whether this
   // notification has been shown since profile start-up.
+  // `expand_notification_icon` indicates whether the notification will
+  // automatically expand upon being shown.
   virtual void UpdateOfferNotification(const AutofillOfferData* offer,
-                                       bool notification_has_been_shown);
+                                       bool notification_has_been_shown,
+                                       bool expand_notification_icon);
 
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification();

@@ -241,7 +241,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
                    AutofillSuggestionTriggerSource trigger_source) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
   void UpdateOfferNotification(const AutofillOfferData* offer,
-                               bool notification_has_been_shown) override;
+                               bool notification_has_been_shown,
+                               bool expand_notification_icon) override;
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;

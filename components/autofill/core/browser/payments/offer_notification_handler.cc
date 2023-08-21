@@ -63,7 +63,8 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
   }
 
   client->UpdateOfferNotification(
-      offer, shown_notification_ids_.contains(offer->GetOfferId()));
+      offer, shown_notification_ids_.contains(offer->GetOfferId()),
+      /*expand_notification_icon=*/false);
   shown_notification_ids_.insert(offer->GetOfferId());
 }
 
