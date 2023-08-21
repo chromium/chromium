@@ -130,7 +130,8 @@ class PowerBookmarkBubbleViewBrowserTest
  public:
   PowerBookmarkBubbleViewBrowserTest() {
     test_features_.InitWithFeatures(
-        {commerce::kShoppingList, features::kPowerBookmarksSidePanel}, {});
+        {commerce::kShoppingList, features::kPowerBookmarksSidePanel},
+        {commerce::kShoppingListTrackByDefault});
   }
 
   PowerBookmarkBubbleViewBrowserTest(
