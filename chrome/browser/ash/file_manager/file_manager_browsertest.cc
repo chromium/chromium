@@ -1879,7 +1879,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileTasksDlpRestricted").EnableDlp(),
         TestCase("zipExtractRestrictedArchiveCheckContent").EnableDlp(),
         TestCase("blockShowsPanelItem").EnableDlp().EnableFilesPolicyNewUX(),
-        TestCase("warnShowsPanelItem").EnableDlp().EnableFilesPolicyNewUX()));
+        TestCase("warnShowsPanelItem").EnableDlp().EnableFilesPolicyNewUX(),
+        TestCase("mixedSummaryDisplayPanel")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DriveSpecific, /* drive_specific.js */

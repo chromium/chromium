@@ -11,7 +11,7 @@ import {FakeTask} from './tasks.js';
 import {BASIC_ANDROID_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
- * Copies or moves a file to provided location.
+ * Copies or moves a file from Downloads to the provided location.
  * @param {string} appId ID of the Files app window.
  * @param {TestEntryInfo} file Test entry info to be copied/cut.
  * @param {string} destination Name of the destination folder.
@@ -23,8 +23,8 @@ async function copyOrMove(appId, file, destination, isCopy) {
     chrome.test.assertTrue(false, 'copyOrMove invalid parameters');
   }
 
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
   await remoteCall.waitForFiles(appId, [file.getExpectedRow()]);
-
   await remoteCall.waitUntilSelected(appId, file.nameText);
 
   const command = isCopy ? 'copy' : 'cut';
@@ -36,16 +36,59 @@ async function copyOrMove(appId, file, destination, isCopy) {
 }
 
 /**
+ * List of panel types.
+ *
+ * Keep this in sync with PanelItem panel types.
+ *
+ * @enum {number}
+ * @const
+ */
+const PanelType = {
+  DEFAULT: -1,
+  PROGRESS: 0,
+  SUMMARY: 1,
+  DONE: 2,
+  ERROR: 3,
+  INFO: 4,
+  FORMAT_PROGRESS: 5,
+  SYNC_PROGRESS: 6,
+};
+
+/**
+ * List of checked panel status indicator types.
+ *
+ * @enum {string}
+ * @const
+ */
+const StatusIndicator = {
+  WARNING: 'warning',
+  FAILURE: 'failure',
+};
+
+/**
+ * Returns the first panel item with the provided panel type.
+ * @param {string} appId ID of the Files app window.
+ * @param {PanelType} panelType
+ */
+async function getPanelItem(appId, panelType) {
+  const panel = await remoteCall.waitForElement(
+      appId, ['#progress-panel', `xf-panel-item[panel-type="${panelType}"]`]);
+  return panel;
+}
+
+/**
  * Checks that the panel item with provided parameters exists.
  * @param {string} appId ID of the Files app window.
+ * @param {PanelType} panelType Expected panel type.
  * @param {string} primaryText Expected primary text.
- * @param {string} secondaryText Expected secondary text.
- * @param {string} status Expected status indicator (failure or warning).
+ * @param {?string} secondaryText Expected secondary text. Can be null.
+ * @param {StatusIndicator} status Expected status indicator (failure or
+ *     warning).
  * @return {Promise} Promise fulfilled on success.
  */
-async function verifyPanelItem(appId, primaryText, secondaryText, status) {
-  const panel = await remoteCall.waitForElement(
-      appId, ['#progress-panel', 'xf-panel-item']);
+async function verifyPanelItem(
+    appId, panelType, primaryText, secondaryText, status) {
+  const panel = await getPanelItem(appId, panelType);
 
   chrome.test.assertEq(primaryText, panel.attributes['primary-text']);
   chrome.test.assertEq(secondaryText, panel.attributes['secondary-text']);
@@ -79,6 +122,29 @@ async function verifyPanelButtonsAndClick(
     '#progress-panel',
     'xf-panel-item',
     `xf-button#${selectedButton}-action`,
+  ]);
+}
+
+/**
+ * Expands the summary panel if it's collapsed, no-op if already expanded.
+ * @param {string} appId ID of the Files app window.
+ * */
+async function maybeExpandSummary(appId) {
+  const summaryPanel = await getPanelItem(appId, PanelType.SUMMARY);
+  if (summaryPanel.attributes['data-category'] === 'expanded') {
+    return;
+  }
+
+  await remoteCall.waitAndClickElement(appId, [
+    '#progress-panel',
+    `xf-panel-item[panel-type="${PanelType.SUMMARY}"]`,
+    'xf-button#primary-action',
+  ]);
+
+  await remoteCall.waitForElement(appId, [
+    '#progress-panel',
+    `xf-panel-item[panel-type="${
+        PanelType.SUMMARY}"][data-category="expanded"]`,
   ]);
 }
 
@@ -843,12 +909,10 @@ testcase.blockShowsPanelItem = async () => {
   // Check that the error panel is open with correct primary and secondary text,
   // and has the expected button types.
   await verifyPanelItem(
-      appId, 'File blocked from copying',
-      `${entry.nameText} was blocked because of policy`, 'failure');
+      appId, PanelType.ERROR, 'File blocked from copying',
+      `${entry.nameText} was blocked because of policy`,
+      StatusIndicator.FAILURE);
   await verifyPanelButtonsAndClick(appId, 'dismiss', 'secondary');
-
-  // Navigate back to Downloads.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
 
   // Cut and paste the file to USB.
   await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ false);
@@ -856,8 +920,9 @@ testcase.blockShowsPanelItem = async () => {
   // Check that the error panel is open with correct primary and secondary text,
   // and has the expected button types.
   await verifyPanelItem(
-      appId, 'File blocked from moving',
-      `${entry.nameText} was blocked because of policy`, 'failure');
+      appId, PanelType.ERROR, 'File blocked from moving',
+      `${entry.nameText} was blocked because of policy`,
+      StatusIndicator.FAILURE);
   await verifyPanelButtonsAndClick(appId, 'dismiss', 'primary');
 };
 
@@ -894,12 +959,10 @@ testcase.warnShowsPanelItem = async () => {
   // Check that the warning panel is open with correct primary and secondary
   // text, and has the expected button types.
   await verifyPanelItem(
-      appId, 'Review is required before copying',
-      `${entry.nameText} may contain sensitive content`, 'warning');
+      appId, PanelType.INFO, 'Review is required before copying',
+      `${entry.nameText} may contain sensitive content`,
+      StatusIndicator.WARNING);
   await verifyPanelButtonsAndClick(appId, 'cancel', 'secondary');
-
-  // Navigate back to Downloads.
-  await navigateWithDirectoryTree(appId, '/My files/Downloads');
 
   // Set the first mock to pause the task.
   await sendTestMessage({
@@ -915,7 +978,103 @@ testcase.warnShowsPanelItem = async () => {
   // Check that the warning panel is open with correct primary and secondary
   // text, and has the expected button types.
   await verifyPanelItem(
-      appId, 'Review is required before moving',
-      `${entry.nameText} may contain sensitive content`, 'warning');
+      appId, PanelType.INFO, 'Review is required before moving',
+      `${entry.nameText} may contain sensitive content`,
+      StatusIndicator.WARNING);
   await verifyPanelButtonsAndClick(appId, 'cancel', 'primary');
+};
+
+/**
+ * Tests that the summary panel shows the correct title when it contains a mix
+ * of warning (paused copy or move IO task) and error (blocked copy or move IO
+ * task) panels, or multiple warnings, but is not shown if only one panel is
+ * visible.
+ */
+testcase.mixedSummaryDisplayPanel = async () => {
+  // Add entry to Downloads.
+  const entry = ENTRIES.hello;
+  await addEntries(['local'], [entry]);
+
+  // Open Files app.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
+
+  // Block the second task.
+  await sendTestMessage({
+    name: 'setBlockedFilesTransfer',
+    fileNames: [entry.nameText],
+  });
+
+  // Mount a USB volume.
+  await sendTestMessage({name: 'mountFakeUsbEmpty'});
+
+  // Wait for the USB volume to mount.
+  const usbVolumeQuery = '#directory-tree [volume-type-icon="removable"]';
+  await remoteCall.waitForElement(appId, usbVolumeQuery);
+
+  // Copy and paste the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that only 1 error panel is opened.
+  await remoteCall.waitForElementsCount(
+      appId, ['#progress-panel', `xf-panel-item`], 1);
+  await remoteCall.waitForElementsCount(
+      appId,
+      ['#progress-panel', `xf-panel-item[panel-type="${PanelType.ERROR}"]`], 1);
+
+  // Set the mock to pause the second task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 2,
+    fileNames: [entry.nameText],
+    action: 'copy',
+  });
+
+  // Copy the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the summary panel is open with correct title and the two sub
+  // panels (3 in total).
+  await remoteCall.waitForElementsCount(
+      appId, ['#progress-panel', 'xf-panel-item'], 3);
+  await verifyPanelItem(
+      appId, PanelType.SUMMARY, '1 errors. 1 warning.', null,
+      StatusIndicator.FAILURE);
+  // Expand the summary panel if needed, in order to click on the individual
+  // ones.
+  await maybeExpandSummary(appId);
+
+  // Dismiss the error panel.
+  await remoteCall.waitAndClickElement(appId, [
+    '#progress-panel',
+    `xf-panel-item[panel-type="${PanelType.ERROR}"]`,
+    'xf-button#secondary-action',
+  ]);
+
+  // Check that only 1 warning panel remains.
+  await remoteCall.waitForElementsCount(
+      appId, ['#progress-panel', `xf-panel-item`], 1);
+  await remoteCall.waitForElementsCount(
+      appId,
+      ['#progress-panel', `xf-panel-item[panel-type="${PanelType.INFO}"]`], 1);
+
+  // Set the mock to pause the third task.
+  await sendTestMessage({
+    name: 'setCheckFilesTransferMockToPause',
+    taskId: 3,
+    fileNames: [entry.nameText],
+    action: 'copy',
+  });
+
+  // Copy the file to USB.
+  await copyOrMove(appId, entry, '/fake-usb', /*isCopy=*/ true);
+
+  // Check that the summary panel is open with correct title and the two sub
+  // panels (3 in total).
+  await remoteCall.waitForElementsCount(
+      appId, ['#progress-panel', 'xf-panel-item'], 3);
+  await remoteCall.waitForElementsCount(
+      appId,
+      ['#progress-panel', `xf-panel-item[panel-type="${PanelType.INFO}"]`], 2);
+  await verifyPanelItem(
+      appId, PanelType.SUMMARY, '2 warnings.', null, StatusIndicator.WARNING);
 };
