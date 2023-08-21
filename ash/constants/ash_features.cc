@@ -212,6 +212,11 @@ BASE_FEATURE(kAudioHFPNbsWarning,
              "AudioHFPNbsWarning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the ui to show the toggle for controlling hfp-mic-sr.
+BASE_FEATURE(kAudioHFPMicSRToggle,
+             "AudioHFPMicSRToggle",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the AudioSourceFetcher resamples the audio for speech
 // recongnition.
 BASE_FEATURE(kAudioSourceFetcherResampling,
@@ -2832,6 +2837,10 @@ bool AreSystemSoundsEnabled() {
 
 bool IsAudioHFPNbsWarningEnabled() {
   return base::FeatureList::IsEnabled(kAudioHFPNbsWarning);
+}
+
+bool IsAudioHFPMicSRToggleEnabled() {
+  return base::FeatureList::IsEnabled(kAudioHFPMicSRToggle);
 }
 
 bool IsAutocompleteExtendedSuggestionsEnabled() {

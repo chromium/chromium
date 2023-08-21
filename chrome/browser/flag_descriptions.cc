@@ -5424,6 +5424,10 @@ const char kAudioHFPMicSRName[] =
 const char kAudioHFPMicSRDescription[] =
     "Enable super-resolution Bluetooth HFP microphone recording.";
 
+const char kAudioHFPMicSRToggleName[] = "Audio toggle for hfp-mic-sr";
+const char kAudioHFPMicSRToggleDescription[] =
+    "Enable the ui to show the toggle for controlling hfp-mic-sr.";
+
 const char kAudioHFPNbsWarningName[] = "Warn when an NBS device is selected";
 const char kAudioHFPNbsWarningDescription[] =
     "Shows a warning in the quick settings when an NBS device is selected";

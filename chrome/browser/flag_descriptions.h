@@ -3135,6 +3135,9 @@ extern const char kAudioFlexibleLoopbackDescription[];
 extern const char kAudioHFPMicSRName[];
 extern const char kAudioHFPMicSRDescription[];
 
+extern const char kAudioHFPMicSRToggleName[];
+extern const char kAudioHFPMicSRToggleDescription[];
+
 extern const char kAudioHFPNbsWarningName[];
 extern const char kAudioHFPNbsWarningDescription[];
 
