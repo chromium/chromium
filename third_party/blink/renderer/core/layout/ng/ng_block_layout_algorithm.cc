@@ -604,20 +604,29 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
   LayoutUnit content_edge = BorderScrollbarPadding().block_start;
 
-  if (BreakToken() && BreakToken()->MonolithicOverflow()) {
-    // If we have been pushed by monolithic overflow that started on a previous
-    // page, we'll behave as if there's a valid breakpoint before the first
-    // child here, and that it has perfect break appeal. This isn't always
-    // strictly correct (the monolithic content in question may have
-    // break-after:avoid, for instance), but should be a reasonable approach,
-    // unless we want to make a bigger effort.
-    has_break_opportunity_before_next_child_ = true;
-  }
-
   NGPreviousInflowPosition previous_inflow_position = {
       LayoutUnit(), ConstraintSpace().MarginStrut(),
       is_resuming_ ? LayoutUnit() : container_builder_.Padding().block_start,
       /* self_collapsing_child_had_clearance */ false};
+
+  if (BreakToken()) {
+    if (IsBreakInside(BreakToken()) && !BreakToken()->IsForcedBreak() &&
+        !BreakToken()->IsCausedByColumnSpanner()) {
+      // If the block container is being resumed after an unforced break,
+      // margins inside may be adjoining with the fragmentainer boundary.
+      previous_inflow_position.margin_strut.discard_margins = true;
+    }
+
+    if (BreakToken()->MonolithicOverflow()) {
+      // If we have been pushed by monolithic overflow that started on a
+      // previous page, we'll behave as if there's a valid breakpoint before the
+      // first child here, and that it has perfect break appeal. This isn't
+      // always strictly correct (the monolithic content in question may have
+      // break-after:avoid, for instance), but should be a reasonable approach,
+      // unless we want to make a bigger effort.
+      has_break_opportunity_before_next_child_ = true;
+    }
+  }
 
   // Do not collapse margins between parent and its child if:
   //
@@ -2284,8 +2293,7 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
           margins.LineLeft(ConstraintSpace().Direction()),
       BfcBlockOffset() + logical_block_offset};
 
-  return {child_bfc_offset, margin_strut, margins,
-          IsBreakInside(child_block_break_token)};
+  return NGInflowChildData(child_bfc_offset, margin_strut, margins);
 }
 
 NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
@@ -2870,11 +2878,6 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     }
     builder.SetIsLineClampContext(is_line_clamp_context_);
     builder.SetLinesUntilClamp(lines_until_clamp_);
-  } else if (child_data.allow_discard_start_margin) {
-    // If the child is being resumed after a break, margins inside the child may
-    // be adjoining with the fragmentainer boundary, regardless of whether the
-    // child establishes a new formatting context or not.
-    builder.SetDiscardingMarginStrut();
   }
   builder.SetBlockStartAnnotationSpace(block_start_annotation_space);
 

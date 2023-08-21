@@ -469,7 +469,6 @@ NGConstraintSpace CreateConstraintSpaceForFragmentainer(
     NGFragmentationType fragmentation_type,
     LogicalSize fragmentainer_size,
     LogicalSize percentage_resolution_size,
-    bool allow_discard_start_margin,
     bool balance_columns,
     NGBreakAppeal min_break_appeal);
 

@@ -734,9 +734,6 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
 
   do {
     const NGBlockBreakToken* column_break_token = next_column_token;
-
-    bool allow_discard_start_margin =
-        column_break_token && !column_break_token->IsCausedByColumnSpanner();
     bool has_violating_break = false;
     bool has_oof_fragmentainer_descendants = false;
 
@@ -757,8 +754,8 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       // Lay out one column. Each column will become a fragment.
       NGConstraintSpace child_space = CreateConstraintSpaceForFragmentainer(
           ConstraintSpace(), kFragmentColumn, column_size,
-          ColumnPercentageResolutionSize(), allow_discard_start_margin,
-          balance_columns, min_break_appeal.value_or(kBreakAppealLastResort));
+          ColumnPercentageResolutionSize(), balance_columns,
+          min_break_appeal.value_or(kBreakAppealLastResort));
 
       NGFragmentGeometry fragment_geometry =
           CalculateInitialFragmentGeometry(child_space, Node(), BreakToken());
@@ -868,7 +865,6 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
             return nullptr;
         }
       }
-      allow_discard_start_margin = true;
     } while (column_break_token);
 
     if (!balance_columns) {

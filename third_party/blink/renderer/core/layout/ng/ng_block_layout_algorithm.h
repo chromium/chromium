@@ -37,13 +37,23 @@ struct NGPreviousInflowPosition {
   bool self_collapsing_child_had_clearance;
 };
 
-// This strut holds information for the current inflow child. The data is not
+// This struct holds information for the current inflow child. The data is not
 // useful outside of handling this single inflow child.
 struct NGInflowChildData {
+  NGInflowChildData(NGBfcOffset bfc_offset_estimate,
+                    const NGMarginStrut& margin_strut,
+                    const NGBoxStrut& margins,
+                    bool is_pushed_by_floats = false)
+      : bfc_offset_estimate(bfc_offset_estimate),
+        margin_strut(margin_strut),
+        margins(margins),
+        is_pushed_by_floats(is_pushed_by_floats) {}
+
+  NGInflowChildData(const NGInflowChildData&) = default;
+
   NGBfcOffset bfc_offset_estimate;
   NGMarginStrut margin_strut;
   NGBoxStrut margins;
-  bool allow_discard_start_margin;
   bool is_pushed_by_floats = false;
 };
 

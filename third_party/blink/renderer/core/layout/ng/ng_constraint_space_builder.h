@@ -338,18 +338,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.EnsureRareData()->SetMarginStrut(margin_strut);
   }
 
-  // Set up a margin strut that discards all adjoining margins. This is used to
-  // discard block-start margins after fragmentainer breaks.
-  void SetDiscardingMarginStrut() {
-#if DCHECK_IS_ON()
-    DCHECK(!is_margin_strut_set_);
-    is_margin_strut_set_ = true;
-#endif
-    NGMarginStrut discarding_margin_strut;
-    discarding_margin_strut.discard_margins = true;
-    space_.EnsureRareData()->SetMarginStrut(discarding_margin_strut);
-  }
-
   void SetBfcOffset(const NGBfcOffset& bfc_offset) {
     if (!is_new_fc_) {
       if (space_.HasRareData())

@@ -95,12 +95,6 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
     builder.SetFragmentationType(NGFragmentationType::kFragmentNone);
   }
 
-  // If we're resuming layout of this float after a fragmentainer break, the
-  // margins of its children may be adjoining with the fragmentainer
-  // block-start, in which case they may get truncated.
-  if (IsBreakInside(unpositioned_float.token))
-    builder.SetDiscardingMarginStrut();
-
   builder.SetAvailableSize(unpositioned_float.available_size);
   builder.SetPercentageResolutionSize(unpositioned_float.percentage_size);
   builder.SetReplacedPercentageResolutionSize(
