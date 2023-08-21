@@ -63,10 +63,12 @@ export type EventData =
 export type Extensible = {
   [key: string]: any;
 };
+
 /**
  * Must be between `-9007199254740991` and `9007199254740991`, inclusive.
  */
 export type JsInt = number;
+
 /**
  * Must be between `0` and `9007199254740991`, inclusive.
  */
