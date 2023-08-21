@@ -22,13 +22,12 @@ ActiveDevicesProviderImpl::ActiveDevicesProviderImpl(
     base::Clock* clock)
     : device_info_tracker_(device_info_tracker), clock_(clock) {
   DCHECK(device_info_tracker_);
-  device_info_tracker_->AddObserver(this);
+  device_info_tracker_observation_.Observe(device_info_tracker_);
 }
 
 ActiveDevicesProviderImpl::~ActiveDevicesProviderImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
-  device_info_tracker_->RemoveObserver(this);
 }
 
 syncer::ActiveDevicesInvalidationInfo
