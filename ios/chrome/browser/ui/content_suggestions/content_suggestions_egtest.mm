@@ -664,46 +664,20 @@ void TapMoreButtonIfVisible() {
       assertWithMatcher:grey_notNil()];
   // Dismiss the CPE promo.
   TapSecondaryActionButton();
-  // Verify the All Set item is complete.
+  // Verify the All Set item is shown.
   condition = ^{
     NSError* error = nil;
     [[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(grey_accessibilityID(l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE)),
-                       grey_sufficientlyVisible(), nil)]
+        selectElementWithMatcher:grey_allOf(grey_accessibilityID(
+                                                set_up_list::kAllSetItemID),
+                                            grey_sufficientlyVisible(), nil)]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
   };
   GREYAssert(
       base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Timeout waiting for the Magic Stack to scroll to next module expired.");
-
-  if (![ChromeEarlGrey isIPadIdiom]) {
-    // Rotate so Magic Stack on iphone so underlying UIScrollView is reachable
-    // for scrolling.
-    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                  error:nil];
-    // Bring Magic Stack into view
-    [[[EarlGrey
-        selectElementWithMatcher:
-            grey_allOf(grey_accessibilityID(
-                           kMagicStackScrollViewAccessibilityIdentifier),
-                       grey_sufficientlyVisible(), nil)]
-           usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-        onElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        assertWithMatcher:grey_notNil()];
-  }
-
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              set_up_list::kAllSetItemID),
-                                          grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionLeft, 200)
-      onElementWithMatcher:grey_accessibilityID(
-                               kMagicStackScrollViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      @"Timeout waiting for the All Set Module to show expired.");
 }
 
 #pragma mark - Test utils

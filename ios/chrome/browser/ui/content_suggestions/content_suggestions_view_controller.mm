@@ -72,6 +72,9 @@ const float kMagicStackSpacing = 10.0f;
 const CGFloat kSetUpListWidthRegular = 393;
 const CGFloat kSetUpListWidthWide = 418;
 
+// The distance in which a replaced/replacing module will fade out/in of view.
+const float kMagicStackReplaceModuleFadeAnimationDistance = 50;
+
 // The duration of the animation that hides the Set Up List.
 const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
@@ -1133,12 +1136,27 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     }
     // Remove all non-visible modules in reverse order
     int removedModuleCount = [viewIndicesToRemove count];
-    for (int i = removedModuleCount - 1; i >= 0; i--) {
-      NSUInteger moduleIndex = [viewIndicesToRemove[i] integerValue];
-      UIView* moduleToRemove =
-          [strongSelf->_magicStack arrangedSubviews][moduleIndex];
-      [moduleToRemove removeFromSuperview];
-      [strongSelf->_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+    if (removedModuleCount > 0) {
+      for (int i = removedModuleCount - 1; i >= 0; i--) {
+        NSUInteger moduleIndex = [viewIndicesToRemove[i] integerValue];
+        UIView* moduleToRemove =
+            [strongSelf->_magicStack arrangedSubviews][moduleIndex];
+        [moduleToRemove removeFromSuperview];
+        [strongSelf->_magicStackModuleOrder removeObjectAtIndex:moduleIndex];
+      }
+      // Compensate for removed module count so the currently visible module is
+      // still displayed.
+      CGFloat moduleWidth = [MagicStackModuleContainer
+          moduleWidthForHorizontalTraitCollection:self.traitCollection];
+      CGFloat offsetRemoved = (removedModuleCount)*moduleWidth +
+                              ((removedModuleCount)*kMagicStackSpacing);
+      [strongSelf->_magicStackScrollView
+          setContentOffset:CGPointMake(strongSelf->_magicStackScrollView
+                                               .contentOffset.x -
+                                           offsetRemoved,
+                                       strongSelf->_magicStackScrollView
+                                           .contentOffset.y)
+                  animated:NO];
     }
   };
 
@@ -1161,10 +1179,31 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)replaceModuleAtIndex:(NSUInteger)index
                   withModule:(MagicStackModuleContainer*)newModule
                   completion:(ProceduralBlock)completion {
-  newModule.alpha = 0;
   UIView* moduleToHide = [_magicStack arrangedSubviews][index];
   __weak __typeof(self) weakSelf = self;
-  [UIView animateWithDuration:1.0
+
+  ProceduralBlock animateInNewModule = ^{
+    [UIView animateWithDuration:0.5
+        delay:0.0
+        options:UIViewAnimationOptionTransitionCurlDown
+        animations:^{
+          __typeof(self) strongSelf = weakSelf;
+          if (!strongSelf) {
+            return;
+          }
+          // Fade in new module from the left to the final position in the Magic
+          // Stack.
+          newModule.transform = CGAffineTransformIdentity;
+          newModule.alpha = 1;
+        }
+        completion:^(BOOL finished) {
+          if (completion) {
+            completion();
+          }
+        }];
+  };
+
+  [UIView animateWithDuration:0.5
       delay:0.0
       options:UIViewAnimationOptionTransitionCurlDown
       animations:^{
@@ -1172,22 +1211,30 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         if (!strongSelf) {
           return;
         }
-        [strongSelf->_magicStack removeArrangedSubview:moduleToHide];
-        [strongSelf->_magicStack insertArrangedSubview:newModule atIndex:index];
+        // Animate module away in the upward direction.
+        moduleToHide.transform = CGAffineTransformTranslate(
+            CGAffineTransformIdentity, 0,
+            -kMagicStackReplaceModuleFadeAnimationDistance);
         moduleToHide.alpha = 0;
-        newModule.alpha = 1;
       }
       completion:^(BOOL finished) {
         __typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
           return;
         }
-        if (completion) {
-          completion();
-        }
+        // Remove module to hide, add the new module with an initial position to
+        // the left and hidden from view in preparation for a fade in.
+        newModule.alpha = 0;
+        [strongSelf->_magicStack removeArrangedSubview:moduleToHide];
+        [strongSelf->_magicStack insertArrangedSubview:newModule atIndex:index];
+        newModule.transform = CGAffineTransformTranslate(
+            CGAffineTransformIdentity,
+            -kMagicStackReplaceModuleFadeAnimationDistance, 0);
         [moduleToHide removeFromSuperview];
         [strongSelf->_magicStack setNeedsLayout];
         [strongSelf->_magicStack layoutIfNeeded];
+
+        animateInNewModule();
       }];
 }
 
