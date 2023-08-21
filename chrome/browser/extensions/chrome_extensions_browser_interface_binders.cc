@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/language_packs/public/mojom/language_packs.mojom.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/appid_util.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception.mojom.h"
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
@@ -50,6 +51,7 @@
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
+#include "chrome/browser/ash/chromebox_for_meetings/xu_camera/xu_camera_service.h"
 #include "chromeos/ash/components/chromebox_for_meetings/features.h"
 #include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #endif
@@ -164,42 +166,71 @@ void PopulateChromeFrameBindersForExtension(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (ash::cfm::IsChromeboxForMeetingsAppId(extension->id())) {
+// The experimentation framework used to manage the
+// `ash::cfm::features::kMojoServices` feature flag requires
+// Chrome to restart before updates are applied. Meet Devices have
+// a variable uptime ranging from a week or more and set by the
+// admin. Additionally its kiosked process is not tied to a chromium
+// release and can be dynamically updated during Chrome runtime.
+// Unfortunately this makes it difficult to fully predict when the
+// flag will be applied to all devices across the fleet.
+// As such we proactively support the case for devices that may be
+// in a different state than expected from the kiosked process.
+#if BUILDFLAG(PLATFORM_CFM)
     binder_map->Add<
         chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
         [](content::RenderFrameHost* frame_host,
            mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
                receiver) {
-#if BUILDFLAG(PLATFORM_CFM)
           if (base::FeatureList::IsEnabled(ash::cfm::features::kMojoServices)) {
             ash::cfm::ServiceConnection::GetInstance()->BindServiceContext(
                 std::move(receiver));
           } else {
-            // The experimentation framework used to manage the
-            // `ash::cfm::features::kMojoServices` feature flag requires
-            // Chrome to restart before updates are applied. Meet Devices have
-            // a variable uptime ranging from a week or more and set by the
-            // admin. Additionally its kiosked process is not tied to a chromium
-            // release and can be dynamically updated during Chrome runtime.
-            // Unfortunately this makes it difficult to fully predict when the
-            // flag will be applied to all devices across the fleet.
-            // As such we proactively support the case for devices that may be
-            // in a different state than expected from the kiosked process.
             receiver.ResetWithReason(
                 static_cast<uint32_t>(
                     chromeos::cfm::mojom::DisconnectReason::kFinchDisabledCode),
                 chromeos::cfm::mojom::DisconnectReason::kFinchDisabledMessage);
           }
+        }));
+    binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
+          if (base::FeatureList::IsEnabled(ash::cfm::features::kXuControls)) {
+            ash::cfm::XuCameraService::Get()->BindServiceContext(
+                std::move(receiver), frame_host->GetGlobalId());
+          } else {
+            receiver.ResetWithReason(
+                static_cast<uint32_t>(
+                    chromeos::cfm::mojom::DisconnectReason::kFinchDisabledCode),
+                chromeos::cfm::mojom::DisconnectReason::kFinchDisabledMessage);
+          }
+        }));
+
+// On first launch some older devices may be running on none-CfM
+// images. For those devices reject all requests until they are
+// rebooted to the CfM image variant for their device.
 #else
-          // On first launch some older devices may be running on none-CfM
-          // images. For those devices reject all requests until they are
-          // rebooted to the CfM image variant for their device.
+    binder_map->Add<
+        chromeos::cfm::mojom::CfmServiceContext>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
+               receiver) {
           receiver.ResetWithReason(
               static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
                                         kServiceUnavailableCode),
               chromeos::cfm::mojom::DisconnectReason::
                   kServiceUnavailableMessage);
-#endif  // BUILDFLAG(PLATFORM_CFM)
         }));
+    binder_map->Add<ash::cfm::mojom::XuCamera>(base::BindRepeating(
+        [](content::RenderFrameHost* frame_host,
+           mojo::PendingReceiver<ash::cfm::mojom::XuCamera> receiver) {
+          receiver.ResetWithReason(
+              static_cast<uint32_t>(chromeos::cfm::mojom::DisconnectReason::
+                                        kServiceUnavailableCode),
+              chromeos::cfm::mojom::DisconnectReason::
+                  kServiceUnavailableMessage);
+        }));
+#endif  // BUILDFLAG(PLATFORM_CFM)
   }
 
   if (extension->permissions_data()->HasAPIPermission(

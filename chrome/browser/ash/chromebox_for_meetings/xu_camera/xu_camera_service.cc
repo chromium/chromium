@@ -16,8 +16,16 @@
 #include <cstdint>
 #include <utility>
 
+#include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_device_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom.h"
 
@@ -64,6 +72,27 @@ class RealDelegate : public XuCameraService::Delegate {
   }
 };
 
+void TranslateDeviceId(
+    const std::string& hashed_device_id,
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    const url::Origin& security_origin,
+    const std::string& salt) {
+  auto translate_device_id_callback = base::BindOnce(
+      [](const std::string& hashed_device_id,
+         base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+         const url::Origin& security_origin, const std::string& salt) {
+        content::GetMediaDeviceIDForHMAC(
+            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt,
+            security_origin, hashed_device_id,
+            content::GetUIThreadTaskRunner({}), std::move(callback));
+      },
+      std::move(hashed_device_id), std::move(callback),
+      std::move(security_origin), std::move(salt));
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, std::move(translate_device_id_callback));
+}
+
 XuCameraService* g_xu_camera_service = nullptr;
 
 }  // namespace
@@ -77,26 +106,31 @@ XuCameraService::~XuCameraService() {
   CfmHotlineClient::Get()->RemoveObserver(this);
 }
 
+// static
 void XuCameraService::Initialize() {
   CHECK(!g_xu_camera_service);
   g_xu_camera_service = new XuCameraService(new RealDelegate());
 }
 
+// static
 void XuCameraService::InitializeForTesting(Delegate* delegate) {
   CHECK(!g_xu_camera_service);
   g_xu_camera_service = new XuCameraService(delegate);
 }
 
+// static
 void XuCameraService::Shutdown() {
   CHECK(g_xu_camera_service);
   delete g_xu_camera_service;
   g_xu_camera_service = nullptr;
 }
 
+// static
 XuCameraService* XuCameraService::Get() {
   return g_xu_camera_service;
 }
 
+// static
 bool XuCameraService::IsInitialized() {
   return g_xu_camera_service;
 }
@@ -132,10 +166,22 @@ bool XuCameraService::ServiceRequestReceived(
   return true;
 }
 
+void XuCameraService::BindServiceContext(
+    mojo::PendingReceiver<mojom::XuCamera> receiver,
+    const content::GlobalRenderFrameHostId& id) {
+  receivers_.Add(this, std::move(receiver), std::move(id));
+}
+
 void XuCameraService::OnBindService(
     mojo::ScopedMessagePipeHandle receiver_pipe) {
-  receivers_.Add(
-      this, mojo::PendingReceiver<mojom::XuCamera>(std::move(receiver_pipe)));
+  // The Render Frame Host Id is used to identify the peripheral's device path
+  // given a hased device id. If the origin of the client is not from within a
+  // chromium renderer then the device paths would not be hashed.
+  // We give a default RFH ID here for these cases that will fail if mistakenly
+  // passed a HMAC ID.
+  BindServiceContext(
+      mojo::PendingReceiver<mojom::XuCamera>(std::move(receiver_pipe)),
+      content::GlobalRenderFrameHostId());
 }
 
 void XuCameraService::OnAdaptorDisconnect() {
@@ -146,9 +192,23 @@ void XuCameraService::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void XuCameraService::GetUnitId(const mojom::WebcamIdPtr id,
+void XuCameraService::GetUnitId(mojom::WebcamIdPtr id,
                                 const std::vector<uint8_t>& guid_le,
                                 GetUnitIdCallback callback) {
+  auto host_id = receivers_.current_context();
+
+  auto get_unit_id_callback = base::BindOnce(
+      &XuCameraService::GetUnitIdWithDevicePath, weak_factory_.GetWeakPtr(),
+      std::move(guid_le), std::move(callback));
+
+  GetDevicePath(std::move(id), std::move(host_id),
+                std::move(get_unit_id_callback));
+}
+
+void XuCameraService::GetUnitIdWithDevicePath(
+    const std::vector<uint8_t>& guid_le,
+    GetUnitIdCallback callback,
+    const absl::optional<std::string>& dev_path) {
   // TODO(b/260593636): Leverage WebRTC and GetDevicePath() once implemented
   auto unitId = guid_unitid_map_.find(guid_le);
   if (unitId != guid_unitid_map_.end()) {
@@ -215,15 +275,35 @@ void XuCameraService::OnGetDevices(
   std::move(callback).Run(ENOSYS, '0');
 }
 
-void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,
-                              const mojom::ControlMappingPtr mapping_ctrl,
+void XuCameraService::MapCtrl(mojom::WebcamIdPtr id,
+                              mojom::ControlMappingPtr mapping_ctrl,
                               MapCtrlCallback callback) {
+  auto host_id = receivers_.current_context();
+
+  auto map_ctrl_callback = base::BindOnce(
+      &XuCameraService::MapCtrlWithDevicePath, weak_factory_.GetWeakPtr(),
+      std::move(mapping_ctrl), std::move(callback));
+
+  GetDevicePath(std::move(id), std::move(host_id),
+                std::move(map_ctrl_callback));
+}
+
+void XuCameraService::MapCtrlWithDevicePath(
+    const mojom::ControlMappingPtr mapping_ctrl,
+    MapCtrlCallback callback,
+    const absl::optional<std::string>& dev_path) {
   uint8_t error_code = 0;
-  std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
-                                            : id->get_dev_path();
-  VLOG(4) << __func__ << ": dev_path - " << dev_path;
   base::ScopedFD file_descriptor;
-  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
+
+  if (!dev_path) {
+    LOG(ERROR) << __func__ << ": Unable to determine device path";
+    std::move(callback).Run(ENOENT);
+    return;
+  }
+
+  VLOG(4) << __func__ << ": dev_path - " << *dev_path;
+
+  if (!delegate_->OpenFile(file_descriptor, *dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT);
     return;
@@ -262,18 +342,38 @@ void XuCameraService::MapCtrl(const mojom::WebcamIdPtr id,
   std::move(callback).Run(error_code);
 }
 
-void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,
-                              const mojom::CtrlTypePtr ctrl,
-                              const mojom::GetFn fn,
+void XuCameraService::GetCtrl(mojom::WebcamIdPtr id,
+                              mojom::CtrlTypePtr ctrl,
+                              mojom::GetFn fn,
                               GetCtrlCallback callback) {
+  auto host_id = receivers_.current_context();
+
+  auto get_ctrl_callback = base::BindOnce(
+      &XuCameraService::GetCtrlWithDevicePath, weak_factory_.GetWeakPtr(),
+      std::move(ctrl), std::move(fn), std::move(callback));
+
+  GetDevicePath(std::move(id), std::move(host_id),
+                std::move(get_ctrl_callback));
+}
+
+void XuCameraService::GetCtrlWithDevicePath(
+    const mojom::CtrlTypePtr ctrl,
+    const mojom::GetFn fn,
+    GetCtrlCallback callback,
+    const absl::optional<std::string>& dev_path) {
   uint8_t error_code = 0;
   std::vector<uint8_t> data;
-  std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
-                                            : id->get_dev_path();
-
-  VLOG(4) << __func__ << ": dev_path - " << dev_path;
   base::ScopedFD file_descriptor;
-  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
+
+  if (!dev_path) {
+    LOG(ERROR) << __func__ << ": Unable to determine device path";
+    std::move(callback).Run(ENOENT, data);
+    return;
+  }
+
+  VLOG(4) << __func__ << ": dev_path - " << *dev_path;
+
+  if (!delegate_->OpenFile(file_descriptor, *dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT, data);
     return;
@@ -297,16 +397,37 @@ void XuCameraService::GetCtrl(const mojom::WebcamIdPtr id,
   std::move(callback).Run(error_code, data);
 }
 
-void XuCameraService::SetCtrl(const mojom::WebcamIdPtr id,
-                              const mojom::CtrlTypePtr ctrl,
+void XuCameraService::SetCtrl(mojom::WebcamIdPtr id,
+                              mojom::CtrlTypePtr ctrl,
                               const std::vector<uint8_t>& data,
                               SetCtrlCallback callback) {
+  auto host_id = receivers_.current_context();
+
+  auto set_ctrl_callback = base::BindOnce(
+      &XuCameraService::SetCtrlWithDevicePath, weak_factory_.GetWeakPtr(),
+      std::move(ctrl), std::move(data), std::move(callback));
+
+  GetDevicePath(std::move(id), std::move(host_id),
+                std::move(set_ctrl_callback));
+}
+
+void XuCameraService::SetCtrlWithDevicePath(
+    const mojom::CtrlTypePtr ctrl,
+    const std::vector<uint8_t>& data,
+    SetCtrlCallback callback,
+    const absl::optional<std::string>& dev_path) {
   uint8_t error_code = 0;
-  std::string dev_path = id->is_device_id() ? GetDevicePath(id->get_device_id())
-                                            : id->get_dev_path();
-  VLOG(4) << __func__ << ": dev_path - " << dev_path;
+
+  if (!dev_path) {
+    LOG(ERROR) << __func__ << ": Unable to determine device path";
+    std::move(callback).Run(ENOENT);
+    return;
+  }
+
+  VLOG(4) << __func__ << ": dev_path - " << *dev_path;
+
   base::ScopedFD file_descriptor;
-  if (!delegate_->OpenFile(file_descriptor, dev_path)) {
+  if (!delegate_->OpenFile(file_descriptor, *dev_path)) {
     LOG(ERROR) << __func__ << ": File is invalid";
     std::move(callback).Run(ENOENT);
     return;
@@ -362,10 +483,44 @@ uint8_t XuCameraService::QueryXuControl(const base::ScopedFD& file_descriptor,
   return error;
 }
 
-std::string XuCameraService::GetDevicePath(const std::string& device_id) {
-  // Not implemented
-  NOTIMPLEMENTED();
-  return "";
+void XuCameraService::GetDevicePath(
+    mojom::WebcamIdPtr id,
+    const content::GlobalRenderFrameHostId& host_id,
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback)
+    const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (id->is_dev_path()) {
+    std::move(callback).Run(id->get_dev_path());
+    return;
+  }
+
+  // TODO(b/295912291): Check get_device_id is in a map
+  auto hashed_device_id = id->get_device_id();
+
+  if (!host_id || hashed_device_id.empty()) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+
+  content::RenderFrameHost* frame_host =
+      content::RenderFrameHost::FromID(host_id);
+  content::BrowserContext* browser_context = frame_host->GetBrowserContext();
+  url::Origin security_origin = frame_host->GetLastCommittedOrigin();
+
+  if (media_device_salt::MediaDeviceSaltService* salt_service =
+          MediaDeviceSaltServiceFactory::GetInstance()->GetForBrowserContext(
+              browser_context)) {
+    salt_service->GetSalt(
+        frame_host->GetStorageKey(),
+        base::BindOnce(&TranslateDeviceId, hashed_device_id,
+                       std::move(callback), std::move(security_origin)));
+  } else {
+    // If the embedder does not provide a salt service, use the browser
+    // context's unique ID as salt.
+    TranslateDeviceId(hashed_device_id, std::move(callback),
+                      std::move(security_origin), browser_context->UniqueId());
+  }
 }
 
 uint8_t XuCameraService::CtrlThroughQuery(const base::ScopedFD& file_descriptor,

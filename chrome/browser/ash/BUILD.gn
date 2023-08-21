@@ -4241,6 +4241,7 @@ source_set("ash") {
     ]
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",
+      "//components/media_device_salt",
       "//components/variations/field_trial_config",
       "//extensions/buildflags",
     ]

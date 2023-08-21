@@ -9,7 +9,10 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 mojom("mojom") {
-  sources = [ "cfm_service_manager.mojom" ]
+  sources = [
+    "cfm_service_manager.mojom",
+    "xu_camera.mojom",
+  ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
@@ -21,7 +24,6 @@ mojom("mojom") {
       "meet_devices_diagnostics.mojom",
       "meet_devices_info.mojom",
       "meet_devices_logger.mojom",
-      "xu_camera.mojom",
     ]
     public_deps += [ "//chromeos/ash/services/cros_healthd/public/mojom" ]
   }
