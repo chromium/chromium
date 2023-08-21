@@ -108,7 +108,7 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose, fast):
 
 
 def CopyAllFilesToStagingDir(config, distribution, staging_dir, build_dir,
-                             enable_hidpi, include_snapshotblob,
+                             enable_hidpi, include_snapshotblob, include_dxc,
                              component_build, component_ffmpeg_build, verbose):
   """Copies the files required for installer archive.
   Copies all common files required for various distributions of Chromium and
@@ -130,6 +130,10 @@ def CopyAllFilesToStagingDir(config, distribution, staging_dir, build_dir,
 
   if include_snapshotblob == '1':
     CopySectionFilesToStagingDir(config, 'SNAPSHOTBLOB', staging_dir, build_dir,
+                                 verbose)
+
+  if include_dxc == '1':
+    CopySectionFilesToStagingDir(config, 'DXC', staging_dir, build_dir,
                                  verbose)
 
   if component_build != '1' and component_ffmpeg_build == '1':
@@ -550,6 +554,7 @@ def main(options):
                            staging_dir, options.build_dir,
                            options.enable_hidpi,
                            options.include_snapshotblob,
+                           options.include_dxc,
                            options.component_build,
                            options.component_ffmpeg_build,
                            options.verbose)
@@ -615,6 +620,8 @@ def _ParseOptions():
       help='Whether to include HiDPI resource files.')
   parser.add_option('--include_snapshotblob', default='0',
       help='Whether to include the V8 snapshot blob.')
+  parser.add_option('--include_dxc', default='0',
+      help='Whether to include DXC dlls.')
   parser.add_option('--component_build', default='0',
       help='Whether this archive is packaging a component build.')
   parser.add_option('--component_ffmpeg_build', default='0',
