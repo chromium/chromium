@@ -10,7 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view.h"
+#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
@@ -22,26 +22,31 @@ class TabSliderButton;
 // rounded rectangle shows behind the selected button. When another button is
 // selected, the selector will move from the position of previously selected
 // button to the position of currently selected button.
-class ASH_EXPORT TabSlider : public views::View {
+class ASH_EXPORT TabSlider : public views::TableLayoutView {
  public:
   METADATA_HEADER(TabSlider);
 
-  // The layout parameters used to configure the layout of the button
-  // container.
-  struct LayoutParams {
-    int internal_border_padding = 0;
-    int between_buttons_spacing = 0;
+  // The init parameters used to initialize the layout, appearance, and behavior
+  // of the tab slider.
+  struct InitParams {
+    int internal_border_padding;
+    int between_buttons_spacing;
+    // Indicates whether there is a fully rounded rect background for the tab
+    // slider.
+    bool has_background;
+    // Indicates whether an animation should be shown when the selector moves
+    // between buttons.
+    bool has_selector_animation;
+    // Indicates whether the extra space should be distributed evenly between
+    // buttons.
+    bool distribute_space_evenly;
   };
 
-  // `has_background` indicates whether there is a fully rounded rect
-  // background for the tab slider.
-  // `has_selector_animation` indicates whether an animation should be shown
-  // when the selector moves between buttons.
-  // `distribute_space_evenly` indicates whether the extra space should be
-  // distributed evenly between buttons.
-  explicit TabSlider(bool has_background = true,
-                     bool has_selector_animation = true,
-                     bool distribute_space_evenly = true);
+  static constexpr InitParams kDefaultParams = {2, 0, true, true, true};
+
+  // `max_tab_num` is the maximum number of tabs in the slider.
+  explicit TabSlider(size_t max_tab_num,
+                     const InitParams& params = kDefaultParams);
   TabSlider(const TabSlider&) = delete;
   TabSlider& operator=(const TabSlider&) = delete;
   ~TabSlider() override;
@@ -66,10 +71,6 @@ class ASH_EXPORT TabSlider : public views::View {
     return AddButton(std::move(button));
   }
 
-  // Sets custom button container layout. When the custom layout is set,
-  // the button container will no longer use the button recommended layout.
-  void SetCustomLayout(const LayoutParams& layout_params);
-
   // Called when a button is selected.
   void OnButtonSelected(TabSliderButton* button);
 
@@ -80,33 +81,23 @@ class ASH_EXPORT TabSlider : public views::View {
   // The view of the selector.
   class SelectorView;
 
+  // Initialize the layout according to the total number of tabs and init
+  // parameters.
+  void Init();
+
   // Adds the button as a child of the button container and inserts it into the
   // 'buttons_' list.
   void AddButtonInternal(TabSliderButton* button);
 
-  // Called when a button is added to the slider.
-  void OnButtonAdded(TabSliderButton* button);
-
-  // Updates the LayoutManager based on how many views exist,
-  // `distribute_space_evenly_`, and `custom_layout_params_`.
-  void UpdateLayout();
-
   // Called when the enabled state is changed.
   void OnEnabledStateChanged();
+
+  const size_t max_tab_num_;
+  const InitParams params_;
 
   // Owned by view hierarchy.
   raw_ptr<SelectorView, ExperimentalAsh> selector_view_;
   std::vector<TabSliderButton*> buttons_;
-
-  // Parameters for a custom layout. Set by either individual buttons, or
-  // through `SetCustomLayout()`.
-  LayoutParams custom_layout_params_;
-
-  // Whether child buttons should be forced to evenly share space.
-  const bool distribute_space_evenly_;
-
-  // By default, respect buttons recommended layout.
-  bool use_button_recommended_layout_ = true;
 
   base::CallbackListSubscription enabled_changed_subscription_;
 };

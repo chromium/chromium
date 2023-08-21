@@ -64,10 +64,12 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
   absl::optional<int> current_state = effect->get_state_callback().Run();
   DCHECK(current_state.has_value());
 
-  auto tab_slider = std::make_unique<TabSlider>();
   const int num_states = effect->GetNumStates();
   DCHECK_LE(num_states, 3) << "UX Requests no more than 3 states, otherwise "
                               "the bubble will need to be wider.";
+
+  auto tab_slider = std::make_unique<TabSlider>(
+      num_states, IconLabelSliderButton::kSliderParams);
   for (int i = 0; i < num_states; ++i) {
     const VcEffectState* state = effect->GetState(/*index=*/i);
     DCHECK(state->state_value());

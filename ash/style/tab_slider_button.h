@@ -52,13 +52,6 @@ class ASH_EXPORT TabSliderButton : public views::Button {
   // Returns the recommended color id for the current button state.
   SkColor GetColorIdOnButtonState();
 
-  // Returns the recommended layout parameters for tab slider. Note that the
-  // recommended layout parameters are only used as a minimum spacing reference.
-  // The slider will adjust the layout based on the the current and recommended
-  // layout spacings.
-  virtual absl::optional<TabSlider::LayoutParams> GetRecommendedSliderLayout()
-      const;
-
  private:
   // Called when the button selected state is changed.
   virtual void OnSelectedChanged() = 0;
@@ -94,10 +87,6 @@ class ASH_EXPORT IconSliderButton : public TabSliderButton {
   IconSliderButton& operator=(const IconSliderButton&) = delete;
   ~IconSliderButton() override;
 
-  // TabSliderButton:
-  absl::optional<TabSlider::LayoutParams> GetRecommendedSliderLayout()
-      const override;
-
  private:
   // TabSliderButton:
   void OnSelectedChanged() override;
@@ -123,10 +112,6 @@ class ASH_EXPORT LabelSliderButton : public TabSliderButton {
   LabelSliderButton& operator=(const LabelSliderButton&) = delete;
   ~LabelSliderButton() override;
 
-  // TabSliderButton:
-  absl::optional<TabSlider::LayoutParams> GetRecommendedSliderLayout()
-      const override;
-
  private:
   // Update label color according to the current button state.
   void UpdateLabelColor();
@@ -148,6 +133,13 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
  public:
   METADATA_HEADER(IconLabelSliderButton);
 
+  static constexpr TabSlider::InitParams kSliderParams{
+      /*internal_border_padding=*/4,
+      /*between_child_spacing=*/0,
+      /*has_background=*/true,
+      /*has_selector_animation=*/true,
+      /*distribute_space_evenly=*/true};
+
   IconLabelSliderButton(PressedCallback callback,
                         const gfx::VectorIcon* icon,
                         const std::u16string& text,
@@ -155,10 +147,6 @@ class ASH_EXPORT IconLabelSliderButton : public TabSliderButton {
   IconLabelSliderButton(const IconLabelSliderButton&) = delete;
   IconLabelSliderButton& operator=(const IconLabelSliderButton&) = delete;
   ~IconLabelSliderButton() override;
-
-  // TabSliderButton:
-  absl::optional<TabSlider::LayoutParams> GetRecommendedSliderLayout()
-      const override;
 
  private:
   // Update label color according to the current button state.

@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -479,16 +480,9 @@ TEST_P(SystemDialogSizeTest, DialogResponsiveSize) {
   EXPECT_EQ(296, GetDialogWidth());
 }
 
-struct TabSliderTestParams {
-  TabSliderType type;
-  bool distribute_space_evenly;
-  absl::optional<TabSlider::LayoutParams> custom_layout;
-  int button_num;
-  std::vector<std::u16string> labels_text;
-};
-
 class TabSliderTest : public SystemComponentsTest,
-                      public testing::WithParamInterface<TabSliderTestParams> {
+                      public testing::WithParamInterface<
+                          std::tuple<TabSliderType, bool, bool, int>> {
  public:
   TabSliderTest() = default;
   TabSliderTest(const TabSliderTest&) = delete;
@@ -496,177 +490,73 @@ class TabSliderTest : public SystemComponentsTest,
   ~TabSliderTest() override = default;
 };
 
-const TabSliderTestParams kTabSliderLayoutTestParams[] = {
-    // IconSliderButton
-    // Two buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"", u""}},
-    // Two buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"", u""}},
-    // Three buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"", u"", u""}},
-    // Three buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"", u"", u""}},
-    // Two buttons with evenly distributed space and customized layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"", u""}},
-    // Two buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"", u""}},
-    // Three buttons with evenly distributed space and customized layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"", u"", u""}},
-    // Three buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kIconSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"", u"", u""}},
+const TabSliderType kTabSliderTypes[] = {TabSliderType::kIconSlider,
+                                         TabSliderType::kLabelSlider,
+                                         TabSliderType::kIconLabelSlider};
 
-    // LabelSliderButton
-    // Two buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Two buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Three buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Three buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Two buttons with evenly distributed space and customized layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Two buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Three buttons with evenly distributed space and customized layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Three buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kLabelSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
+INSTANTIATE_TEST_SUITE_P(
+    TabSliderStyle,
+    TabSliderTest,
+    testing::Combine(
+        /*tab slider types*/ testing::ValuesIn(kTabSliderTypes),
+        /*distribute space evenly*/ testing::Bool(),
+        /*use default layout*/ testing::Bool(),
+        /*number of tabs*/ testing::Values(2, 3)),
+    [](const testing::TestParamInfo<TabSliderTest::ParamType>& info) {
+      std::string test_name;
 
-    // IconLabelSliderButton
-    // Two buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Two buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Three buttons with evenly distributed space and recommended layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/true,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Three buttons with unevenly distributed space and recommended layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/false,
-     absl::nullopt,
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Two buttons with evenly distributed space and customized layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Two buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/2,
-     {u"one", u"one two three"}},
-    // Three buttons with evenly distributed space and customized layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/true,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-    // Three buttons with unevenly distributed space and customized layout.
-    {TabSliderType::kIconLabelSlider,
-     /*distribute_space_evenly=*/false,
-     TabSlider::LayoutParams{3, 5},
-     /*button_num=*/3,
-     {u"one", u"one two three", u"one two three four five"}},
-};
+      const TabSliderType type = std::get<0>(info.param);
+      switch (type) {
+        case TabSliderType::kIconSlider:
+          test_name = "IconSlider";
+          break;
+        case TabSliderType::kLabelSlider:
+          test_name = "LabelSlider";
+          break;
+        case TabSliderType::kIconLabelSlider:
+          test_name = "IconLabelSlider";
+          break;
+      }
 
-INSTANTIATE_TEST_SUITE_P(TabSliderStyle,
-                         TabSliderTest,
-                         testing::ValuesIn(kTabSliderLayoutTestParams));
+      test_name +=
+          std::get<1>(info.param) ? "EvenlyDistributed" : "UnevenlyDistributed";
+      test_name += std::get<2>(info.param) ? "DefaultLayout" : "CustomLayout";
+      test_name += base::NumberToString(std::get<3>(info.param)) + "Buttons";
+      return test_name;
+    });
 
 // Tests tab slider layout works properly with different layout settings.
 TEST_P(TabSliderTest, TabSliderLayout) {
-  TabSliderTestParams params = GetParam();
+  auto test_params = GetParam();
+  const TabSliderType type = std::get<0>(test_params);
+  const bool distribute_space_evenly = std::get<1>(test_params);
+  const bool use_default_layout = std::get<2>(test_params);
+  const int tab_num = std::get<3>(test_params);
+
+  TabSlider::InitParams params = (type == TabSliderType::kIconLabelSlider)
+                                     ? IconLabelSliderButton::kSliderParams
+                                     : TabSlider::kDefaultParams;
+
+  params.distribute_space_evenly = distribute_space_evenly;
+
+  if (!use_default_layout) {
+    params.internal_border_padding = 3;
+    params.between_buttons_spacing = 5;
+  }
 
   // Create a tab slider.
   auto tab_slider =
-      std::make_unique<TabSlider>(true, true, params.distribute_space_evenly);
+      std::make_unique<TabSlider>(/*max_tab_num=*/tab_num, params);
 
+  // The texts for tabs.
+  const std::u16string labels_text[] = {u"one", u"one two three",
+                                        u"one two three four five"};
   // Add slider buttons according to the testing parameters.
-  TabSlider::LayoutParams layout_params;
+  std::vector<TabSliderButton*> buttons(tab_num, nullptr);
   int max_button_width = 0;
   int max_button_height = 0;
-  std::vector<TabSliderButton*> buttons(params.button_num, nullptr);
-  for (int i = 0; i < params.button_num; i++) {
-    switch (params.type) {
+  for (int i = 0; i < tab_num; i++) {
+    switch (type) {
       case TabSliderType::kIconSlider:
         buttons[i] = tab_slider->AddButton<IconSliderButton>(
             IconSliderButton::PressedCallback(), &kTestIcon,
@@ -674,19 +564,14 @@ TEST_P(TabSliderTest, TabSliderLayout) {
         break;
       case TabSliderType::kLabelSlider:
         buttons[i] = tab_slider->AddButton<LabelSliderButton>(
-            LabelSliderButton::PressedCallback(), params.labels_text[i],
+            LabelSliderButton::PressedCallback(), labels_text[i],
             u"label slider button");
         break;
       case TabSliderType::kIconLabelSlider:
         buttons[i] = tab_slider->AddButton<IconLabelSliderButton>(
             IconLabelSliderButton::PressedCallback(), &kTestIcon,
-            params.labels_text[i], u"icon label slider button");
+            labels_text[i], u"icon label slider button");
         break;
-    }
-
-    // Cache the recommended layout provided by the slider button.
-    if (auto recommended_layout = buttons[i]->GetRecommendedSliderLayout()) {
-      layout_params = *recommended_layout;
     }
 
     // Cache the maximum size of the button.
@@ -695,18 +580,12 @@ TEST_P(TabSliderTest, TabSliderLayout) {
     max_button_height = std::max(max_button_height, pref_size.height());
   }
 
-  // If using customized layout, overwrite the current layout.
-  if (params.custom_layout) {
-    tab_slider->SetCustomLayout(*params.custom_layout);
-    layout_params = *params.custom_layout;
-  }
-
   // Attach the tab slider to a widget.
   auto widget = CreateWidgetWithComponent(std::move(tab_slider));
-  int x = layout_params.internal_border_padding;
-  const int y = layout_params.internal_border_padding;
+  int x = params.internal_border_padding;
+  const int y = params.internal_border_padding;
   // Check if the layout works properly.
-  for (int i = 0; i < params.button_num; i++) {
+  for (int i = 0; i < tab_num; i++) {
     const gfx::Size pref_size = buttons[i]->GetPreferredSize();
     const int expect_width =
         params.distribute_space_evenly ? max_button_width : pref_size.width();
@@ -714,7 +593,7 @@ TEST_P(TabSliderTest, TabSliderLayout) {
         params.distribute_space_evenly ? max_button_height : pref_size.height();
     EXPECT_EQ(buttons[i]->bounds(),
               gfx::Rect(x, y, expect_width, expect_height));
-    x += expect_width + layout_params.between_buttons_spacing;
+    x += expect_width + params.between_buttons_spacing;
   }
 }
 

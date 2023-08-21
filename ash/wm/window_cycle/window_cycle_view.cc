@@ -163,7 +163,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   if (is_interactive_alt_tab_mode_allowed) {
-    tab_slider_ = AddChildView(std::make_unique<TabSlider>());
+    tab_slider_ = AddChildView(std::make_unique<TabSlider>(/*max_tab_num=*/2));
     all_desks_tab_slider_button_ =
         tab_slider_->AddButton(std::make_unique<LabelSliderButton>(
             base::BindRepeating(

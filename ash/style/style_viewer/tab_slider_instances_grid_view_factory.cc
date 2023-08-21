@@ -28,7 +28,7 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of icon slider with two buttons, a slider background,
   // the recommended layout, and a selector animation.
-  auto icon_slider_two = std::make_unique<TabSlider>();
+  auto icon_slider_two = std::make_unique<TabSlider>(/*max_tab_num=*/2);
   // Add the buttons with `IconSliderButton` unique pointer.
   auto* image_button =
       icon_slider_two->AddButton(std::make_unique<IconSliderButton>(
@@ -41,11 +41,13 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of icon slider with three buttons, no background, a
   // customized layout, and no slider animation.
+  TabSlider::InitParams params = TabSlider::kDefaultParams;
+  params.internal_border_padding = 0;
+  params.between_buttons_spacing = 16;
+  params.has_background = false;
+  params.has_selector_animation = false;
   auto icon_slider_three = std::make_unique<TabSlider>(
-      /*has_background_=*/false, /*has_slider_background_animation=*/false);
-  icon_slider_three->SetCustomLayout(
-      {/*button_container_spacing=*/0, /*between_buttons_spacing=*/16});
-  // Add the buttons with ctor arguments of `IconSliderButton`.
+      /*max_tab_num=*/3, params);
   auto* fullscreen_button = icon_slider_three->AddButton<IconSliderButton>(
       IconSliderButton::PressedCallback(), &kCaptureModeFullscreenIcon,
       u"fullscreen mode");
@@ -58,7 +60,8 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
       u"window mode");
 
   // Create an instance of disabled icon slider with two buttons.
-  auto icon_slider_two_disabled = std::make_unique<TabSlider>();
+  auto icon_slider_two_disabled =
+      std::make_unique<TabSlider>(/*max_tab_num=*/2);
   auto* disabled_image_button =
       icon_slider_two_disabled->AddButton<IconSliderButton>(
           IconSliderButton::PressedCallback(), &kCaptureModeImageIcon,
@@ -71,9 +74,10 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of label slider with two buttons and unevenly
   // distributed space.
+  params = TabSlider::kDefaultParams;
+  params.distribute_space_evenly = false;
   auto label_slider_two_unevenly = std::make_unique<TabSlider>(
-      /*has_background=*/true, /*has_selector_animation=*/true,
-      /*distribute_space_evenly=*/false);
+      /*max_tab_num=*/2, params);
   // Add the buttons with `TabSliderButton` unique pointer.
   auto* label_button =
       label_slider_two_unevenly->AddButton(std::make_unique<LabelSliderButton>(
@@ -84,7 +88,7 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of label slider with two buttons and evenly distributed
   // space.
-  auto label_slider_two = std::make_unique<TabSlider>();
+  auto label_slider_two = std::make_unique<TabSlider>(/*max_tab_num=*/2);
   auto* label_button_two_1 = label_slider_two->AddButton<LabelSliderButton>(
       LabelSliderButton::PressedCallback(), u"one", u"label 1");
   label_button_two_1->SetSelected(true);
@@ -93,7 +97,7 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of label slider with three buttons and evenly
   // distributed space.
-  auto label_slider_three = std::make_unique<TabSlider>();
+  auto label_slider_three = std::make_unique<TabSlider>(/*max_tab_num=*/3);
   auto* label_button_three_1 = label_slider_three->AddButton<LabelSliderButton>(
       LabelSliderButton::PressedCallback(), u"one", u"label 1");
   label_button_three_1->SetSelected(true);
@@ -105,9 +109,10 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of icon + label slider with two buttons and unevenly
   // distributed space.
+  params = IconLabelSliderButton::kSliderParams;
+  params.distribute_space_evenly = false;
   auto icon_label_slider_two_unevenly = std::make_unique<TabSlider>(
-      /*has_background=*/true, /*has_selector_animation=*/true,
-      /*distribute_space_evenly=*/false);
+      /*max_tab_num=*/2, params);
   auto* icon_label_button =
       icon_label_slider_two_unevenly->AddButton<IconLabelSliderButton>(
           IconLabelSliderButton::PressedCallback(),
@@ -119,7 +124,8 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
 
   // Create an instance of icon + label slider with three buttons and evenly
   // distributed space.
-  auto icon_label_slider_three = std::make_unique<TabSlider>();
+  auto icon_label_slider_three = std::make_unique<TabSlider>(
+      /*max_tab_num=*/3, IconLabelSliderButton::kSliderParams);
   auto* icon_label_button_1 =
       icon_label_slider_three->AddButton<IconLabelSliderButton>(
           IconLabelSliderButton::PressedCallback(),
@@ -134,7 +140,8 @@ std::unique_ptr<SystemUIComponentsGridView> CreateTabSliderInstancesGridView() {
       u"button 3");
 
   // Create an instance of disabled icon + label slider with two buttons.
-  auto icon_label_slider_two_disabled = std::make_unique<TabSlider>();
+  auto icon_label_slider_two_disabled =
+      std::make_unique<TabSlider>(/*max_tab_num=*/2);
   auto* icon_label_button_disabled =
       icon_label_slider_two_disabled->AddButton<IconLabelSliderButton>(
           IconLabelSliderButton::PressedCallback(),
