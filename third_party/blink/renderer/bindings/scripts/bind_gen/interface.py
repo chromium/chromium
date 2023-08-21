@@ -2863,16 +2863,56 @@ def _make_interceptor_callback_def(cg_context, function_name, arg_decls,
     return func_def
 
 
+def _make_interceptor_callback_args(cg_context, named_or_indexed,
+                                    callback_type):
+    arg_decls = []
+    arg_names = []
+
+    # name/index parameter is used for every interceptor except Enumerator.
+    if callback_type != "Enumerator":
+        if named_or_indexed == "Named":
+            arg_decls.append("v8::Local<v8::Name> v8_property_name")
+            arg_names.append("v8_property_name")
+        elif named_or_indexed == "Indexed":
+            arg_decls.append("uint32_t index")
+            arg_names.append("index")
+        else:
+            assert False
+
+    if callback_type == "Getter":
+        callback_info_type = "Value"
+    elif callback_type == "Setter":
+        arg_decls.append("v8::Local<v8::Value> v8_property_value")
+        arg_names.append("v8_property_value")
+        callback_info_type = "Value"
+    elif callback_type == "Query":
+        callback_info_type = "Integer"
+    elif callback_type == "Deleter":
+        callback_info_type = "Boolean"
+    elif callback_type == "Enumerator":
+        callback_info_type = "Array"
+    elif callback_type == "Definer":
+        arg_decls.append("const v8::PropertyDescriptor& v8_property_desc")
+        arg_names.append("v8_property_desc")
+        callback_info_type = "Value"
+    elif callback_type == "Descriptor":
+        callback_info_type = "Value"
+    else:
+        assert False
+    arg_decls.append(
+        _format("const v8::PropertyCallbackInfo<v8::{}>& info",
+                callback_info_type))
+    arg_names.append("info")
+
+    return arg_decls, arg_names
+
+
 def make_indexed_property_getter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Getter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertyGetter")
@@ -2908,13 +2948,8 @@ def make_indexed_property_setter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_value", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Setter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertySetter")
@@ -2992,12 +3027,8 @@ def make_indexed_property_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Deleter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertyDeleter")
@@ -3036,13 +3067,8 @@ def make_indexed_property_definer_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_desc", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Definer")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertyDefiner")
@@ -3110,12 +3136,8 @@ def make_indexed_property_descriptor_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Descriptor")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertyDescriptor")
@@ -3171,9 +3193,8 @@ def make_indexed_property_enumerator_callback(cg_context, function_name):
     if not cg_context.interface.indexed_and_named_properties.indexed_getter:
         return None, None
 
-    arg_decls = ["const v8::PropertyCallbackInfo<v8::Array>& info"]
-    arg_names = ["info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Enumerator")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "IndexedPropertyEnumerator")
@@ -3203,12 +3224,8 @@ def make_named_property_getter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Getter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyGetter")
@@ -3270,13 +3287,8 @@ def make_named_property_setter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_value", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Setter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertySetter")
@@ -3377,12 +3389,8 @@ def make_named_property_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Deleter")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyDeleter")
@@ -3472,13 +3480,8 @@ def make_named_property_definer_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_desc", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Definer")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyDefiner")
@@ -3560,12 +3563,8 @@ def make_named_property_descriptor_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Descriptor")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyDescriptor")
@@ -3641,12 +3640,8 @@ def make_named_property_query_callback(cg_context, function_name):
     if "NotEnumerable" in props.named_getter.extended_attributes:
         return None, None
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Integer>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Query")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyQuery")
@@ -3692,9 +3687,8 @@ def make_named_property_enumerator_callback(cg_context, function_name):
     if "NotEnumerable" in props.named_getter.extended_attributes:
         return None, None
 
-    arg_decls = ["const v8::PropertyCallbackInfo<v8::Array>& info"]
-    arg_names = ["info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Enumerator")
     func_decl, func_def = _make_interceptor_callback(
         cg_context, function_name, arg_decls, arg_names, cg_context.class_name,
         "NamedPropertyEnumerator")
@@ -3740,30 +3734,9 @@ def make_named_props_obj_indexed_callback(cg_context, callback_type):
     """
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(callback_type, str)
-    arg_decls = ["uint32_t index"]
-    arg_names = ["index"]
 
-    if callback_type == "Getter":
-        callback_info_type = "Value"
-    elif callback_type == "Setter":
-        arg_decls.append("v8::Local<v8::Value> v8_property_value")
-        arg_names.append("v8_property_value")
-        callback_info_type = "Value"
-    elif callback_type == "Deleter":
-        callback_info_type = "Boolean"
-    elif callback_type == "Definer":
-        arg_decls.append("const v8::PropertyDescriptor& v8_property_desc")
-        arg_names.append("v8_property_desc")
-        callback_info_type = "Value"
-    elif callback_type == "Descriptor":
-        callback_info_type = "Value"
-    else:
-        assert False
-    arg_decls.append(
-        _format("const v8::PropertyCallbackInfo<v8::{}>& info",
-                callback_info_type))
-    arg_names.append("info")
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", callback_type)
     function_name = "NamedPropsObjIndexed{}Callback".format(callback_type)
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
@@ -3795,12 +3768,8 @@ def make_named_props_obj_named_getter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Getter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "NamedPropertiesObject_NamedPropertyGetter")
@@ -3825,13 +3794,8 @@ def make_named_props_obj_named_setter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_value", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Setter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "NamedPropertiesObject_NamedPropertySetter")
@@ -3857,12 +3821,8 @@ def make_named_props_obj_named_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Deleter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "NamedPropertiesObject_NamedPropertyDeleter")
@@ -3889,13 +3849,8 @@ def make_named_props_obj_named_definer_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_desc", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Definer")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "NamedPropertiesObject_NamedPropertyDefiner")
@@ -3921,12 +3876,8 @@ def make_named_props_obj_named_descriptor_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Descriptor")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "NamedPropertiesObject_NamedPropertyDescriptor")
@@ -4008,12 +3959,8 @@ def make_cross_origin_indexed_getter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Getter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertyGetter")
@@ -4049,13 +3996,8 @@ def make_cross_origin_indexed_setter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_value", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Setter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertySetter")
@@ -4070,12 +4012,8 @@ def make_cross_origin_indexed_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Deleter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertyDeleter")
@@ -4090,13 +4028,8 @@ def make_cross_origin_indexed_definer_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "v8_property_desc", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Definer")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertyDefiner")
@@ -4111,12 +4044,8 @@ def make_cross_origin_indexed_descriptor_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "uint32_t index",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["index", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Descriptor")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertyDescriptor")
@@ -4148,9 +4077,8 @@ def make_cross_origin_indexed_enumerator_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = ["const v8::PropertyCallbackInfo<v8::Array>& info"]
-    arg_names = ["info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Indexed", "Enumerator")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_IndexedPropertyEnumerator")
@@ -4174,12 +4102,8 @@ def make_cross_origin_named_getter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Getter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyGetter")
@@ -4245,13 +4169,8 @@ def make_cross_origin_named_setter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "v8::Local<v8::Value> v8_property_value",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_value", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Setter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertySetter")
@@ -4282,12 +4201,8 @@ def make_cross_origin_named_deleter_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Boolean>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Deleter")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyDeleter")
@@ -4302,13 +4217,8 @@ def make_cross_origin_named_definer_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyDescriptor& v8_property_desc",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "v8_property_desc", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Definer")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyDefiner")
@@ -4323,12 +4233,8 @@ def make_cross_origin_named_descriptor_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Value>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Descriptor")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyDescriptor")
@@ -4419,12 +4325,8 @@ def make_cross_origin_named_query_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = [
-        "v8::Local<v8::Name> v8_property_name",
-        "const v8::PropertyCallbackInfo<v8::Integer>& info",
-    ]
-    arg_names = ["v8_property_name", "info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Query")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyQuery")
@@ -4476,9 +4378,8 @@ def make_cross_origin_named_enumerator_callback(cg_context, function_name):
     assert isinstance(cg_context, CodeGenContext)
     assert isinstance(function_name, str)
 
-    arg_decls = ["const v8::PropertyCallbackInfo<v8::Array>& info"]
-    arg_names = ["info"]
-
+    arg_decls, arg_names = _make_interceptor_callback_args(
+        cg_context, "Named", "Enumerator")
     func_def = _make_interceptor_callback_def(
         cg_context, function_name, arg_decls, arg_names, None,
         "CrossOriginProperty_NamedPropertyEnumerator")
