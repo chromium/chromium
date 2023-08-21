@@ -132,21 +132,35 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
+  auto vlog = [&](std::string message) {
+    VLOG(3) << "NSPD::OnResolveProxy(" << url << ", " << top_frame_url << ") - "
+            << message;
+  };
   if (!EligibleForProxy(*result, method)) {
+    vlog("not eligible");
     return;
   }
 
   if (IsForIpProtection()) {
-    if (auth_token_cache_ && network_service_proxy_allow_list_ &&
-        network_service_proxy_allow_list_->IsEnabled() &&
-        network_service_proxy_allow_list_->Matches(url, top_frame_url) &&
-        auth_token_cache_->IsAuthTokenAvailable()) {
-      result->set_is_for_ip_protection(true);
-    } else {
-      // Do not use the proxy if the request doesn't match the allow list or the
-      // token cache is not available or does not have a token.
+    // Do not use the proxy if the request doesn't match the allow list or the
+    // token cache is not available or does not have a token.
+    if (!auth_token_cache_ || !network_service_proxy_allow_list_) {
+      vlog("no cache or proxy allow list");
       return;
     }
+    if (!network_service_proxy_allow_list_->IsEnabled()) {
+      vlog("proxy allow list not enabled");
+      return;
+    }
+    if (!network_service_proxy_allow_list_->Matches(url, top_frame_url)) {
+      vlog("proxy allow list did not match");
+      return;
+    }
+    if (!auth_token_cache_->IsAuthTokenAvailable()) {
+      vlog("no auth token available from cache");
+      return;
+    }
+    result->set_is_for_ip_protection(true);
   }
 
   net::ProxyInfo proxy_info;
@@ -157,7 +171,13 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
         !proxy_config_->should_override_existing_config) {
       MergeProxyRules(result->proxy_list(), proxy_info);
     }
+    if (VLOG_IS_ON(3)) {
+      vlog(base::StrCat(
+          {"setting proxy list to ", proxy_info.proxy_list().ToPacString()}));
+    }
     result->OverrideProxyList(proxy_info.proxy_list());
+  } else {
+    vlog("not applicable");
   }
 }
 
@@ -171,18 +191,28 @@ void NetworkServiceProxyDelegate::OnFallback(const net::ProxyServer& bad_proxy,
 void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyServer& proxy_server,
     net::HttpRequestHeaders* extra_headers) {
+  auto vlog = [](std::string message) {
+    VLOG(2) << "NSPD::OnBeforeTunnelRequest() - " << message;
+  };
   if (IsInProxyConfig(proxy_server)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
     if (auth_token_cache_ && IsForIpProtection()) {
       auto token = auth_token_cache_->GetAuthToken();
       if (token) {
+        vlog("adding auth token");
         std::string encoded_token;
         base::Base64Encode((*token)->token, &encoded_token);
         auto value = base::StrCat({"Bearer ", encoded_token});
         extra_headers->SetHeader(net::HttpRequestHeaders::kAuthorization,
                                  value);
+      } else {
+        vlog("no token available");
       }
+    } else {
+      vlog("not for IP protection");
     }
+  } else {
+    vlog("no matching proxy server");
   }
 }
 

@@ -76,6 +76,7 @@ void IpProtectionAuthTokenCacheImpl::MaybeRefillCache() {
 
   if (cache_.size() < cache_low_water_mark_) {
     currently_getting_ = true;
+    VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
     auth_token_getter_->TryGetAuthTokens(
         batch_size_,
         base::BindOnce(&IpProtectionAuthTokenCacheImpl::OnGotAuthTokens,
@@ -127,6 +128,7 @@ void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   currently_getting_ = false;
   if (tokens.has_value()) {
+    VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
     try_get_auth_tokens_after_ = base::Time();
     cache_.insert(cache_.end(), std::make_move_iterator(tokens->begin()),
                   std::make_move_iterator(tokens->end()));
@@ -136,6 +138,7 @@ void IpProtectionAuthTokenCacheImpl::OnGotAuthTokens(
                 return a->expiration < b->expiration;
               });
   } else {
+    VLOG(2) << "IPPATC::OnGotAuthTokens back off until " << *try_again_after;
     try_get_auth_tokens_after_ = *try_again_after;
   }
 
@@ -153,6 +156,8 @@ IpProtectionAuthTokenCacheImpl::GetAuthToken() {
 
   base::UmaHistogramBoolean("NetworkService.IpProtection.GetAuthTokenResult",
                             cache_.size() > 0);
+  VLOG(2) << "IPPATC::GetAuthToken with " << cache_.size()
+          << " tokens available";
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
   if (cache_.size() > 0) {

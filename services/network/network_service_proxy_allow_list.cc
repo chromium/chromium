@@ -113,9 +113,14 @@ void NetworkServiceProxyAllowList::AddDomainRules(
 
 bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
                                            const GURL& top_frame_url) {
+  auto vlog = [&](std::string message) {
+    VLOG(3) << "NSPAL::Matches(" << request_url << ", " << top_frame_url
+            << ") - " << message;
+  };
   // If there is no top frame URL, the request should not be proxied because it
   // is not to a 3P resource.
   if (!IsPopulated() || top_frame_url.is_empty()) {
+    vlog("false (not populated or empty top_frame_url)");
     return false;
   }
 
@@ -124,6 +129,7 @@ bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
 
   // First-party requests should not be proxied.
   if (request_site == top_site) {
+    VLOG(2) << " -> false (same-site)";
     return false;
   }
 
@@ -134,11 +140,18 @@ bool NetworkServiceProxyAllowList::Matches(const GURL& request_url,
          allow_list_with_bypass_map_.at(partition_map_key)) {
       auto result = rule->Evaluate(request_url);
       if (result == net::SchemeHostPortMatcherResult::kInclude) {
-        return bypass_rules.Matches(top_frame_url, true);
+        bool m = bypass_rules.Matches(top_frame_url, true);
+        if (m) {
+          vlog("true from bypass_rules.Matches");
+        } else {
+          vlog("false from bypass_rules.Matches");
+        }
+        return m;
       }
     }
   }
 
+  vlog("false (fall-through)");
   return false;
 }
 
