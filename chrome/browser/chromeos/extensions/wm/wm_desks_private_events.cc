@@ -37,7 +37,8 @@ void WMDesksEventsRouter::OnDeskAdded(const base::Uuid& desk_id,
                 : events::DESK_EVENTS_ON_DESK_ADDED,
       api::wm_desks_private::OnDeskAdded::kEventName,
       base::Value::List()
-          .Append(desk_id.AsLowercaseString()));
+          .Append(desk_id.AsLowercaseString())
+          .Append(from_undo));
   event_router_->BroadcastEvent(std::move(event));
 }
 
