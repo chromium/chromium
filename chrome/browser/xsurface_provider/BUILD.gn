@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderFactory.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/XSurfaceProcessScopeProvider.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooks.java",
+    "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooksImpl.java",
+  ]
+  deps = [
+    "//chrome/browser/xsurface:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/XSurfaceHooksImpl*.class" ]
+}
+
+android_library("dependency_provider_impl_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/ProcessScopeDependencyProviderImpl.java" ]
+  deps = [
+    "//chrome/browser/feed/android:java",
+    "//chrome/browser/privacy:java",
+    "//chrome/browser/xsurface:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("hooks_public_impl_java") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/hooks/XSurfaceHooksImpl.java" ]
+  deps = [ ":java" ]
+}
+
+robolectric_library("junit") {
+  sources = [ "android/java/src/org/chromium/chrome/browser/xsurface_provider/XSurfaceProcessScopeProviderTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/xsurface:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
