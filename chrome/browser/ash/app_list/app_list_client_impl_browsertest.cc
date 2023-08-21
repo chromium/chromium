@@ -192,6 +192,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsPlatformAppOpen) {
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   const extensions::Extension* app = InstallPlatformApp("minimal");
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(app_service_proxy);
 
   // Bring up the app list.
   EXPECT_FALSE(client->GetAppListWindow());
@@ -204,9 +207,11 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
 
   // Open the uninstall dialog.
   base::RunLoop run_loop;
-  client->UninstallApp(profile(), app->id());
+  app_service_proxy->UninstallForTesting(
+      app->id(), client->GetAppListWindow(),
+      base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }));
+  run_loop.Run();
 
-  run_loop.RunUntilIdle();
   EXPECT_FALSE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 
   // The app list should not be dismissed when the dialog is shown.

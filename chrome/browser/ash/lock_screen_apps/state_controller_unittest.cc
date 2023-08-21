@@ -60,6 +60,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -444,6 +445,10 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   }
 
   void TearDown() override {
+    // Add loop to wait for icon loading. Otherwise,
+    // data_decoder::ServiceProvider is set as null, and data_decoder for icon
+    // loading could cause crash.
+    base::RunLoop().RunUntilIdle();
     state_controller_->RemoveObserver(&observer_);
     state_controller_->Shutdown();
     focus_cycler_delegate_.reset();
@@ -701,6 +706,8 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
   scoped_refptr<const extensions::Extension> app_;
 
   base::SimpleTestTickClock tick_clock_;
+
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 class LockScreenAppStateKioskUserTest : public LockScreenAppStateTest {
