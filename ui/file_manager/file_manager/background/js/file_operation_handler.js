@@ -358,6 +358,7 @@ function getPolicyExtraButtonText_(event) {
       case chrome.fileManagerPrivate.IOTaskType.COPY:
         return str('DLP_FILES_COPY_WARN_CONTINUE_BUTTON');
       case chrome.fileManagerPrivate.IOTaskType.MOVE:
+      case chrome.fileManagerPrivate.IOTaskType.RESTORE_TO_DESTINATION:
         return str('DLP_FILES_MOVE_WARN_CONTINUE_BUTTON');
       default:
         console.error('Unexpected operation type: ' + event.type);

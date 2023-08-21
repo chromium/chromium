@@ -247,6 +247,7 @@ export class ProgressCenterPanel {
           case ProgressItemType.COPY:
             return str('DLP_FILES_COPY_REVIEW_TITLE');
           case ProgressItemType.MOVE:
+          case ProgressItemType.RESTORE_TO_DESTINATION:
             return str('DLP_FILES_MOVE_REVIEW_TITLE');
           default:
             console.error('Unexpected operation type: ' + item.type);

@@ -904,12 +904,15 @@ void FilesPolicyNotificationManager::SetTaskRunnerForTesting(
 
 void FilesPolicyNotificationManager::OnIOTaskStatus(
     const file_manager::io_task::ProgressStatus& status) {
-  // Observe only Copy and Move tasks.
+  // Observe only Copy, Move, and RestoreToDestination tasks.
   if (status.type != file_manager::io_task::OperationType::kCopy &&
-      status.type != file_manager::io_task::OperationType::kMove) {
+      status.type != file_manager::io_task::OperationType::kMove &&
+      status.type !=
+          file_manager::io_task::OperationType::kRestoreToDestination) {
     return;
   }
-
+  // RestoreToDestination have an underlying Move task, so we show the same UI
+  // as for Move.
   dlp::FileAction action =
       status.type == file_manager::io_task::OperationType::kCopy
           ? dlp::FileAction::kCopy
