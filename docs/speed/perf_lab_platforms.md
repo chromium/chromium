@@ -65,6 +65,7 @@
 
 ### Mac
 
+ * mac-14-m1-pro-perf: Mac M1 PRO 2020 running MacOS 14.
  * mac-laptop_high_end-perf-pgo: MacBook Pro, Core i7 2.8 GHz, 16GB RAM, 256GB SSD, Radeon 55.
  * mac-laptop_low_end-perf-pgo: MacBook Air, Core i5 1.8 GHz, 8GB RAM, 128GB SSD, HD Graphics.
 

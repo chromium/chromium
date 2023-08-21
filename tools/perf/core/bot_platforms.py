@@ -613,6 +613,13 @@ MAC_M1_PRO = PerfPlatform(
     _MAC_M1_PRO_BENCHMARK_CONFIGS,
     1,
     'mac')
+MAC_14_M1_PRO = PerfPlatform(
+    'mac-14-m1-pro-perf',
+    'Mac M1 PRO 2020 running MacOS 14',
+    _MAC_M1_PRO_BENCHMARK_CONFIGS,
+    1,
+    'mac',
+    pinpoint_only=True)
 
 # Win
 WIN_10_LOW_END = PerfPlatform(
