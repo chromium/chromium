@@ -1671,6 +1671,9 @@
                   '|chrome/browser/ui/pdf/'\
                   '|pdf/'
     },
+    'pdf_ocr': {
+      'filepath': 'pdf_ocr'
+    },
     'pepper_api': {
       'filepath': 'ppapi/api'\
                   '|ppapi/c',
@@ -2270,6 +2273,7 @@
                       'kbabbitt@microsoft.com',
                       'kyungjunlee+watcha11y@google.com',
                       'nektar+watch@chromium.org',
+                      'rhalavati+watch@chromium.org',
                       'sarakato+watch@chromium.org',
                       'yuzo+watch@chromium.org',
                       'francisjp+watcha11y@google.com'],
@@ -2932,6 +2936,8 @@
                  'gogerald+paymentswatch@chromium.org',
                  'nburris+paymentswatch@chromium.org'],
     'pdf': ['pdf-reviews@chromium.org'],
+    'pdf_ocr': ['kyungjunlee+watch@google.com',
+                'rhalavati+watch@chromium.org'],
     'pepper_api': ['binji+watch@chromium.org',
                    'bradnelson+warch@chromium.org',
                    'ihf+watch@chromium.org',
