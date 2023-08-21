@@ -636,6 +636,7 @@ views::Builder<views::BoxLayoutView> AudioDetailedView::CreateAgcInfoRow(
     const AudioDevice& device) {
   return views::Builder<views::BoxLayoutView>()
       .SetID(AudioDetailedViewID::kAgcInfoRow)
+      .SetFocusBehavior(FocusBehavior::NEVER)
       .SetDefaultFlex(1)
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal,
@@ -654,6 +655,7 @@ views::Builder<views::BoxLayoutView> AudioDetailedView::CreateAgcInfoRow(
               .SetAutoColorReadabilityEnabled(false)
               .SetSubpixelRenderingEnabled(false)
               .SetBorder(views::CreateEmptyBorder(kToggleButtonRowLabelPadding))
+              .SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY)
               .SetID(AudioDetailedViewID::kAgcInfoLabel))
       .AddChild(views::Builder<views::LabelButton>(
           std::make_unique<views::LabelButton>(
@@ -676,6 +678,9 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateQsAgcInfoRow(
       std::move(info_icon),
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO,
                                  std::u16string()));
+  views::Label* text_label = agc_info_view->text_label();
+  CHECK(text_label);
+  text_label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   // Add settings button to link to the audio settings page.
   auto settings = std::make_unique<views::LabelButton>(
@@ -695,6 +700,7 @@ std::unique_ptr<HoverHighlightView> AudioDetailedView::CreateQsAgcInfoRow(
                                       kQsToggleButtonRowLabelPadding));
   agc_info_view->SetPreferredSize(kQsToggleButtonRowPreferredSize);
   agc_info_view->SetProperty(views::kMarginsKey, kQsToggleButtonRowMargins);
+  agc_info_view->SetFocusBehavior(FocusBehavior::NEVER);
 
   return agc_info_view;
 }
