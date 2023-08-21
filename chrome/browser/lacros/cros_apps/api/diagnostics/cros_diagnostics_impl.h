@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_LACROS_CROS_APPS_API_DIAGNOSTICS_CROS_DIAGNOSTICS_IMPL_H_
 #define CHROME_BROWSER_LACROS_CROS_APPS_API_DIAGNOSTICS_CROS_DIAGNOSTICS_IMPL_H_
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,6 +25,9 @@ class CrosDiagnosticsImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::CrosDiagnostics> receiver);
 
+  // blink::mojom::CrosDiagnostics
+  void GetCpuInfo(GetCpuInfoCallback callback) override;
+
  private:
   friend class content::DocumentUserData<CrosDiagnosticsImpl>;
 
@@ -31,9 +35,17 @@ class CrosDiagnosticsImpl
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::CrosDiagnostics> receiver);
 
+  void GetCpuInfoPostTaskCallback(GetCpuInfoCallback callback,
+                                  blink::mojom::CrosCpuInfoPtr cpu_info_mojom);
+
   DOCUMENT_USER_DATA_KEY_DECL();
 
   mojo::Receiver<blink::mojom::CrosDiagnostics> receiver_;
+
+  // Last member definition. Needed here because WeakPtrFactory members which
+  // refer to their outer class must be the last member in the outer class
+  // definition.
+  base::WeakPtrFactory<CrosDiagnosticsImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_LACROS_CROS_APPS_API_DIAGNOSTICS_CROS_DIAGNOSTICS_IMPL_H_

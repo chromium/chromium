@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// ChromeOS Diagnostics API.
+//
 // Prototype API used to retrieve diagnostics information from the system, e.g.
 // CPU/memory usage statistics and OS information.
-// Available to window and service worker LaCrOS main frames when enabled.
-interface CrosDiagnostics {};
+//
+// Available to window LaCrOS main frames when enabled.
+interface CrosDiagnostics {
+  // Retrieves diagnostics information of the CPU.
+  //
+  // Returns a promise containing diagnostics information
+  // of the CPU, e.g. model name, utilization and temperature.
+  [CallWith=ScriptState] Promise<CrosCpuInfo> getCpuInfo();
+};

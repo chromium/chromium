@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Diagnostics information of the CPU, e.g. model name, utilization and
+// temperature.
+dictionary CrosCpuInfo {
+  // The architecture of the CPU, e.g. "x86", "x86_64", "ARM", "ARM_64".
+  DOMString architectureName;
+
+  // The model name of the CPU, e.g. "AMD Ryzen 7 7840U", "Intel Core i7-1370P".
+  DOMString modelName;
+
+  // The number of logical processors available.
+  long numOfProcessors;
+};

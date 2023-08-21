@@ -5,4 +5,32 @@
 module blink.mojom;
 
 // ChromeOS Diagnostics API.
-interface CrosDiagnostics {};
+//
+// Prototype API used to retrieve diagnostics information from the system, e.g.
+// CPU/memory usage statistics and OS information.
+//
+// This interface is used in blink by blink::CrosDiagnostics which is enabled
+// when `BlinkExtensionChromeOSDiagnostics` is enabled. On the browser side this
+// interface is implemented by CrosDiagnosticsImpl whose lifetime is tied to the
+// document. There's a 1:1 relationship between CrosDiagnosticsImpl and the
+// document. This interface is only bound if `CrosDiagnosticsApi` is enabled.
+interface CrosDiagnostics {
+  // Retrieves diagnostics information of the CPU.
+  //
+  // The response:
+  // * |cpu_info| - diagnostics information of the CPU, e.g. model name, utilization and temperature.
+  GetCpuInfo() => (CrosCpuInfo cpu_info);
+};
+
+// Diagnostics information of the CPU, e.g. model name, utilization and
+// temperature.
+struct CrosCpuInfo {
+  // The architecture of the CPU, e.g. "x86", "x86_64", "ARM", "ARM_64".
+  string architecture_name;
+
+  // The model name of the CPU, e.g. "AMD Ryzen 7 7840U", "Intel Core i7-1370P".
+  string model_name;
+
+  // The number of logical processors available.
+  int32 num_of_processors;
+};
