@@ -5311,7 +5311,7 @@ def CheckAccessibilityEventsTestsAreIncludedForAndroid(input_api, output_api):
         if f.Action() == 'A':
             message = (
                 "It appears that you are adding platform expectations for a"
-                "\ndump_accessibility_* test, but have not included"
+                "\ndump_accessibility_events* test, but have not included"
                 "\na corresponding change for Android."
                 "\nPlease include the test from:"
                 "\n    content/public/android/javatests/src/org/chromium/"
@@ -5356,10 +5356,10 @@ def CheckAccessibilityTreeTestsAreIncludedForAndroid(input_api, output_api):
     message = []
     for f in input_api.AffectedFiles(include_deletes=True,
                                      file_filter=FilePathFilter):
-        if f.Action() == 'A' or f.Action() == 'D':
+        if f.Action() == 'A':
             message = (
-                "It appears that you are adding, renaming or deleting"
-                "\na dump_accessibility_tree* test, but have not included"
+                "It appears that you are adding platform expectations for a"
+                "\ndump_accessibility_tree* test, but have not included"
                 "\na corresponding change for Android."
                 "\nPlease include (or remove) the test from:"
                 "\n    content/public/android/javatests/src/org/chromium/"
