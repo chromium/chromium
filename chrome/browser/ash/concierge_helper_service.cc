@@ -122,9 +122,10 @@ ConciergeHelperServiceFactory::ConciergeHelperServiceFactory()
               .WithGuest(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-KeyedService* ConciergeHelperServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ConciergeHelperServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ConciergeHelperService();
+  return std::make_unique<ConciergeHelperService>();
 }
 
 }  // namespace ash
