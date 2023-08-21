@@ -109,12 +109,11 @@
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM" desc="Screen reader announcement indicating that current form was autofilled.">
     The form was filled in
   </message>
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <!--TODO(crbug.com/1459990): Align with writers about related strings and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that edit autofill profile option was selected." translateable="false">
     The edit address option was selected
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that delete autofill profile option was selected." translateable="false">
     The delete address option was selected
   </message>
@@ -123,7 +122,6 @@
     The autofilled info was cleared from the form
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that filling address fields option was selected." translateable="false">
     The fill address fields option was selected
   </message>
@@ -140,7 +138,6 @@
     Fill full name
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="Screen reader announcement indicating that the fill everything option was selected." translateable="false">
     The fill everything option was selected
   </message>
@@ -153,17 +150,30 @@
     Manage...
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_EDIT_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub meny to open the edit address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
     Edit address
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
   <message name="IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the bottom of the Autofill sub menu to open the delete address profile dialog." meaning="Entry point to address profile deletion." translateable="false">
     Delete address
   </message>
 
-  <!--TODO(crbug.com/1459990): Align with writers about this string and remove translateable=false-->
+  <message name="IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED" desc="The secondary text displayed on a house number suggestion was selected." meaning="The label for the house number field type store by autofill has been selected in the subpopup." translateable="false">
+    Building number option selected
+  </message>
+
+  <message name="IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED" desc="The secondary text displayed on a street name suggestion was selected." meaning="The label for the street namefield type store by autofill has been selected in the subpopup." translateable="false">
+    Street option selected
+  </message>
+
+  <message name="IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT" desc="The secondary text displayed on a house number suggestion." meaning="The label for the house number field type store by autofill." translateable="false">
+    Building number
+  </message>
+
+  <message name="IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT" desc="The secondary text displayed on a street name suggestion." meaning="The label for the street namefield type store by autofill." translateable="false">
+    Street
+  </message>
+
   <message name="IDS_AUTOFILL_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED" desc="The text displayed at the footer of the Autofill sub menu to fill everything from the address profile." meaning="Fill every available information from the address profile." translateable="false">
     Fill everything
   </message>

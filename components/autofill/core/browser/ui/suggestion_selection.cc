@@ -171,6 +171,53 @@ void AddNameChildSuggestions(const AutofillType& type,
   };
 }
 
+// Adds address line suggestions (ADDRESS_HOME_LINE1 and/or
+// ADDRESS_HOME_LINE2) to `suggestions.children`. It potentially includes
+// sub-children if one of the added suggestions contains
+// ADDRESS_HOME_HOUSE_NUMBER and/or ADDRESS_HOME_STREET_NAME. Returns true if at
+// least one suggestion was appended to `suggestions.children`.
+bool AddAddressLineChildSuggestions(const AutofillProfile& profile,
+                                    const std::string& app_locale,
+                                    std::vector<Suggestion>& suggestions) {
+  auto add_address_line = [&](ServerFieldType type) -> bool {
+    CHECK(type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2);
+
+    if (!AddFieldByFieldSuggestions({type}, profile, app_locale, suggestions)) {
+      return false;
+    }
+
+    if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_HOUSE_NUMBER, profile,
+                                   app_locale) &&
+        AddFieldByFieldSuggestions({ADDRESS_HOME_HOUSE_NUMBER}, profile,
+                                   app_locale, suggestions.back().children)) {
+      Suggestion& address_line_suggestion = suggestions.back().children.back();
+      address_line_suggestion.labels = {
+          {Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT))}};
+      address_line_suggestion
+          .acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_HOUSE_NUMBER_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED);
+    }
+    if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_STREET_NAME, profile,
+                                   app_locale) &&
+        AddFieldByFieldSuggestions({ADDRESS_HOME_STREET_NAME}, profile,
+                                   app_locale, suggestions.back().children)) {
+      Suggestion& address_line_suggestion = suggestions.back().children.back();
+      address_line_suggestion.labels = {
+          {Suggestion::Text(l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT))}};
+      address_line_suggestion
+          .acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_STREET_NAME_SUGGESTION_SECONDARY_TEXT_OPTION_SELECTED);
+    }
+
+    return true;
+  };
+  bool added_address_line1 = add_address_line(ADDRESS_HOME_LINE1);
+  bool added_address_line2 = add_address_line(ADDRESS_HOME_LINE2);
+  return added_address_line1 || added_address_line2;
+}
+
 // Adds address related child suggestions to build autofill popup submenu.
 // The param `type` refers to the triggering field type (clicked by the users)
 // and is used to define  whether the `PopupItemId::kFillFullAddress` suggestion
@@ -188,36 +235,11 @@ void AddAddressChildSuggestions(const AutofillType& type,
         GetFillFullAddressSuggestion(Suggestion::BackendId(profile.guid())));
   }
 
-  // Adds a suggestion of `type` (where type is an address line) and
-  // potentially includes children if the suggestion contains
-  // ADDRESS_HOME_HOUSE_NUMBER and/or ADDRESS_HOME_STREET_NAME.
-  auto add_address_line = [&](ServerFieldType type) -> bool {
-    CHECK(type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_LINE2);
-    bool added_address_line = AddFieldByFieldSuggestions(
-        {type}, profile, app_locale, suggestion.children);
-    if (added_address_line) {
-      if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_HOUSE_NUMBER, profile,
-                                     app_locale)) {
-        AddFieldByFieldSuggestions({ADDRESS_HOME_HOUSE_NUMBER}, profile,
-                                   app_locale,
-                                   suggestion.children.back().children);
-      }
-      if (CheckIfTypeContainsSubtype(type, ADDRESS_HOME_STREET_NAME, profile,
-                                     app_locale)) {
-        AddFieldByFieldSuggestions({ADDRESS_HOME_STREET_NAME}, profile,
-                                   app_locale,
-                                   suggestion.children.back().children);
-      }
-    }
-
-    return added_address_line;
-  };
-
-  bool added_address_line1 = add_address_line(ADDRESS_HOME_LINE1);
-  bool added_address_line2 = add_address_line(ADDRESS_HOME_LINE2);
+  bool added_any_address_line =
+      AddAddressLineChildSuggestions(profile, app_locale, suggestion.children);
   bool added_zip = AddFieldByFieldSuggestions({ADDRESS_HOME_ZIP}, profile,
                                               app_locale, suggestion.children);
-  if (added_address_line1 || added_address_line2 || added_zip) {
+  if (added_any_address_line || added_zip) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }

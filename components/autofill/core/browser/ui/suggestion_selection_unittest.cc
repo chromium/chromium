@@ -196,8 +196,11 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
                   Not(u"Marie"))));
 }
 
+// TODO(crbug.com/1459990): Consider having a test fixture for granular filling
+// related tests. In general these tests are quite lengthy and finding a way to
+// make them more concise is desirable.
 TEST_F(SuggestionSelectionTest,
-       GetPrefixMatchedSuggestions_ChildrenSuggestions) {
+       GetPrefixMatchedSuggestions_FirstLevelChildrenSuggestions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kAutofillGranularFillingAvailable);
@@ -270,9 +273,23 @@ TEST_F(SuggestionSelectionTest,
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
           EqualsSuggestion(PopupItemId::kDeleteAddressProfile)));
+}
 
-  // The address line 1 (sixth child) suggestion should have the following
-  // children: house number street name
+TEST_F(SuggestionSelectionTest,
+       GetPrefixMatchedSuggestions_SecondLevelChildrenSuggestions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+  std::string app_locale = comparator_.app_locale();
+  std::vector<AutofillProfile*> matched_profiles;
+  auto suggestions = GetPrefixMatchedSuggestions(
+      AutofillType(NAME_FIRST), u"", GetCanonicalUtf16Content(""), app_locale,
+      /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
+
+  // We should have two levels of children, The address line 1 (sixth child)
+  // suggestion should have the following children: house number street name.
   ASSERT_EQ(2U, suggestions[0].children[5].children.size());
   EXPECT_THAT(
       suggestions[0].children[5].children,
@@ -285,6 +302,13 @@ TEST_F(SuggestionSelectionTest,
               PopupItemId::kFieldByFieldFilling,
               profile.GetInfo(ServerFieldType::ADDRESS_HOME_STREET_NAME,
                               app_locale))));
+  // House number and street name suggestions should have labels.
+  EXPECT_EQ(suggestions[0].children[5].children[0].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Building number")}}));
+  EXPECT_EQ(suggestions[0].children[5].children[1].labels,
+            std::vector<std::vector<Suggestion::Text>>(
+                {{Suggestion::Text(u"Street")}}));
 }
 
 // Asserts that when the triggering field is a phone field, the phone number
