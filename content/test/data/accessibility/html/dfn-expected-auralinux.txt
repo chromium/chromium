@@ -1,4 +1,5 @@
 [document web] tag:#document
 ++[section] tag:body
-++++[static] name='Web Browser'
+++++[description term] tag:dfn
+++++++[static] name='Web Browser'
 ++++[static] name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

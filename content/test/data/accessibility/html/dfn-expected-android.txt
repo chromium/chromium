@@ -1,2 +1,4 @@
 android.webkit.WebView focusable focused scrollable
-++android.widget.TextView name='Web Browser A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'
+++android.view.View
+++++android.view.View role_description='term' name='Web Browser'
+++++android.widget.TextView name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

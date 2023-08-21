@@ -2981,8 +2981,6 @@ AtkRole AXPlatformNodeAuraLinux::GetAtkRole() const {
     case ax::mojom::Role::kTabPanel:
       return ATK_ROLE_SCROLL_PANE;
     case ax::mojom::Role::kTerm:
-      // TODO(accessibility) This mapping should also be applied to the dfn
-      // element. http://crbug.com/874411
       return ATK_ROLE_DESCRIPTION_TERM;
     case ax::mojom::Role::kTitleBar:
       return ATK_ROLE_TITLE_BAR;

@@ -1,4 +1,5 @@
 AXWebArea
 ++AXGroup
-++++AXStaticText AXValue='Web Browser'
+++++AXGroup AXSubrole=AXTerm
+++++++AXStaticText AXValue='Web Browser'
 ++++AXStaticText AXValue=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'
