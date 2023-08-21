@@ -38,11 +38,11 @@ PluginVmEngagementMetricsService::Factory::Factory()
 
 PluginVmEngagementMetricsService::Factory::~Factory() = default;
 
-KeyedService*
-PluginVmEngagementMetricsService::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> PluginVmEngagementMetricsService::Factory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PluginVmEngagementMetricsService(profile);
+  return std::make_unique<PluginVmEngagementMetricsService>(profile);
 }
 
 bool PluginVmEngagementMetricsService::Factory::
