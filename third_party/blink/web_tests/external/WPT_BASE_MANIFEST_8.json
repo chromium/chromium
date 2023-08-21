@@ -697066,14 +697066,14 @@
       ]
      ],
      "dedicated-worker-import-data-url-cross-origin.html": [
-      "37390947b642ebf1ff80434d6e870a0118d3b0be",
+      "2f790a06a5cd717bbda6bf1eb290ab55674b66c1",
       [
        null,
        {}
       ]
      ],
      "dedicated-worker-import-data-url.any.js": [
-      "0d8510da0c24ad378d1215157a70b4fd615a3d94",
+      "b837ad67da62cfaea0e7461df1b6edccf8f7c00b",
       [
        "workers/modules/dedicated-worker-import-data-url.any.html",
        {
@@ -697192,14 +697192,14 @@
       ]
      ],
      "shared-worker-import-data-url-cross-origin.html": [
-      "3f22c5094d1b8c167d76af14bdce1dc912451f43",
+      "06724a2b9ea58073f3f39910f2a5a7000ccd8d43",
       [
        null,
        {}
       ]
      ],
      "shared-worker-import-data-url.window.js": [
-      "6d54c0e2320553e2df1ec539a2e9368ed3b0e6a3",
+      "5c77f6d93661f9e266c40f1d2c7c5140b47f8777",
       [
        "workers/modules/shared-worker-import-data-url.window.html",
        {
