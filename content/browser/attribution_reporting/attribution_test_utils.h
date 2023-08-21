@@ -490,6 +490,11 @@ MATCHER_P(SourceActiveStateIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.active_state(), result_listener);
 }
 
+MATCHER_P(EventReportWindowsIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.event_report_windows(),
+                            result_listener);
+}
+
 // Trigger matchers.
 
 MATCHER_P(TriggerDestinationOriginIs, matcher, "") {

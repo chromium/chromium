@@ -93,9 +93,10 @@ void RunRandomFakeReportsTest(const SourceType source_type,
   //
   // The probability that t trials are not enough to see all possible results is
   // at most n^{-t/(n*ln(n)) + 1}.
-  int expected_num_combinations =
+  int64_t expected_num_combinations =
       BinomialCoefficient(num_stars + num_bars, num_stars);
-  EXPECT_EQ(static_cast<int>(output_counts.size()), expected_num_combinations);
+  EXPECT_EQ(static_cast<int64_t>(output_counts.size()),
+            expected_num_combinations);
 
   // For any of the n possible results, the expected number of times it is seen
   // is equal to 1/n. Moreover, for any possible result, the probability that it

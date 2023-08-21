@@ -83,6 +83,7 @@ absl::optional<DebugDataType> GetReportDataType(StorableSource::Result result,
   switch (result) {
     case StorableSource::Result::kProhibitedByBrowserPolicy:
     case StorableSource::Result::kExceedsMaxChannelCapacity:
+    case StorableSource::Result::kEventReportWindowsInvalidStartTime:
       return absl::nullopt;
     case StorableSource::Result::kSuccess:
     // `kSourceSuccess` is sent for a few errors as well to mitigate the

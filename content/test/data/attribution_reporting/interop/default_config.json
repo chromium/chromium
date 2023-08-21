@@ -14,6 +14,8 @@
   "max_event_level_reports_per_destination": "1024",
   "max_attributions_per_navigation_source": "3",
   "max_attributions_per_event_source": "1",
+  "max_navigation_info_gain": "11.46173",
+  "max_event_info_gain": "1.58494",
   "max_aggregatable_reports_per_destination": "1024",
   "aggregatable_budget_per_source": "65536",
   "aggregatable_report_min_delay": "10",

@@ -8,6 +8,8 @@
 
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/values.h"
+#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -15,6 +17,7 @@
 namespace attribution_reporting {
 namespace {
 
+using ::attribution_reporting::mojom::SourceRegistrationError;
 using WindowResult = EventReportWindows::WindowResult;
 
 constexpr base::TimeDelta kWindowDeadlineOffset = base::Hours(1);
@@ -74,6 +77,166 @@ TEST(EventReportWindowsTest, CreateAndTruncate) {
     EXPECT_EQ(EventReportWindows::CreateAndTruncate(start_time, end_times,
                                                     test_case.expiry),
               test_case.expected);
+  }
+}
+
+TEST(EventReportWindowsTest, Parse) {
+  const struct {
+    const char* desc;
+    base::Value json;
+    base::expected<EventReportWindows, SourceRegistrationError> expected;
+  } kTestCases[] = {
+      {
+          "wrong_type",
+          base::test::ParseJson(R"json(0)json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsWrongType),
+      },
+      {
+          "empty_dict",
+          base::test::ParseJson(R"json({})json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimesMissing),
+      },
+      {
+          "start_time_wrong_type",
+          base::test::ParseJson(R"json({
+            "start_time":"0",
+            "end_times":[96000,172800]
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsStartTimeWrongType),
+      },
+      {
+          "start_time_negative",
+          base::test::ParseJson(R"json({
+            "start_time":-3600,
+            "end_times":[96000,172800]
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsStartTimeInvalid),
+      },
+      {
+          "end_times_missing",
+          base::test::ParseJson(R"json({
+            "start_time":0
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimesMissing),
+      },
+      {
+          "end_times_wrong_type",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":96000
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimesWrongType),
+      },
+      {
+          "end_times_list_empty",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[]
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimesListEmpty),
+      },
+      {
+          "end_times_list_too_long",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[3600,7200,10800,14400,18000,21600]
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimesListTooLong),
+      },
+      {
+          "end_times_value_wrong_type",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":["3600"]
+          })json"),
+          base::unexpected(SourceRegistrationError::
+                               kEventReportWindowsEndTimeValueWrongType),
+      },
+      {
+          "end_times_value_negative",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[-3600]
+          })json"),
+          base::unexpected(
+              SourceRegistrationError::kEventReportWindowsEndTimeValueInvalid),
+      },
+      {
+          "start_time_equal_end",
+          base::test::ParseJson(R"json({
+            "start_time":3600,
+            "end_times":[3600]
+          })json"),
+          base::unexpected(SourceRegistrationError::
+                               kEventReportWindowsEndTimeDurationLTEStart),
+      },
+      {
+          "start_duration_equal_end",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[3600,3600]
+          })json"),
+          base::unexpected(SourceRegistrationError::
+                               kEventReportWindowsEndTimeDurationLTEStart),
+      },
+      {
+          "start_duration_greater_than_end",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[5400,3600]
+          })json"),
+          base::unexpected(SourceRegistrationError::
+                               kEventReportWindowsEndTimeDurationLTEStart),
+      },
+      {
+          "valid",
+          base::test::ParseJson(R"json({
+            "start_time":0,
+            "end_times":[3600,10800,21600]
+          })json"),
+          *EventReportWindows::Create(
+              base::Seconds(0), {base::Seconds(3600), base::Seconds(10800),
+                                 base::Seconds(21600)}),
+      },
+      {
+          "valid_start_time_missing",
+          base::test::ParseJson(R"json({
+            "end_times":[3600,10800,21600]
+          })json"),
+          *EventReportWindows::Create(
+              base::Seconds(0), {base::Seconds(3600), base::Seconds(10800),
+                                 base::Seconds(21600)}),
+      },
+      {
+          "valid_start_time_set",
+          base::test::ParseJson(R"json({
+            "start_time":7200,
+            "end_times":[16000,32000,48000]
+          })json"),
+          *EventReportWindows::Create(
+              base::Seconds(7200), {base::Seconds(16000), base::Seconds(32000),
+                                    base::Seconds(48000)}),
+      },
+      {
+          "valid_end_time_less_than_default",
+          base::test::ParseJson(R"json({
+            "end_times":[1800]
+          })json"),
+          *EventReportWindows::Create(base::Seconds(0), {base::Seconds(3600)}),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    auto event_report_windows = EventReportWindows::FromJSON(test_case.json);
+    EXPECT_EQ(test_case.expected, event_report_windows) << test_case.desc;
   }
 }
 
@@ -188,16 +351,16 @@ TEST(EventReportWindowsTest, ToJson) {
           *EventReportWindows::Create(base::Seconds(0),
                                       {base::Days(1), base::Days(5)}),
           R"json({
-            "start_time":0.0,
-            "end_times":[86400.0,432000.0]
+            "start_time":0,
+            "end_times":[86400,432000]
           })json",
       },
       {
           *EventReportWindows::Create(base::Hours(1),
                                       {base::Days(1), base::Days(5)}),
           R"json({
-            "start_time":3600.0,
-            "end_times":[86400.0,432000.0]
+            "start_time":3600,
+            "end_times":[86400,432000]
           })json",
       },
   };

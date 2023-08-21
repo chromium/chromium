@@ -145,6 +145,11 @@ class AttributionInteropParser {
     ParseInt(dict, "max_destinations_per_rate_limit_window",
              config.destination_rate_limit.max_total, required);
 
+    ParseDouble(dict, "max_navigation_info_gain",
+                config.event_level_limit.max_navigation_info_gain, required);
+    ParseDouble(dict, "max_event_info_gain",
+                config.event_level_limit.max_event_info_gain, required);
+
     int rate_limit_time_window;
     if (ParseInt(dict, "rate_limit_time_window", rate_limit_time_window,
                  required)) {
@@ -177,9 +182,8 @@ class AttributionInteropParser {
     ParseUint64(dict, "event_source_trigger_data_cardinality",
                 config.event_level_limit.event_source_trigger_data_cardinality,
                 required);
-    ParseRandomizedResponseEpsilon(
-        dict, "randomized_response_epsilon",
-        config.event_level_limit.randomized_response_epsilon, required);
+    ParseDouble(dict, "randomized_response_epsilon",
+                config.event_level_limit.randomized_response_epsilon, required);
     ParseInt(dict, "max_aggregatable_reports_per_destination",
              config.aggregate_limit.max_reports_per_destination, required);
     ParseInt64(dict, "aggregatable_budget_per_source",
@@ -555,10 +559,10 @@ class AttributionInteropParser {
                         allow_zero);
   }
 
-  void ParseRandomizedResponseEpsilon(const base::Value::Dict& dict,
-                                      base::StringPiece key,
-                                      double& result,
-                                      bool required) {
+  void ParseDouble(const base::Value::Dict& dict,
+                   base::StringPiece key,
+                   double& result,
+                   bool required) {
     auto context = PushContext(key);
     const base::Value* value = dict.Find(key);
 

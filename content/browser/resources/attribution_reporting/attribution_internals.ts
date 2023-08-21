@@ -938,6 +938,9 @@ function sourceRegistrationStatusToText(status: StoreSourceResult): string {
       return 'Rejected: destination both limits reached';
     case StoreSourceResult.kExceedsMaxChannelCapacity:
       return 'Rejected: channel capacity exceeds max allowed';
+    case StoreSourceResult.kEventReportWindowsInvalidStartTime:
+      return 'Rejected: report windows start time is greater than default end ' +
+          'time';
     default:
       assertNotReached();
   }

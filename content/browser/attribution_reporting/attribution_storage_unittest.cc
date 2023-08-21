@@ -471,6 +471,36 @@ TEST_F(AttributionStorageTest,
             MaybeCreateAndStoreEventLevelReport(DefaultTrigger()));
 }
 
+TEST_F(AttributionStorageTest,
+       ImpressionWithReportWindowsOverDefault_WindowsTruncated) {
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetEventReportWindows(
+              *attribution_reporting::EventReportWindows::Create(
+                  base::Seconds(0), {base::Days(10)}))
+          .SetExpiry(base::Days(10))
+          .SetEventReportWindow(base::Days(5))
+          .Build());
+
+  ASSERT_THAT(storage()->GetActiveSources(),
+              ElementsAre(EventReportWindowsIs(
+                  attribution_reporting::EventReportWindows::Create(
+                      base::Seconds(0), {base::Days(5)}))));
+}
+
+TEST_F(AttributionStorageTest,
+       ImpressionWithReportWindowsStartOverDefaultEnd_RegistrationFailure) {
+  auto source = SourceBuilder()
+                    .SetEventReportWindows(
+                        *attribution_reporting::EventReportWindows::Create(
+                            base::Days(2), {base::Days(5)}))
+                    .SetExpiry(base::Days(1))
+                    .SetEventReportWindow(base::Days(1))
+                    .Build();
+  EXPECT_EQ(storage()->StoreSource(source).status,
+            StorableSource::Result::kEventReportWindowsInvalidStartTime);
+}
+
 TEST_F(AttributionStorageTest, OneConversion_OneReportScheduled) {
   auto conversion = DefaultTrigger();
 

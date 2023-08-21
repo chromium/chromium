@@ -183,9 +183,9 @@ bool IsStorageKeySessionOnly(
 
 void RecordStoreSourceStatus(StoreSourceResult result) {
   static_assert(StorableSource::Result::kMaxValue ==
-                    StorableSource::Result::kExceedsMaxChannelCapacity,
-                "Bump version of Conversions.SourceStoredStatus5 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus5",
+                    StorableSource::Result::kEventReportWindowsInvalidStartTime,
+                "Bump version of Conversions.SourceStoredStatus6 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SourceStoredStatus6",
                                 result.status);
 }
 
