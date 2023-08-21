@@ -944,24 +944,28 @@ class BookmarkManagerMediator
         return BookmarkUtils.isMovable(bookmarkModel, bookmarkItem);
     }
 
-    private int firstIndexWithLocation(int start, int stop, int delta) {
+    private boolean isBookmarkRowType(@ViewType int viewType) {
+        return viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
+                || viewType == ViewType.SHOPPING_POWER_BOOKMARK
+                || viewType == ViewType.IMPROVED_BOOKMARK_COMPACT
+                || viewType == ViewType.IMPROVED_BOOKMARK_VISUAL;
+    }
+
+    private int firstIndexWithPredicate(
+            int start, int stop, int delta, Predicate<ListItem> predicate) {
         for (int i = start; i != stop; i += delta) {
             ListItem listItem = mModelList.get(i);
-            final @ViewType int viewType = listItem.type;
-            if ((viewType == ViewType.BOOKMARK || viewType == ViewType.FOLDER
-                        || viewType == ViewType.SHOPPING_POWER_BOOKMARK
-                        || viewType == ViewType.IMPROVED_BOOKMARK_COMPACT
-                        || viewType == ViewType.IMPROVED_BOOKMARK_VISUAL)
-                    && isMovable(mBookmarkModel, listItem.model)) {
-                return i;
-            }
+            if (predicate.test(listItem)) return i;
         }
         return -1;
     }
 
     private void updateAllLocations() {
-        int startIndex = firstIndexWithLocation(0, mModelList.size(), 1);
-        int lastIndex = firstIndexWithLocation(mModelList.size() - 1, -1, -1);
+        Predicate<ListItem> locationPredicate = (listItem) -> {
+            return isBookmarkRowType(listItem.type) && isMovable(mBookmarkModel, listItem.model);
+        };
+        int startIndex = firstIndexWithPredicate(0, mModelList.size(), 1, locationPredicate);
+        int lastIndex = firstIndexWithPredicate(mModelList.size() - 1, -1, -1, locationPredicate);
         if (startIndex < 0 || lastIndex < 0) {
             return;
         }
@@ -1069,18 +1073,13 @@ class BookmarkManagerMediator
     }
 
     private int getBookmarkItemStartIndex() {
-        return Math.max(0, firstIndexWithLocation(0, mModelList.size(), 1));
+        return firstIndexWithPredicate(0, mModelList.size(), 1,
+                (listItem) -> { return isBookmarkRowType(listItem.type); });
     }
 
     private int getBookmarkItemEndIndex() {
-        int endIndex = mModelList.size() - 1;
-        BookmarkListEntry bookmarkListEntry = getItemByPosition(endIndex);
-        BookmarkItem bookmarkItem =
-                bookmarkListEntry == null ? null : bookmarkListEntry.getBookmarkItem();
-        if (bookmarkItem == null || !BookmarkUtils.isMovable(mBookmarkModel, bookmarkItem)) {
-            endIndex--;
-        }
-        return endIndex;
+        return firstIndexWithPredicate(mModelList.size() - 1, -1, -1,
+                (listItem) -> { return isBookmarkRowType(listItem.type); });
     }
 
     /**
@@ -1418,7 +1417,11 @@ class BookmarkManagerMediator
     void changeSelectionMode(boolean selectionEnabled) {
         mIsSelectionEnabled = selectionEnabled;
 
-        for (int i = getBookmarkItemStartIndex(); i <= getBookmarkItemEndIndex(); i++) {
+        int startIndex = getBookmarkItemStartIndex();
+        int endIndex = getBookmarkItemEndIndex();
+        if (startIndex < 0 || endIndex < 0) return;
+
+        for (int i = startIndex; i <= endIndex; i++) {
             // Section headers may be embedded in the list for reading list.
             // TODO(crbug.com/1473108): Consider using RecyclerView decorations for section headers.
             if (mModelList.get(i).type == ViewType.SECTION_HEADER) continue;
