@@ -33,9 +33,9 @@ policy::dlp::FileAction MapProtoToFileAction(dlp::FileAction file_action) {
     case dlp::FileAction::MOVE:
       return policy::dlp::FileAction::kMove;
     case dlp::FileAction::OPEN:
-    // TODO(crbug.com/1378653): Return open FileAction.
+      return policy::dlp::FileAction::kOpen;
     case dlp::FileAction::SHARE:
-    // TODO(crbug.com/1378653): Return share FileAction.
+      return policy::dlp::FileAction::kShare;
     case dlp::FileAction::TRANSFER:
       return policy::dlp::FileAction::kTransfer;
   }
@@ -157,7 +157,6 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
   policy::DlpFilesControllerAsh* files_controller =
       policy::DlpFilesControllerAsh::GetForPrimaryProfile();
 
-  // TODO(crbug.com/1360005): Add actual file path.
   bool restricted =
       files_controller
           ? files_controller->IsDlpPolicyMatched(
