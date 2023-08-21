@@ -15118,7 +15118,8 @@ std::string ConvertUuidWithOnlyZeros(const std::string& uuid) {
   return all_zeros;
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, AuctionNonceIsValid) {
+// TODO(crbug.com/1474303): Re-enable this test
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DISABLED_AuctionNonceIsValid) {
   GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
