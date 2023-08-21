@@ -41,7 +41,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinates the bottom-sheet saveflow. */
 public class BookmarkSaveFlowCoordinator {
-    private static final int AUTODISMISS_TIME_MS = 6000;
+    private static final int AUTO_DISMISS_TIME_MS = 10000;
 
     private final Context mContext;
     private final PropertyModel mPropertyModel;
@@ -187,7 +187,7 @@ public class BookmarkSaveFlowCoordinator {
     }
 
     private void setupAutodismiss() {
-        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE, this::close, AUTODISMISS_TIME_MS);
+        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE, this::close, AUTO_DISMISS_TIME_MS);
     }
 
     private void destroy() {
