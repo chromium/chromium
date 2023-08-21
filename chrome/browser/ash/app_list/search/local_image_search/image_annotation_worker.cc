@@ -289,13 +289,11 @@ void ImageAnnotationWorker::ProcessNextImage() {
     DVLOG(1) << "CompareModifiedTime: " << stored_annotations.size()
              << " same? "
              << (file_info->last_modified ==
-                 stored_annotations.front().last_modified)
-             << " is_ignored: " << stored_annotations.front().is_ignored;
+                 stored_annotations.front().last_modified);
     // Annotations are updated on a file change and have the file's last
     // modified time. So skip inserting the image annotations if the file
     // has not changed since the last update.
-    if (stored_annotations.front().is_ignored ||
-        file_info->last_modified == stored_annotations.front().last_modified) {
+    if (file_info->last_modified == stored_annotations.front().last_modified) {
       images_being_processed_.pop();
       return ProcessNextImage();
     }
@@ -304,8 +302,7 @@ void ImageAnnotationWorker::ProcessNextImage() {
   DVLOG(1) << "Processing new " << image_path << " "
            << file_info->last_modified;
   annotation_storage_->Remove(image_path);
-  ImageInfo image_info({}, image_path, file_info->last_modified,
-                       /*is_ignored=*/0);
+  ImageInfo image_info({}, image_path, file_info->last_modified);
 
   if (use_ocr_ || use_ica_) {
     ash::image_util::DecodeImageFile(

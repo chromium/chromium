@@ -3878,8 +3878,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     std::vector<std::string> tokens = base::SplitString(
         *terms, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     std::set<std::string> unique_terms(tokens.begin(), tokens.end());
-    app_list::ImageInfo image_info(unique_terms, file_path, base::Time::Now(),
-                                   false);
+    app_list::ImageInfo image_info(unique_terms, file_path, base::Time::Now());
     app_list::LocalImageSearchServiceFactory::GetForBrowserContext(profile())
         ->Insert(image_info);
     return;

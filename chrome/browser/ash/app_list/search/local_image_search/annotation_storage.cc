@@ -62,12 +62,8 @@ int MigrateSchema(SqlDatabase* db, int current_version_number) {
 
 ImageInfo::ImageInfo(const std::set<std::string>& annotations,
                      const base::FilePath& path,
-                     const base::Time& last_modified,
-                     bool is_ignored)
-    : annotations(annotations),
-      path(path),
-      last_modified(last_modified),
-      is_ignored(is_ignored) {}
+                     const base::Time& last_modified)
+    : annotations(annotations), path(path), last_modified(last_modified) {}
 
 ImageInfo::~ImageInfo() = default;
 ImageInfo::ImageInfo(const ImageInfo&) = default;
@@ -175,10 +171,8 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
     const base::Time time = statement->ColumnTime(2);
     DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
              << ", " << time;
-    matched_paths.push_back({{statement->ColumnString(0)},
-                             std::move(path),
-                             std::move(time),
-                             false});
+    matched_paths.push_back(
+        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
   }
 
   return matched_paths;
@@ -214,10 +208,8 @@ std::vector<ImageInfo> AnnotationStorage::FindImagePath(
     const base::Time time = statement->ColumnTime(2);
     DVLOG(1) << "Select find: " << statement->ColumnString(0) << ", " << path
              << ", " << time;
-    matched_paths.push_back({{statement->ColumnString(0)},
-                             std::move(path),
-                             std::move(time),
-                             false});
+    matched_paths.push_back(
+        {{statement->ColumnString(0)}, std::move(path), std::move(time)});
   }
 
   return matched_paths;

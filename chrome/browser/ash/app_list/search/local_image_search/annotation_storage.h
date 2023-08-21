@@ -28,13 +28,10 @@ struct ImageInfo {
   base::FilePath path;
   // The image's last modified time.
   base::Time last_modified;
-  // Remove the image from further search.
-  bool is_ignored;
 
   ImageInfo(const std::set<std::string>& annotations,
             const base::FilePath& path,
-            const base::Time& last_modified,
-            bool is_ignored);
+            const base::Time& last_modified);
 
   ~ImageInfo();
   ImageInfo(const ImageInfo&);
