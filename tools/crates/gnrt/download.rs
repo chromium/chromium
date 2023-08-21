@@ -99,6 +99,18 @@ pub fn download(
         .find(|(allowed_license, _)| cargo.package.license == *allowed_license)
         .expect("License in downloaded Cargo.toml is not in ALLOWED_LICENSES");
 
+    // Determine the crate's license files by searching its `package.include`.
+    // Crates only need license files if they are shipped in a library with a
+    // LICENSE file, and license generation will fail in that case if the files
+    // are not present.
+    let license_files: Vec<String> = cargo
+        .package
+        .include
+        .iter()
+        .filter(|inc| inc.starts_with("LICENSE") || inc.starts_with("COPYING"))
+        .map(|inc| format!("crate/{inc}"))
+        .collect();
+
     let vcs_path = crate_path.join(".cargo_vcs_info.json");
     let vcs_contents = match fs::read_to_string(vcs_path) {
         Ok(s) => serde_json::from_str(&s).unwrap(),
@@ -118,7 +130,8 @@ pub fn download(
         }
     });
 
-    let readme = gen_readme_chromium_text(&cargo, readme_license, githash, security, shipped);
+    let readme =
+        gen_readme_chromium_text(&cargo, readme_license, license_files, githash, security, shipped);
     std::fs::write(build_path.join("README.chromium"), readme)
         .expect("Failed to write README.chromium");
 
@@ -131,6 +144,7 @@ pub fn download(
 fn gen_readme_chromium_text(
     manifest: &CargoManifest,
     license: &str,
+    license_files: Vec<String>,
     githash: Option<&str>,
     security: SecurityCritical,
     shipped: Shipped,
@@ -139,6 +153,7 @@ fn gen_readme_chromium_text(
     let shipped = if shipped == Shipped::Yes { "yes" } else { "no" };
 
     let revision = githash.map_or_else(String::new, |s| format!("Revision: {s}\n"));
+    let license_files = license_files.join(",");
 
     format!(
         "Name: {crate_name}\n\
@@ -148,6 +163,7 @@ fn gen_readme_chromium_text(
          Security Critical: {security}\n\
          Shipped: {shipped}\n\
          License: {license}\n\
+         License File: {license_files}\n\
          {revision}",
         crate_name = manifest.package.name,
         package_name = manifest.package.name,

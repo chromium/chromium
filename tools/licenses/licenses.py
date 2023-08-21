@@ -1104,7 +1104,7 @@ def GenerateLicenseFilePlainText(
     license_files = dir_metadata['License File']
     if shipped == YES and license_files:
       content.append('-' * 20)
-      content.append(directory.split(os.sep)[-1])
+      content.append(dir_metadata["Name"])
       content.append('-' * 20)
       for license_file in license_files:
         content.append(read_file(os.path.join(repo_root, license_file)))

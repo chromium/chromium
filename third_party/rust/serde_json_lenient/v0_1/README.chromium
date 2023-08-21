@@ -5,4 +5,5 @@ Version: 0.1.4
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: crate/LICENSE-APACHE
+License File: crate/LICENSE-APACHE,crate/LICENSE-MIT
+Revision: 01d0cf01520d3c5be23825ec979998fb80c780e6

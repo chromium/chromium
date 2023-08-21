@@ -168,7 +168,7 @@ class LicensesTest(unittest.TestCase):
         'lib3 license text',
         '',
         '--------------------',
-        'lib3-v2',
+        'lib3',
         '--------------------',
         'lib3-v2 license text',
     ]) + '\n'  # extra new line to account for join not adding one to the end
