@@ -62,7 +62,7 @@ class TestFullscreenController : public FullscreenController {
   // The broadcaster.
   ChromeBroadcaster* broadcaster_ = nil;
   // The observers.
-  base::ObserverList<FullscreenControllerObserver> observers_;
+  base::ObserverList<FullscreenControllerObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_TEST_TEST_FULLSCREEN_CONTROLLER_H_
