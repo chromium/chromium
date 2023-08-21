@@ -153,6 +153,9 @@
 #include "base/uuid.h"
 #include "base/version.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"  // nogncheck
 #include "components/account_manager_core/chromeos/fake_account_manager_ui.h"  // nogncheck
@@ -259,6 +262,12 @@ class IdentityExtraSetUp : public ChromeBrowserMainExtraParts {
  private:
   std::unique_ptr<ScopedAshAccountManagerForTests> scoped_ash_account_manager_;
 };
+
+bool IsCrosapiEnabled() {
+  return !base::CommandLine::ForCurrentProcess()
+              ->GetSwitchValuePath("lacros-mojo-socket-for-testing")
+              .empty();
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void EnsureBrowserContextKeyedServiceFactoriesForTestingBuilt() {
@@ -332,6 +341,52 @@ base::Version InProcessBrowserTest::GetAshChromeVersion() {
   return version;
 }
 
+void InProcessBrowserTest::VerifyNoAshBrowserWindowOpenRightNow() {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  DCHECK(lacros_service);
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      lacros_service->GetRemote<crosapi::mojom::TestController>().get());
+
+  uint32_t number = 1;
+  waiter.GetOpenAshBrowserWindows(&number);
+  EXPECT_EQ(0u, number)
+      << "There should not be any ash browser window open at this point.";
+}
+
+void InProcessBrowserTest::CloseAllAshBrowserWindows() {
+  DCHECK(IsCloseAndWaitAshBrowserWindowApisSupported());
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+  bool success;
+  waiter.CloseAllAshBrowserWindowsAndConfirm(&success);
+  EXPECT_TRUE(success) << "Failed to close all ash browser windows";
+}
+
+void InProcessBrowserTest::WaitUntilAtLeastOneAshBrowserWindowOpen() {
+  DCHECK(IsCloseAndWaitAshBrowserWindowApisSupported());
+  crosapi::mojom::TestControllerAsyncWaiter waiter(
+      chromeos::LacrosService::Get()
+          ->GetRemote<crosapi::mojom::TestController>()
+          .get());
+  bool has_open_window;
+  waiter.CheckAtLeastOneAshBrowserWindowOpen(&has_open_window);
+  EXPECT_TRUE(has_open_window);
+}
+
+bool InProcessBrowserTest::IsCloseAndWaitAshBrowserWindowApisSupported() const {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
+    return false;
+  }
+
+  return lacros_service
+             ->GetInterfaceVersion<crosapi::mojom::TestController>() >=
+         static_cast<int>(crosapi::mojom::TestController::MethodMinVersions::
+                              kCheckAtLeastOneAshBrowserWindowOpenMinVersion);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void InProcessBrowserTest::Initialize() {
@@ -819,6 +874,11 @@ void InProcessBrowserTest::PreRunTestOnMainThread() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   content::NetworkConnectionChangeSimulator network_change_simulator;
   network_change_simulator.InitializeChromeosConnectionType();
+
+  if (IsCrosapiEnabled() && IsCloseAndWaitAshBrowserWindowApisSupported()) {
+    // There should NOT be any open ash browser window UI at this point.
+    VerifyNoAshBrowserWindowOpenRightNow();
+  }
 #endif
 
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
@@ -884,6 +944,15 @@ void InProcessBrowserTest::PostRunTestOnMainThread() {
 
   // BrowserList should be empty at this point.
   CHECK(BrowserList::GetInstance()->empty());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsCrosapiEnabled() && IsCloseAndWaitAshBrowserWindowApisSupported()) {
+    // At this point, there should NOT be any ash browser UIs(e.g. SWA, etc)
+    // open; otherwise, the tests running after the current one could be
+    // polluted if the tests are running against the shared Ash (by default).
+    VerifyNoAshBrowserWindowOpenRightNow();
+  }
+#endif
 }
 
 void InProcessBrowserTest::QuitBrowsers() {
@@ -931,7 +1000,7 @@ void InProcessBrowserTest::StartUniqueAshChrome(
     const std::string& bug_number_and_reason) {
   DCHECK(!bug_number_and_reason.empty());
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  CHECK(!cmdline->GetSwitchValuePath("lacros-mojo-socket-for-testing").empty())
+  CHECK(IsCrosapiEnabled())
       << "You can only start unique ash chrome when crosapi is enabled. "
       << "It should not be necessary otherwise.";
   base::FilePath ash_dir_holder = cmdline->GetSwitchValuePath("unique-ash-dir");

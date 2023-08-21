@@ -381,6 +381,21 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // as early as in test SetUp().
   static base::Version GetAshChromeVersion();
 
+  // The following are the helper functions to manage Ash browser based windows
+  // from Lacros browser tests. When running with Ash, Lacros browser tests can
+  // create some Ash browser based UIs, such as SWA, Web UI, etc. These UIs
+  // must be cleaned up when the test tears down, so that they won't pollute
+  // the tests running after, since Lacros browser tests are running with the
+  // shared Ash instance by default.
+  void VerifyNoAshBrowserWindowOpenRightNow();
+  void CloseAllAshBrowserWindows();
+  void WaitUntilAtLeastOneAshBrowserWindowOpen();
+  // Returns true if CloseAllAshBrowserWindows and
+  // WaitUntilAtLeaseOneAshBrowserWindowOpen is supported.
+  // TODO(crbug.com/1473375): Remove the following function once Ash stable
+  // channel supports the Ash Browser Window APIs in
+  // crosapi::mojom::TestController needed by the above functions.
+  bool IsCloseAndWaitAshBrowserWindowApisSupported() const;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)

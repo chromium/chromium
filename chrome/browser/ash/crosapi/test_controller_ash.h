@@ -130,6 +130,12 @@ class TestControllerAsh : public mojom::TestController,
       mojom::AppListItemAttributesPtr attributes,
       SetAppListItemAttributesCallback callback) override;
 
+  void CloseAllAshBrowserWindowsAndConfirm(
+      CloseAllAshBrowserWindowsAndConfirmCallback callback) override;
+
+  void CheckAtLeastOneAshBrowserWindowOpen(
+      CheckAtLeastOneAshBrowserWindowOpenCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
@@ -145,6 +151,8 @@ class TestControllerAsh : public mojom::TestController,
  private:
   class OverviewWaiter;
   class AshUtteranceEventDelegate;
+  class SelfOwnedAshBrowserWindowCloser;
+  class SelfOwnedAshBrowserWindowOpenWaiter;
 
   // Called when a Tts utterance is finished.
   void OnAshUtteranceFinished(int utterance_id);

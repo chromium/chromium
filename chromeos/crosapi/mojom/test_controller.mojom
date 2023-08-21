@@ -270,8 +270,8 @@ enum AssistiveTechnologyType {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 28
-// Next method id: 41
+// Next version: 29
+// Next method id: 43
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -490,4 +490,20 @@ interface TestController {
   [MinVersion=27]
   SetAppListItemAttributes@40(string item_id,
                               AppListItemAttributes attributes) => ();
+
+  // Closes all Ash browser windows and confirms the result in callback
+  // asynchronously.
+  // The callback will be run as soon as it observes all ash browser windows are
+  // closed, or fails to do so when it times out.
+  // Returns true if all windows are closed; false if it fails to close
+  // all windows.
+  [MinVersion=28]
+  CloseAllAshBrowserWindowsAndConfirm@41() => (bool success);
+
+  // Checks if there is at least one ash browser window open asynchronously.
+  // The result is passed back in callback.
+  // The callback will be run as soon as at least 1 ash browser window is
+  // observed, or no ash browser window is open when it times out.
+  [MinVersion=28]
+  CheckAtLeastOneAshBrowserWindowOpen@42() => (bool has_open_window);
 };

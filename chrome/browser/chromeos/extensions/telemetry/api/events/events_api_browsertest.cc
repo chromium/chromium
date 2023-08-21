@@ -76,6 +76,17 @@ class TelemetryExtensionEventsApiBrowserTest
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void TearDownOnMainThread() override {
+    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
+      // Since one of tests opens browser window UI in Ash, it should close the
+      // UI so that it won't pollute other tests running against the shared Ash.
+      CloseAllAshBrowserWindows();
+    }
+    BaseTelemetryExtensionBrowserTest::TearDownOnMainThread();
+  }
+#endif
+
  protected:
   FakeEventsService* GetFakeService() {
     return fake_events_service_impl_.get();
@@ -424,6 +435,13 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       }
     ]);
   )");
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
+    // This test opens a browser window UI in Ash.
+    WaitUntilAtLeastOneAshBrowserWindowOpen();
+  }
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,

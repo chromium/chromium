@@ -118,15 +118,129 @@ void SetTabletModeEnabled(bool enabled) {
   waiter.Wait();
 }
 
+const base::TimeDelta kWindowWaitTimeout = base::Seconds(10);
+
 }  // namespace
+
+// This class closes all the Ash browser windows and runs the callback to
+// notify the callback client whether it has successfully closed all browser
+// windows, or failed to do so within the timeout duration. It will destroy
+// itself after running the callback.
+class TestControllerAsh::SelfOwnedAshBrowserWindowCloser
+    : public BrowserListObserver {
+ public:
+  explicit SelfOwnedAshBrowserWindowCloser(
+      CloseAllAshBrowserWindowsAndConfirmCallback callback)
+      : callback_(std::move(callback)) {
+    BrowserList::AddObserver(this);
+  }
+
+  SelfOwnedAshBrowserWindowCloser(const SelfOwnedAshBrowserWindowCloser&) =
+      delete;
+  SelfOwnedAshBrowserWindowCloser& operator=(
+      const SelfOwnedAshBrowserWindowCloser&) = delete;
+  ~SelfOwnedAshBrowserWindowCloser() override {
+    BrowserList::RemoveObserver(this);
+  }
+
+  void CloseAllBrowserWindows() {
+    if (BrowserList::GetInstance()->empty()) {
+      OnAllBrowserWindowsClosed(/*success=*/true);
+      // Note: |this| is deleted at this point.
+      return;
+    }
+
+    timer_.Start(
+        FROM_HERE, kWindowWaitTimeout,
+        base::BindOnce(
+            &SelfOwnedAshBrowserWindowCloser::OnAllBrowserWindowsClosed,
+            base::Unretained(this), /*success=*/false));
+
+    for (auto* browser : *BrowserList::GetInstance()) {
+      // Close the browser asynchronously.
+      browser->window()->Close();
+    }
+  }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override {
+    if (BrowserList::GetInstance()->empty()) {
+      OnAllBrowserWindowsClosed(/*success=*/true);
+      // Note: |this| is deleted at this point.
+    }
+  }
+
+  void OnAllBrowserWindowsClosed(bool success) {
+    std::move(callback_).Run(success);
+    delete this;
+  }
+
+  CloseAllAshBrowserWindowsAndConfirmCallback callback_;
+  base::OneShotTimer timer_;
+};
+
+// This class runs the callback to notify the callback client whether it has
+// observed at least 1 ash browser window open, or failed to do so within the
+// timeout duration. It will destroy itself after running the callback.
+class TestControllerAsh::SelfOwnedAshBrowserWindowOpenWaiter
+    : public BrowserListObserver {
+ public:
+  explicit SelfOwnedAshBrowserWindowOpenWaiter(
+      CheckAtLeastOneAshBrowserWindowOpenCallback callback)
+      : callback_(std::move(callback)) {
+    BrowserList::AddObserver(this);
+  }
+
+  SelfOwnedAshBrowserWindowOpenWaiter(
+      const SelfOwnedAshBrowserWindowOpenWaiter&) = delete;
+  SelfOwnedAshBrowserWindowOpenWaiter& operator=(
+      const SelfOwnedAshBrowserWindowOpenWaiter&) = delete;
+  ~SelfOwnedAshBrowserWindowOpenWaiter() override {
+    BrowserList::RemoveObserver(this);
+  }
+
+  void CheckIfAtLeastOneWindowOpen() {
+    if (BrowserList::GetInstance()->size() >= 1u) {
+      NotifyBrowserWindowOpen(/*has_open_window=*/true);
+      // Note: |this| is deleted at this point.
+      return;
+    }
+
+    timer_.Start(
+        FROM_HERE, kWindowWaitTimeout,
+        base::BindOnce(
+            &SelfOwnedAshBrowserWindowOpenWaiter::NotifyBrowserWindowOpen,
+            base::Unretained(this), /*browser_window_open=*/false));
+  }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    if (BrowserList::GetInstance()->size() >= 1u) {
+      NotifyBrowserWindowOpen(/*has_open_window=*/true);
+      // Note: |this| is deleted at this point.
+    }
+  }
+
+  // Notifies the |callback_| client whether it has observed at least 1 browser
+  // window open.
+  void NotifyBrowserWindowOpen(bool has_open_window) {
+    std::move(callback_).Run(has_open_window);
+    delete this;
+  }
+
+  CheckAtLeastOneAshBrowserWindowOpenCallback callback_;
+  base::OneShotTimer timer_;
+};
 
 TestControllerAsh::TestControllerAsh() = default;
 TestControllerAsh::~TestControllerAsh() = default;
 
 void TestControllerAsh::BindReceiver(
     mojo::PendingReceiver<mojom::TestController> receiver) {
-// This interface is not available on production devices. It's only needed for
-// tests that run on Linux-chrome so no reason to expose it.
+  // This interface is not available on production devices. It's only
+  // needed for tests that run on Linux-chrome so no reason to expose it.
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
   LOG(ERROR) << "Ash does not support TestController on devices";
 #else
@@ -793,8 +907,22 @@ void TestControllerAsh::SetAppListItemAttributes(
   std::move(callback).Run();
 }
 
+void TestControllerAsh::CloseAllAshBrowserWindowsAndConfirm(
+    CloseAllAshBrowserWindowsAndConfirmCallback callback) {
+  SelfOwnedAshBrowserWindowCloser* closer =
+      new SelfOwnedAshBrowserWindowCloser(std::move(callback));
+  closer->CloseAllBrowserWindows();
+}
+
+void TestControllerAsh::CheckAtLeastOneAshBrowserWindowOpen(
+    CheckAtLeastOneAshBrowserWindowOpenCallback callback) {
+  SelfOwnedAshBrowserWindowOpenWaiter* window_waiter =
+      new SelfOwnedAshBrowserWindowOpenWaiter(std::move(callback));
+  window_waiter->CheckIfAtLeastOneWindowOpen();
+}
+
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
-  // Delete the utterace event delegate object when the utterance is finished.
+  // Delete the utterance event delegate object when the utterance is finished.
   ash_utterance_event_delegates_.erase(utterance_id);
 }
 

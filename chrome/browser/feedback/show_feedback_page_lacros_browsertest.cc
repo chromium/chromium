@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/version.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 
 // Tests invoking feedback report from Lacros with different feedback source.
@@ -18,8 +20,19 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
 
  protected:
   void SetUp() override {
-    StartUniqueAshChrome(
-        {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
+    // TODO(crbug.com/1473375): Check against the exact ash version with ash
+    // browser window API support in crosapi::mojom::TestController once the
+    // implementation cl has landed.
+    if (IsRunningAgainstOlderAsh()) {
+      // For the older ash version without the ash browser window API
+      // support in crosapi::mojom::TestController, we can't verify and close
+      // feedback SWA in ash. Therefore, it still needs to run against the
+      // unique ash.
+      // TODO(crbug/1446083): Remove the unique ash code once ash browser window
+      // API is supported in stable ash.
+      StartUniqueAshChrome(
+          {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
+    }
     InProcessBrowserTest::SetUp();
   }
 
@@ -31,6 +44,30 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
                              /*category_tag=*/unused,
                              /*extra_diagnostics=*/unused,
                              /*autofill_metadata=*/base::Value::Dict());
+    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
+      VerifyFeedbackPageShownInAsh();
+    }
+  }
+
+ private:
+  void VerifyFeedbackPageShownInAsh() {
+    // There has not been a convenient way to verify a specific UI in Ash from
+    // Lacros yet. Therefore, we just verify there is an Ash window opened
+    // since Feedback UI is a SWA.
+    WaitUntilAtLeastOneAshBrowserWindowOpen();
+  }
+
+  void TearDownOnMainThread() override {
+    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
+      CloseAllAshBrowserWindows();
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  bool IsRunningAgainstOlderAsh() {
+    base::Version ash_version = GetAshChromeVersion();
+    base::Version lacros_version = version_info::GetVersion();
+    return ash_version < lacros_version;
   }
 };
 
