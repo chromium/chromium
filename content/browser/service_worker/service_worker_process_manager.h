@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/lock.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -25,7 +24,6 @@ class GURL;
 
 namespace content {
 
-class BrowserContext;
 class SiteInstance;
 class StoragePartitionImpl;
 
@@ -46,15 +44,11 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
     ServiceWorkerMetrics::StartSituation start_situation;
   };
 
-  // |*this| must be owned by a ServiceWorkerContextWrapper in a
-  // StoragePartition within |browser_context|.
-  explicit ServiceWorkerProcessManager(BrowserContext* browser_context);
+  // |*this| must be owned by a ServiceWorkerContextWrapper.
+  ServiceWorkerProcessManager();
 
   // Shutdown must be called before the ProcessManager is destroyed.
   ~ServiceWorkerProcessManager();
-
-  // Called on the UI thread.
-  BrowserContext* browser_context();
 
   // Synchronously prevents new processes from being allocated
   // and drops references to RenderProcessHosts. Called on the UI thread.
@@ -122,14 +116,6 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
  private:
   friend class ServiceWorkerProcessManagerTest;
 
-  // Guarded by |browser_context_lock_|.
-  // Written only on the UI thread, so the UI thread doesn't need to acquire the
-  // lock when reading. Can be read from other threads with the lock.
-  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
-
-  // Protects |browser_context_|.
-  base::Lock browser_context_lock_;
-
   //////////////////////////////////////////////////////////////////////////////
   // All fields below are only accessed on the UI thread.
 
@@ -149,6 +135,9 @@ class CONTENT_EXPORT ServiceWorkerProcessManager {
   int new_process_id_for_test_;
 
   bool force_new_process_for_test_;
+
+  // If it has been shut down.
+  bool is_shutdown_ = false;
 
   // Used to double-check that we don't access *this after it's destroyed.
   base::WeakPtr<ServiceWorkerProcessManager> weak_this_;

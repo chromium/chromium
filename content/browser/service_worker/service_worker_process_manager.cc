@@ -23,15 +23,12 @@
 
 namespace content {
 
-ServiceWorkerProcessManager::ServiceWorkerProcessManager(
-    BrowserContext* browser_context)
-    : browser_context_(browser_context),
-      storage_partition_(nullptr),
+ServiceWorkerProcessManager::ServiceWorkerProcessManager()
+    : storage_partition_(nullptr),
       process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       new_process_id_for_test_(ChildProcessHost::kInvalidUniqueID),
       force_new_process_for_test_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
 
@@ -46,22 +43,11 @@ ServiceWorkerProcessManager::~ServiceWorkerProcessManager() {
   CHECK(worker_process_map_.empty());
 }
 
-BrowserContext* ServiceWorkerProcessManager::browser_context() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // This is safe because reading |browser_context_| on the UI thread doesn't
-  // need locking (while modifying does).
-  return browser_context_;
-}
-
 void ServiceWorkerProcessManager::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // `StoragePartitionImpl` might be destroyed before `this` is destroyed. Set
   // `storage_partition_` to nullptr to avoid holding a dangling ptr.
   storage_partition_ = nullptr;
-  {
-    base::AutoLock lock(browser_context_lock_);
-    browser_context_ = nullptr;
-  }
 
   // In single-process mode, Shutdown() is called when deleting the default
   // browser context, which is itself destroyed after the RenderProcessHost.
@@ -77,11 +63,11 @@ void ServiceWorkerProcessManager::Shutdown() {
     }
   }
   worker_process_map_.clear();
+  is_shutdown_ = true;
 }
 
 bool ServiceWorkerProcessManager::IsShutdown() {
-  base::AutoLock lock(browser_context_lock_);
-  return !browser_context_;
+  return is_shutdown_;
 }
 
 blink::ServiceWorkerStatusCode
@@ -136,9 +122,9 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
                         url::Origin::Create(script_url))
                   : WebExposedIsolationInfo::CreateNonIsolated()));
   scoped_refptr<SiteInstanceImpl> site_instance =
-      SiteInstanceImpl::CreateForServiceWorker(browser_context_, url_info,
-                                               can_use_existing_process,
-                                               is_guest, is_fenced);
+      SiteInstanceImpl::CreateForServiceWorker(
+          storage_partition_->browser_context(), url_info,
+          can_use_existing_process, is_guest, is_fenced);
 
   // Get the process from the SiteInstance.
   RenderProcessHost* rph = site_instance->GetProcess();

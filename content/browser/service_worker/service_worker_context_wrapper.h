@@ -522,6 +522,10 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
   base::ObserverList<ServiceWorkerContextObserver, true>::Unchecked
       observer_list_;
 
+  // `browser_context_` is maintained to be valid within the lifetime of the
+  // browser context.
+  raw_ptr<BrowserContext, DanglingUntriaged> browser_context_;
+
   const std::unique_ptr<ServiceWorkerProcessManager> process_manager_;
   std::unique_ptr<ServiceWorkerContextCore> context_core_;
 

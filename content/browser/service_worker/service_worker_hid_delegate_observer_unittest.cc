@@ -164,6 +164,7 @@ class ServiceWorkerHidDelegateObserverTest
 
   void SetUp() override {
     ServiceWorkerDeviceDelegateObserverTest::SetUp();
+    hid_delegate().SetAssertBrowserContext(true);
     ON_CALL(hid_delegate(), GetHidManager).WillByDefault(Return(&hid_manager_));
     ON_CALL(hid_delegate(), IsFidoAllowedForOrigin)
         .WillByDefault(Return(false));
@@ -914,6 +915,24 @@ TEST_F(ServiceWorkerHidDelegateObserverNoEventHandlersTest,
   EXPECT_FALSE(version->has_hid_event_handlers());
   EXPECT_TRUE(
       context()->hid_delegate_observer()->registration_id_map().empty());
+}
+
+// Shutdown the service worker context and make sure that
+// ServiceWorkerHidDelegateObserver removes itself from the hid delegate
+// properly.
+TEST_F(ServiceWorkerHidDelegateObserverTest, ShutdownServiceWorkerContext) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  CreateHidService(version);
+  EXPECT_TRUE(context()->hid_delegate_observer()->GetHidServiceForTesting(
+      registration->id()));
+
+  EXPECT_FALSE(hid_delegate().observer_list().empty());
+  helper()->ShutdownContext();
+  EXPECT_TRUE(hid_delegate().observer_list().empty());
 }
 
 }  // namespace content

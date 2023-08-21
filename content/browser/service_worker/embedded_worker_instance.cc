@@ -406,7 +406,7 @@ void EmbeddedWorkerInstance::Start(
     GetContentClient()
         ->browser()
         ->UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-            process_manager->browser_context(), params->script_url,
+            context_->wrapper()->browser_context(), params->script_url,
             params->forced_enabled_runtime_features);
   }
   CHECK(params->forced_enabled_runtime_features.empty() ||
@@ -414,10 +414,11 @@ void EmbeddedWorkerInstance::Start(
 
   // TODO(crbug.com/862854): Support changes to blink::RendererPreferences while
   // the worker is running.
-  DCHECK(process_manager->browser_context() || process_manager->IsShutdown());
+  DCHECK(context_->wrapper()->browser_context() ||
+         process_manager->IsShutdown());
   params->renderer_preferences = blink::RendererPreferences();
   GetContentClient()->browser()->UpdateRendererPreferencesForWorker(
-      process_manager->browser_context(), &params->renderer_preferences);
+      context_->wrapper()->browser_context(), &params->renderer_preferences);
 
   {
     // Create a RendererPreferenceWatcher to observe updates in the preferences.
@@ -425,7 +426,7 @@ void EmbeddedWorkerInstance::Start(
     params->preference_watcher_receiver =
         watcher_remote.InitWithNewPipeAndPassReceiver();
     GetContentClient()->browser()->RegisterRendererPreferenceWatcher(
-        process_manager->browser_context(), std::move(watcher_remote));
+        context_->wrapper()->browser_context(), std::move(watcher_remote));
   }
 
   // If we allocated a process, WorkerProcessHandle has to be created before

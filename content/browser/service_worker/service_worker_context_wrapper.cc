@@ -244,8 +244,8 @@ ServiceWorkerContextWrapper::ServiceWorkerContextWrapper(
     BrowserContext* browser_context)
     : core_observer_list_(
           base::MakeRefCounted<ServiceWorkerContextObserverList>()),
-      process_manager_(
-          std::make_unique<ServiceWorkerProcessManager>(browser_context)) {
+      browser_context_(browser_context),
+      process_manager_(std::make_unique<ServiceWorkerProcessManager>()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Add this object as an observer of the wrapped |context_core_|. This lets us
@@ -303,6 +303,7 @@ void ServiceWorkerContextWrapper::Shutdown() {
   process_manager_->Shutdown();
   storage_control_.reset();
   context_core_.reset();
+  browser_context_ = nullptr;
 }
 
 void ServiceWorkerContextWrapper::DeleteAndStartOver() {
@@ -331,7 +332,7 @@ void ServiceWorkerContextWrapper::set_storage_partition(
 
 BrowserContext* ServiceWorkerContextWrapper::browser_context() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return process_manager()->browser_context();
+  return browser_context_;
 }
 
 void ServiceWorkerContextWrapper::OnRegistrationCompleted(

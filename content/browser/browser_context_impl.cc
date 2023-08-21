@@ -41,7 +41,7 @@ void ShutdownServiceWorkerContext(StoragePartition* partition) {
   ServiceWorkerContextWrapper* wrapper =
       static_cast<ServiceWorkerContextWrapper*>(
           partition->GetServiceWorkerContext());
-  wrapper->process_manager()->Shutdown();
+  wrapper->Shutdown();
 }
 
 void ShutdownSharedWorkerContext(StoragePartition* partition) {

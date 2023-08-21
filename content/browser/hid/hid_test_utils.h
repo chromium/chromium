@@ -81,8 +81,11 @@ class MockHidDelegate : public HidDelegate {
 
   const base::ObserverList<Observer>& observer_list() { return observer_list_; }
 
+  void SetAssertBrowserContext(bool assert_browser_context);
+
  private:
   base::ObserverList<Observer> observer_list_;
+  bool assert_browser_context_ = false;
 };
 
 // Test implementation of ContentBrowserClient for HID tests. The test client
