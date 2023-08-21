@@ -49,7 +49,7 @@ void AddMaterialUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonBackgroundProminentFocused] = {GetResultingPaintColor(
       {kColorSysStateFocus}, {kColorButtonBackgroundProminent})};
   mixer[kColorButtonBorder] = {kColorSysTonalOutline};
-  mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabled};
+  mixer[kColorButtonBorderDisabled] = {kColorSysStateDisabledContainer};
   mixer[kColorButtonFeatureAttentionHighlight] =
       SetAlpha({kColorSysPrimary}, kAttentionHighlightAlpha);
   mixer[kColorButtonForeground] = {kColorSysPrimary};
