@@ -10,8 +10,8 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ui.hats.SurveyControllerProvider;
 
 import java.util.Map;
 
@@ -23,6 +23,12 @@ import java.util.Map;
 public class SurveyController {
     private static SurveyController sTestInstance;
 
+    private final org.chromium.chrome.browser.ui.hats.SurveyController mDelegate;
+
+    public SurveyController() {
+        mDelegate = SurveyControllerProvider.create();
+    }
+
     /**
      * @return The SurveyController to use during the lifetime of the browser process.
      */
@@ -30,7 +36,7 @@ public class SurveyController {
         if (sTestInstance != null) {
             return sTestInstance;
         }
-        return AppHooks.get().createSurveyController();
+        return new SurveyController();
     }
 
     /** Set the instance to use for survey related tests. Reset back to null after tests. */
@@ -48,7 +54,9 @@ public class SurveyController {
      *                          survey does not exist.
      */
     protected void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
-            Runnable onFailureRunnable) {}
+            Runnable onFailureRunnable) {
+        mDelegate.downloadSurvey(context, triggerId, onSuccessRunnable, onFailureRunnable);
+    }
 
     /**
      * Show the survey.
@@ -65,7 +73,10 @@ public class SurveyController {
     @Deprecated
     protected void showSurveyIfAvailable(Activity activity, String siteId,
             boolean showAsBottomSheet, int displayLogoResId,
-            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
+            @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+        mDelegate.showSurveyIfAvailable(
+                activity, siteId, displayLogoResId, lifecycleDispatcher, null);
+    }
 
     /**
      * Show the survey.
@@ -79,7 +90,8 @@ public class SurveyController {
     protected void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
             @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
             @Nullable Map<String, String> psd) {
-        throw new UnsupportedOperationException();
+        mDelegate.showSurveyIfAvailable(
+                activity, triggerId, displayLogoResId, lifecycleDispatcher, psd);
     }
 
     /**
@@ -88,6 +100,6 @@ public class SurveyController {
      * @return true if the survey has expired, false if the survey is valid.
      */
     protected boolean isSurveyExpired(String triggerId) {
-        return false;
+        return mDelegate.isSurveyExpired(triggerId);
     }
 }

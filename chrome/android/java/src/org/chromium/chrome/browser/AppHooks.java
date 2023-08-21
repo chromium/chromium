@@ -113,7 +113,7 @@ public abstract class AppHooks {
      * @return The created {@link SurveyController}.
      */
     public SurveyController createSurveyController() {
-        return new SurveyController();
+        return null;
     }
 
     /**

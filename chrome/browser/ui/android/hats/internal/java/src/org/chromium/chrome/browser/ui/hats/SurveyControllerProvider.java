@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.ui.hats;
 /**
  * Util class that creates a new SurveyController.
  */
-class SurveyControllerProvider {
+// TODO(crbug/1400731): Change to package private once public references are removed.
+public class SurveyControllerProvider {
     private SurveyControllerProvider() {}
 
     /**
      * @return A new instance of survey controller.
      */
-    static SurveyController create() {
+    public static SurveyController create() {
         return new SurveyController() {};
     }
 }
