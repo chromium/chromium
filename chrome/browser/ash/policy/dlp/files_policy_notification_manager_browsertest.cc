@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
@@ -34,11 +35,11 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
-#include "chrome/browser/enterprise/data_controls/component.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -197,6 +198,7 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::HistogramTester histogram_tester_;
   raw_ptr<NotificationDisplayServiceImpl, ExperimentalAsh> display_service_;
   raw_ptr<TestNotificationPlatformBridgeDelegator, ExperimentalAsh> bridge_;
   std::unique_ptr<MockFilesPolicyDialogFactory> factory_;
@@ -238,6 +240,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileNoButtonIgnored) {
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
   // The warning timeout notification should be shown.
   EXPECT_TRUE(bridge_->GetDisplayedNotification("dlp_files_1").has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that closing the warning notification (e.g. by X or Dismiss all)
@@ -258,6 +265,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileCloseCancels) {
   notification->delegate()->Close(
       /*by_user=*/true);  // parameter doesn't matter
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the OK button on a warning notification for a single
@@ -286,6 +298,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, SingleFileOKContinues) {
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // This is a test for b/277594200. Tests that clicking the OK button on a
@@ -352,6 +369,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, MultiFileOKShowsDialog) {
   // Check that a new Files app is opened.
   ui_test_utils::WaitForBrowserToOpen();
   ASSERT_EQ(ash::file_manager::FileManagerUI::GetNumInstances(), 2);
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 
   // Skip the warning timeout. The callback will only be invoked when the
   // warnings time out.
@@ -429,6 +451,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest,
   testing::Mock::VerifyAndClearExpectations(&cb);
   EXPECT_CALL(cb, Run).Times(0);
   task_runner->FastForwardBy(kWarningTimeout);
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
 }
 
 // Tests that clicking the Cancel button on a warning notification cancels the
@@ -457,6 +484,11 @@ IN_PROC_BROWSER_TEST_P(NonIOWarningBrowserTest, CancelShowsNoDialog) {
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(FPNM,
@@ -495,6 +527,11 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog) {
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking on the error notification, but no button is ignored.
@@ -509,6 +546,11 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileNoButtonIgnored) {
   bridge_->Click(kNotificationId, /*button_index=*/absl::nullopt);
   // The notification shouldn't be closed.
   EXPECT_TRUE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that closing the error notification (e.g. by X or Dismiss all)
@@ -526,6 +568,11 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileCloseCancels) {
   notification->delegate()->Close(
       /*by_user=*/false);  // parameter doesn't matter
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the OK button on an error notification for multiple
@@ -584,6 +631,11 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, MultiFileOKShowsDialog_Timeout) {
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
       dlp::kDlpLearnMoreUrl);
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 1);
 }
 
 // Tests that clicking the Cancel button on an error notification dismisses
@@ -608,6 +660,11 @@ IN_PROC_BROWSER_TEST_P(NonIOErrorBrowserTest, CancelDismisses) {
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 INSTANTIATE_TEST_SUITE_P(FPNM,
@@ -842,6 +899,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   EXPECT_EQ(notification1->title(), timeout_title);
 
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the OK button on a warning notification shown for copy or
@@ -936,6 +998,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
 
   // The notification should be closed.
   EXPECT_FALSE(bridge_->GetDisplayedNotification(kNotificationId2).has_value());
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the Cancel button on a warning notification shown for
@@ -977,6 +1044,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, MultiFileDismissCancels_Warning) {
 
   // Task info is removed when the task is cancelled.
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId1));
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the OK button on a warning notification shown for
@@ -1020,6 +1092,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest, SingleFileOkProceeds_Warning) {
 
   // Task info should be cleared because there's not any blocked file.
   ASSERT_FALSE(fpnm_->HasIOTask(kTaskId1));
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that clicking the OK button on an error notification shown for copy or
@@ -1105,6 +1182,11 @@ IN_PROC_BROWSER_TEST_P(IOTaskBrowserTest,
   ASSERT_EQ(first_app, FindFilesApp());
   // Task info is removed after the dialog is shown.
   EXPECT_FALSE(fpnm_->HasIOTask(kTaskId2));
+
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, false, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kFilesAppOpenTimedOutUMA, true, 0);
 }
 
 // Tests that the IO task info for copy or move with multiple blocked files will

@@ -1395,6 +1395,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.Dlp.FilesAppOpenTimedOut" enum="Boolean"
+    expires_after="2024-03-01">
+  <owner>aidazolic@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records True when opening the Files App to show a Data Leak Prevention
+    dialog times out, and False when it successfully opens.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.Dlp.FilesDaemonStarted" enum="Boolean"
     expires_after="2023-12-01">
   <owner>poromov@chromium.org</owner>

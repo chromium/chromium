@@ -24,10 +24,11 @@ constexpr char kDataTransferControllerStartedUMA[] =
     "DataTransferControllerStarted";
 constexpr char kDlpPolicyPresentUMA[] = "DlpPolicyPresent";
 constexpr char kDragDropBlockedUMA[] = "DragDropBlocked";
-constexpr char kFilesDaemonStartedUMA[] = "FilesDaemonStarted";
 constexpr char kFileActionBlockedUMA[] = "FileActionBlocked";
 constexpr char kFileActionWarnedUMA[] = "FileActionWarned";
 constexpr char kFileActionWarnProceededUMA[] = "FileActionWarnProceeded";
+constexpr char kFilesAppOpenTimedOutUMA[] = "FilesAppOpenTimedOut";
+constexpr char kFilesDaemonStartedUMA[] = "FilesDaemonStarted";
 constexpr char kSameFileEventTimeDiffUMA[] = "SameFileEventTimeDiff";
 constexpr char kPrintingBlockedUMA[] = "PrintingBlocked";
 constexpr char kPrintingWarnedUMA[] = "PrintingWarned";

@@ -30,6 +30,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -894,6 +895,7 @@ void FilesPolicyNotificationManager::OnBrowserAdded(Browser* browser) {
   }
 
   // Files app successfully opened.
+  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/false);
   ShowPendingDialog(browser->window()->GetNativeWindow());
 }
 
@@ -1237,6 +1239,7 @@ void FilesPolicyNotificationManager::OnIOTaskAppLaunchTimedOut(
   }
   DCHECK(pending_dialogs_.front()->task_id == task_id);
   // Stop waiting for the Files App and fallback to system modal.
+  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
   ShowPendingDialog(/*modal_parent=*/nullptr);
 }
 
@@ -1249,6 +1252,7 @@ void FilesPolicyNotificationManager::OnNonIOTaskAppLaunchTimedOut(
   }
   DCHECK(pending_dialogs_.front()->notification_id == notification_id);
   // Stop waiting for the Files App and fallback to system modal.
+  DlpBooleanHistogram(dlp::kFilesAppOpenTimedOutUMA, /*value=*/true);
   ShowPendingDialog(/*modal_parent=*/nullptr);
 }
 
