@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.touch_to_fill;
 
-import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,9 +31,6 @@ class TouchToFillView extends TouchToFillViewBase {
         @Override
         protected int selectBackgroundDrawable(
                 int position, boolean containsFillButton, int itemCount) {
-            if (!usesUnifiedPasswordManagerBranding()) {
-                return R.drawable.touch_to_fill_credential_background;
-            }
             return super.selectBackgroundDrawable(position, containsFillButton, itemCount);
         }
 
@@ -74,9 +69,7 @@ class TouchToFillView extends TouchToFillViewBase {
                 (RelativeLayout) LayoutInflater.from(context).inflate(
                         R.layout.touch_to_fill_sheet, null));
 
-        if (usesUnifiedPasswordManagerBranding()) {
             getSheetItemListView().addItemDecoration(new HorizontalDividerItemDecoration(context));
-        }
     }
 
     @Override
@@ -112,16 +105,13 @@ class TouchToFillView extends TouchToFillViewBase {
     @Override
     protected @Px int getConclusiveMarginHeightPx() {
         return getContentView().getResources().getDimensionPixelSize(
-                usesUnifiedPasswordManagerBranding()
-                        ? R.dimen.touch_to_fill_sheet_bottom_padding_button_modern
-                        : R.dimen.touch_to_fill_sheet_bottom_padding_button);
+                R.dimen.touch_to_fill_sheet_bottom_padding_button);
     }
 
     @Override
     protected @Px int getSideMarginPx() {
         return getContentView().getResources().getDimensionPixelSize(
-                usesUnifiedPasswordManagerBranding() ? R.dimen.touch_to_fill_sheet_margin_modern
-                                                     : R.dimen.touch_to_fill_sheet_margin);
+                R.dimen.touch_to_fill_sheet_margin);
     }
 
     @Override

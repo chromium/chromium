@@ -31,6 +31,7 @@ import androidx.annotation.Px;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.FaviconOrFallback;
@@ -94,8 +95,6 @@ class TouchToFillMediator {
 
         mManagePasskeysHidesPasswords = managePasskeysHidesPasswords;
 
-        TouchToFillResourceProvider resourceProvider = new TouchToFillResourceProviderImpl();
-
         ListModel<ListItem> sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
@@ -107,7 +106,11 @@ class TouchToFillMediator {
                                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
                         .with(ORIGIN_SECURE, isOriginSecure)
                         .with(SHOW_SUBMIT_SUBTITLE, triggerSubmission)
-                        .with(IMAGE_DRAWABLE_ID, resourceProvider.getHeaderImageDrawableId())
+                        // TODO(crbug.com/1471888): Use the TTF resource provider instead and use a
+                        // 32dp icon.
+                        .with(IMAGE_DRAWABLE_ID,
+                                PasswordManagerResourceProviderFactory.create()
+                                        .getPasswordManagerIcon())
                         .build()));
 
         mWebAuthnCredentials = webAuthnCredentials;

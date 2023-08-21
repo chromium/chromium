@@ -73,13 +73,9 @@ android_resources("java_resources") {
     "java/res/drawable-night/touch_to_fill_header_image.xml",
     "java/res/drawable/touch_to_fill_header_image.xml",
     "java/res/layout/touch_to_fill_credential_item.xml",
-    "java/res/layout/touch_to_fill_credential_item_modern.xml",
-    "java/res/layout/touch_to_fill_fill_button.xml",
     "java/res/layout/touch_to_fill_footer_item.xml",
     "java/res/layout/touch_to_fill_header_item.xml",
-    "java/res/layout/touch_to_fill_header_item_modern.xml",
     "java/res/layout/touch_to_fill_webauthn_credential_item.xml",
-    "java/res/layout/touch_to_fill_webauthn_credential_item_modern.xml",
     "java/res/values/dimens.xml",
   ]
 }

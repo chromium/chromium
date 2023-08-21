@@ -135,7 +135,7 @@ class TouchToFillCreditCardViewBinder {
 
     static View createFillButtonView(ViewGroup parent) {
         return LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.touch_to_fill_fill_button_modern, parent, false);
+                .inflate(R.layout.touch_to_fill_fill_button, parent, false);
     }
 
     static void bindFillButtonView(PropertyModel model, View view, PropertyKey propertyKey) {

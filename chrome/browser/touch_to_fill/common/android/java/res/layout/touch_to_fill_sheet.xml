@@ -20,8 +20,8 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
-        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin"
         android:layout_marginTop="@dimen/ttf_drag_handlebar_margin"
         android:layout_marginBottom="@dimen/ttf_drag_handlebar_margin"
         android:importantForAccessibility="no"
@@ -32,9 +32,9 @@ found in the LICENSE file.
         android:layout_below="@id/drag_handlebar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin_modern"
-        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin_modern"
+        android:layout_marginEnd="@dimen/touch_to_fill_sheet_margin"
+        android:layout_marginStart="@dimen/touch_to_fill_sheet_margin"
         android:clipToPadding="false"
         android:divider="@null"
-        tools:listitem="@layout/touch_to_fill_credential_item_modern"/>
+        tools:listitem="@layout/touch_to_fill_credential_item"/>
 </RelativeLayout>

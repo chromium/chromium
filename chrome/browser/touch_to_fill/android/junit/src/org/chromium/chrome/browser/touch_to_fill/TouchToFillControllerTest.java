@@ -173,8 +173,7 @@ public class TouchToFillControllerTest {
         assertThat(itemList.get(2).model.get(CREDENTIAL), is(CARL));
         assertNotNull(itemList.get(2).model.get(ON_CLICK_LISTENER));
         assertThat(itemList.get(2).model.get(FORMATTED_ORIGIN), is(CARL.getDisplayName()));
-        assertThat(itemList.get(0).model.get(IMAGE_DRAWABLE_ID),
-                is(R.drawable.touch_to_fill_header_image));
+        assertThat(itemList.get(0).model.get(IMAGE_DRAWABLE_ID), is(R.drawable.ic_vpn_key_blue));
     }
 
     @Test
