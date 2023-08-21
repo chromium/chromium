@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -40,6 +41,7 @@ import org.chromium.ui.display.DisplayAndroidManager;
  */
 // clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
 @CommandLineFlags.Add({

@@ -54,6 +54,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -70,6 +71,7 @@ import java.util.Collections;
 
 /** Tests for {@link CustomTabIntentDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabIntentDataProviderTest {
     @Rule

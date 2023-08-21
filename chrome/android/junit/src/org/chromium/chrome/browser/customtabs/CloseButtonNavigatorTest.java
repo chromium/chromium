@@ -33,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
@@ -56,6 +57,7 @@ import java.util.Stack;
  * Tests for {@link CloseButtonNavigator}.
  */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(sdk = Build.VERSION_CODES.N, manifest = Config.NONE)
 public class CloseButtonNavigatorTest {
     @Parameters

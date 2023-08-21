@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
  * Tests for {@link CustomTabStatusBarColorProvider}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabStatusBarColorProviderTest {
     private static final int USER_PROVIDED_COLOR = 0x99aabbcc;

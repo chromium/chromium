@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -38,6 +39,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
  */
 // clang-format off
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @EnableFeatures(ChromeFeatureList.CCT_PREVENT_TOUCHES)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,

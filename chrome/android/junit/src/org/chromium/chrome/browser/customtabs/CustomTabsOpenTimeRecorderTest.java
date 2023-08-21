@@ -21,6 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -30,6 +31,7 @@ import java.util.function.BooleanSupplier;
 
 /** Tests for some parts of {@link CustomTabsOpenTimeRecorder}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class CustomTabsOpenTimeRecorderTest {
     private static final String CHROME_PACKAGE_NAME = "chrome.package.name";
 

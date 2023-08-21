@@ -31,6 +31,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.PowerSavingModeMonitor;
@@ -40,6 +41,7 @@ import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
  * Tests for {@link CustomTabNightModeStateController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class CustomTabNightModeStateControllerTest {
     @Mock
@@ -167,5 +169,4 @@ public class CustomTabNightModeStateControllerTest {
             observer.onSystemNightModeChanged();
         }
     }
-
 }

@@ -19,6 +19,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link NavigationInfoCaptureTrigger}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class NavigationInfoCaptureTriggerTest {
     @Mock
