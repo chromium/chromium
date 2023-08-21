@@ -8,6 +8,8 @@ import {createTriStatePermission} from 'chrome://resources/cr_components/app_man
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
+export type AppConfig = Partial<App>;
+
 export class TestAppManagementBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
   callbackRouter: PageCallbackRouter;
@@ -24,9 +26,9 @@ export class TestAppManagementBrowserProxy extends TestBrowserProxy implements
   }
 }
 
-export function createTestApp(): App {
+export function createTestApp(id: string, optConfig?: AppConfig): App {
   const app: App = {
-    id: 'test_loader.html',
+    id: id,
     type: AppType.kWeb,
     title: 'App Title',
     description: '',
@@ -57,6 +59,10 @@ export function createTestApp(): App {
     dataSize: undefined,
     publisherId: '',
   };
+
+  if (optConfig) {
+    Object.assign(app, optConfig);
+  }
 
   const permissionTypes = [
     PermissionType.kLocation,

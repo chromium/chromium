@@ -31,7 +31,7 @@ suite('AppManagementUninstallButtonTest', () => {
   }
 
   test('Click uninstall', async () => {
-    const app: App = createTestApp();
+    const app: App = createTestApp('app');
     app.id = 'some test app id';
     app.installReason = InstallReason.kUser;
     setupUninstallButton(app);
@@ -46,7 +46,7 @@ suite('AppManagementUninstallButtonTest', () => {
   });
 
   test('Disabled by policy', async () => {
-    const app: App = createTestApp();
+    const app: App = createTestApp('app');
     app.installReason = InstallReason.kPolicy;
 
     await setupUninstallButton(app);
@@ -60,7 +60,7 @@ suite('AppManagementUninstallButtonTest', () => {
   });
 
   test('System app, button hidden', async () => {
-    const app: App = createTestApp();
+    const app: App = createTestApp('app');
     app.installReason = InstallReason.kSystem;
     await setupUninstallButton(app);
 
@@ -69,7 +69,7 @@ suite('AppManagementUninstallButtonTest', () => {
   });
 
   test('User can delete app installed from command line argument', async () => {
-    const app: App = createTestApp();
+    const app: App = createTestApp('app');
     app.id = 'test id for command line app';
     app.installReason = InstallReason.kCommandLine;
     await setupUninstallButton(app);

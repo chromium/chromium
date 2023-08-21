@@ -98,13 +98,18 @@ IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, FileHandlingItem) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, WindowModeItem) {
-  RunTest("cr_components/app_management/window_mode_item_test.js",
+IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, SupportedLinksItem) {
+  RunTest("cr_components/app_management/supported_links_item_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, UninstallButton) {
   RunTest("cr_components/app_management/uninstall_button_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(CrComponentsAppManagementTest, WindowModeItem) {
+  RunTest("cr_components/app_management/window_mode_item_test.js",
           "mocha.run()");
 }
 

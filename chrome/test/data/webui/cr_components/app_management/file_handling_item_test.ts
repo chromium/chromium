@@ -23,7 +23,7 @@ suite('AppManagementFileHandlingItemTest', function() {
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = createTestApp();
+    app = createTestApp('app');
     testProxy = new TestAppManagementBrowserProxy();
     BrowserProxy.setInstance(testProxy);
 
@@ -49,7 +49,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertTrue(!link);
 
     // Overflow link present.
-    const app2 = createTestApp();
+    const app2 = createTestApp('app');
     app2.fileHandlingState!.userVisibleTypesLabel =
         'TXT, CSV, MD, DOC (<a href="#">and 1 more</a>)';
     fileHandlingItem.app = app2;
@@ -80,7 +80,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertEquals(link.href, app.fileHandlingState!.learnMoreUrl!.url);
 
     // Clear the learn more url; it should now be handled by the browser proxy.
-    const app2 = createTestApp();
+    const app2 = createTestApp('app');
     app2.fileHandlingState!.learnMoreUrl = undefined;
     fileHandlingItem.app = app2;
     await flushTasks();

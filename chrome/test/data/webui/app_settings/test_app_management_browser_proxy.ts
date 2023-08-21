@@ -4,25 +4,70 @@
 
 import {App, OptionalBool, PageCallbackRouter, PageHandlerInterface, PageRemote, Permission, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 export class FakePageHandler implements PageHandlerInterface {
   private app_: App;
   private page_: PageRemote;
+  private overlappingApps_: string[];
+  private apps_: App[];
   private defaultAppAssociationsShown_: boolean;
+  private resolverMap_: Map<string, PromiseResolver<void>>;
 
   constructor(page: PageRemote, app: App) {
-    this.page_ = page;
     this.app_ = app;
+    this.page_ = page;
+    this.overlappingApps_ = [];
+    this.apps_ = [];
+
     this.defaultAppAssociationsShown_ = false;
+    this.resolverMap_ = new Map();
+    this.resolverMap_.set('setPreferredApp', new PromiseResolver());
+    this.resolverMap_.set('getOverlappingPreferredApps', new PromiseResolver());
   }
 
+  private getResolver_(methodName: string): PromiseResolver<void> {
+    const method = this.resolverMap_.get(methodName);
+    assert(method, `Method '${methodName}' not found.`);
+    return method;
+  }
+
+  methodCalled(methodName: string): void {
+    this.getResolver_(methodName).resolve();
+  }
+
+  async whenCalled(methodName: string): Promise<void> {
+    await this.getResolver_(methodName).promise;
+    this.resolverMap_.set(methodName, new PromiseResolver());
+  }
+
+  async flushPipesForTesting() {
+    await this.page_.$.flushForTesting();
+  }
+
+  setOverlappingAppsForTesting(ids: string[]) {
+    this.overlappingApps_ = ids;
+  }
+
+  // This is used to set the app for which the App Settings page
+  // is being loaded.
   setApp(app: App) {
     this.app_ = app;
+    this.apps_.push(app);
     this.page_.onAppChanged(this.app_);
   }
 
+  // This is used to mimic the addition of more apps, which can
+  // be taken into account for a few components, like the
+  // supported links item.
+  addApp(app: App) {
+    this.apps_.push(app);
+    this.page_.onAppChanged(app);
+  }
+
   getApps() {
-    return Promise.resolve({apps: []});
+    return Promise.resolve({apps: this.apps_});
   }
 
   getApp(_appId: string) {
@@ -50,12 +95,6 @@ export class FakePageHandler implements PageHandlerInterface {
 
   openNativeSettings(_appId: string) {}
 
-  setPreferredApp(_appId: string, _isPreferredApp: boolean) {}
-
-  getOverlappingPreferredApps(_appId: string) {
-    return Promise.resolve({appIds: []});
-  }
-
   setWindowMode(_appId: string, windowMode: WindowMode) {
     this.app_.windowMode = windowMode;
     this.page_.onAppChanged(this.app_);
@@ -71,9 +110,28 @@ export class FakePageHandler implements PageHandlerInterface {
     this.page_.onAppChanged(this.app_);
   }
 
+  setPreferredApp(appId: string, isPreferredApp: boolean): void {
+    const app = this.apps_.find((app) => app.id === appId);
+    assert(app);
+
+    this.app_ = {...app, isPreferredApp};
+    this.page_.onAppChanged(this.app_);
+    this.methodCalled('setPreferredApp');
+  }
+
+  async getOverlappingPreferredApps(_appId: string):
+      Promise<{appIds: string[]}> {
+    this.methodCalled('getOverlappingPreferredApps');
+    if (!this.overlappingApps_) {
+      return {appIds: []};
+    }
+    return {appIds: this.overlappingApps_};
+  }
+
   showDefaultAppAssociationsUi() {
     this.defaultAppAssociationsShown_ = true;
   }
+
   defaultAppAssociationsUiWasShown() {
     return this.defaultAppAssociationsShown_;
   }
