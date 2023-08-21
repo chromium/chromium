@@ -152,9 +152,14 @@ void ManifestVerifier::OnWebDataServiceRequestDone(
     std::unique_ptr<WDTypedResult> result) {
   DCHECK_LT(0U, number_of_manifests_to_verify_);
 
-  auto it = cache_request_handles_.find(h);
-  if (it == cache_request_handles_.end())
+  if (!result) {
     return;
+  }
+
+  auto it = cache_request_handles_.find(h);
+  if (it == cache_request_handles_.end()) {
+    return;
+  }
 
   GURL method_manifest_url = it->second.method_manifest_url;
   base::TimeDelta check_cache_duration =
@@ -214,8 +219,9 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
   DCHECK_LT(0U, number_of_manifests_to_download_);
 
   if (content.empty()) {
-    if (first_error_message_.empty())
+    if (first_error_message_.empty()) {
       first_error_message_ = error_message;
+    }
     if (cached_manifest_urls_.find(method_manifest_url) ==
             cached_manifest_urls_.end() &&
         --number_of_manifests_to_verify_ == 0) {
@@ -224,8 +230,9 @@ void ManifestVerifier::OnPaymentMethodManifestDownloaded(
           .Run(std::move(apps_), first_error_message_);
     }
 
-    if (--number_of_manifests_to_download_ == 0)
+    if (--number_of_manifests_to_download_ == 0) {
       std::move(finished_using_resources_callback_).Run();
+    }
 
     return;
   }
@@ -279,8 +286,9 @@ void ManifestVerifier::OnPaymentMethodManifestParsed(
   cache_->AddPaymentMethodManifest(method_manifest_url.spec(),
                                    supported_origin_strings);
 
-  if (--number_of_manifests_to_download_ == 0)
+  if (--number_of_manifests_to_download_ == 0) {
     std::move(finished_using_resources_callback_).Run();
+  }
 }
 
 void ManifestVerifier::RemoveInvalidPaymentApps() {
@@ -307,10 +315,11 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
 
   // Remove apps without enabled methods.
   for (auto it = apps_.begin(); it != apps_.end();) {
-    if (it->second->enabled_methods.empty())
+    if (it->second->enabled_methods.empty()) {
       it = apps_.erase(it);
-    else
+    } else {
       ++it;
+    }
   }
 }
 

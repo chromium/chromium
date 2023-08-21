@@ -5,6 +5,7 @@
 #include "components/payments/content/android/payment_manifest_web_data_service_android.h"
 
 #include <string>
+#include <utility>
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
@@ -31,19 +32,25 @@ PaymentManifestWebDataServiceAndroid::~PaymentManifestWebDataServiceAndroid() =
 void PaymentManifestWebDataServiceAndroid::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (weak_java_obj_.get(env).is_null())
+  if (!result) {
     return;
+  }
 
-  if (web_data_service_requests_.find(h) == web_data_service_requests_.end())
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (weak_java_obj_.get(env).is_null()) {
     return;
+  }
+
+  if (web_data_service_requests_.find(h) == web_data_service_requests_.end()) {
+    return;
+  }
 
   switch (result->GetType()) {
     case PAYMENT_WEB_APP_MANIFEST:
-      OnWebAppManifestRequestDone(env, h, result.get());
+      OnWebAppManifestRequestDone(env, h, std::move(result));
       break;
     case PAYMENT_METHOD_MANIFEST:
-      OnPaymentMethodManifestRequestDone(env, h, result.get());
+      OnPaymentMethodManifestRequestDone(env, h, std::move(result));
       break;
     default:
       NOTREACHED() << "unsupported data type";
@@ -53,9 +60,12 @@ void PaymentManifestWebDataServiceAndroid::OnWebDataServiceRequestDone(
 void PaymentManifestWebDataServiceAndroid::OnWebAppManifestRequestDone(
     JNIEnv* env,
     WebDataServiceBase::Handle h,
-    WDTypedResult* result) {
+    std::unique_ptr<WDTypedResult> result) {
+  DCHECK(result);
+
   const WDResult<std::vector<WebAppManifestSection>>* typed_result =
-      static_cast<const WDResult<std::vector<WebAppManifestSection>>*>(result);
+      static_cast<const WDResult<std::vector<WebAppManifestSection>>*>(
+          result.get());
   const std::vector<WebAppManifestSection>* manifest =
       &(typed_result->GetValue());
 
@@ -89,9 +99,11 @@ void PaymentManifestWebDataServiceAndroid::OnWebAppManifestRequestDone(
 void PaymentManifestWebDataServiceAndroid::OnPaymentMethodManifestRequestDone(
     JNIEnv* env,
     WebDataServiceBase::Handle h,
-    WDTypedResult* result) {
+    std::unique_ptr<WDTypedResult> result) {
+  DCHECK(result);
+
   const WDResult<std::vector<std::string>>* typed_result =
-      static_cast<const WDResult<std::vector<std::string>>*>(result);
+      static_cast<const WDResult<std::vector<std::string>>*>(result.get());
   const std::vector<std::string>* web_apps_ids = &(typed_result->GetValue());
 
   Java_PaymentManifestWebDataServiceCallback_onPaymentMethodManifestFetched(
@@ -126,8 +138,9 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
 
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
-  if (web_data_service == nullptr)
+  if (web_data_service == nullptr) {
     return;
+  }
 
   web_data_service->AddPaymentMethodManifest(
       base::android::ConvertJavaStringToUTF8(jmethod_name),
@@ -140,8 +153,9 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
     const base::android::JavaParamRef<jobjectArray>& jmanifest_sections) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
-  if (web_data_service == nullptr)
+  if (web_data_service == nullptr) {
     return;
+  }
 
   std::vector<WebAppManifestSection> manifest;
 
@@ -176,8 +190,9 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentMethodManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
-  if (web_data_service == nullptr)
+  if (web_data_service == nullptr) {
     return false;
+  }
 
   WebDataServiceBase::Handle handle =
       web_data_service->GetPaymentMethodManifest(
@@ -195,8 +210,9 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentWebAppManifest(
     const base::android::JavaParamRef<jobject>& jcallback) {
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
       GetPaymentManifestWebDataService();
-  if (web_data_service == nullptr)
+  if (web_data_service == nullptr) {
     return false;
+  }
 
   WebDataServiceBase::Handle handle =
       web_data_service->GetPaymentWebAppManifest(
@@ -212,8 +228,9 @@ static jlong JNI_PaymentManifestWebDataService_Init(
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
-  if (!web_contents)
+  if (!web_contents) {
     return 0;
+  }
 
   PaymentManifestWebDataServiceAndroid* manifest_web_data_service_android =
       new PaymentManifestWebDataServiceAndroid(env, obj, web_contents);
@@ -222,8 +239,9 @@ static jlong JNI_PaymentManifestWebDataService_Init(
 
 scoped_refptr<PaymentManifestWebDataService>
 PaymentManifestWebDataServiceAndroid::GetPaymentManifestWebDataService() {
-  if (!web_contents_ || !web_contents_->GetBrowserContext())
+  if (!web_contents_ || !web_contents_->GetBrowserContext()) {
     return nullptr;
+  }
 
   return webdata_services::WebDataServiceWrapperFactory::
       GetPaymentManifestWebDataServiceForBrowserContext(

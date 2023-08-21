@@ -86,7 +86,7 @@ void PaymentCredential::OnWebDataServiceRequestDone(
   Reset();
 
   std::move(callback).Run(
-      static_cast<WDResult<bool>*>(result.get())->GetValue()
+      result && static_cast<WDResult<bool>*>(result.get())->GetValue()
           ? mojom::PaymentCredentialStorageStatus::SUCCESS
           : mojom::PaymentCredentialStorageStatus::FAILED_TO_STORE_CREDENTIAL);
 }
