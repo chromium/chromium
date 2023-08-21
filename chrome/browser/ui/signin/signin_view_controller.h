@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/profiles/profile_chooser_constants.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
@@ -77,8 +76,7 @@ class SigninViewController {
   // |access_point| indicates the access point used to open the Gaia sign in
   // page.
   // DEPRECATED: Use ShowDiceEnableSyncTab instead.
-  void ShowSignin(profiles::BubbleViewMode mode,
-                  signin_metrics::AccessPoint access_point,
+  void ShowSignin(signin_metrics::AccessPoint access_point,
                   const GURL& redirect_url = GURL(chrome::kChromeUINewTabURL));
 
   // Shows a Chrome Sync signin tab. |email_hint| may be empty.

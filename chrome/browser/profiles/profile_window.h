@@ -11,7 +11,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/profiles/profile_chooser_constants.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 
 #if BUILDFLAG(IS_ANDROID)

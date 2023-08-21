@@ -55,21 +55,6 @@ namespace {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-// Returns the sign-in reason for |mode|.
-signin_metrics::Reason GetSigninReasonFromMode(profiles::BubbleViewMode mode) {
-  switch (mode) {
-    case profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN:
-      return signin_metrics::Reason::kSigninPrimaryAccount;
-    case profiles::BUBBLE_VIEW_MODE_GAIA_ADD_ACCOUNT:
-      return signin_metrics::Reason::kAddSecondaryAccount;
-    case profiles::BUBBLE_VIEW_MODE_GAIA_REAUTH:
-      return signin_metrics::Reason::kReauthentication;
-    default:
-      NOTREACHED();
-      return signin_metrics::Reason::kUnknownReason;
-  }
-}
-
 // Opens a new tab on |url| or reuses the current tab if it is the NTP.
 void ShowTabOverwritingNTP(Browser* browser, const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
@@ -158,22 +143,15 @@ SigninViewController::~SigninViewController() {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-void SigninViewController::ShowSignin(profiles::BubbleViewMode mode,
-                                      signin_metrics::AccessPoint access_point,
+void SigninViewController::ShowSignin(signin_metrics::AccessPoint access_point,
                                       const GURL& redirect_url) {
   Profile* profile = browser_->profile();
-  std::string email;
-  signin_metrics::Reason signin_reason = GetSigninReasonFromMode(mode);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (signin_reason == signin_metrics::Reason::kReauthentication) {
-    email = identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-                .email;
-  }
   signin_metrics::PromoAction promo_action =
       GetPromoActionForNewAccount(identity_manager);
-  ShowDiceSigninTab(signin_reason, access_point, promo_action, email,
-                    redirect_url);
+  ShowDiceSigninTab(signin_metrics::Reason::kSigninPrimaryAccount, access_point,
+                    promo_action, /*email_hint=*/std::string(), redirect_url);
 }
 
 void SigninViewController::ShowModalInterceptFirstRunExperienceDialog(

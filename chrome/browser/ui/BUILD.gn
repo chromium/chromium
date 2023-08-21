@@ -163,7 +163,6 @@ static_library("ui") {
     "prefs/pref_watcher.h",
     "prefs/prefs_tab_helper.cc",
     "prefs/prefs_tab_helper.h",
-    "profiles/profile_chooser_constants.h",
     "profiles/profile_error_dialog.cc",
     "profiles/profile_error_dialog.h",
     "recently_audible_helper.cc",
