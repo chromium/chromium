@@ -294,6 +294,9 @@ enum class IOSOverflowMenuActionType {
       self.overflowMenuMediator.accountBookmarkModel =
           ios::AccountBookmarkModelFactory::GetForBrowserState(
               self.browser->GetBrowserState());
+      self.overflowMenuMediator.readingListModel =
+          ReadingListModelFactory::GetInstance()->GetForBrowserState(
+              self.browser->GetBrowserState());
       self.overflowMenuMediator.browserStatePrefs =
           self.browser->GetBrowserState()->GetPrefs();
       self.overflowMenuMediator.engagementTracker =

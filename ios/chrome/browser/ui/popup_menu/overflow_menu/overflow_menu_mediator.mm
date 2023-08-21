@@ -21,6 +21,8 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/profile_metrics/browser_profile_type.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
@@ -167,6 +169,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                                     OverflowMenuDestinationProvider,
                                     OverlayPresenterObserving,
                                     PrefObserverDelegate,
+                                    ReadingListModelBridgeObserver,
                                     WebStateListObserving> {
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
@@ -177,6 +180,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   // Bridge to register for bookmark changes.
   std::unique_ptr<BookmarkModelBridge> _localOrSyncableBookmarkModelBridge;
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
+
+  // Bridge to register for reading list model changes.
+  std::unique_ptr<ReadingListModelBridge> _readingListModelBridge;
 
   // Bridge to get notified of the language detection event.
   std::unique_ptr<language::IOSLanguageDetectionTabHelperObserverBridge>
@@ -290,6 +296,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.localOrSyncableBookmarkModel = nullptr;
   self.accountBookmarkModel = nullptr;
+  self.readingListModel = nullptr;
   self.browserStatePrefs = nullptr;
   self.localStatePrefs = nullptr;
 
@@ -396,6 +403,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (accountBookmarkModel) {
     _accountBookmarkModelBridge =
         std::make_unique<BookmarkModelBridge>(self, accountBookmarkModel);
+  }
+
+  [self updateModel];
+}
+
+- (void)setReadingListModel:(ReadingListModel*)readingListModel {
+  _readingListModelBridge.reset();
+
+  _readingListModel = readingListModel;
+
+  if (readingListModel) {
+    _readingListModelBridge =
+        std::make_unique<ReadingListModelBridge>(self, readingListModel);
   }
 
   [self updateModel];
@@ -1284,6 +1304,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   [self updateModel];
 }
 
+#pragma mark - ReadingListModelBridgeObserver
+
+- (void)readingListModelLoaded:(const ReadingListModel*)model {
+  [self updateModel];
+}
+
+- (void)readingListModelDidApplyChanges:(const ReadingListModel*)model {
+  [self updateModel];
+}
+
 #pragma mark - FollowMenuUpdater
 
 - (void)updateFollowMenuItemWithWebPage:(WebPageURLs*)webPageURLs
@@ -1366,7 +1396,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
               feature_engagement::kIPHBadgedReadingListFeature)) {
         self.readingListDestination.badge = BadgeTypePromo;
       }
-      return self.readingListDestination;
+      return self.readingListModel->loaded() ? self.readingListDestination
+                                             : nil;
     case overflow_menu::Destination::Passwords:
       return self.passwordsDestination;
     case overflow_menu::Destination::Downloads:
