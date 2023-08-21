@@ -47,3 +47,46 @@ TEST_F(SearchEngineItemTest, BasicProperties) {
   EXPECT_EQ(item.uniqueIdentifier, URLCell.cellUniqueIdentifier);
   EXPECT_EQ(UITableViewCellAccessoryCheckmark, URLCell.accessoryType);
 }
+
+TEST_F(SearchEngineItemTest, isEqual) {
+  NSString* text = @"Title text";
+  NSString* detailText = @"www.google.com";
+  GURL URL = net::GURLWithNSURL([NSURL URLWithString:detailText]);
+  NSString* otherText = @"Other Title text";
+  NSString* otherDetailText = @"www.notGoogle.com";
+  GURL otherURL = net::GURLWithNSURL([NSURL URLWithString:otherDetailText]);
+
+  SearchEngineItem* item = [[SearchEngineItem alloc] initWithType:0];
+  item.text = text;
+  item.detailText = detailText;
+  item.URL = URL;
+
+  SearchEngineItem* sameItem = [[SearchEngineItem alloc] initWithType:0];
+  sameItem.text = text;
+  sameItem.detailText = detailText;
+  sameItem.URL = URL;
+
+  EXPECT_TRUE([item isEqual:sameItem]);
+
+  SearchEngineItem* itemWithDifferentText =
+      [[SearchEngineItem alloc] initWithType:0];
+  itemWithDifferentText.text = otherText;
+  itemWithDifferentText.detailText = item.detailText;
+  itemWithDifferentText.URL = item.URL;
+
+  EXPECT_FALSE([item isEqual:itemWithDifferentText]);
+
+  SearchEngineItem* itemWithDifferentDetailText =
+      [[SearchEngineItem alloc] initWithType:0];
+  itemWithDifferentDetailText.text = item.text;
+  itemWithDifferentDetailText.detailText = otherDetailText;
+  itemWithDifferentDetailText.URL = item.URL;
+
+  EXPECT_FALSE([item isEqual:itemWithDifferentDetailText]);
+
+  SearchEngineItem* itemWithDifferentURL =
+      [[SearchEngineItem alloc] initWithType:0];
+  itemWithDifferentURL.text = item.text;
+  itemWithDifferentURL.detailText = item.detailText;
+  itemWithDifferentURL.URL = otherURL;
+}

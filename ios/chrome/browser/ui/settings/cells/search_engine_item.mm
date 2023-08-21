@@ -66,4 +66,10 @@
   [cell configureUILayout];
 }
 
+- (BOOL)isEqual:(SearchEngineItem*)otherItem {
+  return (self.text == otherItem.text) &&
+         (self.detailText == otherItem.detailText) &&
+         (self.URL == otherItem.URL);
+}
+
 @end
