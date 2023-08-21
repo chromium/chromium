@@ -10,7 +10,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
@@ -1089,6 +1088,11 @@ public class CustomTabsConnection {
         return mClientManager.shouldSpeculateLoadOnCellularForSession(session);
     }
 
+    /** @see ClientManager#getCanUseHiddenTab(CustomTabsSessionToken) */
+    public boolean canUseHiddenTabForSession(CustomTabsSessionToken session) {
+        return mClientManager.getCanUseHiddenTab(session);
+    }
+
     /** @see ClientManager#shouldSendNavigationInfoForSession(CustomTabsSessionToken) */
     public boolean shouldSendNavigationInfoForSession(CustomTabsSessionToken session) {
         return mClientManager.shouldSendNavigationInfoForSession(session);
@@ -1615,9 +1619,6 @@ public class CustomTabsConnection {
         if (PreloadPagesSettingsBridge.getState() == PreloadPagesState.NO_PRELOADING) {
             return SPECULATION_STATUS_ON_START_NOT_ALLOWED_NETWORK_PREDICTION_DISABLED;
         }
-        ConnectivityManager cm =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
         return SPECULATION_STATUS_ON_START_ALLOWED;
     }
 
