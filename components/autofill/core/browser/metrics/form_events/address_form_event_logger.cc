@@ -36,10 +36,10 @@ void AddressFormEventLogger::OnDidFillSuggestion(
     const AutofillProfile& profile,
     const FormStructure& form,
     const AutofillField& field,
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
   AutofillProfile::RecordType record_type = profile.record_type();
-  sync_state_ = sync_state;
+  signin_state_for_metrics_ = signin_state_for_metrics;
 
   form_interactions_ukm_logger_->LogDidFillSuggestion(record_type, form, field);
 
@@ -71,22 +71,23 @@ void AddressFormEventLogger::OnDidFillSuggestion(
 }
 
 void AddressFormEventLogger::OnDidSeeFillableDynamicForm(
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const FormStructure& form) {
-  sync_state_ = sync_state;
+  signin_state_for_metrics_ = signin_state_for_metrics;
   Log(FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, form);
 }
 
-void AddressFormEventLogger::OnDidRefill(AutofillSyncSigninState sync_state,
-                                         const FormStructure& form) {
-  sync_state_ = sync_state;
+void AddressFormEventLogger::OnDidRefill(
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    const FormStructure& form) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
   Log(FORM_EVENT_DID_DYNAMIC_REFILL, form);
 }
 
 void AddressFormEventLogger::OnSubsequentRefillAttempt(
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const FormStructure& form) {
-  sync_state_ = sync_state;
+  signin_state_for_metrics_ = signin_state_for_metrics;
   Log(FORM_EVENT_DYNAMIC_CHANGE_AFTER_REFILL, form);
 }
 

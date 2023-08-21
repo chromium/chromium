@@ -57,14 +57,15 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
     const FormStructure& form,
     const AutofillField& field,
     const base::TimeTicks& form_parsed_timestamp,
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool off_the_record) {
   if (DoSuggestionsIncludeVirtualCard())
     Log(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, form);
 
   // Also perform the logging actions from the base class:
   FormEventLoggerBase::OnDidShowSuggestions(form, field, form_parsed_timestamp,
-                                            sync_state, off_the_record);
+                                            signin_state_for_metrics,
+                                            off_the_record);
 
   suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
 
@@ -90,8 +91,8 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
 void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
-    AutofillSyncSigninState sync_state) {
-  sync_state_ = sync_state;
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
 
   card_selected_has_offer_ = false;
   if (has_eligible_offer_) {
@@ -159,10 +160,10 @@ void CreditCardFormEventLogger::OnDidFillSuggestion(
     const AutofillField& field,
     const base::flat_set<FieldGlobalId>& newly_filled_fields,
     const base::flat_set<FieldGlobalId>& safe_fields,
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     const AutofillTriggerSource trigger_source) {
   CreditCard::RecordType record_type = credit_card.record_type();
-  sync_state_ = sync_state;
+  signin_state_for_metrics_ = signin_state_for_metrics;
   ukm::builders::Autofill_CreditCardFill builder =
       form_interactions_ukm_logger_->CreateCreditCardFillBuilder();
   builder.SetFormSignature(HashFormSignature(form.form_signature()));

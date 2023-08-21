@@ -723,35 +723,53 @@ absl::optional<CoreAccountInfo> PersonalDataManager::GetPrimaryAccountInfo()
 }
 
 bool PersonalDataManager::IsPaymentsDownloadActive() const {
-  return GetSyncSigninState() ==
-             AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled ||
-         GetSyncSigninState() ==
-             AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
+  if (!sync_service_ || !identity_manager_ ||
+      sync_service_->GetAccountInfo().IsEmpty() ||
+      sync_service_->GetTransportState() ==
+          syncer::SyncService::TransportState::PAUSED) {
+    return false;
+  }
+  return sync_service_->IsSyncFeatureEnabled() ||
+         sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
-AutofillSyncSigninState PersonalDataManager::GetSyncSigninState() const {
+bool PersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
+  if (!sync_service_ || !identity_manager_ ||
+      sync_service_->GetAccountInfo().IsEmpty() ||
+      sync_service_->GetTransportState() ==
+          syncer::SyncService::TransportState::PAUSED) {
+    return false;
+  }
+  return !sync_service_->IsSyncFeatureEnabled() &&
+         sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
+}
+
+AutofillMetrics::PaymentsSigninState
+PersonalDataManager::GetPaymentsSigninStateForMetrics() const {
+  using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
+
   // Check if the user is signed out.
   if (!sync_service_ || !identity_manager_ ||
       sync_service_->GetAccountInfo().IsEmpty()) {
-    return AutofillSyncSigninState::kSignedOut;
+    return PaymentsSigninState::kSignedOut;
   }
 
   if (sync_service_->GetTransportState() ==
       syncer::SyncService::TransportState::PAUSED) {
-    return AutofillSyncSigninState::kSyncPaused;
+    return PaymentsSigninState::kSyncPaused;
   }
 
   // Check if the user has turned on sync.
   if (sync_service_->IsSyncFeatureEnabled()) {
-    return AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled;
+    return PaymentsSigninState::kSignedInAndSyncFeatureEnabled;
   }
 
   // Check if Wallet data types are supported.
   if (sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA)) {
-    return AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
+    return PaymentsSigninState::kSignedInAndWalletSyncTransportEnabled;
   }
 
-  return AutofillSyncSigninState::kSignedIn;
+  return PaymentsSigninState::kSignedIn;
 }
 
 void PersonalDataManager::AddObserver(PersonalDataManagerObserver* observer) {
@@ -2511,8 +2529,7 @@ bool PersonalDataManager::ShouldShowCardsFromAccountOption() const {
 }
 
 void PersonalDataManager::OnUserAcceptedCardsFromAccountOption() {
-  DCHECK_EQ(AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled,
-            GetSyncSigninState());
+  DCHECK(IsPaymentsWalletSyncTransportEnabled());
   prefs::SetUserOptedInWalletSyncTransport(
       pref_service_, sync_service_->GetAccountInfo().account_id,
       /*opted_in=*/true);
@@ -2571,13 +2588,12 @@ void PersonalDataManager::OnCardArtImagesFetched(
 }
 
 void PersonalDataManager::LogServerCardLinkClicked() const {
-  AutofillMetrics::LogServerCardLinkClicked(GetSyncSigninState());
+  AutofillMetrics::LogServerCardLinkClicked(GetPaymentsSigninStateForMetrics());
 }
 
 void PersonalDataManager::OnUserAcceptedUpstreamOffer() {
   // If the user is in sync transport mode for Wallet, record an opt-in.
-  if (GetSyncSigninState() ==
-      AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled) {
+  if (IsPaymentsWalletSyncTransportEnabled()) {
     prefs::SetUserOptedInWalletSyncTransport(
         pref_service_, sync_service_->GetAccountInfo().account_id,
         /*opted_in=*/true);

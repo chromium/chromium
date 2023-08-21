@@ -18,8 +18,11 @@ TestPersonalDataManager::TestPersonalDataManager()
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;
 
-AutofillSyncSigninState TestPersonalDataManager::GetSyncSigninState() const {
-  return sync_and_signin_state_;
+bool TestPersonalDataManager::IsPaymentsWalletSyncTransportEnabled() const {
+  if (payments_wallet_sync_transport_enabled_.has_value()) {
+    return *payments_wallet_sync_transport_enabled_;
+  }
+  return PersonalDataManager::IsPaymentsWalletSyncTransportEnabled();
 }
 
 void TestPersonalDataManager::RecordUseOf(

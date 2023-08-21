@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/fallback_autocomplete_unrecognized_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -43,7 +44,6 @@
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/fast_checkout_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -824,7 +824,8 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.
-  AutofillSyncSigninState sync_state_ = AutofillSyncSigninState::kNumSyncStates;
+  AutofillMetrics::PaymentsSigninState signin_state_for_metrics_ =
+      AutofillMetrics::PaymentsSigninState::kUnknown;
 
   // Helps with measuring whether phone number is collected and whether it is in
   // conjunction with WebOTP or OneTimeCode (OTC).

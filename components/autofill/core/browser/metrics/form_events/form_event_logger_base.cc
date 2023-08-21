@@ -56,8 +56,8 @@ FormEventLoggerBase::~FormEventLoggerBase() {
 
 void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
     const FormStructure& form,
-    AutofillSyncSigninState sync_state) {
-  sync_state_ = sync_state;
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
   if (!has_logged_interacted_) {
     has_logged_interacted_ = true;
     LogUkmInteractedWithForm(form.form_signature());
@@ -67,8 +67,8 @@ void FormEventLoggerBase::OnDidInteractWithAutofillableForm(
 
 void FormEventLoggerBase::OnDidPollSuggestions(
     const FormFieldData& field,
-    AutofillSyncSigninState sync_state) {
-  sync_state_ = sync_state;
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
   // Record only one poll user action for consecutive polls of the same field.
   // This is to avoid recording too many poll actions (for example when a user
   // types in a field, triggering multiple queries) to make the analysis more
@@ -107,9 +107,9 @@ void FormEventLoggerBase::OnDidShowSuggestions(
     const FormStructure& form,
     const AutofillField& field,
     const base::TimeTicks& form_parsed_timestamp,
-    AutofillSyncSigninState sync_state,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool off_the_record) {
-  sync_state_ = sync_state;
+  signin_state_for_metrics_ = signin_state_for_metrics;
   form_interactions_ukm_logger_->LogSuggestionsShown(
       form, field, form_parsed_timestamp, off_the_record);
 
@@ -144,9 +144,10 @@ void FormEventLoggerBase::SetTimeFromInteractionToSubmission(
   time_from_interaction_to_submission_ = time_from_interaction_to_submission;
 }
 
-void FormEventLoggerBase::OnWillSubmitForm(AutofillSyncSigninState sync_state,
-                                           const FormStructure& form) {
-  sync_state_ = sync_state;
+void FormEventLoggerBase::OnWillSubmitForm(
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    const FormStructure& form) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
   // Not logging this kind of form if we haven't logged a user interaction.
   if (!has_logged_interacted_)
     return;
@@ -166,9 +167,10 @@ void FormEventLoggerBase::OnWillSubmitForm(AutofillSyncSigninState sync_state,
   base::RecordAction(base::UserMetricsAction("Autofill_OnWillSubmitForm"));
 }
 
-void FormEventLoggerBase::OnFormSubmitted(AutofillSyncSigninState sync_state,
-                                          const FormStructure& form) {
-  sync_state_ = sync_state;
+void FormEventLoggerBase::OnFormSubmitted(
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    const FormStructure& form) {
+  signin_state_for_metrics_ = signin_state_for_metrics;
   // Not logging this kind of form if we haven't logged a user interaction.
   if (!has_logged_interacted_)
     return;
@@ -248,8 +250,9 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
     name += ".WithBothServerAndLocalData";
   base::UmaHistogramEnumeration(name, event, NUM_FORM_EVENTS);
   base::UmaHistogramEnumeration(
-      name + AutofillMetrics::GetMetricsSyncStateSuffix(sync_state_), event,
-      NUM_FORM_EVENTS);
+      name +
+          AutofillMetrics::GetMetricsSyncStateSuffix(signin_state_for_metrics_),
+      event, NUM_FORM_EVENTS);
 }
 
 void FormEventLoggerBase::LogWillSubmitForm(const FormStructure& form) {

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/account_info_getter.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/personal_data_manager_cleaner.h"
@@ -36,7 +37,6 @@
 #include "components/autofill/core/browser/strike_databases/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/autofill_profile_update_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -168,11 +168,17 @@ class PersonalDataManager : public KeyedService,
   // the user is not signed-in or the identity manager is not available.
   absl::optional<CoreAccountInfo> GetPrimaryAccountInfo() const;
 
-  // Returns whether credit card download is active (sync as a transport).
+  // Returns whether credit card download is active (meaning that wallet sync is
+  // running at least in transport mode).
   bool IsPaymentsDownloadActive() const;
 
-  // Returns the current sync status.
-  virtual AutofillSyncSigninState GetSyncSigninState() const;
+  // Returns true if wallet sync is running in transport mode (meaning that
+  // Sync-the-feature is disabled).
+  virtual bool IsPaymentsWalletSyncTransportEnabled() const;
+
+  // Returns the current sync status for the purpose of metrics only (do not
+  // guard actual logic behind this value).
+  AutofillMetrics::PaymentsSigninState GetPaymentsSigninStateForMetrics() const;
 
   // Adds a listener to be notified of PersonalDataManager events.
   virtual void AddObserver(PersonalDataManagerObserver* observer);

@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/form_events/form_event_logger_base.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/dense_set.h"
 
 namespace autofill::autofill_metrics {
@@ -42,20 +41,24 @@ class AddressFormEventLogger : public FormEventLoggerBase {
 
   ~AddressFormEventLogger() override;
 
-  void OnDidFillSuggestion(const AutofillProfile& profile,
-                           const FormStructure& form,
-                           const AutofillField& field,
-                           AutofillSyncSigninState sync_state,
-                           const AutofillTriggerSource trigger_source);
+  void OnDidFillSuggestion(
+      const AutofillProfile& profile,
+      const FormStructure& form,
+      const AutofillField& field,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const AutofillTriggerSource trigger_source);
 
-  void OnDidSeeFillableDynamicForm(AutofillSyncSigninState sync_state,
-                                   const FormStructure& form);
+  void OnDidSeeFillableDynamicForm(
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const FormStructure& form);
 
-  void OnDidRefill(AutofillSyncSigninState sync_state,
-                   const FormStructure& form);
+  void OnDidRefill(
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const FormStructure& form);
 
-  void OnSubsequentRefillAttempt(AutofillSyncSigninState sync_state,
-                                 const FormStructure& form);
+  void OnSubsequentRefillAttempt(
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      const FormStructure& form);
 
  protected:
   void RecordPollSuggestions() override;

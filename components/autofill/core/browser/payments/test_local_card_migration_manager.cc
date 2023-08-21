@@ -52,9 +52,8 @@ void TestLocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(
   LocalCardMigrationManager::OnUserAcceptedMainMigrationDialog(selected_cards);
 }
 
-void TestLocalCardMigrationManager::ResetSyncState(
-    AutofillSyncSigninState sync_state) {
-  personal_data_manager_->SetSyncAndSignInState(sync_state);
+void TestLocalCardMigrationManager::EnablePaymentsWalletSyncInTransportMode() {
+  personal_data_manager_->SetIsPaymentsWalletSyncTransportEnabled(true);
 }
 
 void TestLocalCardMigrationManager::OnDidGetUploadDetails(

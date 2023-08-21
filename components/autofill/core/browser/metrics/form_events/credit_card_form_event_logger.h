@@ -18,7 +18,6 @@
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/signatures.h"
 
@@ -57,15 +56,17 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
                             const autofill_metrics::CardMetadataLoggingContext&
                                 metadata_logging_context);
 
-  void OnDidShowSuggestions(const FormStructure& form,
-                            const AutofillField& field,
-                            const base::TimeTicks& form_parsed_timestamp,
-                            AutofillSyncSigninState sync_state,
-                            bool off_the_record) override;
+  void OnDidShowSuggestions(
+      const FormStructure& form,
+      const AutofillField& field,
+      const base::TimeTicks& form_parsed_timestamp,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+      bool off_the_record) override;
 
-  void OnDidSelectCardSuggestion(const CreditCard& credit_card,
-                                 const FormStructure& form,
-                                 AutofillSyncSigninState sync_state);
+  void OnDidSelectCardSuggestion(
+      const CreditCard& credit_card,
+      const FormStructure& form,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics);
 
   // To be called whenever (by BrowserAutofillManager) whenever a form is filled
   // (but not on preview).
@@ -88,7 +89,7 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
       const AutofillField& field,
       const base::flat_set<FieldGlobalId>& newly_filled_fields,
       const base::flat_set<FieldGlobalId>& safe_fields,
-      AutofillSyncSigninState sync_state,
+      AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
       const AutofillTriggerSource trigger_source);
 
   // Logging what type of authentication flow was prompted.

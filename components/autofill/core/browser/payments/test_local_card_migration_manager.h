@@ -12,7 +12,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 
 namespace autofill {
@@ -60,9 +59,10 @@ class TestLocalCardMigrationManager : public LocalCardMigrationManager {
   void OnUserAcceptedMainMigrationDialog(
       const std::vector<std::string>& selected_cards) override;
 
-  // Mock the Chrome Sync state in the LocalCardMigrationManager. If not set,
-  // default to AutofillSyncSigninState::kSignedInAndSyncFeature.
-  void ResetSyncState(AutofillSyncSigninState sync_state);
+  // By default, the `LocalCardMigrationManager` syncing state is "signed in
+  // and sync-the-feature enabled". Using this function, tests can simulate
+  // sync transport mode.
+  void EnablePaymentsWalletSyncInTransportMode();
 
  private:
   void OnDidGetUploadDetails(

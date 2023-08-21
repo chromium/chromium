@@ -788,16 +788,19 @@ bool BrowserAutofillManager::ShouldParseForms() {
   // need to parse the forms and query the server as the password manager
   // depends on server classifications.
   bool password_manager_enabled = client().IsPasswordManagerEnabled();
-  sync_state_ = client().GetPersonalDataManager()
-                    ? client().GetPersonalDataManager()->GetSyncSigninState()
-                    : AutofillSyncSigninState::kNumSyncStates;
+  signin_state_for_metrics_ =
+      client().GetPersonalDataManager()
+          ? client()
+                .GetPersonalDataManager()
+                ->GetPaymentsSigninStateForMetrics()
+          : AutofillMetrics::PaymentsSigninState::kUnknown;
   if (!has_logged_autofill_enabled_) {
     AutofillMetrics::LogIsAutofillEnabledAtPageLoad(autofill_enabled,
-                                                    sync_state_);
+                                                    signin_state_for_metrics_);
     AutofillMetrics::LogIsAutofillProfileEnabledAtPageLoad(
-        IsAutofillProfileEnabled(), sync_state_);
+        IsAutofillProfileEnabled(), signin_state_for_metrics_);
     AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
-        IsAutofillCreditCardEnabled(), sync_state_);
+        IsAutofillCreditCardEnabled(), signin_state_for_metrics_);
     has_logged_autofill_enabled_ = true;
   }
 
@@ -920,10 +923,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       client().IsAutocompleteEnabled());
 
   if (IsAutofillProfileEnabled()) {
-    address_form_event_logger_->OnWillSubmitForm(sync_state_, *submitted_form);
+    address_form_event_logger_->OnWillSubmitForm(signin_state_for_metrics_,
+                                                 *submitted_form);
   }
   if (IsAutofillCreditCardEnabled()) {
-    credit_card_form_event_logger_->OnWillSubmitForm(sync_state_,
+    credit_card_form_event_logger_->OnWillSubmitForm(signin_state_for_metrics_,
                                                      *submitted_form);
   }
 
@@ -962,10 +966,11 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   submitted_form->set_submission_source(source);
 
   if (IsAutofillProfileEnabled()) {
-    address_form_event_logger_->OnFormSubmitted(sync_state_, *submitted_form);
+    address_form_event_logger_->OnFormSubmitted(signin_state_for_metrics_,
+                                                *submitted_form);
   }
   if (IsAutofillCreditCardEnabled()) {
-    credit_card_form_event_logger_->OnFormSubmitted(sync_state_,
+    credit_card_form_event_logger_->OnFormSubmitted(signin_state_for_metrics_,
                                                     *submitted_form);
     if (touch_to_fill_delegate_) {
       touch_to_fill_delegate_->LogMetricsAfterSubmission(*submitted_form);
@@ -1416,7 +1421,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
   if (should_fetch_card) {
     credit_card_form_event_logger_->OnDidSelectCardSuggestion(
-        credit_card_, *form_structure, sync_state_);
+        credit_card_, *form_structure, signin_state_for_metrics_);
 
     credit_card_form_ = form;
     credit_card_field_ = field;
@@ -1704,7 +1709,8 @@ void BrowserAutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
   if (logger) {
     logger->OnDidShowSuggestions(*form_structure, *autofill_field,
                                  form_structure->form_parsed_timestamp(),
-                                 sync_state_, client().IsOffTheRecord());
+                                 signin_state_for_metrics_,
+                                 client().IsOffTheRecord());
   } else if (autofill_field->ShouldSuppressSuggestionsAndFillingByDefault()) {
     // Suggestions were triggered on an ac=unrecognized address field.
     autocomplete_unrecognized_fallback_logger_->OnDidShowSuggestions();
@@ -2708,8 +2714,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       credit_card_form_event_logger_->OnDidFillSuggestion(
           credit_card_, *form_structure, *autofill_trigger_field,
           newly_filled_fields,
-          base::flat_set<FieldGlobalId>(std::move(safe_fields)), sync_state_,
-          trigger_source);
+          base::flat_set<FieldGlobalId>(std::move(safe_fields)),
+          signin_state_for_metrics_, trigger_source);
     } else {
       // An address form was filled.
       CHECK(absl::holds_alternative<const AutofillProfile*>(
@@ -2720,7 +2726,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       } else {
         address_form_event_logger_->OnDidFillSuggestion(
             *absl::get<const AutofillProfile*>(profile_or_credit_card),
-            *form_structure, *autofill_trigger_field, sync_state_,
+            *form_structure, *autofill_trigger_field, signin_state_for_metrics_,
             trigger_source);
       }
     }
@@ -2848,7 +2854,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormFieldData& field,
     const AutofillField& autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
-  address_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
+  address_form_event_logger_->OnDidPollSuggestions(field,
+                                                   signin_state_for_metrics_);
   AutofillProfile fake_profile;
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetSkipStatuses assumes that
@@ -2874,7 +2881,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormFieldData& field,
     const AutofillType& type,
     bool& should_display_gpay_logo) const {
-  credit_card_form_event_logger_->OnDidPollSuggestions(field, sync_state_);
+  credit_card_form_event_logger_->OnDidPollSuggestions(
+      field, signin_state_for_metrics_);
 
   std::vector<Suggestion> suggestions;
   bool with_offer = false;
@@ -2951,7 +2959,8 @@ void BrowserAutofillManager::OnBeforeProcessParsedForms() {
   has_parsed_forms_ = true;
 
   // Record the current sync state to be used for metrics on this page.
-  sync_state_ = client().GetPersonalDataManager()->GetSyncSigninState();
+  signin_state_for_metrics_ =
+      client().GetPersonalDataManager()->GetPaymentsSigninStateForMetrics();
 
   // Setup the url for metrics that we will collect for this form.
   form_interactions_ukm_logger()->OnFormsParsed(client().GetUkmSourceId());
@@ -3353,15 +3362,15 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   if (filling_context == nullptr)
     return false;
 
-  address_form_event_logger_->OnDidSeeFillableDynamicForm(sync_state_,
-                                                          form_structure);
+  address_form_event_logger_->OnDidSeeFillableDynamicForm(
+      signin_state_for_metrics_, form_structure);
 
   base::TimeTicks now = AutofillTickClock::NowTicks();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
   if (filling_context->attempted_refill && delta < kLimitBeforeRefill) {
-    address_form_event_logger_->OnSubsequentRefillAttempt(sync_state_,
-                                                          form_structure);
+    address_form_event_logger_->OnSubsequentRefillAttempt(
+        signin_state_for_metrics_, form_structure);
   }
 
   return !filling_context->attempted_refill && delta < kLimitBeforeRefill;
@@ -3397,7 +3406,8 @@ void BrowserAutofillManager::TriggerRefill(
   if (!form_structure)
     return;
 
-  address_form_event_logger_->OnDidRefill(sync_state_, *form_structure);
+  address_form_event_logger_->OnDidRefill(signin_state_for_metrics_,
+                                          *form_structure);
 
   FillingContext* filling_context = GetFillingContext(*form_structure);
   DCHECK(filling_context);
@@ -3513,7 +3523,7 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     auto* logger = GetEventFormLogger(*context->focused_field);
     if (logger) {
       logger->OnDidInteractWithAutofillableForm(*(context->form_structure),
-                                                sync_state_);
+                                                signin_state_for_metrics_);
     }
   }
 

@@ -35,8 +35,8 @@ TEST_F(AddressFormEventLoggerTest, SyncState) {
         /*is_in_any_main_frame=*/true,
         /*form_interactions_ukm_logger=*/nullptr,
         /*client=*/autofill_client_.get());
-    logger.OnDidSeeFillableDynamicForm(AutofillSyncSigninState::kSignedOut,
-                                       form_structure);
+    logger.OnDidSeeFillableDynamicForm(
+        AutofillMetrics::PaymentsSigninState::kSignedOut, form_structure);
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.Address.WithNoData.SignedOut",
         FORM_EVENT_DID_SEE_FILLABLE_DYNAMIC_FORM, 1);
@@ -48,7 +48,8 @@ TEST_F(AddressFormEventLoggerTest, SyncState) {
         /*is_in_any_main_frame=*/true,
         /*form_interactions_ukm_logger=*/nullptr,
         /*client=*/autofill_client_.get());
-    logger.OnDidRefill(AutofillSyncSigninState::kSignedIn, form_structure);
+    logger.OnDidRefill(AutofillMetrics::PaymentsSigninState::kSignedIn,
+                       form_structure);
     histogram_tester.ExpectBucketCount(
         "Autofill.FormEvents.Address.WithNoData.SignedIn",
         FORM_EVENT_DID_DYNAMIC_REFILL, 1);

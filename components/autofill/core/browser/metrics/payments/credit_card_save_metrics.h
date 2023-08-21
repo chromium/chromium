@@ -184,8 +184,9 @@ void LogCardUploadDecisionsUkm(ukm::UkmRecorder* ukm_recorder,
 
 // Records the reason for why (or why not) card upload was enabled for the
 // user.
-void LogCardUploadEnabledMetric(CardUploadEnabled metric,
-                                AutofillSyncSigninState sync_state);
+void LogCardUploadEnabledMetric(
+    CardUploadEnabled metric,
+    AutofillMetrics::PaymentsSigninState sync_state);
 
 // When credit card save is not offered (either at all on mobile or by simply
 // not showing the bubble on desktop), logs the occurrence.
@@ -203,12 +204,13 @@ void LogSaveCardCardholderNamePrefilled(bool prefilled);
 // from its prefilled value or not.
 void LogSaveCardCardholderNameWasEdited(bool edited);
 
-void LogSaveCardPromptOfferMetric(SaveCardPromptOffer metric,
-                                  bool is_uploading,
-                                  bool is_reshow,
-                                  AutofillClient::SaveCreditCardOptions options,
-                                  security_state::SecurityLevel security_level,
-                                  AutofillSyncSigninState sync_state);
+void LogSaveCardPromptOfferMetric(
+    SaveCardPromptOffer metric,
+    bool is_uploading,
+    bool is_reshow,
+    AutofillClient::SaveCreditCardOptions options,
+    security_state::SecurityLevel security_level,
+    AutofillMetrics::PaymentsSigninState sync_state);
 
 void LogSaveCardPromptResultMetric(
     SaveCardPromptResult metric,
@@ -216,7 +218,7 @@ void LogSaveCardPromptResultMetric(
     bool is_reshow,
     AutofillClient::SaveCreditCardOptions options,
     security_state::SecurityLevel security_level,
-    AutofillSyncSigninState sync_state);
+    AutofillMetrics::PaymentsSigninState sync_state);
 
 void LogSaveCvcPromptOfferMetric(SaveCardPromptOffer metric,
                                  bool is_uploading,

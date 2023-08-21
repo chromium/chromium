@@ -9611,6 +9611,7 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Signed In and Wallet Sync Transport Enabled"/>
   <int value="3" label="Signed In and Sync Feature Enabled"/>
   <int value="4" label="Sync Paused"/>
+  <int value="5" label="Unknown"/>
 </enum>
 
 <enum name="AutofillTypeQuality">

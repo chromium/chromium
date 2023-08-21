@@ -48,7 +48,6 @@
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
@@ -111,7 +110,7 @@ int GetFieldTypeGroupPredictionQualityMetric(
 namespace autofill::autofill_metrics {
 
 using mojom::SubmissionSource;
-using SyncSigninState = AutofillSyncSigninState;
+using PaymentsSigninState = AutofillMetrics::PaymentsSigninState;
 using AutofillStatus = AutofillMetrics::AutofillStatus;
 
 namespace {
@@ -7688,8 +7687,8 @@ TEST_F(AutofillMetricsTest, OnAutocompleteSuggestionsShown) {
 TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
   {
     base::HistogramTester histogram_tester;
-    AutofillMetrics::LogIsAutofillEnabledAtPageLoad(/*enabled=*/true,
-                                                    SyncSigninState::kSignedIn);
+    AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
+        /*enabled=*/true, PaymentsSigninState::kSignedIn);
     histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad.SignedIn",
                                        true, 1);
     // Make sure the metric without the sync state is still recorded.
@@ -7698,7 +7697,7 @@ TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
-        /*enabled=*/false, SyncSigninState::kSignedOut);
+        /*enabled=*/false, PaymentsSigninState::kSignedOut);
     histogram_tester.ExpectBucketCount("Autofill.IsEnabled.PageLoad.SignedOut",
                                        false, 1);
     // Make sure the metric without the sync state is still recorded.
@@ -7709,19 +7708,17 @@ TEST_F(AutofillMetricsTest, LogIsAutofillEnabledAtPageLoad_BySyncState) {
 TEST_F(AutofillMetricsTest, LogServerCardLinkClicked) {
   {
     base::HistogramTester histogram_tester;
-    AutofillMetrics::LogServerCardLinkClicked(
-        AutofillSyncSigninState::kSignedIn);
+    AutofillMetrics::LogServerCardLinkClicked(PaymentsSigninState::kSignedIn);
     histogram_tester.ExpectTotalCount("Autofill.ServerCardLinkClicked", 1);
     histogram_tester.ExpectBucketCount("Autofill.ServerCardLinkClicked",
-                                       AutofillSyncSigninState::kSignedIn, 1);
+                                       PaymentsSigninState::kSignedIn, 1);
   }
   {
     base::HistogramTester histogram_tester;
-    AutofillMetrics::LogServerCardLinkClicked(
-        AutofillSyncSigninState::kSignedOut);
+    AutofillMetrics::LogServerCardLinkClicked(PaymentsSigninState::kSignedOut);
     histogram_tester.ExpectTotalCount("Autofill.ServerCardLinkClicked", 1);
     histogram_tester.ExpectBucketCount("Autofill.ServerCardLinkClicked",
-                                       AutofillSyncSigninState::kSignedOut, 1);
+                                       PaymentsSigninState::kSignedOut, 1);
   }
 }
 

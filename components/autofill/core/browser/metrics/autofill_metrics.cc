@@ -1492,7 +1492,7 @@ void AutofillMetrics::LogIsAutofillCreditCardEnabledAtStartup(bool enabled) {
 // static
 void AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
     bool enabled,
-    AutofillSyncSigninState sync_state) {
+    PaymentsSigninState sync_state) {
   std::string name("Autofill.IsEnabled.PageLoad");
   UMA_HISTOGRAM_BOOLEAN(name, enabled);
   base::UmaHistogramBoolean(name + GetMetricsSyncStateSuffix(sync_state),
@@ -1502,7 +1502,7 @@ void AutofillMetrics::LogIsAutofillEnabledAtPageLoad(
 // static
 void AutofillMetrics::LogIsAutofillProfileEnabledAtPageLoad(
     bool enabled,
-    AutofillSyncSigninState sync_state) {
+    PaymentsSigninState sync_state) {
   std::string name("Autofill.Address.IsEnabled.PageLoad");
   UMA_HISTOGRAM_BOOLEAN(name, enabled);
   base::UmaHistogramBoolean(name + GetMetricsSyncStateSuffix(sync_state),
@@ -1512,7 +1512,7 @@ void AutofillMetrics::LogIsAutofillProfileEnabledAtPageLoad(
 // static
 void AutofillMetrics::LogIsAutofillCreditCardEnabledAtPageLoad(
     bool enabled,
-    AutofillSyncSigninState sync_state) {
+    PaymentsSigninState sync_state) {
   std::string name("Autofill.CreditCard.IsEnabled.PageLoad");
   UMA_HISTOGRAM_BOOLEAN(name, enabled);
   base::UmaHistogramBoolean(name + GetMetricsSyncStateSuffix(sync_state),
@@ -2823,27 +2823,25 @@ int64_t AutofillMetrics::FormTypesToBitVector(
   return form_type_bv;
 }
 
-void AutofillMetrics::LogServerCardLinkClicked(
-    AutofillSyncSigninState sync_state) {
-  UMA_HISTOGRAM_ENUMERATION("Autofill.ServerCardLinkClicked", sync_state,
-                            AutofillSyncSigninState::kNumSyncStates);
+void AutofillMetrics::LogServerCardLinkClicked(PaymentsSigninState sync_state) {
+  base::UmaHistogramEnumeration("Autofill.ServerCardLinkClicked", sync_state);
 }
 
 // static
 const char* AutofillMetrics::GetMetricsSyncStateSuffix(
-    AutofillSyncSigninState sync_state) {
+    PaymentsSigninState sync_state) {
   switch (sync_state) {
-    case AutofillSyncSigninState::kSignedOut:
+    case PaymentsSigninState::kSignedOut:
       return ".SignedOut";
-    case AutofillSyncSigninState::kSignedIn:
+    case PaymentsSigninState::kSignedIn:
       return ".SignedIn";
-    case AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled:
+    case PaymentsSigninState::kSignedInAndWalletSyncTransportEnabled:
       return ".SignedInAndWalletSyncTransportEnabled";
-    case AutofillSyncSigninState::kSignedInAndSyncFeatureEnabled:
+    case PaymentsSigninState::kSignedInAndSyncFeatureEnabled:
       return ".SignedInAndSyncFeatureEnabled";
-    case AutofillSyncSigninState::kSyncPaused:
+    case PaymentsSigninState::kSyncPaused:
       return ".SyncPaused";
-    case AutofillSyncSigninState::kNumSyncStates:
+    case PaymentsSigninState::kUnknown:
       return ".Unknown";
   }
 }

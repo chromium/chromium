@@ -431,7 +431,6 @@ static_library("browser") {
     "strike_databases/strike_database_integrator_test_strike_database.h",
     "suggestions_context.cc",
     "suggestions_context.h",
-    "sync_utils.h",
     "ui/accessory_sheet_data.cc",
     "ui/accessory_sheet_data.h",
     "ui/accessory_sheet_enums.h",

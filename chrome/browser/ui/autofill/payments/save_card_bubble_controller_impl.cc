@@ -390,7 +390,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     } else {
       autofill_metrics::LogSaveCardPromptResultMetric(
           metric, is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-          personal_data_manager_->GetSyncSigninState());
+          personal_data_manager_->GetPaymentsSigninStateForMetrics());
     }
   }
 
@@ -534,7 +534,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kShown, is_upload_save_,
           is_reshow_, options_, GetSecurityLevel(),
-          personal_data_manager_->GetSyncSigninState());
+          personal_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::LOCAL_CVC_SAVE:
       autofill_metrics::LogSaveCvcPromptOfferMetric(
@@ -610,7 +610,7 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
       autofill_metrics::LogSaveCardPromptOfferMetric(
           autofill_metrics::SaveCardPromptOffer::kNotShownMaxStrikesReached,
           is_upload_save_, is_reshow_, options_, GetSecurityLevel(),
-          personal_data_manager_->GetSyncSigninState());
+          personal_data_manager_->GetPaymentsSigninStateForMetrics());
       break;
     case BubbleType::LOCAL_CVC_SAVE:
       autofill_metrics::LogSaveCvcPromptOfferMetric(

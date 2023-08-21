@@ -114,15 +114,17 @@ const char* const kSupportedAdditionalDomains[] = {"aol",
                                                    "yahoo",
                                                    "ymail"};
 
-bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
-                               const std::string& user_email,
-                               const std::string& user_country,
-                               const AutofillSyncSigninState sync_state,
-                               LogManager* log_manager) {
+bool IsCreditCardUploadEnabled(
+    const syncer::SyncService* sync_service,
+    const std::string& user_email,
+    const std::string& user_country,
+    AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
+    LogManager* log_manager) {
   if (!sync_service) {
     // If credit card sync is not active, we're not offering to upload cards.
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kSyncServiceNull, sync_state);
+        autofill_metrics::CardUploadEnabled::kSyncServiceNull,
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "SYNC_SERVICE_NULL");
     return false;
   }
@@ -130,7 +132,8 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
   if (sync_service->GetTransportState() ==
       syncer::SyncService::TransportState::PAUSED) {
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kSyncServicePaused, sync_state);
+        autofill_metrics::CardUploadEnabled::kSyncServicePaused,
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "SYNC_SERVICE_PAUSED");
     return false;
   }
@@ -139,7 +142,7 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::
             kSyncServiceMissingAutofillWalletDataActiveType,
-        sync_state);
+        signin_state_for_metrics);
     LogCardUploadDisabled(
         log_manager, "SYNC_SERVICE_MISSING_AUTOFILL_WALLET_ACTIVE_DATA_TYPE");
     return false;
@@ -152,7 +155,7 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
       autofill_metrics::LogCardUploadEnabledMetric(
           autofill_metrics::CardUploadEnabled::
               kSyncServiceMissingAutofillProfileActiveType,
-          sync_state);
+          signin_state_for_metrics);
       LogCardUploadDisabled(
           log_manager,
           "SYNC_SERVICE_MISSING_AUTOFILL_PROFILE_ACTIVE_DATA_TYPE");
@@ -167,7 +170,7 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
   if (sync_service->GetUserSettings()->IsUsingExplicitPassphrase()) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kUsingExplicitSyncPassphrase,
-        sync_state);
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "USER_HAS_EXPLICIT_SYNC_PASSPHRASE");
     return false;
   }
@@ -176,7 +179,8 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
   // won't receive the cards back from Google Payments.
   if (sync_service->IsLocalSyncEnabled()) {
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kLocalSyncEnabled, sync_state);
+        autofill_metrics::CardUploadEnabled::kLocalSyncEnabled,
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "USER_ONLY_SYNCING_LOCALLY");
     return false;
   }
@@ -184,7 +188,8 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
   // Check that the user's account email address is known.
   if (user_email.empty()) {
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kEmailEmpty, sync_state);
+        autofill_metrics::CardUploadEnabled::kEmailEmpty,
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "USER_EMAIL_EMPTY");
     return false;
   }
@@ -213,7 +218,7 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
       !using_google_domain) {
     autofill_metrics::LogCardUploadEnabledMetric(
         autofill_metrics::CardUploadEnabled::kEmailDomainNotSupported,
-        sync_state);
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "USER_EMAIL_DOMAIN_NOT_SUPPORTED");
     return false;
   }
@@ -223,7 +228,8 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
     // required for the ability to continue to launch to more countries as
     // necessary.
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kEnabledByFlag, sync_state);
+        autofill_metrics::CardUploadEnabled::kEnabledByFlag,
+        signin_state_for_metrics);
     LogCardUploadEnabled(log_manager);
     return true;
   }
@@ -234,13 +240,15 @@ bool IsCreditCardUploadEnabled(const syncer::SyncService* sync_service,
   if (country_iter == std::end(kAutofillUpstreamLaunchedCountries)) {
     // |country_code| was not found in the list of launched countries.
     autofill_metrics::LogCardUploadEnabledMetric(
-        autofill_metrics::CardUploadEnabled::kUnsupportedCountry, sync_state);
+        autofill_metrics::CardUploadEnabled::kUnsupportedCountry,
+        signin_state_for_metrics);
     LogCardUploadDisabled(log_manager, "UNSUPPORTED_COUNTRY");
     return false;
   }
 
   autofill_metrics::LogCardUploadEnabledMetric(
-      autofill_metrics::CardUploadEnabled::kEnabledForCountry, sync_state);
+      autofill_metrics::CardUploadEnabled::kEnabledForCountry,
+      signin_state_for_metrics);
   LogCardUploadEnabled(log_manager);
   return true;
 }
@@ -257,7 +265,8 @@ bool IsCreditCardMigrationEnabled(PersonalDataManager* personal_data_manager,
           sync_service,
           personal_data_manager->GetAccountInfoForPaymentsServer().email,
           personal_data_manager->GetCountryCodeForExperimentGroup(),
-          personal_data_manager->GetSyncSigninState(), log_manager)) {
+          personal_data_manager->GetPaymentsSigninStateForMetrics(),
+          log_manager)) {
     return false;
   }
 

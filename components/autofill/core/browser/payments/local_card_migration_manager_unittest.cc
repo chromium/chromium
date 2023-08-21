@@ -34,7 +34,6 @@
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -407,8 +406,7 @@ TEST_F(LocalCardMigrationManagerTest,
 // Trigger migration if user only signs in.
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_SignInOnly) {
   // Mock Chrome Sync is disabled.
-  local_card_migration_manager_->ResetSyncState(
-      AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled);
+  local_card_migration_manager_->EnablePaymentsWalletSyncInTransportMode();
 
   // Use one local card with more valid local cards available.
   UseLocalCardWithOtherLocalCardsOnFile();
