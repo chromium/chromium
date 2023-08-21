@@ -490,7 +490,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE)
 
   const bool is_using_raw_draw_;
-  const bool is_using_graphite_;
 
   gfx::ColorConversionSkFilterCache color_filter_cache_;
 

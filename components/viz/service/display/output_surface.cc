@@ -25,7 +25,7 @@ OutputSurface::Capabilities::Capabilities(const Capabilities& capabilities) =
 OutputSurface::Capabilities& OutputSurface::Capabilities::operator=(
     const Capabilities& capabilities) = default;
 
-OutputSurface::OutputSurface(Type type) : type_(type) {}
+OutputSurface::OutputSurface() : type_(Type::kSkia) {}
 
 OutputSurface::OutputSurface(
     std::unique_ptr<SoftwareOutputDevice> software_device)

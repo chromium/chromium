@@ -863,9 +863,7 @@ SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
       can_skip_render_pass_overlay_(
           base::FeatureList::IsEnabled(features::kCanSkipRenderPassOverlay)),
 #endif
-      is_using_raw_draw_(features::IsUsingRawDraw()),
-      is_using_graphite_(
-          base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
+      is_using_raw_draw_(features::IsUsingRawDraw()) {
   DCHECK(skia_output_surface_);
   lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
 
@@ -1634,7 +1632,7 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
 bool SkiaRenderer::NeedsFlipY(const DrawQuad* quad) const {
   // TODO(crbug.com/1449764): remove this workaround when bottom left origin
   // image is supported by graphite.
-  if (!is_using_graphite_) {
+  if (!skia_output_surface_->IsUsingGraphite()) {
     return false;
   }
   switch (quad->material) {

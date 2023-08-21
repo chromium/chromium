@@ -972,15 +972,26 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
     return nullptr;
   }
 
+  auto gr_context_type = gpu_preferences_.gr_context_type;
+#if BUILDFLAG(IS_APPLE)
+  const bool want_graphite = gr_context_type == GrContextType::kGraphiteDawn ||
+                             gr_context_type == GrContextType::kGraphiteMetal;
+  const bool is_angle_metal =
+      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
+  // Fallback from Graphite to Ganesh/GL if ANGLE is not using Metal too.
+  if (want_graphite && !is_angle_metal) {
+    gr_context_type = GrContextType::kGL;
+  }
+#endif
+
   // TODO(penghuang): https://crbug.com/899735 Handle device lost for Vulkan.
   auto shared_context_state = base::MakeRefCounted<SharedContextState>(
       std::move(share_group), std::move(surface), std::move(context),
       use_virtualized_gl_contexts,
       base::BindOnce(&GpuChannelManager::OnContextLost, base::Unretained(this),
                      context_lost_count_ + 1),
-      gpu_preferences_.gr_context_type, vulkan_context_provider_,
-      metal_context_provider_, dawn_context_provider_,
-      peak_memory_monitor_.GetWeakPtr());
+      gr_context_type, vulkan_context_provider_, metal_context_provider_,
+      dawn_context_provider_, peak_memory_monitor_.GetWeakPtr());
 
   // Initialize GL context, so Vulkan and GL interop can work properly.
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(

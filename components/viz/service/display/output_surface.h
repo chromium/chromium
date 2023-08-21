@@ -50,8 +50,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
  public:
   enum Type {
     kSoftware = 0,
-    kOpenGL = 1,
-    kVulkan = 2,
+    kSkia = 1,
   };
 
   enum class OrientationMode {
@@ -150,7 +149,7 @@ class VIZ_SERVICE_EXPORT OutputSurface {
   };
 
   // Constructor for skia-based compositing.
-  explicit OutputSurface(Type type);
+  OutputSurface();
   // Constructor for software compositing.
   explicit OutputSurface(std::unique_ptr<SoftwareOutputDevice> software_device);
 
