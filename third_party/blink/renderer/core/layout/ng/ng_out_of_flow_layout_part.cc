@@ -2616,19 +2616,21 @@ void NGOutOfFlowLayoutPart::ReplaceFragment(
     // not be contained by the innermost multicol container, and so on. Skip
     // above all OOFs in the containing block chain, to find the right
     // fragmentation context root.
-    while (containing_block->IsOutOfFlowPositioned() &&
-           !containing_block->IsLayoutView())
+    while (containing_block->MightBeInsideFragmentationContext()) {
+      // Keep searching up the tree until we have found a containing block
+      // that's in-flow and the containing block of that containing block is a
+      // fragmentation context root that's also in-flow. This fragmentation
+      // context root is the one that contains the fragment.
+      bool is_out_of_flow = containing_block->IsOutOfFlowPositioned();
       containing_block = containing_block->ContainingNGBox();
-    // If we got to the root LayoutView, it has to mean that it establishes a
-    // fragmentation context (i.e. we're printing).
-    if (containing_block->IsLayoutView())
-      DCHECK(containing_block->IsFragmentationContextRoot());
-    else
-      containing_block = containing_block->ContainingFragmentationContextRoot();
+      if (containing_block->IsFragmentationContextRoot()) {
+        if (!is_out_of_flow && !containing_block->IsOutOfFlowPositioned()) {
+          break;
+        }
+      }
+    }
 
-    // Since this is treated as a nested multicol container, we should always
-    // find an outer fragmentation context.
-    DCHECK(containing_block);
+    DCHECK(containing_block->IsFragmentationContextRoot());
   }
 
   // Replace the old fragment with the new one, if it's inside |parent|.
