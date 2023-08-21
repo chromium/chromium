@@ -16,6 +16,7 @@
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
 #include "ash/root_window_controller.h"
@@ -29,6 +30,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +41,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/html_test_utils.h"
+#include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -65,6 +68,7 @@
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/ime/candidate_window.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -2368,4 +2372,84 @@ IN_PROC_BROWSER_TEST_F(ShortcutsAppSpokenFeedbackTest,
   sm_.ExpectSpeech("row 1 column 1");
   sm_.Replay();
 }
+
+class SpokenFeedbackWithCandidateWindowTest
+    : public LoggedInSpokenFeedbackTest {
+ public:
+  SpokenFeedbackWithCandidateWindowTest() = default;
+  SpokenFeedbackWithCandidateWindowTest(
+      const SpokenFeedbackWithCandidateWindowTest&) = delete;
+  SpokenFeedbackWithCandidateWindowTest& operator=(
+      const SpokenFeedbackWithCandidateWindowTest&) = delete;
+  ~SpokenFeedbackWithCandidateWindowTest() override = default;
+
+  void SetUpOnMainThread() override {
+    LoggedInSpokenFeedbackTest::SetUpOnMainThread();
+
+    aura::Window* parent =
+        ash::Shell::GetContainer(Shell::Get()->GetPrimaryRootWindow(),
+                                 ash::kShellWindowId_MenuContainer);
+
+    candidate_window_view_ = new ui::ime::CandidateWindowView(parent);
+    candidate_window_view_->InitWidget();
+  }
+  void TearDownOnMainThread() override {
+    candidate_window_view_.ExtractAsDangling()->GetWidget()->CloseNow();
+    LoggedInSpokenFeedbackTest::TearDownOnMainThread();
+  }
+
+  raw_ptr<ui::ime::CandidateWindowView> candidate_window_view_;
+};
+
+IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
+                       SpeakSelectedItem) {
+  EnableChromeVox();
+
+  ui::CandidateWindow candidate_window;
+  candidate_window.set_cursor_position(0);
+  candidate_window.set_page_size(2);
+  candidate_window.mutable_candidates()->clear();
+  candidate_window.set_orientation(ui::CandidateWindow::VERTICAL);
+  for (size_t i = 0; i < 2; ++i) {
+    ui::CandidateWindow::Entry entry;
+    entry.value = u"value " + base::NumberToString16(i);
+    entry.label = u"label " + base::NumberToString16(i);
+    candidate_window.mutable_candidates()->push_back(entry);
+  }
+
+  sm_.Call([this, &candidate_window]() {
+    candidate_window_view_->GetWidget()->Show();
+    candidate_window_view_->UpdateCandidates(candidate_window);
+    candidate_window_view_->ShowLookupTable();
+  });
+  sm_.ExpectSpeech("value 0");
+
+  // Move selection to another item.
+  sm_.Call([this, &candidate_window]() {
+    candidate_window.set_cursor_position(1);
+    candidate_window_view_->UpdateCandidates(candidate_window);
+  });
+  sm_.ExpectSpeech("value 1");
+
+  // Simulate pagination.
+  sm_.Call([this, &candidate_window]() {
+    candidate_window.set_cursor_position(0);
+    candidate_window.mutable_candidates()->at(0).value = u"value 2";
+    candidate_window.mutable_candidates()->at(0).label = u"label 2";
+    candidate_window.mutable_candidates()->at(1).value = u"value 3";
+    candidate_window.mutable_candidates()->at(1).label = u"label 3";
+    candidate_window_view_->UpdateCandidates(candidate_window);
+  });
+  // TODO(hirokisato): We should check unexpected utterances are not skipped
+  // when consuming "value 2", otherwise there's a race between when we check
+  // "NextSpeechIsNot" and when speech is created, and test may pass
+  // unexpectedly.
+  sm_.ExpectNextSpeechIsNot("value 0");
+  sm_.ExpectNextSpeechIsNot("value 1");
+  sm_.ExpectNextSpeechIsNot("value 3");
+  sm_.ExpectSpeech("value 2");
+
+  sm_.Replay();
+}
+
 }  // namespace ash

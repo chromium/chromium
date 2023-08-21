@@ -173,6 +173,12 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
       return;
     }
 
+    // To avoid output of stale information, don't report changes in IME
+    // candidates. IME candidate output is handled during selection events.
+    if (evt.target.role === RoleType.IME_CANDIDATE) {
+      return;
+    }
+
     // Report attribute changes for specific generated events.
     if (evt.type === chrome.automation.EventType.SORT_CHANGED) {
       let msgId;
