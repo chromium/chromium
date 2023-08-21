@@ -1386,7 +1386,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.CreditCardSaveFlowResult.{SaveDestination}{SaveSituation}"
-    enum="AutofillCreditCardSaveFlowResult" expires_after="2023-09-30">
+    enum="AutofillCreditCardSaveFlowResult" expires_after="2024-07-01">
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
