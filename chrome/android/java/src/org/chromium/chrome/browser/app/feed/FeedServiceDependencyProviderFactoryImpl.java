@@ -5,11 +5,8 @@
 package org.chromium.chrome.browser.app.feed;
 
 import org.chromium.build.annotations.UsedByReflection;
-import org.chromium.chrome.GoogleAPIKeys;
-import org.chromium.chrome.browser.feed.FeedProcessScopeDependencyProvider;
 import org.chromium.chrome.browser.feed.FeedServiceDependencyProviderFactory;
 import org.chromium.chrome.browser.feed.FeedServiceUtil;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 
 /**
  * Implements the provider factory.
@@ -25,12 +22,6 @@ public class FeedServiceDependencyProviderFactoryImpl
             sInstance = new FeedServiceDependencyProviderFactoryImpl();
         }
         return sInstance;
-    }
-
-    @Override
-    public FeedProcessScopeDependencyProvider createProcessScopeDependencyProvider() {
-        return new FeedProcessScopeDependencyProvider(
-                GoogleAPIKeys.GOOGLE_API_KEY, PrivacyPreferencesManagerImpl.getInstance());
     }
 
     @Override

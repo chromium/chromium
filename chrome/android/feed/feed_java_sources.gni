@@ -48,6 +48,7 @@ feed_test_deps = feed_deps + [
                    "//chrome/browser/privacy:java",
                    "//chrome/browser/user_education:java",
                    "//chrome/browser/xsurface:java",
+                   "//chrome/browser/xsurface_provider:java",
                    "//third_party/android_deps:guava_android_java",
                    "//third_party/google-truth:google_truth_java",
                  ]

@@ -45,4 +45,8 @@ public final class XSurfaceProcessScopeProvider {
         }
         return null;
     }
+
+    public static void setProcessScopeForTesting(ProcessScope processScope) {
+        sProcessScope = processScope;
+    }
 }
