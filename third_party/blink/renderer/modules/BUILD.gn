@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/python.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/modules/modules.gni")
 import("//third_party/webrtc/webrtc.gni")
@@ -298,72 +298,27 @@ group("make_modules_generated") {
 
 # generate_event_interfaces ----------------------------------------------------
 
-generate_event_interfaces("modules_event_interfaces") {
-  sources = [
-    "app_banner/before_install_prompt_event.idl",
-    "background_fetch/background_fetch_event.idl",
-    "background_fetch/background_fetch_update_ui_event.idl",
-    "background_sync/periodic_sync_event.idl",
-    "background_sync/sync_event.idl",
-    "content_index/content_index_event.idl",
-    "cookie_store/cookie_change_event.idl",
-    "cookie_store/extendable_cookie_change_event.idl",
-    "device_orientation/device_motion_event.idl",
-    "device_orientation/device_orientation_event.idl",
-    "encryptedmedia/media_encrypted_event.idl",
-    "encryptedmedia/media_key_message_event.idl",
-    "gamepad/gamepad_axis_event.idl",
-    "gamepad/gamepad_button_event.idl",
-    "gamepad/gamepad_event.idl",
-    "hid/hid_connection_event.idl",
-    "hid/hid_input_report_event.idl",
-    "indexeddb/idb_version_change_event.idl",
-    "mediarecorder/blob_event.idl",
-    "mediastream/captured_mouse_event.idl",
-    "mediastream/media_stream_event.idl",
-    "mediastream/media_stream_track_event.idl",
-    "nfc/ndef_reading_event.idl",
-    "notifications/notification_event.idl",
-    "payments/abort_payment_event.idl",
-    "payments/can_make_payment_event.idl",
-    "payments/merchant_validation_event.idl",
-    "payments/payment_method_change_event.idl",
-    "payments/payment_request_details_update.idl",
-    "payments/payment_request_event.idl",
-    "payments/payment_request_update_event.idl",
-    "peerconnection/rtc_data_channel_event.idl",
-    "peerconnection/rtc_dtmf_tone_change_event.idl",
-    "peerconnection/rtc_peer_connection_ice_error_event.idl",
-    "peerconnection/rtc_peer_connection_ice_event.idl",
-    "picture_in_picture/picture_in_picture_event.idl",
-    "presentation/presentation_connection_available_event.idl",
-    "presentation/presentation_connection_close_event.idl",
-    "push_messaging/push_event.idl",
-    "scheduler/task_priority_change_event.idl",
-    "sensor/sensor_error_event.idl",
-    "service_worker/extendable_event.idl",
-    "service_worker/extendable_message_event.idl",
-    "service_worker/fetch_event.idl",
-    "service_worker/install_event.idl",
-    "speech/speech_recognition_error_event.idl",
-    "speech/speech_recognition_event.idl",
-    "speech/speech_synthesis_error_event.idl",
-    "speech/speech_synthesis_event.idl",
-    "storage/storage_event.idl",
-    "webaudio/audio_processing_event.idl",
-    "webaudio/offline_audio_completion_event.idl",
-    "webgl/webgl_context_event.idl",
-    "webmidi/midi_connection_event.idl",
-    "webmidi/midi_message_event.idl",
-    "websockets/close_event.idl",
-    "xr/xr_input_source_event.idl",
-    "xr/xr_input_sources_change_event.idl",
-    "xr/xr_reference_space_event.idl",
-    "xr/xr_session_event.idl",
+action_with_pydeps("modules_event_interfaces") {
+  script = "//third_party/blink/renderer/bindings/scripts/generate_event_interface_names.py"
+
+  inputs = [ web_idl_database_filepath ]
+  outputs =
+      [ get_path_info(".", "gen_dir") + "/event_interface_modules_names.json5" ]
+
+  args = [
+    "--web_idl_database",
+    rebase_path(web_idl_database_filepath, root_build_dir),
+    "--component",
+    "modules",
+    "--export-macro",
+    "MODULES_EXPORT",
+    "--suffix",
+    "Modules",
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
   ]
 
-  output_file = "modules/event_interface_modules_names.json5"
-  suffix = "Modules"
+  deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
 }
 
 # make_event_factory -----------------------------------------------------------

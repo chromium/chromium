@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/extensions/extensions.gni")
@@ -70,18 +70,32 @@ group("make_chromeos_generated") {
 blink_chromeos_extensions_output_dir = "$blink_extensions_output_dir/chromeos"
 
 # generate_event_interfaces ----------------------------------------------------
-generate_event_interfaces("chromeos_event_interfaces") {
-  sources = [
-    "system_extensions/window_management/cros_accelerator_event.idl",
-    "system_extensions/window_management/cros_window_event.idl",
+
+action_with_pydeps("chromeos_event_interfaces") {
+  script = "//third_party/blink/renderer/bindings/scripts/generate_event_interface_names.py"
+
+  inputs = [ web_idl_database_filepath ]
+  outputs = [ get_path_info(".", "gen_dir") +
+              "/event_interface_chromeos_names.json5" ]
+
+  args = [
+    "--web_idl_database",
+    rebase_path(web_idl_database_filepath, root_build_dir),
+    "--component",
+    "extensions_chromeos",
+    "--export-macro",
+    "EXTENSIONS_CHROMEOS_EXPORT",
+    "--suffix",
+    "ChromeOS",
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
   ]
 
-  output_file = "extensions/chromeos/event_interface_chromeos_names.json5"
-  suffix = "ChromeOS"
-  export_macro = "EXTENSIONS_CHROMEOS_EXPORT"
+  deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
 }
 
 # make_names -------------------------------------------------------------------
+
 make_names("make_chromeos_generated_event_target_names") {
   in_files = [ "event_target_chromeos_names.json5" ]
   output_dir = blink_chromeos_extensions_output_dir

@@ -1787,6 +1787,7 @@ _GENERIC_PYDEPS_FILES = [
     'third_party/blink/renderer/bindings/scripts/check_generated_file_list.pydeps',
     'third_party/blink/renderer/bindings/scripts/collect_idl_files.pydeps',
     'third_party/blink/renderer/bindings/scripts/generate_bindings.pydeps',
+    'third_party/blink/renderer/bindings/scripts/generate_event_interface_names.pydeps',
     'third_party/blink/renderer/bindings/scripts/validate_web_idl.pydeps',
     'third_party/blink/tools/blinkpy/web_tests/merge_results.pydeps',
     'third_party/blink/tools/merge_web_test_results.pydeps',

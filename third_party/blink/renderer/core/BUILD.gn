@@ -5,13 +5,13 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
+import("//build/config/python.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/toolchain.gni")
 import("//media/media_options.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
-import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/config.gni")
 import("//third_party/blink/renderer/core/accessibility/build.gni")
@@ -580,55 +580,24 @@ if (is_ios) {
 
 # generate_event_interfaces ----------------------------------------------------
 
-generate_event_interfaces("core_event_interfaces") {
-  sources = [
-    "css/font_face_set_load_event.idl",
-    "css/media_query_list_event.idl",
-    "display_lock/content_visibility_auto_state_change_event.idl",
-    "dom/events/custom_event.idl",
-    "dom/events/event.idl",
-    "editing/ime/character_bounds_update_event.idl",
-    "editing/ime/text_format.idl",
-    "editing/ime/text_format_update_event.idl",
-    "editing/ime/text_update_event.idl",
-    "events/animation_event.idl",
-    "events/animation_playback_event.idl",
-    "events/before_create_policy_event.idl",
-    "events/before_unload_event.idl",
-    "events/clipboard_event.idl",
-    "events/composition_event.idl",
-    "events/drag_event.idl",
-    "events/error_event.idl",
-    "events/focus_event.idl",
-    "events/hash_change_event.idl",
-    "events/input_event.idl",
-    "events/keyboard_event.idl",
-    "events/message_event.idl",
-    "events/mouse_event.idl",
-    "events/mutation_event.idl",
-    "events/overscroll_event.idl",
-    "events/page_transition_event.idl",
-    "events/pointer_event.idl",
-    "events/pop_state_event.idl",
-    "events/progress_event.idl",
-    "events/promise_rejection_event.idl",
-    "events/resource_progress_event.idl",
-    "events/security_policy_violation_event.idl",
-    "events/text_event.idl",
-    "events/toggle_event.idl",
-    "events/touch_event.idl",
-    "events/transition_event.idl",
-    "events/ui_event.idl",
-    "events/wheel_event.idl",
-    "html/forms/form_data_event.idl",
-    "html/forms/submit_event.idl",
-    "html/track/track_event.idl",
-    "mojo/test/mojo_interface_request_event.idl",
-    "navigation_api/navigate_event.idl",
-    "navigation_api/navigation_current_entry_change_event.idl",
+action_with_pydeps("core_event_interfaces") {
+  script = "//third_party/blink/renderer/bindings/scripts/generate_event_interface_names.py"
+
+  inputs = [ web_idl_database_filepath ]
+  outputs = [ get_path_info(".", "gen_dir") + "/event_interface_names.json5" ]
+
+  args = [
+    "--web_idl_database",
+    rebase_path(web_idl_database_filepath, root_build_dir),
+    "--component",
+    "core",
+    "--export-macro",
+    "CORE_EXPORT",
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
   ]
 
-  output_file = "core/event_interface_names.json5"
+  deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
 }
 
 # generated_testing_idls -------------------------------------------------------
