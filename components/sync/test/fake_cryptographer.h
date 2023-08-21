@@ -52,7 +52,7 @@ class FakeCryptographer : public Cryptographer {
   std::set<std::string> known_key_names_;
   // The state with no default key is encoded with an empty string.
   std::string default_key_name_;
-  CrossUserSharingPublicPrivateKeyPair cross_user_sharing_key_pair =
+  CrossUserSharingPublicPrivateKeyPair cross_user_sharing_key_pair_ =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 };
 

@@ -7,8 +7,6 @@
 #include <vector>
 
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,9 +30,9 @@ TEST(CrossUserSharingKeysTest, ShouldConvertEmptyToProto) {
 }
 
 TEST(CrossUserSharingKeysTest, ShouldCreateEmptyFromProto) {
-  EXPECT_THAT(
-      CrossUserSharingKeys::CreateFromProto(sync_pb::CrossUserSharingKeys()),
-      SizeIs(0));
+  EXPECT_THAT(CrossUserSharingKeys::CreateFromProto(
+                  sync_pb::CrossUserSharingKeys(), absl::nullopt),
+              SizeIs(0));
 }
 
 TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromProto) {
@@ -47,7 +45,7 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromProto) {
   ASSERT_THAT(original_keys, SizeIs(2));
 
   const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto());
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 1);
   EXPECT_THAT(restored_keys, SizeIs(2));
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
   EXPECT_TRUE(restored_keys.HasKeyPair(1));
@@ -66,7 +64,7 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyFromPartiallyInvalidProto) {
       "malformed-key");
 
   CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(malformed_proto);
+      CrossUserSharingKeys::CreateFromProto(malformed_proto, absl::nullopt);
 
   EXPECT_THAT(restored_keys, SizeIs(1));
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
@@ -120,10 +118,67 @@ TEST(CrossUserSharingKeysTest, ShouldCreateNonEmptyKeyPairsFromProto) {
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   const CrossUserSharingKeys restored_keys =
-      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto());
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(),
+                                            absl::nullopt);
 
   EXPECT_TRUE(restored_keys.HasKeyPair(0));
   EXPECT_TRUE(restored_keys.HasKeyPair(1));
+}
+
+TEST(CrossUserSharingKeysTest,
+     ShouldReturnEmptyEncryptionKeyPairVersionForEmptyKeys) {
+  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+
+  EXPECT_FALSE(original_keys.GetEncryptionKeyPairVersion().has_value());
+}
+
+TEST(CrossUserSharingKeysTest, ShouldReturnCurrentEncryptionKeyPairVersion) {
+  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 99);
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+
+  const CrossUserSharingKeys restored_keys =
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 99);
+
+  EXPECT_THAT(restored_keys.GetEncryptionKeyPairVersion().value(), Eq(99U));
+}
+
+TEST(CrossUserSharingKeysTest,
+     ShouldNotReturnEncryptionKeyPairVersionIfExistsAndNotSet) {
+  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 99);
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+
+  const CrossUserSharingKeys restored_keys =
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(),
+                                            absl::nullopt);
+
+  EXPECT_FALSE(restored_keys.GetEncryptionKeyPairVersion().has_value());
+}
+
+TEST(CrossUserSharingKeysTest,
+     ShouldNotReturnEncryptionKeyPairVersionIfSetAndDoesNotExist) {
+  CrossUserSharingKeys original_keys = CrossUserSharingKeys::CreateEmpty();
+
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_keys.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+
+  const CrossUserSharingKeys restored_keys =
+      CrossUserSharingKeys::CreateFromProto(original_keys.ToProto(), 99U);
+
+  EXPECT_FALSE(restored_keys.GetEncryptionKeyPairVersion().has_value());
 }
 
 }  // namespace

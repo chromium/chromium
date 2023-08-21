@@ -4,6 +4,7 @@
 
 #include "components/sync/nigori/nigori_state.h"
 
+#include <cstdint>
 #include <vector>
 
 #include "base/base64.h"
@@ -134,8 +135,12 @@ NigoriState NigoriState::CreateFromLocalProto(
     const sync_pb::NigoriModel& proto) {
   NigoriState state;
 
-  state.cryptographer =
-      CryptographerImpl::FromProto(proto.cryptographer_data());
+  state.cryptographer = CryptographerImpl::FromProto(
+      proto.cryptographer_data(),
+      proto.has_cross_user_sharing_public_key()
+          ? absl::optional<uint32_t>(
+                proto.cross_user_sharing_public_key().version())
+          : absl::nullopt);
 
   if (proto.has_pending_keys()) {
     state.pending_keys = proto.pending_keys();

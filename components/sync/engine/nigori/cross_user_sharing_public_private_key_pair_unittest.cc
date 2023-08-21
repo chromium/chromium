@@ -95,5 +95,109 @@ TEST(CrossUserSharingPublicPrivateKeyPairTest,
   EXPECT_FALSE(key.has_value());
 }
 
+TEST(CrossUserSharingPublicPrivateKeyPairTest, ShouldEncryptAndDecrypt) {
+  CrossUserSharingPublicPrivateKeyPair sender_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+
+  const std::string plaintext = "Sharing is caring";
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      sender_key_pair.HpkeAuthEncrypt(
+          base::as_bytes(base::make_span(plaintext)),
+          recipient_key_pair.GetRawPublicKey(), {});
+
+  EXPECT_TRUE(encrypted_message.has_value());
+
+  absl::optional<std::vector<uint8_t>> decrypted_message =
+      recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
+                                         sender_key_pair.GetRawPublicKey(), {});
+
+  EXPECT_TRUE(decrypted_message.has_value());
+  EXPECT_THAT(decrypted_message.value(), testing::ElementsAreArray(plaintext));
+}
+
+// Ciphertext is too short to split into enc|ciphertext.
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     ShouldReturnEmptyOnDecryptingShortCipherText) {
+  CrossUserSharingPublicPrivateKeyPair sender_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+
+  std::vector<uint8_t> encrypted_message = {0, 1, 2, 3};
+
+  absl::optional<std::vector<uint8_t>> decrypted_message =
+      recipient_key_pair.HpkeAuthDecrypt(encrypted_message,
+                                         sender_key_pair.GetRawPublicKey(), {});
+
+  EXPECT_FALSE(decrypted_message.has_value());
+}
+
+// Encrypt for bad peer key (low-order X25519 points).
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     ShouldReturnEmptyOnEncryptingForBadPeerKey) {
+  CrossUserSharingPublicPrivateKeyPair sender_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  const std::vector<uint8_t> recipient_public_key(X25519_PUBLIC_VALUE_LEN,
+                                                  0x00);
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      sender_key_pair.HpkeAuthEncrypt(
+          base::as_bytes(base::make_span("Sharing is caring")),
+          recipient_public_key, {});
+
+  EXPECT_FALSE(encrypted_message.has_value());
+}
+
+// Decrypt for bad peer key (low-order X25519 points).
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     ShouldReturnEmptyOnDecryptingForBadPeerKey) {
+  CrossUserSharingPublicPrivateKeyPair sender_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+
+  const std::vector<uint8_t> sender_public_key(X25519_PUBLIC_VALUE_LEN, 0xDE);
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      sender_key_pair.HpkeAuthEncrypt(
+          base::as_bytes(base::make_span("Sharing is caring")),
+          recipient_key_pair.GetRawPublicKey(), {});
+
+  ASSERT_TRUE(encrypted_message.has_value());
+
+  absl::optional<std::vector<uint8_t>> decrypted_message =
+      recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
+                                         sender_public_key, {});
+
+  EXPECT_FALSE(decrypted_message.has_value());
+}
+
+// Decrypt corrupted ciphertext.
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     ShouldReturnEmptyOnDecryptingCorruptedCipherText) {
+  CrossUserSharingPublicPrivateKeyPair sender_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair recipient_key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+
+  absl::optional<std::vector<uint8_t>> encrypted_message =
+      sender_key_pair.HpkeAuthEncrypt(
+          base::as_bytes(base::make_span("Sharing is caring")),
+          recipient_key_pair.GetRawPublicKey(), {});
+
+  ASSERT_TRUE(encrypted_message.has_value());
+
+  encrypted_message.value()[5] = encrypted_message.value()[5] ^ 0xDE;
+
+  absl::optional<std::vector<uint8_t>> decrypted_message =
+      recipient_key_pair.HpkeAuthDecrypt(encrypted_message.value(),
+                                         sender_key_pair.GetRawPublicKey(), {});
+
+  EXPECT_FALSE(decrypted_message.has_value());
+}
+
 }  // namespace
 }  // namespace syncer

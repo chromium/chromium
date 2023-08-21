@@ -4,11 +4,11 @@
 
 #include "components/sync/nigori/cross_user_sharing_keys.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
 namespace syncer {
@@ -43,8 +43,9 @@ CrossUserSharingKeys CrossUserSharingKeys::CreateEmpty() {
 
 // static
 CrossUserSharingKeys CrossUserSharingKeys::CreateFromProto(
-    const sync_pb::CrossUserSharingKeys& proto) {
-  CrossUserSharingKeys output;
+    const sync_pb::CrossUserSharingKeys& proto,
+    absl::optional<uint32_t> cross_user_sharing_key_pair_version) {
+  CrossUserSharingKeys output(cross_user_sharing_key_pair_version);
   for (const sync_pb::CrossUserSharingPrivateKey& key : proto.private_key()) {
     if (!output.AddKeyPairFromProto(key)) {
       DLOG(WARNING) << "Could not add PrivateKey protocol buffer message.";
@@ -69,7 +70,7 @@ sync_pb::CrossUserSharingKeys CrossUserSharingKeys::ToProto() const {
 }
 
 CrossUserSharingKeys CrossUserSharingKeys::Clone() const {
-  CrossUserSharingKeys copy;
+  CrossUserSharingKeys copy(encryption_key_pair_version_);
   copy.AddAllUnknownKeysFrom(*this);
   return copy;
 }
@@ -116,6 +117,17 @@ const CrossUserSharingPublicPrivateKeyPair& CrossUserSharingKeys::GetKeyPair(
   return key_pairs_map_.at(version);
 }
 
-CrossUserSharingKeys::CrossUserSharingKeys() = default;
+absl::optional<uint32_t> CrossUserSharingKeys::GetEncryptionKeyPairVersion()
+    const {
+  if (!encryption_key_pair_version_.has_value() ||
+      !key_pairs_map_.contains(encryption_key_pair_version_.value())) {
+    return absl::nullopt;
+  }
+  return encryption_key_pair_version_;
+}
+
+CrossUserSharingKeys::CrossUserSharingKeys(
+    absl::optional<uint32_t> encryption_key_pair_version)
+    : encryption_key_pair_version_(encryption_key_pair_version) {}
 
 }  // namespace syncer

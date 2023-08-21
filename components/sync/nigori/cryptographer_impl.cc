@@ -5,6 +5,7 @@
 #include "components/sync/nigori/cryptographer_impl.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
@@ -33,7 +34,8 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 
 // static
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
-    const sync_pb::CryptographerData& proto) {
+    const sync_pb::CryptographerData& proto,
+    absl::optional<uint32_t> cross_user_sharing_key_pair_version) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
   // TODO(crbug.com/1109221): An invalid local state should be handled in the
   // caller instead of CHECK-ing here, e.g. by resetting the local state.
@@ -41,7 +43,8 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
         key_bag.HasKey(proto.default_key_name()));
 
   CrossUserSharingKeys cross_user_sharing_keys =
-      CrossUserSharingKeys::CreateFromProto(proto.cross_user_sharing_keys());
+      CrossUserSharingKeys::CreateFromProto(
+          proto.cross_user_sharing_keys(), cross_user_sharing_key_pair_version);
 
   return base::WrapUnique(
       new CryptographerImpl(std::move(key_bag), proto.default_key_name(),
@@ -172,6 +175,38 @@ bool CryptographerImpl::DecryptToString(const sync_pb::EncryptedData& encrypted,
                                         std::string* decrypted) const {
   DCHECK(decrypted);
   return key_bag_.Decrypt(encrypted, decrypted);
+}
+
+absl::optional<std::vector<uint8_t>>
+CryptographerImpl::AuthEncryptForCrossUserSharing(
+    base::span<const uint8_t> plaintext,
+    base::span<const uint8_t> recipient_public_key) const {
+  absl::optional encryption_key_version =
+      cross_user_sharing_keys_.GetEncryptionKeyPairVersion();
+  if (!encryption_key_version.has_value()) {
+    return absl::nullopt;
+  }
+  const CrossUserSharingPublicPrivateKeyPair& encryption_key_pair =
+      cross_user_sharing_keys_.GetKeyPair(encryption_key_version.value());
+
+  return encryption_key_pair.HpkeAuthEncrypt(plaintext, recipient_public_key,
+                                             {});
+}
+
+absl::optional<std::vector<uint8_t>>
+CryptographerImpl::AuthDecryptForCrossUserSharing(
+    base::span<const uint8_t> encrypted_data,
+    base::span<const uint8_t> sender_public_key,
+    const uint32_t recipient_key_version) const {
+  if (!cross_user_sharing_keys_.HasKeyPair(recipient_key_version)) {
+    return absl::nullopt;
+  }
+
+  const CrossUserSharingPublicPrivateKeyPair& decryption_key_pair =
+      cross_user_sharing_keys_.GetKeyPair(recipient_key_version);
+
+  return decryption_key_pair.HpkeAuthDecrypt(encrypted_data, sender_public_key,
+                                             {});
 }
 
 }  // namespace syncer
