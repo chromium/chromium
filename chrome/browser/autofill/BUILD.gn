@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/version.gni")
+import("//components/optimization_guide/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 static_library("autofill") {
@@ -36,6 +37,13 @@ static_library("autofill") {
     "validation_rules_storage_factory.cc",
     "validation_rules_storage_factory.h",
   ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "autofill_ml_prediction_model_service_factory.cc",
+      "autofill_ml_prediction_model_service_factory.h",
+    ]
+  }
 
   public_deps = [
     "//base",

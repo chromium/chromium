@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ml_model/autofill_model_executor.h"

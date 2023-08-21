@@ -7,10 +7,10 @@
 
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_handler.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 
@@ -22,7 +22,8 @@ namespace autofill {
 // vector of ServerFieldType.
 class AutofillModelHandler
     : public optimization_guide::ModelHandler<ServerFieldType,
-                                              const FormFieldData&> {
+                                              const FormFieldData&>,
+      public KeyedService {
  public:
   explicit AutofillModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider);
