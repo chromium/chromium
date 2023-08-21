@@ -45,7 +45,7 @@ class TranslateOverlayTabHelper
   TranslateOverlayTabHelper(web::WebState* web_state);
 
   // Observers to listen to translation completions.
-  base::ObserverList<Observer> observers_;
+  base::ObserverList<Observer, true> observers_;
 
  private:
   friend class web::WebStateUserData<TranslateOverlayTabHelper>;
