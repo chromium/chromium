@@ -58,10 +58,10 @@ class NotificationTrampoline {
   void NotifyCookiesChanged();
 
  private:
-  NotificationTrampoline();
-  ~NotificationTrampoline();
+  NotificationTrampoline() = default;
+  ~NotificationTrampoline() = default;
 
-  base::ObserverList<CookieNotificationObserver> observer_list_;
+  base::ObserverList<CookieNotificationObserver, true> observer_list_;
 
   static NotificationTrampoline* g_notification_trampoline;
 };
@@ -85,12 +85,6 @@ void NotificationTrampoline::RemoveObserver(CookieNotificationObserver* obs) {
 void NotificationTrampoline::NotifyCookiesChanged() {
   for (auto& observer : observer_list_)
     observer.OnSystemCookiesChanged();
-}
-
-NotificationTrampoline::NotificationTrampoline() {
-}
-
-NotificationTrampoline::~NotificationTrampoline() {
 }
 
 // Global instance of NotificationTrampoline.
