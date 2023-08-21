@@ -21,12 +21,12 @@
 #include "media/base/pipeline_status.h"
 #include "media/filters/chunk_demuxer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 #include "base/threading/sequence_bound.h"
 #include "media/filters/hls_data_source_provider.h"
+#include "url/gurl.h"
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 namespace media {

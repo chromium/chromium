@@ -144,6 +144,10 @@ declare_args() {
       (is_win || is_chromeos || is_linux || is_apple || is_android)
 }
 
+assert(!enable_hls_demuxer || enable_mse_mpeg2ts_stream_parser,
+       "enable_mse_mpeg2ts_stream_parser required for enable_hls_demuxer")
+assert(!enable_hls_demuxer || proprietary_codecs,
+       "proprietary_codecs required for enable_hls_demuxer")
 assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,
        "proprietary_codecs required for enable_platform_ac3_eac3_audio")
 assert(!enable_platform_mpeg_h_audio || proprietary_codecs,
