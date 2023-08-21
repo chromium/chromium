@@ -15,6 +15,7 @@ import android.view.inputmethod.InputMethodSubtype;
 
 import androidx.annotation.WorkerThread;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -81,6 +82,7 @@ import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.ui.cars.DrivingRestrictionsManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.util.AfterStartupTaskUtils;
@@ -255,6 +257,10 @@ public class ProcessInitializationHandler {
         setProcessStateSummaryForAnrs(true);
 
         AccessibilityState.registerObservers();
+
+        if (BuildInfo.getInstance().isAutomotive) {
+            DrivingRestrictionsManager.initialize();
+        }
     }
 
     /**
