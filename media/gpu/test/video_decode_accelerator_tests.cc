@@ -502,7 +502,16 @@ TEST_F(VideoDecoderTest, FlushMidStream) {
 
   // Total flush count must be two: once mid-stream and once at the end.
   EXPECT_EQ(tvp->GetFlushDoneCount(), 2u);
-  EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+
+  // The H264 bitstreams in our test set have B-frames; by Flush()ing carelessly
+  // like we do here in this test, we're likely to lose needed references that
+  // later B-frames will need. Those B-frames will be discarded.
+  // TODO(mcasas): Flush at an IDR frame.
+  const bool has_b_frames = g_env->Video()->Codec() == VideoCodec::kH264;
+  if (!has_b_frames)
+    EXPECT_EQ(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
+  else
+    EXPECT_LE(tvp->GetFrameDecodedCount(), g_env->Video()->NumFrames());
   EXPECT_TRUE(tvp->WaitForFrameProcessors());
 }
 #endif
