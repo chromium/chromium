@@ -1055,13 +1055,17 @@ def GenerateLicenseFile(args: argparse.Namespace):
 
   metadatas = {}
   for d in third_party_dirs:
-    md = ParseDir(
-        d,
-        _REPOSITORY_ROOT,
-        require_license_file=True,
-        enable_warnings=args.enable_warnings)
-    if md:
-      metadatas[d] = md
+    try:
+      md = ParseDir(d,
+                    _REPOSITORY_ROOT,
+                    require_license_file=True,
+                    enable_warnings=args.enable_warnings)
+      if md:
+        metadatas[d] = md
+    except LicenseError as lic_exp:
+      # TODO(phajdan.jr): Convert to fatal error (http://crbug.com/39240).
+      print(f"Error: {lic_exp}")
+      continue
 
   if args.format == 'spdx':
     license_txt = GenerateLicenseFileSpdx(metadatas, args.spdx_link,
