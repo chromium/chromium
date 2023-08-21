@@ -1545,7 +1545,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame) {
   TRACE_EVENT1("cc", "LayerTreeHostImpl::PrepareToDraw", "SourceFrameNumber",
                active_tree_->source_frame_number());
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -2601,7 +2601,7 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     FrameData* frame) {
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();

@@ -868,7 +868,7 @@ void SurfaceAggregator::EmitSurfaceContent(
                                         extra_content_scale_y);
 
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(frame.metadata.begin_frame_ack.trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -2184,7 +2184,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
   const CompositorFrame& root_surface_frame =
       surface->GetActiveOrInterpolatedFrame();
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(
           root_surface_frame.metadata.begin_frame_ack.trace_id),
       [&](perfetto::EventContext ctx) {

@@ -94,6 +94,7 @@
   X("gpu.angle")                                                         \
   X("gpu.angle.texture_metrics")                                         \
   X("gpu.capture")                                                       \
+  X("graphics.pipeline")                                                 \
   X("headless")                                                          \
   /* Traces for //components/history. */                                 \
   X("history")                                                           \
@@ -372,6 +373,7 @@
   X("v8,devtools.timeline")                                                   \
   X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
   X("viz,benchmark")                                                          \
+  X("viz,benchmark,graphics.pipeline")                                        \
   X("WebCore,benchmark,rail")                                                 \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \

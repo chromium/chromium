@@ -313,7 +313,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
 
   {
     TRACE_EVENT(
-        "viz,benchmark", "Graphics.Pipeline",
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global(begin_frame_args.trace_id),
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -337,7 +337,7 @@ bool FrameSinkImpl::DoBeginFrame(const viz::BeginFrameArgs& begin_frame_args) {
 void FrameSinkImpl::SendDidNotProduceFrame(
     const viz::BeginFrameArgs& begin_frame_args) {
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(begin_frame_args.trace_id),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();

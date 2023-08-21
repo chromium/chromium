@@ -506,7 +506,7 @@ bool CompositorFrameSinkSupport::IsRoot() const {
 
 void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(ack.trace_id), [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
@@ -569,7 +569,7 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   TRACE_EVENT(
-      "viz,benchmark", "Graphics.Pipeline",
+      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global((frame.metadata.begin_frame_ack.trace_id)),
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -936,7 +936,7 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
 
     adjusted_args.trace_id = ComputeTraceId();
     TRACE_EVENT(
-        "viz,benchmark", "Graphics.Pipeline",
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::Flow::Global((adjusted_args.trace_id)),
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();

@@ -702,7 +702,7 @@ void ProxyImpl::ScheduledActionSendBeginMainFrame(
   host_impl_->WillSendBeginMainFrame();
   {
     TRACE_EVENT(
-        "viz,benchmark", "Graphics.Pipeline",
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
         perfetto::TerminatingFlow::Global(args.trace_id),
         [&](perfetto::EventContext ctx) {
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
