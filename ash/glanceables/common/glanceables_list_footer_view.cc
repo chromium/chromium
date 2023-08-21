@@ -24,6 +24,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_types.h"
@@ -55,6 +56,7 @@ class SeeAllButton : public views::LabelButton {
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                           *label());
     SetAccessibilityProperties(ax::mojom::Role::kLink, see_all_accessible_name);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   }
 
   SeeAllButton(const SeeAllButton&) = delete;
