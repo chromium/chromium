@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
+#include "components/webapps/browser/features.h"
 #include "shortcut_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
@@ -22,6 +23,12 @@ namespace {
 // The maximum number of shortcuts an Android launcher supports.
 // https://developer.android.com/guide/topics/ui/shortcuts#shortcut-limitations
 constexpr size_t kMaxShortcuts = 4;
+
+bool IsWebApkDisplayMode(blink::mojom::DisplayMode display_mode) {
+  return (display_mode == blink::mojom::DisplayMode::kStandalone ||
+          display_mode == blink::mojom::DisplayMode::kFullscreen ||
+          display_mode == blink::mojom::DisplayMode::kMinimalUi);
+}
 
 }  // namespace
 
@@ -272,6 +279,24 @@ void ShortcutInfo::UpdateBestSplashIcon(
         minimum_splash_image_size_in_px,
         blink::mojom::ManifestImageResource_Purpose::ANY);
     is_splash_image_maskable = false;
+  }
+}
+
+void ShortcutInfo::UpdateDisplayMode(bool webapk_compatible) {
+  if (!base::FeatureList::IsEnabled(features::kUniversalInstallManifest)) {
+    return;
+  }
+
+  if (webapk_compatible) {
+    if (!IsWebApkDisplayMode(display)) {
+      display = DisplayMode::kMinimalUi;
+    }
+  } else {
+    if (IsWebApkDisplayMode(display)) {
+      display = DisplayMode::kMinimalUi;
+    } else {
+      display = DisplayMode::kBrowser;
+    }
   }
 }
 

@@ -64,28 +64,33 @@ class AddToHomescreenDataFetcher {
 
   ~AddToHomescreenDataFetcher();
 
-  // IPC message received when the initialization is finished.
-  void OnDidGetWebPageMetadata(
-      mojo::AssociatedRemote<mojom::WebPageMetadataAgent> webapps_render_frame,
-      mojom::WebPageMetadataPtr web_page_metadata);
-
   // Accessors, etc.
   content::WebContents* web_contents() { return web_contents_.get(); }
   const SkBitmap& primary_icon() const { return primary_icon_; }
   ShortcutInfo& shortcut_info() { return shortcut_info_; }
 
  private:
+  // Start the pipeline to fetch data.
+  void FetchInstallableData();
+
   // Called to stop the timeout timer.
   void StopTimer();
 
   // Called if either InstallableManager or the favicon fetch takes too long.
   void OnDataTimedout();
 
-  // Called when InstallableManager finishes looking for a manifest and icon.
-  void OnDidGetManifestAndIcons(const InstallableData& data);
+  // Called when InstallableManager finishes looking for a manifest.
+  void OnDidGetInstallableData(const InstallableData& data);
+
+  // Called when InstallableManager finishes looking for a primary icon.
+  void OnDidGetPrimaryIcon(const InstallableData& data);
 
   // Called when InstallableManager finishes checking for installability.
   void OnDidPerformInstallableCheck(const InstallableData& data);
+
+  // Called when installable check failed on any step and continue with the add
+  // shortcut flow.
+  void PrepareToAddShortcut(bool fetch_favicon);
 
   // Grabs the favicon for the current URL.
   void FetchFavicon();
@@ -118,10 +123,6 @@ class AddToHomescreenDataFetcher {
   base::TimeTicks start_time_;
 
   const base::TimeDelta data_timeout_ms_;
-
-  bool is_waiting_for_manifest_;
-
-  mojom::WebPageMobileCapable mobile_capable_meta_;
 
   base::WeakPtrFactory<AddToHomescreenDataFetcher> weak_ptr_factory_{this};
 };

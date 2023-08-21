@@ -138,6 +138,9 @@ struct ShortcutInfo {
   // later download.
   void UpdateBestSplashIcon(const blink::mojom::Manifest& manifest);
 
+  // Update the display mode based on whether the web app is webapk_compatible.
+  void UpdateDisplayMode(bool webapk_compatible);
+
   // Updates the source of the shortcut.
   void UpdateSource(const Source source);
 
