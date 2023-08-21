@@ -54,10 +54,11 @@ NearbyDependenciesProviderFactory::NearbyDependenciesProviderFactory()
 NearbyDependenciesProviderFactory::~NearbyDependenciesProviderFactory() =
     default;
 
-KeyedService* NearbyDependenciesProviderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NearbyDependenciesProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new NearbyDependenciesProvider(
+  return std::make_unique<NearbyDependenciesProvider>(
       profile, IdentityManagerFactory::GetForProfile(profile));
 }
 
