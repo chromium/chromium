@@ -295,6 +295,11 @@ bool LensRegionSearchController::IsOverlayUIVisibleForTesting() {
   return bubble_widget_->IsVisible() && screenshot_flow_->IsCaptureModeActive();
 }
 
+void LensRegionSearchController::SetEntryPointForTesting(
+    lens::AmbientSearchEntryPoint entry_point) {
+  entry_point_ = entry_point;
+}
+
 void LensRegionSearchController::SetWebContentsForTesting(
     content::WebContents* web_contents) {
   Observe(web_contents);
