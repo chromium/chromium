@@ -20,6 +20,7 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
@@ -79,6 +80,8 @@ public class MainSettings extends PreferenceFragmentCompat
     public static final String PREF_DOWNLOADS = "downloads";
     public static final String PREF_DEVELOPER = "developer";
     public static final String PREF_AUTOFILL_OPTIONS = "autofill_options";
+    public static final String PREF_AUTOFILL_ADDRESSES = "autofill_addresses";
+    public static final String PREF_AUTOFILL_PAYMENTS = "autofill_payment_methods";
 
     private final ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private final Map<String, Preference> mAllPreferences = new HashMap<>();
@@ -163,7 +166,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
         cachePreferences();
 
-        updatePasswordsPreference();
+        updateAutofillPreferences();
 
         // TODO(crbug.com/1373451): Remove the passwords managed subtitle for local and UPM
         // unenrolled users who can see it directly in the context of the setting.
@@ -243,7 +246,7 @@ public class MainSettings extends PreferenceFragmentCompat
 
         updateManageSyncPreference();
         updateSearchEnginePreference();
-        updatePasswordsPreference();
+        updateAutofillPreferences();
 
         Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
         setOnOffSummary(homepagePref, HomepageManager.isHomepageEnabled());
@@ -322,9 +325,14 @@ public class MainSettings extends PreferenceFragmentCompat
         searchEnginePreference.setSummary(defaultSearchEngineName);
     }
 
-    private void updatePasswordsPreference() {
-        Preference passwordsPreference = findPreference(PREF_PASSWORDS);
-        passwordsPreference.setOnPreferenceClickListener(preference -> {
+    private void updateAutofillPreferences() {
+        findPreference(PREF_AUTOFILL_PAYMENTS)
+                .setOnPreferenceClickListener(preference
+                        -> SettingsLauncherHelper.showAutofillCreditCardSettings(getActivity()));
+        findPreference(PREF_AUTOFILL_ADDRESSES)
+                .setOnPreferenceClickListener(preference
+                        -> SettingsLauncherHelper.showAutofillProfileSettings(getActivity()));
+        findPreference(PREF_PASSWORDS).setOnPreferenceClickListener(preference -> {
             PasswordManagerLauncher.showPasswordSettings(getActivity(),
                     ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
                     /*managePasskeys=*/false);
@@ -359,7 +367,7 @@ public class MainSettings extends PreferenceFragmentCompat
     @Override
     public void syncStateChanged() {
         updateManageSyncPreference();
-        updatePasswordsPreference();
+        updateAutofillPreferences();
     }
 
     public ManagedPreferenceDelegate getManagedPreferenceDelegateForTest() {
