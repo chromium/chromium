@@ -7,15 +7,20 @@
 
 #ifndef LOG
 
-#include "third_party/abseil-cpp/absl/log/check.h"
-#include "third_party/abseil-cpp/absl/log/log.h"
+#include "third_party/abseil-cpp/absl/log/absl_check.h"
+#include "third_party/abseil-cpp/absl/log/absl_log.h"
 
-#define VLOG(severity) LOG(INFO)
+#define VLOG(severity) ABSL_LOG(INFO)
 #define VLOG_IS_ON(severity) false
+
+#define LOG(severity) ABSL_LOG(severity)
+#define LOG_IF(severity, condition) ABSL_LOG_IF(severity, condition)
+#define LOG_EVERY_N(severity, n) ABSL_LOG_EVERY_N(severity, n)
+#define LOG_FIRST_N(severity, n) ABSL_LOG_FIRST_N(severity, n)
 
 #elif !defined(VLOG)
 
-#define VLOG(severity) LOG(INFO)
+#define VLOG(severity) ABSL_LOG(INFO)
 #define VLOG_IS_ON(severity) false
 
 #endif  // !defined(VLOG)
