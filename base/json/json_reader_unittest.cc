@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <cmath>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -242,6 +243,30 @@ TEST(JSONReaderTest, InvalidNumbers) {
   EXPECT_FALSE(JSONReader::Read("4e3.1"));
   EXPECT_FALSE(JSONReader::Read("4.a"));
   EXPECT_FALSE(JSONReader::Read("42a"));
+}
+
+TEST(JSONReaderTest, Zeroes) {
+  absl::optional<Value> root = JSONReader::Read("0");
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->is_int());
+  EXPECT_DOUBLE_EQ(0, root->GetInt());
+
+  root = JSONReader::Read("0.0");
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->is_double());
+  EXPECT_DOUBLE_EQ(0.0, root->GetDouble());
+  EXPECT_FALSE(std::signbit(root->GetDouble()));
+
+  root = JSONReader::Read("-0");
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->is_int());
+  EXPECT_DOUBLE_EQ(0, root->GetInt());
+
+  root = JSONReader::Read("-0.0");
+  ASSERT_TRUE(root);
+  EXPECT_TRUE(root->is_double());
+  EXPECT_DOUBLE_EQ(-0.0, root->GetDouble());
+  EXPECT_TRUE(std::signbit(root->GetDouble()));
 }
 
 TEST(JSONReaderTest, SimpleString) {
