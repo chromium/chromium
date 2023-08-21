@@ -38,9 +38,10 @@ FamilyUserMetricsServiceFactory::FamilyUserMetricsServiceFactory()
 
 FamilyUserMetricsServiceFactory::~FamilyUserMetricsServiceFactory() = default;
 
-KeyedService* FamilyUserMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FamilyUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new FamilyUserMetricsService(context);
+  return std::make_unique<FamilyUserMetricsService>(context);
 }
 
 }  // namespace ash
