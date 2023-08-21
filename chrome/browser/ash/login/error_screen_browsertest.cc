@@ -44,6 +44,9 @@ namespace {
 constexpr char kWifiServiceName[] = "stub_wifi";
 constexpr char kWifiNetworkName[] = "wifi-test-network";
 
+const test::UIPath kNetworkBackButton = {"error-message", "backButton"};
+const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
+                                                            "continueButton"};
 const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
                                                    "error-guest-signin-link"};
 
@@ -285,6 +288,16 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
+  void SetOnline(bool is_online) {
+    network_helper_->SetServiceProperty(kWifiServiceName, shill::kStateProperty,
+                                        is_online
+                                            ? base::Value(shill::kStateOnline)
+                                            : base::Value(shill::kStateIdle));
+    // Network modification notifications are posted asynchronously. Wait until
+    // idle to ensure observers are notified.
+    base::RunLoop().RunUntilIdle();
+  }
+
   void SetUpOnMainThread() override {
     network_helper_ = std::make_unique<NetworkStateTestHelper>(
         /*use_default_devices_and_services=*/false);
@@ -301,6 +314,18 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
+  void SetBlockAppLaunch(bool block) {
+    if (block) {
+      block_app_launch_override_ =
+          KioskLaunchController::BlockAppLaunchForTesting();
+    } else {
+      block_app_launch_override_.reset();
+    }
+  }
+
+ protected:
+  LoginManagerMixin login_mixin_{&mixin_host_};
+
  private:
   void AddKioskAppToDevicePolicy() {
     std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
@@ -315,6 +340,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 
   std::unique_ptr<base::AutoReset<bool>> skip_splash_wait_override_;
+  std::unique_ptr<base::AutoReset<bool>> block_app_launch_override_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -322,8 +348,6 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
   EmbeddedTestServerSetupMixin embedded_test_server_setup_{
       &mixin_host_, embedded_test_server()};
   KioskAppsMixin kiosk_apps_{&mixin_host_, embedded_test_server()};
-
-  LoginManagerMixin login_manager_{&mixin_host_, {}};
 };
 
 // Verify that certificate manager dialog opens.
@@ -343,6 +367,52 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   test::OobeJS().ClickOnPath(kCertsButton);
 
   waiter.Wait();
+}
+
+// The existence of user pods in the signin screen can influence
+// the presence of the back button in the network configuration
+// screen. Add a regular user to cover this case.
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       PRE_NoBackButtonInNetworkConfigureScreenAfterTimeout) {
+  login_mixin_.LoginAsNewRegularUser();
+}
+
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       NoBackButtonInNetworkConfigureScreenAfterTimeout) {
+  KioskAppsMixin::WaitForAppsButton();
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
+  test::OobeJS().ExpectPathDisplayed(false,
+                                     kNetworkConfigureScreenContinueButton);
+}
+
+// The existence of user pods in the signin screen can influence
+// the presence of the back button in the network configuration
+// screen. Add a regular user to cover this case.
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       PRE_NoBackButtonInNetworkConfigureScreenAfterShortcut) {
+  login_mixin_.LoginAsNewRegularUser();
+}
+
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest,
+                       NoBackButtonInNetworkConfigureScreenAfterShortcut) {
+  SetOnline(true);
+  KioskAppsMixin::WaitForAppsButton();
+  EXPECT_TRUE(LoginScreenTestApi::IsAppsButtonShown());
+  ASSERT_TRUE(LoginScreenTestApi::LaunchApp(KioskAppsMixin::kKioskAppId));
+  SetBlockAppLaunch(true);
+  OobeScreenWaiter(AppLaunchSplashScreenView::kScreenId).Wait();
+
+  ASSERT_TRUE(LoginScreenTestApi::PressAccelerator(
+      ui::Accelerator(ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN)));
+  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  test::OobeJS().ExpectPathDisplayed(false, kNetworkBackButton);
+  test::OobeJS().ExpectPathDisplayed(true,
+                                     kNetworkConfigureScreenContinueButton);
 }
 
 }  // namespace ash

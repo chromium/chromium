@@ -125,6 +125,7 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
     const std::string& network_name) {
   network_config_shown_ = true;
   error_screen_->SetUIState(NetworkError::UI_STATE_KIOSK_MODE);
+  error_screen_->SetIsPersistentError(true);
   error_screen_->AllowGuestSignin(false);
   error_screen_->AllowOfflineLogin(false);
   switch (network_state) {
@@ -155,8 +156,8 @@ void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
 
   if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
     error_screen_->SetParentScreen(kScreenId);
+    error_screen_->Show(/*context=*/nullptr);
   }
-  error_screen_->Show(nullptr);
 }
 
 void AppLaunchSplashScreenHandler::ShowErrorMessage(
@@ -206,6 +207,12 @@ void AppLaunchSplashScreenHandler::ContinueAppLaunch() {
 
   network_config_shown_ = false;
   delegate_->OnNetworkConfigFinished();
+
+  // Reset ErrorScreen state to default. We don't update other parameters such
+  // as SetUIState/SetErrorState as those should be updated by the next caller
+  // of the ErrorScreen.
+  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
+  error_screen_->SetIsPersistentError(false);
 }
 
 void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {

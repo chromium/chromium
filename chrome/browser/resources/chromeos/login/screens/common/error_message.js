@@ -109,7 +109,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
       'setErrorState',
       'showConnectingIndicator',
       'setErrorStateNetwork',
-      'setIsPersistentError',
     ];
   }
 
@@ -136,12 +135,12 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
       },
 
       /**
-       * True if it is forbidden to close the error message.
+       * True if it is possible to close the error message.
        * @private
        */
-      is_persistent_error_: {
+      isCloseable_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
 
       /**
@@ -188,14 +187,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * @private
-       */
-      hasUserPods_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -215,17 +206,6 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
     } else {
       return '';
     }
-  }
-
-  /**
-   * Whether the screen can be closed.
-   * |is_persistent_error_| prevents error screen to be closable even
-   * if there are some user pods.
-   * (E.g. out of OOBE process on the sign-in screen).
-   * @type {boolean}
-   */
-  get closable() {
-    return this.hasUserPods_ && !this.is_persistent_error_;
   }
 
   /**
@@ -388,9 +368,8 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    */
   onBeforeShow(data) {
     this.enableWifiScans_ = true;
-    this.hasUserPods_ = data && ('hasUserPods' in data) && data.hasUserPods;
-    // `closable` is dependent on `hasUserPods_`
-    this.$.backButton.hidden = !this.closable;
+    this.isCloseable_ = data && ('isCloseable' in data) && data.isCloseable;
+    this.$.backButton.hidden = !this.isCloseable_;
   }
 
   /**
@@ -399,8 +378,7 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
   onBeforeHide() {
     this.enableWifiScans_ = false;
     Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.HIDDEN);
-    // Reset property to the default state.
-    this.setIsPersistentError(false);
+    this.isCloseable_ = true;
   }
 
   /**
@@ -465,16 +443,9 @@ class ErrorMessageScreen extends ErrorMessageScreenBase {
    * Cancels error screen and drops to user pods.
    */
   cancel() {
-    if (this.closable) {
+    if (this.isCloseable_) {
       this.userActed('cancel');
     }
-  }
-
-  /**
-   * Makes error message non-closable.
-   */
-  setIsPersistentError(is_persistent) {
-    this.is_persistent_error_ = is_persistent;
   }
 }
 
