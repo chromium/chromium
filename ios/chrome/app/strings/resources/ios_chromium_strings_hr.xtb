@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Pomozite poboljšati Chromiumove značajke i izvedbu</translation>
 <translation id="1531155317299575425">Prikazuje obavijesti za prijavu u Chromium.</translation>
 <translation id="1617663976202781617">Podaci sinkronizacije Chromiuma</translation>
+<translation id="1647558790457890304">Postavke Chromiuma</translation>
 <translation id="1722370509450468186">Zaporka će se spremiti na vaš račun (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Podaci Chromiuma izbrisani su</translation>
 <translation id="1758508597843173586">Zaključajte anonimni način kad napustite Chromium ili se prebacite na drugu aplikaciju.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Upozorava vas na opasne web-lokacije, čak i one za koje Google još nije znao, analiziranjem više podataka s web-lokacija od standardne zaštite. Možete preskočiti Chromiumova upozorenja.</translation>
 <translation id="3805899903892079518">Chromium nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="3827545470516145620">Imate standardnu zaštitu sigurnosti na ovom uređaju</translation>
+<translation id="3886689467633467988">Prijavite se na ovu web-lokaciju i Chromium kako biste imali pristup svojim oznakama i još toga na svim svojim uređajima.</translation>
+<translation id="394413318816989199">Šifriranje šifre ne uključuje načine plaćanja i adrese.
+
+Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na svom računu<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Otvaranje Chromiuma iz bilo koje aplikacije</translation>
 <translation id="4043291146360695975">Zaporke se spremaju u Upravitelj zaporki samo na ovom uređaju.</translation>
 <translation id="4099085513035183040">Nije podržano u beta verziji Chromiuma</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Radi poboljšanja aplikacije Chromium šalje Googleu podatke o upotrebi i rušenju. <ph name="BEGIN_LINK" />Upravljanje<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Uključite Chromiumov skener</translation>
 <translation id="4736424910885271643">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromiuma izbrisati s ovog uređaja</translation>
+<translation id="4790638144988730920">Nastavite upotrebljavati podatke iz Chromiuma na svom Google računu.</translation>
 <translation id="4828317641996116749">Chromium nije uspio provjeriti sve zaporke. Pokušajte ponovo kasnije.</translation>
 <translation id="4985291216379576555">Chromium ne može provjeriti ima li ažuriranja jer ste offline</translation>
 <translation id="4996471330284142407">Veća učinkovitost uz Chromium, jednostavniji, sigurniji i brži nego ikad.</translation>
 <translation id="4999538639245140991">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromiuma izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="5042011327527167688">Dodirnite "Prikaži putem Google karata u Chromiumu".</translation>
 <translation id="5048795749726991615">Da biste jednostavno dohvatili spremljene zaporke u drugim aplikacijama, upotrijebite Chromium za Automatsko popunjavanje</translation>
+<translation id="5131565040785979529">Vaša organizacija, <ph name="DOMAIN" />, upravlja računom na koji ste prijavljeni i načinom na koji se Chromium upotrebljava.</translation>
 <translation id="5171868502429358653">Prijava na Chromium</translation>
 <translation id="5224391634244552924">Nema nijedne spremljene zaporke. Chromium može provjeriti vaše zaporke kad ih spremite.</translation>
+<translation id="5242782538551259282">Neki vaši podaci iz Chromiuma još nisu spremljeni na vaš Google račun.
+
+        Pokušajte pričekati nekoliko minuta prije odjave. Ako se sada odjavite, ovi će se podaci izbrisati.</translation>
 <translation id="5308226104666789935">Chromium ne može provjeriti ima li ažuriranja</translation>
 <translation id="5396916991083608703">Želite li postaviti Chromium kao zadani preglednik?</translation>
 <translation id="5453478652154926037">Chromium ne može provjeriti vaše zaporke.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Na ovoj se kartici prikazuju prijedlozi o tome kako iskoristiti sve prednosti Chromiuma.</translation>
 <translation id="5700709190537129682">Chromium ne može provjeriti vaše zaporke</translation>
 <translation id="5777187867430702742">Chromiumova stranica</translation>
+<translation id="5889847953983052353">Kad je uključeno:
+<ph name="BEGIN_INDENT" /> • Pomozite poboljšati Chromium za korisnike koji ga upotrebljavaju na isti način kao vi.<ph name="END_INDENT" />
+
+Važne napomene:
+<ph name="BEGIN_INDENT" /> • Podaci o upotrebi Chromiuma šalju se Googleu, no nisu povezani s vama.
+
+  • Ako se Chromium sruši, pojedinosti o rušenju mogu uključivati neke osobne podatke.
+
+  • Ako povijest sinkronizirate s Google računom, mjerni podaci mogu uključivati i podatke o URL-ovima koje posjećujete.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Prijavljujete se računom kojim upravlja <ph name="DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromiumu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite s Chromiuma, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>
+<translation id="5951593919357934226">Iskoristite sve prednosti Chromiuma.</translation>
 <translation id="5983312940147103417">Poboljšavanje Chromiuma</translation>
 <translation id="6062449165341879460">Vaša organizacija <ph name="DOMAIN" /> imat će pristup vašim podacima, oznakama, povijesti, zaporkama i drugim postavkama Chromiuma koje pohranjujete na ovom računu. Kad se odjavite, vaši će se podaci izbrisati s ovog uređaja.  No vaši će podaci ostati pohranjeni na vašem upravljanom Google računu i bit će dostupni vašoj organizaciji. Vaša organizacija može postaviti i korisnička pravila koja se odnose na taj račun i koja mogu promijeniti Chromiumovo ponašanje.</translation>
 <translation id="61109258320235597">Da biste upotrebljavali podatke iz Chromiuma na svojem Google računu i spremili ih, unesite šifru.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>
 <translation id="632825460376924298">Dopusti prijavu u Chromium</translation>
 <translation id="6337530241089703714">Odaberite želite li podatke iz Chromiuma izbrisati s ovog uređaja ili ih zadržati</translation>
+<translation id="6407399265324739055">Načini plaćanja i adrese neće se šifrirati. Povijest pregledavanja iz Chromiuma neće se sinkronizirati.
+
+Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šifra se ne šalje Googleu niti se pohranjuje na Googleu. Ako zaboravite šifru ili želite promijeniti tu postavku, <ph name="BEGIN_LINK" />izbrišite Chromiumove podatke na računu<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium je postao još bolji! Dostupna je nova verzija.</translation>
 <translation id="6563921047760808519">Saznajte više o tome <ph name="BEGIN_LINK" />kako Chromium štiti privatnost vaših podataka<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium sada za vaš upravljani račun podržava korisnička pravila</translation>

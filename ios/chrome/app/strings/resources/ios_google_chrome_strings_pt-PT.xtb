@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="1143896152279775643">A palavra-passe será guardada no Gestor de palavras-passe da Google para <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Continue a usar os dados do Chrome na sua Conta Google.</translation>
 <translation id="1282031177488366470">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="1352919863522755794">O Gestor de Palavras-passe da Google não conseguiu verificar as suas palavras-passe. Experimente verificar a sua ligação à Internet.</translation>
+<translation id="1407843355326180937">Inicie sessão neste site e no Chrome para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
 <translation id="1462727070346936664">Inicie sessão para tirar o máximo partido do Chrome.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="1511320244449497906">Tem sessão iniciada e está a sincronizar os seus dados com uma conta gerida pelo domínio <ph name="DOMAIN" />, onde o respetivo administrador pode agora definir Políticas do Utilizador específicas para essa conta que podem alterar o comportamento do Chrome.</translation>
+<translation id="1526327845902180576">Quando a opção está ativada:
+<ph name="BEGIN_INDENT" /> • Ajude a melhorar o Chrome para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
+
+Aspetos a considerar:
+<ph name="BEGIN_INDENT" /> • São enviadas à Google informações sobre a sua utilização do Chrome, mas estas não são associadas a si.
+
+  • Se o Chrome falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
+
+  • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Tem a segurança mais avançada do Chrome contra Websites prejudiciais</translation>
 <translation id="1682483655351012182">Sincronizar os dados do Chrome</translation>
 <translation id="1733654336159102143">Bloqueie a sua Navegação anónima quando sai do Chrome ou muda para uma app diferente.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
+<translation id="3901001113120561395">Tire o máximo partido do Chrome.</translation>
 <translation id="3980220367029651214">Está a mudar as contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chrome existentes são geridos por <ph name="DOMAIN" />. Esta ação elimina os seus dados deste dispositivo, embora permaneçam em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A sua entidade requer que se mantenha sem sessão iniciada no Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Inicie sessão neste site e no Chrome.</translation>
 <translation id="4698415050768537821">O Chrome não conseguiu verificar todas as palavras-passe. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Para ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Alguns dos seus dados do Chrome ainda não foram guardados na sua Conta Google.
+
+        Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="484033449593719797">Opção não suportada no Chrome Beta.</translation>
 <translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Melhore o Chrome</translation>
 <translation id="5119391094379141756">Selecione o Chrome</translation>
 <translation id="5162467219239570114">O Chrome está desatualizado. Se não estiverem disponíveis atualizações na <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, é possível que o seu dispositivo já não suporte novas versões do Chrome.</translation>
+<translation id="5190139289262548459">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chrome é usado.</translation>
 <translation id="5389212809648216794">O Google Chrome não pode utilizar a câmara porque está a ser utilizada por outra aplicação</translation>
 <translation id="5395376160638294582">Certifique-se de que pode sempre usar os dados do Chrome na sua Conta Google</translation>
 <translation id="5439191312780166229">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chrome. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chrome elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
 <translation id="6676840375528380067">Quer limpar os dados do Chrome deste dispositivo?</translation>
 <translation id="6709398533399187136">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe da Google recomenda que a altere agora.</translation>
+<translation id="6815466750807582739">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
+
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">O Chrome não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
 <translation id="6964931465519938134">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="6975725306479268850">Escolha o Chrome para o preenchimento automático</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Mostra pedidos para iniciar sessão no Chrome.</translation>
 <translation id="8788269841521769222">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe da Google de <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Definições do Chrome</translation>
+<translation id="8856877214925961642">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas
+
+Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome na sua conta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">O Gestor de Palavras-passe da Google não conseguiu verificar todas as palavras-passe. Tente amanhã.</translation>
 <translation id="8897749957032330183">As palavras-passe são guardadas no Gestor de Palavras-passe da Google neste dispositivo.</translation>
 <translation id="8969290730818637510">Quando a opção está ativada:

@@ -205,11 +205,13 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5527463683072221100">PDF fayllarni Chromium bilan ochish</translation>
 <translation id="5614091477838198795">Bu yoqilsa, Chromium dasturida ham hisobingizdan chiqasiz</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium uchun yangilanish mavjud}=1{Chromium uchun yangilanish mavjud}other{Chromium uchun yangilanish mavjud (# kun)}}</translation>
+<translation id="5643865575100044307">Chromium yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5883558403894052917">Chromium tarkibida zararli dasturi bor quyidagi fayllarni aniqladi:</translation>
+<translation id="5889361821821684993">Chromium brauzer sozlamalari xavfsiz ekanini muntazam tekshiradi. Biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qilamiz.</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Tarmoqqa kirish</translation>
 <translation id="5924017743176219022">Internetga ulanmoqda…</translation>
@@ -220,6 +222,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5988505247484123880">Odatda siz kiradigan saytlar oʻz xizmatlarini sizga moslashtirish uchun sizga qiziq narsalarni eslab qoladi. Chromium orqali saytlar ham qiziqishlaringiz haqidagi maʼlumotlarni saqlashi mumkin.</translation>
 <translation id="6003112304606738118">Yuklab olinmoqda... <ph name="HOURS" /> soat qoldi</translation>
 <translation id="6040143037577758943">Yopish</translation>
+<translation id="6055611795418209449">Chromium ayrim yuklanmalarni bloklaydi</translation>
 <translation id="6055895534982063517">Chromium brauzerining yanada tezroq ishlaydigan yangi versiyasi chiqdi.</translation>
 <translation id="6063093106622310249">&amp;Chromiumda ochish</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> kengaytmasi Chromiumga o‘rnatildi</translation>
@@ -233,6 +236,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6132897690380286411">Chromium tez orada yopiladi va brauzer maʼlumotlari oʻchib ketadi</translation>
 <translation id="6134968993075716475">Saytlarni xavfsiz kezish yoniq emas. Chromium uni yoqishingizni tavsiya qiladi.</translation>
 <translation id="6145820983052037069">Bu yerda Chromium profillarini almashtirish mumkin</translation>
+<translation id="6175304430031192654">Sozlamalar asosida Chromium cookie fayllar va joriy URL manzilni tekshiruvga yuborishi mumkin</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> qurilmangizda Chromium hisobingizga kiring va keyin qaytadan yuborishga urining.</translation>
 <translation id="6212496753309875659">Bu kompyuterda allaqachon Chromium‘ning so‘nggi versiyasi o‘rnatilgan. Agar dastur ishlamayotgan bo‘lsa, uni o‘chirib qaytadan o‘rnatib ko‘ring.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium hozir qayta ishga tushadi}=1{Chromium 1 soniyadan keyin qayta ishga tushadi}other{Chromium # soniyadan keyin qayta ishga tushadi}}</translation>
@@ -253,6 +257,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="6373523479360886564">Siz haqiqatdan ham Chromium brauzerini o‘chirib tashlamoqchimisiz?</translation>
 <translation id="6375219077595103062">Parollar menejeri uchun yorliq kiriting</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chromium qiziqishlaringizni taxmin qila oladi. Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromium ilovasidan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
+<translation id="6400112897226594999">Kompyuter ekranida Chromium logotipi aks etgan tasvir</translation>
 <translation id="6403826409255603130">Chromium - veb sahifalarni va ilovalarni bir necha soniyada ochadigan brauzer. U tez, barqaror va undan foydalanish oson. Chromium brauzerining firibgarlik va zararli dasturlardan saqlovchi ichki o‘rnatilgan himoya vositasi Internetdagi faoliyatni maksimal havfsizlik bilan ta’minlaydi.</translation>
 <translation id="6442900851116057561">ChromiumOS tizimini ishga tushirish</translation>
 <translation id="6455857529632101747">Chromium profillariga xush kelibsiz</translation>
@@ -302,6 +307,7 @@ Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tay
 <translation id="718435575166326686">Chromium bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="7196312274710523067">Chromium ishga tushmadi. Qayta urining.</translation>
 <translation id="7197677400338048821">Chromium parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining.</translation>
+<translation id="7213407614656404070">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni har doim Chromium orqali ochish</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
 <translation id="7246575524853130370">Chromium taxmin qilgan qiziqishlaringiz</translation>
 <translation id="7309928523159922338">Reklamani oʻlchash orqali siz kiradigan saytlar oʻzidagi reklama unumdorligini hisoblashga yordam beradigan maʼlumotlarni Chromium ilovasidan soʻray oladi. Reklama statistikasi imkon qadar kam axborotni saytlararo ulashish orqali saytlardagi kuzatuv mexanizmlarini taqiqlaydi.</translation>

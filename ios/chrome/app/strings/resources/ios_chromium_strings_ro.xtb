@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Contribuie la îmbunătățirea funcțiilor și performanței Chromium</translation>
 <translation id="1531155317299575425">Afișează solicitări pentru conectarea la Chromium.</translation>
 <translation id="1617663976202781617">Date din sincronizarea Chromium</translation>
+<translation id="1647558790457890304">Setări Chromium</translation>
 <translation id="1722370509450468186">Parola va fi salvată în contul tău (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Datele Chromium au fost șterse</translation>
 <translation id="1758508597843173586">Blochează modul incognito când ieși din Chromium sau treci la altă aplicație.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți alege să omiți avertismentele din Chromium.</translation>
 <translation id="3805899903892079518">Chromium nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
+<translation id="3886689467633467988">Conectează-te la acest site și la Chromium pentru a accesa marcajele și multe altele de pe toate dispozitivele tale.</translation>
+<translation id="394413318816989199">Criptarea cu expresie de acces nu include metodele de plată și adresele.
+
+Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Deschide Chromium din orice aplicație</translation>
 <translation id="4043291146360695975">Parolele sunt salvate în Managerul de parole numai pe acest dispozitiv.</translation>
 <translation id="4099085513035183040">Nu se acceptă în Chromium Beta</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Pentru a contribui la îmbunătățirea aplicației, Chromium trimite la Google statistici de utilizare și rapoarte de blocare. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
 <translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
+<translation id="4790638144988730920">Folosește în continuare datele Chromium din Contul Google.</translation>
 <translation id="4828317641996116749">Chromium nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
 <translation id="4996471330284142407">Poți să faci mai multe cu browserul Chromium, simplu, sigur și mai rapid ca oricând.</translation>
 <translation id="4999538639245140991">Deoarece te deconectezi de la un cont gestionat de <ph name="SIGNOUT_MANAGED_DOMAIN" />, datele tale Chromium de pe acest dispozitiv vor fi șterse. Datele tale vor rămâne în Contul Google.</translation>
 <translation id="5042011327527167688">Atinge Vezi pe Google Maps în Chromium.</translation>
 <translation id="5048795749726991615">Pentru a accesa cu ușurință parolele salvate în alte aplicații, folosește Chromium pentru completare automată</translation>
+<translation id="5131565040785979529">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chromium.</translation>
 <translation id="5171868502429358653">Conectează-te la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
+<translation id="5242782538551259282">Unele date Chromium nu au fost salvate încă în Contul Google.
+
+        Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="5308226104666789935">Chromium nu poate căuta actualizări.</translation>
 <translation id="5396916991083608703">Setezi Chromium ca browser prestabilit?</translation>
 <translation id="5453478652154926037">Chromium nu îți poate verifica parolele.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Acest card afișează sugestii privind modul în care poți profita la maximum de Chromium.</translation>
 <translation id="5700709190537129682">Chromium nu îți poate verifica parolele</translation>
 <translation id="5777187867430702742">Pagină Chromium</translation>
+<translation id="5889847953983052353">Când opțiunea este activă:
+<ph name="BEGIN_INDENT" /> • contribui la îmbunătățirea browserului Chromium pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
+
+De reținut:
+<ph name="BEGIN_INDENT" /> • Google primește informații despre modul în care folosești Chromium, dar acestea nu pot fi asociate cu tine;
+
+  • dacă Chromium se blochează, detaliile despre blocare pot include unele informații cu caracter personal;
+
+  • dacă sincronizezi istoricul cu Contul Google, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chromium. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chromium, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
+<translation id="5951593919357934226">Profită din plin de Chromium.</translation>
 <translation id="5983312940147103417">Contribuie la îmbunătățirea Chromium</translation>
 <translation id="6062449165341879460">Organizația ta <ph name="DOMAIN" /> va avea acces la datele Chromium, marcajele, istoricul, parolele și alte setări pe care le stochezi în acest cont. Când te deconectezi, datele vor fi șterse de pe acest dispozitiv.  Însă vor rămâne stocate în Contul Google administrat și vor fi disponibile pentru organizația ta. În plus, organizația ta poate să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chromium.</translation>
 <translation id="61109258320235597">Pentru a folosi și a salva datele Chromium în Contul Google, introdu expresia de acces.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
 <translation id="632825460376924298">Permite conectarea la Chromium</translation>
 <translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
+<translation id="6407399265324739055">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chromium nu se va sincroniza.
+
+Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chromium din cont<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="6563921047760808519">Află mai multe despre <ph name="BEGIN_LINK" />cum îți păstrează Chromium datele private<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium acceptă acum politicile privind utilizatorii pentru contul tău gestionat</translation>

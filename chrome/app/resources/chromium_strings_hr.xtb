@@ -207,11 +207,13 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5527463683072221100">Otvori PDF-ove u Chromiumu</translation>
 <translation id="5614091477838198795">Kad uključite tu opciju, odjavit ćete se i s Chromiuma</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostupno je ažuriranje Chromiuma}=1{Dostupno je ažuriranje Chromiuma}one{Ažuriranje Chromiuma dostupno je već # dan}few{Ažuriranje Chromiuma dostupno je već # dana}other{Ažuriranje Chromiuma dostupno je već # dana}}</translation>
+<translation id="5643865575100044307">Podaci web-lokacije uvijek se brišu s uređaja kada zatvorite Chromium</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na tom jeziku</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadrže zlonamjerni softver:</translation>
+<translation id="5889361821821684993">Chromium redovito provjerava jesu li postavke preglednika najsigurnije. Obavijestit ćemo vas ako bilo što treba pregledati.</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Prijava na mrežu</translation>
 <translation id="5924017743176219022">Povezivanje s internetom...</translation>
@@ -222,6 +224,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5988505247484123880">Uobičajeno je da web-lokacije koje posjećujete pamte vaše interese radi prilagodbe vašeg doživljaja. Web-lokacije mogu i pohraniti podatke o vašim interesima u Chromium.</translation>
 <translation id="6003112304606738118">Preuzimanje... Još <ph name="HOURS" /> h</translation>
 <translation id="6040143037577758943">Zatvori</translation>
+<translation id="6055611795418209449">Chromium blokira neka preuzimanja</translation>
 <translation id="6055895534982063517">Dostupna je nova verzija preglednika Chromium, brža no ikad.</translation>
 <translation id="6063093106622310249">&amp;Otvori u Chromiumu</translation>
 <translation id="6072279588547424923">Proširenje <ph name="EXTENSION_NAME" /> dodano je u Chromium</translation>
@@ -235,6 +238,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6132897690380286411">Chromium će se uskoro zatvoriti i izbrisati podatke</translation>
 <translation id="6134968993075716475">Sigurno je pregledavanje isključeno. Chromium preporučuje da ga uključite.</translation>
 <translation id="6145820983052037069">Ovdje se možete prebacivati između profila u Chromiumu</translation>
+<translation id="6175304430031192654">Ovisno o postavkama, Chromium može slati kolačiće i vaš trenutačni URL</translation>
 <translation id="6183079672144801177">Obavezno se prijavite na Chromium na uređaju <ph name="TARGET_DEVICE_NAME" /> i nakon toga ponovno pokušajte sa slanjem.</translation>
 <translation id="6212496753309875659">Ovo računalo već ima noviju verziju Chromiuma. Ako softver ne funkcionira, deinstalirajte Chromium i pokušajte ponovo.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium će se sada ponovo pokrenuti}=1{Chromium će se ponovo pokrenuti za jednu sekundu}one{Chromium će se ponovo pokrenuti za # sekundu}few{Chromium će se ponovo pokrenuti za # sekunde}other{Chromium će se ponovo pokrenuti za # sekundi}}</translation>
@@ -255,6 +259,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6375219077595103062">Dodajte prečac Upravitelju zaporki</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kako upotrebljavamo te podatke<ph name="END_BOLD" />: Chromium može procijeniti vaše interese. Web-lokacija koju poslije posjetite može od Chromiuma tražiti podatke o vašim interesima kako bi prilagodila oglase koji će vam se prikazivati.</translation>
+<translation id="6400112897226594999">Logotip Chromiuma na zaslonu računala.</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>
 <translation id="6442900851116057561">Ponovo pokrenite Chromium OS</translation>
 <translation id="6455857529632101747">Dobro došli u Chromiumove profile</translation>
@@ -304,6 +309,7 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="718435575166326686">Chromium treba dopuštenje za fotoaparat za ovu web-lokaciju</translation>
 <translation id="7196312274710523067">Pokretanje Chromiuma nije uspjelo. Pokušajte ponovo.</translation>
 <translation id="7197677400338048821">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata.</translation>
+<translation id="7213407614656404070">Upotrijebite Chromium svaki put kada kliknete veze u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="7223968959479464213">Upravitelj zadataka – Chromium</translation>
 <translation id="7246575524853130370">Vaši interesi prema Chromiumovoj procjeni</translation>
 <translation id="7309928523159922338">Ad measurement API omogućuje web-lokacijama koje posjećujete da od Chromiuma traže podatke koji im pomažu mjeriti izvedbu svojih oglasa. Ad measurement API ograničava praćenje na različitim web-lokacijama tako što se između web-lokacija prenosi što je manje moguće podataka.</translation>

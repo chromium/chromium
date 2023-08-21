@@ -39,6 +39,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Datanızı necə idarə edə bilərsiniz:<ph name="END_BOLD" /> Məxfiliyinizi qorumaq üçün 4 həftədən köhnə maraqlarınızı avtomatik silirik. Baxmağa davam etdikcə, maraq siyahıda yenidən görünə bilər. Və ya Chrome'un nəzərə almasını istəmədiyiniz maraqları silə bilərsiniz.</translation>
 <translation id="1628000112320670027">Chrome ilə yardım alın</translation>
 <translation id="1640672724030957280">Endirilir...</translation>
+<translation id="1642309806724967937">Ayarlardan asılı olaraq Chrome kukilər və cari URL-i də göndərə bilər</translation>
 <translation id="1662146548738125461">ChromeOS Flex haqqında</translation>
 <translation id="1674870198290878346">Linki Gizli Chrome Pəncərəsində açın</translation>
 <translation id="1682634494516646069">Google Chrome öz data direktoriyasını oxuya və yaza bilmir:  <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -94,6 +95,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="2597976513418770460">Chrome brauzerinin elementlərini <ph name="ACCOUNT_EMAIL" /> hesabından əldə edin</translation>
 <translation id="2622559029861875898">Chrome güncəlləmələri yoxlaya bilmir. İnternet bağlantınızı yoxlamağa cəhd edin.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome brauzerin ən təhlükəsiz ayarlara malik olub-olmadığını müntəzəm yoxlayır. Nəzərdən keçirilməli məqam olsa, sizə bildirəcəyik.</translation>
 <translation id="2652691236519827073">Linki Yeni Chrome tabında açın</translation>
 <translation id="2665296953892887393">Qəza raportlarını və <ph name="UMA_LINK" /> linkini Google'a göndərməklə Google Chrome'un daha keyfiyyətli olmasına kömək edin</translation>
 <translation id="2689103672227170538">Bu artırma Chrome'u başlatdığınız zaman hansı səhifənin göstərildiyini dəyişdi.</translation>
@@ -233,6 +235,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 
 Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstərin və ya yeni Chrome versiyası işlədin.</translation>
 <translation id="521447420733633466">Cihaz paylaşsanız, dostlarınız və ailəniz ayrıca baxış keçirə bilər və Chrome'u istədikləri kimi ayarlaya bilər.</translation>
+<translation id="5239627039202700673">Mesaj, sənəd və digər tətbiqlərdə keçidlərə kliklədikdə Chrome istifadə edin</translation>
 <translation id="5251420635869119124">Qonaqlar geridə heç nə buraxmadan Chrome istifadə edə bilər.</translation>
 <translation id="5334309298019785904">ChromeOS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="5334487786912937552">Chrome faylları endirmək üçün yaddaşa giriş tələb edir</translation>
@@ -247,6 +250,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> təlükəli ola bilər, bu səbəbdən Chrome onu blok etdi.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir}=1{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. Anonim pəncərəniz yenidən açılmayacaq.}other{Administrator bu güncəlləməni tətbiq etmək üçün Chrome'u yenidən başlatmanızı tələb edir. # Anonim pəncərəniz yenidən açılmayacaq.}}</translation>
+<translation id="5682679001737420487">Chrome bəzi endirmələri bloklayır</translation>
 <translation id="5686916850681061684">Google Chrome'u fərdiləşdirin və nəzarət edin. Buna baxmalısınız - ətraflı məlumat üçün klikləyin.</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="570005089986962444">Aktiv olduqda Chrome qeyri-aktiv tablardan yaddaşı təmizləyir. Bu, aktiv tablara və digər tətbiqlərə daha çox kompüter resursu verir və Chrome-u sürətləndirir. Qayıtdığınız zaman qeyri-aktiv tablar avtomatik olaraq yenidən aktivləşir.</translation>
@@ -304,6 +308,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6739177684496155661">Yeni Chrome profilində davam edilsin?</translation>
 <translation id="6750954913813541382">Orfoqrafik səhvləri düzəltmək üçün Chrome brauzerində yazdığınız mətni Google'a göndərir</translation>
 <translation id="677276454032249905">Chrome'dan istənilən hada çıxılsın?</translation>
+<translation id="6794858689789885890">Chrome-u bağladıqda sayt datasını cihazdan silin</translation>
 <translation id="683440813066116847">mDNS trafikinə imkan vermək üçün Google Chrome Canary üçün daxil olan qayda.</translation>
 <translation id="6881299373831449287">Chrome güncəllənir</translation>
 <translation id="6885412569789873916">Chrome Beta Tətbiqləri</translation>
@@ -388,6 +393,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Bu datanı necə istifadə edirik:<ph name="END_BOLD" /> Chrome maraqlarınızı təxmin edə bilər. Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chrome'dan maraqlarınızı görməyi tələb edə bilər.</translation>
 <translation id="8387459386171870978">Chrome istifadəsinə davam edin</translation>
 <translation id="8394720698884623075">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır</translation>
+<translation id="8403038600646341038">Kompüter ekranında Chrome loqosu.</translation>
 <translation id="8416347857511542594">Chrome'da reklam fərdiləşdirməsi haqqında ətraflı məlumat</translation>
 <translation id="8418845734693287262">ChromeOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza nömrə göndərmək üçün hər iki cihazda Chrome'a daxil olun.</translation>

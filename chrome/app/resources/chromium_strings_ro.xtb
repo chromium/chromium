@@ -207,11 +207,13 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>
 <translation id="5614091477838198795">Când opțiunea este activată, te vei deconecta de la Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
+<translation id="5643865575100044307">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chromium</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5883558403894052917">Chromium a descoperit că următoarele elemente conțin programe malware:</translation>
+<translation id="5889361821821684993">Chromium verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="5895138241574237353">Reîncepe</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – conectare la rețea</translation>
 <translation id="5924017743176219022">Se conectează la internet…</translation>
@@ -222,6 +224,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5988505247484123880">Se întâmplă frecvent ca site-urile pe care le accesezi să rețină lucrurile care te interesează, pentru a-ți personaliza experiența. În plus, site-urile pot stoca informații în Chromium despre interesele tale.</translation>
 <translation id="6003112304606738118">Se descarcă… Au rămas <ph name="HOURS" /> ore</translation>
 <translation id="6040143037577758943">Închide</translation>
+<translation id="6055611795418209449">Chromium blochează unele descărcări</translation>
 <translation id="6055895534982063517">Este disponibilă o nouă versiune Chromium, iar aceasta este mai rapidă ca oricând.</translation>
 <translation id="6063093106622310249">&amp;Deschide în Chromium</translation>
 <translation id="6072279588547424923">Extensia <ph name="EXTENSION_NAME" /> a fost adăugată la Chromium</translation>
@@ -235,6 +238,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6132897690380286411">În curând, Chromium se va închide și va șterge datele</translation>
 <translation id="6134968993075716475">Navigarea sigură este dezactivată. Chromium îți recomandă s-o activezi.</translation>
 <translation id="6145820983052037069">Aici poți comuta între profilurile Chromium</translation>
+<translation id="6175304430031192654">În funcție de setări, Chromium poate și să trimită cookie-uri și adresa URL actuală</translation>
 <translation id="6183079672144801177">Asigură-te că te-ai conectat la Chromium pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="6212496753309875659">Acest computer are deja o versiune mai recentă de Chromium. Dacă software-ul nu funcționează, dezinstalați Chromium și încercați din nou.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium se va relansa acum}=1{Chromium se va relansa într-o secundă}few{Chromium se va relansa în # secunde}other{Chromium se va relansa în # de secunde}}</translation>
@@ -255,6 +259,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6373523479360886564">Sigur doriți să dezinstalați Chromium?</translation>
 <translation id="6375219077595103062">Adaugă o comandă rapidă către Managerul de parole</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chromium îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chromium să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
+<translation id="6400112897226594999">Sigla Chromium pe un ecran de computer.</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
 <translation id="6442900851116057561">Repornește sistemul de operare Chromium</translation>
 <translation id="6455857529632101747">Bun venit la profilurile Chromium</translation>
@@ -303,6 +308,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="718435575166326686">Chromium are nevoie de acces la cameră pentru acest site</translation>
 <translation id="7196312274710523067">Chromium nu a putut fi lansat. Încearcă din nou.</translation>
 <translation id="7197677400338048821">Chromium nu îți poate verifica parolele. Încearcă din nou după 24 de ore.</translation>
+<translation id="7213407614656404070">Folosește Chromium când dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="7223968959479464213">Manager de activități - Chromium</translation>
 <translation id="7246575524853130370">Interesele tale estimate de Chromium</translation>
 <translation id="7309928523159922338">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chromium care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>

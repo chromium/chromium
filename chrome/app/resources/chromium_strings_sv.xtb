@@ -209,11 +209,13 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5527463683072221100">Öppna PDF-filer i Chromium</translation>
 <translation id="5614091477838198795">När inställningen är aktiverad loggas du också ut från Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Det finns en uppdatering för Chromium}=1{Det finns en uppdatering för Chromium}other{Det finns en uppdatering för Chromium sedan # dagar}}</translation>
+<translation id="5643865575100044307">Radera alltid webbplatsdata från enheten när du stänger Chromium</translation>
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
+<translation id="5889361821821684993">Chromium kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – nätverksinloggning</translation>
 <translation id="5924017743176219022">Ansluter till internet …</translation>
@@ -224,6 +226,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5988505247484123880">Det är vanligt att webbplatser du besöker kommer ihåg sådant som intresserar dig för att anpassa din upplevelse. Webbplatser kan även lagra information om dina intressen i Chromium.</translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
 <translation id="6040143037577758943">Stäng</translation>
+<translation id="6055611795418209449">Chromium blockerar vissa nedladdningar</translation>
 <translation id="6055895534982063517">Det finns en ny version av Chromium och den är snabbare än någonsin.</translation>
 <translation id="6063093106622310249">&amp;Öppna i Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> har lagts till i Chromium</translation>
@@ -237,6 +240,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6132897690380286411">Chromium avslutas snart och data raderas</translation>
 <translation id="6134968993075716475">Säker webbsökning har inaktiverats. Du rekommenderas att aktivera funktionen i Chromium.</translation>
 <translation id="6145820983052037069">Du kan byta mellan Chromium-profiler här</translation>
+<translation id="6175304430031192654">Beroende på dina inställningar kan Chromium även skicka cookies och din nuvarande webbadress</translation>
 <translation id="6183079672144801177">Se till att du är inloggad i Chromium på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="6212496753309875659">Det finns redan en nyare version av Chromium på den här datorn. Avinstallera Chromium och försök igen om programvaran inte fungerar.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium startas om nu}=1{Om en sekund startas Chromium om}other{Om # sekunder startas Chromium om}}</translation>
@@ -257,6 +261,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6373523479360886564">Vill du avinstallera Chromium?</translation>
 <translation id="6375219077595103062">Lägg till en genväg till Lösenordshantering</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Chromium kan göra en uppskattning av dina intressen. Senare kan en webbplats fråga efter dina intressen i Chromium för att anpassa vilka annonser som visas.</translation>
+<translation id="6400112897226594999">Chromium-logotyp på en datorskärm.</translation>
 <translation id="6403826409255603130">Chromium är en webbläsare som kör webbsidor och appar blixtsnabbt. Den är snabb, stabil och lätt att använda. Surfa säkrare med Chromiums skydd mot skadliga program och lösenordsfiske.</translation>
 <translation id="6442900851116057561">Starta om Chromium OS</translation>
 <translation id="6455857529632101747">Välkommen till Chromium-profiler</translation>
@@ -306,6 +311,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="718435575166326686">Du behöver ge Chromium kamerabehörighet för den här webbplatsen</translation>
 <translation id="7196312274710523067">Det gick inte att starta Chromium. Försök igen.</translation>
 <translation id="7197677400338048821">Chromium kan inte kontrollera dina lösenord. Försök igen om ett dygn.</translation>
+<translation id="7213407614656404070">Använd Chromium varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="7223968959479464213">Aktivitetshanteraren – Chromium</translation>
 <translation id="7246575524853130370">Chromiums uppskattning av dina intressen</translation>
 <translation id="7309928523159922338">Genom annonsmätning kan webbplatser du besöker begära information från Chromium som hjälper dem att mäta annonsernas resultat. Med annonsmätning begränsas spårningen från webbplats till webbplats genom att så lite information som möjligt överförs mellan webbplatserna.</translation>

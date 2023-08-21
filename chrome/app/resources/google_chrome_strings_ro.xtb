@@ -37,6 +37,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cum îți poți gestiona datele:<ph name="END_BOLD" /> pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Sau poți elimina categoriile de interese pe care nu dorești ca Chrome să le ia în considerare.</translation>
 <translation id="1628000112320670027">Obține ajutor privind Chrome</translation>
 <translation id="1640672724030957280">Se descarcă…</translation>
+<translation id="1642309806724967937">În funcție de setări, Chrome poate și să trimită cookie-uri și adresa URL actuală</translation>
 <translation id="1662146548738125461">Despre sistemul de operare Chrome Flex</translation>
 <translation id="1674870198290878346">Deschide linkul într-o fereastră Chrome inco&amp;gnito</translation>
 <translation id="1682634494516646069">Google Chrome nu poate citi și scrie în directorul propriu de date: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -92,6 +93,7 @@
 <translation id="2597976513418770460">Obține datele din browserul Chrome din <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome nu poate căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="2645435784669275700">Sistemul de operare Chrome</translation>
+<translation id="2649768380733403658">Chrome verifică periodic dacă browserul are cele mai sigure setări. Te vom anunța dacă trebuie să examinezi ceva.</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
 <translation id="2689103672227170538">Această extensie a modificat ce pagină se afișează când pornești Chrome.</translation>
@@ -229,6 +231,7 @@
 <translation id="5163087008893166964">Bun venit la Chrome; fereastră de browser nouă deschisă</translation>
 <translation id="5170938038195470297">Profilul dvs. nu poate fi utilizat, deoarece provine de la o versiune Google Chrome mai recentă. Este posibil ca unele funcții să nu fie disponibile. Specificați un director de profil diferit sau utilizați o versiune Chrome mai nouă.</translation>
 <translation id="521447420733633466">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc</translation>
+<translation id="5239627039202700673">Folosește Chrome oricând dai clic pe linkuri în mesaje, documente și alte aplicații</translation>
 <translation id="5251420635869119124">Invitații pot folosi Chrome fără a lăsa nicio urmă.</translation>
 <translation id="5334309298019785904">Sistemul de operare Chrome nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="5334487786912937552">Pentru a descărca fișiere, Chrome necesită permisiunea de acces la stocare</translation>
@@ -243,6 +246,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Este posibil ca <ph name="FILE_NAME" /> să fie periculos, așadar Chrome l-a blocat.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica această actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
+<translation id="5682679001737420487">Chrome blochează unele descărcări</translation>
 <translation id="5686916850681061684">Personalizează și controlează Google Chrome. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Când opțiunea este activată, Chrome eliberează memorie din filele inactive. Astfel, filele active și alte aplicații beneficiază de mai multe resurse ale computerului și Chrome funcționează rapid. Filele inactive se reactivează automat când revii la ele.</translation>
@@ -300,6 +304,7 @@
 <translation id="6739177684496155661">Continui cu un profil Chrome nou?</translation>
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="677276454032249905">Ieși din Chrome oricum?</translation>
+<translation id="6794858689789885890">Șterge întotdeauna datele privind site-urile de pe dispozitiv când închizi Chrome</translation>
 <translation id="683440813066116847">Regula de intrare pentru Google Chrome Canary pentru a permite traficul mDNS.</translation>
 <translation id="6881299373831449287">Se actualizează Chrome</translation>
 <translation id="6885412569789873916">Aplicații Chrome Beta</translation>
@@ -384,6 +389,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cum folosim aceste date:<ph name="END_BOLD" /> Chrome îți poate estima interesele. Ulterior, un site pe care-l accesezi poate solicita browserului Chrome să vadă interesele tale pentru a personaliza anunțurile pe care le vezi.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
 <translation id="8394720698884623075">Verifică adresele URL folosind o listă de site-uri nesigure, stocată în Chrome</translation>
+<translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>
 <translation id="8416347857511542594">Află mai multe despre personalizarea anunțurilor în Chrome</translation>
 <translation id="8418845734693287262">Sistemul de operare Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>

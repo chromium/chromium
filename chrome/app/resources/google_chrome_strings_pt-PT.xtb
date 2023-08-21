@@ -38,6 +38,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Como pode gerir os seus dados:<ph name="END_BOLD" /> para proteger a sua privacidade, eliminamos automaticamente os seus interesses com mais de 4 semanas. Enquanto navega, um interesse pode aparecer novamente na lista. Em alternativa, pode remover os interesses que não quer que o Chrome considere.</translation>
 <translation id="1628000112320670027">Obter ajuda relacionada com o Chrome</translation>
 <translation id="1640672724030957280">A transferir...</translation>
+<translation id="1642309806724967937">Consoante as suas definições, o Chrome também pode enviar cookies e o URL atual.</translation>
 <translation id="1662146548738125461">Acerca do ChromeOS Flex</translation>
 <translation id="1674870198290878346">Abrir link numa janela de nave&amp;gação anónima do Chrome</translation>
 <translation id="1682634494516646069">O Google Chrome não consegue ler e escrever no respetivo diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -93,6 +94,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2597976513418770460">Obtenha os seus itens do navegador Chrome a partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">O Chrome não consegue verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">O Chrome verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
 <translation id="2652691236519827073">Abrir link num novo &amp;separador do Chrome</translation>
 <translation id="2665296953892887393">Ajudar a melhorar o Google Chrome ao enviar relatórios de falhas e <ph name="UMA_LINK" /> à Google</translation>
 <translation id="2689103672227170538">Esta extensão alterou a página apresentada quando inicia o Chrome.</translation>
@@ -230,6 +232,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5163087008893166964">Damos-lhe as boas-vindas ao Chrome; nova janela do navegador aberta</translation>
 <translation id="5170938038195470297">O seu perfil não pode ser utilizado pois pertence a uma versão mais recente do Google Chrome. Algumas funcionalidades poderão estar indisponíveis. Especifique um diretório de perfil diferente ou utilize uma versão mais recente do Google Chrome.</translation>
 <translation id="521447420733633466">Se partilhar um dispositivo, os amigos e os familiares podem navegar separadamente e configurar o Chrome da forma que quiserem.</translation>
+<translation id="5239627039202700673">Use o Chrome sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="5251420635869119124">Os convidados podem utilizar o Chrome sem perder qualquer funcionalidade.</translation>
 <translation id="5334309298019785904">O ChromeOS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="5334487786912937552">O Chrome necessita da autorização de acesso ao armazenamento para transferir ficheiros</translation>
@@ -244,6 +247,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, por isso o Chrome bloqueou-o.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização.}=1{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador solicita-lhe que reinicie o Chrome para aplicar esta atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
+<translation id="5682679001737420487">O Chrome bloqueia algumas transferências</translation>
 <translation id="5686916850681061684">Personalize e controle o Google Chrome. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Quando está ativado, o Chrome liberta memória dos separadores inativos. Isto permite que os separadores ativos e outras apps tenham mais recursos do computador e mantém o Chrome rápido. Os seus separadores inativos ficam novamente ativos de forma automática quando regressa a eles.</translation>
@@ -301,6 +305,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6739177684496155661">Quer continuar num novo perfil do Chrome?</translation>
 <translation id="6750954913813541382">Para corrigir erros ortográficos, o Chrome envia o texto que escrever no navegador para a Google.</translation>
 <translation id="677276454032249905">Quer sair do Chrome mesmo assim?</translation>
+<translation id="6794858689789885890">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chrome</translation>
 <translation id="683440813066116847">Regra de importação para o Google Chrome Canary permitir o tráfego mDNS.</translation>
 <translation id="6881299373831449287">A atualizar o Chrome</translation>
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>
@@ -385,6 +390,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> o Chrome pode estimar os seus interesses. Posteriormente, um site que visitar pode pedir ao Chrome para ver os seus interesses para personalizar os anúncios que vê.</translation>
 <translation id="8387459386171870978">Continuar a usar o Chrome</translation>
 <translation id="8394720698884623075">Verifica os URLs com listas de sites inseguros armazenados no Chrome</translation>
+<translation id="8403038600646341038">Logótipo do Chrome num ecrã de computador.</translation>
 <translation id="8416347857511542594">Saiba mais acerca da personalização de anúncios no Chrome</translation>
 <translation id="8418845734693287262">O ChromeOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>

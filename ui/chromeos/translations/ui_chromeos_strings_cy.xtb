@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Cyfanswm y ffeiliau</translation>
 <translation id="1755345808328621801">Mae'r ffeil hon wedi'i dylunio ar gyfer cyfrifiadur personol sy'n defnyddio meddalwedd Windows. Nid yw hyn yn gydnaws â'ch dyfais sy'n rhedeg ChromeOS. Chwiliwch yn Chrome Web Store am ap addas arall.</translation>
 <translation id="1757915090001272240">Lladin eang</translation>
+<translation id="1761091787730831947">Rhannu gyda <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Gwrthodwyd y dystysgrif ddilysu yn lleol</translation>
 <translation id="1775381402323441512">Gwybodaeth am y fideo</translation>
 <translation id="180035236176489073">Rhaid i chi fod ar-lein i gael mynediad at y ffeiliau hyn.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Gosod yr ap gyda Linux</translation>
 <translation id="2719020180254996569">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Manylion</translation>
 <translation id="2724954091494693138">Twrceg gyda bysellfwrdd F</translation>
+<translation id="2732288874651063549">Rheoli rhannu <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI Fietnameg</translation>
 <translation id="2735623501230989521">Rhoi caniatâd i Parallels Desktop gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Rydych wedi defnyddio'ch holl storfa Google Workspace unigol.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3511705761158917664">Wrthi'n paratoi i gysoni <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="3522708245912499433">Portiwgaleg</translation>
+<translation id="3523225005467146490">Mae 1 ffolder wedi'i rhannu gyda <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Rhybudd: Mae'r ffeiliau hyn dros dro a gellir eu dileu yn awtomatig i greu rhagor o le ar y disg.  <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Ffolder</translation>
 <translation id="3548125359243647069">Rhoddwyd y PIN anghywir gormod o weithiau.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Glöynnod Byw</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6170470584681422115">Brechdan</translation>
+<translation id="6181912134988520389">Rhoi caniatâd i <ph name="VM_NAME" /> gael mynediad at ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
 <translation id="6187719147498869044">Hwngareg</translation>
 <translation id="6198252989419008588">Newid PIN</translation>
 <translation id="6199801702437275229">Wrthi'n aros am wybodaeth am le storio...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Swedeg</translation>
 <translation id="6990081529015358884">Rydych wedi rhedeg allan o le storio</translation>
 <translation id="6993826899923627728">Mae'r eitemau hyn yn eich bin sbwriel</translation>
+<translation id="6996593023542748157">Rhannu ffolder gyda <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Mae angen mwy o le storio ar eich sefydliad i gwblhau'r uwchlwythiad.</translation>
 <translation id="7009985720488544166">Mae symud <ph name="COUNT" /> ffeil wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Belarwseg</translation>
 <translation id="8336153091935557858">Ddoe <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Mae ffeil neu gyfeiriadur gyda'r un enw eisoes yn bodoli.</translation>
+<translation id="83651606385705612">Rhoi caniatâd i <ph name="VM_NAME" /> gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Allwedd WEP ddrwg</translation>
 <translation id="8372852072747894550">Groeg</translation>
 <translation id="8386903983509584791">Wedi gorffen sganio</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472">Rhwydwaith <ph name="NETWORK_TYPE" />, werthi'n cysylltu</translation>
 <translation id="8425213833346101688">Newid</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
+<translation id="8429998526804961548">Mae <ph name="NUMBER_OF_ITEMS" /> o ffolderi wedi'u rhannu gyda <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Newid PIN SIM</translation>
 <translation id="8437209419043462667">UDA</translation>
 <translation id="8452135315243592079">Cerdyn SIM ar goll</translation>

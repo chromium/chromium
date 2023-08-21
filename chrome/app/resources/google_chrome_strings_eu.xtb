@@ -39,6 +39,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Zure pribatutasuna babesteko, lau aste baino gehiago dituzten interesak automatikoki ezabatzen ditugu. Arakatzen jarraitu ahala, baliteke interes bat berriro agertzea zerrendan. Bestela, Chrome-k aintzat hartzea nahi ez duzun interesak ken ditzakezu.</translation>
 <translation id="1628000112320670027">Lortu Chrome erabiltzeko laguntza</translation>
 <translation id="1640672724030957280">Deskargatzen…</translation>
+<translation id="1642309806724967937">Zure ezarpenen arabera, baliteke Chrome-k cookieak eta oraingo URLa ere bidaltzea</translation>
 <translation id="1662146548738125461">ChromeOS Flex-i buruz</translation>
 <translation id="1674870198290878346">Ireki esteka Chrome-ko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="1682634494516646069">Google Chrome-k ezin du irakurri bere datu-direktorioa eta ezin du idatzi bertan:
@@ -96,6 +97,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2597976513418770460">Lortu Chrome arakatzailean dituzun gauzak <ph name="ACCOUNT_EMAIL" /> bidez</translation>
 <translation id="2622559029861875898">Chrome-k ezin ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome-k maiz begiratzen die arakatzailearen ezarpenei, ahalik eta seguruenak direla ziurtatzeko. Ezarpenen bat berrikustea komeni bazaizu, jakinarazpen bat bidaliko dizugu.</translation>
 <translation id="2652691236519827073">Ireki esteka Chrome-ko beste &amp;fitxa batean</translation>
 <translation id="2665296953892887393">Lagundu Google Chrome hobetzen hutsegite-txostenak eta <ph name="UMA_LINK" /> Google-ri bidalita</translation>
 <translation id="2689103672227170538">Luzapenak aldatu egin du Chrome abiarazten duzunean agertzen den orria.</translation>
@@ -235,6 +237,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 
 Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direktorio bat edo erabili Chrome-ren bertsio berriagoa.</translation>
 <translation id="521447420733633466">Gailu bat partekatzen baduzu, lagunak eta familiako kideak beren kontuak erabilita ibil daitezke Interneten, eta Chrome nahi duten moduan konfiguratu</translation>
+<translation id="5239627039202700673">Erabili Chrome mezu, dokumentu edo beste aplikazioetako estekak sakatzean</translation>
 <translation id="5251420635869119124">Gonbidatuek Chrome erabil dezakete aztarnarik utzi gabe.</translation>
 <translation id="5334309298019785904">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="5334487786912937552">Chrome-k biltegia erabiltzeko baimena behar du fitxategiak deskargatu ahal izateko</translation>
@@ -251,6 +254,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Baliteke <ph name="FILE_NAME" /> arriskutsua izatea; horregatik, blokeatu egin du Chrome-k.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko}=1{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berrabiarazteko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
+<translation id="5682679001737420487">Chrome-k zenbait deskarga blokeatzen ditu</translation>
 <translation id="5686916850681061684">Pertsonalizatu eta kontrolatu Google Chrome. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Aktibatuta dagoenean, Chrome-k tokia egiten du fitxa inaktiboen memorian. Horrela, fitxa aktiboek eta gainerako aplikazioek ordenagailuaren baliabide gehiago izango dituzte, eta bizkorrago ibiliko da Chrome. Fitxa inaktiboak haietara itzultzen zarenean aktibatuko dira berriro.</translation>
@@ -308,6 +312,7 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6739177684496155661">Chrome-eko beste profil batean egin nahi duzu aurrera?</translation>
 <translation id="6750954913813541382">Ortografia-akatsak konpontzeko, Chrome-k Google-ri bidaltzen dio arakatzailean idazten duzun testua</translation>
 <translation id="677276454032249905">Chrome-tik irten nahi duzu hala ere?</translation>
+<translation id="6794858689789885890">Chrome ixten duzunean, ezabatu beti webguneetako datuak gailutik</translation>
 <translation id="683440813066116847">Google Chrome Canary kanalean mDNS trafikoa baimentzeko sarrera-araua.</translation>
 <translation id="6881299373831449287">Chrome eguneratzen</translation>
 <translation id="6885412569789873916">Chrome Beta aplikazioak</translation>
@@ -392,6 +397,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Chrome-k zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chrome-ri, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
 <translation id="8387459386171870978">Jarraitu Chrome erabiltzen</translation>
 <translation id="8394720698884623075">URLak Chrome-n gordetako webgune ez-seguruen zerrendan dauden ala ez egiaztatzen du.</translation>
+<translation id="8403038600646341038">Chrome-ren logotipoa ordenagailu baten pantailan.</translation>
 <translation id="8416347857511542594">Lortu Chrome-ko iragarkiak pertsonalizatzeari buruzko informazio gehiago</translation>
 <translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="8433638294851456451">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>

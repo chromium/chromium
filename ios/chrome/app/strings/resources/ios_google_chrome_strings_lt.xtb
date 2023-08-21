@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
+<translation id="1180362651362502943">Toliau naudokite „Chrome“ duomenis „Google“ paskyroje.</translation>
 <translation id="1282031177488366470">Padėti tobulinti „Chrome“ funkcijas ir našumą</translation>
 <translation id="1352919863522755794">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti jūsų slaptažodžių. Pabandykite patikrinti interneto ryšį.</translation>
+<translation id="1407843355326180937">Prisijunkite prie šios svetainės ir „Chrome“, kad gautumėte žymes ir kt. visuose savo įrenginiuose.</translation>
 <translation id="1462727070346936664">Prisijunkite, kad išnaudotumėte visas „Chrome“ galimybes.</translation>
 <translation id="1479202195792305274">„Chrome“ gali tikrinti jūsų slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="1491435845014430217">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>
 <translation id="1493827051843127077">Nustatykite „Chrome“ kaip numatytąjį nustatymą, kad būtų sinchronizuojami skirtukai, slaptažodžiai ir mokėjimo informacija visuose įrenginiuose</translation>
 <translation id="1504372625950710826">„Chrome“ nepavyko patikrinti, ar yra naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="1511320244449497906">Esate prisijungę ir sinchronizuojate duomenis naudodami paskyrą, valdomą <ph name="DOMAIN" />, kur jos administratorius dabar gali nustatyti tos paskyros naudotojo politiką, pagal kurią galima keisti „Chrome“ veikimą.</translation>
+<translation id="1526327845902180576">Kai įjungta
+<ph name="BEGIN_INDENT" />  • Padėkite tobulinti „Chrome“ žmonėms, naudojantiems ją kaip jūs.<ph name="END_INDENT" />
+
+Į ką reikėtų atsižvelgti
+<ph name="BEGIN_INDENT" />  • Sistemai „Google“ siunčiama informacija apie „Chrome“ naudojimą, bet ji su jumis nesusiejama.
+
+  • Jei „Chrome“ užstringa, į strigties ataskaitą gali būti įtraukta tam tikros asmens informacijos.
+
+  • Jei sinchronizuosite istoriją „Google“ paskyroje, į metriką taip pat gali būti įtraukta informacijos apie URL, kuriais lankotės.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Turite patikimiausią „Chrome“ apsaugą nuo žalingų svetainių</translation>
 <translation id="1682483655351012182">Sinchronizuoti „Chrome“ duomenis</translation>
 <translation id="1733654336159102143">Užrakinkite inkognito skirtukus, išėję iš „Chrome“ ar perjungę į kitą programą.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
 <translation id="3827545470516145620">Šiame įrenginyje naudojate įprastos apsaugos funkciją</translation>
 <translation id="384394811301901750">„Google Chrome“ šiuo metu negali naudoti fotoaparato</translation>
+<translation id="3901001113120561395">Išnaudokite visas „Chrome“ galimybes.</translation>
 <translation id="3980220367029651214">Perjungiate sinchronizavimo paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chrome“ duomenis valdo <ph name="DOMAIN" />. Duomenys bus ištrinti iš šio įrenginio, bet liks paskyroje <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Jūsų organizacija reikalauja likti atsijungus nuo „Chrome“.</translation>
 <translation id="3988789688219830639">„Google Chrome“ nepasiekia nuotraukų ar vaizdo įr. Įgal. prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Prisijunkite prie šios svetainės ir „Chrome“.</translation>
 <translation id="4698415050768537821">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Kad padėtų tobulinti programą, „Chrome“ siunčia naudojimo ir strigčių duomenis sistemai „Google“. <ph name="BEGIN_LINK" />Tvarkyti<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
+
+        Pabandykite palaukti kelias minutes prieš atsijungdami. Jei atsijungsite dabar, šie duomenys bus ištrinti.</translation>
 <translation id="484033449593719797">Nepalaikoma „Chrome“ beta versijoje</translation>
 <translation id="4840404732697892756">„Google“ slaptažodžių tvarkyklė gali patikrinti slaptažodžius, kai prisijungiate naudodami „Google“ paskyrą.</translation>
 <translation id="4903674399067644695">Šioje kortelėje pateikiami pasiūlymai, kaip išnaudoti visas „Chrome“ galimybes.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">„Chrome“ tobulinimas</translation>
 <translation id="5119391094379141756">Pasirinkite „Chrome“</translation>
 <translation id="5162467219239570114">„Chrome“ versija yra pasenusi. Jei <ph name="BEGIN_LINK" />programų parduotuvėje<ph name="END_LINK" /> nėra jokio naujinio, gali būti, kad įrenginys nebepalaiko naujų versijų „Chrome“.</translation>
+<translation id="5190139289262548459">Jūsų organizacija (<ph name="DOMAIN" />) tvarko paskyrą, prie kurios esate prisijungę, ir tai, kaip naudojama „Chrome“.</translation>
 <translation id="5389212809648216794">„Google Chrome“ negali naudoti fotoaparato, nes jį naudoja kita programa</translation>
 <translation id="5395376160638294582">Užtikrinkite, kad visada galėtumėte naudoti „Chrome“ duomenis „Google“ paskyroje</translation>
 <translation id="5439191312780166229">Įspėjama apie pavojingas svetaines, net ir apie tas, apie kurias anksčiau „Google“ nežinojo, analizuojant daugiau duomenų iš svetainių, nei taikant įprastą apsaugą. Galite pasirinkti praleisti „Chrome“ įspėjimus.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Prisijungiate naudodami <ph name="DOMAIN" /> valdomą paskyrą ir suteikiate jos administratoriui galimybę valdyti jūsų „Chrome“ duomenis. Duomenys bus visam laikui susieti su šia paskyra. Atsijungę nuo „Chrome“ ištrinsite duomenis iš šio įrenginio, bet jie ir toliau bus saugomi „Google“ paskyroje.</translation>
 <translation id="6676840375528380067">Išvalyti jūsų „Chrome“ duomenis iš šio įrenginio?</translation>
 <translation id="6709398533399187136">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Google“ slaptažodžių tvarkytuvė rekomenduoja pakeisti jį dabar.</translation>
+<translation id="6815466750807582739">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+
+Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">„Chrome“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą vėliau.</translation>
 <translation id="6964931465519938134">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="6975725306479268850">„Chrome“ pasirinkimas automatinio pildymo funkcijai</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>
 <translation id="8788269841521769222">Jums nereikia prisiminti šio slaptažodžio. Jis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">„Chrome“ nustatymai</translation>
+<translation id="8856877214925961642">Slaptafrazės šifruotė neapima mokėjimo metodų ir adresų.
+
+Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Rytoj bandykite dar kartą.</translation>
 <translation id="8897749957032330183">Slaptažodžiai saugomi „Google“ slaptažodžių tvarkyklėje šiame įrenginyje.</translation>
 <translation id="8969290730818637510">Kai įjungta

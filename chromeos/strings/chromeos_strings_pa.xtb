@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">ਬਾਹਰੀ ਡੀਵਾਈਸਾਂ ਲਈ ਅੱਪਡੇਟ ਫ਼ਰਮਵੇਅਰ ਵਿੰਡੋ ਖੁੱਲ੍ਹੀ ਹੈ। <ph name="NUM_UPDATES" /> ਅੱਪਡੇਟ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1145516343487477149">ਮਦਦ ਲੇਖ ਅਤੇ Chromebook ਸੰਬੰਧੀ ਆਮ ਸਵਾਲਾਂ ਦੇ ਜਵਾਬ ਲੱਭੋ</translation>
+<translation id="1154390310959620237">ਤੁਸੀਂ ਸਿਰਫ਼ 5 ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰ ਸਕਦੇ ਹੋ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਕਿਸੇ ਇੱਕ ਨੂੰ ਮਿਟਾਓ।</translation>
 <translation id="1164939766849482256">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ ਦਾ ਸਕ੍ਰੀਨ ਸੇਵਰ</translation>
 <translation id="1167755866710282443">ਕੁੰਜੀਆਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ ਮੀਨੂ ਖੋਲ੍ਹੋ। ਲਿਜਾਉਣ ਲਈ ਮੀਨੂ ਨੂੰ ਘਸੀਟੋ।</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> ਵੱਲੋਂ ਇਸ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">ਮੁੜ-ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="2533048460510040082">ਸੁਝਾਈ ਗਈ ਮਦਦ ਸਮੱਗਰੀ</translation>
 <translation id="2536159006530886390">ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
+<translation id="2555662516429796509">ਆਪਣੇ ਕੀ-ਬੋਰਡ 'ਤੇ 1-4 ਸੋਧਕਾਂ ਅਤੇ 1 ਹੋਰ ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="2584559707064218956">ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2597774443162333062">ਫ਼ਾਈਲਾਂ ਡੀਬੱਗਿੰਗ ਲਈ Google ਨੂੰ ਭੇਜੀਆਂ ਜਾਣਗੀਆਂ</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਆਪਣਾ ਸਾਰਾ ਪ੍ਰਿੰਟ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੀਆਂ ਚੱਲ ਰਹੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3373141842870501561">ਧਰਤੀ ਪ੍ਰਵਾਹ ਦਾ ਵਾਲਪੇਪਰ</translation>
 <translation id="337375748120863155">ਤੁਹਾਡੀ ਚੋਣ ਨਾਲ ਸੰਬੰਧਿਤ ਜਾਣਕਾਰੀ। ਕੰਟਰੋਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਖੱਬੀਆਂ ਜਾਂ ਸੱਜੀਆਂ ਤੀਰ ਕੁੰਜੀਆਂ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
+<translation id="3383623117265110236">ਵਿਸ਼ੇਸ਼</translation>
 <translation id="3404249063913988450">ਸਕ੍ਰੀਨ ਸੇਵਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3413935475507503304">ਅੱਪਡੇਟ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">ਚਮਕ ਘਟਾਓ</translation>
 <translation id="4176463684765177261">ਅਸਮਰਥਿਤ</translation>
 <translation id="4176659219503619100">ਕੰਟਰੋਲ ਪੈਨਲ</translation>
+<translation id="4185315616950253617">ਸਿਖਰਲੀ ਕਤਾਰ ਨਾਲ ਕੁੰਜੀਆਂ ਵਾਲੇ ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਖੋਜ ਕੁੰਜੀ ਨੂੰ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="420283545744377356">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="4213104098953699324">USB ਕੀ-ਬੋਰਡ</translation>
 <translation id="4227825898293920515">ਪਾਸਵਰਡ ਦੀ ਮਿਆਦ <ph name="TIME" /> ਵਿੱਚ ਮੁੱਕ ਜਾਵੇਗੀ</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="4271957103967917607">ਪੂਰੀ ਸਕ੍ਰੀਨ ਦੇਖੋ</translation>
 <translation id="4275663329226226506">ਮੀਡੀਆ</translation>
+<translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਵਿਵਾਦ ਨੂੰ ਹੱਲ ਕਰਨ ਲਈ ਸੰਪਾਦਨ ਕਰੋ ਜਾਂ ਹਟਾਓ।</translation>
 <translation id="4289540628985791613">ਓਵਰਵਿਊ</translation>
 <translation id="4289849978083912975">ਸਲਾਈਡ ਸ਼ੋਅ</translation>
 <translation id="4297501883039923494">ਬੰਦ ਹੋ ਗਿਆ - ਅਗਿਆਤ ਗੜਬੜ</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}one{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ ਬਾਕੀ}other{<ph name="ERROR_MESSAGE" /> {0} ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ}}</translation>
 <translation id="4873827928179867585">ਪ੍ਰਮਾਣੀਕਰਨ ਐਲਗੋਰਿਦਮ</translation>
 <translation id="4880328057631981605">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ</translation>
+<translation id="488307179443832524">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">ਛੇਤੀ ਇੱਕ ਨਵਾਂ ਪਾਸਵਰਡ ਚੁਣੋ</translation>
 <translation id="4891842000192098784">ਤਣਾਅ</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਵਧਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="57838592816432529">ਮਿਊਟ ਕਰੋ</translation>
 <translation id="5784136236926853061">ਜ਼ਿਆਦਾ HTTP ਵਿਲੰਬਤਾ</translation>
+<translation id="5816802250591013230">ਕੋਈ ਸ਼ਾਰਟਕੱਟ ਜ਼ਿੰਮੇ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ</translation>
 <translation id="5826644637650799838">ਕਲਾ ਬਾਰੇ</translation>
 <translation id="5832805196449965646">ਵਿਅਕਤੀ ਜੋੜੋ</translation>
 <translation id="583281660410589416">ਅਗਿਆਤ</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> ਇਸ ਡੀਵਾਈਸ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਦਾ ਹੈ ਅਤੇ ਇਸਨੂੰ ਦੇਖੇ ਗਏ ਵੈੱਬ-ਪੰਨਿਆਂ, ਪਾਸਵਰਡਾਂ ਅਤੇ ਈਮੇਲ ਸਮੇਤ ਵਰਤੋਂਕਾਰ ਦੀਆਂ ਸਾਰੀਆਂ ਸਰਗਰਮੀਆਂ ਤੱਕ ਪਹੁੰਚ ਹਾਸਲ ਹੈ।</translation>
 <translation id="7040230719604914234">ਓਪਰੇਟਰ</translation>
 <translation id="7041549558901442110">ਡੀਵਾਈਸ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</translation>
+<translation id="7046522406494308071">ਕੀ ਸਾਰੇ ਸ਼ਾਰਟਕੱਟਾਂ ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7058278511608979688">ਸਮਾਪਤ ਕਰੋ ਅਤੇ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="7059230779847288458">ਚਾਰਜ ਹੋ ਰਹੀ ਹੈ, ਪੂਰੀ ਤਰ੍ਹਾਂ ਚਾਰਜ ਹੋਣ ਵਿੱਚ <ph name="TIME_VALUE" /> ਦਾ ਸਮਾਂ ਬਾਕੀ</translation>
 <translation id="7068619307603204412">ਆਪਣਾ ਡੀਵਾਈਸ ਤਿਆਰ ਕਰੋ</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ਅਸਫਲ ਰਿਹਾ - ਇਖਤਿਆਰੀਕਰਨ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" /> ਡੀਵਾਈਸ ਨੂੰ <ph name="NAME" /> ਨਾਮ ਦਿੱਤਾ ਗਿਆ।</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> ਦਾ ਵਿਸ਼ੇਸ਼ ਆਰਟਵਰਕ ਚੁਣੋ</translation>
 <translation id="7108668606237948702">ਦਰਜ ਕਰੋ</translation>
 <translation id="7130438335435247835">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ਨਾਮ ਸਰਵਰ}one{ਨਾਮ ਸਰਵਰ}other{ਨਾਮ ਸਰਵਰ}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">ਸੈਲਿਊਲਰ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="725133483556299729">ਈਮੇਲ ਚੁਣੋ</translation>
 <translation id="7271040990581020067">ਫ਼ਿਲਹਾਲ ਸਕੈਨਰ ਵਰਤੋਂ ਵਿੱਚ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="7273347807225967898">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, shift, ਖੋਜ ਜਾਂ ਲਾਂਚਰ) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ਹਵਾ ਨੂੰ ਮਹਿਸੂਸ ਕਰੋ</translation>
 <translation id="7287310195820267359">ਵਾਲਪੇਪਰ ਸੰਗ੍ਰਹਿ</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">ਕੀ-ਬੋਰਡ ਲਾਈਟ</translation>
 <translation id="773153675489693198">ਸਾਈਕਲ ਗਿਣਤੀ</translation>
 <translation id="7747039790905080783">ਪਹਿਲਾਂ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਗਈ ਕੁੰਜੀ</translation>
+<translation id="7752963721013053477">ਸਵੇਰ ਤੋਂ ਰਾਤ ਤੱਕ - ਵਿਸ਼ੇਸ਼</translation>
 <translation id="7762130827864645708">ਤੁਹਾਡੇ ਵੱਲੋਂ ਪਾਸਵਰਡ ਨੂੰ ਬਦਲਣਾ ਸਫਲ ਰਿਹਾ। ਕਿਰਪਾ ਕਰਕੇ ਹੁਣ ਤੋਂ ਨਵੇਂ ਪਾਸਵਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।</translation>
 <translation id="7763470514545477072">ਡੋੋਮੇਨ ਪਿਛੇਤਰ ਦਾ ਮਿਲਾਨ</translation>
 <translation id="7769672763586021400">ਮਾਡਲ ਆਈ.ਡੀ.</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ਪ੍ਰਦਾਨਕ ਕਿਸਮ</translation>
 <translation id="7882501334836096755">ਜਨਤਕ ਕੁੰਜੀ</translation>
+<translation id="7903695460270716054">ਚੁਣੇ ਗਏ ਆਰਟਵਰਕ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਚੁਣੋ</translation>
 <translation id="7915220255123750251">ਨੈੱਟਵਰਕ APN ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ। APN ਸੈਲਿਊਲਰ ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ ਵਿਚਕਾਰ ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਕਰਦੇ ਹਨ।</translation>
 <translation id="7936303884198020182">ਕੋਈ ਨਾਮ ਸਰਵਰ ਨਹੀਂ ਮਿਲਿਆ</translation>
 <translation id="7942349550061667556">ਲਾਲ</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="8094062939584182041">Google ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਬਾਰੇ ਤੁਹਾਨੂੰ ਈਮੇਲ ਭੇਜਣ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="8104083085214006426">ਤੁਸੀਂ ਕੋਈ ਖੁੱਲ੍ਹਾ ਅਤੇ ਅਸੁਰੱਖਿਅਤ ਨੈੱਟਵਰਕ ਵਰਤ ਰਹੇ ਹੋ</translation>
+<translation id="8111706652656628199">ਸ਼ਾਰਟਕੱਟ ਉਪਲਬਧ ਨਹੀਂ। Shift ਅਤੇ 1 ਹੋਰ ਸੋਧਕ ਕੁੰਜੀ (ctrl, alt, ਖੋਜ ਜਾਂ ਲਾਂਚਰ) ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ।</translation>
 <translation id="811820734797650957">(Android) ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ਟਰੈਫ਼ਿਕ ਕਾਉਂਟਰਾਂ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ਐਲਬਮ</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">"<ph name="CONFLICT_ACCEL_NAME" />" ਲਈ ਸ਼ਾਰਟਕੱਟ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਨਵਾਂ ਸ਼ਾਰਟਕੱਟ ਦਬਾਓ। ਮੂਲ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਬਦਲਣ ਲਈ, ਇਸ ਸ਼ਾਰਟਕੱਟ ਨੂੰ ਦੁਬਾਰਾ ਦਬਾਓ।</translation>
 <translation id="879568662008399081">ਇਸ ਨੈੱਟਵਰਕ ਕੋਲ ਕੈਪਟਿਵ ਪੋਰਟਲ ਹੋ ਸਕਦਾ ਹੈ</translation>
 <translation id="8798099450830957504">ਪੂਰਵ-ਨਿਰਧਾਰਤ</translation>
 <translation id="8798441408945964110">ਪ੍ਰਦਾਨਕ ਦਾ ਨਾਮ</translation>

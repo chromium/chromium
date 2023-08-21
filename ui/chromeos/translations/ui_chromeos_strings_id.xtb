@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Jumlah file total</translation>
 <translation id="1755345808328621801">File ini dirancang untuk PC yang menggunakan software Windows. File ini tidak kompatibel dengan perangkat Anda yang menjalankan ChromeOS. Telusuri di Chrome Web Store untuk mendapatkan aplikasi pengganti yang sesuai.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">Bagikan ke <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Sertifikat autentikasi ditolak secara lokal</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Anda harus online untuk mengakses file ini.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Instal aplikasi dengan Linux</translation>
 <translation id="2719020180254996569">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Detail</translation>
 <translation id="2724954091494693138">Turki dengan Keyboard-F</translation>
+<translation id="2732288874651063549">Kelola berbagi dengan <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">VNI Vietnam</translation>
 <translation id="2735623501230989521">Beri Parallels Desktop izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Anda telah menggunakan seluruh penyimpanan Google Workspace individual.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="3511705761158917664">Menyiapkan sinkronisasi <ph name="NUMBER_OF_ITEMS" /> item...</translation>
 <translation id="3522708245912499433">Portugis</translation>
+<translation id="3523225005467146490">1 folder dibagikan ke <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Perhatian: File ini bersifat sementara dan dapat dihapus secara otomatis untuk mengosongkan ruang disk.  <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3548125359243647069">Terlalu sering memasukkan PIN yang salah.</translation>
@@ -664,6 +667,7 @@
 <translation id="6164412158936057769">Kupu-kupu</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6181912134988520389">Beri <ph name="VM_NAME" /> izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="6187719147498869044">Hungaria</translation>
 <translation id="6198252989419008588">Ubah PIN</translation>
 <translation id="6199801702437275229">Menunggu info ruang...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">Swedia</translation>
 <translation id="6990081529015358884">Anda telah kehabisan ruang</translation>
 <translation id="6993826899923627728">Item ini ada di sampah Anda</translation>
+<translation id="6996593023542748157">Bagikan folder ke <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Organisasi Anda memerlukan penyimpanan ekstra untuk menyelesaikan upload.</translation>
 <translation id="7009985720488544166">Pemindahan <ph name="COUNT" /> file diblokir oleh kebijakan administrator</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">Belarusia</translation>
 <translation id="8336153091935557858"><ph name="YESTERDAY_DAYTIME" /> kemarin</translation>
 <translation id="8342318071240498787">Sudah ada file atau direktori dengan nama yang sama.</translation>
+<translation id="83651606385705612">Beri <ph name="VM_NAME" /> izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Kunci WEP yang buruk</translation>
 <translation id="8372852072747894550">Yunani</translation>
 <translation id="8386903983509584791">Pemindaian selesai</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472">Jaringan <ph name="NETWORK_TYPE" />, menyambungkan</translation>
 <translation id="8425213833346101688">Ubah</translation>
 <translation id="8428213095426709021">Setelan</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan ke <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Ubah PIN SIM</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8452135315243592079">Kartu SIM tidak ada</translation>

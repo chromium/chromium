@@ -1087,6 +1087,7 @@
 <translation id="1854180393107901205">Спыніць трансляцыю</translation>
 <translation id="1856715684130786728">Дадаць размяшчэнне...</translation>
 <translation id="1858585891038687145">Давяраць гэтаму сертыфікату пры ідэнтыфікацыі стваральнікаў праграмнага забеспячэння</translation>
+<translation id="1859294693760125695">Больш не цікава</translation>
 <translation id="1859339856433307593">Пароль для гэтага ўліковага запісу (<ph name="USER_EMAIL" />) ужо захаваны ў <ph name="BRAND" /></translation>
 <translation id="1861262398884155592">Гэта папка пустая</translation>
 <translation id="1862311223300693744">Ці ўсталявана ў вас якое-небудзь спецыяльнае праграмнае забеспячэнне VPN, проксі-сервера, брандмаўара або NAS?</translation>
@@ -3281,6 +3282,7 @@
 <translation id="3660234220361471169">Ненадзейны</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 пароль ужо існуе}one{{NUM_PASSWORDS} пароль ужо існуе}few{{NUM_PASSWORDS} паролі ўжо існуюць}many{{NUM_PASSWORDS} пароляў ужо існуюць}other{{NUM_PASSWORDS} пароля ўжо існуюць}}</translation>
 <translation id="3664511988987167893">Значок пашырэння</translation>
+<translation id="3665301845536101715">Адкрыць у бакавой панэлі</translation>
 <translation id="3665589677786828986">Выяўлена, што іншая праграма змяніла некаторыя налады ў Chrome, і таму яны скінуты да стандартных значэнняў.</translation>
 <translation id="3665919494326051362">Бягучая версія: <ph name="CURRENT_VERSION" /></translation>
 <translation id="3666196264870170605">Дамп адладкі кантролераў NIC Intel для Wi-Fi</translation>
@@ -8650,6 +8652,7 @@
 <translation id="814204052173971714">{COUNT,plural, =1{відэа}one{# відэа}few{# відэа}many{# відэа}other{# відэа}}</translation>
 <translation id="8143442547342702591">Няправільная праграма</translation>
 <translation id="8143609395536282994">Як кіраваць сваімі данымі:</translation>
+<translation id="8144429778087524791">Пазначыць як гатовае і схаваць</translation>
 <translation id="8145170459658034418">Эканомія памяці</translation>
 <translation id="8146177459103116374">Калі вы ўжо рэгістраваліся на гэтай прыладзе, вы можаце <ph name="LINK2_START" />ўвайсці як існуючы карыстальнік<ph name="LINK2_END" />.</translation>
 <translation id="8146287226035613638">Дадавайце прыярытэтныя мовы і вызначайце іх чарговасць. Вэб-сайты будуць паказвацца на мовах, выбраных вамі ў якасці прыярытэтных, калі гэта магчыма. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>

@@ -205,11 +205,13 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
 <translation id="5614091477838198795">Jeśli ta opcja jest włączona, zostaniesz też wylogowany(-a) z Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostępna jest aktualizacja Chromium}=1{Dostępna jest aktualizacja Chromium}few{Aktualizacja Chromium jest dostępna od # dni}many{Aktualizacja Chromium jest dostępna od # dni}other{Aktualizacja Chromium jest dostępna od # dnia}}</translation>
+<translation id="5643865575100044307">Zawsze usuwaj dane witryn z urządzenia po zamknięciu Chromium</translation>
 <translation id="5653831366781983928">Uruchom Chromium ponownie</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wyświetlaj Chromium w tym języku</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5883558403894052917">Przeglądarka Chromium wykryła w tych elementach złośliwe oprogramowanie:</translation>
+<translation id="5889361821821684993">Chromium regularnie sprawdza, czy przeglądarka ma możliwie najbezpieczniejsze ustawienia. Jeśli będziemy potrzebować Twojej weryfikacji, powiadomimy Cię.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – logowanie do sieci</translation>
 <translation id="5924017743176219022">Łączę z internetem…</translation>
@@ -220,6 +222,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5988505247484123880">Odwiedzane witryny często zapamiętują rzeczy, które Cię interesują, żeby spersonalizować Twoje doświadczenia. Informacje o Twoich zainteresowaniach witryny mogą również przechowywać w Chromium.</translation>
 <translation id="6003112304606738118">Pobieram… Pozostało: <ph name="HOURS" /> godz.</translation>
 <translation id="6040143037577758943">Zamknij</translation>
+<translation id="6055611795418209449">Chromium blokuje pobieranie niektórych plików</translation>
 <translation id="6055895534982063517">Dostępna jest nowa, szybsza niż kiedykolwiek wersja Chromium.</translation>
 <translation id="6063093106622310249">&amp;Otwórz w Chromium</translation>
 <translation id="6072279588547424923">Rozszerzenie <ph name="EXTENSION_NAME" /> zostało dodane do Chromium</translation>
@@ -233,6 +236,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6132897690380286411">Przeglądarka Chromium zostanie wkrótce zamknięta, a dane zostaną usunięte</translation>
 <translation id="6134968993075716475">Bezpieczne przeglądanie jest wyłączone. Chromium zaleca jego włączenie.</translation>
 <translation id="6145820983052037069">Tu możesz przełączać się między profilami Chromium</translation>
+<translation id="6175304430031192654">W zależności od ustawień Chromium może też wysyłać pliki cookie i Twój aktualny adres URL</translation>
 <translation id="6183079672144801177">Najpierw zaloguj się w Chromium na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="6212496753309875659">Na tym komputerze jest już zainstalowana nowsza wersja Chromium. Jeśli program nie działa, odinstaluj go i spróbuj ponownie.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium uruchomi się ponownie teraz}=1{Chromium uruchomi się ponownie za 1 sekundę}few{Chromium uruchomi się ponownie za # sekundy}many{Chromium uruchomi się ponownie za # sekund}other{Chromium uruchomi się ponownie za # sekundy}}</translation>
@@ -253,6 +257,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
 <translation id="6375219077595103062">Dodaj skrót do Menedżera haseł</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> Chromium może oszacować, jakie są Twoje zainteresowania. Witryna, którą później odwiedzisz, może o nie zapytać i na tej podstawie spersonalizować wyświetlane reklamy.</translation>
+<translation id="6400112897226594999">Logo Chromium na ekranie komputera.</translation>
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
 <translation id="6442900851116057561">Uruchom ponownie Chromium OS</translation>
 <translation id="6455857529632101747">Witamy w profilach Chromium</translation>
@@ -301,6 +306,7 @@ Niektóre funkcje mogą być niedostępne. Podaj inny katalog z profilem lub uż
 <translation id="718435575166326686">Ta strona musi mieć w Chromium dostęp do aparatu</translation>
 <translation id="7196312274710523067">Nie udało się uruchomić Chromium. Spróbuj ponownie.</translation>
 <translation id="7197677400338048821">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny.</translation>
+<translation id="7213407614656404070">Używaj Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="7223968959479464213">Menedżer zadań – Chromium</translation>
 <translation id="7246575524853130370">Twoje zainteresowania oszacowane przez Chromium</translation>
 <translation id="7309928523159922338">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chromium o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>

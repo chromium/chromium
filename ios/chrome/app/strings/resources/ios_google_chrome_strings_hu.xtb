@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1143896152279775643">Jelszavát elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
+<translation id="1180362651362502943">Továbbra is használhatja a Google-fiókjában lévő Chrome-adatokat.</translation>
 <translation id="1282031177488366470">Hozzájárulás a Chrome funkcióinak és teljesítményének javításához</translation>
 <translation id="1352919863522755794">A Google Jelszókezelő nem tudta ellenőrizni az Ön jelszavait. Ellenőrizze az internetkapcsolatot.</translation>
+<translation id="1407843355326180937">Jelentkezzen be erre a webhelyre és a Chrome-ba, hogy az összes eszközén hozzáférhessen könyvjelzőihez és még sok minden máshoz.</translation>
 <translation id="1462727070346936664">Jelentkezzen be, hogy a legtöbbet hozhassa ki a Chrome-ból.</translation>
 <translation id="1479202195792305274">A Chrome ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="1491435845014430217">Kapcsolja be az „Inkognitó lapok zárolása a Chrome bezárásakor” beállítást.</translation>
 <translation id="1493827051843127077">A Chrome-ot alapértelmezett böngészőként beállítva az összes eszközén szinkronizálhatja a lapfüleket, jelszavakat és fizetési adatokat</translation>
 <translation id="1504372625950710826">A Chrome nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="1511320244449497906">Ön a(z) <ph name="DOMAIN" /> által felügyelt fiókba van bejelentkezve, és szinkronizálja vele az adatait. Ennek a domainnek a rendszergazdája mostantól beállíthat olyan felhasználói házirendeket erre a fiókra vonatkozóan, amelyek módosíthatják a Chrome viselkedését.</translation>
+<translation id="1526327845902180576">Amikor be van kapcsolva:
+<ph name="BEGIN_INDENT" /> • Segít, hogy továbbfejleszthessük a Chrome-ot azok számára, akik Önhöz hasonló módon használják.<ph name="END_INDENT" /> 
+
+Megjegyzések:
+<ph name="BEGIN_INDENT" /> • A rendszer információt küld a Google-nak az Ön Chrome-használatáról, de az adatokat nem kapcsolja Önhöz.
+
+  • Ha a Chrome összeomlik, az összeomlással kapcsolatos adatok között szerepelhetnek bizonyos személyes adatok.
+
+  • Ha szinkronizálja előzményeit Google-fiókjával, akkor a mutatók a felkeresett URL-ekkel kapcsolatos információkat is tartalmazhatnak.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">A Chrome a legerősebb védelmet biztosítja a kártékony webhelyek ellen</translation>
 <translation id="1682483655351012182">Chrome-adatok szinkronizálása</translation>
 <translation id="1733654336159102143">Zárolhatja az inkognitó módot, amikor kilép a Chrome-ból, vagy másik alkalmazásra vált.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Inkognitó lapok zárolása a Chrome bezárásakor</translation>
 <translation id="3827545470516145620">Normál biztonsági védelemben részesül ezen az eszközön</translation>
 <translation id="384394811301901750">A Google Chrome jelenleg nem tudja használni a kamerát</translation>
+<translation id="3901001113120561395">Hozza ki a legtöbbet a Chrome-ból.</translation>
 <translation id="3980220367029651214">A(z) <ph name="USER_EMAIL1" /> szinkronizált fiókról a következőre vált át: <ph name="USER_EMAIL2" />. A meglévő Chrome-adatokat a(z) <ph name="DOMAIN" /> kezeli. Ezzel törli az adatait erről az eszközről, viszont azok továbbra is megmaradnak a(z) <ph name="USER_EMAIL1" /> fiókban.</translation>
 <translation id="3984746313391923992">Szervezete nem engedélyezi, hogy bejelentkezzen a Chrome-ba.</translation>
 <translation id="3988789688219830639">A Google Chrome nem fér hozzá az Ön képeihez és videóihoz. Engedélyezés iOS-en: Beállítások &gt; Adatvédelem &gt; Fényképek.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Jelentkezzen be erre a webhelyre és a Chrome-ba.</translation>
 <translation id="4698415050768537821">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Az alkalmazás továbbfejlesztése érdekében a Chrome elküldi a használati és az összeomlási adatokat a Google-nak. <ph name="BEGIN_LINK" />Kezelés<ph name="END_LINK" />.</translation>
+<translation id="4831642696589369971">A Chrome egyes adatait még nem mentette a rendszer a Google-fiókjába.
+
+        A kijelentkezés előtt várjon néhány percet. Ha most jelentkezik ki, akkor ezek az adatok törlődnek.</translation>
 <translation id="484033449593719797">A Chrome bétaverziója nem támogatja</translation>
 <translation id="4840404732697892756">A Google Jelszókezelő ellenőrizni tudja a mentett jelszavakat, ha Ön bejelentkezik Google-fiókjával.</translation>
 <translation id="4903674399067644695">Ez a kártya javaslatokat ad arra, hogy miként hozhatja ki a legtöbbet a Chrome-ból.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">A Chrome fejlesztése</translation>
 <translation id="5119391094379141756">Válassza ki a Chrome böngészőt.</translation>
 <translation id="5162467219239570114">A Chrome elavult. Ha nem áll rendelkezésre frissítés az <ph name="BEGIN_LINK" />App Store-ban<ph name="END_LINK" />, akkor lehet, hogy az eszköz már nem támogatja a Chrome újabb verzióit.</translation>
+<translation id="5190139289262548459">Szervezete (<ph name="DOMAIN" />) kezeli azt a fiókot, amelybe be van jelentkezve, és a Chrome használatának módját is.</translation>
 <translation id="5389212809648216794">A Google Chrome nem tudja használni a kamerát, mivel egy másik alkalmazás használja</translation>
 <translation id="5395376160638294582">Biztosítsa, hogy mindig használhassa a Google-fiókjában lévő Chrome-adatokat</translation>
 <translation id="5439191312780166229">Figyelmezteti Önt a veszélyes webhelyekre (még azokra is, amelyekről a Google korábban nem tudott), azáltal hogy több, webhelyekről származó adatot elemez, mint a normál védelem. Beállíthatja a Chrome figyelmeztetéseinek kihagyását.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Egy <ph name="DOMAIN" /> által felügyelt fiókkal jelentkezik be, és engedélyezi az adminisztrátor számára a Chrome-adatok kezelését. Adatai állandó jelleggel ehhez a fiókhoz lesznek társítva. A Chrome-ból való kijelentkezéssel törli adatait erről az eszközről, de azok továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="6676840375528380067">Törli Chrome-adatait az eszközről?</translation>
 <translation id="6709398533399187136">Jelszava adatvédelmi incidens során nyilvánosságra került. A Google Jelszókezelő a jelszó haladéktalan módosítását javasolja.</translation>
+<translation id="6815466750807582739">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
+
+Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">A Chrome nem tudta ellenőrizni az összes jelszót. Próbálja újra később.</translation>
 <translation id="6964931465519938134">Mostantól bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban lévő linkekre koppint.</translation>
 <translation id="6975725306479268850">A Chrome kiválasztása az automatikus kitöltéshez</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Értesítéseket jelenít meg a Chrome-ba való bejelentkezéshez</translation>
 <translation id="8788269841521769222">Nem kell emlékeznie erre a jelszóra. Elmenti a rendszer a fiókhoz (<ph name="EMAIL" />) kapcsolt Google Jelszókezelőbe.</translation>
 <translation id="8808828119384186784">A Chrome beállításai</translation>
+<translation id="8856877214925961642">Az összetett jelszavas titkosítás nem tartalmazza a fizetési módokat és a címeket.
+
+A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">A Google Jelszókezelő nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap.</translation>
 <translation id="8897749957032330183">A jelszavakat ezen az eszközön menti a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="8969290730818637510">Ha be van kapcsolva:

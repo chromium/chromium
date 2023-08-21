@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="1143896152279775643">Parola se va salva în Managerul de parole Google pentru <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Folosește în continuare datele Chrome din Contul Google.</translation>
 <translation id="1282031177488366470">Contribuie la îmbunătățirea funcțiilor și performanței Chrome</translation>
 <translation id="1352919863522755794">Managerul de parole Google nu ți-a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
+<translation id="1407843355326180937">Conectează-te la acest site și la Chrome pentru a accesa marcajele și multe altele de pe toate dispozitivele tale.</translation>
 <translation id="1462727070346936664">Conectează-te pentru a profita din plin de Chrome.</translation>
 <translation id="1479202195792305274">Chrome poate să îți verifice parolele atunci când te conectezi folosind Contul Google.</translation>
 <translation id="1491435845014430217">Activează Blochează filele incognito când închizi Chrome.</translation>
 <translation id="1493827051843127077">Setează Chrome ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="1504372625950710826">Chrome nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="1511320244449497906">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
+<translation id="1526327845902180576">Când opțiunea este activă:
+<ph name="BEGIN_INDENT" /> • contribui la îmbunătățirea browserului Chrome pentru cei care-l folosesc în mod similar cu tine.<ph name="END_INDENT" />
+
+De reținut:
+<ph name="BEGIN_INDENT" /> • Google primește informații despre modul în care folosești Chrome, dar acestea nu pot fi asociate cu tine;
+
+  • dacă Chrome se blochează, detaliile despre blocare pot include unele informații cu caracter personal;
+
+  • dacă sincronizezi istoricul cu Contul Google, valorile pot să includă și informații despre adresele URL pe care le accesezi.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
 <translation id="1733654336159102143">Blochează modul incognito când ieși din Chrome sau treci la altă aplicație.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Blochează filele incognito când închizi Chrome</translation>
 <translation id="3827545470516145620">Beneficiezi de protecție de securitate standard pe acest dispozitiv</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
+<translation id="3901001113120561395">Profită din plin de Chrome</translation>
 <translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Conectează-te la acest site și la Chrome.</translation>
 <translation id="4698415050768537821">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Pentru a contribui la îmbunătățirea aplicației, Chrome trimite date de utilizare și despre erori la Google. <ph name="BEGIN_LINK" />Gestionează<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Unele date Chrome nu au fost salvate încă în Contul Google.
+
+        Așteaptă câteva minute înainte să te deconectezi. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="484033449593719797">Nu se acceptă în Chrome Beta</translation>
 <translation id="4840404732697892756">Managerul de parole Google poate verifica parolele atunci când te conectezi cu Contul Google.</translation>
 <translation id="4903674399067644695">Acest card afișează sugestii pentru a profita la maximum de Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Contribuie la îmbunătățirea Chrome</translation>
 <translation id="5119391094379141756">Selectează Chrome.</translation>
 <translation id="5162467219239570114">Chrome nu este actualizat. Dacă nu este disponibilă nicio actualizare în <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, e posibil ca dispozitivul tău să nu mai accepte versiuni noi de Chrome.</translation>
+<translation id="5190139289262548459">Organizația ta, <ph name="DOMAIN" />, gestionează contul la care te-ai conectat și modul în care folosești Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="5395376160638294582">Asigură-te că poți folosi oricând datele Chrome din Contul Google</translation>
 <translation id="5439191312780166229">Te avertizează cu privire la site-uri periculoase, chiar și cele pe care Google nu le cunoștea înainte, analizând mai multe date din site-uri decât Protecția standard. Poți să omiți avertismentele din Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Te conectezi cu un cont gestionat de <ph name="DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>
 <translation id="6676840375528380067">Ștergi datele tale Chrome de pe acest dispozitiv?</translation>
 <translation id="6709398533399187136">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole Google îți recomandă să schimbi parola acum.</translation>
+<translation id="6815466750807582739">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
+
+Numai un utilizator care deține expresia ta de acces îți poate citi datele criptate. Expresia de acces nu este trimisă la sau stocată de Google. Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="6975725306479268850">Alege Chrome pentru completarea automată</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Setări Chrome</translation>
+<translation id="8856877214925961642">Criptarea cu expresie de acces nu include metodele de plată și adresele.
+
+Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome din cont<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="8897749957032330183">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv.</translation>
 <translation id="8969290730818637510">Când opțiunea este activă

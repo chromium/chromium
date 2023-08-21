@@ -209,11 +209,13 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5527463683072221100">Atidaryti PDF failus naudojant „Chromium“</translation>
 <translation id="5614091477838198795">Kai tai bus įjungta, taip pat būsite atjungti nuo „Chromium“</translation>
 <translation id="5623402015214259806">{0,plural, =0{Pasiekiamas „Chromium“ naujinys}=1{Pasiekiamas „Chromium“ naujinys}one{„Chromium“ naujinys pasiekiamas # dieną}few{„Chromium“ naujinys pasiekiamas # dienas}many{„Chromium“ naujinys pasiekiamas # dienos}other{„Chromium“ naujinys pasiekiamas # dienų}}</translation>
+<translation id="5643865575100044307">Visada ištrinti svetainių duomenis iš įrenginio uždarius „Chromium“</translation>
 <translation id="5653831366781983928">Dabar iš naujo paleiskite „Chromium“</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Pateikti „Chromium“ šia kalba</translation>
 <translation id="5862307444128926510">Sveiki, tai „Chromium“</translation>
 <translation id="5883558403894052917">„Chromium“ aptiko kenkėjišką programą šiuose elementuose:</translation>
+<translation id="5889361821821684993">„Chromium“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
 <translation id="5895138241574237353">Paleisti iš naujo</translation>
 <translation id="5903106910045431592">„<ph name="PAGE_TITLE" />“ – prisijungimas prie tinklo</translation>
 <translation id="5924017743176219022">Prisijungiama prie interneto...</translation>
@@ -224,6 +226,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5988505247484123880">Įprasta, kad svetainės, kuriose lankotės, įsimena, kuo domitės, kad galėtų suasmeninti jūsų patirtį. Svetainėse taip pat gali būti renkama su „Chromium“ susijusi informacija apie jūsų pomėgius.</translation>
 <translation id="6003112304606738118">Atsisiunčiama… Liko <ph name="HOURS" /> val.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
+<translation id="6055611795418209449">„Chromium“ blokuoja kai kuriuos atsisiuntimus</translation>
 <translation id="6055895534982063517">Pasiekiama nauja „Chromium“ versija, kuri greitesnė nei bet kada.</translation>
 <translation id="6063093106622310249">&amp;Atidaryti naudojant „Chromium“</translation>
 <translation id="6072279588547424923">„<ph name="EXTENSION_NAME" />“ pridėtas prie „Chromium“</translation>
@@ -237,6 +240,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6132897690380286411">„Chromium“ netrukus bus uždaryta ir ištrins duomenis</translation>
 <translation id="6134968993075716475">Saugaus naršymo funkcija išjungta. „Chromium“ rekomenduoja ją įjungti.</translation>
 <translation id="6145820983052037069">Čia galite perjungti „Chromium“ profilius</translation>
+<translation id="6175304430031192654">Atsižvelgiant į nustatymus, „Chromium“ taip pat gali siųsti slapukus ir dabartinį URL</translation>
 <translation id="6183079672144801177">Įsitikinkite, kad esate prisijungę prie „Chromium“ naudodami „<ph name="TARGET_DEVICE_NAME" />“, ir bandykite siųsti iš naujo.</translation>
 <translation id="6212496753309875659">Šiame kompiuteryje jau yra naujesnės versijos „Chromium“. Jei programinė įranga neveikia, pašalinkite „Chromium“ ir bandykite dar kartą.</translation>
 <translation id="6219195342503754812">{0,plural, =0{„Chromium“ bus paleista iš naujo dabar}=1{„Chromium“ bus paleista iš naujo po 1 sekundės}one{„Chromium“ bus paleista iš naujo po # sekundės}few{„Chromium“ bus paleista iš naujo po # sekundžių}many{„Chromium“ bus paleista iš naujo po # sekundės}other{„Chromium“ bus paleista iš naujo po # sekundžių}}</translation>
@@ -257,6 +261,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6373523479360886564">Ar tikrai norite pašalinti „Chromium"?</translation>
 <translation id="6375219077595103062">Šaukinio pridėjimas prie Slaptažodžių tvarkyklės</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> „Chromium“ gali numatyti jūsų pomėgius. Vėliau svetainė, kurioje lankotės, gali paprašyti „Chromium“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jūsų matomus skelbimus.</translation>
+<translation id="6400112897226594999">„Chromium“ logotipas kompiuterio ekrane.</translation>
 <translation id="6403826409255603130">„Chromium“ – tai žiniatinklio naršyklė, kurią naudojant akimirksniu paleidžiami tinklalapiai ir programos. Ji greita, stabili ir lengvai naudojama. Saugiau naršykite žiniatinklį naudodami į „Chromium“ integruotą apsaugą nuo kenkėjiškų programų ir sukčiavimo.</translation>
 <translation id="6442900851116057561">„Chromium“ OS paleidimas iš naujo</translation>
 <translation id="6455857529632101747">Sveiki, tai – „Chromium“ profiliai</translation>
@@ -306,6 +311,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="718435575166326686">„Chromium“ reikalingas fotoaparato leidimas šioje svetainėje</translation>
 <translation id="7196312274710523067">Nepavyko paleisti „Chromium“. Bandykite dar kartą.</translation>
 <translation id="7197677400338048821">„Chromium“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val.</translation>
+<translation id="7213407614656404070">Naudokite „Chromium“ bet kada spustelėję nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="7223968959479464213">Užduočių tvarkytuvė – „Chromium“</translation>
 <translation id="7246575524853130370">„Chromium“ numatyti jūsų pomėgiai</translation>
 <translation id="7309928523159922338">Skelbimų vertinimas leidžia svetainėms, kuriose lankotės, prašyti „Chromium“ informacijos, padedančios įvertinti savo skelbimų našumą. Skelbimų vertinimas apriboja veiklos skirtingose svetainėse stebėjimą tarp svetainių perduodant kaip įmanoma mažiau informacijos.</translation>

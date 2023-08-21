@@ -1331,13 +1331,13 @@
 
       如果不設定這項政策，瀏覽器只會在偵測到電腦上的實體記憶體即將用盡時，才會開始嘗試節省記憶體。</translation>
 <translation id="2161348910646846717">允許使用者變更發布版本</translation>
-<translation id="2165567959657265531">針對符合這些模式的網域所設定的 Cookie 會還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站是否相同時，略過網址架構的比較。如需完整說明，請前往 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
+<translation id="2165567959657265531">針對符合這些模式的網域所設定的 Cookie 會還原成舊版的 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 行為。還原成舊版的行為會導致系統將未指定 <ph name="ATTRIBUTE_SAMESITE_NAME" /> 屬性的 Cookie 視為「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」，並移除「<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />」Cookie 必須帶有「<ph name="ATTRIBUTE_SECURE_NAME" />」屬性的要求。此外，這也會讓系統在評估兩個網站是否相同時，略過網址配置的比較。如需完整說明，請前往 https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies。
 
           如果網域中的 Cookie 不符合此處指定的模式，系統會根據使用者的個人設定套用全域預設值。如果不設定這項政策，系統會為所有 Cookie 採用這種做法。
 
           如想進一步瞭解有效的模式，請前往 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。
 
-          請注意，系統會將你在這裡列出的模式視為網域而非網址，因此你不應指定網址架構或通訊埠。</translation>
+          請注意，系統會將你在這裡列出的模式視為網域而非網址，因此你不應指定網址配置或通訊埠。</translation>
 <translation id="2166155400701622446"><ph name="PRODUCT_NAME" /> 內建一份受限通訊埠的清單，使用者將無法連上這些通訊埠。你可以透過這項設定略過該清單。設定值為一份逗號分隔的清單，其中可能包含零或多個對外連線能使用的通訊埠。
 
       限制通訊埠的目的是防止有人將 <ph name="PRODUCT_NAME" /> 做為媒介來利用各種網路安全漏洞。設定這項政策可能會導致你的網路遭受攻擊。這項政策是用來處理「ERR_UNSAFE_PORT」錯誤的暫時性解決方案，可協助將服務從受封鎖的通訊埠遷移至標準通訊埠 (即通訊埠 80 或 443)。

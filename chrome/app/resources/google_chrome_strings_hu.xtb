@@ -38,6 +38,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Az adatok kezelésének módja:<ph name="END_BOLD" /> Adatai védelme érdekében a négy hétnél régebbi érdeklődési köreit automatikusan töröljük. Böngészési tevékenysége alapján az érdeklődési körök újra megjelenhetnek a listákon. Arra is lehetősége van, hogy eltávolítsa azokat az érdeklődési köröket, amelyeket nem szeretne, hogy a Chrome figyelembe vegyen.</translation>
 <translation id="1628000112320670027">Segítség a Chrome használatával kapcsolatban</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
+<translation id="1642309806724967937">A beállításaitól függően a Chrome cookie-kat és az Ön jelenlegi URL-jét is elküldheti.</translation>
 <translation id="1662146548738125461">A ChromeOS Flex névjegye</translation>
 <translation id="1674870198290878346">Link megnyitása Chrome-inko&amp;gnitóablakban</translation>
 <translation id="1682634494516646069">A Chrome nem tudja olvasni és írni az adatkönyvtárát: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -93,6 +94,7 @@
 <translation id="2597976513418770460">Szinkronizálhatja a Chrome böngészőhöz tartozó tartalmait a következő fiókból: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">A Chrome nem tud frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">A Chrome rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="2652691236519827073">Link megnyi&amp;tása új Chrome-lapon</translation>
 <translation id="2665296953892887393">Segítse a Google Chrome fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Ez a bővítmény módosította, hogy melyik oldal jelenik meg a Chrome indításakor.</translation>
@@ -230,6 +232,7 @@
 <translation id="5163087008893166964">Üdvözöljük a Chrome-ban; új böngészőablak megnyitva</translation>
 <translation id="5170938038195470297">A profilja nem használható, mivel a Google Chrome egy újabb verziójából származik. Előfordulhat, hogy egyes funkciók nem érhetők el. Kérjük, adjon meg egy másik profilmappát, vagy használja a Google Chrome újabb verzióját.</translation>
 <translation id="521447420733633466">Ha megoszt egy eszközt, ismerősei és családtagjai külön fiókokban internetezve a saját kívánságaik szerint állíthatják be a Chrome-ot.</translation>
+<translation id="5239627039202700673">Bármikor használhatja a Chrome-ot, amikor üzenetekben, dokumentumokban és más alkalmazásokban linkekre koppint.</translation>
 <translation id="5251420635869119124">A vendégek úgy használhatják a Chrome-ot, hogy nem hagynak hátra semmit.</translation>
 <translation id="5334309298019785904">A ChromeOS nem tudta szinkronizálni az adatait, mert a szinkronizálás nem áll rendelkezésre a domainjénél.</translation>
 <translation id="5334487786912937552">A Chrome-nak tárhelyhozzáférési engedélyre van szüksége a fájlok letöltéséhez</translation>
@@ -244,6 +247,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">A(z) <ph name="FILE_NAME" /> veszélyes lehet, ezért a Chrome letiltotta.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához.}=1{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
+<translation id="5682679001737420487">A Chrome letilt bizonyos letöltéseket</translation>
 <translation id="5686916850681061684">A Google Chrome személyre szabása és beállításai Figyelmet kell fordítania valamire – a részletekért kattintson.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Ha be van kapcsolva, a Chrome memóriát szabadít fel az inaktív lapokból. Így az aktív lapok és más alkalmazások több számítógépes erőforrást kapnak, a Chrome pedig gyors marad. Az inaktív lapok automatikusan ismét aktívak lesznek, amikor visszalép rájuk.</translation>
@@ -301,6 +305,7 @@
 <translation id="6739177684496155661">Biztosan új Chrome-profilban folytatja?</translation>
 <translation id="6750954913813541382">A nyelvtani hibák javítása érdekében a Chrome elküldi a böngészőben begépelt összes szöveget a Google-nak</translation>
 <translation id="677276454032249905">Biztosan kilép a Chrome-ból?</translation>
+<translation id="6794858689789885890">Mindig törölje a webhelyadatokat az eszközről a Chrome bezárásakor</translation>
 <translation id="683440813066116847">Bejövő szabály a Google Chrome Canaryhoz az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="6881299373831449287">A Chrome frissítése</translation>
 <translation id="6885412569789873916">Chrome Beta-alkalmazások</translation>
@@ -385,6 +390,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A Chrome meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chrome-tól az Ön érdeklődési köreinek megismerését.</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
 <translation id="8394720698884623075">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
+<translation id="8403038600646341038">A Chrome logója egy számítógép képernyőjén.</translation>
 <translation id="8416347857511542594">További információ a hirdetések személyre szabásáról a Chrome-ban</translation>
 <translation id="8418845734693287262">A ChromeOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="8433638294851456451">Ha innen szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chrome-ba mindkét eszközén.</translation>

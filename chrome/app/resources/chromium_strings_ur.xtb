@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">‏Chromium میں PDFs کھولیں</translation>
 <translation id="5614091477838198795">‏آن ہونے پر، آپ Chromium سے بھی سائن آؤٹ ہو جائیں گے</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏Chromium کا اپ ڈیٹ دستیاب ہے}=1{‏Chromium کا اپ ڈیٹ دستیاب ہے}other{‏Chromium کا اپ ڈیٹ # دن سے دستیاب ہے}}</translation>
+<translation id="5643865575100044307">‏جب آپ Chromium کو بند کرتے ہیں تو ہمیشہ اپنے آلے سے سائٹ کا ڈیٹا حذف کریں</translation>
 <translation id="5653831366781983928">‏براہ کرم ابھی Chromium کو ری اسٹارٹ کریں</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium کو پتا چلا ہے کہ یہ آئٹمز میلوئیر پر مشتمل ہیں:</translation>
+<translation id="5889361821821684993">‏Chromium باقاعدگی سے یہ یقینی بنانے کے لیے چیک کرتا ہے کہ آپ کے براؤزر میں سب سے محفوظ ترتیبات موجود ہیں۔ اگر کسی چیز کو آپ کے جائزے کی ضرورت ہے تو ہم آپ کو مطلع کریں گے۔</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - نیٹ ورک سائن ان</translation>
 <translation id="5924017743176219022">انٹرنیٹ سے منسلک کیا جا رہا ہے…</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">‏جن سائٹس کو آپ ملاحظہ کرتے ہیں ان میں آپ کی دلچسپیوں کو یاد رکھنا سائٹس کے لئے عام بات ہے تاکہ وہ آپ کے تجربے کو ذاتی نوعیت کا بنا سکیں۔ سائٹس Chromium کے ساتھ آپ کی دلچسپیوں کے بارے میں معلومات بھی اسٹور کر سکتی ہیں۔</translation>
 <translation id="6003112304606738118">ڈاؤن لوڈ ہو رہی ہے… <ph name="HOURS" /> گھنٹہ(گھنٹے) باقی ہے</translation>
 <translation id="6040143037577758943">بند کریں</translation>
+<translation id="6055611795418209449">‏Chromium کچھ ڈاؤن لوڈز کو مسدود کرتا ہے</translation>
 <translation id="6055895534982063517">‏Chromium کا ایک نیا ورژن دستیاب ہے اور وہ پہلے سے کہیں زیادہ تیز ہے۔</translation>
 <translation id="6063093106622310249">‏Chromium میں &amp;کھولیں</translation>
 <translation id="6072279588547424923">‏<ph name="EXTENSION_NAME" /> کو Chromium میں شامل کر دیا گیا ہے</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">‏Chromium جلد ہی بند ہو جائے گا اور ڈیٹا کو حذف کر دے گا</translation>
 <translation id="6134968993075716475">‏محفوظ براؤزنگ آف ہے۔ Chromium اسے آن کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="6145820983052037069">‏آپ یہاں Chromium پروفائلز کے درمیان سوئچ کر سکتے ہیں</translation>
+<translation id="6175304430031192654">‏آپ کی ترتیبات پر منحصر ہے، Chromium کوکیز اور آپ کا موجودہ URL بھی بھیج سکتا ہے</translation>
 <translation id="6183079672144801177">‏یقینی بنائیں کہ آپ اپنے <ph name="TARGET_DEVICE_NAME" /> پر Chromium میں سائن ان ہیں اور پھر دوبارہ بھیج کر دیکھیں۔</translation>
 <translation id="6212496753309875659">‏اس کمپیوٹر پر Chromium کا ایک مزید حالیہ ورژن پہلے سے ہے۔ اگر سافٹ ویئر کام نہیں کر رہا ہے تو براہ کرم Chromium کو ان انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6219195342503754812">{0,plural, =0{‏ابھی Chromium دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chromium دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chromium دوبارہ لانچ ہوگا}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">‏کیا آپ واقعی Chromium کو ان انسٹال کرنا چاہتے ہیں؟</translation>
 <translation id="6375219077595103062">پاس ورڈ مینیجر میں شارٹ کٹ شامل کریں</translation>
 <translation id="6384011394608460044">‏<ph name="BEGIN_BOLD" />ہمارا اس ڈیٹا کو استعمال کرنے کا طریقہ:<ph name="END_BOLD" /> Chromium آپ کی دلچسپیوں کا اندازہ لگا سکتا ہے۔ بعد میں، آپ کی ملاحظہ کی جانے والی سائٹ آپ کو دکھائی دینے والے اشتہارات کو ذاتی نوعیت کا بنانے کے لیے Chromium سے آپ کی دلچسپیوں کو دیکھنے کا مطالبہ کر سکتی ہے۔</translation>
+<translation id="6400112897226594999">‏کمپیوٹر اسکرین کے اندر Chromium لوگو۔</translation>
 <translation id="6403826409255603130">‏Chromium ایک ایسا ویب براؤزر ہے جو ویب صفحات اور ایپلیکیشنز کو روشنی کی رفتار سے چلاتا ہے۔ Chromium میں پہلے سے شامل میلویئر اور فریب دہی تحفظ کے ساتھ ویب کو مزید محفوظ طور پر براؤز کریں۔</translation>
 <translation id="6442900851116057561">‏ChromiumOS کو ری سٹارٹ کریں</translation>
 <translation id="6455857529632101747">‏Chromium کی پروفائلز میں خوش آمدید</translation>
@@ -305,6 +310,7 @@
 <translation id="718435575166326686">‏Chromium کو اس سائٹ کے لیے کیمرے کی اجازت درکار ہے</translation>
 <translation id="7196312274710523067">‏Chromium شروع نہیں ہو سکا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7197677400338048821">‏Chromium آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔ 24 گھنٹے بعد دوبارہ کوشش کریں۔</translation>
+<translation id="7213407614656404070">‏جب بھی آپ پیغامات، دستاویزات اور دیگر ایپس میں لنکس پر کلک کرتے وقت Chromium استعمال کریں</translation>
 <translation id="7223968959479464213">‏ٹاسک مینیجر - Chromium</translation>
 <translation id="7246575524853130370">‏Chromium کے مطابق اندازہ لگائی گئی آپ کی دلچسپیاں</translation>
 <translation id="7309928523159922338">‏Ad measurement آپ کی ملاحظہ کی جانے والی سائٹس کو Chromium سے معلومات کی درخواست کرنے کی اجازت دیتا ہے جس سے سائٹ کو اپنے اشتہارات کی کارکردگی کی پیمائش کرنے میں مدد ملتی ہے۔ Ad measurement سائٹس کے درمیان ممکنہ حد تک کم معلومات کی منتقلی کے ذریعے کراس سائٹ ٹریکنگ کو محدود کرتا ہے۔</translation>

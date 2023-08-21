@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Сыртқы құрылғылардың микробағдарламасын жаңарту терезесі ашық. <ph name="NUM_UPDATES" /> жаңа нұсқа бар.</translation>
 <translation id="1145516343487477149">Chromebook бойынша жиі қойылатын сұрақтарға жауаптар мен анықтамалық мақалаларды табыңыз.</translation>
+<translation id="1154390310959620237">Тек 5 пернелер тіркесімін бейімдей аласыз. Жаңа пернелер тіркесімін қосу үшін ағымдағы тіркесімді жойыңыз.</translation>
 <translation id="1164939766849482256">Таң атқаннан күн батқанға дейінгі кезең бейнеленген скринсейвер</translation>
 <translation id="1167755866710282443">Пернелерді бейімдеу үшін мәзірді ашыңыз. Жылжыту үшін мәзірді сүйреңіз.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Қайта қосылуда…</translation>
 <translation id="2533048460510040082">Ұсынылған анықтамалық контент</translation>
 <translation id="2536159006530886390">Интернетке қосыла алмай жатыр.</translation>
+<translation id="2555662516429796509">Пернетақтада 1–4 өзгерткішті және 1 басқа пернені басыңыз.</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> сынағы жүруде…</translation>
 <translation id="2584559707064218956">Реттеу үшін "Параметрлер" бөліміне өтіңіз.</translation>
 <translation id="2597774443162333062">Қатесін түзету үшін файлдар Google-ға жіберіледі.</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Басып шығару тарихын шынымен толығымен тазалағыңыз келе ме? Қазір орындалып жатқан басып шығару жұмысының деректері сақталады.</translation>
 <translation id="3373141842870501561">Жер қозғалысы бейнеленген тұсқағаз</translation>
 <translation id="337375748120863155">Таңдауға қатысты ақпарат. Басқару элементтерін пайдалану үшін сол немесе оң бағыт пернелерін пайдаланыңыз.</translation>
+<translation id="3383623117265110236">Эксклюзивті</translation>
 <translation id="3404249063913988450">Скринсейверді қосу</translation>
 <translation id="3413935475507503304">Жаңартуды жалғастыру үшін "Келесі" түймесін басыңыз.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">жарықтық деңгейін төмендету</translation>
 <translation id="4176463684765177261">Өшірілген</translation>
 <translation id="4176659219503619100">Басқару панелі</translation>
+<translation id="4185315616950253617">Жоғарғы жол пернелері бар пернелер тіркесімі іздеу пернесін қамтуы керек.</translation>
 <translation id="420283545744377356">Скринсейверді өшіру</translation>
 <translation id="4213104098953699324">USB пернетақтасы</translation>
 <translation id="4227825898293920515">Құпия сөздің мерзімі <ph name="TIME" /> өткен соң аяқталады.</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP кідірісі</translation>
 <translation id="4271957103967917607">Толық экран режимі</translation>
 <translation id="4275663329226226506">Мультимедиа</translation>
+<translation id="4278766082079064416">"<ph name="CONFLICT_ACCEL_NAME" />" үшін пернелер тіркесімі пайдаланылып жатыр. Қарама-қайшылықты шешу үшін өзгертіңіз немесе өшіріңіз.</translation>
 <translation id="4289540628985791613">Шолу</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
 <translation id="4297501883039923494">Тоқтатылды: белгісіз қате</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}other{<ph name="ERROR_MESSAGE" /> {0} әрекет қалды.}}</translation>
 <translation id="4873827928179867585">Аутентификация алгоритмі</translation>
 <translation id="4880328057631981605">Кіру нүктесінің атауы</translation>
+<translation id="488307179443832524">"<ph name="CONFLICT_ACCEL_NAME" />" үшін пернелер тіркесімі пайдаланылып жатыр. Жаңа тіркесімді басыңыз.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Дереу жаңа құпия сөз таңдаңыз.</translation>
 <translation id="4891842000192098784">Стресс</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Дисплей жарықтығын арттыру</translation>
 <translation id="57838592816432529">Дыбысын өшіру</translation>
 <translation id="5784136236926853061">HTTP кідірісі жоғары.</translation>
+<translation id="5816802250591013230">Пернелер тіркесімі тағайындалмаған</translation>
 <translation id="5826644637650799838">Өнер туралы</translation>
 <translation id="5832805196449965646">Адам қосу</translation>
 <translation id="583281660410589416">Белгісіз</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Құрылғы жалғанбаған.</translation>
+<translation id="7046522406494308071">Барлық пернелер тіркесімін әдепкі мәндерге қайта орнату керек пе?</translation>
 <translation id="7058278511608979688">Аяқтау және сақтау</translation>
 <translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="7068619307603204412">Құрылғыңызды дайындаңыз</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Орындалмады – авторизация жасалмады</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> атты құрылғы, <ph name="INDEX" />/<ph name="COUNT" /></translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> эксклюзивті афишасын таңдаңыз.</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Ұялы байланыс провайдері</translation>
 <translation id="725133483556299729">Электрондық поштаны таңдау</translation>
 <translation id="7271040990581020067">Сканер пайдаланылуда. Кейінірек қайталап көріңіз.</translation>
+<translation id="7273347807225967898">Пернелер тіркесімі қолжетімді емес. Өзгерткіш пернені (ctrl, alt, shift, іздеу немесе іске қосу тақтасы пернесін) пайдаланып жаңа пернелер тіркесімін басыңыз.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Самал жел</translation>
 <translation id="7287310195820267359">Тұсқағаз жинақтары</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">пернетақта жарығы</translation>
 <translation id="773153675489693198">Цикл саны</translation>
 <translation id="7747039790905080783">Алдын ала бөлісілген код</translation>
+<translation id="7752963721013053477">Таң атқаннан қараңғыға дейін – эксклюзивті</translation>
 <translation id="7762130827864645708">Құпия сөзіңіз өзгерді. Бұдан былай жаңа құпия сөзді пайдаланыңыз.</translation>
 <translation id="7763470514545477072">Домен суффиксі сәйкестігі</translation>
 <translation id="7769672763586021400">Үлгі идентификаторы</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7882501334836096755">Ашық кілт</translation>
+<translation id="7903695460270716054">Сұрыпталған афиша мен суреттерді таңдаңыз.</translation>
 <translation id="7915220255123750251">Желінің APN параметрлерін басқарыңыз. APN аттары ұялы желі мен интернет арасында байланыс орнатады.</translation>
 <translation id="7936303884198020182">Атау серверлері табылмады.</translation>
 <translation id="7942349550061667556">Қызыл</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8094062939584182041">Google-ға осы мәселе туралы электрондық хат жіберуге рұқсат ету</translation>
 <translation id="8104083085214006426">Ашық әрі қауіпті желіні қолданып жатырсыз.</translation>
+<translation id="8111706652656628199">Пернелер тіркесімі қолжетімді емес. Shift пен 1 өзгерткіш пернені (ctrl, alt, іздеу немесе іске қосу тақтасы пернесін) пайдаланып жаңа тіркесімді басыңыз.</translation>
 <translation id="811820734797650957">Шлюз байланысы тексеріледі (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Трафик есептегіштерін сұрау</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos альбомы</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">"<ph name="CONFLICT_ACCEL_NAME" />" үшін пернелер тіркесімі пайдаланылып жатыр. Жаңа тіркесімді басыңыз. Түпнұсқа пернелер тіркесімін ауыстыру үшін оны қайта басыңыз.</translation>
 <translation id="879568662008399081">Бұл желіде адаптивті портал болуы мүмкін.</translation>
 <translation id="8798099450830957504">Әдепкі</translation>
 <translation id="8798441408945964110">Провайдер аты</translation>

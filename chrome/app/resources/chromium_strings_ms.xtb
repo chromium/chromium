@@ -207,11 +207,13 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
 <translation id="5614091477838198795">Apabila dihidupkan, anda juga akan dilog keluar daripada Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Kemas kini Chromium tersedia}=1{Kemas kini Chromium tersedia}other{Kemas kini Chromium telah tersedia selama # hari}}</translation>
+<translation id="5643865575100044307">Sentiasa padamkan data laman daripada peranti anda apabila anda menutup Chromium</translation>
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5883558403894052917">Chromium mendapati bahawa item ini mengandungi perisian hasad:</translation>
+<translation id="5889361821821684993">Chromium sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian</translation>
 <translation id="5924017743176219022">Menyambung ke Internet...</translation>
@@ -222,6 +224,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5988505247484123880">Menjadi kebiasaan bagi laman yang anda lawati mengingati perkara yang anda minati, untuk memeribadikan pengalaman anda. Laman boleh menyimpan maklumat tentang minat anda menggunakan Chromium.</translation>
 <translation id="6003112304606738118">Memuat turun… <ph name="HOURS" /> jam lagi</translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6055611795418209449">Chromium menyekat sesetengah muat turun</translation>
 <translation id="6055895534982063517">Terdapat versi baharu Chromium yang lebih pantas daripada biasa tersedia.</translation>
 <translation id="6063093106622310249">&amp;Buka dalam Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan pada Chromium</translation>
@@ -235,6 +238,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6132897690380286411">Chromium akan ditutup dan data akan dipadamkan sebentar lagi</translation>
 <translation id="6134968993075716475">Penyemakan Imbas Selamat dimatikan. Chromium mengesyorkan agar ciri ini dihidupkan.</translation>
 <translation id="6145820983052037069">Anda boleh beralih antara profil Chromium di sini</translation>
+<translation id="6175304430031192654">Bergantung pada tetapan anda, Chromium juga mungkin menghantar kuki dan URL semasa anda</translation>
 <translation id="6183079672144801177">Pastikan anda telah log masuk ke Chromium pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
 <translation id="6212496753309875659">Komputer ini telah mempunyai versi Chromium yang lebih baharu. Jika perisian tidak berfungsi, sila nyahpasang Chromium dan cuba lagi.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan dilancarkan semula sekarang}=1{Chromium akan dilancarkan semula dalam masa sesaat}other{Chromium akan dilancarkan semula dalam masa # saat}}</translation>
@@ -255,6 +259,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6373523479360886564">Adakah anda pasti mahu menyahpasang Chromium?</translation>
 <translation id="6375219077595103062">Tambahkan pintasan pada Password Manager</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chromium dapat menganggarkan minat anda. Kemudian, laman yang anda lawati boleh meminta Chromium melihat minat anda untuk memeribadikan iklan yang anda lihat.</translation>
+<translation id="6400112897226594999">Logo Chromium dalam skrin komputer.</translation>
 <translation id="6403826409255603130">Chromium merupakan penyemak imbas yang mengendalikan laman web dan aplikasi dengan kelajuan sepantas kilat. Chromium cepat, stabil dan mudah digunakan. Semak imbas web lebih selamat dengan perlindungan perisian hasad dan pancingan data terbina dalam Chromium.</translation>
 <translation id="6442900851116057561">Mulakan semula Chromium OS</translation>
 <translation id="6455857529632101747">Selamat datang ke profil Chromium</translation>
@@ -304,6 +309,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="718435575166326686">Chromium memerlukan kebenaran kamera untuk laman ini</translation>
 <translation id="7196312274710523067">Tidak dapat melancarkan Chromium. Cuba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat menyemak kata laluan anda. Cuba lagi selepas 24 jam.</translation>
+<translation id="7213407614656404070">Gunakan Chromium pada bila-bila masa anda mengklik pautan dalam mesej, dokumen dan apl lain</translation>
 <translation id="7223968959479464213">Pengurus Tugas - Chromium</translation>
 <translation id="7246575524853130370">Minat anda seperti yang dianggarkan oleh Chromium</translation>
 <translation id="7309928523159922338">Pengukuran iklan membolehkan laman yang anda lawati meminta maklumat daripada Chromium yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.</translation>

@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Update firmware for external devices window is open. <ph name="NUM_UPDATES" /> updates available.</translation>
 <translation id="1145516343487477149">Find help articles and answers to common Chromebook questions</translation>
+<translation id="1154390310959620237">You can only customise five shortcuts. Delete a shortcut to add a new one.</translation>
 <translation id="1164939766849482256">Dawn to dark screen saver</translation>
 <translation id="1167755866710282443">Open menu to customise keys. Drag menu to move.</translation>
 <translation id="1175697296044146566">This <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Restarting...</translation>
 <translation id="2533048460510040082">Suggested help content</translation>
 <translation id="2536159006530886390">Cannot connect to Internet.</translation>
+<translation id="2555662516429796509">Press one to four modifiers and one other key on your keyboard</translation>
 <translation id="2570743873672969996">Running <ph name="TEST_NAME" /> test…</translation>
 <translation id="2584559707064218956">To set up, go to Settings</translation>
 <translation id="2597774443162333062">Files will be sent to Google for debugging</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
 <translation id="3373141842870501561">Earth flow wallpaper</translation>
 <translation id="337375748120863155">Info related to your selection. Use the left or right arrow keys to access controls.</translation>
+<translation id="3383623117265110236">Exclusive</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">brightness down</translation>
 <translation id="4176463684765177261">Disabled</translation>
 <translation id="4176659219503619100">Control panel</translation>
+<translation id="4185315616950253617">Shortcuts with top row keys need to include the search key.</translation>
 <translation id="420283545744377356">Turn off screensaver</translation>
 <translation id="4213104098953699324">USB keyboard</translation>
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP latency</translation>
 <translation id="4271957103967917607">View full screen</translation>
 <translation id="4275663329226226506">Media</translation>
+<translation id="4278766082079064416">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Edit or remove to resolve the conflict.</translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} attempt left}other{<ph name="ERROR_MESSAGE" /> {0} attempts left}}</translation>
 <translation id="4873827928179867585">Authentication algorithm</translation>
 <translation id="4880328057631981605">Access point name</translation>
+<translation id="488307179443832524">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Choose a new one immediately</translation>
 <translation id="4891842000192098784">Stress</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Display brightness up</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
+<translation id="5816802250591013230">No shortcut assigned</translation>
 <translation id="5826644637650799838">About the art</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Device is not connected.</translation>
+<translation id="7046522406494308071">Reset all shortcuts to defaults?</translation>
 <translation id="7058278511608979688">End and save</translation>
 <translation id="7059230779847288458">Charging; <ph name="TIME_VALUE" /> until full</translation>
 <translation id="7068619307603204412">Prepare your device</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Failed – authorisation failed</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> of <ph name="COUNT" /> named <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Choose <ph name="PRODUCT_NAME" /> exclusive artwork</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Mobile provider</translation>
 <translation id="725133483556299729">Select email</translation>
 <translation id="7271040990581020067">Scanner is currently in use. Try again later.</translation>
+<translation id="7273347807225967898">Shortcut not available. Press a new shortcut using a modifier key (ctrl, alt, shift, search or launcher).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Feel the breeze</translation>
 <translation id="7287310195820267359">Wallpaper collections</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">keyboard light</translation>
 <translation id="773153675489693198">Cycle count</translation>
 <translation id="7747039790905080783">Pre-shared key</translation>
+<translation id="7752963721013053477">Dawn to dark – exclusive</translation>
 <translation id="7762130827864645708">Your password change was successful. Please use the new password from now on.</translation>
 <translation id="7763470514545477072">Domain suffix match</translation>
 <translation id="7769672763586021400">Model ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
+<translation id="7903695460270716054">Choose curated artwork and images</translation>
 <translation id="7915220255123750251">Manage network APN settings. APNs establish a connection between a mobile network and the Internet.</translation>
 <translation id="7936303884198020182">No name servers found</translation>
 <translation id="7942349550061667556">Red</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Change password</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
+<translation id="8111706652656628199">Shortcut not available. Press a new shortcut using shift and one more modifier key (ctrl, alt, search or launcher).</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Request traffic counters</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos album</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Shortcut is being used for '<ph name="CONFLICT_ACCEL_NAME" />'. Press a new shortcut. To replace the original shortcut, press this shortcut again.</translation>
 <translation id="879568662008399081">This network may have a captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Provider name</translation>

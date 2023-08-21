@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Atvērt tiešsaistē</translation>
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1044891598689252897">Vietnes darbosies normāli</translation>
+<translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Tiks notīrīti dati un sīkfaili (<ph name="DATASIZE" />), ko glabā vietnes vai lietotnes jūsu sākuma ekrānā.</translation>
 <translation id="1178581264944972037">Pauzēt</translation>
 <translation id="1181037720776840403">Noņemt</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Atļauti, izņemot trešo pušu sīkfailus</translation>
 <translation id="1989112275319619282">Pārlūkot</translation>
 <translation id="1994173015038366702">Vietnes URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Derīguma termiņš beigsies pēc vienas dienas}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
 <translation id="2025115093177348061">Papildinātā realitāte</translation>
 <translation id="2030769033451695672">Pieskarieties, lai atgrieztos cilnē <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Jautāt, pirms atļaut vietnēm uzzināt jūsu atrašanās vietu (ieteicams)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">Trešo pušu sīkfaili ir bloķēti</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Rīt pārlūkā Chrome sīkfaili atkal tiks bloķēti}zero{Pēc # dienām pārlūkā Chrome sīkfaili atkal tiks bloķēti}one{Pēc # dienas pārlūkā Chrome sīkfaili atkal tiks bloķēti}other{Pēc # dienām pārlūkā Chrome sīkfaili atkal tiks bloķēti}}</translation>
 <translation id="3521663503435878242">Vietnes domēnā <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Neļaut vietnēm izveidot jūsu apkārtnes 3D karti vai izsekot kameras pozīciju</translation>
 <translation id="3544058026430919413">Uzņēmums var definēt vietņu grupu, kurā drīkst izmantot sīkfailus, lai grupā kopīgotu jūsu darbības. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Tālruņa numuri</translation>
 <translation id="3826050100957962900">Trešās puses pierakstīšanās</translation>
 <translation id="3835233591525155343">Jūsu ierīces lietojums</translation>
+<translation id="3843916486309149084">Šodien pārlūkā Chrome sīkfaili atkal tiks bloķēti</translation>
 <translation id="385051799172605136">Atpakaļ</translation>
 <translation id="3859306556332390985">Pārtīt uz priekšu</translation>
 <translation id="3895926599014793903">Tālummaiņas piespiedu iespējošana</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Trešās puses pierakstīšanās bloķēšana konkrētā vietnē</translation>
 <translation id="6388207532828177975">Notīrīt un atiestatīt</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
+<translation id="640163077447496506">Derīguma termiņš beidzas šodien</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Neļaut vietnēm izmantot jūsu virtuālās realitātes ierīci un datus</translation>
 <translation id="6447842834002726250">Sīkfaili</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8154912474061769055">Daudzās vietnēs funkcijas var nedarboties.</translation>
 <translation id="8168435359814927499">Saturs</translation>
+<translation id="8186479265534291036">Vai vietne nedarbojas? Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="8197286292360124385">Atļauta: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Kopsavilkums</translation>
 <translation id="8206354486702514201">Šo iestatījumu ievieš jūsu administrators.</translation>

@@ -119,6 +119,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
 <translation id="1554532453982918912">Contribuisci a migliorare Chrome per le persone che lo usano come fai tu</translation>
 <translation id="1558391695376153246">Chiudi schede in incognito</translation>
+<translation id="1568636008098739136">Ascolta questa pagina. Tocca e tieni premuto per modificare questa scorciatoia.</translation>
 <translation id="1571304935088121812">Copia nome utente</translation>
 <translation id="1592864538817356322">Protezione standard:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> elementi suggeriti nell'elenco di seguito.</translation>
@@ -195,6 +196,7 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download non riuscito}other{# download non riusciti}}</translation>
 <translation id="2067805253194386918">testo</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2093731487903423814">ultimi 15 minuti</translation>
 <translation id="2096012225669085171">Sincronizza e personalizza su tutti i dispositivi</translation>
 <translation id="2100273922101894616">Accesso automatico</translation>
 <translation id="2100314319871056947">Prova a condividere il testo in parti più piccole</translation>
@@ -564,6 +566,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="4056223980640387499">Seppia</translation>
 <translation id="4062305924942672200">Informazioni legali</translation>
 <translation id="4072805772816336153">Riprova più tardi</translation>
+<translation id="4080602171844412446">Approfondimenti correlati</translation>
 <translation id="4084682180776658562">Aggiungi ai Preferiti</translation>
 <translation id="4084712963632273211">Di <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />pubblicata da Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Puoi utilizzare questo tablet per accedere sul dispositivo che mostra questo codice QR.</translation>
@@ -644,6 +647,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
+<translation id="4491323382106587961">Scegli un account. Attualmente selezionato: <ph name="EMAIL" />.</translation>
 <translation id="4508528996305412043">Menu scheda feed aperto</translation>
 <translation id="4509501256689523862">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />argomenti degli annunci<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# giorno fa}other{# giorni fa}}</translation>
@@ -651,6 +655,7 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4521489764227272523">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati.
 
 Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="4523326818319942067">ultima ora</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4528638190900283934">Accedi per usufruire di funzionalità aggiuntive</translation>
 <translation id="4532845899244822526">Scegli cartella</translation>
@@ -703,6 +708,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4766678251456904326">Aggiungi un account al dispositivo</translation>
 <translation id="4767947714785277816">Stiamo lanciando una nuova funzionalità per la privacy degli annunci chiamata misurazione degli annunci. Chrome condivide soltanto informazioni molto limitate tra siti e app, ad esempio quando ti è stato mostrato un annuncio, per aiutare a misurare il rendimento degli annunci.</translation>
 <translation id="4769095993849849966">Nuovo nome file</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> di dati eliminati</translation>
 <translation id="4778653490315793244">Nessun contenuto da mostrare</translation>
 <translation id="4787736314074622408">Eliminare il file <ph name="ITEM_TITLE" />?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -802,6 +808,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5233638681132016545">Nuova scheda</translation>
 <translation id="5235196193381275927">Si è verificato un problema durante l'accesso</translation>
 <translation id="5246093389635966745">Modifica scorciatoia per la barra degli strumenti</translation>
+<translation id="5264813352784073502">ultime 24 ore</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5300426565656326054">Personalizzazione degli annunci basata sul browser</translation>
@@ -814,6 +821,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5329858041417644019">Il browser in uso non è gestito</translation>
 <translation id="5339031667684712858">Siti rimossi</translation>
 <translation id="5342314432463739672">Richieste di autorizzazione</translation>
+<translation id="534580735623577507">Nessun sito da <ph name="TIME_PERIOD" /></translation>
 <translation id="53537532693258630">I siti che hai rimosso verranno visualizzati qui</translation>
 <translation id="5355191726083956201">Protezione avanzata è attiva</translation>
 <translation id="5361107212971249203">testo</translation>
@@ -828,6 +836,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="5438292632479953702">Scarica di nuovo</translation>
+<translation id="5441137934526263133">Il sito non funziona? I cookie di terze parti sono bloccati</translation>
 <translation id="5441466871879044658">Traduci in questa lingua</translation>
 <translation id="5441522332038954058">Vai alla barra degli indirizzi</translation>
 <translation id="5444999712122199445">Torna al sito</translation>
@@ -926,6 +935,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5951119116059277034">Visualizzazione della pagina attiva</translation>
 <translation id="5956665950594638604">Apri Centro assistenza di Chrome in nuova scheda</translation>
 <translation id="5957442310066583693">Per vedere i tuoi siti principali, tocca il pulsante Home</translation>
+<translation id="59577092665511740">Scegli un account.</translation>
 <translation id="5958275228015807058">Puoi trovare i tuoi file e le tue pagine nella cartella Download</translation>
 <translation id="5958994127112619898">Pagina semplificata</translation>
 <translation id="5962718611393537961">Tocca per comprimere</translation>
@@ -1264,7 +1274,9 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7638584964844754484">Passphrase sbagliata</translation>
 <translation id="7641339528570811325">Cancella dati di navigazione…</translation>
 <translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
+<translation id="7655240423373329753">ultimi 7 giorni</translation>
 <translation id="7655900163790317559">Attivazione del Bluetooth in corso…</translation>
+<translation id="7656721520530864426">Nessun sito</translation>
 <translation id="7656862631699126784">Attiva il blocco delle schede di navigazione in incognito</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
@@ -1361,6 +1373,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8088176524274673045">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="8090732854597034573">Se hai bisogno di aiuto, rivolgiti al tuo genitore</translation>
 <translation id="8100969750121413114">Accedi per personalizzare Chrome</translation>
+<translation id="8101414242770404289">Nessuna scheda da <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Scheda di navigazione in incognito</translation>
 <translation id="8105613260829665809">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.\nPer contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1412,6 +1425,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8414396119627470038">Accedi a <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Scopri di più sulla personalizzazione degli annunci in Chrome</translation>
 <translation id="8419244640277402268">Includi</translation>
+<translation id="8422250855136581222">Nessuna scheda su questo dispositivo</translation>
 <translation id="8424781820952413435">Pagina inviata. Per visualizzarla, apri Chrome sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">La scheda di anteprima è aperta nella parte inferiore dello schermo</translation>
 <translation id="8428213095426709021">Impostazioni</translation>

@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Agor ar-lein</translation>
 <translation id="1036348656032585052">Diffodd</translation>
 <translation id="1044891598689252897">Bydd gwefannau'n gweithio fel arfer</translation>
+<translation id="1073417869336441572">Helpwch ni i wella Chrome trwy ddweud wrthym pam eich bod wedi caniatáu cwcis trydydd parti. <ph name="BEGIN_LINK" />Anfon adborth<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Bydd hyn yn clirio <ph name="DATASIZE" /> o ddata a chwcis sy'n cael eu storio gan wefannau neu gan apiau ar eich sgrîn Hafan.</translation>
 <translation id="1178581264944972037">Seibio</translation>
 <translation id="1181037720776840403">Dileu</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Wedi'i ganiatáu, ac eithrio trydydd parti</translation>
 <translation id="1989112275319619282">Pori</translation>
 <translation id="1994173015038366702">URL gwefan</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Yn darfod mewn 1 diwrnod}zero{Yn darfod mewn # diwrnod}two{Yn darfod mewn # ddiwrnod}few{Yn darfod mewn # diwrnod}many{Yn darfod mewn # diwrnod}other{Yn darfod mewn # diwrnod}}</translation>
 <translation id="2004697686368036666">Mae'n bosib na fydd nodweddion ar rai gwefannau yn gweithio</translation>
 <translation id="2025115093177348061">Realiti estynedig</translation>
 <translation id="2030769033451695672">Tapiwch i ddychwelyd i <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Gofyn cyn caniatáu i wefannau wybod eich lleoliad (argymhellir)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Mae cwcis trydydd parti wedi'u rhwystro</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Bydd Chrome yn rhwystro cwcis eto yfory}zero{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}two{# ddiwrnod nes bydd Chrome yn rhwystro cwcis eto}few{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}many{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}other{# diwrnod nes bydd Chrome yn rhwystro cwcis eto}}</translation>
 <translation id="3521663503435878242">Gwefannau o dan <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Rhwystro gwefannau rhag creu map 3D o'ch amgylchoedd neu olrhain safle'r camera</translation>
 <translation id="3544058026430919413">Gall cwmni ddiffinio grŵp o wefannau a all ddefnyddio cwcis i rannu eich gweithgarwch yn y grŵp. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Rhifau ffôn</translation>
 <translation id="3826050100957962900">Mewngofnodi trydydd parti</translation>
 <translation id="3835233591525155343">Eich defnydd dyfais</translation>
+<translation id="3843916486309149084">Bydd Chrome yn rhwystro cwcis eto heddiw</translation>
 <translation id="385051799172605136">Nôl</translation>
 <translation id="3859306556332390985">Chwilio ymlaen</translation>
 <translation id="3895926599014793903">Gorfodi galluogi chwyddo</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Rhwystro mewngofnodi trydydd parti ar gyfer gwefan benodol.</translation>
 <translation id="6388207532828177975">Clirio ac ailosod</translation>
 <translation id="6398765197997659313">Gadael y sgrîn lawn</translation>
+<translation id="640163077447496506">Yn darfod heddiw</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Rhwystro gwefannau rhag defnyddio eich dyfais rhithwrionedd a'i data</translation>
 <translation id="6447842834002726250">Cwcis</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Cadarnhau</translation>
 <translation id="8154912474061769055">Mae'n bosib na fydd nodweddion ar lawer o wefannau yn gweithio</translation>
 <translation id="8168435359814927499">Cynnwys</translation>
+<translation id="8186479265534291036">Gwefan ddim yn gweithio? Mae cwcis trydydd parti wedi'u rhwystro</translation>
 <translation id="8197286292360124385">Caniateir <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Parhau</translation>
 <translation id="8206354486702514201">Mae eich gweinyddwr wedi gorfodi'r gosodiad hwn.</translation>

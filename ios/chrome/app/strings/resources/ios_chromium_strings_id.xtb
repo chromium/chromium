@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Bantu Sempurnakan Fitur dan Performa Chromium</translation>
 <translation id="1531155317299575425">Menampilkan perintah untuk login ke Chromium.</translation>
 <translation id="1617663976202781617">Data dari sinkronisasi Chromium</translation>
+<translation id="1647558790457890304">Setelan Chromium</translation>
 <translation id="1722370509450468186">Sandi akan disimpan di Akun Anda (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Data Chromium dihapus</translation>
 <translation id="1758508597843173586">Kunci mode samaran saat Anda menutup Chromium atau beralih ke aplikasi lain.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Memperingatkan Anda tentang situs berbahaya, bahkan situs yang tidak diketahui Google sebelumnya, dengan menganalisis lebih banyak data dari situs dibandingkan perlindungan standar. Anda dapat memilih untuk melewati peringatan Chromium.</translation>
 <translation id="3805899903892079518">Chromium tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="3827545470516145620">Anda mendapatkan perlindungan keamanan standar di perangkat ini</translation>
+<translation id="3886689467633467988">Login ke situs ini dan Chromium untuk mendapatkan bookmark Anda dan lainnya di semua perangkat.</translation>
+<translation id="394413318816989199">Enkripsi frasa sandi tidak mencakup alamat dan metode pembayaran.
+
+Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Buka Chromium dari Aplikasi Apa Saja</translation>
 <translation id="4043291146360695975">Sandi hanya disimpan ke Pengelola Sandi di perangkat ini.</translation>
 <translation id="4099085513035183040">Tidak didukung di Chromium Beta</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Untuk membantu meningkatkan kualitas aplikasi, Chromium akan mengirimkan data penggunaan dan error ke Google. <ph name="BEGIN_LINK" />Kelola<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktifkan pemindai Chromium</translation>
 <translation id="4736424910885271643">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chromium Anda akan dihapus dari perangkat ini</translation>
+<translation id="4790638144988730920">Tetap gunakan data Chromium di Akun Google Anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat memeriksa semua sandi. Coba lagi nanti.</translation>
 <translation id="4985291216379576555">Offline, Chromium tidak dapat memeriksa update</translation>
 <translation id="4996471330284142407">Tingkatkan produktivitas dengan Chromium yang lebih praktis, aman, dan cepat.</translation>
 <translation id="4999538639245140991">Karena Anda logout dari akun yang dikelola oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium Anda akan dihapus dari perangkat ini. Data Anda akan tetap tersedia di Akun Google Anda.</translation>
 <translation id="5042011327527167688">Ketuk “Lihat dengan Google Maps di Chromium”.</translation>
 <translation id="5048795749726991615">Untuk mendapatkan sandi tersimpan dengan mudah di aplikasi lain, gunakan Chromium untuk Isi Otomatis</translation>
+<translation id="5131565040785979529">Organisasi Anda, <ph name="DOMAIN" />, mengelola akun yang Anda gunakan untuk login dan cara Chromium digunakan.</translation>
 <translation id="5171868502429358653">Login ke Chromium</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
+<translation id="5242782538551259282">Beberapa data Chromium Anda belum disimpan di Akun Google Anda.
+
+        Coba tunggu beberapa menit sebelum logout. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat memeriksa update</translation>
 <translation id="5396916991083608703">Setel Chromium sebagai Default?</translation>
 <translation id="5453478652154926037">Chromium tidak dapat memeriksa sandi Anda.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Kartu ini menampilkan saran tentang cara memaksimalkan penggunaan Chromium.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat memeriksa sandi Anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
+<translation id="5889847953983052353">Jika aktif:
+<ph name="BEGIN_INDENT" /> • Membantu Chromium menjadi lebih baik bagi pengguna lain seperti Anda.<ph name="END_INDENT" />
+
+Hal-hal yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" /> • Info tentang penggunaan Chromium akan dikirim ke Google, tetapi tidak dikaitkan dengan Anda.
+
+  • Jika Chromium mengalami error, detail tentang error tersebut dapat menyertakan beberapa info pribadi.
+
+  • Jika Anda menyinkronkan histori ke Akun Google Anda, metrik juga dapat menyertakan info tentang URL yang Anda buka.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Anda masuk dengan akun yang dikelola oleh <ph name="DOMAIN" /> dan memberikan kontrol data Chromium kepada administrator. Data Anda akan terikat dengan akun ini secara permanen. Bila Anda keluar dari Chromium, data akan dihapus dari perangkat ini, namun tetap disimpan di Akun Google.</translation>
+<translation id="5951593919357934226">Dapatkan manfaat optimal dari Chromium.</translation>
 <translation id="5983312940147103417">Buat Chromium Menjadi Lebih Baik</translation>
 <translation id="6062449165341879460">Organisasi Anda <ph name="DOMAIN" /> akan memiliki akses ke data, bookmark, histori, sandi, dan setelan Chromium lainnya yang Anda simpan di akun ini. Jika logout, data Anda akan dihapus dari perangkat ini.  Namun, data akan tetap disimpan di Akun Google terkelola Anda dan tersedia untuk organisasi Anda. Organisasi juga dapat menetapkan kebijakan pengguna khusus untuk akun tersebut yang dapat mengubah perilaku Chromium.</translation>
 <translation id="61109258320235597">Untuk menggunakan dan menyimpan data Chromium di Akun Google Anda, masukkan frasa sandi.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Keluar dari Chromium?</translation>
 <translation id="632825460376924298">Izinkan Login Chromium</translation>
 <translation id="6337530241089703714">Pilih apakah akan menghapus data Chromium dari perangkat ini atau menyimpannya</translation>
+<translation id="6407399265324739055">Metode pembayaran dan alamat tidak akan dienkripsi. Histori penjelajahan dari Chromium tidak akan disinkronkan.
+
+Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi Anda. Frasa sandi tidak dikirim ke atau disimpan oleh Google. Jika lupa frasa sandi atau ingin mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chromium di akun Anda<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium jadi semakin baik! Versi baru telah tersedia.</translation>
 <translation id="6563921047760808519">Pelajari lebih lanjut <ph name="BEGIN_LINK" />cara Chromium menjaga privasi data Anda<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium kini mendukung kebijakan pengguna untuk akun terkelola Anda</translation>

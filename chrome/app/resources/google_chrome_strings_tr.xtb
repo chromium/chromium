@@ -37,6 +37,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Verilerinizi yönetme:<ph name="END_BOLD" /> Gizliliğinizi korumak için 4 haftadan eski ilgi alanlarınızı otomatik olarak sileriz. Siz internette gezindikçe ilgi alanları tekrar listede görünmeye başlayabilir. Dilerseniz Chrome'un dikkate almasını istemediğiniz ilgi alanlarını kaldırabilirsiniz.</translation>
 <translation id="1628000112320670027">Chrome'la ilgili yardım alın</translation>
 <translation id="1640672724030957280">İndiriliyor...</translation>
+<translation id="1642309806724967937">Chrome, ayarlarınıza bağlı olarak çerezleri ve geçerli URL'nizi gönderebilir</translation>
 <translation id="1662146548738125461">ChromeOS Flex hakkında</translation>
 <translation id="1674870198290878346">Bağlantıyı Chrome &amp;Gizli Penceresinde Aç</translation>
 <translation id="1682634494516646069">Google Chrome, veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -92,6 +93,7 @@
 <translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> hesabından Chrome tarayıcı öğelerinizi alın</translation>
 <translation id="2622559029861875898">Chrome güncellemeleri denetleyemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
 <translation id="2652691236519827073">Bağlantıyı Yeni Chrome &amp;sekmesinde aç</translation>
 <translation id="2665296953892887393">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek Google Chrome'u daha iyi hale getirmeye yardımcı olun</translation>
 <translation id="2689103672227170538">Bu uzantı, Chrome'u başlattığınızda gösterilen sayfayı değiştirdi.</translation>
@@ -231,6 +233,7 @@
 
 Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirtin veya daha yeni bir Chrome sürümü kullanın.</translation>
 <translation id="521447420733633466">Bir cihazı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
+<translation id="5239627039202700673">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları her tıkladığınızda Chrome'u kullanın.</translation>
 <translation id="5251420635869119124">Misafirler Chrome'u geride hiçbir şey bırakmadan kullanabilirler.</translation>
 <translation id="5334309298019785904">Senkronizasyon, alan adınızda kullanılamadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="5334487786912937552">Dosya indirmek için Chrome'un depolama alanına erişmesi gerekiyor</translation>
@@ -245,6 +248,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> tehlikeli olabileceği için Chrome tarafından engellendi.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor}=1{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bu güncellemeyi uygulamak için Chrome'u yeniden başlatmanızı istiyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
+<translation id="5682679001737420487">Chrome bazı indirme işlemlerini engelliyor</translation>
 <translation id="5686916850681061684">Google Chrome'u özelleştirin ve kontrol edin. İlgilenmeniz gereken bir konu var. Ayrıntılar için tıklayın.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Bu ayar açık olduğunda Chrome, etkin olmayan sekmelerdeki belleği boşaltır. Böylece, etkin sekmeler ile diğer uygulamalar daha fazla bilgisayar kaynağına sahip olur ve Chrome hızlı çalışmaya devam eder. Geri döndüğünüz etkin olmayan sekmeler otomatik olarak tekrar etkin hale gelir.</translation>
@@ -302,6 +306,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
 <translation id="677276454032249905">Yine de Chrome'dan çıkılsın mı?</translation>
+<translation id="6794858689789885890">Chrome'u kapattığımda site verileri her zaman cihazımdan silinsin</translation>
 <translation id="683440813066116847">Google Chrome Canary'nin mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="6881299373831449287">Chrome güncelleniyor</translation>
 <translation id="6885412569789873916">Chrome Beta Uygulamaları</translation>
@@ -386,6 +391,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chrome, ilgi alanlarınızı tahmin edebilir. Daha sonrasında ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="8387459386171870978">Chrome'u kullanmaya devam et</translation>
 <translation id="8394720698884623075">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder</translation>
+<translation id="8403038600646341038">Bilgisayar ekranındaki Chrome logosu.</translation>
 <translation id="8416347857511542594">Chrome'da reklam kişiselleştirme hakkında daha fazla bilgi edinin</translation>
 <translation id="8418845734693287262">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>

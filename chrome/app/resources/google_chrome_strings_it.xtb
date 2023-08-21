@@ -37,6 +37,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Come puoi gestire i tuoi dati:<ph name="END_BOLD" /> per tutelare la tua privacy, eliminiamo automaticamente i tuoi interessi risalenti a più di 4 settimane prima della data corrente. Mentre continui a navigare, un interesse potrebbe essere nuovamente visualizzato nell'elenco. Puoi anche rimuovere gli interessi che non vuoi che Chrome prenda in considerazione.</translation>
 <translation id="1628000112320670027">Ricevi assistenza per Chrome</translation>
 <translation id="1640672724030957280">Download in corso...</translation>
+<translation id="1642309806724967937">In base alle tue impostazioni, Chrome potrebbe anche inviare i cookie e l'URL corrente</translation>
 <translation id="1662146548738125461">Informazioni su ChromeOS Flex</translation>
 <translation id="1674870198290878346">Apri link in una finestra di navigazione in inco&amp;gnito di Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non è in grado di leggere e scrivere nella directory dei dati: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -92,6 +93,7 @@
 <translation id="2597976513418770460">Accedi ai tuoi contenuti del browser Chrome dall'account <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome non può controllare la disponibilità di aggiornamenti. Prova a controllare la connessione a Internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome esegue controlli regolari per verificare che il browser disponga delle impostazioni più sicure. Ti informeremo qualora fosse necessario un controllo da parte tua.</translation>
 <translation id="2652691236519827073">Apri link in una nuova &amp;scheda di Chrome</translation>
 <translation id="2665296953892887393">Aiutaci a migliorare Google Chrome inviando a Google report sugli arresti anomali e <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Questa estensione ha cambiato la pagina mostrata all'avvio di Chrome.</translation>
@@ -229,6 +231,7 @@
 <translation id="5163087008893166964">Ti diamo il benvenuto in Chrome; nuova finestra del browser aperta</translation>
 <translation id="5170938038195470297">Non è possibile utilizzare il tuo profilo perché è associato a una versione di Google Chrome più recente. Alcune funzioni potrebbero non essere disponibili. Specifica una directory del profilo diversa o utilizza una versione di Chrome più recente.</translation>
 <translation id="521447420733633466">Se condividi un dispositivo, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze</translation>
+<translation id="5239627039202700673">Usa Chrome ogni volta che fai clic sui link in messaggi, documenti e altre app</translation>
 <translation id="5251420635869119124">Gli ospiti possono utilizzare Chrome senza lasciare tracce.</translation>
 <translation id="5334309298019785904">Impossibile sincronizzare i dati in ChromeOS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="5334487786912937552">Chrome deve avere l'autorizzazione di accesso allo spazio di archiviazione per poter scaricare file</translation>
@@ -243,6 +246,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{L'amministratore raccomanda il riavvio di Chrome per installare questo aggiornamento}=1{L'amministratore raccomanda il riavvio di Chrome per installare questo aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore raccomanda il riavvio di Chrome per installare questo aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
+<translation id="5682679001737420487">Chrome blocca alcuni download</translation>
 <translation id="5686916850681061684">Personalizza e controlla Google Chrome. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Se questa opzione è attiva, Chrome libera la memoria dalle schede non attive. In questo modo, le schede attive e altre app hanno più risorse per il computer e mantengono Chrome veloce. Le schede inattive si riattivano automaticamente quando ci torni.</translation>
@@ -300,6 +304,7 @@
 <translation id="6739177684496155661">Vuoi continuare con un nuovo profilo Chrome?</translation>
 <translation id="6750954913813541382">Per correggere gli errori ortografici, Chrome invia a Google il testo che digiti nel browser</translation>
 <translation id="677276454032249905">Vuoi uscire comunque da Chrome?</translation>
+<translation id="6794858689789885890">Elimina sempre i dati dei siti dal dispositivo alla chiusura di Chrome</translation>
 <translation id="683440813066116847">Regola inbound per consentire il traffico mDNS in Google Chrome Canary.</translation>
 <translation id="6881299373831449287">Aggiornamento di Chrome</translation>
 <translation id="6885412569789873916">App di Chrome Beta</translation>
@@ -384,6 +389,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> Chrome può stimare i tuoi interessi. Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>
 <translation id="8394720698884623075">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chrome</translation>
+<translation id="8403038600646341038">Logo di Chrome sullo schermo di un computer.</translation>
 <translation id="8416347857511542594">Scopri di più sulla personalizzazione degli annunci in Chrome</translation>
 <translation id="8418845734693287262">Impossibile sincronizzare i dati in ChromeOS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>

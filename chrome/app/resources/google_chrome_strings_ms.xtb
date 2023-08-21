@@ -38,6 +38,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cara anda boleh mengurus data anda:<ph name="END_BOLD" /> Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chrome.</translation>
 <translation id="1628000112320670027">Dapatkan bantuan berkenaan Chrome</translation>
 <translation id="1640672724030957280">Memuat turun...</translation>
+<translation id="1642309806724967937">Bergantung pada tetapan anda, Chrome juga mungkin menghantar kuki dan URL semasa anda</translation>
 <translation id="1662146548738125461">Perihal Chrome OS Flex</translation>
 <translation id="1674870198290878346">Buka Pautan dalam Tetingkap Inko&amp;gnito Chrome</translation>
 <translation id="1682634494516646069">Google Chrome tidak dapat membaca atau menulis pada direktori datanya: <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -93,6 +94,7 @@
 <translation id="2597976513418770460">Dapatkan bahan penyemak imbas Chrome anda daripada <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome sentiasa menyemak untuk memastikan penyemak imbas anda menawarkan tetapan paling selamat. Kami akan memaklumi anda jika ada apa-apa yang memerlukan semakan anda.</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
 <translation id="2665296953892887393">Bantu jadikan Google Chrome lebih baik dengan menghantar laporan ranap dan <ph name="UMA_LINK" /> kepada Google.</translation>
 <translation id="2689103672227170538">Sambungan ini telah menukar halaman yang ditunjukkan apabila anda memulakan Chrome.</translation>
@@ -230,6 +232,7 @@
 <translation id="5163087008893166964">Selamat datang ke Chrome; tetingkap penyemak imbas baharu dibuka</translation>
 <translation id="5170938038195470297">Profil anda tidak boleh digunakan kerana ia adalah dari versi Google Chrome yang lebih baharu. Beberapa ciri mungkin tidak tersedia. Sila tetapkan direktori profil lain atau gunakan versi Chrome yang lebih baharu.</translation>
 <translation id="521447420733633466">Jika anda berkongsi peranti, rakan dan keluarga boleh menyemak imbas secara terpisah dan menyediakan Chrome sebagaimana yang mereka ingini</translation>
+<translation id="5239627039202700673">Gunakan Chrome pada bila-bila masa anda klik pautan dalam mesej, dokumen dan apl lain</translation>
 <translation id="5251420635869119124">Tetamu boleh menggunakan Chrome tanpa meninggalkan apa-apa.</translation>
 <translation id="5334309298019785904">Chrome OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="5334487786912937552">Chrome memerlukan kebenaran akses storan untuk memuat turun fail</translation>
@@ -244,6 +247,7 @@
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mungkin berbahaya, jadi Chrome telah menyekat fail itu.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini}=1{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda meminta anda melancarkan semula Chrome untuk menggunakan kemas kini ini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
+<translation id="5682679001737420487">Chrome menyekat sesetengah muat turun</translation>
 <translation id="5686916850681061684">Sesuaikan dan kawal Google Chrome. Perhatian anda diperlukan - klik untuk mendapatkan butiran.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Apabila dihidupkan, Chrome mengosongkan memori daripada tab yang tidak aktif. Ini memberi tab aktif dan apl lain lebih banyak sumber komputer dan memastikan Chrome pantas. Tab anda yang tidak aktif menjadi aktif semula secara automatik apabila anda kembali kepada tab tersebut.</translation>
@@ -301,6 +305,7 @@
 <translation id="6739177684496155661">Teruskan dalam profil Chrome baharu?</translation>
 <translation id="6750954913813541382">Untuk membetulkan kesalahan ejaan, Chrome akan menghantar teks yang anda taip dalam penyemak imbas kepada Google</translation>
 <translation id="677276454032249905">Keluar daripada Chrome juga?</translation>
+<translation id="6794858689789885890">Sentiasa padamkan data laman daripada peranti anda apabila anda menutup Chrome</translation>
 <translation id="683440813066116847">Peraturan masuk bagi Google Chrome Canary untuk membenarkan trafik mDNS.</translation>
 <translation id="6881299373831449287">Mengemas kini Chrome</translation>
 <translation id="6885412569789873916">Apl Chrome Beta</translation>
@@ -385,6 +390,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chrome boleh menganggarkan minat anda. Kemudian, laman yang anda lawati boleh meminta Chrome melihat minat anda untuk memeribadikan iklan yang anda lihat.</translation>
 <translation id="8387459386171870978">Terus menggunakan Chrome</translation>
 <translation id="8394720698884623075">Semak URL melalui perbandingan dengan senarai laman tidak selamat yang disimpan dalam Chrome</translation>
+<translation id="8403038600646341038">Logo Chrome dalam skrin komputer.</translation>
 <translation id="8416347857511542594">Ketahui lebih lanjut tentang pemeribadian iklan dalam Chrome</translation>
 <translation id="8418845734693287262">Chrome OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="8433638294851456451">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>

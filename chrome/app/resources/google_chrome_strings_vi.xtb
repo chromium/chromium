@@ -38,6 +38,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Cách bạn có thể quản lý dữ liệu của mình:<ph name="END_BOLD" /> Để bảo vệ quyền riêng tư của bạn, chúng tôi tự động xoá các mối quan tâm không được làm mới sau 4 tuần. Trong quá trình bạn duyệt web, các mối quan tâm có thể xuất hiện lại trong danh sách. Bạn cũng có thể xoá những mối quan tâm mà bạn không muốn Chrome xem xét.</translation>
 <translation id="1628000112320670027">Nhận trợ giúp về Chrome</translation>
 <translation id="1640672724030957280">Đang tải xuống...</translation>
+<translation id="1642309806724967937">Tuỳ vào chế độ cài đặt của bạn, Chrome cũng có thể gửi cookie và URL hiện tại của bạn</translation>
 <translation id="1662146548738125461">Giới thiệu về ChromeOS Flex</translation>
 <translation id="1674870198290878346">Mở đường liên kết trong cửa sổ ẩn &amp;danh của Chrome</translation>
 <translation id="1682634494516646069">Google Chrome không thể đọc và ghi vào thư mục dữ liệu:
@@ -95,6 +96,7 @@
 <translation id="2597976513418770460">Lấy dữ liệu Trình duyệt Chrome từ <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome không thể kiểm tra để tìm các bản cập nhật. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo cho bạn biết nếu có nội dung nào cần bạn xem xét.</translation>
 <translation id="2652691236519827073">Mở đường liên kết trong &amp;tab mới của Chrome</translation>
 <translation id="2665296953892887393">Giúp cải thiện Google Chrome bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="2689103672227170538">Tiện ích này đã thay đổi trang nào được hiển thị khi bạn khởi động Chrome.</translation>
@@ -234,6 +236,7 @@
 
 Một số tính năng có thể không khả dụng. Vui lòng chỉ định thư mục hồ sơ khác hoặc sử dụng phiên bản Chrome mới hơn.</translation>
 <translation id="521447420733633466">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chrome theo ý muốn</translation>
+<translation id="5239627039202700673">Dùng Chrome mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="5251420635869119124">Khách có thể sử dụng Chrome mà không phải thoát khỏi bất cứ nội dung nào.</translation>
 <translation id="5334309298019785904">ChromeOS không đồng bộ hoá được dữ liệu của bạn vì miền của bạn không dùng được tính năng đồng bộ hoá.</translation>
 <translation id="5334487786912937552">Chrome cần có quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
@@ -248,6 +251,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> có thể nguy hiểm, do đó Chrome đã chặn tệp.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="5682679001737420487">Chrome chặn một số nội dung tải xuống</translation>
 <translation id="5686916850681061684">Tùy chỉnh và kiểm soát Google Chrome. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Khi bạn bật chế độ này, Chrome sẽ giải phóng bộ nhớ khỏi các thẻ không hoạt động. Nhờ đó, các thẻ đang hoạt động và ứng dụng khác sẽ được sử dụng nhiều tài nguyên máy tính hơn, còn Chrome thì hoạt động nhanh chóng. Các thẻ không hoạt động sẽ tự động hoạt động trở lại khi bạn quay lại các thẻ đó.</translation>
@@ -305,6 +309,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
 <translation id="6750954913813541382">Để sửa lỗi chính tả, Chrome sẽ gửi văn bản mà bạn nhập vào trình duyệt này cho Google</translation>
 <translation id="677276454032249905">Bạn vẫn muốn thoát khỏi Chrome?</translation>
+<translation id="6794858689789885890">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chrome</translation>
 <translation id="683440813066116847">Quy tắc kết nối để Google Chrome Canary cho phép lưu lượng truy cập mDNS.</translation>
 <translation id="6881299373831449287">Đang cập nhật Chrome</translation>
 <translation id="6885412569789873916">Ứng dụng Chrome Beta</translation>
@@ -389,6 +394,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Chrome có thể ước đoán mối quan tâm của bạn. Sau đó, trang web mà bạn truy cập có thể đề nghị Chrome cho biết mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
 <translation id="8387459386171870978">Tiếp tục sử dụng Chrome</translation>
 <translation id="8394720698884623075">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome</translation>
+<translation id="8403038600646341038">Biểu trưng Chrome trên màn hình máy tính.</translation>
 <translation id="8416347857511542594">Tìm hiểu thêm về chế độ cá nhân hoá quảng cáo trong Chrome</translation>
 <translation id="8418845734693287262">ChromeOS không thể đồng bộ hoá dữ liệu của bạn do thông tin đăng nhập vào tài khoản của bạn đã lỗi thời.</translation>
 <translation id="8433638294851456451">Để gửi số điện thoại từ thiết bị này đến điện thoại Android của bạn, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>

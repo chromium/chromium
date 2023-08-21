@@ -40,6 +40,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Da zaštitimo vašu privatnosti, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromeu na razmatranje.</translation>
 <translation id="1628000112320670027">Pomoć za Chrome</translation>
 <translation id="1640672724030957280">Preuzimanje…</translation>
+<translation id="1642309806724967937">Ovisno o vašim postavkama, Chrome također može slati kolačiće i vaš trenutni URL</translation>
 <translation id="1662146548738125461">O ChromeOS Flexu</translation>
 <translation id="1674870198290878346">Otvori link u anon&amp;imnom prozoru Chromea</translation>
 <translation id="1682634494516646069">Google Chrome ne može čitati i pisati u svoj direktorij podataka:
@@ -97,6 +98,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2597976513418770460">Preuzmite stvari na pregledniku Chrome s računa<ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome ne može provjeravati ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome redovno provjerava ima li vaš preglednik najsigurnije postavke. Obavijestit ćemo vas ako nešto bude potrebno pregledati.</translation>
 <translation id="2652691236519827073">Otvori link u novoj &amp;kartici Chromea</translation>
 <translation id="2665296953892887393">Šaljite Googleu izvještaje o padovima aplikacije i <ph name="UMA_LINK" /> i na taj način pomozite poboljšati Google Chrome</translation>
 <translation id="2689103672227170538">Ova ekstenzija je promijenila stranicu koja se prikazuje prilikom pokretanja Chromea.</translation>
@@ -236,6 +238,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 
 Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profila ili koristite noviju verziju Chromea.</translation>
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
+<translation id="5239627039202700673">Koristite Chrome svaki put kada kliknete na linkove u porukama, dokumentima i drugim aplikacijama</translation>
 <translation id="5251420635869119124">Gosti mogu koristiti Chrome, a da pritom ne ostave tragove o korištenju.</translation>
 <translation id="5334309298019785904">ChromeOS nije sinhronizirao vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="5334487786912937552">Chromeu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
@@ -252,6 +255,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja}=1{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
+<translation id="5682679001737420487">Chrome blokira neka preuzimanja</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Kada je postavka uključena, Chrome oslobađa memoriju od neaktivnih kartica. Time se aktivnim karticama i drugim aplikacijama pruža više računarskih resursa i ubrzava rad Chroma. Neaktivne kartice se automatski ponovo aktiviraju kada se vratite na njih.</translation>
@@ -309,6 +313,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6739177684496155661">Želite li nastaviti na novi Chrome profil?</translation>
 <translation id="6750954913813541382">Za ispravak pravopisnih grešaka, Chrome šalje Googleu tekst koji napišete u pregledniku</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
+<translation id="6794858689789885890">Uvijek izbrišite podatke web lokacije s uređaja kada zatvorite Chrome</translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
@@ -393,6 +398,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Chrome može procijeniti vaša interesovanja. Kasnije, web lokacija koju ste posjetili može zatražiti od Chromea da pogleda vaša interesovanja radi personalizacije oglasa koje vidite.</translation>
 <translation id="8387459386171870978">Nastavi koristiti Chrome</translation>
 <translation id="8394720698884623075">Provjerava URL-ove s listom nesigurnih web lokacija pohranjenih u Chromeu</translation>
+<translation id="8403038600646341038">Logotip Chromea na ekranu računara.</translation>
 <translation id="8416347857511542594">Saznajte više o personalizaciji oglasa u Chromeu</translation>
 <translation id="8418845734693287262">ChromeOS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
 <translation id="8433638294851456451">Da pošaljete broj s ovog uređaja na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>

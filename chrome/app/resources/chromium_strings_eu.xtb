@@ -209,11 +209,13 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5527463683072221100">Ireki PDFak Chromium-en</translation>
 <translation id="5614091477838198795">Aktibatuta dagoenean, Chromium-eko saioa ere amaituko da</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium arakatzailearen eguneratze bat dago erabilgarri}=1{Chromium arakatzailearen eguneratze bat dago erabilgarri}other{Chromium arakatzailearen eguneratze batek # egun daramatza erabilgarri}}</translation>
+<translation id="5643865575100044307">Chromium ixten duzunean, ezabatu beti webguneetako datuak gailutik</translation>
 <translation id="5653831366781983928">Berrabiarazi Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Bistaratu Chromium hizkuntza honetan</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5883558403894052917">Elementuok malwarea dutela hauteman du Chromium-ek:</translation>
+<translation id="5889361821821684993">Chromium-ek maiz begiratzen die arakatzailearen ezarpenei, ahalik eta seguruenak direla ziurtatzeko. Ezarpenen bat berrikustea komeni bazaizu, jakinarazpen bat bidaliko dizugu.</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Hasi saioa sarean</translation>
 <translation id="5924017743176219022">Internetera konektatzen…</translation>
@@ -224,6 +226,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5988505247484123880">Bisitatzen dituzun webguneek interesatzen zaizkizun gauzak gogoratu ohi dituzte zerbitzua pertsonalizatzeko. Webguneek zure interesei buruzko informazioa ere gorde dezakete Chromium-en.</translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6040143037577758943">Itxi</translation>
+<translation id="6055611795418209449">Chromium-ek zenbait deskarga blokeatzen ditu</translation>
 <translation id="6055895534982063517">Chromium-en bertsio berri bat erabilgarri dago; inoiz baino bizkorragoa da.</translation>
 <translation id="6063093106622310249">&amp;Ireki Chromium-en</translation>
 <translation id="6072279588547424923">Gehitu da <ph name="EXTENSION_NAME" /> luzapena Chromium-en</translation>
@@ -237,6 +240,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6132897690380286411">Chromium-ek arakatze-datuak ezabatuko ditu eta itxi egingo da laster</translation>
 <translation id="6134968993075716475">Arakatze segurua desaktibatuta dago. Aktibatzea gomendatzen du Chromium-ek.</translation>
 <translation id="6145820983052037069">Aldatu Chromium-eko profila hemen</translation>
+<translation id="6175304430031192654">Zure ezarpenen arabera, baliteke Chromium-ek cookieak eta oraingo URLa ere bidaltzea</translation>
 <translation id="6183079672144801177">Ziurtatu Chromium-eko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="6212496753309875659">Ordenagailuak Chromium arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Chromium eta saiatu berriro.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Orain berrabiaraziko da Chromium}=1{1 segundo barru berrabiaraziko da Chromium}other{# segundo barru berrabiaraziko da Chromium}}</translation>
@@ -257,6 +261,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6373523479360886564">Ziur Chromium desinstalatu nahi duzula?</translation>
 <translation id="6375219077595103062">Gehitu Pasahitz-kudeatzailea zerbitzurako lasterbide bat</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Nola erabiltzen ditugu datu horiek?<ph name="END_BOLD" /> Chromium-ek zure interesak estima ditzake. Beranduago, bisitatzen duzun webgune batek zure interesak ikusteko eska diezaioke Chromium-i, agertzen zaizkizun iragarkiak pertsonalizatze aldera.</translation>
+<translation id="6400112897226594999">Chromium-en logotipoa ordenagailu baten pantailan.</translation>
 <translation id="6403826409255603130">Web-orriak eta aplikazioak tximista bezain azkar abiarazten dituen web-arakatzailea da Chromium. Bizkorra, egonkorra eta erabiltzeko erraza da. Chromium-ek malwarearen eta phishingaren aurka dituen babes inkorporatuei esker, seguruago ibiliko zara Interneten.</translation>
 <translation id="6442900851116057561">Berrabiarazi Chromium OS</translation>
 <translation id="6455857529632101747">Ongi etorri Chromium-eko profiletara</translation>
@@ -305,6 +310,7 @@ Baliteke eginbide batzuk erabilgarri ez egotea. Adierazi beste profil-direktorio
 <translation id="718435575166326686">Chromium-ek kamera erabiltzeko baimena behar du webgune honetan</translation>
 <translation id="7196312274710523067">Ezin izan da abiarazi Chromium. Saiatu berriro.</translation>
 <translation id="7197677400338048821">Chromium-ek ezin ditu egiaztatu pasahitzak. Saiatu berriro 24 ordu barru.</translation>
+<translation id="7213407614656404070">Erabili Chromium mezu, dokumentu edo beste aplikazioetako estekak sakatzean</translation>
 <translation id="7223968959479464213">Ataza-kudeatzailea - Chromium</translation>
 <translation id="7246575524853130370">Chromium-ek estimatu dizkizun interesak</translation>
 <translation id="7309928523159922338">Iragarkien neurketari esker, bisitatzen dituzun webguneek Chromium-i informazioa eska diezaiokete. Informazio horren bidez, webguneek beren iragarkien errendimendua neur dezakete. Webguneen artean ahalik eta informazio gutxien transferituta mugatzen du iragarkien neurketak webguneen arteko jarraipena.</translation>

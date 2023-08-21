@@ -38,6 +38,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Maʼlumotlaringizni qanday boshqarish mumkin:<ph name="END_BOLD" /> Maxfliylikni himoya qilish maqsadida biz 4 haftadan uzoq saqlangan qiziqishlarni avtomatik oʻchiramiz. Sahifalar takroriy ochilganida qiziqish roʻyxatda yana chiqishi mumkin. Yoki Chrome foydalanmasligini istasangiz, qiziqishlarni olib tashlashingiz mumkin.</translation>
 <translation id="1628000112320670027">Chrome yordam markazi</translation>
 <translation id="1640672724030957280">Yuklab olinmoqda...</translation>
+<translation id="1642309806724967937">Sozlamalar asosida Chrome cookie fayllar va joriy URL manzilni tekshiruvga yuborishi mumkin</translation>
 <translation id="1662146548738125461">ChromeOS Flex haqida</translation>
 <translation id="1674870198290878346">Havolani Chromening &amp;inkognito oynasida ochish</translation>
 <translation id="1682634494516646069">Google Chrome brauzeri quyidagi jildda ma’lumotlarni o‘qish va yozish amallarini bajara olmadi:
@@ -94,6 +95,7 @@
 <translation id="2597976513418770460">Chrome brauzeri maʼlumotlarini <ph name="ACCOUNT_EMAIL" /> profilidan oling</translation>
 <translation id="2622559029861875898">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome brauzer sozlamalari xavfsiz ekanini muntazam tekshiradi. Biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qilamiz.</translation>
 <translation id="2652691236519827073">Havolani yangi &amp;varaqda ochish</translation>
 <translation id="2665296953892887393">Google‘ga ishdan chiqishlar hisoboti va <ph name="UMA_LINK" />‘ni jo‘natib Google Chrome yaxshilanishiga yordam berish.</translation>
 <translation id="2689103672227170538">Bu kengaytma Chrome ishga tushganda ko‘rinadigan sahifani o‘zgartirdi.</translation>
@@ -233,6 +235,7 @@
 
 Ba’zi imkoniyatlar ishlamasligi mumkin. Profilni saqlash uchun boshqa jild tanlang yoki yangiroq Google Chrome versiyasini o‘rnating.</translation>
 <translation id="521447420733633466">Agar qurilmadan yaqinlaringiz va doʻstlaringiz ham foydalansa, ular Chrome brauzerini oʻzlari xohlagancha sozlab olishlari mumkin.</translation>
+<translation id="5239627039202700673">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni bosganda Chrome ochiladi</translation>
 <translation id="5251420635869119124">Agar tashrif buyurgan saytlaringiz haqidagi ma’lumotlar saqlanmasligini xohlasangiz, Chrome mehmon rejimidan foydalaning.</translation>
 <translation id="5334309298019785904">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="5334487786912937552">Chrome bu fayllarni yuklab olishi uchun xotiraga saqlash ruxsati kerak</translation>
@@ -249,6 +252,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> zararli bo‘lishi mumkin, shuning uchun u Chrome tomonidan bloklandi.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chrome brauzerini qayta ishga tushirishni soʻramoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
+<translation id="5682679001737420487">Chrome ayrim yuklanmalarni bloklaydi</translation>
 <translation id="5686916850681061684">Google Chrome brauzerini sozlash va boshqarish. Diqqat qaratishingiz zarur. Batafsil axborot olish uchun bu yerga bosing.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Yoniq boʻlsa, Chrome nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chrome ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi.</translation>
@@ -306,6 +310,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="6739177684496155661">Yangi Chrome profilida davom etasizmi?</translation>
 <translation id="6750954913813541382">Imlo xatolarini tuzatish uchun Chrome brauzerida kiritiladigan matn Google serverlariga yuboriladi.</translation>
 <translation id="677276454032249905">Chrome baribir yopilsinmi?</translation>
+<translation id="6794858689789885890">Chrome yopilganda har doim qurilmadan sayt maʼlumotlarini oʻchirib tashlash</translation>
 <translation id="683440813066116847">Google Chrome Canary‘ga kiruvchi trafikni mDNS protokoli orqali uzatishga ruxsat berish</translation>
 <translation id="6881299373831449287">Chrome yangilanmoqda</translation>
 <translation id="6885412569789873916">Chrome Beta ilovalari</translation>
@@ -390,6 +395,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Bu axborotdan qanday foydalanamiz:<ph name="END_BOLD" /> Chrome qiziqishlaringizni taxmin qila oladi. Keyinchalik sayt sizga chiqadigan reklamani moslashtirish maqsadida Chromedan qiziqishlaringiz haqida soʻrashi mumkin.</translation>
 <translation id="8387459386171870978">Chrome yopilmasin</translation>
 <translation id="8394720698884623075">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
+<translation id="8403038600646341038">Kompyuter ekranida Chrome logotipi aks etgan tasvir</translation>
 <translation id="8416347857511542594">Chromeda reklamani moslashtirish haqida batafsil</translation>
 <translation id="8418845734693287262">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>

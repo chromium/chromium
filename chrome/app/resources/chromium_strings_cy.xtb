@@ -209,11 +209,13 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5527463683072221100">Agor ffeiliau PDF yn Chromium</translation>
 <translation id="5614091477838198795">Pan fydd ymlaen, byddwch hefyd yn cael eich allgofnodi o Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Mae diweddariad Cromiwm ar gael}=1{Mae diweddariad Cromiwm ar gael}two{Mae diweddariad Chromium wedi bod ar gael ers # ddiwrnod}few{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}many{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}other{Mae diweddariad Chromium wedi bod ar gael ers # diwrnod}}</translation>
+<translation id="5643865575100044307">Dileu data gwefan o'ch dyfais bob amser pan fyddwch yn cau Chromium</translation>
 <translation id="5653831366781983928">Ailgychwynnwch Chromium nawr</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Dangos Chromium yn yr iaith hon</translation>
 <translation id="5862307444128926510">Croeso i Chromium</translation>
 <translation id="5883558403894052917">Gwnaeth Chromium ganfod bod yr eitemau hyn yn cynnwys drwgwedd:</translation>
+<translation id="5889361821821684993">Mae Chromium yn gwirio i sicrhau bod gan eich porwr y gosodiadau mwyaf diogel yn rheolaidd. Byddwn yn rhoi gwybod i chi os oes angen i chi adolygu unrhyw beth.</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Mewngofnodi Rhwydwaith</translation>
 <translation id="5924017743176219022">Wrthi'n cysylltu â'r Rhyngrwyd...</translation>
@@ -224,6 +226,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5988505247484123880">Mae'n gyffredin i wefannau y byddwch yn ymweld â nhw gofio pethau y mae gennych ddiddordeb ynddynt, i bersonoleiddio'ch profiad. Gall gwefannau hefyd storio gwybodaeth am eich diddordebau gyda Chromium.</translation>
 <translation id="6003112304606738118">Wrthi'n lawrlwytho... Mae <ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6040143037577758943">Cau</translation>
+<translation id="6055611795418209449">Mae Chromium yn rhwystro rhai lawrlwythiadau</translation>
 <translation id="6055895534982063517">Mae fersiwn newydd o Chromium ar gael, ac mae'n gyflymach nag erioed.</translation>
 <translation id="6063093106622310249">&amp;Agor yn Chromium</translation>
 <translation id="6072279588547424923">Mae <ph name="EXTENSION_NAME" /> wedi'i ychwanegu at Chromium</translation>
@@ -237,6 +240,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6132897690380286411">Bydd Chromium yn cau ac yn dileu data yn fuan</translation>
 <translation id="6134968993075716475">Mae Pori'n Ddiogel wedi'i ddiffodd. Mae Chromium yn argymell ei droi ymlaen.</translation>
 <translation id="6145820983052037069">Gallwch newid rhwng proffiliau Chromium yma</translation>
+<translation id="6175304430031192654">Yn dibynnu ar eich gosodiadau, mae'n bosib y bydd Chromium hefyd yn anfon cwcis a'ch URL presennol</translation>
 <translation id="6183079672144801177">Gwnewch yn siŵr eich bod wedi mewngofnodi i Chromium ar eich <ph name="TARGET_DEVICE_NAME" /> a rhowch gynnig arall arni.</translation>
 <translation id="6212496753309875659">Mae gan y cyfrifiadur hwn fersiwn fwy diweddar o Chromium eisoes. Os nad yw'r feddalwedd yn gweithio, dadosodwch Chromium a rhowch gynnig arall arni.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Bydd Chromium yn ail-lansio nawr}=1{Bydd Chromium yn ail-lansio mewn 1 eiliad}two{Bydd Chromium yn ail-lansio mewn # eiliad}few{Bydd Chromium yn ail-lansio mewn # eiliad}many{Bydd Chromium yn ail-lansio mewn # eiliad}other{Bydd Chromium yn ail-lansio mewn # eiliad}}</translation>
@@ -257,6 +261,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="6373523479360886564">Ydych chi'n siŵr eich bod am ddadosod Chromium?</translation>
 <translation id="6375219077595103062">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall Chromium amcangyfrif eich diddordebau. Yn nes ymlaen, gall gwefan rydych yn ymweld â hi ofyn i Chromium weld eich diddordebau er mwyn personoleiddio'r hysbysebion rydych yn eu gweld.</translation>
+<translation id="6400112897226594999">Logo Chromium tu mewn i sgrîn gyfrifiadur.</translation>
 <translation id="6403826409255603130">Porwr gwe yw Chromium sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we yn fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Chromium.</translation>
 <translation id="6442900851116057561">Ailgychwyn ChromiumOS</translation>
 <translation id="6455857529632101747">Croeso i broffiliau Chromium</translation>
@@ -306,6 +311,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="718435575166326686">Mae angen caniatâd camera ar Chromium ar gyfer y wefan hon</translation>
 <translation id="7196312274710523067">Methu â lansio Chromium. Rhowch gynnig arall arni.</translation>
 <translation id="7197677400338048821">Ni all Chromium wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr.</translation>
+<translation id="7213407614656404070">Defnyddiwch Chromium unrhyw bryd y byddwch yn clicio dolenni mewn negeseuon, dogfennau ac apiau eraill</translation>
 <translation id="7223968959479464213">Rheolydd Tasgau - Chromium</translation>
 <translation id="7246575524853130370">Eich diddordebau fel yr amcangyfrifir gan Chromium</translation>
 <translation id="7309928523159922338">Mae Mesur hysbysebion yn caniatáu i wefannau rydych yn ymweld â nhw ofyn am wybodaeth o Chromium sy'n helpu'r wefan i fesur perfformiad eu hysbysebion. Mae Mesur hysbysebion yn cyfyngu ar olrhain traws-wefan drwy drosglwyddo cyn lleied o wybodaeth â phosib rhwng gwefannau.</translation>

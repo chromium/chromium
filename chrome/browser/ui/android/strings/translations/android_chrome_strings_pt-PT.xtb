@@ -119,6 +119,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
 <translation id="1554532453982918912">Ajude a melhorar o Chrome para as pessoas que o utilizam de forma semelhante à sua</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
+<translation id="1568636008098739136">Ouça esta página. Para editar este atalho, toque sem soltar.</translation>
 <translation id="1571304935088121812">Copiar nome de utilizador</translation>
 <translation id="1592864538817356322">Proteção padrão:</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> itens sugeridos na lista abaixo.</translation>
@@ -195,6 +196,7 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}other{# transferências falhadas}}</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2093731487903423814">últimos 15 minutos</translation>
 <translation id="2096012225669085171">Sincronizar e personalizar entre dispositivos</translation>
 <translation id="2100273922101894616">Início de sessão automático</translation>
 <translation id="2100314319871056947">Experimente partilhar o texto em partes mais pequenas.</translation>
@@ -564,6 +566,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4062305924942672200">Informações legais</translation>
 <translation id="4072805772816336153">Tente mais tarde.</translation>
+<translation id="4080602171844412446">Informações relacionadas</translation>
 <translation id="4084682180776658562">Marcar</translation>
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />fornecido pela Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Pode usar este tablet para iniciar sessão no dispositivo que está a apresentar este código QR.</translation>
@@ -644,6 +647,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4484496141267039529">Sem ligação. Tente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
+<translation id="4491323382106587961">Selecione uma conta. Seleção atual: <ph name="EMAIL" />.</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4509501256689523862">À medida que navega, a personalização de um anúncio que lhe é mostrado depende da definição <ph name="BEGIN_LINK_1" />Tópicos do anúncio<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}other{Há # dias}}</translation>
@@ -651,6 +655,7 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4521489764227272523">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados.
 
 A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
+<translation id="4523326818319942067">na última hora</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4528638190900283934">Inicie sessão para obter funcionalidades adicionais</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
@@ -703,6 +708,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="4766678251456904326">Adicionar conta ao dispositivo</translation>
 <translation id="4767947714785277816">Vamos lançar uma nova funcionalidade de privacidade dos anúncios chamada medição de anúncios. O Chrome partilha apenas informações muito limitadas entre sites e apps, por exemplo, quando um anúncio lhe é apresentado, para ajudar a medir o desempenho dos anúncios.</translation>
 <translation id="4769095993849849966">Novo nome do ficheiro</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> eliminados</translation>
 <translation id="4778653490315793244">Nada a apresentar de momento</translation>
 <translation id="4787736314074622408">Quer eliminar <ph name="ITEM_TITLE" />?</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -802,6 +808,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5233638681132016545">Novo separador</translation>
 <translation id="5235196193381275927">Algo correu mal durante o início de sessão</translation>
 <translation id="5246093389635966745">Editar atalho da barra de ferramentas</translation>
+<translation id="5264813352784073502">últimas 24 horas</translation>
 <translation id="5271967389191913893">O dispositivo não consegue abrir o conteúdo a transferir.</translation>
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5300426565656326054">Personalização de anúncios com base no navegador</translation>
@@ -814,6 +821,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5329858041417644019">O seu navegador não é gerido</translation>
 <translation id="5339031667684712858">Sites que removeu</translation>
 <translation id="5342314432463739672">Pedidos de autorização</translation>
+<translation id="534580735623577507">Nenhum site de <ph name="TIME_PERIOD" /></translation>
 <translation id="53537532693258630">Os sites removidos aparecem aqui</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
 <translation id="5361107212971249203">texto</translation>
@@ -828,6 +836,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="543338862236136125">Editar palavra-passe</translation>
 <translation id="5433691172869980887">Nome de utilizador copiado</translation>
 <translation id="5438292632479953702">Transferir novamente</translation>
+<translation id="5441137934526263133">O site não funciona? Os cookies de terceiros estão bloqueados.</translation>
 <translation id="5441466871879044658">Traduza para este idioma</translation>
 <translation id="5441522332038954058">Ir para a barra de endereço</translation>
 <translation id="5444999712122199445">Voltar ao site</translation>
@@ -926,6 +935,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5951119116059277034">A ver a página publicada…</translation>
 <translation id="5956665950594638604">Abrir Centro de Ajuda do Chrome num novo separador</translation>
 <translation id="5957442310066583693">Para ver os seus sites principais, toque no botão página inicial.</translation>
+<translation id="59577092665511740">Selecione uma conta.</translation>
 <translation id="5958275228015807058">Encontre os seus ficheiros e páginas nas Transferências.</translation>
 <translation id="5958994127112619898">Simplificar a página</translation>
 <translation id="5962718611393537961">Toque para reduzir</translation>
@@ -1264,7 +1274,9 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7638584964844754484">Frase de acesso incorreta</translation>
 <translation id="7641339528570811325">Limpar dados de navegação…</translation>
 <translation id="7646772052135772216">A sincronização de palavras-passe não está a funcionar</translation>
+<translation id="7655240423373329753">últimos 7 dias</translation>
 <translation id="7655900163790317559">A ativar o Bluetooth…</translation>
+<translation id="7656721520530864426">Não foram visitados sites</translation>
 <translation id="7656862631699126784">Ativar bloqueio da Navegação anónima</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665369617277396874">Adicionar conta</translation>
@@ -1361,6 +1373,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8088176524274673045">Para partilhar com pessoas nas proximidades, deixe-as ler este código QR</translation>
 <translation id="8090732854597034573">Se precisares de ajuda, pede à pessoa adulta responsável</translation>
 <translation id="8100969750121413114">Inicie sessão para personalizar o Chrome</translation>
+<translation id="8101414242770404289">Nenhum separador de <ph name="TIME_PERIOD" /></translation>
 <translation id="8103578431304235997">Separador de navegação anónima</translation>
 <translation id="8105613260829665809">Ao continuar, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização<ph name="END_TOS_LINK" />.\nPara ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_UMA_LINK" />Faça a gestão<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1412,6 +1425,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8414396119627470038">Inicie sessão em <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8416347857511542594">Saiba mais acerca da personalização de anúncios no Chrome</translation>
 <translation id="8419244640277402268">Incluir</translation>
+<translation id="8422250855136581222">Nenhum separador neste dispositivo</translation>
 <translation id="8424781820952413435">Página enviada. Para a ver, abra o Chrome no seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8427875596167638501">O separador Pré-visualização está aberto até meio.</translation>
 <translation id="8428213095426709021">Definições</translation>

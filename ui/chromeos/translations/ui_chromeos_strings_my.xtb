@@ -94,6 +94,7 @@
 <translation id="174937106936716857">စုစုပေါင်းဖိုင်အရေအတွက်</translation>
 <translation id="1755345808328621801">ဤဖိုင်ကို PC အတွက် Windows ဆော့ဖ်ဝဲဖြင့် ထုတ်လုပ်ထားခြင်းဖြစ်သည်။ ChromeOS သုံးသော သင့်စက်နှင့် တွဲဖက်အသုံးမပြုနိုင်ပါ။ သင့်လျော်သည့် အစားထိုးအက်ပ်အား Chrome Web Store တွင် ရှာဖွေပါ။</translation>
 <translation id="1757915090001272240">လက်တင် အကျယ်</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> နှင့် မျှဝေရန်</translation>
 <translation id="1773212559869067373">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အတွင်းမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="1775381402323441512">ဗီဒီယိုအချက်အလက်</translation>
 <translation id="180035236176489073">ဤဖိုင်များကို အသုံးပြုရန် သင် online ဖြစ်ရန် လိုသည်။</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">အက်ပ်ကို Linux ဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="2719020180254996569">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ အသေးစိတ်များ</translation>
 <translation id="2724954091494693138">F ကီးဘုတ်ဖြင့် တူရကီ</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> မျှဝေမှုကို စီမံရန်</translation>
 <translation id="2732839045120506979">ဗီယက်နမ် VNI</translation>
 <translation id="2735623501230989521"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Parallels Desktop အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="2764206540577097904">သင်၏တစ်ဦးချင်း Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးပြီးပါပြီ။</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3511705761158917664">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို စင့်ခ်လုပ်ရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> နှင့် ဖိုင်တွဲ ၁ ခု မျှဝေထားသည်</translation>
 <translation id="3524311639100184459">သတိ- ဤဖိုင်များသည် ယာယီဖြစ်ပြီး ဒစ်ခ်နေရာလွတ်ပြုလုပ်ရန် အလိုအလျောက် ဖျက်နိုင်ပါသည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ဖိုင်တွဲ</translation>
 <translation id="3548125359243647069">ပင်နံပါတ်အမှားကို အကြိမ်များစွာ ထည့်ထားသည်။</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">လိပ်ပြာများ</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6170470584681422115">အသားညှပ်ပေါင်မုန့်</translation>
+<translation id="6181912134988520389">သင်၏ Google Drive ရှိ ဖိုင်များကို <ph name="VM_NAME" /> အား သုံးခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားမည်။</translation>
 <translation id="6187719147498869044">ဟန်ဂေရီ</translation>
 <translation id="6198252989419008588">ပင်နံပါတ် ပြောင်းလဲမည်</translation>
 <translation id="6199801702437275229">နေရာ အင်ဖိုကို စောင့်နေ...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">ဆွီဒင်</translation>
 <translation id="6990081529015358884">သင့်ဆီမှာ နေရာ ကုန်သွားပြီ</translation>
 <translation id="6993826899923627728">ဤဖိုင်များသည် အမှိုက်ပုံးထဲတွင် ရှိသည်</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> နှင့် ဖိုင်တွဲမျှဝေခြင်း</translation>
 <translation id="7008426324576352165">အပ်လုဒ်ပြီးစီးနိုင်ရန် သင့်အဖွဲ့အစည်းက သိုလှောင်ခန်း ထပ်မံလိုအပ်ပါသည်။</translation>
 <translation id="7009985720488544166">ဖိုင် <ph name="COUNT" /> ဖိုင် ရွှေ့ခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">ဘီလာရုစ်</translation>
 <translation id="8336153091935557858">မနေ့က <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">တူညီသည့် အမည်ဖြင့် ဖိုင်တစ်ဖိုင် သို့မဟုတ် လမ်းကြောင်းတစ်ခု ရှိပြီးဖြစ်သည်။</translation>
+<translation id="83651606385705612"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို <ph name="VM_NAME" /> အား သုံးခွင့်ပေးမည်</translation>
 <translation id="8372369524088641025">WEP သော့ မကောင်းပါ</translation>
 <translation id="8372852072747894550">ဂရိ</translation>
 <translation id="8386903983509584791">ရှာဖွေပြီးပါပြီ</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ချိတ်ဆက်နေသည်</translation>
 <translation id="8425213833346101688">ပြောင်းရန်</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> နှင့် ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခု မျှဝေထားသည်</translation>
 <translation id="8431909052837336408">ဆင်းမ်ကတ် ပင်နံပါတ်ပြောင်းရန်</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">ဆင်းမ်ကတ် မရှိပါ</translation>

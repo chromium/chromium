@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">"Proqramı xarici cihazlar üçün güncəlləyin" pəncərəsi açıqdır. <ph name="NUM_UPDATES" /> güncəlləmə əlçatandır.</translation>
 <translation id="1145516343487477149">Ümumi Chromebook suallarına yardım məqalələri və cavablar tapın</translation>
+<translation id="1154390310959620237">Yalnız 5 qısayol fərdiləşdirmək olar. Yeni qısayol əlavə etmək üçün birini silin.</translation>
 <translation id="1164939766849482256">"Sübhdən axşama" ekran qoruyucusu</translation>
 <translation id="1167755866710282443">Düymələri fərdiləşdirmək üçün menyunu açın. Hərəkət etdirmək üçün menyunu sürüşdürün.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> tərəfindən idarə olunur.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Yenidən başladılır...</translation>
 <translation id="2533048460510040082">Təklif olunan yardım məzmunu</translation>
 <translation id="2536159006530886390">İnternetə qoşulmaq olmur.</translation>
+<translation id="2555662516429796509">Klaviaturada 1-4 dəyişdiricilərini və 1 digər düyməni basın</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
 <translation id="2584559707064218956">Ayarlamaq üçün Ayarlara keçin</translation>
 <translation id="2597774443162333062">Fayllar sazlama üçün Google'a göndəriləcək</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
 <translation id="3373141842870501561">"Torpaq axını" divar kağızı</translation>
 <translation id="337375748120863155">Seçimlə əlaqəli məlumat. Sol və ya Sağ ox düymələri ilə nizamlayıcılara daxil olun.</translation>
+<translation id="3383623117265110236">Eksklüziv</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
 <translation id="3413935475507503304">Güncəlləməyə keçmək üçün "Növbəti" seçiminə toxunun.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">parlaqlığı azaldın</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4176659219503619100">İdarəetmə Paneli</translation>
+<translation id="4185315616950253617">Üst sıra düymələri olan qısayolda axtarış düyməsi olmalıdır.</translation>
 <translation id="420283545744377356">Ekran qoruyucusunu deaktiv edin</translation>
 <translation id="4213104098953699324">USB klaviatura</translation>
 <translation id="4227825898293920515">Parolun vaxtı <ph name="TIME" /> ərzində başa çatır</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP Gecikməsi</translation>
 <translation id="4271957103967917607">Tam Ekranda BAxın</translation>
 <translation id="4275663329226226506">Media</translation>
+<translation id="4278766082079064416">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Ziddiyyəti yox etmək üçün redaktə edin və ya silin.</translation>
 <translation id="4289540628985791613">Baxış</translation>
 <translation id="4289849978083912975">Slayd şou</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}other{<ph name="ERROR_MESSAGE" /> {0} cəhd qalıb}}</translation>
 <translation id="4873827928179867585">Doğrulama alqoritmi</translation>
 <translation id="4880328057631981605">Giriş nöqtəsi adı</translation>
+<translation id="488307179443832524">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Yeni qısayolu basın.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Dərhal yenisini seçin</translation>
 <translation id="4891842000192098784">Gərginlik</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Displey parlaqlığını artırın</translation>
 <translation id="57838592816432529">Səssiz</translation>
 <translation id="5784136236926853061">Yüksək HTTP gecikməsi</translation>
+<translation id="5816802250591013230">Qısayol təyin edilməyib</translation>
 <translation id="5826644637650799838">Rəsm haqqında</translation>
 <translation id="5832805196449965646">Şəxs əlavə edin</translation>
 <translation id="583281660410589416">Naməlum</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Cihaz qoşulmayıb.</translation>
+<translation id="7046522406494308071">Bütün qısayollar defolta sıfırlansın?</translation>
 <translation id="7058278511608979688">Bitirin və yadda saxlayın</translation>
 <translation id="7059230779847288458">Şarj edilir, tam dolana qədər <ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7068619307603204412">Cihazınızı hazırlayın</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Alınmadı - Doğrulama Alınmadı</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> üçün eksklüziv illüstrasiya seçin</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="725133483556299729">E-poçt seçin</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
+<translation id="7273347807225967898">Qısayol əlçatan deyil. Dəyişdirici düymə (ctrl, alt, shift, axtarış və ya başladıcı) ilə yeni qısayolu basın.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Mehi hiss edin</translation>
 <translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">işıqlı klaviatura</translation>
 <translation id="773153675489693198">Dövrə sayı</translation>
 <translation id="7747039790905080783">Öncədən paylaşılan açar</translation>
+<translation id="7752963721013053477">Sübhdən axşama - eksklüziv</translation>
 <translation id="7762130827864645708">Parolunuz uğurla dəyişdirildi. Bundan sonra yeni paroldan istifadə edin.</translation>
 <translation id="7763470514545477072">Domen sonluğunun uyğunluğu</translation>
 <translation id="7769672763586021400">Model ID</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provayder növü</translation>
 <translation id="7882501334836096755">İctimai açar</translation>
+<translation id="7903695460270716054">Hazır illüstrasiya və şəkillər seçin</translation>
 <translation id="7915220255123750251">Şəbəkə APN ayarlarını idarə edin. APN-lər mobil şəbəkə ilə internet arasında əlaqə yaradır.</translation>
 <translation id="7936303884198020182">Ad serveri tapılmadı</translation>
 <translation id="7942349550061667556">Qırmızı</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
+<translation id="8111706652656628199">Qısayol əlçatan deyil. Shift və daha 1 dəyişdirici düymə (ctrl, alt, axtarış və ya başladıcı) ilə yeni qısayolu basın.</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto albomu</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Qısayol "<ph name="CONFLICT_ACCEL_NAME" />" üçün istifadə edilir. Yeni qısayolu basın. Orijinal qısayolu əvəzləmək üçün qısayolu yenidən basın.</translation>
 <translation id="879568662008399081">Bu şəbəkənin avtorizasiya portalı ola bilər</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8798441408945964110">Provayder adı</translation>

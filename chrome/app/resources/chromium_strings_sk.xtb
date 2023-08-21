@@ -209,11 +209,13 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>
 <translation id="5614091477838198795">Keď zapnete túto možnosť, systém vás odhlási aj z prehliadača Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Je k dispozícii aktualizácia prehliadača Chromium}=1{Je k dispozícii aktualizácia prehliadača Chromium}few{Aktualizácia prehliadača Chromium je k dispozícii už # dni}many{Aktualizácia prehliadača Chromium je k dispozícii už # dňa}other{Aktualizácia prehliadača Chromium je k dispozícii už # dní}}</translation>
+<translation id="5643865575100044307">Pred zavretím prehliadača Chromium vždy odstraňujte dáta webov zo zariadenia</translation>
 <translation id="5653831366781983928">Reštartujte Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Zobraziť Chromium v tomto jazyku</translation>
 <translation id="5862307444128926510">Vitajte v prehliadači Chromium</translation>
 <translation id="5883558403894052917">Prehliadač Chromium zistil, že tieto položky obsahujú malvér:</translation>
+<translation id="5889361821821684993">Chromium vykonáva pravidelné kontroly s cieľom uistiť sa, že v prehliadači máte najbezpečnejšie nastavenia. Ak bude treba, aby ste niečo skontrolovali, oznámime vám to.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prihlásenie do siete</translation>
 <translation id="5924017743176219022">Pripája sa k internetu…</translation>
@@ -224,6 +226,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="5988505247484123880">Je bežné, že navštívené weby si pamätajú veci, ktoré vás zaujímajú, aby vám mohli prispôsobiť prostredie. Weby môžu v prehliadači Chromium ukladať aj údaje o vašich záujmoch.</translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
+<translation id="6055611795418209449">Chromium blokuje stiahnutie niektorých súborov</translation>
 <translation id="6055895534982063517">K dispozícii je nová verzia prehliadača Chromium, ktorá je rýchlejšia ako kedykoľvek predtým.</translation>
 <translation id="6063093106622310249">&amp;Otvoriť v prehliadači Chromium</translation>
 <translation id="6072279588547424923">Rozšírenie <ph name="EXTENSION_NAME" /> bolo pridané do prehliadača Chromium</translation>
@@ -237,6 +240,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6132897690380286411">Chromium sa čoskoro zavrie a odstráni dáta</translation>
 <translation id="6134968993075716475">Bezpečné prehliadanie je vypnuté. Chromium ho odporúča zapnúť.</translation>
 <translation id="6145820983052037069">Tu môžete prepínať profily prehliadača Chromium</translation>
+<translation id="6175304430031192654">V závislosti od vašich nastavení môže Chromium odosielať aj súbory cookie a vašu aktuálnu webovú adresu</translation>
 <translation id="6183079672144801177">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do prehliadača Chromium, a potom to skúste odoslať znova.</translation>
 <translation id="6212496753309875659">Tento počítač už obsahuje novšiu verziu prehliadača Chromium. Ak softvér nefunguje, odinštalujte prehliadač Chromium a skúste to znova.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sa teraz reštartuje}=1{Chromium sa reštartuje o 1 sekundu}few{Chromium sa reštartuje o # sekundy}many{Chromium sa reštartuje o # sekundy}other{Chromium sa reštartuje o # sekúnd}}</translation>
@@ -257,6 +261,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="6373523479360886564">Naozaj chcete Chromium odinštalovať?</translation>
 <translation id="6375219077595103062">Pridajte odkaz na Správcu hesiel</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Ako používame tieto údaje:<ph name="END_BOLD" /> Chromium môže odhadovať vaše záujmy. Neskôr môže web, ktorý navštívite, o ne Chromium požiadať, aby mohol prispôsobiť zobrazované reklamy.</translation>
+<translation id="6400112897226594999">Logo prehliadača Chromium na obrazovke počítača.</translation>
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
 <translation id="6442900851116057561">Reštartovanie systému Chromium OS</translation>
 <translation id="6455857529632101747">Vitajte v profiloch prehliadača Chromium</translation>
@@ -306,6 +311,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="718435575166326686">Chromium vyžaduje pre tento web povolený prístup ku kamere</translation>
 <translation id="7196312274710523067">Chromium sa nepodarilo spustiť. Skúste to znova.</translation>
 <translation id="7197677400338048821">Chromium nemôže skontrolovať heslá. Skúste to znova o 24 hodín.</translation>
+<translation id="7213407614656404070">Chromium môžete kedykoľvek použiť kliknutím na odkazy v správach, dokumentoch a ďalších aplikáciách</translation>
 <translation id="7223968959479464213">Správca úloh – Chromium</translation>
 <translation id="7246575524853130370">Vaše záujmy podľa odhadu prehliadača Chromium</translation>
 <translation id="7309928523159922338">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od prehliadača Chromium údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>

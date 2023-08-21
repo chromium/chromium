@@ -40,6 +40,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> siekdami apsaugoti jūsų privatumą, automatiškai ištriname senesnius nei keturių savaičių pomėgius. Jums naršant toliau, pomėgiai vėl gali atsirasti sąraše. Arba galite pašalinti pomėgius, kurių „Chrome“ įtraukti neturėtų.</translation>
 <translation id="1628000112320670027">Gaukite pagalbos dėl „Chrome“</translation>
 <translation id="1640672724030957280">Atsisiunčiama...</translation>
+<translation id="1642309806724967937">Atsižvelgiant į nustatymus, „Chrome“ taip pat gali siųsti slapukus ir dabartinį URL</translation>
 <translation id="1662146548738125461">Apie „ChromeOS Flex“</translation>
 <translation id="1674870198290878346">Atidaryti nuorodą „Chrome“ inko&amp;gnito lange</translation>
 <translation id="1682634494516646069">„Google Chrome“ negali skaityti ir rašyti į duomenų katalogą:
@@ -97,6 +98,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2597976513418770460">Gaukite „Chrome“ naršyklės informaciją iš <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">„Chrome“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2645435784669275700">„Chrome“ OS</translation>
+<translation id="2649768380733403658">„Chrome“ reguliariai tikrina, ar naršyklės nustatymai yra saugiausi. Pranešime, jei reikės ką nors peržiūrėti.</translation>
 <translation id="2652691236519827073">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>
 <translation id="2665296953892887393">Padėkite tobulinti „Google Chrome“ siųsdami „Google“ strigčių ataskaitas ir <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Šis plėtinys pakeitė, kuris puslapis rodomas paleidus „Chrome“.</translation>
@@ -236,6 +238,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 
 Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalogą arba naudokite naujesnės versijos „Chrome“.</translation>
 <translation id="521447420733633466">Jei bendrinate įrenginį, šeimos nariai ir draugai gali naršyti atskirai ir nustatyti „Chrome“ pagal savo poreikius</translation>
+<translation id="5239627039202700673">Naudokite „Chrome“ bet kada spustelėję nuorodas pranešimuose, dokumentuose ir kitose programose</translation>
 <translation id="5251420635869119124">Svečiai gali naudoti „Chrome“ nepalikdami jokių duomenų.</translation>
 <translation id="5334309298019785904">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes jūsų domene sinchronizavimas nepasiekiamas.</translation>
 <translation id="5334487786912937552">„Chrome“ reikia prieigos prie saugyklos, kad būtų galima atsisiųsti failus</translation>
@@ -252,6 +255,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="5566025111015594046">„Google Chrome“ (mDNS-In)</translation>
 <translation id="565744775970812598">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį}=1{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. Inkognito langas nebus atidarytas iš naujo.}one{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langas nebus atidarytas iš naujo.}few{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langai nebus atidaryti iš naujo.}many{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito lango nebus atidaryta iš naujo.}other{Administratorius prašo paleisti „Chrome“ iš naujo, kad būtų galima pritaikyti šį naujinį. # inkognito langų nebus atidaryta iš naujo.}}</translation>
+<translation id="5682679001737420487">„Chrome“ blokuoja kai kuriuos atsisiuntimus</translation>
 <translation id="5686916850681061684">Tinkinkite ir valdykite „Google Chrome“. Reikia atkreipti dėmesį – spustelėkite ir peržiūrėkite išsamią informaciją.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Įjungus, „Chrome“ atlaisvina atminties iš neaktyvių skirtukų. Taip aktyviems skirtukams ir kitoms programoms suteikiama daugiau kompiuterio išteklių ir „Chrome“ veikia sparčiai. Neaktyvūs skirtukai automatiškai vėl tampa aktyvūs, kai grįžtate į juos.</translation>
@@ -309,6 +313,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6739177684496155661">Tęsti naudojant naują „Chrome“ profilį?</translation>
 <translation id="6750954913813541382">Kad ištaisytų rašybos klaidas, „Chrome“ tekstą, kurį įvedate naršyklėje, siunčia „Google“</translation>
 <translation id="677276454032249905">Vis tiek išeiti iš „Chrome“?</translation>
+<translation id="6794858689789885890">Visada ištrinti svetainių duomenis iš įrenginio uždarius „Chrome“</translation>
 <translation id="683440813066116847">„Canary“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
 <translation id="6881299373831449287">„Chrome“ atnaujinimas</translation>
 <translation id="6885412569789873916">„Chrome“ beta versijos programos</translation>
@@ -393,6 +398,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> „Chrome“ gali įvertinti jūsų pomėgius. Vėliau svetainė, kurioje lankotės, gali paprašyti „Chrome“ peržiūrėti jūsų pomėgius, kad galėtų suasmeninti jūsų matomus skelbimus.</translation>
 <translation id="8387459386171870978">Toliau naudoti „Chrome“</translation>
 <translation id="8394720698884623075">Tikrinami URL pagal nesaugių svetainių sąrašą, saugomą naršyklėje „Chrome“</translation>
+<translation id="8403038600646341038">„Chrome“ logotipas kompiuterio ekrane.</translation>
 <translation id="8416347857511542594">Sužinokite daugiau apie skelbimų suasmeninimą sistemoje „Chrome“</translation>
 <translation id="8418845734693287262">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes išsami paskyros prisijungimo informacija pasenusi.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>

@@ -209,11 +209,13 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5527463683072221100">Open PDFs in Chromium</translation>
 <translation id="5614091477838198795">When on, you'll also be signed out of Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{A Chromium update is available}=1{A Chromium update is available}other{A Chromium update has been available for # days}}</translation>
+<translation id="5643865575100044307">Always delete site data from your device when you close Chromium</translation>
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
+<translation id="5889361821821684993">Chromium regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5924017743176219022">Connecting to the Internet…</translation>
@@ -224,6 +226,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5988505247484123880">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chromium about your interests.</translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
 <translation id="6040143037577758943">Close</translation>
+<translation id="6055611795418209449">Chromium blocks some downloads</translation>
 <translation id="6055895534982063517">There's a new version of Google Chrome available and it's faster than ever.</translation>
 <translation id="6063093106622310249">&amp;Open in Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> has been added to Chromium</translation>
@@ -237,6 +240,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6132897690380286411">Chromium will soon close and delete data</translation>
 <translation id="6134968993075716475">Safe Browsing is off. Chromium recommends turning it on.</translation>
 <translation id="6145820983052037069">You can switch between Chromium profiles here</translation>
+<translation id="6175304430031192654">Depending on your settings, Chromium may also send cookies and your current URL</translation>
 <translation id="6183079672144801177">Make sure that you are signed in to Chromium on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="6212496753309875659">This computer already has a more recent version of Chromium. If the software is not working, please uninstall Chromium and try again.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium will relaunch now}=1{Chromium will relaunch in 1 second}other{Chromium will relaunch in # seconds}}</translation>
@@ -257,6 +261,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
 <translation id="6375219077595103062">Add a shortcut to Password Manager</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chromium can estimate your interests. Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see.</translation>
+<translation id="6400112897226594999">Chromium logo inside a computer screen.</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6442900851116057561">Restart Chromium OS</translation>
 <translation id="6455857529632101747">Welcome to Chromium profiles</translation>
@@ -305,6 +310,7 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="718435575166326686">Chromium needs camera permission for this site</translation>
 <translation id="7196312274710523067">Couldn't launch Chromium. Try again.</translation>
 <translation id="7197677400338048821">Chromium can't check your passwords. Try again after 24 hours.</translation>
+<translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
 <translation id="7246575524853130370">Your interests as estimated by Chromium</translation>
 <translation id="7309928523159922338">Ad measurement allows sites that you visit to request information from Chromium that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>

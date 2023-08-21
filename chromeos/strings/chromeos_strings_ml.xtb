@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">'ബാഹ്യ ഉപകരണങ്ങൾക്കുള്ള ഫേംവെയർ അപ്‌ഡേറ്റ് ചെയ്യുക' വിൻഡോ തുറന്നിരിക്കുന്നു. <ph name="NUM_UPDATES" /> അപ്ഡേറ്റുകൾ ലഭ്യമാണ്.</translation>
 <translation id="1145516343487477149">Chromebook-മായി ബന്ധപ്പെട്ട പൊതുവായ ചോദ്യങ്ങൾക്കുള്ള സഹായ ലേഖനങ്ങളും ഉത്തരങ്ങളും കണ്ടെത്തുക</translation>
+<translation id="1154390310959620237">നിങ്ങൾക്ക് 5 കുറുക്കുവഴികൾ മാത്രമേ ഇഷ്ടാനുസൃതമാക്കാനാകൂ. പുതിയൊരെണ്ണം ചേർക്കാൻ ഒരു കുറുക്കുവഴി ഇല്ലാതാക്കുക.</translation>
 <translation id="1164939766849482256">'ഉദയം മുതൽ അസ്തമയം വരെ' സ്ക്രീൻ സേവർ</translation>
 <translation id="1167755866710282443">കീകൾ ഇഷ്ടാനുസൃതമാക്കാൻ മെനു തുറക്കുക. നീക്കാൻ മെനു വലിച്ചിടുക.</translation>
 <translation id="1175697296044146566">ഈ <ph name="DEVICE_TYPE" /> മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER" /> ആണ്.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">റീസ്റ്റാർട്ട് ചെയ്യുന്നു…</translation>
 <translation id="2533048460510040082">നിർദ്ദേശിക്കുന്ന സഹായ ഉള്ളടക്കം</translation>
 <translation id="2536159006530886390">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല.</translation>
+<translation id="2555662516429796509">കീബോഡിലെ 1-4 മോഡിഫയറുകളും മറ്റൊരു കീയും അമർത്തുക</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> പരീക്ഷണം റൺ ചെയ്യുന്നു...</translation>
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2597774443162333062">ഡീബഗ് ചെയ്യുന്നതിന് ഫയലുകൾ Google-ലേക്ക് അയയ്‌ക്കും</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
 <translation id="3373141842870501561">എർത്ത് ഫ്ലോ വാൾപേപ്പർ</translation>
 <translation id="337375748120863155">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ. നിയന്ത്രണങ്ങൾ ആക്‌സസ് ചെയ്യാൻ ഇടത്തേക്കോ വലത്തേക്കോ ഉള്ള അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
+<translation id="3383623117265110236">എക്‌സ്ക്ലൂസീവ്</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4176659219503619100">നിയന്ത്രണ പാനൽ</translation>
+<translation id="4185315616950253617">മുകൾ വരിയിലെ കീകൾ ഉള്ള കുറുക്കുവഴിയിൽ തിരയൽ കീ ഉൾപ്പെടുത്തേണ്ടതുണ്ട്.</translation>
 <translation id="420283545744377356">സ്ക്രീൻ സേവർ ഓഫാക്കുക</translation>
 <translation id="4213104098953699324">USB കീബോർഡ്</translation>
 <translation id="4227825898293920515">പാസ്‌വേഡ് <ph name="TIME" /> സമയത്തിനുള്ളിൽ കാലഹരണപ്പെടും</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP പ്രതികരണ സമയം</translation>
 <translation id="4271957103967917607">പൂർണ്ണ സ്‌ക്രീനിൽ കാണുക</translation>
 <translation id="4275663329226226506">മീഡിയ</translation>
+<translation id="4278766082079064416">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. വൈരുദ്ധ്യം പരിഹരിക്കാൻ എഡിറ്റ് ചെയ്യുക അല്ലെങ്കിൽ നീക്കം ചെയ്യുക.</translation>
 <translation id="4289540628985791613">അവലോകനം</translation>
 <translation id="4289849978083912975">സ്ലൈഡ് ഷോ</translation>
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ശ്രമം ശേഷിക്കുന്നു}other{<ph name="ERROR_MESSAGE" /> {0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="4873827928179867585">പരിശോധിച്ചുറപ്പിക്കൽ അൽഗോരിതം</translation>
 <translation id="4880328057631981605">ആ‌ക്‌സസ് പോയിന്‍റിന്‍റെ പേര്</translation>
+<translation id="488307179443832524">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">ഡിസ്‌പ്ലേ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
+<translation id="5816802250591013230">കുറുക്കുവഴിയൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5826644637650799838">ആർട്ടിനെ കുറിച്ച്</translation>
 <translation id="5832805196449965646">വ്യക്തിയെ ചേർക്കുക</translation>
 <translation id="583281660410589416">അജ്ഞാതം</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
 <translation id="7041549558901442110">ഉപകരണം കണക്റ്റ് ചെയ്തിട്ടില്ല.</translation>
+<translation id="7046522406494308071">എല്ലാ കുറുക്കുവഴികളും ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്യണോ?</translation>
 <translation id="7058278511608979688">അവസാനിപ്പിച്ച് സംരക്ഷിക്കുക</translation>
 <translation id="7059230779847288458">ചാർജ് ചെയ്യുന്നു, പൂർത്തിയാകാൻ <ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="7068619307603204412">നിങ്ങളുടെ ഉപകരണം തയ്യാറാക്കുക</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">പരാജയപ്പെട്ടു - അംഗീകരിക്കൽ പ്രക്രിയ നടന്നില്ല</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />-ൽ <ph name="COUNT" />-ാമത്തെ ഉപകരണം, പേര് <ph name="NAME" />.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> എക്‌സ്‌ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
 <translation id="7130438335435247835">ആക്സസ്സ് പോയിന്റിന്റെ പേര് (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">സെല്ലുലാര്‍‌ സേവനദാതാവ്</translation>
 <translation id="725133483556299729">ഇമെയിൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7271040990581020067">സ്‌കാനർ നിലവിൽ ഉപയോഗത്തിലാണ്. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="7273347807225967898">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift, തിരയൽ, അല്ലെങ്കിൽ ലോഞ്ചർ) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">ഇളം കാറ്റ് അനുഭവിക്കൂ</translation>
 <translation id="7287310195820267359">വാൾപേപ്പർ ശേഖരങ്ങൾ</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">കീബോർഡ് ലെെറ്റ്</translation>
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
 <translation id="7747039790905080783">മുമ്പ് പങ്കിട്ട കീ</translation>
+<translation id="7752963721013053477">ഉദയം മുതൽ അസ്തമയം വരെ - എക്‌സ്‌ക്ലൂസീവ്</translation>
 <translation id="7762130827864645708">നിങ്ങൾ പാസ്‌വേഡ് മാറ്റി. ഇപ്പോൾ മുതൽ പുതിയ പാസ്‌വേഡ് ഉപയോഗിക്കുക.</translation>
 <translation id="7763470514545477072">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തം</translation>
 <translation id="7769672763586021400">മോഡൽ ഐഡി</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">പ്രൊവൈഡര്‍ തരം:</translation>
 <translation id="7882501334836096755">എല്ലാവർക്കുമായുള്ള കീ</translation>
+<translation id="7903695460270716054">ക്യുറേറ്റ് ചെയ്ത ആർട്ട്‌വർക്കും ചിത്രങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7915220255123750251">നെറ്റ്‌വർക്ക് APN ക്രമീകരണം മാനേജ് ചെയ്യുക. സെല്ലുലാർ നെറ്റ്‌വർക്കിനും ഇന്റർനെറ്റിനും ഇടയിൽ APN-കൾ കണക്ഷൻ സ്ഥാപിക്കുന്നു.</translation>
 <translation id="7936303884198020182">നെയിം സെർവറുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="7942349550061667556">ചുവപ്പ്</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
+<translation id="8111706652656628199">കുറുക്കുവഴി ലഭ്യമല്ല. shift-ഉം ഒരു മോഡിഫയർ കീയും (ctrl, alt, തിരയൽ അല്ലെങ്കിൽ ലോഞ്ചർ) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">ട്രാഫിക് കൗണ്ടറുകൾ അഭ്യർത്ഥിക്കുക</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ആൽബം</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. പുതിയൊരു കുറുക്കുവഴി അമർത്തുക. ആദ്യത്തെ കുറുക്കുവഴിക്ക് പകരം മറ്റൊന്ന് നൽകാൻ, ഈ കുറുക്കുവഴി വീണ്ടും അമർത്തുക.</translation>
 <translation id="879568662008399081">ഈ നെറ്റ്‌വർക്കിന് ക്യാപ്റ്റീവ് പോർട്ടൽ ഉണ്ടായിരിക്കാം</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
 <translation id="8798441408945964110">പ്രൊവൈഡറിന്റെ പേര്</translation>

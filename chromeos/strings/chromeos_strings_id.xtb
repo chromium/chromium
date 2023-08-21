@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Jendela update firmware untuk perangkat eksternal terbuka. <ph name="NUM_UPDATES" /> update tersedia.</translation>
 <translation id="1145516343487477149">Temukan artikel bantuan dan jawaban atas pertanyaan umum tentang Chromebook</translation>
+<translation id="1154390310959620237">Anda hanya dapat menyesuaikan 5 pintasan. Hapus satu pintasan untuk menambahkan pintasan baru</translation>
 <translation id="1164939766849482256">Screensaver Fajar ke petang</translation>
 <translation id="1167755866710282443">Buka menu untuk menyesuaikan tombol. Tarik menu untuk memindahkan.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> ini dikelola oleh <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Memulai ulang ...</translation>
 <translation id="2533048460510040082">Konten bantuan yang disarankan</translation>
 <translation id="2536159006530886390">Tidak dapat terhubung ke internet.</translation>
+<translation id="2555662516429796509">Tekan 1-4 pengubah dan 1 tombol lainnya di keyboard</translation>
 <translation id="2570743873672969996">Menjalankan pengujian <ph name="TEST_NAME" /> ...</translation>
 <translation id="2584559707064218956">Untuk menyiapkan, buka Setelan</translation>
 <translation id="2597774443162333062">File akan dikirim ke Google untuk proses debug</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Yakin ingin menghapus semua histori cetak? Pekerjaan cetak yang sedang berlangsung tidak akan dihapus.</translation>
 <translation id="3373141842870501561">Wallpaper Aliran bumi</translation>
 <translation id="337375748120863155">Info terkait pilihan Anda. Gunakan tombol Panah kiri atau kanan untuk mengakses kontrol.</translation>
+<translation id="3383623117265110236">Eksklusif</translation>
 <translation id="3404249063913988450">Aktifkan screen saver</translation>
 <translation id="3413935475507503304">Untuk melanjutkan update, klik Berikutnya.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">kurangi kecerahan</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
 <translation id="4176659219503619100">Panel Kontrol</translation>
+<translation id="4185315616950253617">Pintasan dengan tombol baris atas harus menyertakan tombol penelusuran.</translation>
 <translation id="420283545744377356">Matikan screen saver</translation>
 <translation id="4213104098953699324">Keyboard USB</translation>
 <translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Latensi HTTP</translation>
 <translation id="4271957103967917607">Lihat di Layar Penuh</translation>
 <translation id="4275663329226226506">Media</translation>
+<translation id="4278766082079064416">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Edit atau hapus untuk menyelesaikan konflik.</translation>
 <translation id="4289540628985791613">Ringkasan</translation>
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}other{<ph name="ERROR_MESSAGE" /> {0} kesempatan lagi}}</translation>
 <translation id="4873827928179867585">Algoritme autentikasi</translation>
 <translation id="4880328057631981605">Nama titik akses</translation>
+<translation id="488307179443832524">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="4891842000192098784">Tegangan</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Tingkatkan kecerahan layar</translation>
 <translation id="57838592816432529">Bisukan</translation>
 <translation id="5784136236926853061">Latensi HTTP tinggi</translation>
+<translation id="5816802250591013230">Tidak ada pintasan yang ditetapkan</translation>
 <translation id="5826644637650799838">Tentang karya seni</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Perangkat tidak terhubung.</translation>
+<translation id="7046522406494308071">Reset semua pintasan ke default?</translation>
 <translation id="7058278511608979688">Akhiri &amp; simpan</translation>
 <translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
 <translation id="7068619307603204412">Siapkan perangkat Anda</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Pilih ilustrasi eksklusif <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">masuk</translation>
 <translation id="7130438335435247835">Nama poin akses (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Operator seluler</translation>
 <translation id="725133483556299729">Pilih email</translation>
 <translation id="7271040990581020067">Pemindai sedang digunakan. Coba lagi nanti.</translation>
+<translation id="7273347807225967898">Pintasan tidak tersedia. Tekan pintasan baru menggunakan tombol pengubah (ctrl, alt, shift, penelusuran, atau peluncur).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Rasakan angin sepoi-sepoi</translation>
 <translation id="7287310195820267359">Koleksi Wallpaper</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">lampu keyboard</translation>
 <translation id="773153675489693198">Jumlah siklus</translation>
 <translation id="7747039790905080783">Kunci yang dibagikan sebelumnya</translation>
+<translation id="7752963721013053477">Dawn to dark - eksklusif</translation>
 <translation id="7762130827864645708">Perubahan sandi Anda berhasil. Gunakan sandi baru mulai sekarang.</translation>
 <translation id="7763470514545477072">Kecocokan suffix domain</translation>
 <translation id="7769672763586021400">ID Model</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci publik</translation>
+<translation id="7903695460270716054">Memilih ilustrasi dan gambar pilihan</translation>
 <translation id="7915220255123750251">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet.</translation>
 <translation id="7936303884198020182">Tidak ada server nama yang ditemukan</translation>
 <translation id="7942349550061667556">Merah</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Ubah sandi</translation>
 <translation id="8094062939584182041">Izinkan Google mengirim email kepada Anda tentang masalah ini</translation>
 <translation id="8104083085214006426">Anda menggunakan jaringan terbuka dan tidak aman</translation>
+<translation id="8111706652656628199">Pintasan tidak tersedia. Tekan pintasan baru menggunakan shift dan 1 tombol pengubah lainnya (ctrl, alt, penelusuran, atau peluncur).</translation>
 <translation id="811820734797650957">(Android) Gateway Dapat Di-ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Minta Penghitung Traffic</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru. Untuk mengganti pintasan awal, tekan lagi pintasan ini.</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>

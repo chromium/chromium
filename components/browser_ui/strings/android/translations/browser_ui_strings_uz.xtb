@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Onlayn versiyasini ochish</translation>
 <translation id="1036348656032585052">O‘chirib qo‘yish</translation>
 <translation id="1044891598689252897">Saytlar xatosiz ishlaydi</translation>
+<translation id="1073417869336441572">Tashqi cookie fayllarga nega ruxsat berganingiz sababini yozish orqali Chromeni yaxshilashimizga yordam bering. <ph name="BEGIN_LINK" />Fikr-mulohaza<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Bunda saytlar maʼlumotlari, cookie fayllar va Bosh ekrandagi ilovalar egallagan <ph name="DATASIZE" /> joy tozalanadi.</translation>
 <translation id="1178581264944972037">Pauza</translation>
 <translation id="1181037720776840403">Olib tashlash</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Tashqi saytlardan tashqarilarga ruxsat berilgan</translation>
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="1994173015038366702">Sayt URL manzili</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{1 kundan keyin muddati tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="2004697686368036666">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
 <translation id="2025115093177348061">Boyitilgan reallik</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> sahifasiga qaytish uchun bosing</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Joylashuv ma’lumotini ko‘rishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Tashqi cookie fayl bloklandi</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome cookie fayllarni ertadan yana bloklaydi}other{Chrome cookie fayllarni # kundan keyin yana bloklaydi}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> domenidagi saytlar</translation>
 <translation id="3538390592868664640">Saytlarni atrofingizning 3D xaritasini yaratish yoki kamera joylashuvini aniqlashdan bloklash</translation>
 <translation id="3544058026430919413">Kompaniya saytlar guruhini jamlashi va cookielar yordamida guruhdagi faoliyatni ulashishi mumkin. Inkognito rejimidan chiqish.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Telefon raqamlari</translation>
 <translation id="3826050100957962900">Tashqi xizmatga kirish</translation>
 <translation id="3835233591525155343">Qurilmadan foydalanish</translation>
+<translation id="3843916486309149084">Chrome cookie fayllarni bugundan yana bloklaydi</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3859306556332390985">Oldinga surish</translation>
 <translation id="3895926599014793903">Hajmni majburiy o‘zgartirish funksiyasini yoqish</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Muayyan sayt uchun tashqi xizmatga kirishni bloklang.</translation>
 <translation id="6388207532828177975">Tozalash va asl holiga qaytarish</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
+<translation id="640163077447496506">Muddati bugun tugaydi</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Saytlarga virtual reallik qurilmalari yoki maʼlumotlaridan foydalanishni taqiqlash</translation>
 <translation id="6447842834002726250">Cookie fayllari</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Tasdiqlash</translation>
 <translation id="8154912474061769055">Aksariyat saytlardagi funksiyalar ishalamay qolishi mumkin</translation>
 <translation id="8168435359814927499">Kontent</translation>
+<translation id="8186479265534291036">Sayt ishlamayaptimi? Tashqi cookie fayllar bloklandi</translation>
 <translation id="8197286292360124385">Ruxsat berildi: <ph name="PERMISSION_1" /></translation>
 <translation id="8200772114523450471">Davom ettirish</translation>
 <translation id="8206354486702514201">Bu parametr administrator tomonidan yoqilgan.</translation>

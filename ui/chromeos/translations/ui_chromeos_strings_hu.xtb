@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Fájlok száma összesen</translation>
 <translation id="1755345808328621801">Ezt a fájlt Windows-szoftvereket használó számítógéphez készítették. Nem kompatibilis az Ön ChromeOS-t futtató eszközével. A Chrome Webáruházban kereshet megfelelő helyettesítő alkalmazást.</translation>
 <translation id="1757915090001272240">Széles latin</translation>
+<translation id="1761091787730831947">Megosztás a következővel: <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">A hitelesítési tanúsítvány helyileg elutasítva</translation>
 <translation id="1775381402323441512">Videófájl adatai</translation>
 <translation id="180035236176489073">Online kell lennie a fájlok eléréséhez.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Alkalmazás telepítése a Linux segítségével</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, részletek</translation>
 <translation id="2724954091494693138">török, F-billentyűzettel</translation>
+<translation id="2732288874651063549">A(z) <ph name="VM_NAME" />-megosztás kezelése</translation>
 <translation id="2732839045120506979">vietnámi, VNI</translation>
 <translation id="2735623501230989521">A Parallels Desktop engedélyt kap arra, hogy hozzáférjen a fájlokhoz a következő mappában: <ph name="FOLDER_NAME" />.</translation>
 <translation id="2764206540577097904">Felhasználta Google Workspace-tárhelyét.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="3511705761158917664">Felkészülés <ph name="NUMBER_OF_ITEMS" /> elem szinkronizálására…</translation>
 <translation id="3522708245912499433">portugál</translation>
+<translation id="3523225005467146490">1 mappa megosztva a következővel: <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Figyelem: Ezek ideiglenes fájlok, és automatikusan törlésre kerülnek azért, hogy tárhely szabaduljon fel.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mappa</translation>
 <translation id="3548125359243647069">Túl sokszor lett megadva helytelen PIN-kód.</translation>
@@ -664,6 +667,7 @@
 <translation id="6164412158936057769">Pillangók</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6170470584681422115">Szendvics</translation>
+<translation id="6181912134988520389">Engedélyezi a(z) <ph name="VM_NAME" /> számára a Google Drive-on tárolt fájljaihoz való hozzáférést. A változtatások az összes eszközén szinkronizálódnak.</translation>
 <translation id="6187719147498869044">magyar</translation>
 <translation id="6198252989419008588">PIN-kód megváltoztatása</translation>
 <translation id="6199801702437275229">Várakozás a helyinformációkra...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">svéd</translation>
 <translation id="6990081529015358884">Elfogyott a hely</translation>
 <translation id="6993826899923627728">Ezek az elemek a kukában vannak</translation>
+<translation id="6996593023542748157">Mappa megosztása a következővel: <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Szervezetének további tárhelyre van szüksége a feltöltés befejezéséhez.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> fájl áthelyezését letiltotta egy rendszergazdai házirend</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">belarusz</translation>
 <translation id="8336153091935557858">Tegnap <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Már létezik ugyanezzel a névvel egy fájl vagy egy könyvtár.</translation>
+<translation id="83651606385705612">Engedélyezi a(z) <ph name="VM_NAME" /> számára a(z) <ph name="FOLDER_NAME" /> mappában tárolt fájljaihoz való hozzáférést.</translation>
 <translation id="8372369524088641025">Hibás WEP kulcs</translation>
 <translation id="8372852072747894550">görög</translation>
 <translation id="8386903983509584791">Keresés befejezve</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472">Hálózat: <ph name="NETWORK_TYPE" />. Csatlakozás…</translation>
 <translation id="8425213833346101688">Módosítás</translation>
 <translation id="8428213095426709021">Beállítások</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> mappa megosztva a következővel: <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">SIM-kártya PIN-kódjának módosítása</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Hiányzó SIM-kártya</translation>

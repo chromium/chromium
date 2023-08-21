@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Harici cihazlar için donanım yazılımını güncelleme penceresi açık. <ph name="NUM_UPDATES" /> güncelleme var.</translation>
 <translation id="1145516343487477149">Sık sorulan Chromebook sorularıyla ilgili yardım makaleleri ve yanıtlar bulun</translation>
+<translation id="1154390310959620237">Yalnızca 5 kısayol özelleştirebilirsiniz. Yeni kısayol eklemek için mevcut bir kısayolu silin.</translation>
 <translation id="1164939766849482256">Şafaktan geceye ekran koruyucu</translation>
 <translation id="1167755866710282443">Tuşları özelleştirmek için menüyü açın. Taşımak için menüyü sürükleyin.</translation>
 <translation id="1175697296044146566">Bu <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> tarafından yönetiliyor.</translation>
@@ -194,7 +195,7 @@
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2364498172489649528">Başarılı oldu</translation>
 <translation id="2367335866686097760">Tuş eşleme anahtarı</translation>
-<translation id="2380886658946992094">Hukuk</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2407209115954268704">SIM Kilitleme Durumu</translation>
 <translation id="241419523391571119">Test etmek için kapağı tekrar açın</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Yeniden başlatılıyor…</translation>
 <translation id="2533048460510040082">Önerilen yardım içeriği</translation>
 <translation id="2536159006530886390">İnternete bağlanamıyor.</translation>
+<translation id="2555662516429796509">Klavyenizde 1-4 değiştiriciye ve bir tane de farklı tuşa basın</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> adlı test çalıştırılıyor...</translation>
 <translation id="2584559707064218956">Kurulum yapmak için Ayarlar'a gidin</translation>
 <translation id="2597774443162333062">Dosyalar hata ayıklama amacıyla Google'a gönderilecektir</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
 <translation id="3373141842870501561">Toprak akışı duvar kağıdı</translation>
 <translation id="337375748120863155">Seçiminizle ilgili bilgi. Kontrollere erişmek için sol veya sağ ok tuşlarını kullanın.</translation>
+<translation id="3383623117265110236">Özel</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">parlaklığı azalt</translation>
 <translation id="4176463684765177261">Devre dışı</translation>
 <translation id="4176659219503619100">Kontrol Paneli</translation>
+<translation id="4185315616950253617">Üst sıra tuşlarına sahip kısayolun arama tuşunu içermesi gerekir.</translation>
 <translation id="420283545744377356">Ekran koruyucuyu kapat</translation>
 <translation id="4213104098953699324">USB klavye</translation>
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP Gecikmesi</translation>
 <translation id="4271957103967917607">Tam Ekran görüntüle</translation>
 <translation id="4275663329226226506">Medya</translation>
+<translation id="4278766082079064416">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Çakışmayı gidermek için kısayolu düzenleyin veya kaldırın.</translation>
 <translation id="4289540628985791613">Genel bakış</translation>
 <translation id="4289849978083912975">Slayt gösterisi</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}other{<ph name="ERROR_MESSAGE" /> {0} deneme hakkınız kaldı}}</translation>
 <translation id="4873827928179867585">Kimlik doğrulama algoritması</translation>
 <translation id="4880328057631981605">Erişim noktası adı</translation>
+<translation id="488307179443832524">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Yeni bir kısayola basın.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Hemen yeni bir tane seçin</translation>
 <translation id="4891842000192098784">Stres</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Ekran parlaklığını artır</translation>
 <translation id="57838592816432529">Sesi kapat</translation>
 <translation id="5784136236926853061">Yüksek HTTP gecikmesi</translation>
+<translation id="5816802250591013230">Kısayol atanmadı</translation>
 <translation id="5826644637650799838">Eser hakkında</translation>
 <translation id="5832805196449965646">Kişi Ekle</translation>
 <translation id="583281660410589416">Bilinmiyor</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
+<translation id="7046522406494308071">Tüm kısayollar varsayılanlara sıfırlansın mı?</translation>
 <translation id="7058278511608979688">Bitir ve kaydet</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
 <translation id="7068619307603204412">Cihazınızı hazırlayın</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Başarısız - Yetkilendirme Başarısız Oldu</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> cihazdan <ph name="INDEX" />. sıradakinin adı <ph name="NAME" />.</translation>
+<translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> cihazlara özel poster seçin</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
 <translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
+<translation id="7273347807225967898">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter, arama veya başlatıcı) kullanarak yeni bir kısayola basın.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Esintiyi hissedin</translation>
 <translation id="7287310195820267359">Duvar Kağıdı Koleksiyonları</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">klavye ışığı</translation>
 <translation id="773153675489693198">Şarj döngüsü sayısı</translation>
 <translation id="7747039790905080783">Önceden paylaşılan anahtar</translation>
+<translation id="7752963721013053477">Şafaktan geceye - özel</translation>
 <translation id="7762130827864645708">Şifre değişikliğiniz başarıyla tamamlandı. Lütfen bundan sonra yeni şifreyi kullanın.</translation>
 <translation id="7763470514545477072">Alan adı son eki eşleşmesi</translation>
 <translation id="7769672763586021400">Model kimliği</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Sağlayıcı türü</translation>
 <translation id="7882501334836096755">Ortak anahtar</translation>
+<translation id="7903695460270716054">Özel olarak seçilen posterleri ve resimleri kullanın</translation>
 <translation id="7915220255123750251">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur.</translation>
 <translation id="7936303884198020182">Alan adı sunucusu bulunamadı</translation>
 <translation id="7942349550061667556">Kırmızı</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8094062939584182041">Google'ın bu sorunla ilgili olarak size e-posta göndermesine izin verin</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
+<translation id="8111706652656628199">Kısayol kullanılamıyor. Üst karakter ve bir tane daha değiştirici tuş (ctrl, alt, arama veya başlatıcı) kullanarak yeni bir kısayola basın.</translation>
 <translation id="811820734797650957">(Android) Ağ geçidi pinglenebilir</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Trafik Sayaçlarını İste</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotoğraflar albümü</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Kısayol, "<ph name="CONFLICT_ACCEL_NAME" />" için kullanılıyor. Yeni bir kısayola basın. Orijinal kısayolu değiştirmek için bu kısayola tekrar basın.</translation>
 <translation id="879568662008399081">Bu ağda giriş portalı olabilir</translation>
 <translation id="8798099450830957504">Varsayılan</translation>
 <translation id="8798441408945964110">Sağlayıcı adı</translation>

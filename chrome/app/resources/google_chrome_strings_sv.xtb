@@ -40,6 +40,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Så här kan du hantera dina uppgifter:<ph name="END_BOLD" /> För att skydda din integritet raderar vi automatiskt intressen som är äldre än fyra veckor. Medan du surfar kan ett intresse dyka upp på listan igen. Du kan också ta bort intressen som du inte vill att Chrome ska inkludera.</translation>
 <translation id="1628000112320670027">Få hjälp med Chrome</translation>
 <translation id="1640672724030957280">Hämtar ...</translation>
+<translation id="1642309806724967937">Beroende på dina inställningar kan Chrome även skicka cookies och din nuvarande webbadress</translation>
 <translation id="1662146548738125461">Om ChromeOS Flex</translation>
 <translation id="1674870198290878346">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="1682634494516646069">Google Chrome kan inte läsa och skriva till datakatalogen:
@@ -97,6 +98,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2597976513418770460">Få saker i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2649768380733403658">Chrome kontrollerar regelbundet att webbläsaren har de säkraste inställningarna. Vi meddelar dig om du behöver granska något.</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>
 <translation id="2665296953892887393">Hjälp oss att göra Google Chrome bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google.</translation>
 <translation id="2689103672227170538">Det här tillägget har ändrat vilken sida som visas när du startar Chrome.</translation>
@@ -236,6 +238,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 
 Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om du vill använda en nyare version av Chrome.</translation>
 <translation id="521447420733633466">Om du delar en enhet med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
+<translation id="5239627039202700673">Använd Chrome varje gång du klickar på länkar i meddelanden, dokument och andra appar</translation>
 <translation id="5251420635869119124">Gäster kan använda Chrome utan att lämna spår.</translation>
 <translation id="5334309298019785904">Det gick inte att synkronisera data med Chrome OS eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="5334487786912937552">Du behöver ge Chrome åtkomst till lagringsutrymmet om det ska gå att ladda ned filer</translation>
@@ -252,6 +255,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> kan vara skadlig och har blockerats av Chrome.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas}=1{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
+<translation id="5682679001737420487">Chrome blockerar vissa nedladdningar</translation>
 <translation id="5686916850681061684">Anpassa och styr Google Chrome. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">När det här alternativet är aktiverat frigörs minne från inaktiva flikar i Chrome. Detta förser aktiva flikar och andra appar med mer av datorns resurser, vilket gör att Chrome fortsätter att fungera snabbt. De inaktiva flikarna aktiveras automatiskt när du återvänder till dem.</translation>
@@ -309,6 +313,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6739177684496155661">Vill du fortsätta i en ny Chrome-profil?</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
 <translation id="677276454032249905">Vill du avsluta Chrome ändå?</translation>
+<translation id="6794858689789885890">Radera alltid webbplatsdata från enheten när du stänger Chrome</translation>
 <translation id="683440813066116847">Regel som tillåter inkommande mDNS-trafik för Google Chrome Canary.</translation>
 <translation id="6881299373831449287">Chrome uppdateras</translation>
 <translation id="6885412569789873916">Appar i Chrome Beta</translation>
@@ -393,6 +398,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Så här använder vi denna data:<ph name="END_BOLD" /> Chrome kan göra en uppskattning av dina intressen. Senare kan en webbplats fråga efter dina intressen i Chrome för att anpassa vilka annonser som visas.</translation>
 <translation id="8387459386171870978">Fortsätt att använda Chrome</translation>
 <translation id="8394720698884623075">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome</translation>
+<translation id="8403038600646341038">Chrome-logotyp på en datorskärm.</translation>
 <translation id="8416347857511542594">Läs mer om annonsanpassning i Chrome</translation>
 <translation id="8418845734693287262">Det gick inte att synkronisera data med Chrome OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>

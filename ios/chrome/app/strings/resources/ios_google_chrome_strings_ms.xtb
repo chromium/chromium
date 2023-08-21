@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1143896152279775643">Kata laluan anda akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Kekal menggunakan data Chrome dalam Google Account anda.</translation>
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
 <translation id="1352919863522755794">Google Password Manager tidak dapat menyemak kata laluan anda. Cuba periksa sambungan Internet anda.</translation>
+<translation id="1407843355326180937">Log masuk ke laman ini dan Chrome untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
 <translation id="1462727070346936664">Log masuk untuk memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
 <translation id="1491435845014430217">Hidupkan “Kunci Tab Inkognito Apabila Anda Menutup Chrome”.</translation>
 <translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="1511320244449497906">Anda telah log masuk dan menyegerakkan data anda dengan akaun yang diurus oleh <ph name="DOMAIN" />. Kini pentadbirnya boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chrome.</translation>
+<translation id="1526327845902180576">Apabila dihidupkan:
+<ph name="BEGIN_INDENT" />  • Bantu jadikan Chrome lebih baik untuk orang yang menggunakan ciri ini seperti anda.<ph name="END_INDENT" />
+
+Perkara yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Maklumat dihantar kepada Google tentang penggunaan Chromium anda tetapi tidak terikat dengan anda.
+
+  • Jika Chrome ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
+
+  • Jika anda menyegerakkan sejarah anda kepada Google Account anda, metrik mungkin merangkumi maklumat URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Anda mempunyai keselamatan terkuat Chrome terhadap laman web berbahaya</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
 <translation id="1733654336159102143">Kunci tab inkognito anda semasa anda keluar daripada Chrome atau beralih kepada apl lain.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Kunci Tab Inkognito Apabila Anda Menutup Chrome</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
 <translation id="384394811301901750">Google Chrome tidak dapat menggunakan kamera anda sekarang</translation>
+<translation id="3901001113120561395">Manfaatkan Chrome sepenuhnya.</translation>
 <translation id="3980220367029651214">Anda bertukar akaun penyegerakan daripada <ph name="USER_EMAIL1" /> kepada <ph name="USER_EMAIL2" />. Data Chrome sedia ada anda diurus oleh <ph name="DOMAIN" />. Ini akan memadamkan data anda daripada peranti ini, tetapi data anda akan kekal dalam <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasi anda menghendaki anda kekal dilog keluar daripada Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome tidak mempunyai akses ke foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Log masuk ke laman ini dan Chrome.</translation>
 <translation id="4698415050768537821">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Akaun Google anda.<ph name="END_LINK" /></translation>
 <translation id="4819268619367838612">Untuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Sesetengah data Chrome anda belum disimpan dalam Google Account anda.
+
+        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="484033449593719797">Tidak disokong pada Chrome Beta</translation>
 <translation id="4840404732697892756">Google Password Manager boleh menyemak kata laluan anda apabila anda log masuk menggunakan Google Account anda.</translation>
 <translation id="4903674399067644695">Kad ini menunjukkan cadangan tentang cara memanfaatkan Chrome sepenuhnya.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Jadikan Chrome Lebih Baik</translation>
 <translation id="5119391094379141756">Pilih Chrome</translation>
 <translation id="5162467219239570114">Chrome sudah lapuk. Jika tiada kemaskinian tersedia dalam <ph name="BEGIN_LINK" />Gedung Apl<ph name="END_LINK" />, mungkin peranti anda sudah tidak menyokong versi baharu Chrome lagi.</translation>
+<translation id="5190139289262548459">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chrome digunakan.</translation>
 <translation id="5389212809648216794">Google Chrome tidak dapat menggunakan kamera anda kerana kamera sedang digunakan oleh aplikasi lain</translation>
 <translation id="5395376160638294582">Pastikan anda dapat menggunakan data Chrome pada bila-bila masa dalam Google Account anda</translation>
 <translation id="5439191312780166229">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Anda log masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chrome anda kepada  pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan log keluar daripada Chrome akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="6676840375528380067">Kosongkan data Chrome anda daripada peranti ini?</translation>
 <translation id="6709398533399187136">Kata laluan anda terdedah dalam suatu pelanggaran data. Pengurus Kata Laluan Google mengesyorkan agar anda menukarnya sekarang.</translation>
+<translation id="6815466750807582739">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.
+
+Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersulit anda. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
 <translation id="6964931465519938134">Kini, anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="6975725306479268850">Pilih Chrome untuk AutoLengkap</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Memaparkan gesaan untuk log masuk ke Chrome.</translation>
 <translation id="8788269841521769222">Anda tidak perlu mengingati kata laluan ini. Kata laluan ini akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Tetapan Chrome</translation>
+<translation id="8856877214925961642">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
+
+Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Google Password Manager tidak dapat menyemak semua kata laluan. Cuba lagi esok.</translation>
 <translation id="8897749957032330183">Kata laluan disimpan pada Google Password Manager pada peranti ini.</translation>
 <translation id="8969290730818637510">Apabila dihidupkan:

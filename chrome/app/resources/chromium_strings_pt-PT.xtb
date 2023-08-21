@@ -207,11 +207,13 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5614091477838198795">Quando está ativado, a sua sessão também é terminada no Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Está disponível uma atualização do Chromium}=1{Está disponível uma atualização do Chromium}other{Está disponível uma atualização do Chromium há # dias}}</translation>
+<translation id="5643865575100044307">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chromium</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5883558403894052917">O Chromium encontrou software malicioso nestes itens:</translation>
+<translation id="5889361821821684993">O Chromium verifica regularmente se o navegador tem as definições mais seguras. Entraremos em contacto consigo se precisar de revisão.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Início de sessão na rede</translation>
 <translation id="5924017743176219022">A ligar à Internet…</translation>
@@ -222,6 +224,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5988505247484123880">É comum que os sites que visita se lembrem de assuntos que lhe interessam para personalizar a sua experiência. Os sites também podem armazenar informações no Chromium sobre os seus interesses.</translation>
 <translation id="6003112304606738118">A transferir… Falta(m) <ph name="HOURS" /> hora(s)</translation>
 <translation id="6040143037577758943">Fechar</translation>
+<translation id="6055611795418209449">O Chromium bloqueia algumas transferências</translation>
 <translation id="6055895534982063517">Está disponível uma nova versão do Chromium, mais rápida do que nunca.</translation>
 <translation id="6063093106622310249">&amp;Abrir no Chromium</translation>
 <translation id="6072279588547424923">A extensão <ph name="EXTENSION_NAME" /> foi adicionada ao Chromium.</translation>
@@ -235,6 +238,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6132897690380286411">O Chromium vai ser fechado e vai eliminar os dados em breve</translation>
 <translation id="6134968993075716475">A Navegação segura está desativada. O Chromium recomenda que a ative.</translation>
 <translation id="6145820983052037069">Pode alternar entre perfis do Chromium aqui</translation>
+<translation id="6175304430031192654">Consoante as suas definições, o Chromium também pode enviar cookies e o URL atual</translation>
 <translation id="6183079672144801177">Certifique-se de que tem sessão iniciada no Chromium no seu <ph name="TARGET_DEVICE_NAME" /> e, em seguida, tente enviar novamente.</translation>
 <translation id="6212496753309875659">Este computador já tem uma versão mais recente do Chromium. Se o software não estiver a funcionar, desinstale o Chromium e tente novamente.</translation>
 <translation id="6219195342503754812">{0,plural, =0{O Chromium será reiniciado agora}=1{O Chromium será reiniciado dentro de 1 segundo}other{O Chromium será reiniciado dentro de # segundos}}</translation>
@@ -255,6 +259,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="6373523479360886564">Tem a certeza de que quer desinstalar o Chromium?</translation>
 <translation id="6375219077595103062">Adicione um atalho ao Gestor de Palavras-passe</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Como usamos estes dados:<ph name="END_BOLD" /> o Chromium pode estimar os seus interesses. Posteriormente, um site que visitar pode pedir ao Chromium para ver os seus interesses para personalizar os anúncios que vê.</translation>
+<translation id="6400112897226594999">Logótipo do Chromium num ecrã de computador.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador de internet que executa páginas Web e aplicações à velocidade da luz. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança, com proteção contra programas maliciosos e phishing integrada no Chromium.</translation>
 <translation id="6442900851116057561">Reinicie o ChromiumOS</translation>
 <translation id="6455857529632101747">Damos-lhe as boas-vindas aos perfis do Chromium</translation>
@@ -304,6 +309,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="718435575166326686">O Chromium necessita da autorização da câmara para este site</translation>
 <translation id="7196312274710523067">Não foi possível iniciar o Chromium. Tente novamente.</translation>
 <translation id="7197677400338048821">O Chromium não consegue verificar as suas palavras-passe. Tente novamente após 24 horas.</translation>
+<translation id="7213407614656404070">Use o Chromium sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7223968959479464213">Gestor de Tarefas - Chromium</translation>
 <translation id="7246575524853130370">Os seus interesses conforme estimado pelo Chromium</translation>
 <translation id="7309928523159922338">A medição de anúncios permite que os sites que visita peçam informações ao Chromium que ajudam o site a medir o desempenho dos respetivos anúncios. A medição de anúncios restringe a monitorização entre sites ao transferir o mínimo de informações possível entre sites.</translation>

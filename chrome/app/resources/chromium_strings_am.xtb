@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">PDFዎችን በChromium ውስጥ ክፈት</translation>
 <translation id="5614091477838198795">ሲበራ ከChromium ዘግተው እንዲወጡ ይደረጋሉ</translation>
 <translation id="5623402015214259806">{0,plural, =0{የChromium ዝማኔ ይገኛል}=1{የChromium ዝማኔ ይገኛል}one{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}other{አንድ የChromium ዝማኔ ለ# ቀኖች ነበር}}</translation>
+<translation id="5643865575100044307">Chromium በሚዘጉበት ጊዜ የጣቢያ ውሂብን ሁልጊዜ ከመሣሪያዎ ላይ ይሰርዙ</translation>
 <translation id="5653831366781983928">እባክዎ Chromium ን አህን ዳግም ያስጀምሩ</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumን በዚህ ቋንቋ አሳይ</translation>
 <translation id="5862307444128926510">ወደ Chromium እንኳን በደህና መጡ</translation>
 <translation id="5883558403894052917">Chromium እነዚህ ንጥሎች ተንኮል አዘል ዌር እንደያዙ አግኝቷል፦</translation>
+<translation id="5889361821821684993">Chromium የእርስዎ አሳሽ ደህንነታቸው የተጠበቁ ቅንብሮች እንዳለው ለማረጋገጥ በመደበኛነት ይፈትሻል። ማንኛውም ነገር የእርስዎ ግምገማ ካስፈለገው እናሳውቅዎታለን።</translation>
 <translation id="5895138241574237353">እንደገና ጀምር</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - በአውታረ መረብ ወደ መለያ መግባት</translation>
 <translation id="5924017743176219022">ከበይነመረቡ ጋር በመገናኘት ላይ...</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">የሚጎበኟቸው ጣቢያዎች ልምድዎን ግላዊነት ማላበስ እንዲችሉ እርስዎ የሚፈልጓቸውን ነገሮች ማስታወስ የተለመደ ነው። እንዲሁም ጣቢያዎች ስለዝንባሌዎችዎ መረጃን በChromium አማካኝነት ማከማቸት ይችላሉ።</translation>
 <translation id="6003112304606738118">በማውረድ ላይ... <ph name="HOURS" /> ሰዓት(ታት) ይቀራል(ሉ)</translation>
 <translation id="6040143037577758943">ዝጋ</translation>
+<translation id="6055611795418209449">Chromium አንዳንድ ውርዶችን ያግዳል</translation>
 <translation id="6055895534982063517">አዲስ የChromium ስሪት ይገኛል፣ እና ከመቼውም በበለጠ ፈጣን ሆኗል።</translation>
 <translation id="6063093106622310249">በChromium ውስጥ &amp;ክፈት</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> ወደ Chromium ታክሏል።</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">Chromium በቅርቡ ይዘጋል እና ውሂብ ይሰርዛል</translation>
 <translation id="6134968993075716475">የጥንቃቄ አሰሳ ጠፍቷል። Chromium እንዲያበሩት ይመክራል።</translation>
 <translation id="6145820983052037069">እዚህ በChromium መገለጫዎች መካከል መቀያየር ይችላሉ</translation>
+<translation id="6175304430031192654">በቅንብሮችዎ ላይ በመመሥረት Chromium እንዲሁም ኩኪዎች እና የአሁን ዩአርኤልዎን ሊልክ ይችላል</translation>
 <translation id="6183079672144801177">በእርስዎ <ph name="TARGET_DEVICE_NAME" /> ላይ በመለያ ወደ Chromium መግባትዎን ያረጋግጡ እና እንደገና ለመላክ ይሞክሩ።</translation>
 <translation id="6212496753309875659">ይህ ኮምፒውተር አስቀድሞ ይበልጥ አዲስ የሆነ የChromium ስሪት አለው። ሶፍትዌሩ የማይሰራ ከሆነ እባክዎ Chromiumን ያራግፉና እንደገና ይሞክሩ።</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium አሁን ዳግም ይጀመራል}=1{Chromium በ1 ሰከንድ ውስጥ ዳግም ይጀመራል}one{Chromium በ# ሰከንዶች ውስጥ ዳግም ይጀመራል}other{Chromium በ# ሰከንዶች ውስጥ ዳግም ይጀመራል}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">እርግጠኛ ነዎት Chromiumን ማራገፍ ይፈልጋሉ?</translation>
 <translation id="6375219077595103062">ለየሚስጥር ቁልፍ አስተዳዳሪ አቋራጭ ያክሉ</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />ይህን ውሂብ እንዴት እንደምንጠቀምበት፦<ph name="END_BOLD" /> Chromium የእርስዎን ዝንባሌዎች ሊገምት ይችላል። በኋላ ላይ እርስዎ የሚጎበኙት ጣቢያ እርስዎ የሚያዩዋቸውን ማስታወቂያዎች ግላዊነት ለማላበስ Chromium ዝንባሌዎችዎን እንዲያይ ሊጠይቅ ይችላል።</translation>
+<translation id="6400112897226594999">በኮምፒውተር ማያ ገፅ ውስጥ የChromium ዓርማ።</translation>
 <translation id="6403826409255603130">Chromium ድረ-ገጾችን እና መተግበሪያዎችን እጅግ በጣም ፈጣን በሆነ ፍጥነት የሚያሄድ ድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Chromium ውስጥ አብሮ በተሰራላቸው የተንኮል-አዘል ሶፍትዌር እና የማስገሪያ መከላከያዎች አማካኝነት ደህንነትዎ ይበልጥ በተጠበቀ ሁኔታ ድሩን ያስሱ።</translation>
 <translation id="6442900851116057561">ChromiumOSን ዳግም አስጀምር</translation>
 <translation id="6455857529632101747">ወደ Chromium መገለጫዎች እንኳን በደህና መጡ</translation>
@@ -305,6 +310,7 @@
 <translation id="718435575166326686">Chromium ለዚህ ጣቢያ የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="7196312274710523067">Chromiumን ማስጀመር አልተቻለም። እንደገና ይሞክሩ።</translation>
 <translation id="7197677400338048821">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም። ከ24 ሰዓቶች በኋላ እንደገና ይሞክሩ።</translation>
+<translation id="7213407614656404070">በመልዕክቶች፣ ሰነዶች እና ሌሎች መተግበሪያዎች ውስጥ አገናኞች ላይ ጠቅ በሚያደርጉበት ማንኛውም ጊዜ Chromium ይጠቀሙ</translation>
 <translation id="7223968959479464213">ተግባር መሪ - Chromium</translation>
 <translation id="7246575524853130370">በChromium የተገመቱ የእርስዎ ዝንባሌዎች</translation>
 <translation id="7309928523159922338">የማስታወቂያ ልኬት እርስዎ የሚጎበኟቸው ጣቢያዎች የማስታወቂያዎቻቸውን አፈጻጸም የሚለካው ጣቢያ የሚያግዘውን መረጃ ከChromium እንዲጠይቁ ያስችላቸዋል። የማስታወቂያ ልኬት በተቻለ መጠን ትንሽ መረጃን በጣቢያዎች መካከል በማስተላለፍ የጣቢያ ተሻጋሪ ክትትልን ይገድባል።</translation>

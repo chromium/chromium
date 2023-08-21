@@ -207,11 +207,13 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5527463683072221100">PDF-ləri Chromium'da açın</translation>
 <translation id="5614091477838198795">Aktiv olduqda, Chromium'dan da çıxacaqsınız</translation>
 <translation id="5623402015214259806">{0,plural, =0{Chromium güncəlləməsi əlçatandır}=1{Chromium güncəlləməsi əlçatandır}other{Chromium güncəlləməsi # gün ərzində əlçatan olub}}</translation>
+<translation id="5643865575100044307">Chromium-u bağladıqda sayt datasını cihazdan silin</translation>
 <translation id="5653831366781983928">Chromium'u indi başladın</translation>
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="5698481217667032250">Chromium'u bu dildə görüntüləyin</translation>
 <translation id="5862307444128926510">Chromium'a xoş gəlmisiniz</translation>
 <translation id="5883558403894052917">Chromium bu elementlərdə zərərli proqram olduğunu aşkar edib:</translation>
+<translation id="5889361821821684993">Chromium brauzerin ən təhlükəsiz ayarlara malik olub-olmadığını müntəzəm yoxlayır. Nəzərdən keçirilməli məqam olsa, sizə bildirəcəyik.</translation>
 <translation id="5895138241574237353">Yenidən başladın</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Şəbəkəyə Giriş</translation>
 <translation id="5924017743176219022">İnternetə qoşulur...</translation>
@@ -222,6 +224,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="5988505247484123880">Ziyarət etdiyiniz saytların təcrübənizi fərdiləşdirmək üçün maraqlarınızı xatırlaması normaldır. Saytlar həmçinin maraqlarınız haqqında Chromium ilə məlumat saxlaya bilər.</translation>
 <translation id="6003112304606738118">Endirilir... <ph name="HOURS" /> saat qalıb</translation>
 <translation id="6040143037577758943">Qapat</translation>
+<translation id="6055611795418209449">Chromium bəzi endirmələri bloklayır</translation>
 <translation id="6055895534982063517">Chromium'um yeni versiyası əlçatandır və həmişəkindən daha sürətlidir.</translation>
 <translation id="6063093106622310249">Chromium'də açın</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'a əlavə edildi</translation>
@@ -235,6 +238,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="6132897690380286411">Chromium tezliklə bağlanacaq və datanı siləcək</translation>
 <translation id="6134968993075716475">Təhlükəsiz Baxış deaktivdir. Chromium onu aktiv etməyi tövsiyə edir.</translation>
 <translation id="6145820983052037069">Burada Chromium profilləri arasında keçid edə bilərsiniz</translation>
+<translation id="6175304430031192654">Ayarlardan asılı olaraq Chromium kukilər və cari URL-i də göndərə bilər</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızda Chromium'a daxil olduğunuza əmin olun və sonra yenidən göndərin.</translation>
 <translation id="6212496753309875659">Bu kompüterdə Chromium'um daha son versiyası var. Proqram təminatı işləmirsə, Chroimum'u sistemdən silin və yenidən cəhd edin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium indi yenidən başlayacaq}=1{Chromium 1 saniyəyə yenidən başlayacaq}other{Chromium # saniyəyə yenidən başlayacaq}}</translation>
@@ -255,6 +259,7 @@ Hazırda veb saytlar və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq o
 <translation id="6373523479360886564">Chromium'u silmək istəyirsiniz?</translation>
 <translation id="6375219077595103062">Parol meneceri üçün qısayol əlavə edin</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu datanı necə istifadə edirik:<ph name="END_BOLD" /> Chromium maraqlarınızı təxmin edə bilər. Daha sonra ziyarət etdiyiniz sayt gördüyünüz reklamları fərdiləşdirmək üçün Chromium'dan maraqlarınızı görməyi tələb edə bilər.</translation>
+<translation id="6400112897226594999">Kompüter ekranında Chromium loqosu.</translation>
 <translation id="6403826409255603130">Chromium veb səhifələri və tətbiqləri ildırım sürəti ilə işlədən veb brauzerdir. Chromium sürətlidir, stabildir və istifadəyə rahatdır. Chromium ilə internetdən fırıldaqlardan və viruslardan uzaq şəkildə istifadə edin.</translation>
 <translation id="6442900851116057561">ChromiumOS'i yenidən başladın</translation>
 <translation id="6455857529632101747">Chromium profillərinə xoş gəlmisiniz</translation>
@@ -303,6 +308,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="718435575166326686">Chromium bu sayt üçün kamera icazəsi tələb edir</translation>
 <translation id="7196312274710523067">Chromium başlamadı. Yenidən sınayın.</translation>
 <translation id="7197677400338048821">Chromium parollarınızı yoxlaya bilmir. 24 saatdan sonra yenidən cəhd edin.</translation>
+<translation id="7213407614656404070">Mesaj, sənəd və digər tətbiqlərdə keçidlərə kliklədikdə Chromium istifadə edin</translation>
 <translation id="7223968959479464213">Tapşırıq Meneceri - Chromium</translation>
 <translation id="7246575524853130370">Chromium tərəfindən təxmin edilən maraqlarınız</translation>
 <translation id="7309928523159922338">Reklamın ölçülməsi ziyarət etdiyiniz saytlara Chromium'dan sayta reklamlarının performansını ölçməyə kömək edən məlumat tələb etməyə imkan verir. Reklamın ölçülməsi saytlar arasında mümkün qədər az məlumat ötürməklə saytlararası izləməni məhdudlaşdırır.</translation>

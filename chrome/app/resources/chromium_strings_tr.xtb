@@ -205,11 +205,13 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5527463683072221100">PDF'leri Chromium'da aç</translation>
 <translation id="5614091477838198795">Etkin durumdayken Chromium oturumunuz da kapatılır</translation>
 <translation id="5623402015214259806">{0,plural, =0{Bir Chromium güncellemesi var}=1{Bir Chromium güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chromium güncellemesi var}}</translation>
+<translation id="5643865575100044307">Chromium'u kapattığımda site verileri her zaman cihazımdan silinsin</translation>
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5883558403894052917">Chromium, aşağıdaki öğelerde kötü amaçlı yazılım tespit etti:</translation>
+<translation id="5889361821821684993">Chromium, tarayıcınızın en güvenli ayarlara sahip olup olmadığını düzenli olarak kontrol eder. İncelemeniz gereken bir konu varsa sizi bilgilendiririz.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın</translation>
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
@@ -220,6 +222,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5988505247484123880">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da da saklayabilir.</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>
 <translation id="6040143037577758943">Kapat</translation>
+<translation id="6055611795418209449">Chromium neden bazı indirme işlemlerini engelliyor?</translation>
 <translation id="6055895534982063517">Kullanabileceğiniz yeni bir Chromium sürümü var ve bu sürüm her zamankinden daha hızlı.</translation>
 <translation id="6063093106622310249">&amp;Chromium'da aç</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> Chromium'a eklendi</translation>
@@ -233,6 +236,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6132897690380286411">Chromium yakında kapanacak ve verileri silecek</translation>
 <translation id="6134968993075716475">Güvenli Tarama kapalı. Chromium bunun açılmasını öneriyor.</translation>
 <translation id="6145820983052037069">Chromium profilleri arasında burada geçiş yapabilirsiniz</translation>
+<translation id="6175304430031192654">Chromium, ayarlarınıza bağlı olarak çerezleri ve geçerli URL'nizi gönderebilir</translation>
 <translation id="6183079672144801177"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chromium'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
 <translation id="6212496753309875659">Bu bilgisayarda Chromium'un daha yeni bir sürümü de var. Yazılım çalışmıyorsa, Chromium'u kaldırın ve tekrar deneyin.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium şimdi yeniden başlatılacak}=1{Chromium 1 saniye içinde yeniden başlatılacak}other{Chromium # saniye içinde yeniden başlatılacak}}</translation>
@@ -253,6 +257,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="6375219077595103062">Şifre Yöneticisi'ne kısayol ekleyin</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Bu verileri kullanma şeklimiz:<ph name="END_BOLD" /> Chromium, ilgi alanlarınızı tahmin edebilir. Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chromium'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
+<translation id="6400112897226594999">Bilgisayar ekranındaki Chromium logosu.</translation>
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>
 <translation id="6442900851116057561">ChromiumOS'i yeniden başlatın</translation>
 <translation id="6455857529632101747">Chromium profillerine hoş geldiniz</translation>
@@ -301,6 +306,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="718435575166326686">Bu site için Chromium'un kamera iznine ihtiyacı var</translation>
 <translation id="7196312274710523067">Chromium başlatılamadı. Tekrar deneyin.</translation>
 <translation id="7197677400338048821">Chromium, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin.</translation>
+<translation id="7213407614656404070">Mesajlardaki, dokümanlardaki ve diğer uygulamalardaki bağlantıları tıkladığınızda Chromium'u kullanabilirsiniz</translation>
 <translation id="7223968959479464213">Görev Yöneticisi - Chromium</translation>
 <translation id="7246575524853130370">Chromium'un tahmin ettiği ilgi alanlarınız</translation>
 <translation id="7309928523159922338">Reklam ölçümü, ziyaret ettiğiniz sitelerin Chromium'dan bilgi istemesine olanak tanır. Bu bilgiler de sitenin, reklamlarının performansını ölçmesine yardımcı olur. Reklam ölçümü, siteler arasında mümkün olduğunca az bilgi aktararak siteler arası izlemeyi kısıtlar.</translation>

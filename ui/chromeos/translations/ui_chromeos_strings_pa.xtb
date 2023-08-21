@@ -94,6 +94,7 @@
 <translation id="174937106936716857">ਫ਼ਾਈਲਾਂ ਦੀ ਕੁੱਲ ਗਿਣਤੀ</translation>
 <translation id="1755345808328621801">ਇਹ ਫ਼ਾਈਲ Windows ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ PC ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ ChromeOS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਰੂਪ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="1757915090001272240">ਵਾਈਡ ਲਾਤੀਨੀ</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1773212559869067373">ਪ੍ਰਮਾਣਿਕਤਾ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਨੂੰ ਸਥਾਨਕ ਰੂਪ ਵਿਚ ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1775381402323441512">ਵੀਡੀਓ ਜਾਣਕਾਰੀ</translation>
 <translation id="180035236176489073">ਤੁਹਾਨੂੰ ਇਹਨਾਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਣਾ ਪਵੇਗਾ।</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Linux ਨਾਲ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="2719020180254996569">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ਵੇਰਵੇ</translation>
 <translation id="2724954091494693138">F ਕੀ-ਬੋਰਡ ਦੇ ਨਾਲ ਤੁਰਕੀ</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2732839045120506979">ਵੀਅਤਨਾਮੀ VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="2764206540577097904">ਤੁਸੀਂ ਆਪਣੀ ਸਾਰੀ ਵਿਅਕਤੀਗਤ Google Workspace ਸਟੋਰੇਜ ਵਰਤ ਲਈ ਹੈ।</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਵੇਰਵੇ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਸਿੰਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3522708245912499433">ਪੋਰਤੂਗੂਈਸ</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> ਨਾਲ 1 ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3524311639100184459">ਸਾਵਧਾਨ: ਇਹ ਫ਼ਾਈਲਾਂ ਅਸਥਾਈ ਹਨ ਅਤੇ ਡਿਸਕ ਵਿੱਚ ਜਗ੍ਹਾ ਨੂੰ ਖਾਲੀ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮਿਟਾਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ਫੋਲਡਰ</translation>
 <translation id="3548125359243647069">ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ।</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">ਤਿਤਲੀਆਂ</translation>
 <translation id="6165508094623778733">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="6170470584681422115">ਸੈਂਡਵਿਚ</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> ਨੂੰ ਤੁਹਾਡੀ Google Drive ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ। ਤਬਦੀਲੀਆਂ ਨੂੰ ਤੁਹਾਡੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="6187719147498869044">ਹੰਗਰੀਆਈ</translation>
 <translation id="6198252989419008588">PIN ਬਦਲੋ</translation>
 <translation id="6199801702437275229">ਸਪੇਸ ਜਾਣਕਾਰੀ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">ਸਵੀਡਿਸ਼</translation>
 <translation id="6990081529015358884">ਤੁਹਾਡਾ ਸਪੇਸ ਖ਼ਤਮ ਹੋਣ ਵਾਲਾ ਹੈ</translation>
 <translation id="6993826899923627728">ਇਹ ਆਈਟਮਾਂ ਤੁਹਾਡੀ ਰੱਦੀ ਵਿੱਚ ਹਨ</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7008426324576352165">ਅੱਪਲੋਡ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਤੁਹਾਡੀ ਸੰਸਥਾ ਨੂੰ ਹੋਰ ਸਟੋਰੇਜ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="7009985720488544166">ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਵੱਲੋਂ <ph name="COUNT" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਲਿਜਾਉਣ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">ਬੇਲਾਰੂਸੀ</translation>
 <translation id="8336153091935557858">ਕੱਲ੍ਹ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">ਸਮਾਨ ਨਾਮ ਵਾਲੀ ਇੱਕ ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="8372369524088641025">ਘਟੀਆ WEP ਕੁੰਜੀ</translation>
 <translation id="8372852072747894550">ਯੂਨਾਨੀ</translation>
 <translation id="8386903983509584791">ਸਕੈਨ ਪੂਰਾ ਹੋਈ</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> ਨੈੱਟਵਰਕ, ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8425213833346101688">ਬਦਲੋ</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> ਨਾਲ <ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
 <translation id="8431909052837336408">ਸਿਮ PIN ਬਦਲੋ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">ਗੁੰਮ ਸਿਮ ਕਾਰਡ</translation>

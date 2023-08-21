@@ -37,6 +37,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Kā varat pārvaldīt savus datus:<ph name="END_BOLD" /> lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Varat arī noņemt intereses, ja nevēlaties, lai Chrome tās apsvērtu.</translation>
 <translation id="1628000112320670027">Saņemt palīdzību par Chrome</translation>
 <translation id="1640672724030957280">Notiek lejupielāde...</translation>
+<translation id="1642309806724967937">Ja to atļauj jūsu iestatījumi, pārlūks Chrome var arī nosūtīt sīkfailus un jūsu pašreizējo URL</translation>
 <translation id="1662146548738125461">Par Chrome OS Flex</translation>
 <translation id="1674870198290878346">Atvērt saiti Chrome inko&amp;gnito režīma logā</translation>
 <translation id="1682634494516646069">Google Chrome nevar nolasīt savu datu direktoriju un ierakstīt tajā:
@@ -94,6 +95,7 @@
 <translation id="2597976513418770460">Piekļūstiet savam Chrome saturam no konta <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="2622559029861875898">Pārlūkprogrammā Chrome nevar pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome regulāri pārbauda, vai jūsu pārlūkā ir atlasīti visdrošākie iestatījumi. Ja kaut kas būs jāpārskata, saņemsiet paziņojumu.</translation>
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
 <translation id="2665296953892887393">Palīdzēt uzlabot pārlūku Google Chrome, nosūtot Google serveriem avāriju pārskatus un <ph name="UMA_LINK" /></translation>
 <translation id="2689103672227170538">Šis paplašinājums mainīja iestatījumu, kura lapa tiek parādīta, palaižot pārlūku Chrome.</translation>
@@ -233,6 +235,7 @@
 
 Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai lietojiet jaunāku Chrome versiju.</translation>
 <translation id="521447420733633466">Ja jūsu ierīci izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos profilos.</translation>
+<translation id="5239627039202700673">Izmantojiet pārlūku Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs</translation>
 <translation id="5251420635869119124">Viesi var izmantot pārlūku Chrome, neatstājot nekādas pēdas.</translation>
 <translation id="5334309298019785904">Chrome OS nevarēja sinhronizēt jūsu datus, jo sinhronizācija jūsu domēnā nav pieejama.</translation>
 <translation id="5334487786912937552">Pārlūkam Chrome ir nepieciešama atļauja piekļūt krātuvei, lai varētu lejupielādēt failus.</translation>
@@ -247,6 +250,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5566025111015594046">Google Chrome (mDNS ienākošā datplūsma)</translation>
 <translation id="565744775970812598">Fails <ph name="FILE_NAME" /> var būt bīstams, tādēļ Chrome to bloķēja.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome.}=1{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. Jūsu inkognito režīma logs netiks atkārtoti atvērts.}zero{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}one{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logs netiks atkārtoti atvērts.}other{Lai lietotu šo atjauninājumu, administrators lūdz restartēt pārlūku Chrome. # jūsu inkognito režīma logi netiks atkārtoti atvērti.}}</translation>
+<translation id="5682679001737420487">Pārlūkā Chrome tiek bloķētas dažas lejupielādes</translation>
 <translation id="5686916850681061684">Pielāgojiet un kontrolējiet pārlūkprogrammu Google Chrome. Ir nepieciešama jūsu uzmanība. Noklikšķiniet, lai skatītu plašāku informāciju.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Ja šis iestatījums ir ieslēgts, pārlūkā Chrome neaktīvās cilnēs tiek atbrīvota atmiņa. Tādējādi aktīvajām cilnēm un citām lietotnēm tiek nodrošināts vairāk datora resursu un tiek uzlabots Chrome darbības ātrums. Neaktīvās cilnes atkal tiek automātiski aktivizētas, kad tās atverat.</translation>
@@ -304,6 +308,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6739177684496155661">Vai turpināt jaunā Chrome profilā?</translation>
 <translation id="6750954913813541382">Lai labotu pareizrakstības kļūdas, Chrome nosūta jūsu pārlūkprogrammā ievadīto tekstu Google serveriem</translation>
 <translation id="677276454032249905">Vai tik un tā aizvērt pārlūku Chrome?</translation>
+<translation id="6794858689789885890">Vienmēr dzēst vietnes datus no ierīces, kad tiek aizvērts pārlūks Chrome</translation>
 <translation id="683440813066116847">Ienākošo savienojumu kārtula pārlūkam Google Chrome Canary, lai atļautu mDNS datplūsmu.</translation>
 <translation id="6881299373831449287">Notiek Chrome atjaunināšana</translation>
 <translation id="6885412569789873916">Chrome Beta lietotnes</translation>
@@ -388,6 +393,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Kā mēs izmantojam šos datus:<ph name="END_BOLD" /> pārlūkā Chrome var aptuveni noteikt jūsu intereses. Vēlāk kāda jūsu apmeklēta vietne var pieprasīt pārlūkam Chrome atļauju skatīt jūsu intereses, lai personalizētu jums rādāmās reklāmas.</translation>
 <translation id="8387459386171870978">Turpināt lietot Chrome</translation>
 <translation id="8394720698884623075">Vietrāži URL tiek pārbaudīti, salīdzinot ar nedrošo vietņu sarakstu, kas ir saglabāts pārlūkprogrammā Chrome.</translation>
+<translation id="8403038600646341038">Chrome logotips datora ekrānā.</translation>
 <translation id="8416347857511542594">Uzziniet vairāk par reklāmu personalizēšanu pārlūkā Chrome</translation>
 <translation id="8418845734693287262">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>

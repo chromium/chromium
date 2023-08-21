@@ -207,11 +207,13 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5527463683072221100">Buka PDF di Chromium</translation>
 <translation id="5614091477838198795">Jika aktif, Anda juga akan logout dari Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Update Chromium tersedia}=1{Update Chromium tersedia}other{Update Chromium telah tersedia selama # hari}}</translation>
+<translation id="5643865575100044307">Selalu menghapus data situs dari perangkat saat Anda menutup Chromium</translation>
 <translation id="5653831366781983928">Mulai ulang Chromium sekarang</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5883558403894052917">Chromium menemukan bahwa item berikut berisi malware:</translation>
+<translation id="5889361821821684993">Chromium memeriksa secara berkala untuk memastikan browser memiliki setelan yang paling aman. Kami akan memberi tahu Anda jika ada yang perlu ditinjau.</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login Jaringan</translation>
 <translation id="5924017743176219022">Menghubungkan ke internet...</translation>
@@ -222,6 +224,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5988505247484123880">Situs yang Anda buka biasanya mengingat hal-hal yang Anda minati agar dapat mempersonalisasi pengalaman Anda. Situs juga dapat menyimpan informasi tentang minat Anda ke Chromium.</translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
 <translation id="6040143037577758943">Tutup</translation>
+<translation id="6055611795418209449">Chromium memblokir beberapa download</translation>
 <translation id="6055895534982063517">Tersedia Chromium versi baru, dan versi ini lebih cepat dari sebelumnya.</translation>
 <translation id="6063093106622310249">&amp;Buka di Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> telah ditambahkan ke Chromium</translation>
@@ -235,6 +238,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6132897690380286411">Chromium akan segera ditutup serta menghapus data</translation>
 <translation id="6134968993075716475">Safe Browsing nonaktif. Chromium merekomendasikan untuk mengaktifkannya.</translation>
 <translation id="6145820983052037069">Anda dapat berpindah-pindah profil Chromium di sini</translation>
+<translation id="6175304430031192654">Bergantung pada setelan Anda, Chromium juga dapat mengirim cookie dan URL Anda saat ini</translation>
 <translation id="6183079672144801177">Pastikan Anda login ke Chromium di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="6212496753309875659">Komputer ini sudah memiliki versi Chromium yang lebih baru. Jika software tidak bekerja, harap coba uninstal Chromium, lalu cobalah kembali.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium akan diluncurkan ulang sekarang}=1{Chromium akan diluncurkan ulang dalam 1 detik}other{Chromium akan diluncurkan ulang dalam # detik}}</translation>
@@ -255,6 +259,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6373523479360886564">Anda yakin ingin meng-uninstal Chromium?</translation>
 <translation id="6375219077595103062">Tambahkan pintasan ke Pengelola Sandi</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cara kami menggunakan data ini:<ph name="END_BOLD" /> Chromium dapat memperkirakan minat Anda. Kemudian, situs yang Anda buka dapat meminta Chromium untuk melihat minat Anda agar dapat mempersonalisasi iklan yang Anda lihat.</translation>
+<translation id="6400112897226594999">Logo Chromium di dalam layar komputer.</translation>
 <translation id="6403826409255603130">Chromium adalah browser web yang menjalankan halaman web dan aplikasi dengan kecepatan kilat. Browser ini cepat, stabil, dan mudah digunakan. Jelajahi web lebih aman dengan perlindungan dari software perusak dan phishing yang tertanam di dalam Chromium.</translation>
 <translation id="6442900851116057561">Mulai ulang ChromiumOS</translation>
 <translation id="6455857529632101747">Selamat datang di profil Chromium</translation>
@@ -304,6 +309,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="718435575166326686">Chromium memerlukan izin kamera untuk situs ini</translation>
 <translation id="7196312274710523067">Tidak dapat meluncurkan Chromium. Harap coba lagi.</translation>
 <translation id="7197677400338048821">Chromium tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam.</translation>
+<translation id="7213407614656404070">Gunakan Chromium kapan pun Anda mengklik link di pesan, dokumen, dan aplikasi lainnya</translation>
 <translation id="7223968959479464213">Pengelola Tugas - Chromium</translation>
 <translation id="7246575524853130370">Minat Anda sesuai perkiraan Chromium</translation>
 <translation id="7309928523159922338">Pengukuran iklan memungkinkan situs yang Anda buka untuk meminta informasi dari Chromium yang membantu situs mengukur performa iklannya. Pengukuran iklan membatasi pelacakan lintas situs dengan mentransfer sesedikit mungkin informasi antar-situs.</translation>

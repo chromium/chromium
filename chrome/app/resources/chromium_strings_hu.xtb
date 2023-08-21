@@ -207,11 +207,13 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5527463683072221100">PDF-fájlok megnyitása a Chromiumban</translation>
 <translation id="5614091477838198795">Amikor be van kapcsolva, a Chromiumból is kijelentkezteti Önt a rendszer</translation>
 <translation id="5623402015214259806">{0,plural, =0{Rendelkezésre áll egy Chromium-frissítés}=1{Rendelkezésre áll egy Chromium-frissítés}other{# napja rendelkezésre áll egy Chromium-frissítés}}</translation>
+<translation id="5643865575100044307">Mindig törölje a webhelyadatokat az eszközről a Chromium bezárásakor</translation>
 <translation id="5653831366781983928">Indítsa újra a Chromiumot most</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">A Chromium megjelenítése ezen a nyelven</translation>
 <translation id="5862307444128926510">Üdvözli a Chromium!</translation>
 <translation id="5883558403894052917">A Chromium rosszindulatú programot talált a következő elemekben:</translation>
+<translation id="5889361821821684993">A Chromium rendszeresen ellenőrzi, hogy a böngészője a legbiztonságosabb beállításokkal rendelkezik-e. Tudatni fogjuk, ha bármit felül kell vizsgálni.</translation>
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
@@ -222,6 +224,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5988505247484123880">A felkeresett webhelyek esetében megszokott dolog, hogy megjegyzik az Önt érdeklő dolgokat a felhasználói élmény személyre szabása érdekében. Emellett a webhelyek tárolhatnak az Ön érdeklődési köreivel kapcsolatos információkat a Chromiumban.</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
 <translation id="6040143037577758943">Bezárás</translation>
+<translation id="6055611795418209449">A Chromium letilt bizonyos letöltéseket</translation>
 <translation id="6055895534982063517">Elérhető a Chromium új verziója, amely minden korábbinál sokkal gyorsabb.</translation>
 <translation id="6063093106622310249">Megnyitás Chromiumban</translation>
 <translation id="6072279588547424923">A(z) <ph name="EXTENSION_NAME" /> hozzá lett adva a Chromiumhoz</translation>
@@ -235,6 +238,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6132897690380286411">A Chromium hamarosan bezáródik, és törli az adatokat</translation>
 <translation id="6134968993075716475">A Biztonságos Böngészés ki van kapcsolva. A Chromium a szolgáltatás bekapcsolását javasolja.</translation>
 <translation id="6145820983052037069">Itt válthat a Chromium-profilok között</translation>
+<translation id="6175304430031192654">A beállításaitól függően a Chromium cookie-kat és az Ön jelenlegi URL-jét is elküldheti.</translation>
 <translation id="6183079672144801177">Ellenőrizze, hogy bejelentkezett-e a Chromiumba <ph name="TARGET_DEVICE_NAME" /> eszközén, majd próbálja meg újraküldeni.</translation>
 <translation id="6212496753309875659">A számítógépen már megtalálható a Chromium újabb verziója. Ha a szoftver nem működik, kérjük, távolítsa el a Chromiumot, majd próbálkozzon újra.</translation>
 <translation id="6219195342503754812">{0,plural, =0{A Chromium most újraindul}=1{A Chromium 1 másodpercen belül újraindul}other{A Chromium # másodpercen belül újraindul}}</translation>
@@ -255,6 +259,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="6373523479360886564">Biztos, hogy el szeretné távolítani a Chromiumot?</translation>
 <translation id="6375219077595103062">Parancsikon hozzáadása a Jelszókezelőhöz</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Az adatok felhasználási módja:<ph name="END_BOLD" /> A Chromium meg tudja becsülni az Ön érdeklődési köreit. Később az Ön által felkeresett webhelyek a megjelenő hirdetések személyre szabása érdekében kérhetik a Chromiumtól az Ön érdeklődési köreinek megismerését.</translation>
+<translation id="6400112897226594999">A Chromium logója egy számítógép képernyőjén.</translation>
 <translation id="6403826409255603130">A Chromium olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
 <translation id="6442900851116057561">A ChromiumOS újraindítása</translation>
 <translation id="6455857529632101747">Üdvözöljük a Chromium-profilokban!</translation>
@@ -302,6 +307,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="718435575166326686">A Chromiumnak kamerahasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="7196312274710523067">Nem sikerült a Chromium elindítása. Próbálkozzon újra.</translation>
 <translation id="7197677400338048821">A Chromium nem tudja ellenőrizni a jelszavait. Próbálja újra 24 óra múlva.</translation>
+<translation id="7213407614656404070">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint</translation>
 <translation id="7223968959479464213">Feladatkezelő -- Chromium</translation>
 <translation id="7246575524853130370">Az Ön Chromium által megbecsült érdeklődési körei</translation>
 <translation id="7309928523159922338">A hirdetésmérés segítségével az Ön által felkeresett webhelyek olyan adatokat kérhetnek a Chromiumtól, amelyek segítségével a webhely mérheti hirdetéseinek teljesítményét. A hirdetésmérés azáltal korlátozza a webhelyeken átnyúló nyomon követést, hogy a lehető legkevesebb adatot továbbítja a webhelyek között.</translation>

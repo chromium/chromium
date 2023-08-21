@@ -39,6 +39,7 @@
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />Como podes xestionar os teus datos?<ph name="END_BOLD" /> Para protexer a túa privacidade, eliminamos automaticamente os teus intereses cuxa antigüidade sexa superior a 4 semanas. Algúns poderían volver incluírse na lista ao seguires navegando. Se o prefires, podes quitar os intereses que non queiras que teña en conta Chrome.</translation>
 <translation id="1628000112320670027">Obter axuda sobre Chrome</translation>
 <translation id="1640672724030957280">Descargando…</translation>
+<translation id="1642309806724967937">En función da túa configuración, é posible que Chrome tamén envíe cookies e o teu URL actual</translation>
 <translation id="1662146548738125461">Acerca de Chrome OS Flex</translation>
 <translation id="1674870198290878346">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="1682634494516646069">Google Chrome non pode ler nin escribir no seu directorio de datos:
@@ -96,6 +97,7 @@
 <translation id="2597976513418770460">Obtén os datos do navegador Chrome de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome fai comprobacións de forma periódica para ver se tes a configuración máis segura. Informarémoste se atopamos algo que necesites revisar.</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
 <translation id="2665296953892887393">Axudar a mellorar Google Chrome enviando informes de erros e <ph name="UMA_LINK" /> a Google.</translation>
 <translation id="2689103672227170538">Esta extensión cambiou a páxina que se mostra ao iniciar Chrome.</translation>
@@ -235,6 +237,7 @@
 
 É posible que algunhas funcións non estean dispoñibles. Especifica un directorio de perfil diferente ou utiliza unha versión máis recente de Chrome.</translation>
 <translation id="521447420733633466">Se compartes un dispositivo, as túas amizades e os membros da túa familia poden navegar cun perfil independente e configurar Chrome como prefiran</translation>
+<translation id="5239627039202700673">Usa Chrome cada vez que fagas clic nas ligazóns de mensaxes, documentos e outras aplicacións</translation>
 <translation id="5251420635869119124">Os invitados poden utilizar Chrome sen perder información.</translation>
 <translation id="5334309298019785904">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="5334487786912937552">Chrome necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
@@ -251,6 +254,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{O teu administrador pídeche que reinicies Chrome para aplicar esta actualización}=1{O teu administrador pídeche que reinicies Chrome para aplicar esta actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador pídeche que reinicies Chrome para aplicar esta actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="5682679001737420487">Chrome bloquea algunhas descargas</translation>
 <translation id="5686916850681061684">Personaliza e controla Google Chrome. Algo precisa a túa atención. Fai clic para obter información.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">Cando esta opción está activada, Chrome libera memoria das pestanas inactivas. Desta forma, as pestanas activas e outras aplicacións dispoñen de máis recursos informáticos e Chrome segue funcionando rápido. As pestanas inactivas volven activarse automaticamente cando regresas a elas.</translation>
@@ -308,6 +312,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
 <translation id="6750954913813541382">Para corrixir erros ortográficos, Chrome enviaralle a Google o texto que escribas no navegador</translation>
 <translation id="677276454032249905">Queres saír de Chrome de todas formas?</translation>
+<translation id="6794858689789885890">Eliminar sempre do dispositivo os datos dos sitios cando peches Chrome</translation>
 <translation id="683440813066116847">Regra de entrada para Google Chrome Canary para permitir tráfico mDNS.</translation>
 <translation id="6881299373831449287">Actualizando Chrome</translation>
 <translation id="6885412569789873916">Aplicacións de Chrome Beta</translation>
@@ -392,6 +397,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Chrome pode facer unha estimación dos teus intereses. Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>
+<translation id="8403038600646341038">O logotipo de Chrome dentro da pantalla dun ordenador.</translation>
 <translation id="8416347857511542594">Máis información sobre a personalización de anuncios en Chrome</translation>
 <translation id="8418845734693287262">Chrome OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>

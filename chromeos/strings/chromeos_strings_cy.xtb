@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">Mae ffenestr diweddaru cadarnwedd ar gyfer dyfeisiau allanol ar agor. Mae <ph name="NUM_UPDATES" /> o ddiweddariadau ar gael.</translation>
 <translation id="1145516343487477149">Dewch o hyd i erthyglau cymorth ac atebion i gwestiynau cyffredin Chromebook</translation>
+<translation id="1154390310959620237">Dim ond 5 llwybr byr y gallwch chi eu haddasu. Dileu llwybr byr i ychwanegu un newydd.</translation>
 <translation id="1164939766849482256">Arbedwr sgrîn o wawr i dywyll</translation>
 <translation id="1167755866710282443">Agorwch y ddewislen i bersonoleiddio allweddi. Llusgwch y ddewislen i'w symud.</translation>
 <translation id="1175697296044146566">Rheolir y <ph name="DEVICE_TYPE" /> hwn gan <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Wrthi'n ailgychwyn...</translation>
 <translation id="2533048460510040082">Cynnwys cymorth a awgrymir</translation>
 <translation id="2536159006530886390">Ni ellir cysylltu â'r we.</translation>
+<translation id="2555662516429796509">Pwyswch 1-4 addasydd ac 1 fysell arall ar eich bysellfwrdd</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">I osod, ewch i'r Gosodiadau</translation>
 <translation id="2597774443162333062">Bydd ffeiliau'n cael eu hanfon at Google i'w dadfygio</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
 <translation id="3373141842870501561">Papur wal llif y ddaear</translation>
 <translation id="337375748120863155">Gwybodaeth yn ymwneud â'ch dewis. Defnyddiwch y bysellau saeth Chwith neu Dde i gael mynediad at reolyddion.</translation>
+<translation id="3383623117265110236">Unigryw</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">disgleirdeb i lawr</translation>
 <translation id="4176463684765177261">Mae wedi'i analluogi</translation>
 <translation id="4176659219503619100">Panel Rheoli</translation>
+<translation id="4185315616950253617">Mae angen i lwybr byr gyda bysellau rhes uchaf gynnwys y fysell Search.</translation>
 <translation id="420283545744377356">Diffodd yr arbedydd sgrîn</translation>
 <translation id="4213104098953699324">Bysellfwrdd USB</translation>
 <translation id="4227825898293920515">Mae'r cyfrinair yn darfod mewn <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Cuddni HTTP</translation>
 <translation id="4271957103967917607">Gweld yn y modd Sgrîn Lawn</translation>
 <translation id="4275663329226226506">Cyfryngau</translation>
+<translation id="4278766082079064416">Mae'r llwybr byr yn cael ei ddefnyddio ar gyfer "<ph name="CONFLICT_ACCEL_NAME" />". Golygwch neu tynnwch i ddatrys y gwrthdaro.</translation>
 <translation id="4289540628985791613">Trosolwg</translation>
 <translation id="4289849978083912975">Sioe sleidiau</translation>
 <translation id="4297501883039923494">Wedi stopio - Gwall anhysbys</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}zero{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}two{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}few{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}many{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}other{<ph name="ERROR_MESSAGE" /> {0} ymgais ar ôl}}</translation>
 <translation id="4873827928179867585">Algorithm dilysu</translation>
 <translation id="4880328057631981605">Enw pwynt mynediad</translation>
+<translation id="488307179443832524">Mae'r llwybr byr yn cael ei ddefnyddio ar gyfer "<ph name="CONFLICT_ACCEL_NAME" />". Pwyswch lwybr byr newydd.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Dewiswch un newydd ar unwaith</translation>
 <translation id="4891842000192098784">Straen</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Disgleirdeb y sgrîn i fyny</translation>
 <translation id="57838592816432529">Distewi</translation>
 <translation id="5784136236926853061">Cuddni HTTP uchel</translation>
+<translation id="5816802250591013230">Dim llwybr byr wedi'i aseinio</translation>
 <translation id="5826644637650799838">Ynghylch y gelf</translation>
 <translation id="5832805196449965646">Ychwanegu Person</translation>
 <translation id="583281660410589416">Anhysbys</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
 <translation id="7040230719604914234">Gweithredydd</translation>
 <translation id="7041549558901442110">Nid yw'r ddyfais wedi'i chysylltu.</translation>
+<translation id="7046522406494308071">Ailosod pob llwybr byr i ddiofyn?</translation>
 <translation id="7058278511608979688">Gorffen a chadw</translation>
 <translation id="7059230779847288458">Wrthi'n gwefru, <ph name="TIME_VALUE" /> nes ei fod yn llawn</translation>
 <translation id="7068619307603204412">Paratoi eich dyfais</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Wedi methu - Wedi Methu ag Awdurdodi</translation>
 <translation id="7103252855940681301">Dyfais <ph name="INDEX" /> o <ph name="COUNT" /> o'r enw <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Dewiswch waith celf unigryw <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">rhowch yr allwedd</translation>
 <translation id="7130438335435247835">Enw Pwynt Mynediad (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Gweinydd enwau}zero{Gweinyddion enwau}two{Gweinyddion enwau}few{Gweinyddion enwau}many{Gweinyddion enwau}other{Gweinyddion enwau}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Darparwr Rhwydwaith Symudol</translation>
 <translation id="725133483556299729">Dewis e-bost</translation>
 <translation id="7271040990581020067">Mae'r sganiwr wrthi'n cael ei ddefnyddio. Rhowch gynnig arall arni'n nes ymlaen.</translation>
+<translation id="7273347807225967898">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio bysell addasydd (ctrl, alt, shift, search, neu launcher).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Teimlo'r awel</translation>
 <translation id="7287310195820267359">Casgliadau Papur Wal</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">golau bysellfwrdd</translation>
 <translation id="773153675489693198">Cyfrif cylch gwefru</translation>
 <translation id="7747039790905080783">Allwedd a rannwyd ymlaen llaw</translation>
+<translation id="7752963721013053477">O'r wawr i'r tywyllwch - unigryw</translation>
 <translation id="7762130827864645708">Gwnaethoch newid eich cyfrinair yn llwyddiannus. Defnyddiwch y cyfrinair newydd o hyn ymlaen.</translation>
 <translation id="7763470514545477072">Cyfateb ôl-ddodiad parth</translation>
 <translation id="7769672763586021400">Rhif adnabod y Model</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Math o ddarparwr</translation>
 <translation id="7882501334836096755">Allwedd gyhoeddus</translation>
+<translation id="7903695460270716054">Dewiswch waith celf a lluniau sydd wedi'u curadu</translation>
 <translation id="7915220255123750251">Rheoli gosodiadau APN rhwydwaith. Mae APN yn sefydlu cysylltiad rhwng rhwydwaith cellog a'r rhyngrwyd.</translation>
 <translation id="7936303884198020182">Ni chanfuwyd gweinyddion enwau</translation>
 <translation id="7942349550061667556">Coch</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Newid cyfrinair</translation>
 <translation id="8094062939584182041">Caniatáu i Google anfon e-bost atoch am y broblem hon</translation>
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
+<translation id="8111706652656628199">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio Shift ac 1 fysell addasydd arall (ctrl, alt, search, neu launcher).</translation>
 <translation id="811820734797650957">Gall porth gael ei Bingio (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Gwneud cais am Rifyddion Traffig</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albwm Google Photos</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">Mae'r llwybr byr yn cael ei ddefnyddio ar gyfer "<ph name="CONFLICT_ACCEL_NAME" />". Pwyswch lwybr byr newydd. I ddisodli'r llwybr byr gwreiddiol, pwyswch y llwybr byr hwn eto.</translation>
 <translation id="879568662008399081">Mae'n bosib bod gan y rhwydwaith hwn borth caeth</translation>
 <translation id="8798099450830957504">Diofyn</translation>
 <translation id="8798441408945964110">Enw'r darparwr</translation>

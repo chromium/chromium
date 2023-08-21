@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Sigue usando os datos de Chrome na túa Conta de Google.</translation>
 <translation id="1282031177488366470">Axudar a mellorar o rendemento e as funcións de Chrome</translation>
 <translation id="1352919863522755794">O xestor de contrasinais de Google non puido comprobar os teus contrasinais. Verifica a conexión a Internet.</translation>
+<translation id="1407843355326180937">Inicia sesión neste sitio e en Chrome para acceder aos teus marcadores e a máis contido en todos os teus dispositivos.</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarlle o máximo partido a Chrome.</translation>
 <translation id="1479202195792305274">Chrome pode comprobar os teus contrasinais cando inicies sesión coa túa Conta de Google.</translation>
 <translation id="1491435845014430217">Activa Bloquear pestanas do modo de incógnito ao pechar Chrome.</translation>
 <translation id="1493827051843127077">Define Chrome como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="1511320244449497906">Tes a sesión iniciada e estás sincronizando os teus datos cunha conta xestionada por <ph name="DOMAIN" /> cuxo administrador xa pode definir políticas de usuario específicas para esa conta que poden modificar o comportamento de Chrome.</translation>
+<translation id="1526327845902180576">Cando esta opción está activada:
+<ph name="BEGIN_INDENT" />  • Axuda a mellorar Chrome para as persoas que o usan do mesmo xeito ca ti.<ph name="END_INDENT" />
+
+Cuestións que debes ter en conta:
+<ph name="BEGIN_INDENT" />  • Enviarase información a Google sobre o uso que fagas de Chrome, pero non se asociará a ti.
+
+  • Se se produce algún fallo en Chrome, entre os datos do erro podería incluírse algunha información persoal.
+
+  • Se sincronizas o historial coa túa Conta de Google, pode que as métricas tamén conteñan información sobre os URL que visites.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Contas coa máxima seguranza de Chrome contra sitios web daniños</translation>
 <translation id="1682483655351012182">Sincronizar os teus datos de Chrome</translation>
 <translation id="1733654336159102143">Bloquea o modo de incógnito ao saír de Chrome ou cambiar de aplicación.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="3827545470516145620">Contas con protección de seguranza estándar neste dispositivo</translation>
 <translation id="384394811301901750">Google Chrome non pode usar a cámara neste momento</translation>
+<translation id="3901001113120561395">Tira o máximo proveito de Chrome.</translation>
 <translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Inicia sesión neste sitio e en Chrome.</translation>
 <translation id="4698415050768537821">Chrome non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Para contribuír a mellorar a aplicación, Chrome envíalle a Google datos de uso e de fallos. <ph name="BEGIN_LINK" />Xestionar<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Algúns dos teus datos Chrome aínda non se gardaron na túa Conta de Google.
+
+        Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos eliminaranse.</translation>
 <translation id="484033449593719797">Non compatible na versión beta de Chrome</translation>
 <translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
 <translation id="4903674399067644695">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Mellora Chrome</translation>
 <translation id="5119391094379141756">Selecciona Chrome</translation>
 <translation id="5162467219239570114">A versión de Chrome está desactualizada. Se non hai dispoñible ningunha actualización na <ph name="BEGIN_LINK" />tenda de aplicacións<ph name="END_LINK" />, é posible que o teu dispositivo xa non sexa compatible coas novas versións de Chrome.</translation>
+<translation id="5190139289262548459">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que tes a sesión iniciada e o xeito no que se usa Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome non pode usar a cámara porque a está usando outra aplicación</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="5439191312780166229">Analiza máis datos de sitios que a protección estándar para avisarte sobre os sitios perigosos (mesmo sobre os que Google non coñeza ata ese momento). Se queres, podes omitir as advertencias de Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Estás iniciando sesión cunha conta xestionada por <ph name="DOMAIN" /> e proporcionándolle ao seu administrador o control dos teus datos de Chrome, que quedarán ligados permanentemente a esta conta. Se pechas sesión en Chrome, eliminaranse os teus datos deste dispositivo, pero seguirán almacenados na túa conta de Google.</translation>
 <translation id="6676840375528380067">Queres borrar os teus datos de Chrome deste dispositivo?</translation>
 <translation id="6709398533399187136">O teu contrasinal púxose en risco debido a unha violación da seguranza dos datos. O xestor de contrasinais de Google recomenda que o cambies de inmediato.</translation>
+<translation id="6815466750807582739">Os enderezos e os métodos de pago non se encriptarán. Non se sincronizará o historial de navegación de Chrome.
+
+Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Google non a recibirá nin a almacenará). Se esqueces a frase de acceso ou queres cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Chrome non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="6964931465519938134">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="6975725306479268850">Escolle Chrome para autocompletar</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>
 <translation id="8788269841521769222">Non terás que lembrar este contrasinal. Gardarase no xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Configuración de Chrome</translation>
+<translation id="8856877214925961642">A encriptación mediante frase de acceso non inclúe os enderezos nin os métodos de pago.
+
+Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os datos de Chrome da túa conta<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo mañá.</translation>
 <translation id="8897749957032330183">Os contrasinais gárdanse no xestor de contrasinais de Google neste dispositivo.</translation>
 <translation id="8969290730818637510">Cando esta opción está activada:

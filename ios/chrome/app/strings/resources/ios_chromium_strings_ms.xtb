@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Bantu Tingkatkan Ciri dan Prestasi Chromium</translation>
 <translation id="1531155317299575425">Memaparkan gesaan untuk log masuk ke Chromium.</translation>
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
+<translation id="1647558790457890304">Tetapan Chromium</translation>
 <translation id="1722370509450468186">Kata laluan anda akan disimpan dalam Account anda (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Data Chromium dikosongkan</translation>
 <translation id="1758508597843173586">Kunci tab inkognito anda semasa anda keluar daripada Chromium atau beralih kepada apl lain.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Memberikan amaran kepada anda tentang laman berbahaya, termasuk laman yang tidak diketahui oleh Google sebelum ini, dengan menganalisis lebih banyak data daripada laman berbanding perlindungan standard. Anda boleh memilih untuk melangkau amaran Chromium.</translation>
 <translation id="3805899903892079518">Chromium tidak mempunyai akses kepada foto atau video anda. Dayakan akses dalam Tetapan iOS &gt; Privasi &gt; Foto.</translation>
 <translation id="3827545470516145620">Anda mendapat perlindungan keselamatan standard pada peranti ini</translation>
+<translation id="3886689467633467988">Log masuk laman ini dan Chromium untuk mendapatkan penanda halaman anda dan banyak lagi pada semua peranti anda.</translation>
+<translation id="394413318816989199">Penyulitan ungkapan laluan tidak termasuk kaedah pembayaran dan alamat.
+
+Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Buka Chromium Daripada Mana-mana Apl</translation>
 <translation id="4043291146360695975">Kata laluan disimpan pada Pengurus Kata Laluan pada peranti ini sahaja.</translation>
 <translation id="4099085513035183040">Tidak disokong pada Chromium Beta</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
 <translation id="4736424910885271643">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chromium anda akan dikosongkan daripada peranti ini</translation>
+<translation id="4790638144988730920">Kekal menggunakan data Chromium dalam Google Account anda.</translation>
 <translation id="4828317641996116749">Chromium tidak dapat menyemak semua kata laluan. Cuba lagi nanti.</translation>
 <translation id="4985291216379576555">Luar Talian, Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="4996471330284142407">Selesaikan lebih banyak tugas dengan Chromium yang mudah, selamat dan lebih pantas berbanding dahulu.</translation>
 <translation id="4999538639245140991">Oleh sebab anda log keluar daripada akaun yang diurus oleh <ph name="SIGNOUT_MANAGED_DOMAIN" />, data Chromium anda akan dipadamkan daripada peranti ini. Data anda akan kekal dalam Akaun Google anda.</translation>
 <translation id="5042011327527167688">Ketik “Paparkan dengan Google Maps pada Chromium”.</translation>
 <translation id="5048795749726991615">Untuk mendapatkan kata laluan anda yang disimpan dalam apl anda yang lain dengan mudah, gunakan Chromium untuk AutoLengkap</translation>
+<translation id="5131565040785979529">Organisasi anda, <ph name="DOMAIN" />, mengurus akaun yang anda log masuk dan cara Chromium digunakan.</translation>
 <translation id="5171868502429358653">Log Masuk ke Chromium</translation>
 <translation id="5224391634244552924">Tiada kata laluan yang disimpan. Chromium boleh menyemak kata laluan anda yang disimpan.</translation>
+<translation id="5242782538551259282">Sesetengah data Chromium anda belum disimpan dalam Google Account anda.
+
+        Tunggu beberapa minit sebelum log keluar. Jika anda log keluar sekarang, data ini akan dipadamkan.</translation>
 <translation id="5308226104666789935">Chromium tidak dapat menyemak kemaskinian</translation>
 <translation id="5396916991083608703">Tetapkan Chromium sebagai Penyemak Imbas Lalai?</translation>
 <translation id="5453478652154926037">Chromium tidak dapat menyemak kata laluan anda.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Kad ini menunjukkan cadangan tentang cara memanfaatkan Chromium sepenuhnya.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat menyemak kata laluan anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
+<translation id="5889847953983052353">Apabila dihidupkan:
+<ph name="BEGIN_INDENT" />  • Bantu jadikan Chromium lebih baik untuk orang yang menggunakan ciri ini seperti anda.<ph name="END_INDENT" />
+
+Perkara yang perlu dipertimbangkan:
+<ph name="BEGIN_INDENT" />  • Maklumat dihantar kepada Google tentang penggunaan Chromium anda tetapi tidak terikat dengan anda.
+
+  • Jika Chromium ranap, butiran tentang keranapan mungkin termasuk beberapa maklumat peribadi.
+
+  • Jika anda menyegerakkan sejarah anda kepada Google Account anda, metrik mungkin merangkumi maklumat URL yang anda lawati.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Anda mengelog masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chromium anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan mengelog keluar daripada Chromium akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
+<translation id="5951593919357934226">Dapatkan manfaat sepenuhnya daripada Chromium.</translation>
 <translation id="5983312940147103417">Jadikan Chromium Lebih Baik</translation>
 <translation id="6062449165341879460">Organisasi <ph name="DOMAIN" /> anda akan mempunyai akses kepada data Chromium, penanda halaman, sejarah, kata laluan dan tetapan lain yang anda simpan dalam akaun ini. Apabila anda log keluar, data anda akan dikosongkan daripada peranti ini.  Namun begitu, data anda akan terus disimpan dalam Google Account terurus anda dan akan tersedia di organisasi anda. Organisasi anda juga boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chromium.</translation>
 <translation id="61109258320235597">Untuk menggunakan dan menyimpan data Chromium dalam Google Account anda, masukkan ungkapan laluan anda.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Log keluar daripada Chromium?</translation>
 <translation id="632825460376924298">Benarkan Log Masuk Chromium</translation>
 <translation id="6337530241089703714">Pilih sama ada anda hendak mengosongkan data Chromium anda daripada peranti ini atau mengekalkan data tersebut</translation>
+<translation id="6407399265324739055">Kaedah pembayaran dan alamat tidak akan disulitkan. Sejarah penyemakan imbas daripada Chromium tidak akan disegerakkan.
+
+Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data tersulit anda. Ungkapan laluan tidak dihantar kepada atau disimpan oleh Google. Jika anda terlupa ungkapan laluan anda atau mahu menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chromium dalam akaun anda<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">Chromium telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="6563921047760808519">Ketahui lebih lanjut tentang <ph name="BEGIN_LINK" />cara Chromium mengekalkan data anda peribadi<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Kini Chromium menyokong dasar pengguna untuk akaun terurus anda</translation>

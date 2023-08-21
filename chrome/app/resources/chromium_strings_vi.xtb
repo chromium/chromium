@@ -207,11 +207,13 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="5527463683072221100">Mở tệp PDF trong Chromium</translation>
 <translation id="5614091477838198795">Khi bật, bạn cũng sẽ đăng xuất khỏi Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Đã có bản cập nhật Chromium}=1{Đã có bản cập nhật Chromium}other{Đã có bản cập nhật Chromium từ # ngày trước}}</translation>
+<translation id="5643865575100044307">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chromium</translation>
 <translation id="5653831366781983928">Vui lòng khởi động lại Chromium ngay bây giờ</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Hiển thị Chromium bằng ngôn ngữ này</translation>
 <translation id="5862307444128926510">Chào mừng bạn đến với Chromium</translation>
 <translation id="5883558403894052917">Chromium nhận thấy rằng các mục này chứa phần mềm độc hại:</translation>
+<translation id="5889361821821684993">Chromium thường xuyên kiểm tra để đảm bảo trình duyệt của bạn có các chế độ cài đặt an toàn nhất. Chúng tôi sẽ thông báo cho bạn biết nếu có nội dung nào cần bạn xem xét.</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Đăng nhập vào mạng</translation>
 <translation id="5924017743176219022">Đang kết nối Internet...</translation>
@@ -222,6 +224,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="5988505247484123880">Các trang web bạn truy cập thường ghi nhớ các mối quan tâm của bạn để cá nhân hoá trải nghiệm cho bạn. Các trang web cũng có thể lưu trữ thông tin trên Chromium về mối quan tâm của bạn.</translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
 <translation id="6040143037577758943">Đóng</translation>
+<translation id="6055611795418209449">Chromium chặn một số nội dung tải xuống</translation>
 <translation id="6055895534982063517">Hiện đã có phiên bản Chromium mới và phiên bản này nhanh hơn bao giờ hết.</translation>
 <translation id="6063093106622310249">&amp;Mở trong Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> đã được thêm vào Chromium</translation>
@@ -235,6 +238,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="6132897690380286411">Chromium sắp đóng và xoá dữ liệu</translation>
 <translation id="6134968993075716475">Tính năng Duyệt web an toàn đang tắt. Bạn nên bật tính năng này trên Chromium.</translation>
 <translation id="6145820983052037069">Bạn có thể chuyển đổi giữa các hồ sơ trên Chromium tại đây</translation>
+<translation id="6175304430031192654">Tuỳ vào chế độ cài đặt của bạn, Chromium cũng có thể gửi cookie và URL hiện tại của bạn</translation>
 <translation id="6183079672144801177">Đảm bảo bạn đã đăng nhập vào Chromium trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="6212496753309875659">Máy tính này đã có phiên bản Chromium mới hơn. Nếu phần mềm không hoạt động, hãy gỡ cài đặt Chromium và thử lại.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium sẽ khởi động lại ngay bây giờ}=1{Chromium sẽ khởi động lại sau 1 giây}other{Chromium sẽ khởi động lại sau # giây}}</translation>
@@ -255,6 +259,7 @@ Các quyền bạn từng cấp cho trang web và ứng dụng có thể áp d�
 <translation id="6373523479360886564">Bạn có chắc chắn muốn gỡ cài đặt Chromium không?</translation>
 <translation id="6375219077595103062">Thêm lối tắt vào Trình quản lý mật khẩu</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Cách chúng tôi sử dụng dữ liệu này:<ph name="END_BOLD" /> Chromium có thể ước đoán mối quan tâm của bạn. Sau đó, trang web mà bạn truy cập có thể đề nghị Chromium cung cấp mối quan tâm của bạn nhằm cá nhân hoá quảng cáo mà bạn thấy.</translation>
+<translation id="6400112897226594999">Biểu trưng Chromium trên màn hình máy tính.</translation>
 <translation id="6403826409255603130">Chromium là trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Đây là một trình duyệt web nhanh, ổn định và dễ sử dụng. Duyệt web trở nên an toàn hơn với tính năng bảo vệ chống lại phần mềm độc hại và lừa đảo được tích hợp sẵn vào Chromium.</translation>
 <translation id="6442900851116057561">Khởi động lại ChromiumOS</translation>
 <translation id="6455857529632101747">Chào mừng bạn đến với hồ sơ trên Chromium</translation>
@@ -304,6 +309,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="718435575166326686">Chromium cần có quyền truy cập máy ảnh đối với trang web này</translation>
 <translation id="7196312274710523067">Không thể mở Chromium. Hãy thử lại.</translation>
 <translation id="7197677400338048821">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ.</translation>
+<translation id="7213407614656404070">Dùng Chromium mỗi khi bạn nhấp vào đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác</translation>
 <translation id="7223968959479464213">Trình quản lý tác vụ - Chromium</translation>
 <translation id="7246575524853130370">Mối quan tâm của bạn theo ước đoán của Chromium</translation>
 <translation id="7309928523159922338">Tính năng Đo lường quảng cáo cho phép các trang web bạn truy cập đề nghị Chromium cung cấp thông tin để đo lường hiệu quả quảng cáo. Tính năng Đo lường quảng cáo hạn chế hoạt động theo dõi qua nhiều trang web bằng cách chuyển ít thông tin nhất có thể giữa các trang web.</translation>

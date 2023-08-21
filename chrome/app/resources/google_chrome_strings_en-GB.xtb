@@ -39,6 +39,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1627304841979541023"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don’t want Chrome to consider.</translation>
 <translation id="1628000112320670027">Get help with Chrome</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
+<translation id="1642309806724967937">Depending on your settings, Chrome may also send cookies and your current URL</translation>
 <translation id="1662146548738125461">About Chrome OS Flex</translation>
 <translation id="1674870198290878346">Open Link in Chrome Inco&amp;gnito Window</translation>
 <translation id="1682634494516646069">Google Chrome cannot read and write to its data directory:
@@ -96,6 +97,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
+<translation id="2649768380733403658">Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs your review.</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2689103672227170538">This extension has changed the page that is shown when you start Chrome.</translation>
@@ -235,6 +237,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 
 Some features may be unavailable. Please specify a different profile directory or use a newer version of Chrome.</translation>
 <translation id="521447420733633466">If you share a device, friends and family can browse separately and set up Chrome just the way they want</translation>
+<translation id="5239627039202700673">Use Chrome any time that you click links in messages, documents and other apps</translation>
 <translation id="5251420635869119124">Guests can use Chrome without leaving anything behind.</translation>
 <translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5334487786912937552">Chrome needs storage access permission to download files</translation>
@@ -251,6 +254,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> may be dangerous, so Chrome has blocked it.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Your administrator asks that you relaunch Chrome to apply this update}=1{Your administrator asks that you relaunch Chrome to apply this update. Your Incognito window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Incognito windows won't reopen.}}</translation>
+<translation id="5682679001737420487">Chrome blocks some downloads</translation>
 <translation id="5686916850681061684">Customise and control Google Chrome. Something needs your attention – click for details.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="570005089986962444">When on, Chrome frees up memory from inactive tabs. This gives active tabs and other apps more computer resources and keeps Chrome fast. Your inactive tabs automatically become active again when you go back to them.</translation>
@@ -308,6 +312,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="677276454032249905">Exit Chrome anyway?</translation>
+<translation id="6794858689789885890">Always delete site data from your device when you close Chrome</translation>
 <translation id="683440813066116847">Inbound rule for Google Chrome Canary to allow mDNS traffic.</translation>
 <translation id="6881299373831449287">Updating Chrome</translation>
 <translation id="6885412569789873916">Chrome Beta apps</translation>
@@ -392,6 +397,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8383226135083126309"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chrome can estimate your interests. Later, a site that you visit can ask Chrome to see your interests in order to personalise the ads that you see.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
+<translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
 <translation id="8416347857511542594">Learn more about ad personalisation in Chrome</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
