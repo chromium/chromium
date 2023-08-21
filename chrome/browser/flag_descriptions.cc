@@ -5119,6 +5119,12 @@ const char kImmersiveFullscreenName[] = "Immersive Fullscreen Toolbar";
 const char kImmersiveFullscreenDescription[] =
     "Automatically hide and show the toolbar in fullscreen.";
 
+const char kMacPWAsNotificationAttributionName[] =
+    "Mac PWA notification attribution";
+const char kMacPWAsNotificationAttributionDescription[] =
+    "Route notifications for PWAs on Mac through the app shim, attributing "
+    "notifications to the correct apps.";
+
 const char kMacSyscallSandboxName[] = "Mac Syscall Filtering Sandbox";
 const char kMacSyscallSandboxDescription[] =
     "Controls whether the macOS sandbox filters syscalls.";

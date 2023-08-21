@@ -61637,6 +61637,7 @@ from previous Chrome versions.
   <int value="-1392689905" label="ServiceWorkerLongRunningMessage:enabled"/>
   <int value="-1392673888"
       label="PolicyBlocklistThrottleRequiresPoliciesLoaded:enabled"/>
+  <int value="-1392627070" label="AppShimNotificationAttribution:disabled"/>
   <int value="-1392562498" label="disable-origin-chip"/>
   <int value="-1391728260" label="ContextualSearchDefinitions:enabled"/>
   <int value="-1391693054"
@@ -64321,6 +64322,7 @@ from previous Chrome versions.
   <int value="-35528548" label="LensImageFormatOptimizations:disabled"/>
   <int value="-35388407" label="AshNewSystemMenu:disabled"/>
   <int value="-35256214" label="InterestFeedNoticeCardAutoDismiss:enabled"/>
+  <int value="-33240310" label="AppShimNotificationAttribution:enabled"/>
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-32385086" label="NtpRecipeTasksModule:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>

@@ -2964,6 +2964,9 @@ extern const char kEnableUniversalLinksDescription[];
 extern const char kImmersiveFullscreenName[];
 extern const char kImmersiveFullscreenDescription[];
 
+extern const char kMacPWAsNotificationAttributionName[];
+extern const char kMacPWAsNotificationAttributionDescription[];
+
 extern const char kMacSyscallSandboxName[];
 extern const char kMacSyscallSandboxDescription[];
 

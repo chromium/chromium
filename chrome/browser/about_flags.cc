@@ -10842,6 +10842,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(apps::kAlmanacGameMigration)},
 #endif
 
+#if BUILDFLAG(IS_MAC)
+    {"enable-mac-pwas-notification-attribution",
+     flag_descriptions::kMacPWAsNotificationAttributionName,
+     flag_descriptions::kMacPWAsNotificationAttributionDescription, kOsMac,
+     FEATURE_VALUE_TYPE(features::kAppShimNotificationAttribution)},
+#endif  // BUILDFLAG(IS_MAC)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
