@@ -61,6 +61,11 @@ class LensSidePanelCoordinatorTest : public TestWithBrowserView {
     AddTab(browser, GURL("about:blank"));
   }
 
+  void TearDown() override {
+    lens_side_panel_coordinator_ = nullptr;
+    TestWithBrowserView::TearDown();
+  }
+
   SidePanelCoordinator* GetSidePanelCoordinator() {
     return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
