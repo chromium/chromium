@@ -4222,6 +4222,7 @@ if (is_android) {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
     sources = [
+      "allocator/partition_alloc_features.cc",
       "android/base_features.cc",
       "features.cc",
       "task/task_features.cc",
