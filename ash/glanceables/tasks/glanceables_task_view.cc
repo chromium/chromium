@@ -23,11 +23,13 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -100,6 +102,8 @@ class GlanceablesTaskView::CheckButton : public views::ImageButton {
       : views::ImageButton(std::move(pressed_callback)) {
     SetAccessibleRole(ax::mojom::Role::kCheckBox);
     UpdateImage();
+    SetFlipCanvasOnPaintForRTLUI(/*enable=*/false);
+    views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
