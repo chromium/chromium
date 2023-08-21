@@ -11,6 +11,10 @@
   #lockOptionsDiv {
     display: block;
   }
+
+  .underbar {
+    border-bottom: var(--cr-separator-line);
+  }
 </style>
 <div>
   <settings-toggle-button id="enableLockScreen"
@@ -22,7 +26,7 @@
   <h2 class="settings-box">
     $i18n{lockScreenSignInOptions}
   </h2>
-  <div class="list-frame" id="signInOptionsList">
+  <div class="list-frame underbar" id="signInOptionsList">
     <settings-pin-settings
         id="pinSettings"
         auth-token="[[authToken]]"
@@ -42,7 +46,7 @@
     <h2 class="settings-box">
       $i18n{lockScreenNotificationTitle}
     </h2>
-    <div class="list-frame">
+    <div class="list-frame underbar">
       <settings-radio-group
           id="notificationSettings"
           pref="{{prefs.ash.message_center.lock_screen_mode}}"
