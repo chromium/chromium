@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Отваряне онлайн</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1044891598689252897">Сайтовете ще работят нормално</translation>
+<translation id="1073417869336441572">Помогнете ни да подобрим Chrome, като ни кажете защо разрешихте „бисквитките“ на трети страни. <ph name="BEGIN_LINK" />Изпращане на отзиви<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Съхраняваните от сайтовете или приложенията на началния екран данни и „бисквитки“ в размер на <ph name="DATASIZE" /> ще бъдат изчистени.</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Разрешено, но не и за трети страни</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="1994173015038366702">URL адрес на сайт</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Изтича след 1 ден}other{Изтича след # дни}}</translation>
 <translation id="2004697686368036666">Функциите в някои сайтове може да не работят</translation>
 <translation id="2025115093177348061">Обогатена реалност</translation>
 <translation id="2030769033451695672">Докоснете, за да се върнете към <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Извеждане на запитване, преди на сайтовете да се разреши достъп до местоположението ви (препоръчително)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome ще блокира „бисквитките“ отново утре}other{# дни, докато Chrome блокира „бисквитките“ отново}}</translation>
 <translation id="3521663503435878242">Сайтове в домейна <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Блокиране на сайтовете, така че да не могат да създават триизмерна карта на заобикалящата ви среда или да следят позицията на камерата</translation>
 <translation id="3544058026430919413">Дадена компания има възможност да дефинира група от сайтове, които могат да използват „бисквитки“, за да споделят активността ви в групата. Тази функция е изключена в режим „инкогнито“.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Телефонни номера</translation>
 <translation id="3826050100957962900">Подкани за вход от трети страни</translation>
 <translation id="3835233591525155343">Използването на устройството ви</translation>
+<translation id="3843916486309149084">Chrome ще блокира „бисквитките“ отново днес</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3859306556332390985">Придвижване напред</translation>
 <translation id="3895926599014793903">Принудително активиране на промяната на мащаба</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Блокиране на влизането с профили от трети страни за конкретен сайт.</translation>
 <translation id="6388207532828177975">Изчистване и нулиране</translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
+<translation id="640163077447496506">Изтича днес</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Блокиране на сайтовете, така че да не използват устройствата и данните ви за виртуална реалност</translation>
 <translation id="6447842834002726250">„Бисквитки“</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8154912474061769055">Функциите в много сайтове може да не работят</translation>
 <translation id="8168435359814927499">Съдържание</translation>
+<translation id="8186479265534291036">Сайтът не работи? „Бисквитките“ на трети страни са блокирани</translation>
 <translation id="8197286292360124385">Достъпът до <ph name="PERMISSION_1" /> е разрешен</translation>
 <translation id="8200772114523450471">Възобновяване</translation>
 <translation id="8206354486702514201">Тази настройка е наложена от администратора ви.</translation>

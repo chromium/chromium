@@ -1677,6 +1677,7 @@
 <translation id="4566017918361049074">Ачык абада</translation>
 <translation id="4567686777917670400">Администраторуңуз серепчини алыстан жөндөй алат. Бул түзмөктө аткарылган аракеттер Chromium'дан тышкары да башкарылышы мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">Cookie файлдарынын тизмесин жана сайттагы маалыматты жаңы терезеде карап чыгыңыз</translation>
+<translation id="4569155249847375786">Текшерилди</translation>
 <translation id="457875822857220463">Жеткирүү</translation>
 <translation id="4579699065574932398">Банк кызматы</translation>
 <translation id="4582204425268416675">Картаны алып салуу</translation>
@@ -2289,6 +2290,7 @@
 <translation id="5873297634595728366">Дизель унаалары</translation>
 <translation id="5877831137320480913">Сулуулук жана фитнес</translation>
 <translation id="5879989559903563723">Конок режиминде тыюу салынат</translation>
+<translation id="5883861433316751031">MIDI түзмөктөрүн көзөмөлдөп, кайра программалайсызбы?</translation>
 <translation id="5884465125445718607">Конверт Кытайча #6</translation>
 <translation id="5887400589839399685">Карта сакталды</translation>
 <translation id="5887687176710214216">Кечээ акыркы жолу кирген</translation>
@@ -3332,6 +3334,7 @@
 <translation id="8038817883578389970">Авто жарыш</translation>
 <translation id="8041089156583427627">Пикириңизди билдириңиз</translation>
 <translation id="8041940743680923270">Дүйнөлүк демейкини колдонуу (Суроо)</translation>
+<translation id="8042577181291637092">MIDI түзмөктөрүн колдоносузбу?</translation>
 <translation id="8046360364391076336">Өнөр жай материалдары жана жабдуулары</translation>
 <translation id="8052898407431791827">Буферге көчүрүлдү</translation>
 <translation id="8055534648776115597">Кесиптик жана үзгүлтүксүз билим берүү</translation>
@@ -3625,6 +3628,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> мааниси өлчөмгө коюлган талаптарга жооп бербейт.</translation>
 <translation id="867224526087042813">Колтамга</translation>
 <translation id="8672264262457010862">Бизнес жана өнөр-жай</translation>
+<translation id="8673776281896298303">MIDI түзмөктөрүңүздү (SysEx) көзөмөлдөө жана кайра программалоо</translation>
 <translation id="8676424191133491403">Дароо</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, жооп, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> дарегиндеги веб-баракча жүктөлбөй койду, анткени:</translation>

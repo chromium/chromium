@@ -129,6 +129,7 @@
 <translation id="1090541560108055381">ಜೋಡಿಸುವ ಮೊದಲು, ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿ ಈ ಕೋಡ್ ಒಂದೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="1091767800771861448">ಸ್ಕಿಪ್‌ ಮಾಡಲು ESCAPE ಅನ್ನು ಒತ್ತಿರಿ (ಅಧಿಕೃತವಲ್ಲದ ಬಿಲ್ಡ್‌ಗಳಿಗೆ ಮಾತ್ರ).</translation>
 <translation id="1093457606523402488">ಗೋಚರಿಸುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
+<translation id="1093645050124056515">ctrl + alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="1094219634413363886">ಈ ನಿರ್ವಹಿಸಲ್ಪಟ್ಟ ಸಾಧನದಲ್ಲಿ ರೆಕಾರ್ಡಿಂಗ್ ಪ್ರಾರಂಭವಾದರೆ ನೀವು ಅಧಿಸೂಚನೆಯೊಂದನ್ನು ಕಾಣುತ್ತೀರಿ</translation>
 <translation id="1095761715416917775">ನಿಮ್ಮ ಸಿಂಕ್ ಡೇಟಾಕ್ಕೆ ನೀವು ಯಾವಾಗಲೂ ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗುವ ಹಾಗೆ ನೋಡಿಕೊಳ್ಳಿ</translation>
 <translation id="1095879482467973146">ವೆಬ್‌ನಲ್ಲಿನ Google Password Manager</translation>
@@ -244,6 +245,7 @@
 <translation id="118057123461613219">ಭಾರಿ ಉಳಿತಾಯಗಳು</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> ನಲ್ಲಿ</translation>
+<translation id="1182876754474670069">ಹೋಮ್</translation>
 <translation id="1183237619868651138"><ph name="EXTERNAL_CRX_FILE" /> ಅನ್ನು ಸ್ಥಳೀಯ ಕ್ಯಾಷ್‌ನಲ್ಲಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="1185924365081634987">ಈ ನೆಟ್‌ವರ್ಕ್‌ ದೋಷವನ್ನು ಬಗೆಹರಿಸಲು <ph name="GUEST_SIGNIN_LINK_START" />ಅತಿಥಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು<ph name="GUEST_SIGNIN_LINK_END" /> ಕೂಡಾ ನೀವು ಪ್ರಯತ್ನಿಸಬಹುದು.</translation>
 <translation id="1187692277738768150">ನೀವು ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬಳಸಿದಾಗ ಮತ್ತು ಸೇವ್ ಮಾಡಿದಾಗ:</translation>
@@ -3518,6 +3520,7 @@
 <translation id="3794792524918736965">Windows Hello ಆನ್ ಮಾಡಿ</translation>
 <translation id="379509625511193653">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="3795766489237825963">ಅನಿಮೇಷನ್ ಪ್ಲೇ ಮಾಡಿ</translation>
+<translation id="3796215473395753611">alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="3796648294839530037">ಮೆಚ್ಚಿನ ನೆಟ್‌ವರ್ಕ್‌ಗಳು:</translation>
 <translation id="3797739167230984533">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> ಗಾಗಿ '<ph name="SEARCH_TERMS" />' &amp;ಹುಡುಕಿ</translation>
@@ -5068,6 +5071,7 @@
 <translation id="508059534790499809">Kerberos ಟಿಕೆಟ್ ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="5081124414979006563">ಅತಿಥಿ ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5081960376148623587">ಪುಟಗಳನ್ನು ಪ್ರಿಲೋಡ್ ಮಾಡಬೇಕೆ ಎಂಬುದನ್ನು ಆರಿಸಿ</translation>
+<translation id="5083035541015925118">ctrl + alt + ಅಪ್ ಆ್ಯರೋ</translation>
 <translation id="5084328598860513926">ಒದಗಿಸುವಾಗ ಅಡಚಣೆ ಉಂಟಾಗಿದೆ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ಸಾಧನದ ಮಾಲೀಕರು ಅಥವಾ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">ಸೈಟ್‌ಗಳು ನೀವು ನಿರೀಕ್ಷಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸುವ ಸಾಧ್ಯತೆ ಹೆಚ್ಚಿರುತ್ತದೆ.</translation>
 <translation id="5084686326967545037">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಿ</translation>
@@ -5784,6 +5788,7 @@
 <translation id="5687326903064479980">ಸಮಯ ವಲಯ</translation>
 <translation id="5687606994963670306">Chrome 30 ದಿನಗಳಿಗಿಂತ ಹಳೆಯದಾದ ಸೈಟ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅಳಿಸುತ್ತದೆ. ನೀವು ಪುನಃ ಭೇಟಿ ನೀಡುವ ಸೈಟ್, ಪಟ್ಟಿಯಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳಬಹುದು. ಅಥವಾ ನಿಮಗಾಗಿ ಜಾಹೀರಾತುಗಳನ್ನು ಸೂಚಿಸದಂತೆ ನೀವು ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಬಹುದು. <ph name="BEGIN_LINK" />Chrome ನಲ್ಲಿ ನಿಮ್ಮ ಜಾಹೀರಾತು ಗೌಪ್ಯತೆಯನ್ನು ನಿರ್ವಹಿಸುವ<ph name="END_LINK" /> ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="5687935527303996204">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಪ್ಲಗ್ ಇನ್ ಮಾಡಲಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ ಹಾಗೂ ಅದನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ. ಇನ್‌ಸ್ಟಾಲ್ ಆಗಲು 20 ನಿಮಿಷಗಳವರೆಗೆ ತೆಗೆದುಕೊಳ್ಳಬಹುದು. ಇನ್‌ಸ್ಟಾಲ್ ಪ್ರಕ್ರಿಯೆ ಪೂರ್ಣಗೊಂಡ ನಂತರ, ನಿಮ್ಮ ಸಾಧನವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಶಟ್ ಡೌನ್ ಆಗುತ್ತದೆ.</translation>
+<translation id="5689233503102158537">alt + ಬ್ಯಾಕ್‍‍ಸ್ಪೇಸ್</translation>
 <translation id="5689516760719285838">ಸ್ಥಳ</translation>
 <translation id="5689531695336322499">ಮತ್ತೊಂದು ಸಾಧನದಲ್ಲಿ <ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈಗಾಗಲೇ Assistant ಮೂಲಕ Voice Match ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿರುವಂತೆ ತೋರುತ್ತಿದೆ. ಈ ಸಾಧನದಲ್ಲಿ ವಾಯ್ಸ್ ಮಾಡೆಲ್ ಅನ್ನು ರೂಪಿಸಲು ಈ ಹಿಂದೆ ರೆಕಾರ್ಡಿಂಗ್‌ಗಳನ್ನು ಬಳಸಲಾಗಿತ್ತು.</translation>
 <translation id="56907980372820799">ಲಿಂಕ್ ಡೇಟಾ</translation>
@@ -6656,6 +6661,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6417468503703810114">ಡಿಫಾಲ್ಟ್ ವರ್ತನೆ</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> ನ ಹಿಂದೆ ಸ್ಥಾಪಿಸಿದ ಆವೃತ್ತಿಗೆ ಹಿಂತಿರುಗಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="641817663353603351">ಪೇಜ್ ಅಪ್</translation>
 <translation id="6418481728190846787">ಎಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್‌ಗಳ ಪ್ರವೇಶವನ್ನು ಶಾಶ್ವತವಾಗಿ ತೆಗೆಯಿರಿ</translation>
 <translation id="6418511932144861495">ಮಹತ್ವದ ಅಪ್‌ಡೇಟ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="641867537956679916">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಸಮಸ್ಯೆಯೊಂದನ್ನು ಪರಿಶೀಲಿಸಲು ಲಾಗ್ ಇನ್ ಮಾಡಿದ್ದಾರೆ. ನಿರ್ವಾಹಕರು ನಿಮಗೆ ನಿಯಂತ್ರಣವನ್ನು ಮರಳಿ ನೀಡಿದ ನಂತರ ನೀವು ಸಾಧನವನ್ನು ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಬಹುದು.</translation>
@@ -7275,6 +7281,7 @@
 <translation id="6920989436227028121">ದಿನನಿತ್ಯದ ಟ್ಯಾಬ್ ಅಂತೆ ತೆರೆಯಿರಿ</translation>
 <translation id="6921104647315081813">ಚಟುವಟಿಕೆಗಳನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
+<translation id="692135145298539227">ಅಳಿಸಿ</translation>
 <translation id="6922128026973287222">Google ಡೇಟಾ ಉಳಿಸುವಿಕೆ ಬಳಸುವ ಮೂಲಕ ಡೇಟಾವನ್ನು ಉಳಿಸಿ ಮತ್ತು ವೇಗವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಿ. ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="6922745772873733498">ಮುದ್ರಿಸಲು ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="6922763095098248079">ನಿಮ್ಮ ಸಾಧನವನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ. ನಿರ್ವಾಹಕರು ಈ ಸಾಧನದಲ್ಲಿನ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಡೇಟಾವನ್ನು ಪ್ರವೇಶಿಸಬಹುದು.</translation>
@@ -7351,6 +7358,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">ಮ್ಯೂಟ್ (ಡಿಫಾಲ್ಟ್)</translation>
 <translation id="6979737339423435258">ಎಲ್ಲ ಸಮಯ</translation>
+<translation id="6980402667292348590">ಸೇರಿಸಿ</translation>
 <translation id="6981553172137913845">ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು, ಅಜ್ಞಾತ ವಿಂಡೋವನ್ನು ತೆರೆಯಲು ಚುಕ್ಕೆಗಳ ಐಕಾನ್ ಮೆನುವನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6981761993313539853">ನಿಮ್ಮ ಬ್ಲೂಟೂತ್ ಸಾಧನವು ಜೋಡಿಸುವಿಕೆ ಮೋಡ್‌ನಲ್ಲಿದೆ ಮತ್ತು ಸಮೀಪದಲ್ಲಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ. ನಿಮಗೆ ನಂಬಿಕೆ ಇರುವ ಸಾಧನಗಳಿಗೆ ಮಾತ್ರ ಜೋಡಣೆ ಮಾಡಿ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
@@ -7744,6 +7752,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">ಅಮಾನ್ಯ ಸಂಯೋಜನೆ</translation>
 <translation id="7329154610228416156">ಸೈನ್‌ ಇನ್‌ ವಿಫಲಗೊಂಡಿದೆ ಏಕೆಂದರೆ ಅದು ಸುರಕ್ಷಿತವಲ್ಲದ URL (<ph name="BLOCKED_URL" />) ಬಳಸುವಂತೆ ಕಾನ್ಫಿಗರ್‌‌ ಮಾಡಲಾಗಿದೆ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="7331646370422660166">alt + ಡೌನ್ ಆ್ಯರೋ</translation>
 <translation id="7332053360324989309">ಮೀಸಲು ಕೆಲಸಗಾರ: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಮತ್ತು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="7335974957018254119">ಈ ಭಾಷೆಗಳಿಗಾಗಿ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಬಳಸಿ</translation>
@@ -7992,6 +8001,7 @@
 <translation id="7514417110442087199">ಕಾರ್ಯನಿಯೋಜನೆ ಸೇರಿಸಿ</translation>
 <translation id="751523031290522286">ನಿರ್ವಾಹಕರು<ph name="APP_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ. ಈ ಆ್ಯಪ್ ಅನ್ನು ಬಳಸುವುದಕ್ಕೆ ನಿರ್ವಾಹಕರ ಅನುಮತಿಯನ್ನು ಕೇಳಿ.</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">ಪೇಜ್ ಡೌನ್</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> ಅನ್ನು ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7517959947270534934">ಇದೀಗ ನಿಮ್ಮ ಕುಟುಂಬದ ಸದಸ್ಯರು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸ್ವೀಕರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. Chrome ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವಂತೆ ಮತ್ತು ಅವರ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡುವಂತೆ ಅವರಿಗೆ ತಿಳಿಸಿ.</translation>
 <translation id="7520766081042531487">ಅಜ್ಞಾತ ಪೋರ್ಟಲ್: <ph name="SUBFRAME_SITE" /></translation>
@@ -8773,7 +8783,6 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ಸ್ಥಿತಿ</translation>
 <translation id="8139440916039659819">ಕರ್ಸರ್ ವೇಗವರ್ಧನೆ</translation>
 <translation id="8139447493436036221">Google Drive ಫೈಲ್‌ಗಳು</translation>
-<translation id="8139643636835015859">ಇದು ನಿಮ್ಮ ಆಫ್‌ಲೈನ್ ಫೈಲ್‌ಗಳು ಬಳಸಿದ <ph name="OFFLINE_STORAGE_SIZE" /> ರಷ್ಟು ಸ್ಪೇಸ್‌ ಅನ್ನು ತೆಗೆದುಹಾಕುತ್ತದೆ. ಕೆಲವು ಫೈಲ್‌ಗಳು ಇನ್ನೂ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿರುತ್ತವೆ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923"><ph name="BROWSER_DOMAIN" /> <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /> ಮತ್ತು <ph name="PROFILE_DOMAIN" /> ನಿಮ್ಮ <ph name="BEGIN_LINK" />ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ<ph name="END_LINK" /></translation>
 <translation id="8141418916163800697">ಫೋನ್ ಹಬ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು ಇನ್ನಷ್ಟು ಫೀಚರ್‌ಗಳನ್ನು ಸೆಟಪ್ ಮಾಡಬಹುದು</translation>
@@ -10033,6 +10042,7 @@
 <translation id="9150079578948279438">ಪ್ರೊಫೈಲ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ತಾಂತ್ರಿಕ ಬೆಂಬಲಕ್ಕಾಗಿ ನಿಮ್ಮ ಕ್ಯಾರಿಯರ್ ಅನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="9150860646299915960">Linux ಕಂಟೇನರ್ ಅನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಿ</translation>
 <translation id="9151249085738989067">ಭಾಷೆಯ ಆಧಾರದ ಮೇಲೆ ChromeVox ಧ್ವನಿಯನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬದಲಾಯಿಸಿ</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">LaCrOS ಸಿಸ್ಟಂ ಮಾಹಿತಿ</translation>
 <translation id="9154082578438716291">ನೀವು ಭೇಟಿ ನೀಡಿದ ಪುಟಗಳನ್ನು ಮತ್ತು Chrome ಪ್ರಯಾಣಗಳಲ್ಲಿ ನಿಮ್ಮ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಗೆ ಸುಲಭವಾಗಿ ಹಿಂತಿರುಗುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು ಸೂಚಿಸಿದ ಹುಡುಕಾಟಗಳನ್ನು ನೀವು ನೋಡುತ್ತಿರುವಿರಿ.
         <ph name="BREAK" />

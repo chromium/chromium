@@ -128,6 +128,7 @@
 <translation id="1090541560108055381">Перед підключенням переконайтеся, що ввели один код на обох пристроях</translation>
 <translation id="1091767800771861448">Натисніть ESCAPE, щоб пропустити (лише в неофіційних версіях складання).</translation>
 <translation id="1093457606523402488">Видимі мережі:</translation>
+<translation id="1093645050124056515">ctrl + alt + стрілка вниз</translation>
 <translation id="1094219634413363886">Якщо на цьому керованому пристрої почнеться записування, ви отримаєте сповіщення</translation>
 <translation id="1095761715416917775">Подбайте про те, щоб не втратити доступ до своїх синхронізованих даних</translation>
 <translation id="1095879482467973146">Google Менеджер паролів (веб-версія)</translation>
@@ -243,6 +244,7 @@
 <translation id="118057123461613219">Дуже значне заощадження</translation>
 <translation id="1181037720776840403">Видалити</translation>
 <translation id="1181366777303791449">на сторінці <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1182876754474670069">home</translation>
 <translation id="1183237619868651138">Не вдається встановити <ph name="EXTERNAL_CRX_FILE" /> у локальному кеші.</translation>
 <translation id="1185924365081634987">Щоб виправити цю помилку мережі, можна також спробувати <ph name="GUEST_SIGNIN_LINK_START" />перегляд у гостьовому режимі<ph name="GUEST_SIGNIN_LINK_END" />.</translation>
 <translation id="1187692277738768150">Якщо ви використаєте й збережете цей пароль:</translation>
@@ -1926,6 +1928,7 @@
 <translation id="2480868415629598489">Змінювати дані, які копіюються</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2482895651873876648">Вкладку переміщено в групу "<ph name="GROUP_NAME" />" – <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Укажіть пошукову систему в налаштуваннях веб-переглядача Chrome</translation>
 <translation id="2484743711056182585">Вилучити дозвіл на доступ</translation>
 <translation id="2484909293434545162">Якщо сайт використовує файли cookie, він з’явиться тут</translation>
 <translation id="2484959914739448251">Щоб очистити дані веб-перегляду на всіх синхронізованих пристроях і в обліковому записі Google, <ph name="BEGIN_LINK" />введіть парольну фразу<ph name="END_LINK" />.</translation>
@@ -2082,6 +2085,7 @@
 <translation id="2612676031748830579">Номер картки</translation>
 <translation id="2613210758071148851">Заборонити запуск розширень на сайті <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306">Сайт <ph name="ORIGIN" /> зможе змінювати файл <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Відкрийте й редагуйте файл "<ph name="FILE1" />" у цьому розширенні}one{Відкрийте й редагуйте файли "<ph name="FILE1" />", … у цьому додатку}few{Відкрийте й редагуйте файли "<ph name="FILE1" />", … у цьому додатку}many{Відкрийте й редагуйте файли "<ph name="FILE1" />", … у цьому додатку}other{Відкрийте й редагуйте файли "<ph name="FILE1" />", … у цьому додатку}}</translation>
 <translation id="2616366145935564096">Читати та змінювати свої дані на веб-сайті <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Налаштуйте функцію "Передавання поблизу"</translation>
 <translation id="261953424982546039">Chrome і експериментальні функції…</translation>
@@ -3520,6 +3524,7 @@
 <translation id="3794792524918736965">Увімкніть Windows Hello</translation>
 <translation id="379509625511193653">Вимкнено</translation>
 <translation id="3795766489237825963">Відтворити анімацію</translation>
+<translation id="3796215473395753611">alt + стрілка вгору</translation>
 <translation id="3796648294839530037">Улюблені мережі:</translation>
 <translation id="3797739167230984533">Пристроєм <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> керує<ph name="END_LINK" /> адміністратор вашої організації</translation>
 <translation id="3797900183766075808">&amp;Шукати "<ph name="SEARCH_TERMS" />" у <ph name="SEARCH_ENGINE" />.</translation>
@@ -4493,6 +4498,7 @@
 <translation id="4585793705637313973">Редагувати сторінку</translation>
 <translation id="4586275095964870617">Не вдалося відкрити <ph name="URL" /> в альтернативному веб-переглядачі. Зв’яжіться із системним адміністратором.</translation>
 <translation id="4587589328781138893">Сайти</translation>
+<translation id="4588749726511456218">Прискорення прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Журнали записано в каталог "Завантаження".</translation>
 <translation id="459204634473266369">В обліковому записі <ph name="PRIMARY_EMAIL" /> немає збережених пристроїв</translation>
 <translation id="4592525994536856567">Швидша робота веб-переглядача й пошуку.</translation>
@@ -5068,6 +5074,7 @@
 <translation id="508059534790499809">Оновити квиток Kerberos</translation>
 <translation id="5081124414979006563">&amp;Відкрити профіль гостя</translation>
 <translation id="5081960376148623587">Укажіть, чи потрібно попередньо завантажувати сторінки</translation>
+<translation id="5083035541015925118">ctrl + alt + стрілка вгору</translation>
 <translation id="5084328598860513926">Налаштування перервано. Повторіть спробу або зв'яжіться з адміністратором чи власником пристрою. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Сайти, імовірно, працюватимуть належним чином</translation>
 <translation id="5084686326967545037">Виконайте вказівки на пристрої</translation>
@@ -5781,6 +5788,7 @@
 <translation id="5687326903064479980">Часовий пояс</translation>
 <translation id="5687606994963670306">Chrome автоматично видаляє сайти через 30 днів. Якщо ви повторно відвідаєте видалений сайт, він може знову з’явитися в списку. Ви також можете заборонити сайту пропонувати вам оголошення. Дізнайтесь, <ph name="BEGIN_LINK" />як керувати конфіденційністю в рекламі в Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Переконайтеся, що пристрій підключено, і не вимикайте його. Встановлення може тривати до 20 хвилин. Після цього пристрій автоматично завершить роботу.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Місцезнаходження</translation>
 <translation id="5689531695336322499">Схоже, у користувача <ph name="SUPERVISED_USER_NAME" /> вже налаштовано Voice Match для Асистента на іншому пристрої. Зразок голосу на цьому пристрої створено на основі попередніх записів.</translation>
 <translation id="56907980372820799">Зв’язати облікові записи</translation>
@@ -6326,6 +6334,7 @@
 <translation id="6130692320435119637">Додати мережу Wi-Fi</translation>
 <translation id="6130887916931372608">Клавіша клавіатури</translation>
 <translation id="6132714462430777655">Пропустити реєстрацію пристрою для використання в закладі освіти?</translation>
+<translation id="6134428719487602109">Вилучіть усі облікові записи користувача й скиньте налаштування пристрою Chromebook.</translation>
 <translation id="6135823405800500595">Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено</translation>
 <translation id="6135826623269483856">Заборонено керувати вікнами на всіх ваших екранах</translation>
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
@@ -6650,6 +6659,7 @@
 <translation id="6417265370957905582">Google Асистент</translation>
 <translation id="6417468503703810114">Поведінка за умовчанням</translation>
 <translation id="6418160186546245112">Повернення до попередньої встановленої версії <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6418481728190846787">Назавжди видалити доступ для всіх програм</translation>
 <translation id="6418511932144861495">Установіть важливе оновлення</translation>
 <translation id="641867537956679916">Ваш адміністратор увійшов у систему, щоб вирішити проблему. Ви знову зможете користуватися пристроєм після того, як адміністратор поверне вам контроль над ним.</translation>
@@ -7272,6 +7282,7 @@
 <translation id="6920989436227028121">Відкрити як звичайну вкладку</translation>
 <translation id="6921104647315081813">Очистити історію</translation>
 <translation id="692114467174262153">Не вдалося відкрити <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
+<translation id="692135145298539227">видалити</translation>
 <translation id="6922128026973287222">Зменшіть обсяг завантажених даних і відкривайте веб-сторінки швидше з Google Заощадження трафіку. Натисніть, щоб дізнатися більше.</translation>
 <translation id="6922745772873733498">Щоб друкувати, введіть PIN-код</translation>
 <translation id="6922763095098248079">Пристроєм керує ваша організація. Адміністратори мають доступ до даних у всіх профілях на цьому пристрої.</translation>
@@ -7348,6 +7359,7 @@
 <translation id="6979158407327259162">Диск Google</translation>
 <translation id="6979440798594660689">Без звуку (за умовчанням)</translation>
 <translation id="6979737339423435258">Увесь час</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">Щоб переглядати веб-сторінки конфіденційно, натисніть значок меню з трьома крапками й відкрийте вікно в режимі анонімного перегляду</translation>
 <translation id="6981761993313539853">Переконайтеся, що пристрій із Bluetooth поруч і на ньому ввімкнено режим підключення. Під’єднуйте лише надійні пристрої. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Доступність</translation>
@@ -7740,6 +7752,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Недійсна комбінація</translation>
 <translation id="7329154610228416156">Не вдалося ввійти, оскільки вас було переспрямовано на незахищену URL-адресу (<ph name="BLOCKED_URL" />). Зв’яжіться з адміністратором.</translation>
+<translation id="7331646370422660166">alt + стрілка вниз</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Створюйте резервні копії додатків і налаштувань та відновлюйте їх</translation>
 <translation id="7335974957018254119">Використовувати перевірку орфографії для таких мов:</translation>
@@ -7988,6 +8001,7 @@
 <translation id="7514417110442087199">Додати призначення</translation>
 <translation id="751523031290522286">Додаток <ph name="APP_NAME" /> заблоковано адміністратором. Попросіть у нього дозвіл використовувати цей додаток.</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431">Додаток <ph name="APP_NAME" /> призупинено</translation>
 <translation id="7517959947270534934">Зараз учасник вашої сімейної групи не може отримувати паролі. Попросіть його оновити Chrome і синхронізувати паролі.</translation>
 <translation id="7520766081042531487">Портал анонімного режиму: <ph name="SUBFRAME_SITE" /></translation>
@@ -8773,7 +8787,6 @@
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Прискорення руху курсора</translation>
 <translation id="8139447493436036221">Файли з Google Диска</translation>
-<translation id="8139643636835015859">Буде звільнено <ph name="OFFLINE_STORAGE_SIZE" /> пам’яті, що використовується для файлів, збережених офлайн. Деякі файли все ще будуть доступні офлайн. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
 <translation id="8140108728130537923">Вашим <ph name="BEGIN_LINK" />веб-переглядачем керує<ph name="END_LINK" /> <ph name="BROWSER_DOMAIN" />, а <ph name="BEGIN_LINK" />профілем<ph name="END_LINK" /> – <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8141418916163800697">Ви можете ввімкнути більше параметрів у налаштуваннях функції "Керування телефоном"</translation>
@@ -10035,6 +10048,7 @@
 <translation id="9150079578948279438">Не вдалося вилучити профіль. Повторіть спробу або зв'яжіться з оператором, щоб отримати технічну підтримку.</translation>
 <translation id="9150860646299915960">Оновіть контейнер Linux</translation>
 <translation id="9151249085738989067">Автоматично перемикати голос ChromeVox залежно від мови</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Системна інформація Lacros</translation>
 <translation id="9154082578438716291">Ви бачите відвідані сторінки й рекомендовані пошукові запити, які допоможуть вам легко повернутися до останніх дій на картці "Сеанси Chrome".
         <ph name="BREAK" />

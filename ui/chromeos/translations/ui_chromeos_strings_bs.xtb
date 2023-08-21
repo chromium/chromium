@@ -95,6 +95,7 @@
 <translation id="174937106936716857">Ukupan broj fajlova</translation>
 <translation id="1755345808328621801">Ovaj fajl je dizajniran za PC računar koji koristi Windows softver. Sadržaj nije kompatibilan s vašim uređajem koji koristi ChromeOS. Pretražite Chrome Web trgovinu da pronađete odgovarajuću zamjensku aplikaciju.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">Dijeli s virtuelnom mašinom <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Potvrda za autentifikaciju je odbijena lokalno</translation>
 <translation id="1775381402323441512">Informacije o videozapisu</translation>
 <translation id="180035236176489073">Za pristup ovim fajlovima morate biti na mreži.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Instaliraj aplikaciju s Linuxom</translation>
 <translation id="2719020180254996569">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, detalji</translation>
 <translation id="2724954091494693138">turski s tastaturom F</translation>
+<translation id="2732288874651063549">Upravljajte dijeljenjem s virtuelnom mašinom <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">vijetnamski VNI</translation>
 <translation id="2735623501230989521">Odobrite da Parallels Desktop pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Iskoristili ste svu individualnu pohranu Google Workspacea.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="3511705761158917664">Priprema za sinhronizaciju <ph name="NUMBER_OF_ITEMS" /> stavke/i...</translation>
 <translation id="3522708245912499433">portugalski</translation>
+<translation id="3523225005467146490">1 folder se dijeli s virtuelnom mašinom <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Oprez: Ovi fajlovi su privremeni i moguće je da će se automatski izbrisati radi oslobađanja prostora na disku.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3548125359243647069">Previše puta je unet pogrešan PIN.</translation>
@@ -662,6 +665,7 @@
 <translation id="6164412158936057769">Leptiri</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6181912134988520389">Dajte virtuelnoj mašini <ph name="VM_NAME" /> odobrenje da pristupa fajlovima na vašem Google Disku. Promjene će se sinhronizirati na vašim drugim uređajima.</translation>
 <translation id="6187719147498869044">mađarski</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>
 <translation id="6199801702437275229">Čekanje informacija o prostoru…</translation>
@@ -765,6 +769,7 @@
 <translation id="6989942356279143254">švedski</translation>
 <translation id="6990081529015358884">Nestalo vam je prostora</translation>
 <translation id="6993826899923627728">Ovi artikli su u otpadu</translation>
+<translation id="6996593023542748157">Dijelite folder s virtuelnom mašinom <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Vašoj organizaciji treba više pohrane da dovrši otpremanje.</translation>
 <translation id="7009985720488544166">Administratorska pravila blokiraju premještanje fajlova (njih<ph name="COUNT" />)</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">bjeloruski</translation>
 <translation id="8336153091935557858">Jučer, u <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Fajl ili direktorij s istim nazivom već postoji.</translation>
+<translation id="83651606385705612">Dozvolite da <ph name="VM_NAME" /> pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Nepravilan WEP ključ</translation>
 <translation id="8372852072747894550">grčki</translation>
 <translation id="8386903983509584791">Skeniranje je dovršeno</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472">Mreža <ph name="NETWORK_TYPE" />, povezivanje</translation>
 <translation id="8425213833346101688">Izmijeni</translation>
 <translation id="8428213095426709021">Postavke</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> folder(a) se dijeli/e s virtulenom mašinom <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Promijeni PIN za SIM</translation>
 <translation id="8437209419043462667">SAD</translation>
 <translation id="8452135315243592079">Nedostaje SIM kartica</translation>

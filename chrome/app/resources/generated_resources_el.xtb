@@ -128,6 +128,7 @@
 <translation id="1090541560108055381">Πριν από τη σύζευξη, βεβαιωθείτε ότι αυτός ο κωδικός είναι ο ίδιος και στις δύο συσκευές.</translation>
 <translation id="1091767800771861448">Πατήστε ESCAPE για παράλειψη (Μόνο για ανεπίσημες εκδόσεις).</translation>
 <translation id="1093457606523402488">Ορατά δίκτυα:</translation>
+<translation id="1093645050124056515">ctrl + alt + κάτω βέλος</translation>
 <translation id="1094219634413363886">Θα εμφανιστεί μια ειδοποίηση σε περίπτωση που ξεκινήσει η εγγραφή σε αυτήν τη διαχειριζόμενη συσκευή</translation>
 <translation id="1095761715416917775">Βεβαιωθείτε ότι έχετε πάντα πρόσβαση σε συγχρονισμένα δεδομένα</translation>
 <translation id="1095879482467973146">Διαχειριστής κωδικών πρόσβασης Google στον ιστό</translation>
@@ -243,6 +244,7 @@
 <translation id="118057123461613219">Τεράστια εξοικονόμηση</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
 <translation id="1181366777303791449">στο <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1182876754474670069">σπίτι</translation>
 <translation id="1183237619868651138">Δεν είναι δυνατή η εγκατάσταση του <ph name="EXTERNAL_CRX_FILE" /> σε τοπική κρυφή μνήμη.</translation>
 <translation id="1185924365081634987">Μπορείτε επίσης να δοκιμάσετε να <ph name="GUEST_SIGNIN_LINK_START" />περιηγηθείτε ως επισκέπτης<ph name="GUEST_SIGNIN_LINK_END" /> για να διορθώσετε αυτό το σφάλμα δικτύου.</translation>
 <translation id="1187692277738768150">Όταν χρησιμοποιείτε και αποθηκεύετε αυτόν τον κωδικό πρόσβασης:</translation>
@@ -3519,6 +3521,7 @@
 <translation id="3794792524918736965">Ενεργοποίηση του Windows Hello</translation>
 <translation id="379509625511193653">Ανενεργό</translation>
 <translation id="3795766489237825963">Αναπαραγωγή κινούμενων εικόνων</translation>
+<translation id="3796215473395753611">alt + πάνω βέλος</translation>
 <translation id="3796648294839530037">Αγαπημένα δίκτυα:</translation>
 <translation id="3797739167230984533">Η συσκευή <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> είναι διαχειριζόμενη<ph name="END_LINK" /> από τον οργανισμό σας</translation>
 <translation id="3797900183766075808">&amp;Αναζήτηση <ph name="SEARCH_ENGINE" /> για "<ph name="SEARCH_TERMS" />"</translation>
@@ -5068,6 +5071,7 @@
 <translation id="508059534790499809">Ανανέωση ενός εισιτηρίου Kerberos</translation>
 <translation id="5081124414979006563">&amp;Άνοιγμα προφίλ επισκέπτη</translation>
 <translation id="5081960376148623587">Επιλέξτε αν θα γίνεται προφόρτωση σελίδων</translation>
+<translation id="5083035541015925118">ctrl + alt + πάνω βέλος</translation>
 <translation id="5084328598860513926">Η ροή παροχής διακόπηκε. Δοκιμάστε ξανά ή επικοινωνήστε με τον κάτοχο ή τον διαχειριστή της συσκευής σας. Κωδικός σφάλματος: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Οι ιστότοποι είναι πιο πιθανό να λειτουργούν με τον αναμενόμενο τρόπο</translation>
 <translation id="5084686326967545037">Ακολουθήστε τα βήματα στη συσκευή σας</translation>
@@ -5784,6 +5788,7 @@
 <translation id="5687326903064479980">Ζώνη ώρας</translation>
 <translation id="5687606994963670306">Το Chrome διαγράφει αυτόματα τους ιστοτόπους που είναι παλαιότεροι των 30 ημερών. Ένας ιστότοπος που επισκέπτεστε ξανά ενδέχεται να εμφανιστεί και πάλι στη λίστα. Εναλλακτικά, μπορείτε να αποκλείσετε τη δυνατότητα ενός ιστοτόπου να σας προτείνει διαφημίσεις. Μάθετε περισσότερα σχετικά με τη <ph name="BEGIN_LINK" />διαχείριση του απορρήτου διαφημίσεων στο Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Βεβαιωθείτε ότι η συσκευή σας είναι συνδεδεμένη στο ρεύμα και μην την απενεργοποιήσετε. Η εγκατάσταση ενδέχεται να διαρκέσει έως 20 λεπτά. Η λειτουργία της συσκευής σας θα τερματιστεί αυτόματα όταν η εγκατάσταση ολοκληρωθεί.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Τοποθεσία</translation>
 <translation id="5689531695336322499">Φαίνεται πώς το παιδί <ph name="SUPERVISED_USER_NAME" /> έχει ρυθμίσει ήδη το Voice Match με τον Βοηθό σε κάποια άλλη συσκευή. Αυτές οι προηγούμενες εγγραφές χρησιμοποιήθηκαν για τη δημιουργία ενός φωνητικού μοντέλου σε αυτήν τη συσκευή.</translation>
 <translation id="56907980372820799">Σύνδεση δεδομένων</translation>
@@ -6655,6 +6660,7 @@
 <translation id="6417265370957905582">Βοηθός Google</translation>
 <translation id="6417468503703810114">Προεπιλεγμένη συμπεριφορά</translation>
 <translation id="6418160186546245112">Γίνεται επαναφορά στην προηγούμενη εγκατεστημένη έκδοση του <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6418481728190846787">Οριστική κατάργηση πρόσβασης για όλες τις εφαρμογές</translation>
 <translation id="6418511932144861495">Εγκατάσταση σημαντικής ενημέρωσης</translation>
 <translation id="641867537956679916">Ο διαχειριστής σας έχει συνδεθεί για να διερευνήσει κάποιο ζήτημα. Μπορείτε να συνεχίσετε να χρησιμοποιείτε τη συσκευή αφού ο διαχειριστής σάς δώσει και πάλι τον έλεγχο.</translation>
@@ -7271,6 +7277,7 @@
 <translation id="6920989436227028121">Άνοιγμα ως κανονικής καρτέλας</translation>
 <translation id="6921104647315081813">Διαγραφή δραστηριοτήτων</translation>
 <translation id="692114467174262153">Δεν ήταν δυνατό το άνοιγμα του <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
+<translation id="692135145298539227">διαγραφή</translation>
 <translation id="6922128026973287222">Εξοικονομήστε δεδομένα και περιηγηθείτε πιο γρήγορα με την Εξοικονόμηση δεδομένων Google. Κάντε κλικ για να μάθετε περισσότερα.</translation>
 <translation id="6922745772873733498">Εισαγάγετε ένα PIN για να εκτυπώσετε.</translation>
 <translation id="6922763095098248079">Η διαχείριση της συσκευής σας γίνεται από τον οργανισμό σας. Οι διαχειριστές μπορούν να αποκτήσουν πρόσβαση στα δεδομένα οποιουδήποτε προφίλ σε αυτήν τη συσκευή.</translation>
@@ -7347,6 +7354,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">Σίγαση (προεπιλογή)</translation>
 <translation id="6979737339423435258">Από την αρχή</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">Για να περιηγηθείτε ιδιωτικά, κάντε κλικ στο μενού με τα εικονίδια κουκίδων για να ανοίξετε ένα παράθυρο για ανώνυμη περιήγηση.</translation>
 <translation id="6981761993313539853">Βεβαιωθείτε ότι η συσκευή Bluetooth βρίσκεται σε λειτουργία σύζευξης και σε κοντινή απόσταση. Να κάνετε σύζευξη μόνο συσκευές που θεωρείτε αξιόπιστες. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Προσβασιμότητα</translation>
@@ -7739,6 +7747,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Μη έγκυρος συνδυασμός</translation>
 <translation id="7329154610228416156">Η διαδικασία σύνδεσης απέτυχε γιατί είχε ρυθμιστεί να χρησιμοποιεί μια μη ασφαλή διεύθυνση URL (<ph name="BLOCKED_URL" />). Επικοινωνήστε με το διαχειριστή σας.</translation>
+<translation id="7331646370422660166">alt + κάτω βέλος</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Δημιουργία αντιγράφων ασφαλείας και επαναφορά εφαρμογών και ρυθμίσεων</translation>
 <translation id="7335974957018254119">Χρήση ορθογραφικού ελέγχου για</translation>
@@ -7988,6 +7997,7 @@
 <translation id="7514417110442087199">Προσθήκη ανάθεσης</translation>
 <translation id="751523031290522286">Η εφαρμογή <ph name="APP_NAME" /> αποκλείστηκε από τον διαχειριστή. Ζητήστε άδεια από τον διαχειριστή για χρήση αυτής της εφαρμογής.</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431">Η εφαρμογή <ph name="APP_NAME" /> τέθηκε σε παύση</translation>
 <translation id="7517959947270534934">Το μέλος της οικογένειάς σας δεν μπορεί να λάβει κωδικούς πρόσβασης αυτήν τη στιγμή. Ζητήστε από το μέλος να ενημερώσει το Chrome και να συγχρονίσει τους κωδικούς πρόσβασής του.</translation>
 <translation id="7520766081042531487">Πύλη ανώνυμης περιήγησης: <ph name="SUBFRAME_SITE" /></translation>
@@ -8773,7 +8783,6 @@
 <translation id="8138997515734480534">Κατάσταση <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Επιτάχυνση δείκτη</translation>
 <translation id="8139447493436036221">Αρχεία Google Drive</translation>
-<translation id="8139643636835015859">Αυτή η ενέργεια θα καταργήσει <ph name="OFFLINE_STORAGE_SIZE" /> αποθηκευτικού χώρου που χρησιμοποιείται από αρχεία εκτός σύνδεσης. Ορισμένα αρχεία θα συνεχίσουν να είναι διαθέσιμα εκτός σύνδεσης. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8140108728130537923">Το <ph name="BEGIN_LINK" />πρόγραμμα περιήγησης είναι υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="BROWSER_DOMAIN" /> και <ph name="BEGIN_LINK" />το προφίλ σας υπό τη διαχείριση<ph name="END_LINK" /> του τομέα <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8141418916163800697">Μπορείτε να ρυθμίσετε περισσότερες λειτουργίες στις ρυθμίσεις του Phone Hub</translation>
@@ -10030,6 +10039,7 @@
 <translation id="9150079578948279438">Δεν ήταν δυνατή η κατάργηση του προφίλ. Δοκιμάστε ξανά ή επικοινωνήστε με την εταιρεία κινητής τηλεφωνίας για τεχνική υποστήριξη.</translation>
 <translation id="9150860646299915960">Αναβάθμιση κοντέινερ Linux</translation>
 <translation id="9151249085738989067">Αυτόματη εναλλαγή φωνής ChromeVox με βάση τη γλώσσα</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9153274276370926498">Πληροφορίες συστήματος Lacros</translation>
 <translation id="9154082578438716291">Βλέπετε σελίδες που έχετε επισκεφτεί και προτεινόμενες αναζητήσεις που θα σας βοηθήσουν να επιστρέψετε στην πιο πρόσφατη δραστηριότητά σας στη λειτουργία Διαδρομές του Chrome.
         <ph name="BREAK" />

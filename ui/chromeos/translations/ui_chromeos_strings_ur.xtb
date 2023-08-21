@@ -95,6 +95,7 @@
 <translation id="174937106936716857">فائلوں کی کُل تعداد</translation>
 <translation id="1755345808328621801">‏یہ فائل Windows سافٹ ویئر استعمال کر رہے PC کیلئے بنائی گئی ہے۔ یہ آپ کے اس آلہ کے ساتھ موافق نہیں ہے جو ChromeOS چلاتا ہے۔ براہ کرم ایک مناسب متبادل ایپ کیلئے Chrome ویب اسٹور تلاش کریں۔</translation>
 <translation id="1757915090001272240">وائڈ لاطینی</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> کے ساتھ اشتراک کریں</translation>
 <translation id="1773212559869067373">توثیق کا سرٹیفکیٹ مقامی طور پر مسترد کر دیا گیا</translation>
 <translation id="1775381402323441512">ویڈیو کی معلومات</translation>
 <translation id="180035236176489073">ان فائلوں تک رسائی کیلئے آپ کا آن لائن ہونا ضروری ہے۔</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">‏Linux والی ایپ انسٹال کریں</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، تفصیلات</translation>
 <translation id="2724954091494693138">‏F کی بورڈ کے ساتھ ترکی</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> کے اشتراک کا نظم کریں</translation>
 <translation id="2732839045120506979">‏ویتنامی VNI</translation>
 <translation id="2735623501230989521">‏Parallels ڈیسک ٹاپ کو<ph name="FOLDER_NAME" /> فولڈر میں فائلز تک رسائی کے لیے اجازت دیں</translation>
 <translation id="2764206540577097904">‏آپ نے اپنی تمام انفرادی Google Workspace اسٹوریج استعمال کر لی ہے۔</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، تفصیلات</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> آئٹمز کو مطابقت پذیری کرنے کی تیاری ہو رہی ہے...</translation>
 <translation id="3522708245912499433">پُرتگالی</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> کے ساتھ 1 فولڈر کا اشتراک کیا گیا</translation>
 <translation id="3524311639100184459">احتیاط: یہ فائلز عارضی ہیں اور ڈسک میں جگہ خالی کرنے کیلئے انہیں خودکار طور پر حذف کیا جا سکتا ہے۔  <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">فولڈر</translation>
 <translation id="3548125359243647069">‏ایک غلط PIN کئی مرتبہ درج کیا گیا۔</translation>
@@ -661,6 +664,7 @@
 <translation id="6164412158936057769">تتلیاں</translation>
 <translation id="6165508094623778733">مزید جانیں</translation>
 <translation id="6170470584681422115">سینڈوچ</translation>
+<translation id="6181912134988520389">‏<ph name="VM_NAME" /> کو اپنے Google Drive میں موجود فائلز تک رسائی دینے کی اجازت دیں۔ آپ کے دیگر آلات پر تبدیلیوں کی مطابقت پذیری کی جائے گی۔</translation>
 <translation id="6187719147498869044">ہنگریائی</translation>
 <translation id="6198252989419008588">‏PIN تبدیل کریں</translation>
 <translation id="6199801702437275229">جگہ کی معلومات کا منتظر…</translation>
@@ -764,6 +768,7 @@
 <translation id="6989942356279143254">سویڈش</translation>
 <translation id="6990081529015358884">آپ کے پاس جگہ ختم ہو گئی ہے</translation>
 <translation id="6993826899923627728">یہ آئٹمز آپ کے کوڑے دان میں ہیں</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> کے ساتھ فولڈر کا اشتراک کریں</translation>
 <translation id="7008426324576352165">آپ کی تنظیم کو اپ لوڈ مکمل کرنے کے لیے مزید اسٹوریج کی ضرورت ہے۔</translation>
 <translation id="7009985720488544166">منتظم کی پالیسی کے تحت، <ph name="COUNT" /> فائلز کو منتقل کرنا مسدود ہے</translation>
 <translation id="7012943028104619157">‎<ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -950,6 +955,7 @@
 <translation id="8335837413233998004">بيلاروسی</translation>
 <translation id="8336153091935557858">گزشتہ کل <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">اسی نام کی ایک فائل یا ڈائریکٹری پہلے سے موجود ہے۔</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> کو <ph name="FOLDER_NAME" /> فولڈر میں موجود فائلز تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="8372369524088641025">‏غلط WEP کلید</translation>
 <translation id="8372852072747894550">يونانی</translation>
 <translation id="8386903983509584791">اسکین مکمل ہو گیا</translation>
@@ -959,6 +965,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> نیٹ ورک، منسلک ہو رہا ہے</translation>
 <translation id="8425213833346101688">تبدیل کریں</translation>
 <translation id="8428213095426709021">ترتیبات</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> کے ساتھ <ph name="NUMBER_OF_ITEMS" /> فولڈرز کا نظم کیا گیا</translation>
 <translation id="8431909052837336408">‏SIM کا PIN تبدیل کریں</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8452135315243592079">‏غائب SIM کارڈ</translation>

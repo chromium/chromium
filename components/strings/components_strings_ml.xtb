@@ -135,6 +135,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">നിങ്ങളുടെ സ്ഥാപനത്തിന് നിയന്ത്രണമില്ലാത്ത സൈറ്റിലാണ് പാസ്‌വേഡ് നൽകിയിരിക്കുന്നത്. നിങ്ങളുടെ അക്കൗണ്ട് പരിരക്ഷിക്കാൻ, മറ്റ് ആപ്പുകളിലും സൈറ്റുകളിലും നിങ്ങളുടെ പാസ്‌വേഡ് പുനരുപയോഗിക്കരുത്.</translation>
 <translation id="1257553931232494454">സൂം ലെവലുകൾ</translation>
+<translation id="1258942153897182536">OCR പുരോഗമിക്കുന്നു ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Chrome ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="1264309058268477500">ഇതര ട്രേ</translation>
 <translation id="1264974993859112054">കായികം</translation>
@@ -311,6 +312,7 @@
 <translation id="1594030484168838125">തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1596296697375291157">ത്രില്ലർ, ക്രൈം, നിഗൂഢ സിനിമകൾ</translation>
 <translation id="1597473228022844713">നിങ്ങൾ ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു. ഈ പേജ് <ph name="LAST_BOOKMARKS_FOLDER" /> എന്നതിൽ സംരക്ഷിച്ചിരിക്കുന്നു</translation>
+<translation id="1598816256585174656">Windows Hello-യിൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="1599199147673445968">പുതിയ കാർഡാണോ? <ph name="BEGIN_LINK" />കാർഡ് വിശദാംശങ്ങൾ നൽകുക<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome-ൽ ദിനോസർ റൺ ഗെയിം കളിക്കുക</translation>
 <translation id="161042844686301425">സിയാൻ</translation>
@@ -1350,6 +1352,7 @@
 <translation id="3827112369919217609">അബ്‌സല്യൂട്ട്</translation>
 <translation id="3827666161959873541">കുടുംബ സിനിമകൾ</translation>
 <translation id="3828924085048779000">പാസ്ഫ്രെയ്‍സ് പൂരിപ്പിക്കാതിരിക്കാനാവില്ല.</translation>
+<translation id="3830470485672984938">മറ്റൊരു പാസ്‌കീ ഉപയോഗിക്കൂ</translation>
 <translation id="3831065134033923230">നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‍വേഡുകൾ പരിശോധിക്കുക</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />അധിക ഫംഗ്ഷനുകൾക്കുള്ള വിപുലീകരണങ്ങൾ ഇൻസ്‌റ്റാൾ ചെയ്‌തിരിക്കുന്നു. വിപുലീകരണങ്ങൾക്ക് നിങ്ങളുടെ ചില ഡാറ്റയിലേക്ക് ആക്‌സസ് ഉണ്ട്.</translation>
 <translation id="3832522519263485449">ഇടതുവശത്ത് ഒന്നിലധികം പഞ്ച് ചെയ്യുക</translation>
@@ -1406,6 +1409,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ഒന്നുമില്ല}=1{ഒരു സൈറ്റിൽ നിന്ന് }other{# സൈറ്റുകളിൽ നിന്ന് }}</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ബ്ലോക്കുചെയ്‌തിരിക്കുന്നു</translation>
+<translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" എന്നതിൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">പക്ഷികൾ</translation>
 <translation id="3985750352229496475">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
@@ -1694,6 +1698,7 @@
 <translation id="4566017918361049074">ഔട്ട്ഡോർ</translation>
 <translation id="4567686777917670400">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chromium-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">കുക്കികളുടെയും സൈറ്റ് ഡാറ്റയുടെയും ലിസ്റ്റ് ഒരു പുതിയ വിൻഡോയിൽ അവലോകനം ചെയ്യുക</translation>
+<translation id="4569155249847375786">പരിശോധിച്ചുറപ്പിച്ചു</translation>
 <translation id="457875822857220463">ഡെലിവറി വിവരങ്ങൾ</translation>
 <translation id="4579699065574932398">ബാങ്കിംഗ്</translation>
 <translation id="4582204425268416675">കാർഡ് നീക്കം ചെയ്യുക</translation>
@@ -1784,6 +1789,7 @@
 <translation id="4754461935447132332">സുരക്ഷിതമല്ലാത്ത സൈറ്റുകളിൽ അനുവദനീയമല്ല</translation>
 <translation id="4756388243121344051">&amp;ചരിത്രം</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">നിങ്ങളുടെ Chrome പ്രൊഫൈലിൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="4757993714154412917">വഞ്ചനാപരമായ സൈറ്റിൽ നിങ്ങൾ ഇപ്പോൾ പാസ്‍വേഡ് നൽകി. അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, നിങ്ങളുടെ സംരക്ഷിച്ച പാസ്‌വേഡുകൾ ഇപ്പോൾ തന്നെ പരിശോധിക്കാൻ Chromium നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="4758311279753947758">കോൺടാക്റ്റ് വിവരങ്ങൾ ചേർക്കുക</translation>
 <translation id="4761104368405085019">നിങ്ങളുടെ മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
@@ -1940,6 +1946,7 @@
 <translation id="5070838744279127212">പത്താമത്തെ റോൾ</translation>
 <translation id="507130231501693183">മെയിൽബോക്സ് 4</translation>
 <translation id="5074134429918579056">പാന്റ്സും ഷോർട്ട്സും</translation>
+<translation id="5077767274537436092">മറ്റൊരു പാസ്‌കീ ഉപയോഗിക്കൂ</translation>
 <translation id="5078060223219502807">നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിച്ച പാസ്‌വേഡ് ഡാറ്റാ ലംഘനത്തിൽ കണ്ടെത്തിയിരിക്കുന്നു. നിങ്ങളുടെ അക്കൗണ്ടുകൾ സുരക്ഷിതമാക്കാൻ, ഇപ്പോൾ തന്നെ അവ മാറ്റാനും സംരക്ഷിച്ച പാസ്‌വേഡുകൾ പരിശോധിക്കാനും Password Manager നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="5086225927071063542">ഡിസ്‌ട്രിബ്യൂട്ടഡ്, ക്ലൗഡ് കമ്പ്യൂട്ടിംഗ്</translation>
 <translation id="5087286274860437796">സെർവറിന്റെ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയില്ല.</translation>
@@ -2109,6 +2116,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{സെെറ്റുകളൊന്നും ബ്ലോക്ക് ചെയ്‌തില്ല}=1{1 സൈറ്റ് ബ്ലോക്ക് ചെയ്‌തു}other{# സൈറ്റുകൾ ബ്ലോക്ക് ചെയ്‌തു}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> നിങ്ങൾക്ക് അറിയിപ്പുകൾ അയയ്‌ക്കാൻ ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5430298929874300616">ബുക്ക്‌മാർക്ക് നീക്കംചെയ്യുക</translation>
+<translation id="54430913453805768">നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ (SysEx) നിയന്ത്രിക്കാനും റീപ്രോഗ്രാം ചെയ്യാനും <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> സൈറ്റിനെ, അത് നിങ്ങളെ കുറിച്ച് സംരക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="5447765697759493033">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല</translation>
@@ -2610,6 +2618,7 @@
 <translation id="6480864723214312258">വീട്ടാവശ്യങ്ങൾക്കുള്ള ബാറ്ററികൾ</translation>
 <translation id="6486200200930923183">ഡോക്യുമെന്ററി സിനിമകൾ</translation>
 <translation id="6489534406876378309">ക്രാഷുകൾ അപ്‌ലോഡുചെയ്യുന്നത് ആരംഭിക്കുക</translation>
+<translation id="6491663123807473970"><ph name="URL" /> -ന് നിങ്ങളുടെ MIDI ഉപകരണങ്ങൾ ഉപയോഗിക്കേണ്ടതുണ്ട്</translation>
 <translation id="6493924760403974580">ഈ ആപ്പ് ഈ വലുപ്പം മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ.</translation>
 <translation id="6494750904506170417">പോപ്-അപ്പുകളും റീഡയറക്‌റ്റുകളും</translation>
 <translation id="6497295192259406877">ബിസിനസ് പ്രവർത്തനങ്ങൾ</translation>
@@ -2895,6 +2904,7 @@
 <translation id="7102079138917191645">നിർമ്മാണവും പരിപാലനവും</translation>
 <translation id="7102554173784142865">Chrome ദിനോസർ ഗെയിം കളിക്കുക</translation>
 <translation id="7102760431686146931">പാചകത്തിനുള്ള പാത്രങ്ങളും ഡൈനിംഗ്‌വെയറും</translation>
+<translation id="7105998430540165694">iCloud Keychain-ൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="7106762743910369165">നിങ്ങളുടെ സ്ഥാപനമാണ് നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="7108338896283013870">മറയ്ക്കുക</translation>
 <translation id="7108634116785509031">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കാൻ <ph name="HOST" /> ആഗ്രഹിക്കുന്നു</translation>
@@ -3148,6 +3158,7 @@
 <translation id="7582602800368606489">Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="7583969447617676942">നിയമ സേവനങ്ങൾ</translation>
 <translation id="7586676035079382730">അറിയിപ്പുകൾ ആക്സസ് അനുവദിച്ചില്ല</translation>
+<translation id="7588460771338574392">"<ph name="PHONE_NAME" />" എന്നതിൽ നിന്നുള്ള പാസ്‌കീ</translation>
 <translation id="7588707273764747927">ട്രാൻസ്‌ഫർ</translation>
 <translation id="7591288787774558753">രഹസ്യാത്മക ഉള്ളടക്കം പങ്കിടണോ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> എന്നതിൽ കുക്കികളും സൈറ്റ് ഡാറ്റയും ഉപയോഗിക്കാൻ <ph name="EMBEDDED_URL" /> ആഗ്രഹിക്കുന്നു</translation>

@@ -1287,6 +1287,7 @@
 
           如果已停用或未设置此政策，系统不会向 Kerberos 账号设置中添加账号，并会移除之前启用此政策时添加的所有账号。即使启用了“用户可以添加 Kerberos 账号”政策，用户也仍可手动添加账号。</translation>
 <translation id="2104418465060359056">报告扩展程序和插件信息</translation>
+<translation id="210652463860415362">使用压缩字典传输功能接受 Web 内容</translation>
 <translation id="2106627642643925514">替换默认 PIN 码打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="2107563874993284076">如果此政策已启用，用户便可在 <ph name="PRODUCT_NAME" />中使用网络文件共享功能。如果此政策已停用，用户便无法使用此功能。</translation>
 <translation id="2107601598727098402">
@@ -5369,6 +5370,7 @@
       如果此政策已停用或未设置，系统将不会报告任何系统日志。</translation>
 <translation id="5861856285460256766">家长访问码配置</translation>
 <translation id="5868414965372171132">用户级网络配置</translation>
+<translation id="5871786561822073630">不允许使用压缩字典传输功能</translation>
 <translation id="587242272905978723">允许 <ph name="PLUGIN_VM_NAME" /> 收集 <ph name="PLUGIN_VM_NAME" /> 使用情况数据。
 
       如果此政策设为 false 或未设置，系统将不允许 <ph name="PLUGIN_VM_NAME" /> 收集数据。
@@ -6282,6 +6284,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       - 如果此政策已停用，浏览器的功能会受到限制。
 
       - 如果此政策已停用，管理员必须将这项设置告知设备的最终用户。</translation>
+<translation id="6605778633186421420">启用压缩字典传输支持</translation>
 <translation id="6607983779935460461">对 SVGUseElement 的数据网址支持。</translation>
 <translation id="6609867253856597039">设置已停用功能的用户体验</translation>
 <translation id="6614557704487944013">允许用户使用 <ph name="LACROS_NAME" /> 浏览器</translation>
@@ -7910,6 +7913,10 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8078297389450285582">如果此政策已启用或未设置，系统会开启智能调暗模式，并可推迟屏幕变暗的时间。倘若屏幕变暗时间推迟了，系统会随之调整屏幕关闭延迟时间、屏幕锁定延迟时间和闲置延迟时间，以使它们保持在原有设置下与屏幕变暗延迟时间的间隔。
 
           如果此政策已停用，智能调暗模式将不会影响屏幕变暗时间。</translation>
+<translation id="8078540622602481084">当字典可供使用时，此功能可允许在 Accept-Encoding 请求标头（“sbr”和“zst-d”）中使用字典专用内容编码。
+
+如果此政策已启用或未设置，<ph name="PRODUCT_NAME" /> 将会使用压缩字典传输功能接受 Web 内容。
+如果此政策已停用，系统会关闭压缩字典传输功能。</translation>
 <translation id="8079544387901313374">请注意，此政策已被弃用，并已从 <ph name="PRODUCT_OS_NAME" /> 88 版中移除。公用会话已不再受支持。请改用 <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> 来配置受管理的访客会话。
       如果此政策设为 false，受管理的访客会话在行为上将与 https://support.google.com/chrome/a/answer/3017014 页面中所述的标准“公用会话”一样。
 

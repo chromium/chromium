@@ -125,6 +125,7 @@
 <translation id="1090541560108055381">Пред спарувањето, проверете дали кодов е ист на двата уреда</translation>
 <translation id="1091767800771861448">Притиснете ESCAPE за да прескокнете (Само неофицијални верзии).</translation>
 <translation id="1093457606523402488">Видливи мрежи:</translation>
+<translation id="1093645050124056515">ctrl + alt + стрелка надолу</translation>
 <translation id="1094219634413363886">Ќе видите известување ако започне снимање на управуваниов уред</translation>
 <translation id="1095761715416917775">Погрижете се секогаш да имате пристап до синхронизираните податоци</translation>
 <translation id="1095879482467973146">Google Password Manager на интернет</translation>
@@ -239,6 +240,7 @@
 <translation id="118057123461613219">Огромни заштеди</translation>
 <translation id="1181037720776840403">Отстрани</translation>
 <translation id="1181366777303791449">на <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1182876754474670069">home</translation>
 <translation id="1183237619868651138">Не може да ја инсталира датотеката <ph name="EXTERNAL_CRX_FILE" /> во локалниот кеш.</translation>
 <translation id="1185924365081634987">Исто така, може да се обидете да <ph name="GUEST_SIGNIN_LINK_START" />прелистувате како гостин<ph name="GUEST_SIGNIN_LINK_END" /> за да ја поправите оваа грешка на мрежата.</translation>
 <translation id="1187692277738768150">Кога ќе ја користите и зачувате лозинкава:</translation>
@@ -3474,6 +3476,7 @@
 <translation id="3794792524918736965">Вклучување Windows Hello</translation>
 <translation id="379509625511193653">Исклучено</translation>
 <translation id="3795766489237825963">Пушти ги анимациите</translation>
+<translation id="3796215473395753611">alt + стрелка нагоре</translation>
 <translation id="3796648294839530037">Омилени мрежи:</translation>
 <translation id="3797739167230984533">Вашиот <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> е управуван<ph name="END_LINK" /> од организацијата</translation>
 <translation id="3797900183766075808">&amp;Пребарај „<ph name="SEARCH_TERMS" />“ на <ph name="SEARCH_ENGINE" /></translation>
@@ -5001,6 +5004,7 @@
 <translation id="508059534790499809">Освежете го билетот на Kerberos</translation>
 <translation id="5081124414979006563">Отворете гостински профил</translation>
 <translation id="5081960376148623587">Изберете дали да се вчитуваат страници однапред</translation>
+<translation id="5083035541015925118">ctrl + alt + стрелка нагоре</translation>
 <translation id="5084328598860513926">Текот за поставување е прекинат. Обидете се повторно или контактирајте со сопственикот или администраторот на уредот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Сајтовите е поверојатно да функционираат според вашите очекувања</translation>
 <translation id="5084686326967545037">Следете ги чекорите на вашиот уред</translation>
@@ -5710,6 +5714,7 @@
 <translation id="5687326903064479980">Временска зона</translation>
 <translation id="5687606994963670306">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами. Дознајте повеќе за <ph name="BEGIN_LINK" />управувањето со вашата приватност за реклами на Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Уверете се дека уредот е приклучен и не исклучувајте го. Инсталацијата може да потрае до 20 минути. Вашиот уред автоматски ќе се исклучи кога ќе заврши инсталацијата.</translation>
+<translation id="5689233503102158537">alt + backspace</translation>
 <translation id="5689516760719285838">Локација</translation>
 <translation id="5689531695336322499">Се чини дека <ph name="SUPERVISED_USER_NAME" /> веќе има поставено Voice Match со „Помошникот“ на друг уред. Претходните снимки се користеа за да се направи гласовниот модел на уредов.</translation>
 <translation id="56907980372820799">Поврзи податоци</translation>
@@ -6570,6 +6575,7 @@
 <translation id="6417265370957905582">Помошник на Google</translation>
 <translation id="6417468503703810114">Стандардното однесување</translation>
 <translation id="6418160186546245112">Враќање на претходно инсталирана верзија на <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
+<translation id="641817663353603351">страница нагоре</translation>
 <translation id="6418481728190846787">Трајно отстрани пристап за сите апликации</translation>
 <translation id="6418511932144861495">Инсталирајте важно ажурирање</translation>
 <translation id="641867537956679916">Администраторот се најавил за да се обиде да го реши проблемот. Може да продолжите да го користите уредот откако администраторот ќе ја врати контролата во ваши раце.</translation>
@@ -7185,6 +7191,7 @@
 <translation id="6920989436227028121">Отвори како обична картичка</translation>
 <translation id="6921104647315081813">Избриши ги активностите</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> не може да се отвори</translation>
+<translation id="692135145298539227">избриши</translation>
 <translation id="6922128026973287222">Зачувувајте податоци и прелистувајте побрзо користејќи го Штедачот на податоци на Google. Кликнете за да дознаете повеќе.</translation>
 <translation id="6922745772873733498">Внесете PIN за да печатите</translation>
 <translation id="6922763095098248079">Со уредот управува вашата организација. Администраторите може да пристапуваат до податоците на секој профил на уредов.</translation>
@@ -7260,6 +7267,7 @@
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979440798594660689">Исклучи звук (стандардно)</translation>
 <translation id="6979737339423435258">Целосната историја</translation>
+<translation id="6980402667292348590">копче insert</translation>
 <translation id="6981553172137913845">За да прелистувате приватно, кликнете на менито од иконата со точки за да отворите прозорец „Инкогнито“</translation>
 <translation id="6981761993313539853">Проверете дали уредот со Bluetooth е во режим на спарување и е во близина. Сапрувајте само доверливи уреди. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">Пристапност</translation>
@@ -7645,6 +7653,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">Неважечка комбинација</translation>
 <translation id="7329154610228416156">Најавувањето не успеа бидејќи беше конфигурирано да користи небезбедна URL-адреса (<ph name="BLOCKED_URL" />). Контактирајте со администраторот.</translation>
+<translation id="7331646370422660166">alt + стрелка надолу</translation>
 <translation id="7332053360324989309">Доделен работник: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">Бекап и враќање на вашите апликации и поставки</translation>
 <translation id="7335974957018254119">Користете проверка на правопис за</translation>
@@ -7887,6 +7896,7 @@
 <translation id="7514417110442087199">Додајте назначување</translation>
 <translation id="751523031290522286">Администраторот ја блокирал <ph name="APP_NAME" />. Побарајте дозвола од администраторот за користење на апликацијава.</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">страница надолу</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> е паузирана</translation>
 <translation id="7517959947270534934">Членот на вашето семејство не може да прима лозинки во моментов. Кажете му да го ажурира Chrome и да ги синхронизира своите лозинки.</translation>
 <translation id="7520766081042531487">Инкогнито портал: <ph name="SUBFRAME_SITE" /></translation>
@@ -8666,7 +8676,6 @@
 <translation id="8138997515734480534">Статус на <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Забрзување на курсорот</translation>
 <translation id="8139447493436036221">Датотеки на Google Drive</translation>
-<translation id="8139643636835015859">Со ова ќе се отстрани простор од <ph name="OFFLINE_STORAGE_SIZE" /> што го користат офлајн датотеките. Некои датотеки и понатаму ќе бидат достапни офлајн. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" /> <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">Можете да поставите други функции во поставките за Phone Hub</translation>
 <translation id="8141584439523427891">Се отвора во алтернативен прелистувач сега</translation>
@@ -9908,6 +9917,7 @@
 <translation id="9150079578948279438">Профилот не можеше да се отстрани. Обидете се повторно или побарајте техничка поддршка од вашиот оператор.</translation>
 <translation id="9150860646299915960">Ажурирајте го контејнерот за Linux</translation>
 <translation id="9151249085738989067">Автоматски префрлај го гласот на ChromeVox според јазикот</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9154082578438716291">Ги гледате страниците што сте ги отвориле и предложените пребарувања за да може лесно да се вратите на вашата последна активност во Chrome Journeys.
         <ph name="BREAK" />
         <ph name="BREAK" />

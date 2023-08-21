@@ -95,6 +95,7 @@
 <translation id="174937106936716857">Numero totale di file</translation>
 <translation id="1755345808328621801">Questo file è supportato su PC con software Windows. Non è compatibile con il tuo dispositivo che esegue ChromeOS. Cerca sul Chrome Web Store un'app sostitutiva adatta.</translation>
 <translation id="1757915090001272240">Wide Latin</translation>
+<translation id="1761091787730831947">Condividi con <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certificato di autenticazione rifiutato localmente</translation>
 <translation id="1775381402323441512">Info video</translation>
 <translation id="180035236176489073">Per poter accedere a questi file devi essere online.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Installa app con Linux</translation>
 <translation id="2719020180254996569">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, dettagli</translation>
 <translation id="2724954091494693138">Turco con tastiera F</translation>
+<translation id="2732288874651063549">Gestisci la condivisione con <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamita VNI</translation>
 <translation id="2735623501230989521">Concedi a Parallels Desktop l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Hai esaurito il tuo spazio di archiviazione Google Workspace individuale.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="3511705761158917664">Preparazione alla sincronizzazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="3522708245912499433">Portoghese</translation>
+<translation id="3523225005467146490">1 cartella condivisa con <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Attenzione: questi file sono temporanei e potrebbero essere eliminati automaticamente per liberare spazio su disco.  <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Cartella</translation>
 <translation id="3548125359243647069">Hai inserito troppe volte un PIN non corretto.</translation>
@@ -661,6 +664,7 @@
 <translation id="6164412158936057769">Farfalle</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6181912134988520389">Autorizza <ph name="VM_NAME" /> ad accedere ai file memorizzati nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="6187719147498869044">Ungherese</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>
 <translation id="6199801702437275229">In attesa di informazioni sullo spazio...</translation>
@@ -764,6 +768,7 @@
 <translation id="6989942356279143254">Svedese</translation>
 <translation id="6990081529015358884">Spazio disponibile esaurito</translation>
 <translation id="6993826899923627728">Questi elementi sono nel cestino</translation>
+<translation id="6996593023542748157">Condividi cartella con <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">La tua organizzazione richiede più spazio di archiviazione per completare il caricamento.</translation>
 <translation id="7009985720488544166">Lo spostamento di <ph name="COUNT" /> file è bloccato dal criterio dell'amministratore</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -950,6 +955,7 @@
 <translation id="8335837413233998004">Bielorusso</translation>
 <translation id="8336153091935557858">Ieri alle <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Esiste già un file o una directory con lo stesso nome.</translation>
+<translation id="83651606385705612">Autorizza <ph name="VM_NAME" /> ad accedere ai file memorizzati nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8372852072747894550">Greco</translation>
 <translation id="8386903983509584791">Scansione completata</translation>
@@ -959,6 +965,7 @@
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
 <translation id="8425213833346101688">Cambia</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Cambia il PIN della SIM</translation>
 <translation id="8437209419043462667">USA</translation>
 <translation id="8452135315243592079">Scheda SIM mancante</translation>
@@ -1039,6 +1046,7 @@
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 avviso.}other{<ph name="COUNT" /> avvisi.}}</translation>
 <translation id="908378762078012445">Russo con tastiera fonetica AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9099674669267916096">Numero di pagine</translation>

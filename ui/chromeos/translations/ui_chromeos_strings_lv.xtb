@@ -95,6 +95,7 @@
 <translation id="174937106936716857">Failu kopskaits</translation>
 <translation id="1755345808328621801">Šis fails ir paredzēts datoram ar Windows programmatūru. Tas nav saderīgs ar jūsu ierīci, kurā darbojas operētājsistēma Chrome OS. Lūdzu, meklējiet Chrome interneta veikalā atbilstošu aizstājošo lietotni.</translation>
 <translation id="1757915090001272240">Plats latīņu</translation>
+<translation id="1761091787730831947">Kopīgot ar <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Autentifikācijas sertifikāts tika lokāli noraidīts.</translation>
 <translation id="1775381402323441512">Video informācija</translation>
 <translation id="180035236176489073">Lai piekļūtu šiem failiem, jums ir jābūt tiešsaistē.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Instalēt lietotni operētājsistēmā Linux</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, informācija</translation>
 <translation id="2724954091494693138">Turku, ar F tastatūru</translation>
+<translation id="2732288874651063549">Pārvaldīt kopīgošanu ar <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vjetnamiešu, VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop saņems atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Jūs esat izmantojis visu savu individuālo Google Workspace krātuvi.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums:<ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="3511705761158917664">Notiek gatavošanās <ph name="NUMBER_OF_ITEMS" /> faila(-u) sinhronizēšanai…</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
+<translation id="3523225005467146490">Ar virtuālo mašīnu <ph name="VM_NAME" /> tiek kopīgota viena mape</translation>
 <translation id="3524311639100184459">Uzmanību! Šie ir pagaidu faili un var tikt automātiski izdzēsti, lai atbrīvotu vietu diskā.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3527085408025491307">Mape</translation>
 <translation id="3548125359243647069">Pārāk daudz reižu tika ievadīts nepareizs PIN.</translation>
@@ -662,6 +665,7 @@
 <translation id="6164412158936057769">Tauriņi</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
 <translation id="6170470584681422115">Sviestmaize</translation>
+<translation id="6181912134988520389">Piešķiriet virtuālajai mašīnai <ph name="VM_NAME" /> atļauju piekļūt failiem jūsu Google diskā. Izmaiņas tiks sinhronizētas ar citām jūsu ierīcēm.</translation>
 <translation id="6187719147498869044">Ungāru</translation>
 <translation id="6198252989419008588">Mainīt PIN</translation>
 <translation id="6199801702437275229">Gaida informāciju par brīvo vietu...</translation>
@@ -765,6 +769,7 @@
 <translation id="6989942356279143254">Zviedru</translation>
 <translation id="6990081529015358884">Jums trūkst vietas</translation>
 <translation id="6993826899923627728">Šie vienumi atrodas jūsu atkritnē</translation>
+<translation id="6996593023542748157">Mapes kopīgošana ar virtuālo mašīnu <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Jūsu organizācijai ir nepieciešama lielāka krātuve, lai pabeigtu augšupielādi.</translation>
 <translation id="7009985720488544166">Administratora politika bloķē vairāku failu pārvietošanu (skaits: <ph name="COUNT" />)</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Baltkrievu</translation>
 <translation id="8336153091935557858">Vakar plkst. <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Fails vai direktorijs ar šādu nosaukumu jau pastāv.</translation>
+<translation id="83651606385705612">Piešķiriet virtuālajai mašīnai <ph name="VM_NAME" /> atļauju piekļūt failiem mapē <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Neatbilstoša WEP atslēga</translation>
 <translation id="8372852072747894550">Grieķu</translation>
 <translation id="8386903983509584791">Meklēšana ir pabeigta</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472">Tīkls: <ph name="NETWORK_TYPE" />, notiek savienojuma izveide</translation>
 <translation id="8425213833346101688">Mainīt</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
+<translation id="8429998526804961548">Ar virtuālo mašīnu <ph name="VM_NAME" /> tiek kopīgotas <ph name="NUMBER_OF_ITEMS" /> mapes</translation>
 <translation id="8431909052837336408">SIM kartes PIN mainīšana</translation>
 <translation id="8437209419043462667">ASV</translation>
 <translation id="8452135315243592079">Nav SIM kartes.</translation>

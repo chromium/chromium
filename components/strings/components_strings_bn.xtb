@@ -1679,6 +1679,7 @@
 <translation id="4566017918361049074">আউটডোর</translation>
 <translation id="4567686777917670400">আপনার অ্যাডমিনিস্ট্রেটর দূরবর্তী স্থান থেকে আপনার ব্রাউজারের সেটআপ পরিবর্তন করতে পারেন। এই ডিভাইসের অ্যাক্টিভিটি Chromium-এর বাইরে থেকেও ম্যানেজ করা যেতে পারে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">নতুন উইন্ডোতে কুকির তালিকা এবং সাইট ডেটা পর্যালোচনা করুন</translation>
+<translation id="4569155249847375786">যাচাইকৃত</translation>
 <translation id="457875822857220463">ডেলিভারি</translation>
 <translation id="4579699065574932398">ব্যাঙ্কিং</translation>
 <translation id="4582204425268416675">কার্ডটি সরিয়ে দিন</translation>
@@ -2291,6 +2292,7 @@
 <translation id="5873297634595728366">ডিজেলে চলা গাড়ি</translation>
 <translation id="5877831137320480913">রূপচর্চা ও ফিটনেস</translation>
 <translation id="5879989559903563723">গেস্ট মোডে অনুমোদিত নয়</translation>
+<translation id="5883861433316751031">MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করতে চান?</translation>
 <translation id="5884465125445718607">এনভেলপ চিনা #৬</translation>
 <translation id="5887400589839399685">কার্ড সেভ করা হয়েছে</translation>
 <translation id="5887687176710214216">গতকাল শেষবার দেখা হয়েছে</translation>
@@ -3333,6 +3335,7 @@
 <translation id="8038817883578389970">অটো রেসিং</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8041940743680923270">বিশ্বব্যাপী ডিফল্ট ব্যবহার করুন (জানতে চান)</translation>
+<translation id="8042577181291637092">MIDI ডিভাইস ব্যবহার করবেন?</translation>
 <translation id="8046360364391076336">শিল্প সামগ্রী ও যন্ত্রপাতি</translation>
 <translation id="8052898407431791827">ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="8055534648776115597">বৃত্তিমূলক ও অব্যাহত শিক্ষা</translation>
@@ -3626,6 +3629,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> মানটি সাইজের প্রয়োজনীয়তা পূরণ করে না।</translation>
 <translation id="867224526087042813">স্বাক্ষর</translation>
 <translation id="8672264262457010862">ব্যবসা ও শিল্প সংক্রান্ত</translation>
+<translation id="8673776281896298303">আপনার MIDI ডিভাইস (SysEx) কন্ট্রোল করুন এবং তাদের রিপ্রোগ্রাম করুন</translation>
 <translation id="8676424191133491403">কোনও দেরি হয়নি</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, উত্তর, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" />-এ ওয়েবপৃষ্ঠাটি লোড করা যায়নি কারণ:</translation>

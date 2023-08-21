@@ -1678,6 +1678,7 @@
 <translation id="4566017918361049074">आउटडोर गतिविधियां</translation>
 <translation id="4567686777917670400">आपका एडमिन किसी दूसरे डिवाइस से आपके ब्राउज़र का सेट अप बदल सकता है. इस डिवाइस की गतिविधि को Chromium के बाहर भी मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="4568329205873177285">कुकी और साइट डेटा की सूची, नई विंडो में देखें</translation>
+<translation id="4569155249847375786">सत्यापित</translation>
 <translation id="457875822857220463">वितरण</translation>
 <translation id="4579699065574932398">बैंकिंग</translation>
 <translation id="4582204425268416675">कार्ड हटाएं</translation>
@@ -2290,6 +2291,7 @@
 <translation id="5873297634595728366">डीज़ल वाहन</translation>
 <translation id="5877831137320480913">खूबसूरती और फ़िटनेस</translation>
 <translation id="5879989559903563723">मेहमान मोड में अनुमति नहीं है</translation>
+<translation id="5883861433316751031">क्या एमआईडीआई डिवाइसों को कंट्रोल और फिर से प्रोग्राम करना है?</translation>
 <translation id="5884465125445718607">चाइनीज़ #6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5887400589839399685">कार्ड सेव किया गया</translation>
 <translation id="5887687176710214216">साइट पर पिछली बार कल गए</translation>
@@ -3333,6 +3335,7 @@
 <translation id="8038817883578389970">ऑटो रेसिंग</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8041940743680923270">वैश्विक डिफ़ॉल्ट का उपयोग करें (पूछें)</translation>
+<translation id="8042577181291637092">क्या एमआईडीआई डिवाइसों का इस्तेमाल करना है?</translation>
 <translation id="8046360364391076336">इंडस्ट्रियल मटीरियल और इक्विपमेंट</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8055534648776115597">व्यावसायिक और प्रौढ़ शिक्षा</translation>
@@ -3627,6 +3630,7 @@
 <translation id="8671519637524426245"><ph name="SECURE_DNS_SALT" /> वैल्यू, साइज़ की ज़रूरी शर्तों को पूरा नहीं करती.</translation>
 <translation id="867224526087042813">हस्ताक्षर</translation>
 <translation id="8672264262457010862">कारोबार और उद्योग</translation>
+<translation id="8673776281896298303">अपने एमआईडीआई डिवाइसों (SysEx) को कंट्रोल करें और फिर से प्रोग्राम करें</translation>
 <translation id="8676424191133491403">बिना देरी के</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, उत्तर, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054"><ph name="PAGE" /> पर वेबपेज को लोड नहीं किया जा सका क्योंकि:</translation>

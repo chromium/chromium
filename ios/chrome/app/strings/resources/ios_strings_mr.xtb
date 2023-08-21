@@ -62,6 +62,7 @@
 <translation id="1283524564873030414">मागील २४ तासांचा</translation>
 <translation id="1285320974508926690">या साइटचा कधीही भाषांतर करु नका</translation>
 <translation id="1291506870746876680">तुम्ही या साइटमधून बाहेर पडाल, तेव्हा <ph name="BEGIN_BOLD" />"<ph name="SITE_NAME" />"<ph name="END_BOLD" /> संबंधित परवानग्या बंदवर रीसेट केल्या जातील.</translation>
+<translation id="1295289763199166823">मेनू कस्टमाइझ करा</translation>
 <translation id="1305822519689023679">तुम्ही तुमच्या Google खाते मधील पासवर्ड कधीही वापरू शकता याची खात्री करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा.</translation>
 <translation id="1312721752506309252">सुधारित संरक्षण सुरू आहे</translation>
 <translation id="1316466854070752597">उघडे असलेले सर्व टॅब पहा</translation>
@@ -110,6 +111,7 @@
 <translation id="1554477036522844996">नवीन विंडो</translation>
 <translation id="1563071802032385236">"गुप्त मोड मध्ये इतर ॲप्समधील लिंक उघडण्याची विनंती करा" सुरू करा.</translation>
 <translation id="1565371473877914088">नवीन गुप्त टॅब</translation>
+<translation id="1565395699240341063">लपवलेले</translation>
 <translation id="1580715474678097352">धोकादायक वेबसाइटपासून सुरक्षित राहा</translation>
 <translation id="1580783302095112590">मेल पाठवले.</translation>
 <translation id="1582732959743469162">यामुळे तुमच्या सुरू असलेल्या डाउनलोडची पुढची सर्व प्रगती थांबेल.</translation>
@@ -446,6 +448,7 @@
 <translation id="3533436815740441613">नवीन टॅब</translation>
 <translation id="3540141921715814660">बुकमार्क मध्ये जोडा</translation>
 <translation id="3551320343578183772">टॅब बंद करा</translation>
+<translation id="3564513311876185114">स्‍मार्ट ऑर्डर मेनू बार</translation>
 <translation id="3565207542107370586">ब्राउझिंग डेटा साफ करा…</translation>
 <translation id="3575234738189584619">Lens वापरून शोधा</translation>
 <translation id="3577555362230509265">इतर अ‍ॅप्समध्ये Chrome वापरा.</translation>
@@ -1313,6 +1316,7 @@
 <translation id="854938212724803178">तुमच्याकडे धोक्यात असलेला १ पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.</translation>
 <translation id="8556590991644167667">{count,plural, =1{तुम्ही {count} चेतावणी डिसमिस केली आहे}other{तुम्ही {count} चेतावण्या डिसमिस केल्या आहेत}}</translation>
 <translation id="8558480467877843976">तुम्ही आता मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंक ब्राउझ करता किंवा त्यावर टॅप करता, तेव्हा Chrome कधीही वापरू शकता.</translation>
+<translation id="8560253818350321773">वारंवार वापरले जाणारे आयटम सर्वप्रथम दाखवा.</translation>
 <translation id="8580411965900177618">नाही, नको</translation>
 <translation id="8588404856427128947">बंद करा</translation>
 <translation id="8591976964826315682">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>

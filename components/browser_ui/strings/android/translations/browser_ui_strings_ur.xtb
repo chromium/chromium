@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">آن لائن کھولیں</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1044891598689252897">سائٹس حسب معمول کام کریں گی</translation>
+<translation id="1073417869336441572">‏ہمیں یہ بتا کر Chrome کو بہتر بنانے میں ہماری مدد کریں کہ آپ نے فریق ثالث کوکیز کی اجازت کیوں دی۔ <ph name="BEGIN_LINK" />تاثرات بھیجیں<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">اس سے آپ کی ہوم اسکرین پر موجود سائٹس یا ایپس کے ذریعے اسٹور کردہ <ph name="DATASIZE" /> ڈیٹا اور کوکیز صاف ہو جائیں گی۔</translation>
 <translation id="1178581264944972037">موقوف کریں</translation>
 <translation id="1181037720776840403">ہٹائیں</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">اجازت یافتہ، سوائے فریق ثالث</translation>
 <translation id="1989112275319619282">براؤز کریں</translation>
 <translation id="1994173015038366702">‏سائٹ کا URL</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{1 دن میں میعاد ختم ہو جائے گی}other{# دن میں میعاد ختم ہو جائے گی}}</translation>
 <translation id="2004697686368036666">ہو سکتا ہے کہ کچھ سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="2025115093177348061">افزودہ حقیقت</translation>
 <translation id="2030769033451695672"><ph name="URL_OF_THE_CURRENT_TAB" /> پر واپس جانے کے لیے تھپتھپائیں</translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">سائٹس کو آپ کا مقام جاننے کی اجازت دینے سے پہلے پوچھیں (تجویز کردہ)</translation>
 <translation id="3403537308306431953">%%‎ ‎<ph name="ZOOM_LEVEL" /></translation>
 <translation id="344449859752187052">فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{‏Chrome کل کوکیز کو دوبارہ مسدود کر دے گا}other{‏Chrome کے کوکیز کو دوبارہ مسدود کرنے میں # دن باقی ہیں}}</translation>
 <translation id="3521663503435878242"><ph name="DOMAIN" /> کے تحت سائٹس</translation>
 <translation id="3538390592868664640">‏سائٹس کو اپنے اطراف کا 3D نقشہ تخلیق یا کیمرے کی پوزیشن ٹریک کرنے سے مسدود کریں</translation>
 <translation id="3544058026430919413">ایک کمپنی سائٹس کے ایک گروپ کی وضاحت کر سکتی ہے جو گروپ میں آپ کی سرگرمی کا اشتراک کرنے کے لیے کوکیز کا استعمال کر سکتی ہے۔ یہ پوشیدگی میں آف ہے۔</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">فون نمبرز</translation>
 <translation id="3826050100957962900">فریق ثالث سائن ان</translation>
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
+<translation id="3843916486309149084">‏Chrome آج دوبارہ کوکیز کو مسدود کر دے گا</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کو مسدود کریں۔</translation>
 <translation id="6388207532828177975">صاف کریں اور ری سیٹ کریں</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
+<translation id="640163077447496506">میعاد آج ختم ہوگی</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">سائٹس کو اپنا ورچوئل ریئلٹی آلہ اور ڈیٹا استعمال کرنے سے مسدود کریں</translation>
 <translation id="6447842834002726250">کوکیز</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8154912474061769055">ہوسکتا ہے کہ بہت سی سائٹس پر خصوصیات کام نہ کریں</translation>
 <translation id="8168435359814927499">مواد</translation>
+<translation id="8186479265534291036">سائٹ کام نہیں کر رہی ہے؟ فریق ثالث کوکیز کو مسدود کر دیا گیا</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> کی اجازت دی گئی</translation>
 <translation id="8200772114523450471">دوبارہ شروع کریں</translation>
 <translation id="8206354486702514201">اس ترتیب کو آپ کے منتظم نے نافذ کیا ہے۔</translation>

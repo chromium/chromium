@@ -154,7 +154,7 @@
 <translation id="2047316797244836561">Estabeleça ligação a uma rede e atualize a página para ver a proteção de ecrã.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Mais definições</translation>
-<translation id="2085089206770112532">Diminuir o brilho do ecrã</translation>
+<translation id="2085089206770112532">Diminuir o luminosidade do ecrã</translation>
 <translation id="2102231663024125441">Edição de texto</translation>
 <translation id="2105810540595158374">O dispositivo é um comando de jogos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
@@ -366,6 +366,7 @@
 <translation id="3941014780699102620">Falha ao resolver anfitrião.</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3954678691475912818">O tipo de dispositivo é desconhecido.</translation>
+<translation id="3959413315969265597">Não é possível ativar este APN. Certifique-se de que é adicionado um APN predefinido.</translation>
 <translation id="3966286471246132217">Para obter resultados mais exatos, feche todas as apps até que o teste esteja concluído.</translation>
 <translation id="3967822245660637423">Transferência concluída</translation>
 <translation id="3969602104473960991">A palavra-passe do ChromeOS foi atualizada</translation>
@@ -603,7 +604,7 @@
 <translation id="5733298426544876109">Atualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="5757187557809630523">faixa seguinte</translation>
 <translation id="5760715441271661976">Estado do portal</translation>
-<translation id="576835345334454681">Aumentar o brilho do ecrã</translation>
+<translation id="576835345334454681">Aumentar o luminosidade do ecrã</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">Latência elevada de HTTP</translation>
 <translation id="5826644637650799838">Acerca da arte</translation>

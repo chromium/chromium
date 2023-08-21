@@ -659,6 +659,7 @@
 <translation id="380165613292957338">嗨，有什么我可以帮你的吗？</translation>
 <translation id="3804737937830804242">收起相机</translation>
 <translation id="3824784079442479685">这将允许“<ph name="APP_NAME" />”以及所有具有摄像头使用权限的应用和网站使用摄像头。您可能需要刷新网页或重启应用。</translation>
+<translation id="3825680296690914697">已上交 <ph name="NUM_TURNED_IN" /> 份（共 <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 份），<ph name="NUM_GRADED" /> 份已评分</translation>
 <translation id="3826099427150913765">切换到密码</translation>
 <translation id="383058930331066723">省电模式已开启</translation>
 <translation id="383629559565718788">显示键盘设置</translation>
@@ -1741,6 +1742,7 @@
 <translation id="8446884382197647889">了解详情</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">关闭“随选朗读”功能</translation>
+<translation id="8468806060683421065"><ph name="DUE_DATE_AND_TIME" />到期</translation>
 <translation id="847056008324733326">显示比例设置</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" />已<ph name="FEATURE_STATE" /><ph name="FEATURE_NAME" />。</translation>
 <translation id="8477270416194247200">按 Alt+搜索键或按 Shift 键可取消。</translation>
@@ -1824,6 +1826,7 @@
 <translation id="8853703225951107899">仍然无法验证您的 PIN 码或密码。注意：如果您最近更改了密码，请使用旧密码。待您退出登录后，系统才会应用新密码。</translation>
 <translation id="8855885154700222542">全屏键</translation>
 <translation id="8858369206579825206">隐私控制</translation>
+<translation id="8860366331836346216">添加 eSIM 卡</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875021410787719674">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间移动</translation>

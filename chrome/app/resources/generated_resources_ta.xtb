@@ -125,6 +125,7 @@
 <translation id="1090541560108055381">இணைப்பதற்கு முன்பு, இரண்டு சாதனங்களிலும் ஒரே குறியீடு காட்டப்படுவதை உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="1091767800771861448">தவிர்க்க, ESCAPE அழுத்துக (அதிகாரப்பூர்வமற்ற தொகுதிகள் மட்டும்).</translation>
 <translation id="1093457606523402488">தெரியும் நெட்வொர்க்குகள்:</translation>
+<translation id="1093645050124056515">Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="1094219634413363886">இந்த நிர்வகிக்கப்படும் சாதனத்தில் ரெக்கார்டு செய்வது தொடங்கப்பட்டால் அறிவிப்பு காட்டப்படும்</translation>
 <translation id="1095761715416917775">உங்கள் ஒத்திசைவுத் தரவை எப்போதும் அணுகக்கூடியதாக அமைத்துக் கொள்ளுங்கள்</translation>
 <translation id="1095879482467973146">இணையத்தில் Google Password Manager</translation>
@@ -239,6 +240,7 @@
 <translation id="118057123461613219">மிகப் பெரியளவில் சேமிப்புகள்</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /> இல்</translation>
+<translation id="1182876754474670069">முகப்பு</translation>
 <translation id="1183237619868651138">அக தற்காலிகச் சேமிப்பில் <ph name="EXTERNAL_CRX_FILE" />ஐ நிறுவ முடியாது.</translation>
 <translation id="1185924365081634987">இந்த நெட்வொர்க் பிழையைச் சரிசெய்ய, <ph name="GUEST_SIGNIN_LINK_START" />கெஸ்டாக உலாவவும்<ph name="GUEST_SIGNIN_LINK_END" /> முயற்சி செய்யலாம்.</translation>
 <translation id="1187692277738768150">நீங்கள் இந்தக் கடவுச்சொல்லைப் பயன்படுத்தும்போதும் சேமிக்கும்போதும்:</translation>
@@ -3475,6 +3477,7 @@
 <translation id="3794792524918736965">Windows Hello அம்சத்தை இயக்குதல்</translation>
 <translation id="379509625511193653">ஆஃப்</translation>
 <translation id="3795766489237825963">அனிமேஷன்களைப் பிளே செய்யும்</translation>
+<translation id="3796215473395753611">Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="3796648294839530037">பிடித்த நெட்வொர்க்குகள்:</translation>
 <translation id="3797739167230984533">உங்கள் நிறுவனம் உங்களுடைய <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> சாதனத்தை நிர்வகிக்கிறது<ph name="END_LINK" /></translation>
 <translation id="3797900183766075808"><ph name="SEARCH_ENGINE" /> இல் “<ph name="SEARCH_TERMS" />” எனத் &amp;தேடு</translation>
@@ -5003,6 +5006,7 @@
 <translation id="508059534790499809">Kerberos டிக்கெட்டை ரெஃப்ரெஷ் செய்தல்</translation>
 <translation id="5081124414979006563">&amp;விருந்தினர் சுயவிவரத்தைத் திற</translation>
 <translation id="5081960376148623587">பக்கங்களை முன்கூட்டியே ஏற்ற வேண்டுமா என்பதைத் தேர்வுசெய்தல்</translation>
+<translation id="5083035541015925118">Ctrl + Alt + மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="5084328598860513926">அமைப்பதில் தடங்கல் ஏற்பட்டது. மீண்டும் முயலவும் அல்லது உங்கள் சாதன உரிமையாளரையோ நிர்வாகியையோ தொடர்புகொள்ளவும். பிழைக் குறியீடு: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">தளங்கள் நீங்கள் எதிர்பார்த்தபடி செயல்படக்கூடும்</translation>
 <translation id="5084686326967545037">சாதனத்தில் காட்டப்படும் படிகளைப் பின்பற்றவும்</translation>
@@ -5713,6 +5717,7 @@
 <translation id="5687326903064479980">நேரமண்டலம்</translation>
 <translation id="5687606994963670306">30 நாட்களுக்கு முந்தைய தளங்களை Chrome தானாக நீக்கிவிடும். நீங்கள் மீண்டும் பார்க்கும் தளம் பட்டியலில் மறுபடியும் காட்டப்படக்கூடும். இல்லையென்றால் உங்களுக்கான விளம்பரங்களைப் பரிந்துரைக்கும் தளத்தை நீங்கள் தடுக்கலாம். <ph name="BEGIN_LINK" />Chromeமில் உங்கள் விளம்பரங்கள் தொடர்பான தனியுரிமையை நிர்வகிப்பது<ph name="END_LINK" /> குறித்து மேலும் அறிக.</translation>
 <translation id="5687935527303996204">சாதனம் ப்ளக்கில் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்வதுடன் அதனை ஆஃப் செய்யாமல் வைத்திருக்கவும். நிறுவல் முடிவதற்கு 20 நிமிடங்கள் வரை ஆகலாம். நிறுவல் முடிந்ததும் சாதனம் தானாகவே ஷட் டவுன் ஆகும்.</translation>
+<translation id="5689233503102158537">Alt + backspace</translation>
 <translation id="5689516760719285838">இருப்பிடம்</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> ஏற்கெனவே வேறொரு சாதனத்தில் Assistantடில் Voice Matchசை அமைத்துள்ளதாகத் தெரிகிறது. இந்தச் சாதனத்தில் குரல் மாதிரியை உருவாக்குவதற்காக அந்த முந்தைய பதிவுகள் பயன்படுத்தப்பட்டன.</translation>
 <translation id="56907980372820799">தரவை இணை</translation>
@@ -6574,6 +6579,7 @@
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6417468503703810114">இயல்பு அமைப்பு</translation>
 <translation id="6418160186546245112"><ph name="IDS_SHORT_PRODUCT_NAME" /> இன் நிறுவப்பட்ட முந்தைய பதிப்பிற்கு மாற்றியமைக்கிறது</translation>
+<translation id="641817663353603351">page up</translation>
 <translation id="6418481728190846787">எல்லா ஆப்ஸுக்கும் அணுகலை நிரந்தரமாக அகற்று</translation>
 <translation id="6418511932144861495">முக்கியப் புதுப்பிப்பை நிறுவவும்</translation>
 <translation id="641867537956679916">உங்கள் சாதனத்தில் உள்ள சிக்கலைச் சரிசெய்ய நிர்வாகி உள்நுழைந்துள்ளார். நிர்வாகி உங்களுக்குக் கட்டுப்பாட்டைத் திரும்ப வழங்கியதும் சாதனத்தைத் தொடர்ந்து பயன்படுத்தலாம்.</translation>
@@ -7187,6 +7193,7 @@
 <translation id="6920989436227028121">வழக்கமான தாவலாகத் திற</translation>
 <translation id="6921104647315081813">செயல்பாடுகளை அழி</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> உலாவியைத் திறக்க இயலவில்லை</translation>
+<translation id="692135145298539227">நீக்கு</translation>
 <translation id="6922128026973287222">Google தரவு சேமிப்பானைப் பயன்படுத்தி தரவைச் சேமிக்கலாம், வேகமாக உலாவலாம். மேலும் அறிய, கிளிக் செய்யவும்.</translation>
 <translation id="6922745772873733498">அச்சிடுவதற்குப் பின்னை உள்ளிடவும்</translation>
 <translation id="6922763095098248079">உங்கள் சாதனத்தை உங்கள் நிறுவனம் நிர்வகிக்கிறது. இந்தச் சாதனத்தில் உள்ள எந்தவொரு சுயவிவரத் தரவையும் நிர்வாகிகளால் அணுக முடியும்.</translation>
@@ -7262,6 +7269,7 @@
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979440798594660689">முடக்கு (இயல்பு)</translation>
 <translation id="6979737339423435258">இதுவரை அனைத்தும்</translation>
+<translation id="6980402667292348590">insert</translation>
 <translation id="6981553172137913845">தனிப்பட்ட முறையில் உலாவ, புள்ளிகள் ஐகான் மெனுவைக் கிளிக் செய்து மறைநிலைத் தாவலைத் திறக்கவும்</translation>
 <translation id="6981761993313539853">உங்கள் புளூடூத் சாதனம், இணைத்தல் பயன்முறையிலும் அருகிலும் இருப்பதை உறுதிசெய்துகொள்ளவும். நம்பகமான சாதனங்களை மட்டும் இணைக்கவும். <ph name="BEGIN_LINK_LEARN_MORE" />மேலும் அறிக<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
@@ -7648,6 +7656,7 @@
 <translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7328867076235380839">தவறான சேர்க்கை</translation>
 <translation id="7329154610228416156">பாதுகாப்பற்ற URLஐப் (<ph name="BLOCKED_URL" />) பயன்படுத்தும்படி உள்ளமைக்கப்பட்டதால் உள்நுழைவு தோல்வியானது. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
+<translation id="7331646370422660166">Alt + கீழ்நோக்கிய அம்புக்குறி</translation>
 <translation id="7332053360324989309">பிரத்தியேக வொர்க்கர்: <ph name="SCRIPT_URL" /></translation>
 <translation id="7333669215417470379">ஆப்ஸ், அமைப்புகள் ஆகியவற்றைக் காப்புப் பிரதி எடுத்தல் மற்றும் மீட்டெடுத்தல்</translation>
 <translation id="7335974957018254119">எழுத்துப்பிழைச் சரிபார்ப்பை இதற்குப் பயன்படுத்தவும்</translation>
@@ -7890,6 +7899,7 @@
 <translation id="7514417110442087199">ஒதுக்கீட்டைச் சேர்</translation>
 <translation id="751523031290522286">நிர்வாகியால் <ph name="APP_NAME" /> தடுக்கப்பட்டுள்ளது. இந்த ஆப்ஸைப் பயன்படுத்த நிர்வாகியிடம் அனுமதி கேட்கவும்.</translation>
 <translation id="7515998400212163428">Android</translation>
+<translation id="7516641972665276706">page down</translation>
 <translation id="7516981202574715431"><ph name="APP_NAME" /> இடைநிறுத்தப்பட்டுள்ளது</translation>
 <translation id="7517959947270534934">தற்போது உங்கள் குடும்ப உறுப்பினர்களால் கடவுச்சொற்களைப் பெற முடியாது. Chromeமைப் புதுப்பித்து அவர்களுடைய கடவுச்சொற்களை ஒத்திசைக்குமாறு அவர்களிடம் கேட்கவும்.</translation>
 <translation id="7520766081042531487">மறைநிலைப் போர்ட்டல்: <ph name="SUBFRAME_SITE" /></translation>
@@ -8670,7 +8680,6 @@
 <translation id="8138997515734480534"><ph name="VM_NAME" /> நிலை</translation>
 <translation id="8139440916039659819">கர்சர் ஆக்ஸிலரேஷன்</translation>
 <translation id="8139447493436036221">Google Drive ஃபைல்கள் </translation>
-<translation id="8139643636835015859">இதைச் செய்வதால் உங்கள் ஆஃப்லைன் ஃபைல்கள் பயன்படுத்தும் <ph name="OFFLINE_STORAGE_SIZE" /> சேமிப்பிடம் அகற்றப்படும். இருப்பினும் சில ஃபைல்கள் ஆஃப்லைனில் கிடைக்கும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
 <translation id="8141418916163800697">ஃபோன் ஹப் அமைப்புகளில் இன்னும் கூடுதலான அம்சங்களை அமைக்கலாம்</translation>
 <translation id="8141584439523427891">மாற்று உலாவியில் இப்போது திறக்கிறது</translation>
@@ -9908,6 +9917,7 @@
 <translation id="9150079578948279438">சுயவிவரத்தை அகற்ற முடியவில்லை. மீண்டும் முயலவும் அல்லது தொழில்நுட்ப உதவியைப் பெற சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="9150860646299915960">உங்கள் Linux கண்டெய்னரை மேம்படுத்துங்கள்</translation>
 <translation id="9151249085738989067">மொழியின் அடிப்படையில் ChromeVox குரலைத் தானாக மாற்று</translation>
+<translation id="9151906066336345901">end</translation>
 <translation id="9154082578438716291">Chrome பயணங்களில் உங்களின் மிகச் சமீபத்திய செயல்பாட்டிற்கு எளிதில் மீண்டும் செல்வதற்கு உதவும் விதமாக நீங்கள் பார்வையிட்ட பக்கங்களையும் பரிந்துரைக்கப்பட்ட தேடல்களையும் பார்க்கிறீர்கள்.
         <ph name="BREAK" />
         <ph name="BREAK" />
