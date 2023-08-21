@@ -65,6 +65,8 @@ extension WidgetConfiguration {
 extension View {
   // Hides the modified view on iOS17+ if the environment value
   // `\.showsWidgetContainerBackground` is false
+  // Note: the property crashes on iOS17 beta 6, so this is not used for now.
+  // But keep the wrapper to be used if needed once this is fixed.
   func applyShowWidgetContainerBackground() -> some View {
     #if swift(>=5.9)
       if #available(iOS 17.0, *) {

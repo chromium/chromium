@@ -237,7 +237,6 @@ struct ShortcutsWidgetEntryView: View {
           .foregroundColor(Colors.widgetMostVisitedSitesRow)
           .frame(minWidth: 0, maxWidth: .infinity)
           .accessibilityLabel(Strings.widgetDisplayName)
-          .applyShowWidgetContainerBackground()
         HStack {
           let ntpTiles = Array(entry.mostVisitedSites.values).sorted()
 
