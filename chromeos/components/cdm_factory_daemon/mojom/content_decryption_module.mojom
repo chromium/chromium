@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 4
 
 module chromeos.cdm.mojom;
 
@@ -137,6 +137,8 @@ enum DecryptStatus {
 };
 
 // Next Method ID: 11
+// These method calls originate in the Chrome GPU process and end up in the
+// cdm-oemcrypto daemon in ChromeOS.
 [Stable, Uuid="cbe7142d-379a-4b23-bfee-a370ab01bdea"]
 interface ContentDecryptionModule {
   // Provides a server certificate to be used to encrypt messages to the
@@ -191,15 +193,20 @@ interface ContentDecryptionModule {
                                 array<uint8> hw_identifier) =>
       (DecryptStatus status, array<uint8> key_data);
 
-  // Used for decrypting to clear or for transcrypting to a secure buffer. If
-  // |is_video| is true, then it will be transcrypted to a secure buffer on
-  // supported platforms (e.g. AMD). |decrypt_config_in| can be null if the
-  // input data is not encrypted. |decrypt_config_out| will be non-null only in
-  // the case of transcryption and will specify crypto information for the
-  // returned |decrypted_data|.
+  // Used for decrypting to clear, transcrypting to a secure buffer or
+  // decrypting to secure memory. If |is_video| is true, then it will be
+  // transcrypted to a secure buffer on supported platforms (e.g. AMD). If
+  // |secure_handle| is non-zero, then it will be written to the corresponding
+  // secure Trust Zone memory (ARM only). |secure_handle| is an identifier for
+  // the corresponding secure memory that can be resolved in the TEE and not
+  // a handle to the actual resource (we have another FD we use for that).
+  // |decrypt_config_in| can be null if the input data is not encrypted.
+  // |decrypt_config_out| will be non-null only in the case of transcryption and
+  // will specify crypto information for the returned |decrypted_data|.
   [MinVersion=2]
   Decrypt@10(array<uint8> encrypted_data, DecryptConfig? decrypt_config_in,
-             bool is_video)
+             bool is_video,
+             [MinVersion=3] uint64 secure_handle)
       => (DecryptStatus status, array<uint8> decrypted_data,
           DecryptConfig? decrypt_config_out);
 };

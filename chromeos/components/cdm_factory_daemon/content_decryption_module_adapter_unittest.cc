@@ -33,6 +33,7 @@ constexpr char kFakeSessionUpdate[] = "fake_session_update";
 
 constexpr int64_t kFakeTimestampSec = 42;
 constexpr int64_t kFakeDurationSec = 64;
+constexpr uint64_t kFakeSecureHandle = 75;
 
 template <size_t size>
 std::vector<uint8_t> ToVector(const char (&array)[size]) {
@@ -92,6 +93,7 @@ class MockDaemonCdm : public cdm::mojom::ContentDecryptionModule {
               (const std::vector<uint8_t>&,
                std::unique_ptr<media::DecryptConfig>,
                bool,
+               uint64_t,
                DecryptCallback));
   MOCK_METHOD(void,
               GetHwKeyData,
@@ -462,12 +464,14 @@ TEST_F(ContentDecryptionModuleAdapterTest, RegisterNewKeyCB) {
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_TranscryptUnencrypted) {
   std::unique_ptr<media::DecryptConfig> expected_decrypt_config;
-  EXPECT_CALL(*mock_daemon_cdm_,
-              Decrypt(kFakeEncryptedData,
-                      MatchesDecryptConfig(&expected_decrypt_config), true, _))
+  EXPECT_CALL(
+      *mock_daemon_cdm_,
+      Decrypt(kFakeEncryptedData,
+              MatchesDecryptConfig(&expected_decrypt_config), true, 0, _))
       .WillOnce([](const std::vector<uint8_t>& data,
                    std::unique_ptr<media::DecryptConfig> decrypt_config,
-                   bool is_video, MockDaemonCdm::DecryptCallback callback) {
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
         // Simulate transcryption (that's the only reason this is called with
         // clear data), by just reversing the data.
         std::vector<uint8_t> decrypted = data;
@@ -500,10 +504,11 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_TranscryptUnencrypted) {
 }
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Failure) {
-  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _))
+  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _, _))
       .WillOnce([](const std::vector<uint8_t>& data,
                    std::unique_ptr<media::DecryptConfig> decrypt_config,
-                   bool is_video, MockDaemonCdm::DecryptCallback callback) {
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
         std::move(callback).Run(media::Decryptor::kError, {}, nullptr);
       });
   base::MockCallback<media::Decryptor::DecryptCB> callback;
@@ -518,10 +523,11 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Failure) {
 }
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_NoKey) {
-  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _))
+  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _, _))
       .WillOnce([](const std::vector<uint8_t>& data,
                    std::unique_ptr<media::DecryptConfig> decrypt_config,
-                   bool is_video, MockDaemonCdm::DecryptCallback callback) {
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
         std::move(callback).Run(media::Decryptor::kNoKey, {}, nullptr);
       });
   base::MockCallback<media::Decryptor::DecryptCB> callback;
@@ -536,7 +542,7 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_NoKey) {
 }
 
 TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_MismatchedSubsamples) {
-  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _)).Times(0);
+  EXPECT_CALL(*mock_daemon_cdm_, Decrypt(_, _, _, _, _)).Times(0);
   base::MockCallback<media::Decryptor::DecryptCB> callback;
   EXPECT_CALL(callback, Run(media::Decryptor::kError, IsNull()));
   scoped_refptr<media::DecoderBuffer> encrypted_buffer =
@@ -552,12 +558,14 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Success) {
   std::unique_ptr<media::DecryptConfig> expected_decrypt_config =
       media::DecryptConfig::CreateCbcsConfig(kFakeKeyId, kFakeIv, {},
                                              media::EncryptionPattern(6, 9));
-  EXPECT_CALL(*mock_daemon_cdm_,
-              Decrypt(kFakeEncryptedData,
-                      MatchesDecryptConfig(&expected_decrypt_config), true, _))
+  EXPECT_CALL(
+      *mock_daemon_cdm_,
+      Decrypt(kFakeEncryptedData,
+              MatchesDecryptConfig(&expected_decrypt_config), true, 0, _))
       .WillOnce([](const std::vector<uint8_t>& data,
                    std::unique_ptr<media::DecryptConfig> decrypt_config,
-                   bool is_video, MockDaemonCdm::DecryptCallback callback) {
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
         // For decryption, just reverse the data.
         std::vector<uint8_t> decrypted = data;
         std::reverse(std::begin(decrypted), std::end(decrypted));
@@ -578,6 +586,60 @@ TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_Success) {
   encrypted_buffer->set_is_key_frame(true);
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
       kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+  cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
+                        callback.Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SecureHandleUnencrypted) {
+  std::unique_ptr<media::DecryptConfig> no_config;
+  EXPECT_CALL(*mock_daemon_cdm_,
+              Decrypt(kFakeEncryptedData, MatchesDecryptConfig(&no_config),
+                      true, kFakeSecureHandle, _))
+      .WillOnce([](const std::vector<uint8_t>& data,
+                   std::unique_ptr<media::DecryptConfig> decrypt_config,
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
+        // For secure handles, there is no decrypted data returned.
+        std::move(callback).Run(media::Decryptor::kSuccess, {}, nullptr);
+      });
+
+  base::MockCallback<media::Decryptor::DecryptCB> callback;
+  scoped_refptr<media::DecoderBuffer> clear_buffer =
+      CreateDecoderBuffer(kFakeEncryptedData);
+  clear_buffer->set_is_key_frame(true);
+  clear_buffer->WritableSideData().secure_handle = kFakeSecureHandle;
+  EXPECT_CALL(callback, Run(media::Decryptor::kSuccess,
+                            MatchesDecoderBuffer(clear_buffer)));
+  cdm_adapter_->Decrypt(media::Decryptor::kVideo, clear_buffer, callback.Get());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(ContentDecryptionModuleAdapterTest, Decrypt_SecureHandleEncrypted) {
+  std::unique_ptr<media::DecryptConfig> expected_decrypt_config =
+      media::DecryptConfig::CreateCbcsConfig(kFakeKeyId, kFakeIv, {},
+                                             media::EncryptionPattern(6, 9));
+  EXPECT_CALL(*mock_daemon_cdm_,
+              Decrypt(kFakeEncryptedData,
+                      MatchesDecryptConfig(&expected_decrypt_config), true,
+                      kFakeSecureHandle, _))
+      .WillOnce([](const std::vector<uint8_t>& data,
+                   std::unique_ptr<media::DecryptConfig> decrypt_config,
+                   bool is_video, uint64_t secure_handle,
+                   MockDaemonCdm::DecryptCallback callback) {
+        // For secure handles, there is no decrypted data returned.
+        std::move(callback).Run(media::Decryptor::kSuccess, {}, nullptr);
+      });
+
+  scoped_refptr<media::DecoderBuffer> encrypted_buffer =
+      CreateDecoderBuffer(kFakeEncryptedData);
+  encrypted_buffer->set_is_key_frame(true);
+  encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCbcsConfig(
+      kFakeKeyId, kFakeIv, {}, media::EncryptionPattern(6, 9)));
+  encrypted_buffer->WritableSideData().secure_handle = kFakeSecureHandle;
+  base::MockCallback<media::Decryptor::DecryptCB> callback;
+  EXPECT_CALL(callback, Run(media::Decryptor::kSuccess,
+                            MatchesDecoderBuffer(encrypted_buffer)));
   cdm_adapter_->Decrypt(media::Decryptor::kVideo, encrypted_buffer,
                         callback.Get());
   base::RunLoop().RunUntilIdle();
