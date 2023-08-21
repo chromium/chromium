@@ -1,0 +1,66 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package allocation_recorder;
+
+enum OperationType {
+  // The operation is an allocation.
+  ALLOCATION = 0;
+  // The operation is a free.
+  FREE = 1;
+  // Present mainly for compatibility with the internal operation type. Entries
+  // with this type should not make it into this message.
+  NONE = 2;
+}
+
+// A single frame of the stack trace.
+message StackFrame {
+  uint64 address = 1;
+}
+
+message StackTrace {
+  repeated StackFrame frames = 1;
+}
+
+message MemoryOperation {
+  // The type of operation that this operation represents.
+  OperationType operation_type = 1;
+  // The affected address.
+  uint64 address = 2;
+  // The number of allocated bytes, only set for allocations.
+  optional uint64 size = 3;
+  // The stack trace that caused this operation.
+  StackTrace stack_trace = 4;
+}
+
+message Statistics {
+  // The total number of memory operations recorded so far. This might be
+  // different from the number of operations in this report since the recorder
+  // overwrites old entries.
+  uint64 total_number_of_operations = 1;
+  // The total number of collisions that have been encountered. A collision
+  // happens when two threads concurrently try to record using the same slot.
+  optional uint64 total_number_of_collisions = 2;
+}
+
+message MemoryOperationReport {
+  repeated MemoryOperation memory_operations = 1;
+  Statistics statistics = 2;
+}
+
+message ProcessingFailures {
+  repeated string messages = 1;
+}
+
+// The main message for the allocation trace recorder.
+message Payload {
+  oneof payload {
+    MemoryOperationReport operation_report = 1;
+    ProcessingFailures processing_failures = 2;
+  }
+}

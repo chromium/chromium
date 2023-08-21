@@ -2,10 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/protobuf/proto_library.gni")
+
 source_set("crash_handler") {
   sources = [
     "allocation_recorder_holder.cc",
     "allocation_recorder_holder.h",
+    "payload.cc",
+    "payload.h",
     "stream_data_source_factory.cc",
     "stream_data_source_factory.h",
     "user_stream_data_source.cc",
@@ -13,6 +17,7 @@ source_set("crash_handler") {
   ]
 
   deps = [
+    ":memory_operation_report",
     "//base",
     "//base:debugging_buildflags",
     "//components/allocation_recorder/internal",
@@ -20,7 +25,12 @@ source_set("crash_handler") {
     "//third_party/crashpad/crashpad/minidump",
     "//third_party/crashpad/crashpad/snapshot",
     "//third_party/crashpad/crashpad/util",
+    "//third_party/protobuf:protobuf_lite",
   ]
+}
+
+proto_library("memory_operation_report") {
+  sources = [ "memory_operation_report.proto" ]
 }
 
 source_set("unit_tests") {
@@ -28,12 +38,14 @@ source_set("unit_tests") {
 
   sources = [
     "allocation_recorder_holder_unittest.cc",
+    "payload_unittests.cc",
     "stream_data_source_factory_unittest.cc",
     "user_stream_data_source_unittest.cc",
   ]
 
   deps = [
     ":crash_handler",
+    ":memory_operation_report",
     "//base",
     "//base/test:test_support",
     "//components/allocation_recorder/internal",

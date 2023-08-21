@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "base/debug/allocation_trace.h"
+#include "components/allocation_recorder/crash_handler/memory_operation_report.pb.h"
 #include "components/allocation_recorder/internal/internal.h"
 #include "components/allocation_recorder/testing/crashpad_fake_objects.h"
-#include "components/allocation_recorder/testing/mock_objects.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::debug::tracer::AllocationTraceRecorder;
@@ -17,18 +17,17 @@ using crashpad::test::BufferExtensionStreamDataSourceDelegate;
 
 namespace allocation_recorder::crash_handler {
 namespace {
+
 class StreamDataSourceFactoryTest : public ::testing::Test {
  protected:
-  StreamDataSourceFactory& GetSubjectUnderTest() { return *sut_; }
+  StreamDataSourceFactory& GetFactory() { return *factory_; }
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
-  AllocationTraceRecorder& GetOperationTraceRecorder() const {
-    return *operation_trace_;
-  }
+  AllocationTraceRecorder& GetRecorder() const { return *operation_trace_; }
 #endif
 
  private:
-  const scoped_refptr<StreamDataSourceFactory> sut_ =
+  const scoped_refptr<StreamDataSourceFactory> factory_ =
       base::MakeRefCounted<StreamDataSourceFactory>();
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
@@ -38,111 +37,58 @@ class StreamDataSourceFactoryTest : public ::testing::Test {
 };
 
 // Read the message stored in the given stream and return it.
-std::vector<uint8_t> ReadMessage(
+std::string ReadMessageAsString(
     const std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>&
         stream) {
   BufferExtensionStreamDataSourceDelegate stream_data_source_delegate;
 
   stream->ReadStreamData(&stream_data_source_delegate);
 
-  return stream_data_source_delegate.GetMessage();
+  const std::vector<uint8_t> message = stream_data_source_delegate.GetMessage();
+
+  return std::string(reinterpret_cast<const char*>(message.data()),
+                     message.size());
 }
 
-// Verify the header and footer of the message match internal::kReportMarker.
-// The payload_data will contain begin and end of the payload for further
-// verification.
-void VerifyMessageHeaderAndFooter(
-    const std::vector<uint8_t>& received_message,
-    std::pair<std::vector<uint8_t>::const_iterator,
-              std::vector<uint8_t>::const_iterator>& payload_data) {
-  // Assert here as we might continue reading out of bounds with an EXPECT_EQ.
-  ASSERT_GE(received_message.size(), 2 * internal::kLengthOfReportMarker);
-
-  const auto* const expected_header_begin =
-      std::cbegin(internal::kReportMarker);
-  // Do not use std::end to calculate the end of the expected header as this
-  // would include the terminating 0.
-  const auto* const expected_header_end =
-      std::cbegin(internal::kReportMarker) + internal::kLengthOfReportMarker;
-
-  // Check the header.
-  const auto intro_compare = std::mismatch(
-      expected_header_begin, expected_header_end, received_message.begin());
-  EXPECT_EQ(intro_compare.first, expected_header_end)
-      << "difference at intro-position="
-      << std::distance(expected_header_begin, intro_compare.first)
-      << ", expected='" << *intro_compare.first << "', found='"
-      << *intro_compare.second << "'.";
-
-  const auto received_payload_begin =
-      std::cbegin(received_message) + internal::kLengthOfReportMarker;
-  const auto received_payload_end =
-      std::cend(received_message) - internal::kLengthOfReportMarker;
-
-  // Check the footer.
-  const auto outro_compare = std::mismatch(
-      expected_header_begin, expected_header_end, received_payload_end);
-  EXPECT_EQ(outro_compare.first, expected_header_end)
-      << "difference at outro-position="
-      << std::distance(expected_header_begin, outro_compare.first)
-      << ", expected='" << *outro_compare.first << "', found='"
-      << *outro_compare.second << "'.";
-
-  payload_data = {received_payload_begin, received_payload_end};
-}
-
-void VerifyMessageFromStream(
+void GetPayloadFromStream(
     const std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>&
         stream,
-    const std::string& expected_payload_param) {
+    allocation_recorder::Payload& payload) {
   ASSERT_NE(stream, nullptr);
 
-  std::vector<uint8_t> expected_payload;
-  std::transform(
-      std::begin(expected_payload_param), std::end(expected_payload_param),
-      std::back_inserter(expected_payload),
-      [](std::string::value_type c) { return static_cast<uint8_t>(c); });
+  const auto received_message = ReadMessageAsString(stream);
 
-  const std::vector<uint8_t> received_message = ReadMessage(stream);
-
-  std::pair<std::vector<uint8_t>::const_iterator,
-            std::vector<uint8_t>::const_iterator>
-      payload_range;
-
-  VerifyMessageHeaderAndFooter(received_message, payload_range);
-
-  ASSERT_EQ(std::ssize(expected_payload),
-            std::distance(payload_range.first, payload_range.second));
-
-  const auto payload_begin = payload_range.first;
-  const auto expected_payload_begin = expected_payload.begin();
-  const auto expected_payload_end = expected_payload.end();
-  const auto message_compare = std::mismatch(
-      expected_payload_begin, expected_payload_end, payload_begin);
-
-  EXPECT_EQ(message_compare.first, expected_payload_end)
-      << "difference at payload-position="
-      << std::distance(expected_payload_begin, message_compare.first)
-      << ", expected='" << *message_compare.first << "', found='"
-      << *message_compare.second << "'.";
+  ASSERT_TRUE(payload.ParseFromString(received_message));
 }
+
 }  // namespace
 
 TEST_F(StreamDataSourceFactoryTest, VerifyCreateErrorMessage) {
-  StreamDataSourceFactory& sut = GetSubjectUnderTest();
+  StreamDataSourceFactory& factory = GetFactory();
 
-  const char* const error = "A SUPER FATAL ERROR HAPPENED";
+  const char* const error = "A fatal error happened.";
 
-  VerifyMessageFromStream(sut.CreateErrorMessage(error), error);
+  allocation_recorder::Payload payload;
+
+  GetPayloadFromStream(factory.CreateErrorMessage(error), payload);
+
+  ASSERT_TRUE(payload.has_processing_failures());
+  EXPECT_EQ(1, payload.processing_failures().messages().size());
+  EXPECT_EQ(error, payload.processing_failures().messages().at(0));
 }
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 TEST_F(StreamDataSourceFactoryTest, VerifyCreateReportStream) {
-  AllocationTraceRecorder& operation_recorder = GetOperationTraceRecorder();
-  StreamDataSourceFactory& sut = GetSubjectUnderTest();
+  AllocationTraceRecorder& recorder = GetRecorder();
+  StreamDataSourceFactory& factory = GetFactory();
 
-  VerifyMessageFromStream(sut.CreateReportStream(operation_recorder),
-                          "!!REPORT CREATION NOT IMPLEMENTED!!");
+  allocation_recorder::Payload payload;
+
+  GetPayloadFromStream(factory.CreateReportStream(recorder), payload);
+
+  EXPECT_TRUE(payload.has_operation_report());
+  EXPECT_TRUE(payload.operation_report().has_statistics());
+  EXPECT_EQ(0, payload.operation_report().memory_operations().size());
 }
 #endif
 

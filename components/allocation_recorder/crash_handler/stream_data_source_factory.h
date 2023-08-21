@@ -31,8 +31,8 @@ class StreamDataSourceFactory
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
   virtual std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
-  CreateReportStream(const base::debug::tracer::AllocationTraceRecorder&
-                         allocation_trace_recorder) const;
+  CreateReportStream(
+      const base::debug::tracer::AllocationTraceRecorder& recorder) const;
 #endif
 
  protected:

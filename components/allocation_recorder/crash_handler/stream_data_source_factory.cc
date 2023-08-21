@@ -8,58 +8,56 @@
 #include <string>
 #include <utility>
 
-#include "base/check_op.h"
+#include "base/debug/allocation_trace.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/stringprintf.h"
+#include "components/allocation_recorder/crash_handler/payload.h"
 #include "components/allocation_recorder/internal/internal.h"
 #include "third_party/crashpad/crashpad/minidump/minidump_user_extension_stream_data_source.h"
 
 namespace allocation_recorder::crash_handler {
 namespace {
 
-// Wrap the payload into the report begin and end marker, see
-// |internal::kReportMarker|.
-class WrappedByHeaderAndFooter final
+class StringStreamDataSource final
     : public crashpad::MinidumpUserExtensionStreamDataSource {
  public:
-  template <typename... ArgTypes>
-  WrappedByHeaderAndFooter(ArgTypes&&... payload_args);
-  ~WrappedByHeaderAndFooter() override;
+  StringStreamDataSource(std::string payload, uint32_t stream_type);
+  ~StringStreamDataSource() override;
 
   size_t StreamDataSize() override;
 
   bool ReadStreamData(Delegate* delegate) override;
 
  private:
-  const std::string payload_;
+  std::string payload_;
 };
 
-template <typename... ArgTypes>
-WrappedByHeaderAndFooter::WrappedByHeaderAndFooter(ArgTypes&&... payload_args)
-    : crashpad::MinidumpUserExtensionStreamDataSource(
-          ::allocation_recorder::internal::kStreamDataType),
-      payload_(std::forward<ArgTypes>(payload_args)...) {}
+StringStreamDataSource::StringStreamDataSource(std::string payload,
+                                               uint32_t stream_type)
+    : crashpad::MinidumpUserExtensionStreamDataSource(stream_type),
+      payload_(std::move(payload)) {}
 
-WrappedByHeaderAndFooter::~WrappedByHeaderAndFooter() = default;
+StringStreamDataSource::~StringStreamDataSource() = default;
 
-size_t WrappedByHeaderAndFooter::StreamDataSize() {
-  return 2 * internal::kLengthOfReportMarker + payload_.length();
+size_t StringStreamDataSource::StreamDataSize() {
+  return std::size(payload_);
 }
 
-bool WrappedByHeaderAndFooter::ReadStreamData(Delegate* delegate) {
-  return delegate->ExtensionStreamDataSourceRead(
-             internal::kReportMarker, internal::kLengthOfReportMarker) &&
-         delegate->ExtensionStreamDataSourceRead(payload_.c_str(),
-                                                 payload_.length()) &&
-         delegate->ExtensionStreamDataSourceRead(
-             internal::kReportMarker, internal::kLengthOfReportMarker);
+bool StringStreamDataSource::ReadStreamData(Delegate* delegate) {
+  return delegate->ExtensionStreamDataSourceRead(std::data(payload_),
+                                                 std::size(payload_));
 }
 
-template <typename... ArgTypes>
-std::unique_ptr<WrappedByHeaderAndFooter> MakeWrappedStringStream(
-    ArgTypes&&... args) {
-  return std::make_unique<WrappedByHeaderAndFooter>(
-      std::forward<ArgTypes>(args)...);
+std::unique_ptr<StringStreamDataSource> MakeStringStreamDataSource(
+    std::string payload) {
+  return std::make_unique<StringStreamDataSource>(
+      std::move(payload), ::allocation_recorder::internal::kStreamDataType);
+}
+
+bool SerializePayload(const allocation_recorder::Payload& payload,
+                      std::string& destination) {
+  return payload.SerializeToString(&destination);
 }
 
 }  // namespace
@@ -69,15 +67,30 @@ StreamDataSourceFactory::~StreamDataSourceFactory() = default;
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
 StreamDataSourceFactory::CreateErrorMessage(
     base::StringPiece error_message) const {
-  return MakeWrappedStringStream(error_message);
+  std::string serialized_report;
+
+  if (!SerializePayload(CreatePayloadWithProcessingFailures(error_message),
+                        serialized_report)) {
+    return MakeStringStreamDataSource(base::StringPrintf(
+        "Failed to created error message. Original message was '%s'.",
+        std::data(error_message)));
+  }
+
+  return MakeStringStreamDataSource(std::move(serialized_report));
 }
 
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 std::unique_ptr<crashpad::MinidumpUserExtensionStreamDataSource>
 StreamDataSourceFactory::CreateReportStream(
-    const base::debug::tracer::AllocationTraceRecorder&
-        allocation_trace_recorder) const {
-  return CreateErrorMessage("!!REPORT CREATION NOT IMPLEMENTED!!");
+    const base::debug::tracer::AllocationTraceRecorder& recorder) const {
+  std::string serialized_report;
+
+  if (SerializePayload(CreatePayloadWithMemoryOperationReport(recorder),
+                       serialized_report)) {
+    return MakeStringStreamDataSource(std::move(serialized_report));
+  }
+
+  return CreateErrorMessage("Failed to serialize full report.");
 }
 #endif
 
