@@ -2,7 +2,7 @@ NAME_FIRST | fn | Nome: |  | fn_1
 NAME_LAST | ln | Sobrenome: |  | fn_1
 COMPANY_NAME | cm | Empresa: |  | fn_1
 ADDRESS_HOME_LINE1 | a1 | Endereço: |  | fn_1
-UNKNOWN_TYPE | a2 | Complemento: |  | fn_1
+ADDRESS_HOME_LINE2 | a2 | Complemento: |  | fn_1
 ADDRESS_HOME_CITY | ct | Cidade: |  | fn_1
 ADDRESS_HOME_ZIP | zc | CEP: |  | fn_1
 ADDRESS_HOME_STATE | st | Estado: |  | fn_1

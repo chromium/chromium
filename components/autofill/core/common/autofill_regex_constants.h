@@ -92,7 +92,7 @@ inline constexpr char16_t kAddressLine2Re[] =
     u"|addresssuppl|complementnom|appartement"  // fr-FR
     u"|indirizzo2"                              // it-IT
     u"|住所2"                                   // ja-JP
-    u"|addrcomplement"                          // pt-BR, pt-PT
+    u"|complemento|addrcomplement"              // pt-BR, pt-PT
     u"|Улица"                                   // ru
     u"|地址2"                                   // zh-CN
     u"|주소.?2";                                // ko-KR

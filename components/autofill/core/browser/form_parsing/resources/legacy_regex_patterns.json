@@ -589,7 +589,7 @@
     ],
     "pt": [
       {
-        "positive_pattern": "addrcomplement",
+        "positive_pattern": "complemento|addrcomplement",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
