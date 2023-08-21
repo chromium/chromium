@@ -1754,8 +1754,13 @@ config("default_warnings") {
       }
 
       if (is_fuchsia && llvm_force_head_revision) {
-        # TODO(https://crbug.com/1474032): fix and reenable
-        cflags_cc += [ "-Wno-deprecated-literal-operator" ]
+        cflags_cc += [
+          # TODO(https://crbug.com/1474032): fix and reenable
+          "-Wno-deprecated-literal-operator",
+
+          # TODO(https://crbug.com/1474434): fix and reenable
+          "-Wno-missing-field-initializers",
+        ]
       }
 
       cflags += [
