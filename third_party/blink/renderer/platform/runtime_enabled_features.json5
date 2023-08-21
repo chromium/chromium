@@ -4265,6 +4265,12 @@
       name: "WindowPlacementFullscreenOnScreensChange",
       status: "experimental",
     },
+    // Flag guard for change to XML parser to merge adjacent CDATA sections.
+    // See https://crrev.com/c/4790343.
+    {
+      name: "XMLParserMergeAdjacentCDataSections",
+      status: "stable",
+    },
     {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12
       // frames, which should trigger a zero-copy path in the tab capture code.

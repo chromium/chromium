@@ -1240,10 +1240,20 @@ void XMLDocumentParser::CdataBlock(const String& text) {
   // If the most recent child is already a CDATA node *AND* this is the first
   // parse event emitted from the current input chunk, we append this text to
   // the existing node. Otherwise we append a new CDATA node.
+  // TODO(https://crbug.com/36431): Unfortunately, when a CDATA straddles
+  // multiple input chunks, libxml starts to emit CDATA nodes in 300 byte
+  // chunks. The MergeAdjacentCDataSections REF is an attempt to keep these
+  // within a single node. However, this will also merge actual adjacent CDATA
+  // sections into a single node, e.g.: `<![CDATA[foo]]><![CDATA[bar]]>` will
+  // now produce one node. The REF is added to easily reverse in case this
+  // isn't web compatible. Otherwise, we can remove `is_start_of_new_chunk_`
+  // and this REF.
   CDATASection* cdata_tail =
       current_node_ ? DynamicTo<CDATASection>(current_node_->lastChild())
                     : nullptr;
-  if (cdata_tail && is_start_of_new_chunk) {
+  if (cdata_tail &&
+      (RuntimeEnabledFeatures::XMLParserMergeAdjacentCDataSectionsEnabled() ||
+       is_start_of_new_chunk)) {
     cdata_tail->ParserAppendData(text);
   } else {
     current_node_->ParserAppendChild(
