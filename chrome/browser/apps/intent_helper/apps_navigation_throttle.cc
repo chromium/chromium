@@ -87,15 +87,6 @@ bool AppsNavigationThrottle::ShouldCancelNavigation(
   return false;
 }
 
-bool AppsNavigationThrottle::ShouldShowDisablePage(
-    content::NavigationHandle* handle) {
-  return false;
-}
-
-ThrottleCheckResult AppsNavigationThrottle::MaybeShowCustomResult() {
-  return content::NavigationThrottle::CANCEL_AND_IGNORE;
-}
-
 bool AppsNavigationThrottle::navigate_from_link() const {
   return navigate_from_link_;
 }
@@ -121,9 +112,6 @@ ThrottleCheckResult AppsNavigationThrottle::HandleRequest() {
     if (ShouldCancelNavigation(handle)) {
       return content::NavigationThrottle::CANCEL_AND_IGNORE;
     }
-
-    if (ShouldShowDisablePage(handle))
-      return MaybeShowCustomResult();
   }
 
   return content::NavigationThrottle::PROCEED;

@@ -49,8 +49,6 @@ class ChromeOsAppsNavigationThrottle : public apps::AppsNavigationThrottle {
 
  private:
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
-  bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
-  ThrottleCheckResult MaybeShowCustomResult() override;
 
   // Used to create a unique timestamped URL to force reload apps.
   // Points to the base::DefaultTickClock by default.

@@ -5647,6 +5647,8 @@ static_library("browser") {
     sources += [
       "apps/intent_helper/chromeos_apps_navigation_throttle.cc",
       "apps/intent_helper/chromeos_apps_navigation_throttle.h",
+      "apps/intent_helper/chromeos_disabled_apps_throttle.cc",
+      "apps/intent_helper/chromeos_disabled_apps_throttle.h",
       "apps/intent_helper/chromeos_intent_picker_helpers.cc",
       "apps/intent_helper/chromeos_intent_picker_helpers.h",
       "apps/intent_helper/metrics/intent_handling_metrics.cc",

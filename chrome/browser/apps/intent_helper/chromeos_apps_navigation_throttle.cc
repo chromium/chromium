@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
-#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -27,8 +26,6 @@
 #include "chrome/browser/apps/intent_helper/chromeos_intent_picker_helpers.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,20 +35,14 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/grit/browser_resources.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
-#include "ui/base/webui/web_ui_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace apps {
@@ -59,37 +50,6 @@ namespace apps {
 namespace {
 
 using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
-
-// TODO(crbug.com/1251490 ) Update to make disabled page works in Lacros.
-std::string GetAppDisabledErrorPage() {
-  base::Value::Dict strings;
-
-  strings.Set("disabledPageHeader",
-              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
-  strings.Set("disabledPageTitle",
-              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
-  strings.Set("disabledPageMessage",
-              l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
-  std::string html =
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_CHROME_URLS_DISABLED_PAGE_HTML);
-  const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  webui::SetLoadTimeDataDefaults(app_locale, &strings);
-  return webui::GetI18nTemplateHtml(html, strings);
-}
-
-bool IsAppDisabled(const std::string& app_id) {
-  policy::SystemFeature system_feature =
-      policy::SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
-          app_id);
-
-  if (system_feature == policy::SystemFeature::kUnknownSystemFeature) {
-    return false;
-  }
-
-  return policy::SystemFeaturesDisableListPolicyHandler::
-      IsSystemFeatureDisabled(system_feature, g_browser_process->local_state());
-}
 
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
@@ -340,31 +300,6 @@ bool ChromeOsAppsNavigationThrottle::ShouldCancelNavigation(
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));
   return true;
-}
-
-bool ChromeOsAppsNavigationThrottle::ShouldShowDisablePage(
-    content::NavigationHandle* handle) {
-  content::WebContents* web_contents = handle->GetWebContents();
-  const GURL& url = handle->GetURL();
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  std::vector<std::string> app_ids =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/false);
-
-  for (const auto& app_id : app_ids) {
-    if (IsAppDisabled(app_id)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-ThrottleCheckResult ChromeOsAppsNavigationThrottle::MaybeShowCustomResult() {
-  return ThrottleCheckResult(content::NavigationThrottle::CANCEL,
-                             net::ERR_BLOCKED_BY_ADMINISTRATOR,
-                             GetAppDisabledErrorPage());
 }
 
 }  // namespace apps

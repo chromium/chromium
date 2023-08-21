@@ -41,10 +41,6 @@ class AppsNavigationThrottle : public content::NavigationThrottle {
  protected:
   virtual bool ShouldCancelNavigation(content::NavigationHandle* handle);
 
-  virtual bool ShouldShowDisablePage(content::NavigationHandle* handle);
-
-  virtual ThrottleCheckResult MaybeShowCustomResult();
-
   bool navigate_from_link() const;
 
   GURL starting_url_;
