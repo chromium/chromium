@@ -33,10 +33,11 @@ PluginVmManagerFactory::PluginVmManagerFactory()
 PluginVmManagerFactory::~PluginVmManagerFactory() = default;
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* PluginVmManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PluginVmManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PluginVmManagerImpl(profile);
+  return std::make_unique<PluginVmManagerImpl>(profile);
 }
 
 }  // namespace plugin_vm
