@@ -465,8 +465,8 @@ void LayoutTheme::AdjustSliderContainerStyle(
     ComputedStyleBuilder& builder) const {
   DCHECK(IsSliderContainer(element));
 
-  if (!RuntimeEnabledFeatures::
-          RemoveNonStandardAppearanceValueSliderVerticalEnabled() &&
+  if (RuntimeEnabledFeatures::
+          NonStandardAppearanceValueSliderVerticalEnabled() &&
       builder.EffectiveAppearance() == kSliderVerticalPart) {
     builder.SetTouchAction(TouchAction::kPanX);
     builder.SetWritingMode(WritingMode::kVerticalRl);

@@ -839,11 +839,10 @@
     "menulist-button",
     "meter",
     "progress-bar",
-    "slider-vertical",
     "searchfield",
     "textfield",
     "textarea",
-    // All appearance values that should not be accepted by the parser.
+    // TODO(crbug/924486) All appearance values that should not be accepted by the parser (part 1).
     "inner-spin-button",
     "media-slider",
     "media-sliderthumb",
@@ -855,6 +854,8 @@
     "sliderthumb-horizontal",
     "sliderthumb-vertical",
     "searchfield-cancel-button",
+    // TODO(crbug/1426629) All appearance values that should not be accepted by the parser (part 2).
+    "slider-vertical",
     //
     // border-image
     //

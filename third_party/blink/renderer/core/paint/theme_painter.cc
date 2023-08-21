@@ -303,10 +303,10 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
 
   ControlPart part = o.StyleRef().EffectiveAppearance();
   // We don't support ticks on alternate sliders like MediaVolumeSliders.
-  if (part != kSliderHorizontalPart &&
-      (part != kSliderVerticalPart ||
-       RuntimeEnabledFeatures::
-           RemoveNonStandardAppearanceValueSliderVerticalEnabled())) {
+  if (!(part == kSliderHorizontalPart ||
+        (part == kSliderVerticalPart &&
+         RuntimeEnabledFeatures::
+             NonStandardAppearanceValueSliderVerticalEnabled()))) {
     return;
   }
   bool is_horizontal =

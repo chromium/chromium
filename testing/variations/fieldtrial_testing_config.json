@@ -9841,6 +9841,28 @@
             ]
         }
     ],
+    "NonStandardAppearanceValues": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "NonStandardAppearanceValues"
+                    ]
+                }
+            ]
+        }
+    ],
     "NormalPriorityImageDecoding": [
         {
             "platforms": [
@@ -12985,28 +13007,6 @@
                     "name": "Enabled_20230210",
                     "enable_features": [
                         "RemoveFontLinkFallbacks"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RemoveNonStandardAppearanceValue": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RemoveNonStandardAppearanceValue"
                     ]
                 }
             ]

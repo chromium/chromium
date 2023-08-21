@@ -481,8 +481,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_PROPAGATE_NETWORK_SIGNALS,
                     "This flag will allow webView to propagate networking signals to the networking stack. "
                             + "Only onNetwork(Connected|Disconnected|SoonToDisconnect|MadeDefault) signals are propagated."),
-            Flag.baseFeature(BlinkFeatures.REMOVE_NON_STANDARD_APPEARANCE_VALUE,
-                    "Remove non-standard CSS appearance values."),
+            Flag.baseFeature(BlinkFeatures.NON_STANDARD_APPEARANCE_VALUES,
+                    "This flag allows non-standard CSS appearance values and "
+                            + "shows a deprecation warning."),
             Flag.baseFeature(BlinkFeatures.WEB_ENVIRONMENT_INTEGRITY,
                     "Enables Web Environment Integrity APIs. "
                             + "See https://chromestatus.com/feature/5796524191121408."),

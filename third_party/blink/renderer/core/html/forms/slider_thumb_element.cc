@@ -308,8 +308,8 @@ void SliderThumbElement::AdjustStyle(ComputedStyleBuilder& builder) {
   const ComputedStyle& host_style = host->ComputedStyleRef();
 
   if (host_style.EffectiveAppearance() == kSliderVerticalPart &&
-      !RuntimeEnabledFeatures::
-          RemoveNonStandardAppearanceValueSliderVerticalEnabled()) {
+      RuntimeEnabledFeatures::
+          NonStandardAppearanceValueSliderVerticalEnabled()) {
     builder.SetEffectiveAppearance(kSliderThumbVerticalPart);
   } else if (host_style.EffectiveAppearance() == kSliderHorizontalPart) {
     builder.SetEffectiveAppearance(kSliderThumbHorizontalPart);

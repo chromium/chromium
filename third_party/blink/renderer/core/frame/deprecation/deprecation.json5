@@ -161,12 +161,21 @@
     },
     {
       name: "CSSValueAppearanceNonStandard",
-      message: "CSS appearance values  `inner-spin-button`, `media-slider`, `media-sliderthumb`, `media-volume-slider`, `media-volume-sliderthumb`, `push-button`, `searchfield-cancel-button`, `slider-horizontal`, `sliderthumb-horizontal`, `sliderthumb-vertical`, `square-button` are not standardized and will no longer be supported.",
+      message: "CSS appearance values  `inner-spin-button`, `media-slider`, `media-sliderthumb`, `media-volume-slider`, `media-volume-sliderthumb`, `push-button`, `searchfield-cancel-button`, `slider-horizontal`, `sliderthumb-horizontal`, `sliderthumb-vertical`, `square-button` are not standardized and will be removed.",
       translation_note: "Warning displayed to developers to let them know the CSS appearance property values they used are deprecated and will be removed.",
       web_features: [
         "kCSSValueAppearanceNonStandard",
       ],
       chrome_status_feature: 5066630972833792,
+    },
+    {
+      name: "CSSValueAppearanceSliderVertical",
+      message: "CSS appearance value `slider-vertical` is not standardized and will be removed.",
+      translation_note: "Warning displayed to developers to let them know the CSS appearance property value they used is not standard and will be removed.",
+      web_features: [
+        "kCSSValueAppearanceSliderVertical",
+      ],
+      chrome_status_feature: 6001359429566464,
     },
     {
       name: "DataUrlInSvgUse",

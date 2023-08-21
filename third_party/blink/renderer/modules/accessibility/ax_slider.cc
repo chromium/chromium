@@ -70,9 +70,9 @@ AccessibilityOrientation AXSlider::Orientation() const {
 
     case kSliderVerticalPart:
       return RuntimeEnabledFeatures::
-                     RemoveNonStandardAppearanceValueSliderVerticalEnabled()
-                 ? kAccessibilityOrientationHorizontal
-                 : kAccessibilityOrientationVertical;
+                     NonStandardAppearanceValueSliderVerticalEnabled()
+                 ? kAccessibilityOrientationVertical
+                 : kAccessibilityOrientationHorizontal;
     case kSliderThumbVerticalPart:
     case kMediaVolumeSliderPart:
       return kAccessibilityOrientationVertical;
