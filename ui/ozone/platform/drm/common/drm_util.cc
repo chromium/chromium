@@ -412,9 +412,13 @@ GetDisplayInfosAndInvalidCrtcs(const DrmWrapper& drm) {
       continue;
     }
 
-    if (connector->connection == DRM_MODE_CONNECTED &&
-        connector->count_modes != 0) {
-      available_connectors.push_back(connector.get());
+    if (connector->connection == DRM_MODE_CONNECTED) {
+      if (connector->count_modes != 0) {
+        available_connectors.push_back(connector.get());
+      } else {
+        LOG(WARNING) << "[CONNECTOR:" << connector->connector_id
+                     << "] is connected but has no modes. Connector ignored.";
+      }
     }
 
     connectors.emplace_back(std::move(connector));
