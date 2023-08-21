@@ -123,11 +123,7 @@ bool ShouldUpdateHeader(base::StringPiece name) {
 }
 
 bool HasEmbeddedNulls(base::StringPiece str) {
-  for (char c : str) {
-    if (c == '\0')
-      return true;
-  }
-  return false;
+  return str.find('\0') != std::string::npos;
 }
 
 void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {

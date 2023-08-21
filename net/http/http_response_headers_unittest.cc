@@ -1828,6 +1828,18 @@ TEST(HttpResponseHeadersTest, SetHeader) {
       ToSimpleString(headers));
 }
 
+TEST(HttpResponseHeadersTest, TryToCreateWithNul) {
+  static constexpr char kHeadersWithNuls[] = {
+      "HTTP/1.1 200 OK\0"
+      "Content-Type: application/octet-stream\0"};
+  // The size must be specified explicitly to include the nul characters.
+  static constexpr base::StringPiece kHeadersWithNulsAsStringPiece(
+      kHeadersWithNuls, sizeof(kHeadersWithNuls));
+  scoped_refptr<HttpResponseHeaders> headers =
+      HttpResponseHeaders::TryToCreate(kHeadersWithNulsAsStringPiece);
+  EXPECT_EQ(headers, nullptr);
+}
+
 #if !BUILDFLAG(CRONET_BUILD)
 // Cronet disables tracing so this test would fail.
 TEST(HttpResponseHeadersTest, TracingSupport) {
