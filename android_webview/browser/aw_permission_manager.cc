@@ -332,6 +332,19 @@ void AwPermissionManager::RequestPermissions(
             base::BindOnce(&OnRequestResponse, weak_ptr_factory_.GetWeakPtr(),
                            request_id, permissions[i]));
         break;
+      case PermissionType::CLIPBOARD_SANITIZED_WRITE:
+        // This is the permission for writing vetted data (such as plain text or
+        // sanitized images) using the async clipboard API. Chrome automatically
+        // grants access with a user gesture, and alternatively queries for
+        // gesture-less access with a popup bubble. For now, just grant based on
+        // user gesture.
+        // Reading from the clipboard or writing custom data is represented with
+        // the CLIPBOARD_READ_WRITE permission, and that requires an explicit
+        // user approval, which is not implemented yet. See crbug.com/1271620
+        pending_request_raw->SetPermissionStatus(
+            permissions[i], user_gesture ? PermissionStatus::GRANTED
+                                         : PermissionStatus::DENIED);
+        break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::NOTIFICATIONS:
@@ -339,7 +352,6 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::BACKGROUND_SYNC:
       case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
-      case PermissionType::CLIPBOARD_SANITIZED_WRITE:
       case PermissionType::PAYMENT_HANDLER:
       case PermissionType::BACKGROUND_FETCH:
       case PermissionType::IDLE_DETECTION:
