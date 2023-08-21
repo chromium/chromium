@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests callFunction on local remote objects.\n`);
 
   var object = [6, 28, 496];
-  var localObject = SDK.RemoteObject.fromLocalObject(object);
+  var localObject = SDK.RemoteObject.RemoteObject.fromLocalObject(object);
 
   function getItem(index) {
     return this[index];

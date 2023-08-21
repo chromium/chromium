@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that the execution context is changed to match new selected node.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -21,7 +23,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       ElementsTestRunner.expandElementsTree(onExpanded);
 
       function onExpanded() {
-        mainContext = UI.context.flavor(SDK.ExecutionContext);
+        mainContext = UI.context.flavor(SDK.RuntimeModel.ExecutionContext);
         dumpContextAndNext(next);
       }
     },
@@ -39,15 +41,15 @@ import {ElementsTestRunner} from 'elements_test_runner';
     },
 
     function selectIframeContentDocument(next) {
-      var iframe = UI.context.flavor(SDK.DOMNode);
+      var iframe = UI.context.flavor(SDK.DOMModel.DOMNode);
       var child = iframe.contentDocument();
       ElementsTestRunner.selectNode(child).then(dumpContextAndNext.bind(null, next));
     },
   ]);
 
   function dumpContextAndNext(next) {
-    var context = UI.context.flavor(SDK.ExecutionContext);
-    var node = UI.context.flavor(SDK.DOMNode);
+    var context = UI.context.flavor(SDK.RuntimeModel.ExecutionContext);
+    var node = UI.context.flavor(SDK.DOMModel.DOMNode);
     var contextName = context === mainContext ? 'main' : 'iframe';
     var matchesNode = context.frameId === node.frameId();
     TestRunner.addResult('Execution Context: ' + contextName);

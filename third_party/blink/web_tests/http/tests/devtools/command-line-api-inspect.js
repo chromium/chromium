@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -13,7 +15,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
       </p>
     `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'inspectRequested', sniffInspect, true);
+  TestRunner.addSniffer(SDK.RuntimeModel.RuntimeModel.prototype, 'inspectRequested', sniffInspect, true);
 
   function sniffInspect(objectId, hints) {
     TestRunner.addResult('WebInspector.inspect called with: ' + objectId.description);
@@ -33,7 +35,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   TestRunner.runTestSuite([function testRevealElement(next) {
     const originalReveal = Common.Revealer.reveal;
     Common.Revealer.setRevealForTest((node) => {
-      if (!(node instanceof SDK.RemoteObject)) {
+      if (!(node instanceof SDK.RemoteObject.RemoteObject)) {
         return Promise.resolve();
       }
       return originalReveal(node).then(step3);

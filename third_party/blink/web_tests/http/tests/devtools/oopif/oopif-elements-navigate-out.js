@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that oopif iframes are rendered inline.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -19,12 +21,12 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   TestRunner.evaluateInPagePromise(`document.getElementById('page-iframe').src = 'http://devtools.oopif.test:8000/devtools/oopif/resources/inner-iframe.html';`);
 
-  SDK.targetManager.observeTargets({
+  SDK.TargetManager.TargetManager.instance().observeTargets({
     targetAdded: async function(target) {
-      if (!target.model(SDK.ResourceTreeModel)) return;
-      target.model(SDK.ResourceTreeModel).agent.setLifecycleEventsEnabled(true);
+      if (!target.model(SDK.ResourceTreeModel.ResourceTreeModel)) return;
+      target.model(SDK.ResourceTreeModel.ResourceTreeModel).agent.setLifecycleEventsEnabled(true);
       let loadedModels = 0;
-      target.model(SDK.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
+      target.model(SDK.ResourceTreeModel.ResourceTreeModel).addEventListener(SDK.ResourceTreeModel.Events.LifecycleEvent, async (event) => {
         if (event.data.name === 'load') {
           loadedModels++;
 

@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that InspectorBackendDispatcher is catching incorrect messages.\n`);
 
@@ -15,7 +17,7 @@ import {TestRunner} from 'test_runner';
   }
 
 
-  const frameTargetSession = SDK.targetManager.primaryPageTarget().sessionId;
+  const frameTargetSession = SDK.TargetManager.TargetManager.instance().primaryPageTarget().sessionId;
 
   var messages = [
     'some wrong string',

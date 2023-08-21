@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   'use strict';
@@ -61,7 +62,7 @@ import * as Common from 'devtools/core/common/common.js';
     url: 'http://example.com/inspector-test.js',
     lineNumber: 117
   };
-  var testRequest = SDK.NetworkRequest.create(
+  var testRequest = SDK.NetworkRequest.NetworkRequest.create(
       'testRequest', 'http://example.com/inspector-test.js',
       'http://example.com/fake-document-url', 1, 1, fakeInitiator);
   setRequestValues(testRequest);

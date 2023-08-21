@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests the navigation request related events are available in the DevTools\n`);
   await TestRunner.loadLegacyModule('console');
@@ -52,10 +54,10 @@ import {ApplicationTestRunner} from 'application_test_runner';
     }
   }
 
-  SDK.targetManager.addModelListener(SDK.NetworkManager, SDK.NetworkManager.Events.RequestStarted, onRequestStarted);
-  SDK.targetManager.addModelListener(
-      SDK.NetworkManager, SDK.NetworkManager.Events.ResponseReceived, onResponseReceived);
-  SDK.targetManager.addModelListener(SDK.NetworkManager, SDK.NetworkManager.Events.RequestFinished, onRequestFinished);
+  SDK.TargetManager.TargetManager.instance().addModelListener(SDK.NetworkManager.NetworkManager, SDK.NetworkManager.Events.RequestStarted, onRequestStarted);
+  SDK.TargetManager.TargetManager.instance().addModelListener(
+      SDK.NetworkManager.NetworkManager, SDK.NetworkManager.Events.ResponseReceived, onResponseReceived);
+  SDK.TargetManager.TargetManager.instance().addModelListener(SDK.NetworkManager.NetworkManager, SDK.NetworkManager.Events.RequestFinished, onRequestFinished);
 
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope)
       .then(_ => ApplicationTestRunner.waitForActivated(scope))

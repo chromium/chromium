@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that cache view updates when the cache is changed.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -13,7 +15,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   await TestRunner.showPanel('resources');
 
-  var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel);
+  var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel.ServiceWorkerCacheModel);
   cacheStorageModel.enable();
 
   await ApplicationTestRunner.clearAllCaches();

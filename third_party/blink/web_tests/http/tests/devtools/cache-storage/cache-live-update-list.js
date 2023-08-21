@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that the cache storage list live updates.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -13,24 +15,24 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   await TestRunner.showPanel('resources');
 
-  var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel);
+  var cacheStorageModel = TestRunner.mainTarget.model(SDK.ServiceWorkerCacheModel.ServiceWorkerCacheModel);
   cacheStorageModel.enable();
   cacheStorageModel.setThrottlerSchedulesAsSoonAsPossibleForTest();
 
   await ApplicationTestRunner.clearAllCaches();
   await ApplicationTestRunner.dumpCacheTree();
 
-  var promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheAdded');
+  var promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.ServiceWorkerCacheModel.prototype, 'cacheAdded');
   ApplicationTestRunner.createCache('testCache1');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
 
-  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheAdded');
+  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.ServiceWorkerCacheModel.prototype, 'cacheAdded');
   ApplicationTestRunner.createCache('testCache2');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();
 
-  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.prototype, 'cacheRemoved');
+  promise = TestRunner.addSnifferPromise(SDK.ServiceWorkerCacheModel.ServiceWorkerCacheModel.prototype, 'cacheRemoved');
   ApplicationTestRunner.deleteCache('testCache1');
   await promise;
   await ApplicationTestRunner.dumpCacheTreeNoRefresh();

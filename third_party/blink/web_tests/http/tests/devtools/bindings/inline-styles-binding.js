@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Editing inline styles should play nice with inline scripts.\n`);
 
@@ -30,7 +32,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   i = 0;
   for (const styleSheetId of styleSheets) {
     const header = TestRunner.cssModel.styleSheetHeaderForId(styleSheetId);
-    const rawLocation = new SDK.CSSLocation(header, header.startLine, header.startColumn);
+    const rawLocation = new SDK.CSSModel.CSSLocation(header, header.startLine, header.startColumn);
     await Bindings.cssWorkspaceBinding.createLiveLocation(
       rawLocation, updateDelegate.bind(null, 'style' + i), locationPool);
     i++;

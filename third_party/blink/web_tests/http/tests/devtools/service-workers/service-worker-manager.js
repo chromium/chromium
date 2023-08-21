@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests the way service worker manager manages targets.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -17,12 +19,12 @@ import {ApplicationTestRunner} from 'application_test_runner';
   var scope = 'http://127.0.0.1:8000/devtools/service-workers/resources/scope1/';
   ApplicationTestRunner.registerServiceWorker(scriptURL, scope);
 
-  SDK.targetManager.observeTargets({
+  SDK.TargetManager.TargetManager.instance().observeTargets({
     targetAdded: function(target) {
       TestRunner.addResult('Target added: ' + target.name() + '; type: ' + target.type());
       if (target.type() === SDK.Target.Type.ServiceWorker) {
-        var serviceWorkerManager = SDK.targetManager.primaryPageTarget().model(SDK.ServiceWorkerManager);
-        // Allow agents to do rountrips.
+        var serviceWorkerManager = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ServiceWorkerManager.ServiceWorkerManager);
+        // Allow agents to do roundtrips.
         TestRunner.deprecatedRunAfterPendingDispatches(function() {
           for (var registration of serviceWorkerManager.registrations().values())
             serviceWorkerManager.deleteRegistration(registration.id)

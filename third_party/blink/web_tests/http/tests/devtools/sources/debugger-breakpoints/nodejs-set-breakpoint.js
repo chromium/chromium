@@ -6,15 +6,17 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Verify that front-end is able to set breakpoint for node.js scripts.\n`);
   await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
-  SDK.targetManager.rootTarget().markAsNodeJSForTest();
+  SDK.TargetManager.TargetManager.instance().rootTarget().markAsNodeJSForTest();
   SourcesTestRunner.startDebuggerTest();
 
-  var debuggerModel = SDK.targetManager.rootTarget().model(SDK.DebuggerModel);
+  var debuggerModel = SDK.TargetManager.TargetManager.instance().rootTarget().model(SDK.DebuggerModel.DebuggerModel);
   var functionText = 'function foobar() { \nconsole.log(\'foobar execute!\');\n}';
   var sourceURL = Host.isWin() ? '\n//# sourceURL=c:\\prog\\foobar.js' : '\n//# sourceURL=/usr/local/home/prog/foobar.js';
   await TestRunner.evaluateInPageAnonymously(functionText + sourceURL);

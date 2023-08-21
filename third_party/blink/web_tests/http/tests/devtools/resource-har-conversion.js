@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests conversion of Inspector's resource representation into HAR format.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -24,14 +26,14 @@ import {ApplicationTestRunner} from 'application_test_runner';
   }
 
   function addCookieHeadersToRequest(request) {
-    const c1 = new SDK.Cookie('a', 'b');
+    const c1 = new SDK.Cookie.Cookie('a', 'b');
     c1.addAttribute('path', '/path');
     c1.addAttribute('domain', 'example.com');
     request.addExtraRequestInfo({
       includedRequestCookies: [
         c1,
-        new SDK.Cookie('a1', 'b1'),
-        new SDK.Cookie('c1', 'd1'),
+        new SDK.Cookie.Cookie('a1', 'b1'),
+        new SDK.Cookie.Cookie('c1', 'd1'),
       ],
       blockedRequestCookies: [],
       requestHeaders: [{name: 'version', value: 'HTTP/1.1'}],

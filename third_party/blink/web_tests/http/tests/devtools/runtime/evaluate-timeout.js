@@ -5,11 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   await TestRunner.loadLegacyModule('sources');
   TestRunner.addResult("Test frontend's timeout support.\n");
 
-  const executionContext = UI.context.flavor(SDK.ExecutionContext);
+  const executionContext = UI.context.flavor(SDK.RuntimeModel.ExecutionContext);
   const regularExpression = '1 + 1';
   const infiniteExpression = 'while (1){}';
 

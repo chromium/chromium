@@ -5,11 +5,13 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that dataReceived is called on NetworkDispatcher for XHR with responseType="blob".\n`);
   await TestRunner.showPanel('network');
 
-  TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'dataReceived', dataReceived);
+  TestRunner.addSniffer(SDK.NetworkManager.NetworkDispatcher.prototype, 'dataReceived', dataReceived);
 
   NetworkTestRunner.recordNetwork();
   NetworkTestRunner.makeXHR(

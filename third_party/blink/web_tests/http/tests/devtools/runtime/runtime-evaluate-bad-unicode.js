@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests TestRunner.RuntimeAgent.evaluate can handle invalid Unicode code points and non-characters.\n`);
 
   async function test(expression) {
-    const executionContext = UI.context.flavor(SDK.ExecutionContext);
+    const executionContext = UI.context.flavor(SDK.RuntimeModel.ExecutionContext);
     const compileResult = await executionContext.runtimeModel.compileScript(expression, '', true, executionContext.id);
     const runResult = await executionContext.runtimeModel.runScript(compileResult.scriptId, executionContext.id);
     TestRunner.addResult(`"${expression}" -> ${runResult.object.value}`);

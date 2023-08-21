@@ -6,10 +6,12 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   await TestRunner.showPanel('security');
 
-  const request1 = new SDK.NetworkRequest(0, 'https://foo.test/', 'https://foo.test', 0, 0, null);
+  const request1 = new SDK.NetworkRequest.NetworkRequest(0, 'https://foo.test/', 'https://foo.test', 0, 0, null);
   request1.setSecurityState(Protocol.Security.SecurityState.Secure);
   const securityDetails = {
     protocol : 'TLS 1.2',

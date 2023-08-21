@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests the console timestamp setting.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -19,7 +21,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   Common.settingForTest('consoleGroupSimilar').set(false);
 
   function addMessageWithFixedTimestamp(messageText, timestamp, type) {
-    var message = new SDK.ConsoleMessage(
+    var message = new SDK.ConsoleModel.ConsoleMessage(
         TestRunner.runtimeModel,
         Protocol.Log.LogEntrySource.Other,  // source
         Protocol.Log.LogEntryLevel.Info,    // level
@@ -28,26 +30,26 @@ import {ConsoleTestRunner} from 'console_test_runner';
           // timestamp: 2014-05-13T16:53:20.123Z
           timestamp: timestamp || baseTimestamp + 123,
         });
-    const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+    const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
     consoleModel.addMessage(message, true);  // allowGrouping
   }
 
   TestRunner.addResult('Console messages with timestamps disabled:');
   addMessageWithFixedTimestamp(
       '<Before> First Command', baseTimestamp + 789,
-      SDK.ConsoleMessage.FrontendMessageType.Command);
+      SDK.ConsoleModel.FrontendMessageType.Command);
   addMessageWithFixedTimestamp(
       '<Before> First Result', baseTimestamp + 789,
-      SDK.ConsoleMessage.FrontendMessageType.Result);
+      SDK.ConsoleModel.FrontendMessageType.Result);
   addMessageWithFixedTimestamp('<Before>');
   addMessageWithFixedTimestamp('<Before>', baseTimestamp + 456);
   addMessageWithFixedTimestamp('<Before>');
   addMessageWithFixedTimestamp(
       '<Before> Command', baseTimestamp,
-      SDK.ConsoleMessage.FrontendMessageType.Command);
+      SDK.ConsoleModel.FrontendMessageType.Command);
   addMessageWithFixedTimestamp(
       '<Before> Result', baseTimestamp + 1,
-      SDK.ConsoleMessage.FrontendMessageType.Result);
+      SDK.ConsoleModel.FrontendMessageType.Result);
 
   await ConsoleTestRunner.dumpConsoleMessages();
 

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   'use strict';
   TestRunner.addResult(`Tests curl command generation\n`);
@@ -15,7 +17,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   const NODE_JS = 1;
 
   function newRequest(isBlob, headers, data, opt_url, method = null) {
-    var request = SDK.NetworkRequest.create(
+    var request = SDK.NetworkRequest.NetworkRequest.create(
         0,
         (isBlob === true ? 'blob:' : '') +
             (opt_url || 'http://example.org/path'),

@@ -5,13 +5,15 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests query string parsing.\n`);
   await TestRunner.showPanel('network');
 
   function checkQuery(query) {
     var url = 'http://webkit.org?' + query;
-    var request = SDK.NetworkRequest.create(url, url, '', '', '');
+    var request = SDK.NetworkRequest.NetworkRequest.create(url, url, '', '', '');
     TestRunner.addResult('Query: ' + request.queryString());
     var params = request.queryParameters;
     TestRunner.addResult('Parameters: ');

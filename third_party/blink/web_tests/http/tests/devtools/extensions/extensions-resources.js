@@ -7,6 +7,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {ExtensionsTestRunner} from 'extensions_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
   await TestRunner.loadLegacyModule('console');
@@ -32,7 +34,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   }
 
   TestRunner.waitForStyleSheetChangedEvent = function(reply) {
-    TestRunner.addSniffer(SDK.CSSModel.prototype, "fireStyleSheetChanged", reply);
+    TestRunner.addSniffer(SDK.CSSModel.CSSModel.prototype, "fireStyleSheetChanged", reply);
   }
 
   await TestRunner.evaluateInPageAnonymously(`

@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Test that ObjectPropertiesSection works with local remote objects.\n`);
   await TestRunner.loadLegacyModule('ui/legacy/components/object_ui');
@@ -12,7 +14,7 @@ import {TestRunner} from 'test_runner';
   for (var i = 1000; i < 1256; ++i)
     d.push(i);
   var object = {a: 'b', c: d};
-  var localObject = SDK.RemoteObject.fromLocalObject(object);
+  var localObject = SDK.RemoteObject.RemoteObject.fromLocalObject(object);
 
   var propertiesSection = new ObjectUI.ObjectPropertiesSection(localObject, 'local object');
   propertiesSection.expand();

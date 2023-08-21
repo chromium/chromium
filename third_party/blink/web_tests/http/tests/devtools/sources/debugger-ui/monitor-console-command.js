@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests traceCalls(fn) console command.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -64,7 +66,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
     ConsoleTestRunner.waitUntilMessageReceived(didReceive);
 
     function didReceive(message) {
-      if (message.type === SDK.ConsoleMessage.FrontendMessageType.Result) {
+      if (message.type === SDK.ConsoleModel.FrontendMessageType.Result) {
         ConsoleTestRunner.waitUntilMessageReceived(didReceive);
         return;
       }

@@ -4,11 +4,13 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Test supported CSS properties.\n`);
   await TestRunner.showPanel('elements');
 
-  var marginLonghands = SDK.cssMetadata().getLonghands('margin');
+  var marginLonghands = SDK.CSSMetadata.cssMetadata().getLonghands('margin');
   marginLonghands.sort();
   TestRunner.addResult('Margin longhands: ' + marginLonghands.join(', '));
   TestRunner.completeTest();

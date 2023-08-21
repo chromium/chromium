@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   'use strict';
@@ -14,7 +15,7 @@ import * as Common from 'devtools/core/common/common.js';
   await TestRunner.showPanel('network');
 
   function createNetworkRequest(mimeType, content, statusCode, resourceType) {
-    var request = SDK.NetworkRequest.create(0, 'http://localhost');
+    var request = SDK.NetworkRequest.NetworkRequest.create(0, 'http://localhost');
     request.setResourceType(resourceType);
     request.mimeType = mimeType;
     request.setContentDataProvider(() => Promise.resolve({error: null, content: content, encoded: false}));

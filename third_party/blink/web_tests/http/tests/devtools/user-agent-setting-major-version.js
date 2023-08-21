@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Test user agent setting\n`);
@@ -51,7 +52,7 @@ import * as Network from 'devtools/panels/network/network.js';
       if (splitUserAgentVersion.length === 3)
           testPatchedUserAgentVersion += additionalAppVersion + splitUserAgentVersion[2];
 
-      const patchedUserAgentVersion = SDK.MultitargetNetworkManager.patchUserAgentWithChromeVersion(userAgentVersion.value);
+      const patchedUserAgentVersion = SDK.NetworkManager.MultitargetNetworkManager.patchUserAgentWithChromeVersion(userAgentVersion.value);
 
       if (patchedUserAgentVersion !== testPatchedUserAgentVersion)
           failTest('Computed user agent strings are not equal.');

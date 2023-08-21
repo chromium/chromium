@@ -1,6 +1,8 @@
 
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
+
+import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult(`Tests exception message from eval on nested worker context in console contains stack trace.\n`);
   await TestRunner.loadLegacyModule('console');
@@ -12,14 +14,14 @@ import {ConsoleTestRunner} from 'console_test_runner';
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
+  TestRunner.addSniffer(SDK.RuntimeModel.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
   TestRunner.evaluateInPage('startWorker()');
 
   var contexts_still_loading = 2;
   function contextCreated() {
     contexts_still_loading--;
     if (contexts_still_loading > 0) {
-      TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
+      TestRunner.addSniffer(SDK.RuntimeModel.RuntimeModel.prototype, 'executionContextCreated', contextCreated);
       return;
     }
 

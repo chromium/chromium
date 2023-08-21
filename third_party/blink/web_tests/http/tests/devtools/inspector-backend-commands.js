@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests correctness of promisified protocol commands.\n`);
 
@@ -67,7 +69,7 @@ import {TestRunner} from 'test_runner';
   var sendMessageToBackendOriginal = InspectorFrontendHost.sendMessageToBackend;
   InspectorFrontendHost.sendMessageToBackend = sendMessageToBackendLoopback;
 
-  var agent = SDK.targetManager.rootTarget().profilerAgent();
+  var agent = SDK.TargetManager.TargetManager.instance().rootTarget().profilerAgent();
   await processResult(
       'commandError',
       agent.commandError({'message': 'this is the error message'}));  // Error: error in the protocol response

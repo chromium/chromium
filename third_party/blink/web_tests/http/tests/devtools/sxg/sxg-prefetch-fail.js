@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
+
+import * as SDK from 'devtools/core/sdk/sdk.js';
 (async function() {
   TestRunner.addResult('Tests the signed exchange information are available when the prefetch failed.\n');
   await TestRunner.loadLegacyModule('console');
@@ -12,7 +14,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
   NetworkTestRunner.networkLog().reset();
 
   const promise = new Promise(resolve => {
-    TestRunner.addSniffer(SDK.NetworkDispatcher.prototype, 'loadingFailed', loadingFailed, true);
+    TestRunner.addSniffer(SDK.NetworkManager.NetworkDispatcher.prototype, 'loadingFailed', loadingFailed, true);
     function loadingFailed(requestId, time, localizedDescription, canceled) {
       var request = NetworkTestRunner.networkLog().requestByManagerAndId(
           TestRunner.networkManager, requestId);

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Verify that bindings handle target suspension as expected.\n`);
 
@@ -21,7 +23,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);
 
   TestRunner.markStep('Suspending targets.');
-  await SDK.targetManager.suspendAllTargets();
+  await SDK.TargetManager.TargetManager.instance().suspendAllTargets();
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);
 
   TestRunner.markStep('detachFrame');
@@ -31,7 +33,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
   TestRunner.markStep('Resuming targets.');
   await Promise.all([
-    SDK.targetManager.resumeAllTargets(), BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
+    SDK.TargetManager.TargetManager.instance().resumeAllTargets(), BindingsTestRunner.waitForSourceMap('sourcemap-script.js.map'),
     BindingsTestRunner.waitForSourceMap('sourcemap-style.css.map')
   ]);
   snapshot = BindingsTestRunner.dumpWorkspace(snapshot);

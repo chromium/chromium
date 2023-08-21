@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that evaluating 'throw undefined|1|string|object|Error' in the console won't crash the browser and correctly reported. Bug 59611.\n`);
@@ -14,7 +16,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 
   async function dumpMessages(next, message) {
     await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
-    const consoleModel = SDK.targetManager.primaryPageTarget().model(SDK.ConsoleModel);
+    const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
     consoleModel.addEventListener(SDK.ConsoleModel.Events.ConsoleCleared, afterCleared);
     Console.ConsoleView.clearConsole();
 

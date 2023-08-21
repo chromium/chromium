@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   await TestRunner.showPanel('security');
 
@@ -14,7 +16,7 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
     /* safetyTipsInfo= */ null, /* securityStateIssueIds= */ []);
   TestRunner.mainTarget.model(Security.SecurityModel).dispatchEventToListeners(
     Security.SecurityModel.Events.VisibleSecurityStateChanged, pageVisibleSecurityState);
-  const request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  const request = new SDK.NetworkRequest.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   request.setBlockedReason(Protocol.Network.BlockedReason.MixedContent);
   request.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(request);

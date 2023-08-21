@@ -8,6 +8,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests framework event listeners output in Sources panel when service worker is present.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -37,7 +39,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
       BrowserDebugger.ObjectEventListenersSidebarPane.instance();
 
   function isServiceWorker() {
-    var target = UI.context.flavor(SDK.ExecutionContext).target();
+    var target = UI.context.flavor(SDK.RuntimeModel.ExecutionContext).target();
     return target.type() === SDK.Target.Type.ServiceWorker;
   }
 
@@ -58,7 +60,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 
   function step3() {
     TestRunner.addResult('Selecting main thread');
-    SourcesTestRunner.selectThread(SDK.targetManager.primaryPageTarget());
+    SourcesTestRunner.selectThread(SDK.TargetManager.TargetManager.instance().primaryPageTarget());
     TestRunner.addResult('Context is service worker: ' + isServiceWorker());
     TestRunner.addResult('Dumping listeners');
     ElementsTestRunner.expandAndDumpEventListeners(objectEventListenersPane.eventListenersView, step4);

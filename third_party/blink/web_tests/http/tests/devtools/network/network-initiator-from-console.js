@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that there is no javascript error when console evaluation causes resource loading.\n`);
   await TestRunner.showPanel('network');
@@ -17,7 +19,7 @@ import {NetworkTestRunner} from 'network_test_runner';
     str += 'var s = document.createElement("script");';
     str += 's.src = "resources/silent_script.js";';
     str += 'document.head.appendChild(s);';
-    UI.context.flavor(SDK.ExecutionContext).evaluate({expression: str, objectGroup: 'console'});
+    UI.context.flavor(SDK.RuntimeModel.ExecutionContext).evaluate({expression: str, objectGroup: 'console'});
   }
 
   function onRequest(event) {

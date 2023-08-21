@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that proper data and start/end offset positions are reported for CSS keyframes.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -53,7 +55,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       dumpRule(animation);
 
     TestRunner.addResult('\n>> Modifying keyframe rule');
-    var style = new SDK.CSSStyleDeclaration(
+    var style = new SDK.CSSStyleDeclaration.CSSStyleDeclaration(
         TestRunner.cssModel, null, response.cssKeyframesRules[1].keyframes[0].style,
         SDK.CSSStyleDeclaration.Type.Regular);
     await style.setText('width: 123px');

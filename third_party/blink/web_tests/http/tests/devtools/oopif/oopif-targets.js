@@ -4,19 +4,21 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that targets are created for oopif iframes.\n`);
 
   TestRunner.addResult('\nTargets before navigate');
-  TestRunner.addResults(SDK.targetManager.targets().map(t => t.name()).sort());
+  TestRunner.addResults(SDK.TargetManager.TargetManager.instance().targets().map(t => t.name()).sort());
 
   await TestRunner.navigatePromise('resources/page.html');
   TestRunner.addResult('\nTargets after navigate');
-  TestRunner.addResults(SDK.targetManager.targets().map(t => t.name()).sort());
+  TestRunner.addResults(SDK.TargetManager.TargetManager.instance().targets().map(t => t.name()).sort());
 
   await TestRunner.navigatePromise('about:blank');
   TestRunner.addResult('\nTargets on about:blank');
-  TestRunner.addResults(SDK.targetManager.targets().map(t => t.name()).sort());
+  TestRunner.addResults(SDK.TargetManager.TargetManager.instance().targets().map(t => t.name()).sort());
 
   TestRunner.completeTest();
 })();

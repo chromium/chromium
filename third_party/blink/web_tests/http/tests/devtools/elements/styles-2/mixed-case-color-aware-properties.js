@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that color-related mix-cased CSS properties are actually color aware.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -12,7 +14,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   var colorAwareProperties = ['bAckground-ColoR', 'COloR', 'Border-coLoR', 'border-right-color', 'BOX-SHADOW'];
   for (var i = 0; i < colorAwareProperties.length; ++i) {
-    var isColorAware = SDK.cssMetadata().isColorAwareProperty(colorAwareProperties[i]);
+    var isColorAware = SDK.CSSMetadata.cssMetadata().isColorAwareProperty(colorAwareProperties[i]);
     TestRunner.addResult(colorAwareProperties[i] + (isColorAware ? ' is' : ' is NOT') + ' color aware');
   }
   TestRunner.completeTest();

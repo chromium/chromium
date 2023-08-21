@@ -4,10 +4,12 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests stability of performance metrics list.\n`);
 
-  const model = SDK.targetManager.primaryPageTarget().model(SDK.PerformanceMetricsModel);
+  const model = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.PerformanceMetricsModel.PerformanceMetricsModel);
   await model.enable();
   let metrics = (await model.requestMetrics()).metrics;
 
