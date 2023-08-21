@@ -18,6 +18,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/combobox.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,7 +34,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -150,17 +150,15 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
 
   tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
-      std::make_unique<views::Combobox>(tasks_combobox_model_.get()));
+      std::make_unique<Combobox>(tasks_combobox_model_.get()));
   task_list_combo_box_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox));
-  task_list_combo_box_view_->SetSizeToLargestLabel(false);
   combobox_view_observation_.Observe(task_list_combo_box_view_);
 
-  task_list_combo_box_view_->SetTooltipTextAndAccessibleName(
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME));
+  task_list_combo_box_view_->SetTooltipText(l10n_util::GetStringUTF16(
+      IDS_GLANCEABLES_TASKS_DROPDOWN_ACCESSIBLE_NAME));
   task_list_combo_box_view_->SetAccessibleDescription(u"");
-  task_list_combo_box_view_->SetCallback(base::BindRepeating(
+  task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &TasksBubbleView::SelectedTasksListChanged, base::Unretained(this)));
   task_list_combo_box_view_->SetSelectedIndex(0);
 

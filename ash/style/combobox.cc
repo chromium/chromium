@@ -71,7 +71,8 @@ constexpr int kMenuShadowElevation = 12;
 class Combobox::ComboboxMenuView : public views::View {
  public:
   METADATA_HEADER(ComboboxMenuView);
-  explicit ComboboxMenuView(Combobox* combobox) : combobox_(combobox) {
+  explicit ComboboxMenuView(base::WeakPtr<Combobox> combobox)
+      : combobox_(combobox) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     // Create a radio buttons group for item list.
@@ -101,8 +102,7 @@ class Combobox::ComboboxMenuView : public views::View {
     // Build a radio button group according to current combobox model.
     for (size_t i = 0; i < combobox_->model_->GetItemCount(); i++) {
       auto* item = menu_item_group_->AddButton(
-          base::BindRepeating(&Combobox::MenuSelectionAt,
-                              base::Unretained(combobox_), i),
+          base::BindRepeating(&Combobox::MenuSelectionAt, combobox_, i),
           combobox_->model_->GetDropDownTextAt(i));
       item->SetLabelStyle(TypographyToken::kCrosButton2);
       item->SetLabelColorId(kTextAndIconColorId);
@@ -111,7 +111,7 @@ class Combobox::ComboboxMenuView : public views::View {
   }
 
  private:
-  const raw_ptr<Combobox> combobox_;
+  const base::WeakPtr<Combobox> combobox_;
 
   // Owned by this.
   raw_ptr<RadioButtonGroup> menu_item_group_;
@@ -268,6 +268,15 @@ void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
+std::u16string Combobox::GetTextForRow(size_t row) const {
+  return model_->IsItemSeparatorAt(row) ? std::u16string()
+                                        : model_->GetItemAt(row);
+}
+
+void Combobox::SelectMenuItemForTest(size_t row) {
+  MenuSelectionAt(row);
+}
+
 gfx::Rect Combobox::GetExpectedMenuBounds() const {
   CHECK(menu_view_);
   return gfx::Rect(GetBoundsInScreen().bottom_left() + kMenuOffset,
@@ -297,7 +306,8 @@ void Combobox::ShowDropDownMenu() {
     return;
   }
 
-  auto menu_view = std::make_unique<ComboboxMenuView>(this);
+  auto menu_view =
+      std::make_unique<ComboboxMenuView>(weak_ptr_factory_.GetWeakPtr());
   menu_view_ = menu_view.get();
 
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
@@ -317,6 +327,7 @@ void Combobox::ShowDropDownMenu() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       kComboboxActiveColorId, kComboboxRoundedCorners,
       /*for_border_thickness=*/0));
+  RequestFocus();
 }
 
 void Combobox::CloseDropDownMenu() {
@@ -357,6 +368,92 @@ void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
   CloseDropDownMenu();
   model_ = nullptr;
   observation_.Reset();
+}
+
+bool Combobox::SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) {
+  // Escape should close the drop down list when it is active, not host UI.
+  if (e.key_code() != ui::VKEY_ESCAPE || e.IsShiftDown() || e.IsControlDown() ||
+      e.IsAltDown() || e.IsAltGrDown()) {
+    return false;
+  }
+  return IsMenuRunning();
+}
+
+bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
+  CHECK_EQ(e.type(), ui::ET_KEY_PRESSED);
+
+  CHECK(selected_index_.has_value());
+  CHECK_LT(selected_index_.value(), model_->GetItemCount());
+
+  const auto index_at_or_after = [](ui::ComboboxModel* model,
+                                    size_t index) -> absl::optional<size_t> {
+    for (; index < model->GetItemCount(); ++index) {
+      if (!model->IsItemSeparatorAt(index) && model->IsItemEnabledAt(index)) {
+        return index;
+      }
+    }
+    return absl::nullopt;
+  };
+
+  const auto index_before = [](ui::ComboboxModel* model,
+                               size_t index) -> absl::optional<size_t> {
+    for (; index > 0; --index) {
+      const auto prev = index - 1;
+      if (!model->IsItemSeparatorAt(prev) && model->IsItemEnabledAt(prev)) {
+        return prev;
+      }
+    }
+    return absl::nullopt;
+  };
+
+  absl::optional<size_t> new_index;
+  switch (e.key_code()) {
+    // Show the menu on F4 without modifiers.
+    case ui::VKEY_F4:
+      if (e.IsAltDown() || e.IsAltGrDown() || e.IsControlDown()) {
+        return false;
+      }
+      ShowDropDownMenu();
+      return true;
+
+    // Move to the next item if any, or show the menu on Alt+Down like Windows.
+    case ui::VKEY_DOWN:
+      if (e.IsAltDown()) {
+        ShowDropDownMenu();
+        return true;
+      }
+      new_index = index_at_or_after(model_, selected_index_.value() + 1);
+      break;
+
+    // Move to the end of the list.
+    case ui::VKEY_END:
+    case ui::VKEY_NEXT:  // Page down.
+      new_index = index_before(model_, model_->GetItemCount());
+      break;
+
+    // Move to the beginning of the list.
+    case ui::VKEY_HOME:
+    case ui::VKEY_PRIOR:  // Page up.
+      new_index = index_at_or_after(model_, 0);
+      break;
+
+    // Move to the previous item if any.
+    case ui::VKEY_UP:
+      new_index = index_before(model_, selected_index_.value());
+      break;
+
+    case ui::VKEY_RETURN:
+    case ui::VKEY_SPACE:
+      ShowDropDownMenu();
+      return true;
+    default:
+      return false;
+  }
+
+  if (new_index.has_value()) {
+    SetSelectedIndex(new_index);
+  }
+  return true;
 }
 
 BEGIN_METADATA(Combobox, views::Button)

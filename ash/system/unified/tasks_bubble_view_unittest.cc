@@ -12,6 +12,7 @@
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/shell.h"
+#include "ash/style/combobox.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "ash/test/ash_test_base.h"
@@ -87,8 +88,8 @@ class TasksBubbleViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  views::Combobox* GetComboBoxView() const {
-    return views::AsViewClass<views::Combobox>(view_->GetViewByID(
+  Combobox* GetComboBoxView() const {
+    return views::AsViewClass<Combobox>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
   }
 
@@ -125,6 +126,10 @@ class TasksBubbleViewTest : public AshTestBase {
     return new_window_delegate_;
   }
 
+  void MenuSelectionAt(int index) {
+    GetComboBoxView()->SelectMenuItemForTest(index);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{features::kGlanceablesV2};
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
@@ -148,13 +153,37 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(IsMenuRunning());
 
-  // Select the next task list using keyboard navigation.
-  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  // Select the second task list using keyboard navigation.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
 
   // Verify the number of items in task_items_container_view()->children().
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 3u);
+
+  // Verify that tapping on combobox opens the selection menu.
+  GestureTapOn(GetComboBoxView());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsMenuRunning());
+
+  // Select the first task list using keyboard navigation.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_UP);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Verify the number of items in task_items_container_view()->children().
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 2u);
+
+  // Verify that tapping on combobox opens the selection menu.
+  GestureTapOn(GetComboBoxView());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(IsMenuRunning());
+
+  // Select the third task list using keyboard navigation.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+
+  // Verify the number of items in task_items_container_view()->children().
+  EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 0u);
 }
 
 TEST_F(TasksBubbleViewTest, MarkTaskAsComplete) {
@@ -191,7 +220,7 @@ TEST_F(TasksBubbleViewTest, ShowsAndHidesAddNewButton) {
 
   // Switch to the empty task list.
   ASSERT_EQ(GetComboBoxView()->GetTextForRow(2), u"Task List 3 Title (empty)");
-  GetComboBoxView()->MenuSelectionAt(2);
+  MenuSelectionAt(2);
   EXPECT_FALSE(GetTaskItemsContainerView()->GetVisible());
   EXPECT_TRUE(GetTaskItemsContainerView()->children().empty());
   EXPECT_TRUE(GetAddNewTaskButton()->GetVisible());
@@ -208,7 +237,7 @@ TEST_F(TasksBubbleViewTest, ShowsProgressBarWhileLoadingTasks) {
   EXPECT_FALSE(GetProgressBar()->GetVisible());
 
   // Switch to another task list, the progress bar should become visible.
-  GetComboBoxView()->MenuSelectionAt(2);
+  MenuSelectionAt(2);
   EXPECT_TRUE(GetProgressBar()->GetVisible());
 
   // After replying to pending callbacks, the progress bar should become hidden.

@@ -57,6 +57,11 @@ class ASH_EXPORT Combobox : public views::Button,
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
+  std::u16string GetTextForRow(size_t row) const;
+
+  // Test method exposing MenuSelectionAt.
+  void SelectMenuItemForTest(size_t index);
+
  private:
   class ComboboxMenuView;
   class ComboboxEventHandler;
@@ -81,6 +86,10 @@ class ASH_EXPORT Combobox : public views::Button,
   void OnComboboxModelChanged(ui::ComboboxModel* model) override;
   void OnComboboxModelDestroying(ui::ComboboxModel* model) override;
 
+  // views::Button:
+  bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
+  bool OnKeyPressed(const ui::KeyEvent& e) override;
+
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
   std::unique_ptr<ui::ComboboxModel> owned_model_;
@@ -101,11 +110,11 @@ class ASH_EXPORT Combobox : public views::Button,
   // menu.
   std::unique_ptr<ComboboxEventHandler> event_handler_;
 
-  // Drop down menu widget.
-  views::UniqueWidgetPtr menu_;
-
   // Drop down menu view owned by menu widget.
   raw_ptr<ComboboxMenuView> menu_view_ = nullptr;
+
+  // Drop down menu widget.
+  views::UniqueWidgetPtr menu_;
 
   // Like MenuButton, we use a time object in order to keep track of when the
   // combobox was closed. The time is used for simulating menu behavior; that
@@ -117,6 +126,8 @@ class ASH_EXPORT Combobox : public views::Button,
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
+
+  base::WeakPtrFactory<Combobox> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
