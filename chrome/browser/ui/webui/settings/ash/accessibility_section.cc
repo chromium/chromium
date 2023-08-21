@@ -467,6 +467,10 @@ int GetDisplayAndMangificationLinkDescriptionResourceId() {
   return IDS_SETTINGS_ACCESSIBILITY_DISPLAY_AND_MAGNIFICATION_LINK_DESCRIPTION;
 }
 
+bool IsAccessibilityGameFaceIntegrationEnabled() {
+  return ::features::IsAccessibilityGameFaceIntegrationEnabled();
+}
+
 }  // namespace
 
 AccessibilitySection::AccessibilitySection(
@@ -1122,6 +1126,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("pdfOcrEnabled",
                           base::FeatureList::IsEnabled(::features::kPdfOcr));
+
+  html_source->AddBoolean("isAccessibilityGameFaceIntegrationEnabled",
+                          IsAccessibilityGameFaceIntegrationEnabled());
 
   ::settings::AddCaptionSubpageStrings(html_source);
 }
