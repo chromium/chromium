@@ -5,11 +5,12 @@
 """Utility library for working with lucicfg graph nodes."""
 
 load("@stdlib//internal/graph.star", "graph")
+load("@stdlib//internal/sequence.star", "sequence")
 load("@stdlib//internal/luci/common.star", "builder_ref", "keys", "kinds")
 
 _CHROMIUM_NS_KIND = "@chromium"
 
-def _create_unscoped_node_type(kind):
+def _create_unscoped_node_type(kind, allow_unnamed = False):
     """Create an unscoped node type.
 
     Unscoped node types only allow for one node to exist with a given key_value.
@@ -19,6 +20,9 @@ def _create_unscoped_node_type(kind):
     Args:
         kind: (str) An identifier for the kind of the node. Must be unique
             within the chromium namespace.
+        allow_unnamed: (bool) Whether or not to allow the creation of unnamed
+            nodes. This can allow for creating resources that are defined within
+            the definition of other resources without requiring assigned names.
 
     Returns:
         A node type that can be used for creating and getting nodes of
@@ -28,23 +32,39 @@ def _create_unscoped_node_type(kind):
         * kind: The kind of nodes of the type.
 
         The node types has the following methods:
-        * key(key_value): Creates a key with the given value.
-        * add(key_value, **kwargs): Adds a node with a key created via
-            `key(key_value)`. `graph.add_node` will be called with the key and
-            `**kwargs`. Returns the key.
-        * get(key_value): Gets the node with key given by `key(key_value)`.
+        * key(key_id_or_keyset): Gets a key of kind. key_id_or_keyset can either
+            be the ID value for the key or it can be a keyset, in which case the
+            key of kind will be extracted from the keyset.
+        * add(key_id, **kwargs): Adds a node with a key created via
+            `key(key_id)`. `graph.add_node` will be called with the key and
+            `**kwargs`. Returns the key. If allow_unnamed is True, key_id will
+            have the defult value of None and a None value for key_id will
+            create a node with a key that is unique within the lucicfg run.
+        * get(key_id): Gets the node with key given by `key(key_id)`.
     """
 
-    def key(key_value):
-        return graph.key(_CHROMIUM_NS_KIND, "", kind, key_value)
+    def key(key_id_or_keyset):
+        if graph.is_keyset(key_id_or_keyset):
+            return key_id_or_keyset.get(kind)
+        return graph.key(_CHROMIUM_NS_KIND, "", kind, key_id_or_keyset)
 
-    def add(key_value, **kwargs):
-        k = key(key_value)
-        graph.add_node(k, **kwargs)
-        return k
+    if allow_unnamed:
+        def add(key_id = None, **kwargs):
+            if key_id == None:
+                sequence_value = str(sequence.next(kind))
+                k = graph.key(_CHROMIUM_NS_KIND, "UNIQUE", kind, sequence_value)
+            else:
+                k = key(key_id)
+            graph.add_node(k, **kwargs)
+            return k
+    else:
+        def add(key_id, **kwargs):
+            k = key(key_id)
+            graph.add_node(k, **kwargs)
+            return k
 
-    def get(key_value):
-        return graph.node(key(key_value))
+    def get(key_id):
+        return graph.node(key(key_id))
 
     return struct(
         kind = kind,
