@@ -1559,6 +1559,42 @@ public class StartSurfaceMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
+    public void testInitializeLogoWhenSurfacePolishedMoveDownLogoEnabled() {
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.setForTesting(true);
+        Assert.assertTrue(ReturnToChromeUtil.moveDownLogo());
+
+        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
+                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
+                /* useMagicSpace*/ false);
+        showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
+
+        verify(mLogoContainerView).setVisibility(View.VISIBLE);
+        verify(mLogoBridge).getCurrentLogo(anyLong(), any(), any());
+        Assert.assertTrue(mediator.isLogoVisible());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
+    public void testNotInitializeLogoWhenSurfacePolishedMoveDownLogoDisabled() {
+        doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+
+        Assert.assertFalse(ReturnToChromeUtil.moveDownLogo());
+
+        StartSurfaceMediator mediator = createStartSurfaceMediator(/*isStartSurfaceEnabled=*/true,
+                /* isRefactorEnabled */ false, /* hadWarmStart= */ false,
+                /* useMagicSpace*/ false);
+        showHomepageAndVerify(mediator, StartSurfaceState.SHOWN_HOMEPAGE);
+
+        verify(mLogoContainerView, times(0)).setVisibility(View.VISIBLE);
+        Assert.assertFalse(mediator.isLogoVisible());
+    }
+
+    @Test
     public void testFeedReliabilityLoggerPageLoadStarted() {
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 

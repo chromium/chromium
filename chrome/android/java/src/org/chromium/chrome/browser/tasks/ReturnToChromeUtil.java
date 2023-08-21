@@ -877,6 +877,14 @@ public final class ReturnToChromeUtil {
     }
 
     /**
+     * Returns whether to move logo out of toolbar from Start surface.
+     */
+    public static boolean moveDownLogo() {
+        return ChromeFeatureList.sSurfacePolish.isEnabled()
+                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue();
+    }
+
+    /**
      * Returns true if START_SURFACE_REFACTOR is enabled.
      */
     public static boolean isStartSurfaceRefactorEnabled(Context context) {

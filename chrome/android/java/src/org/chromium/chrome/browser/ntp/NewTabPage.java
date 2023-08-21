@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -1030,19 +1032,45 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private int getLogoMargin(boolean isTopMargin) {
         if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
 
-        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
-            return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
-                           R.dimen.ntp_logo_vertical_top_margin_tablet)
-                               : mNewTabPageLayout.getResources().getDimensionPixelSize(
-                                       R.dimen.ntp_logo_vertical_bottom_margin_tablet);
-        }
-
-        return isTopMargin ? mNewTabPageLayout.getResources().getDimensionPixelSize(
-                       R.dimen.ntp_logo_margin_top)
-                           : mNewTabPageLayout.getResources().getDimensionPixelSize(
-                                   R.dimen.ntp_logo_margin_bottom);
+        return isTopMargin ? getLogoTopMargin() : getLogoBottomMargin();
     }
 
+    private int getLogoTopMargin() {
+        Resources resources = mNewTabPageLayout.getResources();
+        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
+            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
+                    && !mIsTablet) {
+                return LogoUtils.getTopMarginPolishedSmall(resources);
+
+            } else {
+                return LogoUtils.getTopMarginPolished(resources);
+            }
+        }
+
+        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
+            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
+        }
+
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+    }
+
+    private int getLogoBottomMargin() {
+        Resources resources = mNewTabPageLayout.getResources();
+        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
+            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
+                    && !mIsTablet) {
+                return LogoUtils.getBottomMarginPolishedSmall(resources);
+            } else {
+                return LogoUtils.getBottomMarginPolished(resources);
+            }
+        }
+
+        if (mIsNtpAsHomeSurfaceEnabled && mSearchProviderHasLogo) {
+            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
+        }
+
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
+    }
     private void mayCreateSearchResumptionModule(
             Profile profile, AutocompleteControllerProvider provider) {
         // The module is disabled on tablets.

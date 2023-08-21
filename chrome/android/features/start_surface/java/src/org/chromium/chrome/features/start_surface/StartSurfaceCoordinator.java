@@ -5,6 +5,7 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -1013,11 +1015,28 @@ public class StartSurfaceCoordinator implements StartSurface {
         mContainerView = directChildHolder;
     }
 
+    private int getLogoInSurfaceHeight() {
+        if (mIsSurfacePolishEnabled
+                && StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO.getValue()) {
+            Resources resources = mActivity.getResources();
+            if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()) {
+                return LogoUtils.getLogoHeightPolishedShort(resources)
+                        + LogoUtils.getTopMarginPolishedSmall(resources)
+                        + LogoUtils.getBottomMarginPolishedSmall(resources);
+            } else {
+                return LogoUtils.getLogoHeightPolished(resources)
+                        + LogoUtils.getTopMarginPolished(resources)
+                        + LogoUtils.getBottomMarginPolished(resources);
+            }
+        }
+
+        return getPixelSize(R.dimen.ntp_logo_height) + getPixelSize(R.dimen.ntp_logo_margin_top)
+                + getPixelSize(R.dimen.ntp_logo_margin_bottom);
+    }
+
     private void initializeOffsetChangedListener() {
         int realVerticalMargin = getPixelSize(R.dimen.location_bar_vertical_margin);
-        int logoInSurfaceHeight = getPixelSize(R.dimen.ntp_logo_height)
-                + getPixelSize(R.dimen.ntp_logo_margin_top)
-                + getPixelSize(R.dimen.ntp_logo_margin_bottom);
+        int logoInSurfaceHeight = getLogoInSurfaceHeight();
 
         // The following |fake*| values mean the values of the fake search box; |real*| values
         // mean the values of the real search box.

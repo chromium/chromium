@@ -107,6 +107,8 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.START_SURFACE_OPEN_NTP_INSTEAD_OF_START,
                 StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE,
                 StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR,
+                StartSurfaceConfiguration.SURFACE_POLISH_MOVE_DOWN_LOGO,
+                StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                 StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
                 TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
                 TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE,

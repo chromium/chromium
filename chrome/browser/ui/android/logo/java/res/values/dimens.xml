@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+  <dimen name="logo_height_polished">54dp</dimen>
+  <dimen name="logo_height_short">48dp</dimen>
+  <dimen name="logo_margin_top_polished">40dp</dimen>
+  <dimen name="logo_margin_bottom_polished">32dp</dimen>
+  <dimen name="logo_margin_top_polished_small">12dp</dimen>
+  <dimen name="logo_margin_bottom_polished_small">24dp</dimen>
+</resources>
