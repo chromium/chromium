@@ -507,8 +507,6 @@ TEST_F(SyncModelLoadManagerTest,
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
   ModelTypeSet types;
@@ -528,8 +526,6 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataAfterStopped) {
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   ModelLoadManager model_load_manager(&controllers_, &delegate_);
 
@@ -543,8 +539,6 @@ TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfNotRunning) {
 }
 
 TEST_F(SyncModelLoadManagerTest, ShouldClearMetadataIfFailed) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
   controllers_[BOOKMARKS] = std::make_unique<FakeDataTypeController>(BOOKMARKS);
   EXPECT_CALL(delegate_, OnSingleDataTypeWillStop(BOOKMARKS, _)).Times(2);
 

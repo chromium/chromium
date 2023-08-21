@@ -1548,9 +1548,6 @@ TEST_F(SyncServiceImplTest,
 }
 
 TEST_F(SyncServiceImplTest, ShouldCallStopUponResetEngineIfAlreadyShutDown) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kSyncAllowClearingMetadataWhenDataTypeIsStopped);
-
   // The intention here is to stop sync without clearing metadata by getting to
   // a sync paused state by simulating a credential rejection error.
 

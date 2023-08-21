@@ -338,16 +338,13 @@ void SyncServiceImpl::Initialize() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
-    // Call Stop() on controllers for non-preferred types to clear metadata.
-    // This allows clearing metadata for types disabled in previous run early-on
-    // during initialization.
-    ModelTypeSet preferred_types = GetPreferredDataTypes();
-    for (auto& [type, controller] : data_type_controllers_) {
-      if (!preferred_types.Has(type)) {
-        controller->Stop(CLEAR_METADATA, base::DoNothing());
-      }
+  // Call Stop() on controllers for non-preferred types to clear metadata.
+  // This allows clearing metadata for types disabled in previous run early-on
+  // during initialization.
+  ModelTypeSet preferred_types = GetPreferredDataTypes();
+  for (auto& [type, controller] : data_type_controllers_) {
+    if (!preferred_types.Has(type)) {
+      controller->Stop(CLEAR_METADATA, base::DoNothing());
     }
   }
 
@@ -629,11 +626,8 @@ void SyncServiceImpl::ResetEngine(ShutdownReason shutdown_reason,
     if (shutdown_reason == ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA) {
       sync_client_->GetSyncApiComponentFactory()->ClearAllTransportData();
     }
-    // If enabled, call controller's Stop() to inform them to clear the
-    // metadata.
-    if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA &&
-        base::FeatureList::IsEnabled(
-            kSyncAllowClearingMetadataWhenDataTypeIsStopped)) {
+    // Call controller's Stop() to inform them to clear the metadata.
+    if (shutdown_reason != ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA) {
       SyncStopMetadataFate fate =
           ShutdownReasonToSyncStopMetadataFate(shutdown_reason);
       for (auto& [type, controller] : data_type_controllers_) {

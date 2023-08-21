@@ -200,9 +200,7 @@ void ModelTypeController::Stop(SyncStopMetadataFate fate,
       // Nothing to stop.
       std::move(callback).Run();
       // Clear metadata if needed.
-      if (base::FeatureList::IsEnabled(
-              kSyncAllowClearingMetadataWhenDataTypeIsStopped) &&
-          fate == CLEAR_METADATA) {
+      if (fate == CLEAR_METADATA) {
         ClearMetadataWhileStopped();
       }
       return;
