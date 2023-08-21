@@ -13,4 +13,7 @@ specific_include_rules = {
   "zaura_shell\.cc": [
     "+components/version_info/version_info.h",
   ],
+  "surface_augmentor_unittest\.cc": [
+    "+ui/accessibility/aura/aura_window_properties.h",
+  ],
 }
