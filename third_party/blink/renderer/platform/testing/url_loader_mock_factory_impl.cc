@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -59,14 +60,14 @@ void URLLoaderMockFactoryImpl::RegisterURL(const WebURL& url,
         << response_info.file_path.MaybeAsASCII() << " does not exist.";
   }
 
-  DCHECK(url_to_response_info_.find(url) == url_to_response_info_.end());
+  DCHECK(!base::Contains(url_to_response_info_, url));
   url_to_response_info_.Set(url, response_info);
 }
 
 void URLLoaderMockFactoryImpl::RegisterErrorURL(const WebURL& url,
                                                 const WebURLResponse& response,
                                                 const WebURLError& error) {
-  DCHECK(url_to_response_info_.find(url) == url_to_response_info_.end());
+  DCHECK(!base::Contains(url_to_response_info_, url));
   RegisterURL(url, response, WebString());
   url_to_error_info_.Set(url, error);
 }
@@ -96,8 +97,7 @@ void URLLoaderMockFactoryImpl::RegisterURLProtocol(
         << response_info.file_path.MaybeAsASCII() << " does not exist.";
   }
 
-  DCHECK(protocol_to_response_info_.find(protocol) ==
-         protocol_to_response_info_.end());
+  DCHECK(!base::Contains(protocol_to_response_info_, protocol));
   protocol_to_response_info_.Set(protocol, response_info);
 }
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -260,8 +261,9 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     // Check to see whether the server supports byte ranges.
     std::string accept_ranges =
         response.HttpHeaderField("Accept-Ranges").Utf8();
-    if (accept_ranges.find("bytes") != std::string::npos)
+    if (base::Contains(accept_ranges, "bytes")) {
       destination_url_data->set_range_supported();
+    }
 
     // If we have verified the partial response and it is correct.
     // It's also possible for a server to support range requests

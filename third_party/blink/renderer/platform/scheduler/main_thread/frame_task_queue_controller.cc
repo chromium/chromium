@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
@@ -111,8 +112,7 @@ void FrameTaskQueueController::TaskQueueCreated(
   all_task_queues_and_voters_.push_back(
       TaskQueueAndEnabledVoterPair(task_queue.get(), voter.get()));
 
-  DCHECK(task_queue_enabled_voters_.find(task_queue) ==
-         task_queue_enabled_voters_.end());
+  DCHECK(!base::Contains(task_queue_enabled_voters_, task_queue));
   task_queue_enabled_voters_.insert(task_queue, std::move(voter));
 }
 

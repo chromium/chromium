@@ -24,13 +24,16 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_stats_response.h"
 
+#include "base/containers/contains.h"
+
 namespace blink {
 
 RTCStatsResponse::RTCStatsResponse() = default;
 
 RTCLegacyStatsReport* RTCStatsResponse::namedItem(const AtomicString& name) {
-  if (idmap_.find(name) != idmap_.end())
+  if (base::Contains(idmap_, name)) {
     return result_[idmap_.at(name)];
+  }
   return nullptr;
 }
 

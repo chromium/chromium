@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -219,7 +220,7 @@ void MultiBuffer::AddReader(const BlockId& pos, Reader* reader) {
     }
   }
   if (!provider) {
-    DCHECK(writer_index_.find(pos) == writer_index_.end());
+    DCHECK(!base::Contains(writer_index_, pos));
     writer_index_[pos] = CreateWriter(pos, is_client_audio_element_);
     provider = writer_index_[pos].get();
   }
@@ -249,7 +250,7 @@ void MultiBuffer::CleanupWriters(const BlockId& pos) {
 bool MultiBuffer::Contains(const BlockId& pos) const {
   DCHECK(present_[pos] == 0 || present_[pos] == 1)
       << " pos = " << pos << " present_[pos] " << present_[pos];
-  DCHECK_EQ(present_[pos], data_.find(pos) != data_.end() ? 1 : 0);
+  DCHECK_EQ(present_[pos], base::Contains(data_, pos) ? 1 : 0);
   return !!present_[pos];
 }
 
@@ -373,8 +374,9 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
 
 bool MultiBuffer::ProviderCollision(const BlockId& id) const {
   // If there is a writer at the same location, it is always a collision.
-  if (writer_index_.find(id) != writer_index_.end())
+  if (base::Contains(writer_index_, id)) {
     return true;
+  }
 
   // Data already exists at providers current position,
   // if the URL supports ranges, we can kill the data provider.
@@ -536,7 +538,7 @@ void MultiBuffer::PinRange(const BlockId& from,
         for (BlockId block = present_transitioned_range.end - 1;
              block >= present_transitioned_range.begin; --block) {
           DCHECK_GE(block, 0);
-          DCHECK(data_.find(block) != data_.end());
+          DCHECK(base::Contains(data_, block));
           if (pin) {
             DCHECK(pinned_[block]);
             lru_->Remove(this, block);

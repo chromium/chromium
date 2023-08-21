@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -301,7 +302,7 @@ class PictureInPictureControllerTestWithWidget : public RenderingTest {
 
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
-    if (test_name.find("MediaSource") != std::string::npos) {
+    if (base::Contains(test_name, "MediaSource")) {
       MediaStreamComponentVector dummy_tracks;
       auto* descriptor = MakeGarbageCollected<MediaStreamDescriptor>(
           dummy_tracks, dummy_tracks);

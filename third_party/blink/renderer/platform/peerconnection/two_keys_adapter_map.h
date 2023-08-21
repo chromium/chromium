@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -37,7 +38,7 @@ class TwoKeysAdapterMap {
   // map. There must not already exist a mapping for this primary key, in other
   // words |!FindByPrimary(primary)| must hold.
   Value* Insert(PrimaryKey primary, Value value) {
-    DCHECK(entries_by_primary_.find(primary) == entries_by_primary_.end());
+    DCHECK(!base::Contains(entries_by_primary_, primary));
     auto* add_result =
         entries_by_primary_
             .insert(std::move(primary),

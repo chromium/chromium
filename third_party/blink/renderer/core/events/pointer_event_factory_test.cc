@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/containers/contains.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -172,7 +173,7 @@ void PointerEventFactoryTest::CheckNonHoveringPointers(
       pointer_event_factory_.GetPointerIdsOfNonHoveringPointers();
   EXPECT_EQ(pointers.size(), expected_pointers.size());
   for (int p : pointers) {
-    EXPECT_TRUE(expected_pointers.find(p) != expected_pointers.end());
+    EXPECT_TRUE(base::Contains(expected_pointers, p));
   }
 }
 

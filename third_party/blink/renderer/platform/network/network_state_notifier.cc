@@ -27,6 +27,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/nqe/effective_connection_type.h"
@@ -351,7 +352,7 @@ void NetworkStateNotifier::RemoveObserver(
   DCHECK(observer);
 
   ObserverListMap& map = GetObserverMapFor(type);
-  DCHECK_NE(map.end(), map.find(observer));
+  DCHECK(base::Contains(map, observer));
   map.erase(observer);
 }
 

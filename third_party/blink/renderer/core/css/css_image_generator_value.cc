@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
@@ -41,7 +42,7 @@ Image* GeneratedImageCache::GetImage(const gfx::SizeF& size) const {
     return nullptr;
   }
 
-  DCHECK(sizes_.find(size) != sizes_.end());
+  DCHECK(base::Contains(sizes_, size));
   GeneratedImageMap::const_iterator image_iter = images_.find(size);
   if (image_iter == images_.end()) {
     return nullptr;
@@ -62,10 +63,10 @@ void GeneratedImageCache::AddSize(const gfx::SizeF& size) {
 
 void GeneratedImageCache::RemoveSize(const gfx::SizeF& size) {
   DCHECK(!size.IsEmpty());
-  SECURITY_DCHECK(sizes_.find(size) != sizes_.end());
+  SECURITY_DCHECK(base::Contains(sizes_, size));
   bool fully_erased = sizes_.erase(size);
   if (fully_erased) {
-    DCHECK(images_.find(size) != images_.end());
+    DCHECK(base::Contains(images_, size));
     images_.erase(images_.find(size));
   }
 }

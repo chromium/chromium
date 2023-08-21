@@ -34,6 +34,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/substring_set_matcher/substring_set_matcher.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -1086,8 +1087,7 @@ bool RuleSet::CanIgnoreEntireList(base::span<const RuleData> list,
   }
   if (list.size() < GetMinimumRulesetSizeForSubstringMatcher()) {
     // Too small to build up a tree, so always check.
-    DCHECK_EQ(attr_substring_matchers_.find(key),
-              attr_substring_matchers_.end());
+    DCHECK(!base::Contains(attr_substring_matchers_, key));
     return false;
   }
 

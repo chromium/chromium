@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_DOM_DATA_STORE_H_
 
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -172,7 +173,7 @@ class DOMDataStore final : public GarbageCollected<DOMDataStore> {
   bool ContainsWrapper(const ScriptWrappable* object) {
     if (is_main_world_)
       return object->ContainsWrapper();
-    return wrapper_map_.find(object) != wrapper_map_.end();
+    return base::Contains(wrapper_map_, object);
   }
 
   virtual void Trace(Visitor*) const;

@@ -33,6 +33,7 @@
 #include <stddef.h>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mhtml/archive_resource.h"
@@ -160,9 +161,10 @@ static KeyValueMap RetrieveKeyValuePairs(SharedBufferChunkReader* buffer) {
     }
     // New key/value, store the previous one if any.
     if (!key.empty()) {
-      if (key_value_pairs.find(key) != key_value_pairs.end())
+      if (base::Contains(key_value_pairs, key)) {
         DVLOG(1) << "Key duplicate found in MIME header. Key is '" << key
                  << "', previous value replaced.";
+      }
       key_value_pairs.insert(key, value.ToString().StripWhiteSpace());
       key = String();
       value.Clear();

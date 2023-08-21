@@ -221,7 +221,7 @@ void ServiceWorkerEventQueue::EndEvent(int event_id) {
 }
 
 bool ServiceWorkerEventQueue::HasEvent(int event_id) const {
-  return all_events_.find(event_id) != all_events_.end();
+  return base::Contains(all_events_, event_id);
 }
 
 bool ServiceWorkerEventQueue::HasEventInQueue(int event_id) const {

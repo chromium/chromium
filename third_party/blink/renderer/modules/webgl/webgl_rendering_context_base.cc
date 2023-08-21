@@ -2599,8 +2599,8 @@ bool WebGLRenderingContextBase::ValidateCopyTexFormat(const char* function_name,
     is_ext_color_buffer_half_float_formats_added_ = true;
   }
 
-  if (supported_internal_formats_copy_tex_image_.find(internalformat) ==
-      supported_internal_formats_copy_tex_image_.end()) {
+  if (!base::Contains(supported_internal_formats_copy_tex_image_,
+                      internalformat)) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid internalformat");
     return false;
   }
@@ -7893,9 +7893,8 @@ bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
   }
 
   if (params.internalformat != 0 &&
-      supported_tex_image_source_internal_formats_.find(
-          params.internalformat) ==
-          supported_tex_image_source_internal_formats_.end()) {
+      !base::Contains(supported_tex_image_source_internal_formats_,
+                      params.internalformat)) {
     if (GetTexImageFunctionType(params.function_id) == kTexImage) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name,
                         "invalid internalformat");
@@ -7905,13 +7904,11 @@ bool WebGLRenderingContextBase::ValidateTexImageSourceFormatAndType(
     }
     return false;
   }
-  if (supported_tex_image_source_formats_.find(params.format) ==
-      supported_tex_image_source_formats_.end()) {
+  if (!base::Contains(supported_tex_image_source_formats_, params.format)) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid format");
     return false;
   }
-  if (supported_tex_image_source_types_.find(params.type) ==
-      supported_tex_image_source_types_.end()) {
+  if (!base::Contains(supported_tex_image_source_types_, params.type)) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid type");
     return false;
   }
@@ -7940,8 +7937,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncFormatAndType(
   }
 
   if (params.internalformat != 0 &&
-      supported_internal_formats_.find(params.internalformat) ==
-          supported_internal_formats_.end()) {
+      !base::Contains(supported_internal_formats_, params.internalformat)) {
     if (GetTexImageFunctionType(params.function_id) == kTexImage) {
       if (compressed_texture_formats_.Contains(
               static_cast<GLenum>(params.internalformat))) {
@@ -7957,11 +7953,11 @@ bool WebGLRenderingContextBase::ValidateTexFuncFormatAndType(
     }
     return false;
   }
-  if (supported_formats_.find(params.format) == supported_formats_.end()) {
+  if (!base::Contains(supported_formats_, params.format)) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid format");
     return false;
   }
-  if (supported_types_.find(params.type) == supported_types_.end()) {
+  if (!base::Contains(supported_types_, params.type)) {
     SynthesizeGLError(GL_INVALID_ENUM, function_name, "invalid type");
     return false;
   }

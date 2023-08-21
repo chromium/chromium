@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 
 #include "base/auto_reset.h"
+#include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
@@ -1403,7 +1404,7 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   DCHECK(!IsFrozen()) << "Can't create AXObject while tree is frozen: " << node;
 
   AXID axid = GenerateAXID();
-  DCHECK(objects_.find(axid) == objects_.end());
+  DCHECK(!base::Contains(objects_, axid));
 
   if (node) {
     DCHECK(!node_object_mapping_.Contains(node))
@@ -2194,8 +2195,7 @@ void AXObjectCacheImpl::TextChanged(Node* node) {
     return;
 
   // A text changed event is redundant with children changed on the same node.
-  if (nodes_with_pending_children_changed_.find(node) !=
-      nodes_with_pending_children_changed_.end()) {
+  if (base::Contains(nodes_with_pending_children_changed_, node)) {
     return;
   }
 
@@ -2212,8 +2212,7 @@ void AXObjectCacheImpl::TextChanged(const LayoutObject* layout_object) {
   Node* node = GetClosestNodeForLayoutObject(layout_object);
   if (node) {
     // A text changed event is redundant with children changed on the same node.
-    if (nodes_with_pending_children_changed_.find(node) !=
-        nodes_with_pending_children_changed_.end()) {
+    if (base::Contains(nodes_with_pending_children_changed_, node)) {
       return;
     }
 
@@ -4648,7 +4647,7 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
       continue;
     }
 
-    if (already_serialized_ids.find(event.id) == already_serialized_ids.end()) {
+    if (!base::Contains(already_serialized_ids, event.id)) {
       // Node no longer exists or could not be serialized.
       VLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
               << ObjectFromAXID(event.id);

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -183,7 +184,7 @@ TEST_F(FrameTaskQueueControllerTest, CreateAllTaskQueues) {
     auto [task_queue_ptr, voter] = task_queue_and_voter;
 
     EXPECT_NE(task_queue_ptr, nullptr);
-    EXPECT_TRUE(all_task_queues.find(task_queue_ptr) != all_task_queues.end());
+    EXPECT_TRUE(base::Contains(all_task_queues, task_queue_ptr));
     // Make sure we don't get the same queue twice.
     auto it = all_task_queues.find(task_queue_ptr);
     EXPECT_FALSE(it == all_task_queues.end());

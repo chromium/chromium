@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
@@ -243,7 +244,7 @@ void WorkerThreadScheduler::RegisterWorkerScheduler(
 
 void WorkerThreadScheduler::UnregisterWorkerScheduler(
     WorkerSchedulerImpl* worker_scheduler) {
-  DCHECK(worker_schedulers_.find(worker_scheduler) != worker_schedulers_.end());
+  DCHECK(base::Contains(worker_schedulers_, worker_scheduler));
   worker_schedulers_.erase(worker_scheduler);
 }
 

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_assigned_nodes_options.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -198,8 +199,9 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
 
   HeapLinkedHashSet<WeakMember<Node>> removed_nodes;
   for (Node* node : manually_assigned_nodes_) {
-    if (added_nodes.find(node) == added_nodes.end())
+    if (!base::Contains(added_nodes, node)) {
       removed_nodes.insert(node);
+    }
   }
 
   updated |= added_nodes.size() != manually_assigned_nodes_.size();

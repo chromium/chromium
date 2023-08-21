@@ -35,6 +35,7 @@
 #include <queue>
 
 #include "base/auto_reset.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -707,9 +708,9 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
           ax::mojom::blink::Role::kVideo,
       });
 
-  if (always_included_computed_roles.find(RoleValue()) !=
-      always_included_computed_roles.end())
+  if (base::Contains(always_included_computed_roles, RoleValue())) {
     return kIncludeObject;
+  }
 
   // Using the title or accessibility description (so we
   // check if there's some kind of accessible name for the element)

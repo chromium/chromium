@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
@@ -75,7 +76,7 @@ DiskDataMetadata DiskDataAllocator::FindFreeChunk(size_t size) {
 
 void DiskDataAllocator::ReleaseChunk(const DiskDataMetadata& metadata) {
   DiskDataMetadata chunk = metadata;
-  DCHECK(free_chunks_.find(chunk.start_offset()) == free_chunks_.end());
+  DCHECK(!base::Contains(free_chunks_, chunk.start_offset()));
 
   auto lower_bound = free_chunks_.lower_bound(chunk.start_offset());
   DCHECK(free_chunks_.upper_bound(chunk.start_offset()) ==

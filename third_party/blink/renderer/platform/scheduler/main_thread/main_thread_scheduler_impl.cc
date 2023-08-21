@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -2301,8 +2302,7 @@ void MainThreadSchedulerImpl::AddPageScheduler(
 
 void MainThreadSchedulerImpl::RemovePageScheduler(
     PageSchedulerImpl* page_scheduler) {
-  DCHECK(main_thread_only().page_schedulers.find(page_scheduler) !=
-         main_thread_only().page_schedulers.end());
+  DCHECK(base::Contains(main_thread_only().page_schedulers, page_scheduler));
   main_thread_only().page_schedulers.erase(page_scheduler);
   if (page_scheduler->IsOrdinary()) {
     memory_purge_manager_.OnPageDestroyed(

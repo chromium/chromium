@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
@@ -152,9 +153,9 @@ void FontAccess::DidGetEnumerationResponse(
     // If the optional postscript name filter is set in QueryOptions,
     // only allow items that match.
     if (hasPostscriptNameFilter &&
-        selection_utf8.find(element.postscript_name().c_str()) ==
-            selection_utf8.end())
+        !base::Contains(selection_utf8, element.postscript_name().c_str())) {
       continue;
+    }
 
     auto entry = FontEnumerationEntry{
         .postscript_name = String::FromUTF8(element.postscript_name().c_str()),

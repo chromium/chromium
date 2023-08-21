@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
@@ -357,7 +358,7 @@ std::unique_ptr<blink::FrameScheduler> PageSchedulerImpl::CreateFrameScheduler(
 }
 
 void PageSchedulerImpl::Unregister(FrameSchedulerImpl* frame_scheduler) {
-  DCHECK(frame_schedulers_.find(frame_scheduler) != frame_schedulers_.end());
+  DCHECK(base::Contains(frame_schedulers_, frame_scheduler));
   frame_schedulers_.erase(frame_scheduler);
 }
 
