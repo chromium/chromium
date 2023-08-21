@@ -34,9 +34,11 @@ PrerenderTriggerType GetTriggerType(
 }  // namespace
 
 struct PrerendererImpl::PrerenderInfo {
+  blink::mojom::SpeculationInjectionWorld injection_world;
+  blink::mojom::SpeculationEagerness eagerness;
+  int prerender_host_id;
   GURL url;
   Referrer referrer;
-  int prerender_host_id;
 };
 
 PrerendererImpl::PrerendererImpl(RenderFrameHost& render_frame_host)
@@ -254,10 +256,12 @@ bool PrerendererImpl::MaybePrerender(
         // WebContents for prerendering.
         int prerender_host_id =
             registry_->CreateAndStartHostForNewTab(attributes);
-        started_prerenders_.insert(end,
-                                   {.url = candidate->url,
-                                    .referrer = referrer,
-                                    .prerender_host_id = prerender_host_id});
+        started_prerenders_.insert(
+            end, {.injection_world = candidate->injection_world,
+                  .eagerness = candidate->eagerness,
+                  .prerender_host_id = prerender_host_id,
+                  .url = candidate->url,
+                  .referrer = referrer});
         break;
       }
       // Handle the rule as kNoHint if the prerender-in-new-tab is not
@@ -268,9 +272,12 @@ bool PrerendererImpl::MaybePrerender(
     case blink::mojom::SpeculationTargetHint::kSelf: {
       int prerender_host_id = registry_->CreateAndStartHost(
           attributes, /*preloading_attempt=*/preloading_attempt);
-      started_prerenders_.insert(end, {.url = candidate->url,
-                                       .referrer = referrer,
-                                       .prerender_host_id = prerender_host_id});
+      started_prerenders_.insert(end,
+                                 {.injection_world = candidate->injection_world,
+                                  .eagerness = candidate->eagerness,
+                                  .prerender_host_id = prerender_host_id,
+                                  .url = candidate->url,
+                                  .referrer = referrer});
       break;
     }
   }
@@ -300,7 +307,71 @@ void PrerendererImpl::CancelStartedPrerenders() {
         PrerenderCancellationReason(PrerenderFinalStatus::kTriggerDestroyed));
   }
 
+  RecordReceivedPrerendersCountToMetrics();
+
   started_prerenders_.clear();
+}
+
+void PrerendererImpl::RecordReceivedPrerendersCountToMetrics() {
+  // Records the number of received speculation rules prerender triggers via
+  // started_prerenders_.
+  // This is expected to count up eventually started triggers that developers
+  // actually try to use in one page (Note that started_prerenders_ releases the
+  // prerenders whose rule set is eliminated on current implementation).
+
+  for (auto trigger_type :
+       {PrerenderTriggerType::kSpeculationRule,
+        PrerenderTriggerType::kSpeculationRuleFromIsolatedWorld}) {
+    int conservative = 0, moderate = 0, eager = 0;
+    for (const auto& started_prerender_it : started_prerenders_) {
+      if (GetTriggerType(started_prerender_it.injection_world) ==
+          trigger_type) {
+        switch (started_prerender_it.eagerness) {
+          case blink::mojom::SpeculationEagerness::kConservative:
+            conservative++;
+            break;
+          case blink::mojom::SpeculationEagerness::kModerate:
+            moderate++;
+            break;
+          case blink::mojom::SpeculationEagerness::kEager:
+            eager++;
+            break;
+        }
+      }
+    }
+
+    // This should be zero
+    //  1) when there are no started prerenders eventually. Also noted that if
+    //     there is no rule set, PreloadingDecider won't be created (which means
+    //     PrerenderImpl also won't be created), so it cannot be reached this
+    //     code path at the first place.
+    //  2) after CancelStartedPrerenders is called and started_prerenders_ are
+    //     cleared once (as long as PreloadingDecider (which has the same
+    //     lifetime with a document) that owns this (PrerenderImpl) lives, this
+    //     function should be called via PrimaryPageChanged).
+    //
+    // Avoids recording these cases uniformly.
+    if (conservative + moderate + eager == 0) {
+      continue;
+    }
+
+    // Record per single eagerness.
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(
+        conservative, trigger_type, "Conservative");
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(moderate, trigger_type,
+                                                       "Moderate");
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(eager, trigger_type,
+                                                       "Eager");
+
+    // Record per eager or non-eager(eager case has already been recorded
+    // above).
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(
+        conservative + moderate, trigger_type, "NonEager");
+
+    // Record the total number of prerenders.
+    RecordReceivedPrerendersPerPrimaryPageChangedCount(
+        conservative + moderate + eager, trigger_type, "Total");
+  }
 }
 
 }  // namespace content
