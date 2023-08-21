@@ -195,3 +195,9 @@ message SignedEncryptionInfo {
   // Verified by client against a well-known signature.
   optional bytes signature = 3;
 }
+
+// List of blocked destinations delivered from the server, this list is already
+// processed by the browser to check for OS version compliance.
+message ListOfBlockedDestinations {
+  repeated Destination destinations = 1;
+}
