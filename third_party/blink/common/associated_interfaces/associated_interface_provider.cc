@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -36,7 +37,7 @@ class AssociatedInterfaceProvider::LocalProvider
   void ResetBinderForName(const std::string& name) { binders_.erase(name); }
 
   bool HasInterface(const std::string& name) const {
-    return binders_.find(name) != binders_.end();
+    return base::Contains(binders_, name);
   }
 
   void GetInterface(const std::string& name,

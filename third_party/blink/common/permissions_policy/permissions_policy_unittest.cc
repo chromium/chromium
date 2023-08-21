@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -102,8 +103,7 @@ class PermissionsPolicyTest : public testing::Test {
 
   bool PolicyContainsInheritedValue(const PermissionsPolicy* policy,
                                     mojom::PermissionsPolicyFeature feature) {
-    return policy->inherited_policies_.find(feature) !=
-           policy->inherited_policies_.end();
+    return base::Contains(policy->inherited_policies_, feature);
   }
 
   url::Origin origin_a_ = url::Origin::Create(GURL("https://example.com/"));

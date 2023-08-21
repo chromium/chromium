@@ -6,6 +6,7 @@
 
 #include <unordered_set>
 
+#include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 
@@ -37,7 +38,7 @@ bool CommonSchemeRegistry::IsExtensionScheme(const std::string& scheme) {
   if (scheme.empty())
     return false;
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
-  return GetExtensionSchemes().find(scheme) != GetExtensionSchemes().end();
+  return base::Contains(GetExtensionSchemes(), scheme);
 }
 
 }  // namespace blink

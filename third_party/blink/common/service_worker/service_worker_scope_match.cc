@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 
 namespace blink {
@@ -16,12 +17,10 @@ bool PathContainsDisallowedCharacter(const GURL& url) {
 
   // We should avoid these escaped characters in the path component because
   // these can be handled differently depending on server implementation.
-  if (path.find("%2f") != std::string::npos ||
-      path.find("%2F") != std::string::npos) {
+  if (base::Contains(path, "%2f") || base::Contains(path, "%2F")) {
     return true;
   }
-  if (path.find("%5c") != std::string::npos ||
-      path.find("%5C") != std::string::npos) {
+  if (base::Contains(path, "%5c") || base::Contains(path, "%5C")) {
     return true;
   }
   return false;
