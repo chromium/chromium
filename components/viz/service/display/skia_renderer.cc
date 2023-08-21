@@ -3040,17 +3040,6 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
   // TODO(weiliangc): ChromeOS would need backdrop_filter_quality implemented
   if (backdrop_filters) {
     DCHECK(!backdrop_filters->IsEmpty());
-    cc::FilterOperations filter_operations;
-    for (const cc::FilterOperation& op : backdrop_filters->operations()) {
-      if (op.type() == cc::FilterOperation::BLUR) {
-        cc::FilterOperation blur_op(op);
-        blur_op.set_amount(op.amount() * quad->backdrop_filter_quality);
-        filter_operations.Append(blur_op);
-      } else {
-        filter_operations.Append(op);
-      }
-    }
-
     rpdq_params.backdrop_filter_quality = quad->backdrop_filter_quality;
 
     // quad->rect represents the layer's bounds *after* any display scale has
@@ -3064,7 +3053,7 @@ SkiaRenderer::DrawRPDQParams SkiaRenderer::CalculateRPDQParams(
       SkIRect filter_rect =
           inv_local_matrix.mapRect(gfx::RectToSkRect(quad->rect)).roundOut();
       auto bg_paint_filter = cc::RenderSurfaceFilters::BuildImageFilter(
-          filter_operations, gfx::SkIRectToRect(filter_rect));
+          *backdrop_filters, gfx::SkIRectToRect(filter_rect));
 
       auto sk_bg_filter =
           bg_paint_filter ? bg_paint_filter->cached_sk_filter_ : nullptr;
