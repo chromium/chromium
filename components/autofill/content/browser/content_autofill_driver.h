@@ -199,8 +199,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // Callbacks that are called also in other functions by ContentAutofillRouter.
   void FocusNoLongerOnFormCallback(bool had_interacted_form);
   void UnsetKeyPressHandlerCallback();
-  void OnContextMenuShownInFieldCallback(const FormGlobalId& form_global_id,
-                                         const FieldGlobalId& field_global_id);
 
  private:
   friend class ContentAutofillDriverTestApi;
