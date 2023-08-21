@@ -36,13 +36,22 @@ def _package_name(channel: str):
   return 'com.android.chrome'
 
 
+def _is_require_signed(channel: str) -> bool:
+  """Check if we need to install a signed build."""
+  # The stable build has the same package name as prebuilt one, in order
+  # to avoid the signature mismatch, we need to install the one with the
+  # same signed build.
+  return channel == 'stable'
+
+
 def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
   """Installs Chrome to the device and returns the package name."""
   args = [
     _INSTALLER_SCRIPT_PY, f'--product=chrome',
     f'--channel={channel}', f'--serial={device.serial}',
-    f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}', '--unsigned',
+    f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
+  args.append['--signed' if _is_require_signed(channel) else '--unsigned']
   subprocess.check_call(args=args)
   return _package_name(channel)
 
@@ -55,8 +64,9 @@ def install_webview(
   args = [
     _INSTALLER_SCRIPT_PY, f'--product=webview',
     f'--channel={channel}', f'--serial={device.serial}',
-    f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}', '--unsigned',
+    f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
+  args.append['--signed' if _is_require_signed(channel) else '--unsigned']
   subprocess.check_call(args=args)
 
   version_regex = r'\s*Preferred WebView package[^:]*[^\d]*([^\)]+)'
