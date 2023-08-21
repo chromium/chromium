@@ -545,10 +545,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
   bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
 
-  // Whether `force_ignore_top_frame_party_for_cookies` should be set on
-  // net::URLRequest.
-  bool ShouldForceIgnoreTopFramePartyForCookies() const;
-
   // Applies Private Network Access checks to the current request.
   //
   // Helper for `OnConnected()`.

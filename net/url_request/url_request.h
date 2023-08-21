@@ -315,16 +315,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     force_ignore_site_for_cookies_ = attach;
   }
 
-  // Indicates whether the top frame party will be considered same-party to the
-  // request URL (regardless of what it is), for the purpose of SameParty
-  // cookies.
-  bool force_ignore_top_frame_party_for_cookies() const {
-    return force_ignore_top_frame_party_for_cookies_;
-  }
-  void set_force_ignore_top_frame_party_for_cookies(bool force) {
-    force_ignore_top_frame_party_for_cookies_ = force;
-  }
-
   // Indicates if the request should be treated as a main frame navigation for
   // SameSite cookie computations.  This flag overrides the IsolationInfo
   // request type associated with fetches from a service worker context.
@@ -971,7 +961,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   absl::optional<CookiePartitionKey> cookie_partition_key_ = absl::nullopt;
 
   bool force_ignore_site_for_cookies_ = false;
-  bool force_ignore_top_frame_party_for_cookies_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
   CookieSettingOverrides cookie_setting_overrides_;
 

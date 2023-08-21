@@ -297,7 +297,6 @@ void URLRequestHttpJob::Start() {
       cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           SchemefulSite(request()->url()), request()->isolation_info(),
           request()->context()->cookie_store()->cookie_access_delegate(),
-          request()->force_ignore_top_frame_party_for_cookies(),
           base::BindOnce(&URLRequestHttpJob::OnGotFirstPartySetMetadata,
                          weak_factory_.GetWeakPtr()));
 

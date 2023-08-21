@@ -51,13 +51,6 @@ namespace {
 // adding a user-perceptible delay.
 constexpr base::TimeDelta kCookiesAccessedTimeout = base::Milliseconds(100);
 
-// TODO(cfredric): the `force_ignore_top_frame_party` param being false prevents
-// `document.cookie` access for same-party scripts embedded in an extension
-// frame. It would be better if we allowed that similarly to how we allow
-// SameParty cookies for requests in same-party contexts embedded in top-level
-// extension frames.
-const bool kForceIgnoreTopFrameParty = false;
-
 net::CookieOptions MakeOptionsForSet(
     mojom::RestrictedCookieManagerRole role,
     const GURL& url,
@@ -125,8 +118,7 @@ void RestrictedCookieManager::ComputeFirstPartySetMetadata(
   absl::optional<net::FirstPartySetMetadata> metadata =
       net::cookie_util::ComputeFirstPartySetMetadataMaybeAsync(
           /*request_site=*/net::SchemefulSite(origin), isolation_info,
-          cookie_store->cookie_access_delegate(), kForceIgnoreTopFrameParty,
-          std::move(callbacks.first));
+          cookie_store->cookie_access_delegate(), std::move(callbacks.first));
   if (metadata.has_value())
     std::move(callbacks.second).Run(std::move(metadata.value()));
 }

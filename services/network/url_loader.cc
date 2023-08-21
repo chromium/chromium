@@ -583,9 +583,6 @@ URLLoader::URLLoader(
     DCHECK(!url_request_->isolation_info().IsEmpty());
   }
 
-  if (ShouldForceIgnoreTopFramePartyForCookies())
-    url_request_->set_force_ignore_top_frame_party_for_cookies(true);
-
   // When a service worker forwards a navigation request it uses the
   // service worker's IsolationInfo.  This causes the cookie code to fail
   // to send SameSite=Lax cookies for main-frame navigations passed through
@@ -2674,36 +2671,6 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
   }
 
   return false;
-}
-
-bool URLLoader::ShouldForceIgnoreTopFramePartyForCookies() const {
-  const net::IsolationInfo& isolation_info = url_request_->isolation_info();
-  const absl::optional<url::Origin>& top_frame_origin =
-      isolation_info.top_frame_origin();
-
-  if (!top_frame_origin || top_frame_origin->opaque())
-    return false;
-
-  const absl::optional<std::set<net::SchemefulSite>>& party_context =
-      isolation_info.party_context();
-  if (!party_context)
-    return false;
-
-  // The top frame origin must have access to the request URL.
-  if (cors::OriginAccessList::AccessState::kAllowed !=
-      origin_access_list_->CheckAccessState(*top_frame_origin,
-                                            url_request_->url())) {
-    return false;
-  }
-
-  // The top frame origin must have access to each site in the party_context.
-  return base::ranges::all_of(
-      *party_context,
-      [this, &top_frame_origin](const net::SchemefulSite& site) {
-        return origin_access_list_->CheckAccessState(*top_frame_origin,
-                                                     site.GetURL()) ==
-               cors::OriginAccessList::AccessState::kAllowed;
-      });
 }
 
 void URLLoader::SetRequestCredentials(const GURL& url) {

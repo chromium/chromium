@@ -897,16 +897,13 @@ absl::optional<FirstPartySetMetadata> ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party,
     base::OnceCallback<void(FirstPartySetMetadata)> callback) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
       cookie_access_delegate) {
     return cookie_access_delegate->ComputeFirstPartySetMetadataMaybeAsync(
         request_site,
-        force_ignore_top_frame_party
-            ? nullptr
-            : base::OptionalToPtr(
-                  isolation_info.network_isolation_key().GetTopFrameSite()),
+        base::OptionalToPtr(
+            isolation_info.network_isolation_key().GetTopFrameSite()),
         std::move(callback));
   }
 
