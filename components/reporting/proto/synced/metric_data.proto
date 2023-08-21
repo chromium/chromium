@@ -436,6 +436,8 @@ message TelemetryData {
   optional FatalCrashTelemetry fatal_crash_telemetry = 9;
   // Runtime counter data.
   optional RuntimeCountersTelemetry runtime_counters_telemetry = 10;
+  // Website telemetry data.
+  optional WebsiteTelemetry website_telemetry = 11;
 }
 
 enum MetricEventType {
@@ -452,6 +454,8 @@ enum MetricEventType {
   NETWORK_STATE_CHANGE = 15;
   VPN_CONNECTION_STATE_CHANGE = 16;
   CRASH_FATALLY = 17;
+  URL_OPENED = 18;
+  URL_CLOSED = 19;
 
   reserved 2, 3, 10, 11, 12;
 }
@@ -523,6 +527,51 @@ message AppUninstallData {
   optional string app_id = 2;
   // Type of app.
   optional apps.ApplicationType app_type = 3;
+}
+
+// Website telemetry data.
+message WebsiteTelemetry {
+  oneof website_metric_data {
+    // Website opened data.
+    WebsiteOpenedData website_opened_data = 1;
+    // Website closed data.
+    WebsiteClosedData website_closed_data = 2;
+    // Website usage data.
+    WebsiteUsageData website_usage_data = 3;
+  }
+}
+
+// Website opened data.
+message WebsiteOpenedData {
+  // Website URL.
+  optional string url = 1;
+  // Render process host id.
+  optional int32 render_process_host_id = 2;
+  // Render frame routing id.
+  optional int32 render_frame_routing_id = 3;
+}
+
+// Website closed data.
+message WebsiteClosedData {
+  // Website URL.
+  optional string url = 1;
+  // Render process host id.
+  optional int32 render_process_host_id = 2;
+  // Render frame routing id.
+  optional int32 render_frame_routing_id = 3;
+}
+
+// Website usage data.
+message WebsiteUsageData {
+  message WebsiteUsage {
+    // Website URL.
+    optional string url = 1;
+    // Website foreground running time (in milliseconds).
+    optional int64 running_time_ms = 2;
+  }
+
+  // Usage data that includes other website metadata.
+  repeated WebsiteUsage website_usage = 3;
 }
 
 // Peripherals data.
