@@ -26,6 +26,7 @@ const SegmentId kSegmentId2 = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
 
 const ModelSource kDefaultModelSource = ModelSource::DEFAULT_MODEL_SOURCE;
 const ModelSource kServerModelSource = ModelSource::SERVER_MODEL_SOURCE;
+const ModelSource kUnknownModelSource = ModelSource::UNKNOWN_MODEL_SOURCE;
 
 std::string ToString(SegmentId segment_id, ModelSource model_source) {
   std::string prefix =
@@ -295,6 +296,33 @@ TEST_F(SegmentInfoDatabaseTest, Update) {
   ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId, kSegmentId2});
 }
 
+TEST_F(SegmentInfoDatabaseTest, UpdateWithUnknownModelSource) {
+  // Initialize DB with one entry.
+  db_entries_.insert(
+      std::make_pair(ToString(kSegmentId, kUnknownModelSource),
+                     CreateSegment(kSegmentId, kUnknownModelSource)));
+  SetUpDB();
+
+  segment_db_->Initialize(base::DoNothing());
+  db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  db_->LoadCallback(true);
+
+  // Delete a segment.
+  segment_db_->UpdateSegment(kSegmentId, kUnknownModelSource, absl::nullopt,
+                             base::DoNothing());
+  db_->UpdateCallback(true);
+  VerifyDb({});
+
+  // Insert a segment and verify.
+  segment_db_->UpdateSegment(kSegmentId, kUnknownModelSource,
+                             CreateSegment(kSegmentId, kUnknownModelSource),
+                             base::DoNothing());
+  db_->UpdateCallback(true);
+  VerifyDb({std::make_pair(kSegmentId, kUnknownModelSource)});
+  auto segment_info = db_entries_[ToString(kSegmentId, kUnknownModelSource)];
+  EXPECT_EQ(kServerModelSource, segment_info.model_source());
+}
+
 TEST_F(SegmentInfoDatabaseTest, UpdateWithModelSource) {
   // Initialize DB with one entry.
   db_entries_.insert(
@@ -332,8 +360,8 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
       std::make_pair(ToString(kSegmentId, kServerModelSource),
                      CreateSegment(kSegmentId, kServerModelSource)));
   db_entries_.insert(
-      std::make_pair(ToString(kSegmentId2, kServerModelSource),
-                     CreateSegment(kSegmentId2, kServerModelSource)));
+      std::make_pair(ToString(kSegmentId2, kUnknownModelSource),
+                     CreateSegment(kSegmentId2, kUnknownModelSource)));
   SetUpDB();
 
   segment_db_->Initialize(base::DoNothing());
@@ -344,7 +372,7 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
   segment_db_->UpdateMultipleSegments(
       {},
       {std::make_pair(kSegmentId, kServerModelSource),
-       std::make_pair(kSegmentId2, kServerModelSource)},
+       std::make_pair(kSegmentId2, kUnknownModelSource)},
       base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({});
@@ -354,16 +382,16 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
   segments_to_update.emplace_back(
       kSegmentId, CreateSegment(kSegmentId, kServerModelSource));
   segments_to_update.emplace_back(
-      kSegmentId2, CreateSegment(kSegmentId2, kServerModelSource));
+      kSegmentId2, CreateSegment(kSegmentId2, kUnknownModelSource));
   segment_db_->UpdateMultipleSegments(segments_to_update, {},
                                       base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({std::make_pair(kSegmentId, kServerModelSource),
-            std::make_pair(kSegmentId2, kServerModelSource)});
+            std::make_pair(kSegmentId2, kUnknownModelSource)});
 
   // Update one of the existing segment and verify.
   proto::SegmentInfo segment_info =
-      CreateSegment(kSegmentId2, kServerModelSource);
+      CreateSegment(kSegmentId2, kUnknownModelSource);
   segment_info.mutable_prediction_result()->add_result(0.9f);
   // Add this entry to `segments_to_update`.
   segments_to_update.clear();
@@ -373,8 +401,11 @@ TEST_F(SegmentInfoDatabaseTest, UpdateMultipleSegments) {
                                       base::DoNothing());
   db_->UpdateCallback(true);
   VerifyDb({std::make_pair(kSegmentId, kServerModelSource),
-            std::make_pair(kSegmentId2, kServerModelSource)});
+            std::make_pair(kSegmentId2, kUnknownModelSource)});
   VerifyResult(kSegmentId2, kServerModelSource, 0.9f);
+  auto segment_info_from_db =
+      db_entries_[ToString(kSegmentId, kUnknownModelSource)];
+  EXPECT_EQ(kServerModelSource, segment_info_from_db.model_source());
 
   // Verify GetSegmentInfoForSegments.
   ExecuteAndVerifyGetSegmentInfoForSegments({kSegmentId2});

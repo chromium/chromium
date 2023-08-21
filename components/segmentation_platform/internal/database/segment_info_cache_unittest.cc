@@ -25,6 +25,7 @@ const proto::SegmentId kSegmentId3 =
 
 const ModelSource kDefaultModelSource = ModelSource::DEFAULT_MODEL_SOURCE;
 const ModelSource kServerModelSource = ModelSource::SERVER_MODEL_SOURCE;
+const ModelSource kUnknownModelSource = ModelSource::UNKNOWN_MODEL_SOURCE;
 
 proto::SegmentInfo CreateSegment(SegmentId segment_id,
                                  ModelSource model_source) {
@@ -257,6 +258,29 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
   EXPECT_TRUE(segment_info_.has_value());
   EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
   EXPECT_EQ(7, segment_info_.value().model_version());
+
+  // Unknown model source
+  created_segment_info = CreateSegment(kSegmentId, kUnknownModelSource);
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId, kServerModelSource,
+                                         created_segment_info);
+
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource);
+  EXPECT_TRUE(segment_info_.has_value());
+  EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(0, segment_info_.value().model_version());
+  EXPECT_EQ(kServerModelSource, segment_info_.value().model_source());
+
+  // Update model_version of segment_info
+  created_segment_info.set_model_version(2);
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId, kServerModelSource,
+                                         created_segment_info);
+
+  segment_info_ =
+      segment_info_cache_->GetSegmentInfo(kSegmentId, kServerModelSource);
+  EXPECT_TRUE(segment_info_.has_value());
+  EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
+  EXPECT_EQ(2, segment_info_.value().model_version());
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsWithEmptyDatabase) {
