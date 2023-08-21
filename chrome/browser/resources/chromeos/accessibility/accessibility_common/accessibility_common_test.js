@@ -8,6 +8,13 @@ GEN_INCLUDE(['../common/testing/common_e2e_test_base.js']);
  * Accessibility common extension browser tests.
  */
 AccessibilityCommonE2ETest = class extends CommonE2ETestBase {
+  async getFeature(name) {
+    return new Promise(resolve => {
+      chrome.accessibilityPrivate.isFeatureEnabled(
+          name, enabled => resolve(enabled));
+    });
+  }
+
   async getPref(name) {
     return new Promise(resolve => {
       chrome.settingsPrivate.getPref(name, ret => {
@@ -32,6 +39,12 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
     assertEquals('settings.a11y.autoclick', pref.key);
     assertTrue(pref.value);
     assertTrue(Boolean(accessibilityCommon.getAutoclickForTest()));
+
+    // Then check that GameFace is disabled by default.
+    const enabled = await this.getFeature(
+        chrome.accessibilityPrivate.AccessibilityFeature.GAME_FACE_INTEGRATION);
+    assertFalse(enabled);
+    assertFalse(Boolean(accessibilityCommon.getGameFaceForTest()));
 
     // Next, flip on screen magnifier and verify all prefs and internal state.
     await this.setPref('settings.a11y.screen_magnifier', true);
@@ -79,3 +92,29 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
     assertTrue(!accessibilityCommon.getMagnifierForTest());
   })();
 });
+
+GEN('#include "ui/accessibility/accessibility_features.h"');
+
+/**
+ * Accessibility common extension browser tests with enabled GameFace feature.
+ */
+AccessibilityCommonWithGameFaceEnabledE2ETest =
+    class extends AccessibilityCommonE2ETest {
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kAccessibilityGameFaceIntegration']};
+  }
+};
+
+TEST_F(
+    'AccessibilityCommonWithGameFaceEnabledE2ETest', 'GameFaceEnabled',
+    function() {
+      this.newCallback(async () => {
+        // Then check that GameFace is enabled.
+        const enabled = await this.getFeature(
+            chrome.accessibilityPrivate.AccessibilityFeature
+                .GAME_FACE_INTEGRATION);
+        assertTrue(enabled);
+        assertTrue(Boolean(accessibilityCommon.getGameFaceForTest()));
+      })();
+    });

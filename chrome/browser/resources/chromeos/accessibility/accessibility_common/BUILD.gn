@@ -59,6 +59,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/parse/simple_parse_strategy.js",
     "dictation/parse/speech_parser.js",
     "dictation/ui_controller.js",
+    "gameface/gameface.js",
     "magnifier/magnifier.js",
   ]
   rewrite_rules = [
@@ -140,6 +141,7 @@ js_library("accessibility_common") {
   deps = [
     ":autoclick",
     ":dictation",
+    ":gameface",
     ":magnifier",
     "../common:automation_predicate",
     "../common:chrome_event_handler",
@@ -287,6 +289,10 @@ js_library("dictation_locale_info") {
 
 js_library("dictation_context_checker") {
   sources = [ "dictation/context_checker.js" ]
+}
+
+js_library("gameface") {
+  sources = [ "gameface/gameface.js" ]
 }
 
 action("pumpkin_test_files") {
