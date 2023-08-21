@@ -81,6 +81,7 @@ LongScreenshotsTabService::~LongScreenshotsTabService() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_LongScreenshotsTabService_onNativeDestroyed(env, java_ref_);
   java_ref_.Reset();
+  capture_handle_.RunAndReset();
 }
 
 void LongScreenshotsTabService::CaptureTab(int tab_id,
