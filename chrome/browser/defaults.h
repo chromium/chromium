@@ -44,10 +44,6 @@ extern const bool kScrollEventChangesTab;
 // Are bookmark enabled? True by default.
 extern bool bookmarks_enabled;
 
-// Whether HelpApp is enabled. True by default. This is only used by Chrome OS
-// today.
-extern bool enable_help_app;
-
 }  // namespace browser_defaults
 
 #endif  // CHROME_BROWSER_DEFAULTS_H_

@@ -52,6 +52,4 @@ const bool kScrollEventChangesTab = false;
 
 bool bookmarks_enabled = true;
 
-bool enable_help_app = true;
-
 }  // namespace browser_defaults

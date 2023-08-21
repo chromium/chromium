@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -84,6 +85,11 @@ class ComponentLoader {
   // Call this during test setup to load component extensions that have
   // background pages for testing, which could otherwise interfere with tests.
   static void EnableBackgroundExtensionsForTesting();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Call this during test setup to disabling loading the HelpApp.
+  static void DisableHelpAppForTesting();
+#endif
 
   // Adds the default component extensions. If |skip_session_components|
   // the loader will skip loading component extensions that weren't supposed to
