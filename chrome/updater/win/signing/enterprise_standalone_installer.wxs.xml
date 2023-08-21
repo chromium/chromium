@@ -1,8 +1,6 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
-  <?define CompanyName = 'Google'?>
-  <?define CompanyFullName = 'Google LLC'?>
-  <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) Google LLC'?>
+  <?define Copyright = '$(var.ProductOriginalVersionString) Copyright $(var.ProductBuildYear) $(var.CompanyFullName)'?>
   <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
   <?define InstallCommandBase='--silent --tag=[ProductTag] --installsource enterprisemsi[OptOmahaArgs]'?>
 

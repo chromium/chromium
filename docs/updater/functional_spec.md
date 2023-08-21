@@ -690,6 +690,8 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --custom_action_dll_path out/Default/msi_custom_action.dll
     --msi_base_name GoogleChromeBetaStandaloneEnterprise
     --enterprise_installer_dir chrome/updater/win/signing
+    --company_name "Google"
+    --company_full_name "Google LLC"
     --output_dir out/Default
 ```
 

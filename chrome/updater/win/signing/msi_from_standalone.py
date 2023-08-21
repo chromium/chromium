@@ -25,6 +25,8 @@ python3 chrome/updater/win/signing/msi_from_standalone.py
     --custom_action_dll_path out/Default/msi_custom_action.dll
     --msi_base_name GoogleChromeBetaStandaloneEnterprise
     --enterprise_installer_dir chrome/updater/win/signing
+    --company_name "Google"
+    --company_full_name "Google LLC"
     --output_dir out/Default
 ```
 
@@ -155,7 +157,8 @@ def get_wix_candle_flags(
         msi_product_version,
         product_version,
         appid,
-        company_name=None,
+        company_name,
+        company_full_name,
         custom_action_dll_path=None,
         product_uninstaller_additional_args=None,
         msi_product_id=None,
@@ -179,6 +182,7 @@ def get_wix_candle_flags(
         *optional_flag('ProductBuildYear', str(date.today().year)),
         *optional_flag('ProductGuid', appid),
         *optional_flag('CompanyName', company_name),
+        *optional_flag('CompanyFullName', company_full_name),
         *optional_flag('MsiInstallerCADll', custom_action_dll_path),
         *optional_flag('ProductUninstallerAdditionalArgs',
                        product_uninstaller_additional_args),
@@ -222,7 +226,8 @@ class EnterpriseInstaller:
                  appid, product_custom_params,
                  product_uninstaller_additional_args, product_installer_data,
                  standalone_installer_path, custom_action_dll_path,
-                 msi_base_name, enterprise_installer_dir, output_dir):
+                 msi_base_name, enterprise_installer_dir, company_name,
+                 company_full_name, output_dir):
         self._candle_path = candle_path
         self._light_path = light_path
         self._product_name = product_name
@@ -236,6 +241,8 @@ class EnterpriseInstaller:
         self._custom_action_dll_path = custom_action_dll_path
         self._msi_base_name = msi_base_name
         self._enterprise_installer_dir = enterprise_installer_dir
+        self._company_name = company_name
+        self._company_full_name = company_full_name
         self._output_dir = output_dir
 
     def BuildInstaller(self):
@@ -277,6 +284,8 @@ class EnterpriseInstaller:
             msi_product_version,
             self._product_version,
             self._appid,
+            self._company_name,
+            self._company_full_name,
             product_custom_params=self._product_custom_params,
             standalone_installer_path=self._standalone_installer_path,
             custom_action_dll_path=self._custom_action_dll_path,
@@ -361,6 +370,12 @@ def main():
         required=True,
         help=
         'path to dir which contains enterprise_standalone_installer.wxs.xml')
+    parser.add_argument('--company_name',
+                        default='Google',
+                        help='company name for the application')
+    parser.add_argument('--company_full_name',
+                        default='Google LLC',
+                        help='company full name for the application')
     parser.add_argument(
         '--output_dir',
         required=True,
@@ -371,8 +386,8 @@ def main():
         args.product_version, args.appid, args.product_custom_params,
         args.product_uninstaller_additional_args, args.product_installer_data,
         args.standalone_installer_path, args.custom_action_dll_path,
-        args.msi_base_name, args.enterprise_installer_dir,
-        args.output_dir).BuildInstaller()
+        args.msi_base_name, args.enterprise_installer_dir, args.company_name,
+        args.company_full_name, args.output_dir).BuildInstaller()
 
 
 if __name__ == '__main__':
