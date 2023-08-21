@@ -77,6 +77,7 @@ export async function testProgressAndItemsArePassedToElement() {
     filesToPin: 24,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 24,
   };
 
   // Dispatch an update to the store and wait for the panel to have the
@@ -109,6 +110,7 @@ export async function testOutOfBoundsValuesDoNotUpdateProgress() {
     filesToPin: -10,    // Negative number of files to pin.
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 24,
   };
 
   // Dispatch an update to the store and ensure the panel doesn't get
@@ -137,6 +139,7 @@ export async function testOtherStoreUpdatesDontCauseThisContainerToUpdate() {
     filesToPin: 24,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 24,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -193,6 +196,7 @@ export async function testZeroBytesToPinShouldShowAllFilesSynced() {
     filesToPin: 0,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 0,
   };
 
   // Dispatch an update to the store and wait for the panel to have the
@@ -254,6 +258,7 @@ testInProgressStateDoesNotUpdateThePanelWhenPrefDisabled() {
     filesToPin: 10,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 10,
   };
 
   // Dispatch an update to the store, wait for the store to update before
@@ -295,6 +300,7 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     filesToPin: 10,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 10,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -359,6 +365,7 @@ testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute() {
     filesToPin: 10,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 10,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -413,6 +420,7 @@ export async function testExistingPropertiesAreRemovedOnSubsequentSyncds() {
     filesToPin: 10,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 10,
   };
 
   // Dispatch an update to the store and ensure the panel does get attributes.
@@ -457,6 +465,7 @@ export async function testNoBytesToPinButHasFilesAddsPercentage() {
     filesToPin: 1,
     remainingSeconds: 0,
     emptiedQueue: false,
+    listedFiles: 1,
   };
 
   store.dispatch(updateBulkPinProgress(bulkPinning));
