@@ -125,10 +125,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
                                    "sync_load_models_timeout_duration",
                                    base::Seconds(30)};
 
-// Enable check to ensure only preferences in the allowlist are registered as
-// syncable.
-BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
-
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)

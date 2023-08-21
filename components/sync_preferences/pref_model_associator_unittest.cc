@@ -554,15 +554,12 @@ TEST_F(IndividualPreferenceMergeTest, ListPreference) {
 class SyncablePrefsDatabaseTest : public testing::Test {
  protected:
   SyncablePrefsDatabaseTest()
-      : feature_list_(syncer::kSyncEnforcePreferencesAllowlist),
-        pref_registry_(
+      : pref_registry_(
             base::MakeRefCounted<user_prefs::PrefRegistrySyncable>()) {
     PrefServiceMockFactory factory;
     factory.SetPrefModelAssociatorClient(&client_);
     pref_service_ = factory.CreateSyncable(pref_registry_.get());
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   TestPrefModelAssociatorClient client_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry_;
