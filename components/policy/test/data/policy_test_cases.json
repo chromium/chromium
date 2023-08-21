@@ -23761,7 +23761,8 @@
       "mac",
       "chromeos_ash",
       "chromeos_lacros",
-      "android"
+      "android",
+      "fuchsia"
     ],
     "policy_pref_mapping_tests": [
       {
