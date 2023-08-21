@@ -148,6 +148,14 @@ bool GetW3CSetting(const base::Value::Dict& params) {
 
 namespace {
 
+std::string PlatformNameToW3C(const std::string& platform_name) {
+  std::string result = base::ToLowerASCII(platform_name);
+  if (base::StartsWith(result, "mac")) {
+    result = "mac";
+  }
+  return result;
+}
+
 // Creates a JSON object (represented by base::Value::Dict) that contains
 // the capabilities, for returning to the client app as the result of New
 // Session command.
@@ -165,7 +173,7 @@ base::Value::Dict CreateCapabilities(Session* session,
   if (os_name.find("Windows") != std::string::npos)
     os_name = "Windows";
   if (session->w3c_compliant) {
-    caps.Set("platformName", base::ToLowerASCII(os_name));
+    caps.Set("platformName", PlatformNameToW3C(os_name));
   } else {
     caps.Set("platform", os_name);
   }

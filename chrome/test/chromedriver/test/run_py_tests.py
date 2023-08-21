@@ -565,6 +565,21 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
                       driver.Load, 'http://invalid/')
     self.assertEqual('http://invalid/', driver.GetCurrentUrl())
 
+  def testReturnedPlatformName(self):
+    # This tests makes sure that the 'platformName' values defined in the
+    # standard are respected by ChromeDriver:
+    # https://www.w3.org/TR/webdriver2/#dfn-matching-capabilities
+    driver = self.CreateDriver()
+    current_platform = util.GetPlatformName()
+    if current_platform == 'linux':
+      self.assertEqual('linux', driver.capabilities['platformName'])
+    elif current_platform == 'mac':
+      self.assertEqual('mac', driver.capabilities['platformName'])
+    elif current_platform == 'win':
+      self.assertEqual('windows', driver.capabilities['platformName'])
+    else:
+      pass
+
 class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
   @staticmethod
   def composeWebSocketUrl(server_url, session_id):
