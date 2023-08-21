@@ -21,6 +21,8 @@
 
 namespace syncer {
 
+const base::TimeDelta kSyncLoadModelsTimeoutDuration = base::Seconds(30);
+
 ModelLoadManager::ModelLoadManager(
     const DataTypeController::TypeMap* controllers,
     ModelLoadManagerDelegate* processor)
@@ -183,12 +185,11 @@ void ModelLoadManager::LoadDesiredTypes() {
     }
   }
 
-  if (base::FeatureList::IsEnabled(syncer::kSyncEnableLoadModelsTimeout)) {
-    // Start a timeout timer for load.
-    load_models_timeout_timer_.Start(FROM_HERE,
-                                     kSyncLoadModelsTimeoutDuration.Get(), this,
-                                     &ModelLoadManager::OnLoadModelsTimeout);
-  }
+  // Start a timeout timer for load.
+  load_models_timeout_timer_.Start(FROM_HERE, kSyncLoadModelsTimeoutDuration,
+                                   this,
+                                   &ModelLoadManager::OnLoadModelsTimeout);
+
   // It's possible that all models are already loaded.
   NotifyDelegateIfReadyForConfigure();
 }
@@ -271,7 +272,6 @@ void ModelLoadManager::NotifyDelegateIfReadyForConfigure() {
 }
 
 void ModelLoadManager::OnLoadModelsTimeout() {
-  DCHECK(base::FeatureList::IsEnabled(syncer::kSyncEnableLoadModelsTimeout));
   // TODO(crbug.com/1420553): Investigate why the following DCHECK fails.
   // DCHECK(!loaded_types_.HasAll(preferred_types_without_errors_));
 

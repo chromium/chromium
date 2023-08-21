@@ -683,7 +683,7 @@ TEST_F(SyncModelLoadManagerTest, ShouldTimeoutIfNotAllTypesLoaded) {
 
   EXPECT_CALL(delegate_, OnAllDataTypesReadyForConfigure);
   // Types not loaded till now are skipped.
-  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration.Get());
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
 }
 
 }  // namespace syncer

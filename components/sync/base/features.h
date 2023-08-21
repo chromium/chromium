@@ -111,20 +111,6 @@ BASE_DECLARE_FEATURE(kSyncEnforceBookmarksCountLimit);
 // Enables codepath to allow clearing metadata when the data type is stopped.
 BASE_DECLARE_FEATURE(kSyncAllowClearingMetadataWhenDataTypeIsStopped);
 
-// Enabled by default, this acts as a kill switch for a timeout introduced over
-// loading of models for enabled types in ModelLoadManager. When enabled, it
-// skips waiting for types not loaded yet and tries to stop them once they
-// finish loading.
-BASE_DECLARE_FEATURE(kSyncEnableLoadModelsTimeout);
-
-// Timeout duration for loading data types in ModelLoadManager.
-// TODO(crbug.com/992340): Update the timeout duration based on uma metrics
-// Sync.ModelLoadManager.LoadModelsElapsedTime
-inline constexpr base::FeatureParam<base::TimeDelta>
-    kSyncLoadModelsTimeoutDuration{&kSyncEnableLoadModelsTimeout,
-                                   "sync_load_models_timeout_duration",
-                                   base::Seconds(30)};
-
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)

@@ -1656,7 +1656,7 @@ TEST_F(SyncDataTypeManagerImplTest, ShouldFinishConfigureIfSomeTypesTimeout) {
             GetController(BOOKMARKS)->state());
 
   // Fast-forward to time out.
-  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration.Get());
+  task_environment_.FastForwardBy(kSyncLoadModelsTimeoutDuration);
 
   // BOOKMARKS is ignored and PREFERENCES is connected.
   EXPECT_EQ(configurer_.connected_types(), ModelTypeSet({PREFERENCES}));

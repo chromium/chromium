@@ -97,10 +97,6 @@ BASE_FEATURE(kSyncAllowClearingMetadataWhenDataTypeIsStopped,
              "SyncAllowClearingMetadataWhenDataTypeIsStopped",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnableLoadModelsTimeout,
-             "SyncEnableLoadModelsTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
