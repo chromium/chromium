@@ -94,6 +94,7 @@ public class PasswordAccessoryIntegrationTest {
                 mTestServer.getURL("/chrome/test/data/password/password_form.html"));
         mHelper.focusPasswordField(false);
         mHelper.waitForKeyboardAccessoryToBeShown();
+        mHelper.waitForKeyboardToShow();
         whenDisplayed(isKeyboardAccessoryTabLayout()).perform(selectTabAtPosition(0));
 
         // Check that the provided elements are there.
