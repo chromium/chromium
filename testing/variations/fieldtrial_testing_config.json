@@ -16768,6 +16768,9 @@
                         "DefaultANGLEVulkan",
                         "Vulkan",
                         "VulkanFromANGLE"
+                    ],
+                    "disable_features": [
+                        "VaapiVideoDecoder"
                     ]
                 }
             ]
