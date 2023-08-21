@@ -11,7 +11,6 @@
 #import "base/notreached.h"
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -55,10 +54,6 @@
 }
 
 - (void)start {
-  bool isFinchFreEnabled = base::FeatureList::IsEnabled(switches::kFinchIosFre);
-  // TODO(crbug.com/1447028): Remove this histogram when the finch experiment
-  // is finished.
-  base::UmaHistogramBoolean("FirstRun.iOSFreFinchEnabled", isFinchFreEnabled);
   [self presentScreen:[self.screenProvider nextScreenType]];
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kStart);
