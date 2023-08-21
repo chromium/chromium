@@ -11,6 +11,7 @@
 #include "base/rand_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "components/background_task_scheduler/background_task_scheduler.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_tiles/internal/stats.h"
 #include "components/query_tiles/internal/tile_config.h"

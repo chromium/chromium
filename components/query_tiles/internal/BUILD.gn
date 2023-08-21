@@ -91,6 +91,7 @@ source_set("unit_tests") {
     ":internal",
     "//base",
     "//base/test:test_support",
+    "//components/background_task_scheduler:public",
     "//components/image_fetcher/core:test_support",
     "//components/leveldb_proto",
     "//components/leveldb_proto:test_support",

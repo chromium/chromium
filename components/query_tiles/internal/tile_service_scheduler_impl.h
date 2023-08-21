@@ -14,6 +14,10 @@
 #include "components/query_tiles/tile_service_prefs.h"
 #include "net/base/backoff_entry_serializer.h"
 
+namespace background_task {
+class BackgroundTaskScheduler;
+}  // namespace background_task
+
 class PrefService;
 
 namespace query_tiles {
