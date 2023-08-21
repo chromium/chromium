@@ -1237,7 +1237,16 @@ void CommerceHintAgent::OnMainFrameIntersectionChanged(
 
 void CommerceHintAgent::FocusedElementChanged(
     const blink::WebElement& focused_element) {
+  // Don't observe focused element change when the navigation hasn't finished
+  // to avoid being triggered by auto focus due to page rendering.
+  if (!starting_url_.is_empty()) {
+    return;
+  }
   base::Time before_check = base::Time::Now();
+  if ((before_check - add_to_cart_heuristics_execution_time_) <
+      commerce::kHeuristicsExecutionGapTime.Get()) {
+    return;
+  }
   if (!should_skip_.has_value() || should_skip_.value()) {
     return;
   }
@@ -1247,6 +1256,8 @@ void CommerceHintAgent::FocusedElementChanged(
   auto builder = ukm::builders::Shopping_AddToCartDetection(
       render_frame()->GetWebFrame()->GetDocument().GetUkmSourceId());
   blink::WebElement element = focused_element;
+  // Record the last time that the heuristics is run.
+  add_to_cart_heuristics_execution_time_ = base::Time::Now();
   if (IsAddToCartButton(element)) {
     add_to_cart_focus_time_ = base::Time::Now();
   }
