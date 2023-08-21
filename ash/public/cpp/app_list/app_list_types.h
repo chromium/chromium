@@ -623,6 +623,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutLeft,
     kKeyboardShortcutRight,
     kKeyboardShortcutPrivacyScreenToggle,
+    kKeyboardShortcutSettings,
     kKeyboardShortcutSnapshot,
   };
 

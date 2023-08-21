@@ -109,6 +109,8 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutRight;
     case (KeyboardCode::VKEY_PRIVACY_SCREEN_TOGGLE):
       return IconCode::kKeyboardShortcutPrivacyScreenToggle;
+    case (KeyboardCode::VKEY_SETTINGS):
+      return IconCode::kKeyboardShortcutSettings;
     case (KeyboardCode::VKEY_SNAPSHOT):
       return IconCode::kKeyboardShortcutSnapshot;
     default:

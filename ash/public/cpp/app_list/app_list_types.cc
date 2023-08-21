@@ -426,6 +426,9 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Privacy.
     case kKeyboardShortcutPrivacyScreenToggle:
       return &kKsvPrivacyScreenToggleIcon;
+    // Settings.
+    case kKeyboardShortcutSettings:
+      return &kKsSettingsIcon;
     // Snapshot.
     case kKeyboardShortcutSnapshot:
       return &kKsvSnapshotIcon;
