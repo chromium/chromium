@@ -381,6 +381,9 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Emoji picker.
     case kKeyboardShortcutEmojiPicker:
       return &kKsEmojiPickerIcon;
+    // Dictation.
+    case kKeyboardShortcutDictationToggle:
+      return &kKsDictationIcon;
     // Zoom.
     case kKeyboardShortcutZoom:
       return &kKsvFullscreenIcon;

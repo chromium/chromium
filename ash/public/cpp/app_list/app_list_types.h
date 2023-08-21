@@ -603,6 +603,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutBrowserBack,
     kKeyboardShortcutBrowserForward,
     kKeyboardShortcutBrowserRefresh,
+    kKeyboardShortcutDictationToggle,
     kKeyboardShortcutEmojiPicker,
     kKeyboardShortcutZoom,
     kKeyboardShortcutMediaLaunchApp1,
