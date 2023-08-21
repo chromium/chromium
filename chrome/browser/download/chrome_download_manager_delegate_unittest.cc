@@ -1030,7 +1030,9 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       PrepareDownloadItemForInsecureBlocking(kFinalUrl, kInitiator,
                                              kRedirectUrl);
 
-  feature_list.InitAndEnableFeature(features::kTreatUnsafeDownloadsAsActive);
+  // If insecure download warnings are enabled, they block this download so
+  // disable it to avoid that.
+  feature_list.InitAndDisableFeature(features::kInsecureDownloadWarnings);
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // DownloadTargetDeterminer looks for plugin handlers if there's an
@@ -1445,6 +1447,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
   const GURL kMovieFile("http://example.com/foo.mp4");
   const GURL kSecureFile("https://example.com/foo");
   const GURL kInsecureFile("http://example.com/foo");
+  const GURL kLocalFile("http://localhost/foo");
   const auto kSecureOrigin = Origin::Create(GURL("https://example.org"));
   const auto kInsecureOrigin = Origin::Create(GURL("http://example.org"));
 
@@ -1501,6 +1504,10 @@ TEST_F(ChromeDownloadManagerDelegateTest, InsecureDownloadsBlocked) {
       {kMovieFile, kInsecureOrigin, kInsecureUrl,
        download::DOWNLOAD_INTERRUPT_REASON_NONE,
        download::DownloadItem::InsecureDownloadStatus::SAFE, "insecure_mp4"},
+      // Files hosted on localhost are always secure.
+      {kLocalFile, kInsecureOrigin, kInsecureUrl,
+       download::DOWNLOAD_INTERRUPT_REASON_NONE,
+       download::DownloadItem::InsecureDownloadStatus::SAFE, "local_secure"},
   };
 
 #if BUILDFLAG(ENABLE_PLUGINS)
