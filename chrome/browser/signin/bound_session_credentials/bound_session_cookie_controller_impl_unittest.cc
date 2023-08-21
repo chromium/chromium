@@ -40,6 +40,7 @@ constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
 const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
 const base::TimeDelta kCookieRefreshInterval = base::Minutes(2);
+const base::TimeDelta kResumeBlockedRequestTimeout = base::Seconds(20);
 
 base::Time GetTimeInTenMinutes() {
   return base::Time::Now() + base::Minutes(10);
@@ -200,6 +201,10 @@ class BoundSessionCookieControllerImplTest
 
   base::OneShotTimer* cookie_refresh_timer() {
     return &bound_session_cookie_controller()->cookie_refresh_timer_;
+  }
+
+  base::OneShotTimer* resume_blocked_requests_timer() {
+    return &bound_session_cookie_controller()->resume_blocked_requests_timer_;
   }
 
   unexportable_keys::UnexportableKeyLoader* key_loader() {
@@ -534,6 +539,62 @@ TEST_F(BoundSessionCookieControllerImplTest,
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
   }
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
+  // The fetch hasn't completed nor are the required cookies fresh, but the
+  // request is resumed due to timeout.
+  EXPECT_FALSE(AreAllCookiesFresh());
+  EXPECT_TRUE(cookie_fetcher());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       BlockedRequestsCalculateTimeoutFromFirstRequest) {
+  constexpr int kBlockedRequestCount = 2;
+  constexpr base::TimeDelta kDeltaBetweenRequests = base::Seconds(1);
+  BoundSessionCookieController* controller = bound_session_cookie_controller();
+  std::array<base::test::TestFuture<void>, kBlockedRequestCount> futures;
+
+  for (auto& future : futures) {
+    controller->OnRequestBlockedOnCookie(future.GetCallback());
+    EXPECT_FALSE(future.IsReady());
+    task_environment()->FastForwardBy(kDeltaBetweenRequests);
+  }
+
+  // We should release as soon as `kResumeBlockedRequestTimeout` has passed
+  // since the first blocked request.
+  task_environment()->FastForwardBy(kResumeBlockedRequestTimeout -
+                                    kDeltaBetweenRequests *
+                                        kBlockedRequestCount);
+  // The fetch hasn't completed nor are the required cookies fresh, but the
+  // requests are resumed due to timeout.
+  EXPECT_FALSE(AreAllCookiesFresh());
+  EXPECT_TRUE(cookie_fetcher());
+  for (auto& future : futures) {
+    EXPECT_TRUE(future.IsReady());
+  }
+  EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
+  SimulateCompleteRefreshRequest(
+      BoundSessionRefreshCookieFetcher::Result::kSuccess,
+      GetTimeInTenMinutes());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,

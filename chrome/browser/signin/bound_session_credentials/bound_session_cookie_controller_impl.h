@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -39,17 +38,18 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
-  void Initialize() override;
-
-  void OnRequestBlockedOnCookie(
-      base::OnceClosure resume_blocked_request) override;
-
   ~BoundSessionCookieControllerImpl() override;
 
   BoundSessionCookieControllerImpl(const BoundSessionCookieControllerImpl&) =
       delete;
   BoundSessionCookieControllerImpl& operator=(
       const BoundSessionCookieControllerImpl&) = delete;
+
+  // BoundSessionCookieController:
+  void Initialize() override;
+
+  void OnRequestBlockedOnCookie(
+      base::OnceClosure resume_blocked_request) override;
 
  private:
   friend class BoundSessionCookieControllerImplTest;
@@ -94,6 +94,8 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
   std::vector<base::OnceClosure> resume_blocked_requests_;
   // Used to schedule preemptive cookie refresh.
   base::OneShotTimer cookie_refresh_timer_;
+  // Used to release blocked requests after a timeout.
+  base::OneShotTimer resume_blocked_requests_timer_;
 
   RefreshCookieFetcherFactoryForTesting
       refresh_cookie_fetcher_factory_for_testing_;

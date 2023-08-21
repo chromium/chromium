@@ -15,7 +15,6 @@
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #include "content/public/browser/storage_partition.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -62,6 +61,19 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   MaybeRefreshCookie();
+
+  if (!resume_blocked_requests_timer_.IsRunning() &&
+      !resume_blocked_requests_.empty()) {
+    // Ensure all blocked requests are released after a timeout.
+    // `base::Unretained(this)` is safe because `this` owns
+    // `resume_blocked_requests_timer_`.
+    const base::TimeDelta kResumeBlockedRequestTimeout = base::Seconds(20);
+    resume_blocked_requests_timer_.Start(
+        FROM_HERE, kResumeBlockedRequestTimeout,
+        base::BindRepeating(
+            &BoundSessionCookieControllerImpl::ResumeBlockedRequests,
+            base::Unretained(this)));
+  }
 }
 
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
@@ -175,6 +187,7 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {
+  resume_blocked_requests_timer_.Stop();
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, resume_blocked_requests_);
   for (auto& callback : callbacks) {
