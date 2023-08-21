@@ -8,9 +8,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/json/values_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
@@ -93,6 +95,8 @@ void IsolatedWebAppUpdateDiscoveryTask::Start(CompletionCallback callback) {
   CHECK(!has_started_);
   has_started_ = true;
   callback_ = std::move(callback);
+
+  debug_log_.Set("start_time", base::TimeToValue(base::Time::Now()));
 
   // TODO(crbug.com/1459160): Once we support updating IWAs not installed via
   // policy, we need to update this annotation.
@@ -318,12 +322,14 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateDryRunDone(
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::SucceedWith(Success success) {
+  debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", SuccessToString(success));
   VLOG(1) << "Isolated Web App update discovery task succeeded: " << success;
   std::move(callback_).Run(success);
 }
 
 void IsolatedWebAppUpdateDiscoveryTask::FailWith(Error error) {
+  debug_log_.Set("end_time", base::TimeToValue(base::Time::Now()));
   debug_log_.Set("result", ErrorToString(error));
   LOG(ERROR) << "Isolated Web App update discovery task failed: " << error;
   std::move(callback_).Run(base::unexpected(error));

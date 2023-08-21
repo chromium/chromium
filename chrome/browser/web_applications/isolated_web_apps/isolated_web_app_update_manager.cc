@@ -26,7 +26,9 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_waiter.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -110,12 +112,12 @@ void IsolatedWebAppUpdateManager::Start() {
 void IsolatedWebAppUpdateManager::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Stop all potentially ongoing update discovery tasks and avoid scheduling
-  // new tasks.
+  // Stop all potentially ongoing tasks and avoid scheduling new tasks.
   install_manager_observation_.Reset();
   update_discovery_timer_.Stop();
   update_discovery_tasks_.clear();
   update_apply_waiters_.clear();
+  update_apply_tasks_.clear();
 }
 
 base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
@@ -134,6 +136,11 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
     update_apply_waiters.Append(waiter->AsDebugValue());
   }
 
+  base::Value::List update_apply_tasks;
+  for (const auto& task : update_apply_tasks_) {
+    update_apply_tasks.Append(task->AsDebugValue());
+  }
+
   return base::Value(
       base::Value::Dict()
           .Set("automatic_updates_enabled", automatic_updates_enabled_)
@@ -146,7 +153,9 @@ base::Value IsolatedWebAppUpdateManager::AsDebugValue() const {
                         next_update_check_delta_in_minutes))
           .Set("update_discovery_tasks", std::move(update_discovery_tasks))
           .Set("update_discovery_log", update_discovery_results_log_.Clone())
-          .Set("update_apply_waiters", std::move(update_apply_waiters)));
+          .Set("update_apply_waiters", std::move(update_apply_waiters))
+          .Set("update_apply_tasks", std::move(update_apply_tasks))
+          .Set("update_apply_log", update_apply_results_log_.Clone()));
 }
 
 void IsolatedWebAppUpdateManager::SetEnableAutomaticUpdatesForTesting(
@@ -170,6 +179,10 @@ void IsolatedWebAppUpdateManager::OnWebAppUninstalled(
   if (update_discovery_timer_.IsRunning() && !IsAnyIWAInstalled()) {
     update_discovery_timer_.Stop();
   }
+}
+
+void IsolatedWebAppUpdateManager::DiscoverUpdatesNowForTesting() {
+  QueueUpdateDiscoveryTasks();
 }
 
 bool IsolatedWebAppUpdateManager::IsAnyIWAInstalled() {
@@ -240,7 +253,7 @@ void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
     QueueUpdateDiscoveryTask(url_info, update_manifest_url);
   }
 
-  MaybeStartNextUpdateDiscoveryTask();
+  MaybeStartNextTask();
 }
 
 void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTask(
@@ -252,19 +265,27 @@ void IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTask(
           provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
 }
 
-void IsolatedWebAppUpdateManager::MaybeStartNextUpdateDiscoveryTask() {
-  if (update_discovery_tasks_.empty()) {
+void IsolatedWebAppUpdateManager::MaybeStartNextTask() {
+  if (IsAnyTaskRunning()) {
     return;
   }
 
-  const std::unique_ptr<IsolatedWebAppUpdateDiscoveryTask>& next_task =
-      update_discovery_tasks_.front();
-  if (!next_task->has_started()) {
-    next_task->Start(base::BindOnce(
+  if (!update_apply_tasks_.empty()) {
+    update_apply_tasks_.front()->Start(
+        base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted,
+                       // We can use `base::Unretained` here, because `this`
+                       // owns `update_apply_tasks_`.
+                       base::Unretained(this)));
+    return;
+  }
+
+  if (!update_discovery_tasks_.empty()) {
+    update_discovery_tasks_.front()->Start(base::BindOnce(
         &IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted,
         // We can use `base::Unretained` here, because `this` owns
         // `update_discovery_tasks_`.
         base::Unretained(this)));
+    return;
   }
 }
 
@@ -282,6 +303,13 @@ void IsolatedWebAppUpdateManager::CreateUpdateApplyWaiter(
       &*profile_,
       base::BindOnce(&IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished,
                      weak_factory_.GetWeakPtr(), url_info));
+}
+
+bool IsolatedWebAppUpdateManager::IsAnyTaskRunning() const {
+  return (!update_apply_tasks_.empty() &&
+          update_apply_tasks_.front()->has_started()) ||
+         (!update_discovery_tasks_.empty() &&
+          update_discovery_tasks_.front()->has_started());
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
@@ -307,7 +335,7 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
     }
   }
 
-  MaybeStartNextUpdateDiscoveryTask();
+  MaybeStartNextTask();
 }
 
 void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
@@ -316,7 +344,30 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyWaiterFinished(
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {
   update_apply_waiters_.erase(url_info.app_id());
 
-  // TODO(cmfcmf): Start task to apply the update here.
+  update_apply_tasks_.push_back(std::make_unique<IsolatedWebAppUpdateApplyTask>(
+      url_info, std::move(keep_alive), std::move(profile_keep_alive),
+      provider_->scheduler()));
+
+  MaybeStartNextTask();
+}
+
+void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
+    IsolatedWebAppUpdateApplyTask::CompletionStatus status) {
+  base::Value task_debug_value = update_apply_tasks_.front()->AsDebugValue();
+  IsolatedWebAppUrlInfo url_info = update_apply_tasks_.front()->url_info();
+  update_apply_tasks_.pop_front();
+
+  update_apply_results_log_.Append(std::move(task_debug_value));
+  if (status.has_value()) {
+    VLOG(1) << "Applying an Isolated Web App update for "
+            << url_info.web_bundle_id().id() << " succeeded.";
+  } else {
+    LOG(ERROR) << "Applying an Isolated Web App update for "
+               << url_info.web_bundle_id().id()
+               << " failed: " << status.error();
+  }
+
+  MaybeStartNextTask();
 }
 
 }  // namespace web_app
