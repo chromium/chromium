@@ -53,7 +53,7 @@ def _RunTests(input_api, output_api):
         'make_permissions_policy_features_tests.py',
         'affected_list': [
             r'.*make_permissions_policy_features.*',
-            'templates/third_party/permissions_policy_features.cc.tmpl',
+            'templates/permissions_policy_features_generated.cc.tmpl',
         ]
     }]
     test_commands = []
