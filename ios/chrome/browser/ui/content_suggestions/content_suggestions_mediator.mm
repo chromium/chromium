@@ -311,7 +311,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)refreshMostVisitedTiles {
   // Refresh in case there are new MVT to show.
-  _mostVisitedSites->RefreshTiles();
   _mostVisitedSites->Refresh();
 }
 
