@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">अपने फ़ोन पर सेट अप पूरा करें</translation>
 <translation id="1054153489933238809">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> को 1 हफ़्ते में अपडेट करें}one{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्ते में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_WEEKS} हफ़्तों में अपडेट करें}}</translation>
+<translation id="1056398434290692818">हाथ के जेस्चर की मदद से आगे और पीछे जाएं</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
 <translation id="1056980582064308040">सेटिंग बदलने से हॉटस्पॉट रीस्टार्ट हो जाएगा. साथ ही, हॉटस्पॉट का इस्तेमाल करने वाले डिवाइस अपने-आप डिसकनेक्ट हो जाएंगे.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -514,6 +515,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ऐप्लिकेशन हटाएं}one{ऐप्लिकेशन हटाएं}other{ऐप्लिकेशन हटाएं}}</translation>
 <translation id="1417497355604638350">ऐप्लिकेशन की परफ़ॉर्मेंस से जुड़ी जानकारी और उसके इस्तेमाल के बारे में डेटा भेजें.</translation>
 <translation id="1418552618736477642">सूचनाएं और ऐप्लिकेशन</translation>
+<translation id="1418559532423038045">आपके <ph name="DEVICE_TYPE" /> से <ph name="VM_NAME" /> को हटाता है. ऐसा करने से, वर्चुअल मशीन में मौजूद डेटा और सभी ऐप्लिकेशन मिट जाएंगे!</translation>
 <translation id="1418882096915998312">Chrome Enterprise Upgrade की मदद से रजिस्टर किया जा रहा है</translation>
 <translation id="1418954524306642206">अपने प्रिंटर के PPD को सेट करने के लिए ब्राउज़ करें</translation>
 <translation id="1420834118113404499">मीडिया लाइसेंस</translation>
@@ -2383,6 +2385,7 @@
 <translation id="287205682142673348">पोर्ट फ़ॉरवर्डिंग</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> जोड़ें...</translation>
 <translation id="2872961005593481000">शट डाउन करें</translation>
+<translation id="2873744479411987024">रीफ़्रेश दर ज़्यादा होने पर, आपको ज़्यादा स्मूद डिसप्ले की सुविधा मिलती है. इससे चीज़ें साफ़ नज़र आती हैं. हालांकि, रीफ़्रेश दर ज़्यादा रखने पर, बैटरी लाइफ़ पर असर पड़ सकता है.</translation>
 <translation id="2873995907777332853">सभी कुकी को ब्लॉक करने से जुड़ी जानकारी दिखाएं</translation>
 <translation id="2874939134665556319">पिछला ट्रैक</translation>
 <translation id="2875698561019555027">(Chrome गड़बड़ी पृष्‍ठ)</translation>
@@ -2472,6 +2475,7 @@
 <translation id="2944060181911631861">इस्तेमाल और निदान से जुड़ा डेटा भेजें. Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेजकर, अपने Android अनुभव को बेहतर बनाने में मदद करें. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK1" />ज़्यादा जानें<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">फ़ाइल पर जाएं</translation>
 <translation id="2946119680249604491">कनेक्शन जोड़ें</translation>
+<translation id="2946190589196900944">डिसप्ले की सीमाएं</translation>
 <translation id="2946640296642327832">ब्लूटूथ सक्षम करें</translation>
 <translation id="2947605845283690091">वेब ब्राउज़िंग तेज़ होनी चाहिए. अभी <ph name="BEGIN_LINK" />अपने एक्सटेंशन की जांच करें.<ph name="END_LINK" /></translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> पर जाएं</translation>
@@ -2487,6 +2491,7 @@
 <translation id="2959127025785722291">कोई गड़बड़ी हुई. स्कैन करने की प्रक्रिया पूरी नहीं हो सकी. कृपया फिर से कोशिश करें.</translation>
 <translation id="2959842337402130152">स्टोरेज के लिए कम जगह बची है, इसलिए कंटेनर बहाल नहीं किया जा सका. डिवाइस से <ph name="SPACE_REQUIRED" /> खाली करके फिर से कोशिश करें.</translation>
 <translation id="2960208947600937804">Linux को कॉन्फ़िगर करने में कोई गड़बड़ी हुई. अपने एडमिन से संपर्क करें.</translation>
+<translation id="2960942820860729477">रीफ़्रेश दर</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (एक्सटेंशन दिया गया)</translation>
 <translation id="2961210776189273067">टाइटल</translation>
 <translation id="2961695502793809356">आगे जाने के लिए क्लिक करें, इतिहास देखने के लिए दबाकर रखें</translation>
@@ -4205,6 +4210,7 @@
 <translation id="4404843640767531781">आपके माता-पिता ने <ph name="APP_NAME" /> को ब्लॉक किया है. उनसे इस ऐप्लिकेशन का इस्तेमाल करने की अनुमति लें.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">इसमें ले जाएं…</translation>
+<translation id="4405781821077215583">टेक्स्ट के साथ-साथ आपकी स्क्रीन पर मौजूद आइटम को छोटा या बड़ा करता है</translation>
 <translation id="4406883609789734330">लाइव कैप्शन</translation>
 <translation id="4407039574263172582">आगे बढ़ने के लिए, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> इस साइट के साथ आपका नाम, ईमेल पता, और प्रोफ़ाइल फ़ोटो शेयर करेगा. इस साइट की <ph name="BEGIN_LINK" />सेवा की शर्तें<ph name="END_LINK" /> देखें.</translation>
 <translation id="4408599188496843485">स&amp;हायता</translation>
@@ -6315,6 +6321,7 @@
 <translation id="6196640612572343990">तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="6196854373336333322">एक्सटेंशन "<ph name="EXTENSION_NAME" />" ने आपकी प्रॉक्सी सेटिंग पर नियंत्रण कर लिया है, जिसका अर्थ है कि यह   ऑनलाइन किए जाने वाले काम को बदल सकता है, रोक सकता है या उसे छिप कर सुन सकता है. अगर आप पक्का नहीं हैं कि यह बदलाव क्यों हुआ है, तो संभवत: आप उसे नहीं चाहते हैं.</translation>
 <translation id="6197128521826316819">इस पेज के लिए क्यूआर कोड बनाएं</translation>
+<translation id="6198223452299275399">पेजों के बीच स्वाइप करना</translation>
 <translation id="6198252989419008588">पिन बदलें</translation>
 <translation id="6200047250927636406">फ़ाइल खारिज करें</translation>
 <translation id="6200151268994853226">एक्सटेंशन मैनेज करें</translation>
@@ -6711,6 +6718,7 @@
 <translation id="6532527800157340614">आपका ऐक्सेस टोकन नहीं मिल पाने की वजह से साइन-इन नहीं किया जा सका. कृपया अपना नेटवर्क कनेक्शन जांचें और फिर से कोशिश करें.</translation>
 <translation id="6532663472409656417">एंटरप्राइज़ दर्ज किया गया है</translation>
 <translation id="6533315466883598769">Google Translate का इस्तेमाल करें</translation>
+<translation id="65334502113648172">डिसप्ले एरिया को छोटा या बड़ा करने के लिए, ऐरो बटन दबाएं. डिसप्ले एरिया को इधर-उधर ले जाने के लिए, shift और + दबाएं और फिर ऐरो बटन का इस्तेमाल करें.</translation>
 <translation id="6533636340637966565">चालू हो रहा है...</translation>
 <translation id="6535331821390304775">इस तरह के लिंक को उनसे जुड़े ऐप्लिकेशन में खोलने के लिए, हमेशा <ph name="ORIGIN" /> का इस्तेमाल करें</translation>
 <translation id="653659894138286600">दस्तावेज़ और इमेज स्कैन करें</translation>

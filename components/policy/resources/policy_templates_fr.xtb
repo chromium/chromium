@@ -1296,6 +1296,7 @@ La règle <ph name="HTTP_ALLOWLIST_POLICY_NAME" /> distincte permet d'éviter qu
 
           Si cette règle est désactivée ou si elle n'est pas définie, aucun compte n'est ajouté aux paramètres de comptes Kerberos, et tous ceux déjà ajoutés avec cette règle sont supprimés. Les utilisateurs peuvent toujours ajouter des comptes manuellement si la règle KerberosAddAccountsAllowed est activée.</translation>
 <translation id="2104418465060359056">Enregistrer les informations des extensions et des plug-ins</translation>
+<translation id="210652463860415362">Accepter les contenus Web à l'aide de la fonctionnalité de transport de compression par dictionnaire</translation>
 <translation id="2106627642643925514">Remplace le mode d'impression par code défini par défaut. Si le mode est indisponible, cette règle est ignorée.</translation>
 <translation id="2107563874993284076">Si cette règle est activée, les utilisateurs peuvent utiliser des partages de fichiers en réseau pour <ph name="PRODUCT_NAME" />. Si elle est désactivée, les utilisateurs n'y sont pas autorisés.</translation>
 <translation id="2107601598727098402">
@@ -5412,6 +5413,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
       Si cette règle est désactivée ou qu'elle n'est pas configurée, aucun journal système n'est communiqué.</translation>
 <translation id="5861856285460256766">Configuration du code d'accès parental</translation>
 <translation id="5868414965372171132">Configuration réseau au niveau de l'utilisateur</translation>
+<translation id="5871786561822073630">Ne pas autoriser l'utilisation de la fonctionnalité de transport de compression par dictionnaire</translation>
 <translation id="587242272905978723">Autoriser <ph name="PLUGIN_VM_NAME" /> à collecter les données d'utilisation de <ph name="PLUGIN_VM_NAME" />.
 
       Si la règle est définie sur "false" ou n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas autorisé à collecter les données.
@@ -6323,6 +6325,7 @@ Si vous sélectionnez les options suivantes :
       - Si cette règle est désactivée, les fonctionnalités du navigateur sont limitées.
 
       - Si cette règle est désactivée, les administrateurs doivent le signaler aux utilisateurs finaux de l'appareil.</translation>
+<translation id="6605778633186421420">Activer la prise en charge de la compression par dictionnaire</translation>
 <translation id="6607983779935460461">Prise en charge de l'URL des données pour SVGUseElement.</translation>
 <translation id="6609867253856597039">Définir l'expérience utilisateur pour les fonctionnalités désactivées</translation>
 <translation id="6614557704487944013">Autoriser les utilisateurs à se servir du navigateur <ph name="LACROS_NAME" /></translation>
@@ -7961,6 +7964,10 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="8078297389450285582">Si cette règle est activée ou qu'elle n'est pas configurée, le modèle de réduction intelligente de la luminosité est activé, et le délai d'assombrissement de l'écran peut être augmenté. L'ajustement de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.
 
       Si cette règle est désactivée, le modèle de réduction intelligente de la luminosité n'influe pas sur l'assombrissement de l'écran.</translation>
+<translation id="8078540622602481084">Cette fonctionnalité permet d'utiliser des encodages de contenu spécifiques au dictionnaire dans l'en-tête de requête Accept-Encoding ("sbr" et "zst-d") lorsque des dictionnaires sont disponibles.
+
+Si cette règle est activée ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte les contenus Web qui utilisent la fonctionnalité de transport de compression par dictionnaire.
+Si elle est désactivée, la fonctionnalité de transport de compression par dictionnaire est désactivée.</translation>
 <translation id="8079544387901313374">Notez que cette règle est obsolète et a été supprimée dans la version 88 de <ph name="PRODUCT_OS_NAME" />. Les sessions publiques ne sont plus acceptées. Veuillez utiliser à la place la règle <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> pour configurer des sessions Invité gérées.
       Si cette règle est définie sur "False", les sessions Invité gérées se déroulent comme indiqué sur la page https://support.google.com/chrome/a/answer/3017014 ("sessions publiques" standards).
 

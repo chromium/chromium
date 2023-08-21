@@ -659,6 +659,7 @@
 <translation id="380165613292957338">Здравейте, как мога да помогна?</translation>
 <translation id="3804737937830804242">Свиване на камерата</translation>
 <translation id="3824784079442479685">Това разрешава достъп до камерата за <ph name="APP_NAME" /> и всички приложения и уебсайтове, които имат съответното разрешение. Може да се наложи да опресните уеб страницата или да рестартирате приложението.</translation>
+<translation id="3825680296690914697">Предадени: <ph name="NUM_TURNED_IN" /> от <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, оценени: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Превключване към парола</translation>
 <translation id="383058930331066723">Режимът за запазване на батерията е включен</translation>
 <translation id="383629559565718788">Показване на настройките на клавиатурата</translation>
@@ -1744,6 +1745,7 @@
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8456543082656546101">„<ph name="SHORTCUT_KEY_NAME" />“ + V</translation>
 <translation id="8462305545768648477">Затваряне на функцията „Прочитане на глас“</translation>
+<translation id="8468806060683421065">Краен срок: <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Настройки за мащаба на показване</translation>
 <translation id="8473301994082929012">Функцията „<ph name="FEATURE_NAME" />“ е <ph name="FEATURE_STATE" /> от <ph name="ORGANIZATION_NAME" />.</translation>
 <translation id="8477270416194247200">Натиснете Alt + клавиша „търсене“ или само Shift, за да анулирате.</translation>
@@ -1827,6 +1829,7 @@
 <translation id="8853703225951107899">ПИН кодът или паролата ви пак не бяха потвърдени. Забележка: Ако наскоро сте променили паролата си, използвайте старата. Новата ще бъде приложена, щом излезете от профила си.</translation>
 <translation id="8855885154700222542">Клавиш за цял екран</translation>
 <translation id="8858369206579825206">Контроли за поверителност</translation>
+<translation id="8860366331836346216">Добавяне на електронна SIM карта</translation>
 <translation id="8870509716567206129">Приложението не поддържа разделен екран.</translation>
 <translation id="8874184842967597500">Няма връзка</translation>
 <translation id="8875021410787719674">Придвижване между долния десен ъгъл, стартовия панел, адресната лента, лентата на отметките, отворения уебсайт и изтеглянията</translation>

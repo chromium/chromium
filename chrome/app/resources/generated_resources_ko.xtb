@@ -1902,6 +1902,7 @@
 <translation id="2480868415629598489">복사하고 붙여넣는 데이터 수정</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> 그룹으로 탭을 이동함 - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Chrome 브라우저 설정에서 검색엔진 설정</translation>
 <translation id="2484743711056182585">권한 삭제</translation>
 <translation id="2484909293434545162">사이트에서 쿠키를 사용하는 경우 여기에 표시됩니다.</translation>
 <translation id="2484959914739448251">동기화된 모든 기기 및 Google 계정에서 인터넷 사용 기록을 삭제하려면 <ph name="BEGIN_LINK" />암호를 입력<ph name="END_LINK" />하세요.</translation>
@@ -2056,6 +2057,7 @@
 <translation id="2612676031748830579">카드번호</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />에서 모든 확장 프로그램을 허용하지 않음</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{이 확장 프로그램에서 <ph name="FILE1" /> 파일을 열고 수정}other{이 앱에서, ... <ph name="FILE1" /> 파일을 열고 수정}}</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
 <translation id="2618797463720777311">Nearby Share 설정</translation>
 <translation id="261953424982546039">Chrome 실험실(&amp;L)...</translation>
@@ -4430,6 +4432,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4585793705637313973">페이지 수정</translation>
 <translation id="4586275095964870617"><ph name="URL" />을(를) 대체 브라우저에서 열 수 없습니다. 시스템 관리자에게 문의하세요.</translation>
 <translation id="4587589328781138893">사이트</translation>
+<translation id="4588749726511456218">스크롤 가속 <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">로그가 다운로드 디렉터리에 작성되었습니다.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />에 저장된 기기 없음</translation>
 <translation id="4592525994536856567">탐색과 검색이 더 빨라집니다.</translation>
@@ -6248,6 +6251,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6130692320435119637">Wi-Fi 추가</translation>
 <translation id="6130887916931372608">키보드 키</translation>
 <translation id="6132714462430777655">학교 등록을 건너뛸까요?</translation>
+<translation id="6134428719487602109">모든 사용자 계정을 삭제하고 Chromebook을 새것처럼 재설정합니다.</translation>
 <translation id="6135823405800500595">휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="6135826623269483856">모든 디스플레이의 창 관리 허용 안함</translation>
 <translation id="6136114942382973861">다운로드바 닫기</translation>

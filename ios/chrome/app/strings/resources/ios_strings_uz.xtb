@@ -61,6 +61,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1283524564873030414">Oxirgi 24 soat</translation>
 <translation id="1285320974508926690">Bu sayt hech qachon tarjima qilinmasin</translation>
 <translation id="1291506870746876680">Bu sayt yopilganda <ph name="BEGIN_BOLD" />“<ph name="SITE_NAME" />”<ph name="END_BOLD" /> ruxsatlari asliga qaytariladi.</translation>
+<translation id="1295289763199166823">Menyuni sozlash</translation>
 <translation id="1305822519689023679">Google hisobingizdagi parollardan istalgan vaqt foydalanish uchun shaxsingizni tasdiqlang.</translation>
 <translation id="1312721752506309252">Kengaytirilgan himoya yoniq</translation>
 <translation id="1316466854070752597">Barcha ochiq varaqlar</translation>
@@ -106,6 +107,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1554477036522844996">Yangi oyna</translation>
 <translation id="1563071802032385236">“Boshqa ilovalardan havolalarni inkognito rejimida ochishni soʻrash” bandini yoqing.</translation>
 <translation id="1565371473877914088">Yangi inkognito sahifa</translation>
+<translation id="1565395699240341063">Yashirin</translation>
 <translation id="1580715474678097352">Xavfli saytlardan himoyalaning</translation>
 <translation id="1580783302095112590">Xat yuborildi.</translation>
 <translation id="1582732959743469162">Joriy yuklanma uchun barcha jarayonlar to‘xtatiladi.</translation>
@@ -436,6 +438,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3533436815740441613">Yangi varaq</translation>
 <translation id="3540141921715814660">Bukmarklash</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
+<translation id="3564513311876185114">Smart tartiblash menyu paneli</translation>
 <translation id="3565207542107370586">Brauzer tarixini tozalash…</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
 <translation id="3577555362230509265">Chromedan boshqa ilovalarda foydalaning.</translation>
@@ -1287,6 +1290,7 @@ Maʼlumotlaringiz <ph name="TIME" /> sanasida kodli ibora bilan shifrlangan. Chr
 <translation id="854938212724803178">1 ta parolingiz oshkor qilingan. Xavfsiz qolish uchun uni tuzating.</translation>
 <translation id="8556590991644167667">{count,plural, =1{{count} ta ogohlantirishni yopdingiz}other{{count} ta ogohlantirishni yopdingiz}}</translation>
 <translation id="8558480467877843976">Siz endi Chrome brauzerini har doim internetni kezish vaqtida yoki xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
+<translation id="8560253818350321773">Avval tez-tez ishlatilgan elementlarni chiqarish.</translation>
 <translation id="8580411965900177618">Kerak emas</translation>
 <translation id="8588404856427128947">Oʻchiq</translation>
 <translation id="8591976964826315682">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>

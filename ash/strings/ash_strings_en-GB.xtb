@@ -659,6 +659,7 @@ Connect your device to power.</translation>
 <translation id="380165613292957338">Hi, how can I help?</translation>
 <translation id="3804737937830804242">Collapse camera</translation>
 <translation id="3824784079442479685">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission. You may need to refresh the web page or restart the app.</translation>
+<translation id="3825680296690914697"><ph name="NUM_TURNED_IN" /> of <ph name="TOTAL_NUM_OF_SUBMISSIONS" /> turned in, <ph name="NUM_GRADED" /> graded</translation>
 <translation id="3826099427150913765">Switch to password</translation>
 <translation id="383058930331066723">Battery saver mode is on</translation>
 <translation id="383629559565718788">Show keyboard settings</translation>
@@ -1744,6 +1745,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8446884382197647889">Learn More</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Close Select to Speak</translation>
+<translation id="8468806060683421065">due <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Display scale settings</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> has <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Press Alt+Search or Shift to cancel.</translation>
@@ -1827,6 +1829,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>
+<translation id="8860366331836346216">Add eSIM</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8875021410787719674">Move between bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>

@@ -1039,6 +1039,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="9038620279323455325">“<ph name="FILE_NAME" />” nomli fayl allaqachon mavjud. Boshqa nom tanlang.</translation>
 <translation id="9046895021617826162">Ulanmadi</translation>
 <translation id="9065512565307033593">Tasdiqlanmasa, tarmoqqa ruxsatingiz yopiladi.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 ta ogohlantiruv.}other{<ph name="COUNT" /> ta ogohlantiruv.}}</translation>
 <translation id="908378762078012445">Rus (fonetik AATSEEL klaviaturasi)</translation>
 <translation id="9086302186042011942">Sinxronlanmoqda</translation>
 <translation id="9099674669267916096">Sahifalar soni</translation>

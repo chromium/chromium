@@ -311,6 +311,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1594030484168838125">Choose</translation>
 <translation id="1596296697375291157">Thriller, crime and mystery movies</translation>
 <translation id="1597473228022844713">You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
+<translation id="1598816256585174656">Passkey from Windows Hello</translation>
 <translation id="1599199147673445968">New card? <ph name="BEGIN_LINK" />Enter card details<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Play the Dino Run game in Chrome</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -1335,6 +1336,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3827112369919217609">Absolute</translation>
 <translation id="3827666161959873541">Family movies</translation>
 <translation id="3828924085048779000">Empty passphrase is not allowed.</translation>
+<translation id="3830470485672984938">Use a different passkey</translation>
 <translation id="3831065134033923230">Check your saved passwords</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> has installed extensions for additional functions. Extensions have access to some of your data.</translation>
 <translation id="3832522519263485449">Multiple punch left</translation>
@@ -1390,6 +1392,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3964661563329879394">{COUNT,plural, =0{None}=1{From 1 site }other{From # sites }}</translation>
 <translation id="397105322502079400">Calculating...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> is blocked</translation>
+<translation id="3983340834939868135">Passkey from '<ph name="VENDOR_NAME" />'</translation>
 <translation id="3984581365661308170">Envelope no.11</translation>
 <translation id="398470910934384994">Birds</translation>
 <translation id="3985750352229496475">Manage Addresses…</translation>
@@ -1768,6 +1771,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4754461935447132332">Not allowed for non-secure sites</translation>
 <translation id="4756388243121344051">&amp;History</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Passkey from your Chrome profile</translation>
 <translation id="4757993714154412917">You just entered your password on a deceptive site. To secure your accounts, Chromium recommends checking your saved passwords.</translation>
 <translation id="4758311279753947758">Add contact info</translation>
 <translation id="4761104368405085019">Use your microphone</translation>
@@ -1924,6 +1928,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5070838744279127212">Tenth roll</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
 <translation id="5074134429918579056">Trousers and Shorts</translation>
+<translation id="5077767274537436092">Use a different passkey</translation>
 <translation id="5078060223219502807">The password that you just used was found in a data breach. To secure your accounts, Password Manager recommends changing it now and then checking your saved passwords.</translation>
 <translation id="5086225927071063542">Distributed and cloud computing</translation>
 <translation id="5087286274860437796">Server's certificate is not valid at this time.</translation>
@@ -2093,6 +2098,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{1 site blocked}other{# sites blocked}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wants to send you notifications</translation>
 <translation id="5430298929874300616">Remove bookmark</translation>
+<translation id="54430913453805768"><ph name="URL" /> wants to control and reprogramme your MIDI devices (SysEx)</translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
 <translation id="5447765697759493033">This site will not be translated</translation>
@@ -2290,6 +2296,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5873297634595728366">Diesel Vehicles</translation>
 <translation id="5877831137320480913">Beauty and fitness</translation>
 <translation id="5879989559903563723">Not allowed in Guest mode</translation>
+<translation id="5883861433316751031">Control and reprogramme MIDI devices?</translation>
 <translation id="5884465125445718607">Envelope Chinese no.6</translation>
 <translation id="5887400589839399685">Card saved</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
@@ -2587,6 +2594,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6480864723214312258">Household Batteries</translation>
 <translation id="6486200200930923183">Documentary movies</translation>
 <translation id="6489534406876378309">Start uploading crashes</translation>
+<translation id="6491663123807473970"><ph name="URL" /> wants to use your MIDI devices</translation>
 <translation id="6493924760403974580">This app supports only this size.</translation>
 <translation id="6494750904506170417">pop-ups and redirects</translation>
 <translation id="6497295192259406877">Business operations</translation>
@@ -2865,6 +2873,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="7102079138917191645">Construction and maintenance</translation>
 <translation id="7102554173784142865">Play Chrome Dino game</translation>
 <translation id="7102760431686146931">Cookware and Tableware</translation>
+<translation id="7105998430540165694">Passkey from iCloud Keychain</translation>
 <translation id="7106762743910369165">Your browser is managed by your organisation</translation>
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> wants to use your camera</translation>
@@ -3119,6 +3128,7 @@ Additional details:
 <translation id="7582602800368606489">Create a new event in Google Calendar quickly</translation>
 <translation id="7583969447617676942">Legal services</translation>
 <translation id="7586676035079382730">Notifications not allowed</translation>
+<translation id="7588460771338574392">Passkey from '<ph name="PHONE_NAME" />'</translation>
 <translation id="7588707273764747927">Transfer</translation>
 <translation id="7591288787774558753">Share confidential content?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wants to use cookies and site data on <ph name="TOP_LEVEL_URL" /></translation>
@@ -3333,6 +3343,7 @@ Additional details:
 <translation id="8038817883578389970">Auto racing</translation>
 <translation id="8041089156583427627">Send Feedback</translation>
 <translation id="8041940743680923270">Use global default (Ask)</translation>
+<translation id="8042577181291637092">Use MIDI devices?</translation>
 <translation id="8046360364391076336">Industrial Materials and Equipment</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8055534648776115597">Vocational and continuing education</translation>
@@ -3626,6 +3637,7 @@ Additional details:
 <translation id="8671519637524426245">The <ph name="SECURE_DNS_SALT" /> value does not meet the size requirements.</translation>
 <translation id="867224526087042813">Signature</translation>
 <translation id="8672264262457010862">Business and industrial</translation>
+<translation id="8673776281896298303">Control and reprogramme your MIDI devices (SysEx)</translation>
 <translation id="8676424191133491403">No delay</translation>
 <translation id="8680536109547170164"><ph name="QUERY" />, answer, <ph name="ANSWER" /></translation>
 <translation id="8681531050781943054">The web page at <ph name="PAGE" /> could not be loaded because:</translation>

@@ -311,6 +311,7 @@
 <translation id="1594030484168838125">არჩევა</translation>
 <translation id="1596296697375291157">ტრილერის, დეტექტივისა და მისტიკის ჟანრის ფილმები</translation>
 <translation id="1597473228022844713">თქვენ თვალს ადევნებთ ამ პროდუქტს. ეს გვერდი შენახულია „<ph name="LAST_BOOKMARKS_FOLDER" />“-ში.</translation>
+<translation id="1598816256585174656">Windows Hello-ს წვდომის გასაღები</translation>
 <translation id="1599199147673445968">ახალი ბარათი გაქვთ? <ph name="BEGIN_LINK" />შეიყვანეთ ბარათის მონაცემები<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">დინოზავრის გარბენის თამაშის თამაში Chrome-ში</translation>
 <translation id="161042844686301425">ციანი</translation>
@@ -1351,6 +1352,7 @@
 <translation id="3827112369919217609">აბსოლუტური</translation>
 <translation id="3827666161959873541">საოჯახო ფილმები</translation>
 <translation id="3828924085048779000">ცარიელი პაროლი ნებადართული არ არის.</translation>
+<translation id="3830470485672984938">წვდომის სხვა გასაღების გამოყენება</translation>
 <translation id="3831065134033923230">შეამოწმეთ შენახული პაროლები</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" />-მა დააინსტალირა დამატებითი ფუნქციების გაფართოებები. აღნიშნულ გაფართოებებს აქვს წვდომა თქვენს ზოგიერთ მონაცემზე.</translation>
 <translation id="3832522519263485449">მრავალად გახვრეტა მარცხნივ</translation>
@@ -1407,6 +1409,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{არცერთი}=1{1 საიტიდან }other{# საიტიდან }}</translation>
 <translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> დაბლოკილია</translation>
+<translation id="3983340834939868135">„<ph name="VENDOR_NAME" />“-ის წვდომის გასაღები</translation>
 <translation id="3984581365661308170">კონვერტი 11</translation>
 <translation id="398470910934384994">ფრინველები</translation>
 <translation id="3985750352229496475">მისამართების მართვა…</translation>
@@ -1785,6 +1788,7 @@
 <translation id="4754461935447132332">დაუშვებელია დაუცველი საიტებისთვის</translation>
 <translation id="4756388243121344051">&amp;ისტორია</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">თქვენი Chrome პროფილის წვდომის გასაღები</translation>
 <translation id="4757993714154412917">თქვენ ეს-ესაა შეიყვანეთ პაროლი შეცდომაში შემყვან საიტზე. თქვენი ანგარიშების დაცვის მიზნით, Chromium გირჩევთ, შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="4758311279753947758">საკონტაქტო ინფორმაციის დამატება</translation>
 <translation id="4761104368405085019">გამოიყენეთ თქვენი მიკროფონი</translation>
@@ -1941,6 +1945,7 @@
 <translation id="5070838744279127212">მეათე რულონი</translation>
 <translation id="507130231501693183">საფოსტო ყუთი 4</translation>
 <translation id="5074134429918579056">შარვლები და შორტები</translation>
+<translation id="5077767274537436092">წვდომის სხვა გასაღების გამოყენება</translation>
 <translation id="5078060223219502807">თქვენ მიერ ახლახან გამოყენებული პაროლი ნაპოვნია გაჟონილ მონაცემებში. თქვენი ანგარიშის დაცვის მიზნით, პაროლების მმართველი გირჩევთ, ახლავე შეცვალოთ ის, შემდეგ კი შეამოწმოთ თქვენი შენახული პაროლები.</translation>
 <translation id="5086225927071063542">გამოთვლა მონაცემების გადანაწილებისა და ინტერნეტ-რესურსების დახმარებით</translation>
 <translation id="5087286274860437796">სერვერის ამჟამინდელი სერტიფიკატი არასწორია.</translation>
@@ -2110,6 +2115,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{დაბლოკილი საიტები არ არის}=1{დაბლოკილია 1 საიტი}other{დაბლოკილია # საიტი}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ითხოვს თქვენთვის შეტყობინებების გამოგზავნას</translation>
 <translation id="5430298929874300616">სანიშნის ამოშლა</translation>
+<translation id="54430913453805768"><ph name="URL" />-ს სურს, მართოს და ხელახლა დააპროგრამოს თქვენი MIDI მოწყობილობები (SysEx)</translation>
 <translation id="5443468954631487277">უკუმიმდევრობა ნაბეჭდი მხარით აღმა</translation>
 <translation id="5447235695608032700">მიეცით საშუალება <ph name="SITE" />-ს, გამოიყენოს მის მიერ თქვენ შესახებ შენახული ინფორმაცია</translation>
 <translation id="5447765697759493033">ეს გვერდი არ ითარგმნება</translation>
@@ -2611,6 +2617,7 @@
 <translation id="6480864723214312258">საყოფაცხოვრებო ბატარეები</translation>
 <translation id="6486200200930923183">დოკუმენტური ფილმები</translation>
 <translation id="6489534406876378309">შეცდომების ატვირთვის დაწყება</translation>
+<translation id="6491663123807473970"><ph name="URL" />-ს სურს, გამოიყენოს თქვენი MIDI მოწყობილობები</translation>
 <translation id="6493924760403974580">ამ აპის მიერ მხოლოდ ეს ზომაა მხარდაჭერილი.</translation>
 <translation id="6494750904506170417">ამომხტარი ფანჯრები და გადამისამართებები</translation>
 <translation id="6497295192259406877">ბიზნესოპერაციები</translation>
@@ -2896,6 +2903,7 @@
 <translation id="7102079138917191645">მშენებლობა და ტექნიკური მომსახურება</translation>
 <translation id="7102554173784142865">Chrome დინოზავრის თამაშის თამაში</translation>
 <translation id="7102760431686146931">სამზარეულოს და სასადილო ჭურჭელი</translation>
+<translation id="7105998430540165694">iCloud Keychain-ის წვდომის გასაღები</translation>
 <translation id="7106762743910369165">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია</translation>
 <translation id="7108338896283013870">დამალვა</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ითხოვს თქვენი კამერის გამოყენების ნებართვას</translation>
@@ -3151,6 +3159,7 @@
 <translation id="7582602800368606489">Google Calendar-ში ახალი მოვლენის სწრაფად შექმნა</translation>
 <translation id="7583969447617676942">იურიდიული მომსახურება</translation>
 <translation id="7586676035079382730">შეტყობინებები დაუშვებელია</translation>
+<translation id="7588460771338574392">„<ph name="PHONE_NAME" />“-ის წვდომის გასაღები</translation>
 <translation id="7588707273764747927">გადასაყვანი</translation>
 <translation id="7591288787774558753">გსურთ კონფიდენციალური კონტენტის გაზიარება?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ითხოვს <ph name="TOP_LEVEL_URL" />-ის ქუქი-ჩანაწერებისა და საიტის მონაცემების გამოყენების ნებართვას</translation>

@@ -676,6 +676,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4634124774493850572">Use password</translation>
 <translation id="4637420359569396807">With ad measurement, limited types of data can be shared among sites and apps to measure the performance of their ads, such as the time of day that an ad was shown to you.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 compromised password}other{# compromised passwords}}</translation>
+<translation id="4645146721047390964">While in Incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may break.</translation>
 <translation id="4650364565596261010">System default</translation>
 <translation id="4654641641922242357">'Listen to this page' player.</translation>
 <translation id="465657074423018424">Safe Browsing protects you against deceptive websites. If you turn it off, be extra careful when browsing, especially before entering passwords.</translation>
@@ -695,6 +696,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4719927025381752090">Offer to translate</translation>
 <translation id="4720023427747327413">Open in <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">See your top sites</translation>
+<translation id="4731877163452936634">Playback speed: <ph name="PLAYBACK_SPEED" />. Click to change.</translation>
 <translation id="4732120983431207637">Stack unwinder</translation>
 <translation id="4736934858538408121">Virtual card</translation>
 <translation id="473775607612524610">Update</translation>
@@ -1172,6 +1174,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7116588989735740310">To get back to the sites that you’ve visited on other devices, sync your tabs and history</translation>
 <translation id="7130504491556983216">A list of interests will appear here as you browse the web</translation>
 <translation id="7138678301420049075">Other</translation>
+<translation id="7140829094791862589">Sort by manual order</translation>
 <translation id="7146622961999026732">These sites and apps seem important to you:</translation>
 <translation id="7149893636342594995">Last 24 Hours</translation>
 <translation id="7155317020660659215">To scan a QR code, change your settings so that Chrome can use your camera</translation>
@@ -1254,6 +1257,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="751961395872307827">Can't connect to the site</translation>
 <translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
+<translation id="752731652852882757">Block while using Incognito</translation>
 <translation id="7539698981064401140">Sync your tabs and history</translation>
 <translation id="7562080006725997899">Clear browsing data</translation>
 <translation id="756809126120519699">Cleared Chrome data</translation>
@@ -1334,6 +1338,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7939485076072265087">Create stylised card with highlight</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> is out of date.</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
+<translation id="7945822420239537236">Forward <ph name="NUMBER_OF_SECONDS" /> seconds</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
 <translation id="7957413488482743710">A virtual card hides your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Page insights back button</translation>
@@ -1342,6 +1347,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7965838025086216108">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
+<translation id="7972866381678406344">Back <ph name="NUMBER_OF_SECONDS" /> seconds</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>

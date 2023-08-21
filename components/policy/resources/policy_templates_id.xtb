@@ -1309,6 +1309,7 @@ diupgrade ke HTTPS oleh fitur ini.</translation>
 
           Jika kebijakan ini dinonaktifkan atau tidak ditetapkan, tidak ada akun yang akan ditambahkan ke setelan Akun Kerberos dan semua akun yang sebelumnya ditambahkan dengan kebijakan ini akan dihapus. Pengguna masih dapat menambahkan akun secara manual jika kebijakan 'Pengguna dapat menambahkan akun Kerberos' diaktifkan.</translation>
 <translation id="2104418465060359056">Melaporkan informasi Ekstensi dan Plugin</translation>
+<translation id="210652463860415362">Terima konten web yang menggunakan fitur transpor kamus kompresi</translation>
 <translation id="2106627642643925514">Mengganti mode pencetakan PIN default. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
 <translation id="2107563874993284076">Jika kebijakan disetel ke Aktif, pengguna dapat menggunakan Berbagi File Jaringan untuk <ph name="PRODUCT_NAME" />. Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat menggunakan fitur ini.</translation>
 <translation id="2107601598727098402">
@@ -5523,6 +5524,7 @@ Jika kebijakan ini dinonaktifkan, perlindungan ekstensi <ph name="SAFE_BROWSING_
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak akan ada laporan log sistem.</translation>
 <translation id="5861856285460256766">Konfigurasi Kode Akses Orang Tua</translation>
 <translation id="5868414965372171132">Konfigurasi jaringan tingkat pengguna</translation>
+<translation id="5871786561822073630">Jangan izinkan penggunaan fitur transpor kamus kompresi</translation>
 <translation id="587242272905978723">Mengizinkan <ph name="PLUGIN_VM_NAME" /> untuk mengumpulkan data penggunaan <ph name="PLUGIN_VM_NAME" />.
 
       Jika kebijakan ditetapkan ke salah (false) atau tidak ditetapkan, <ph name="PLUGIN_VM_NAME" /> tidak diizinkan mengumpulkan data.
@@ -6494,6 +6496,7 @@ Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
       - Jika kebijakan ini Dinonaktifkan, browser akan memiliki fungsi terbatas.
 
       - Jika kebijakan ini Dinonaktifkan, admin harus memberitahukan hal ini kepada pengguna akhir perangkat.</translation>
+<translation id="6605778633186421420">Mengaktifkan dukungan transpor kamus kompresi</translation>
 <translation id="6607983779935460461">Dukungan URL data untuk SVGUseElement.</translation>
 <translation id="6609867253856597039">Menyetel pengalaman pengguna fitur yang dinonaktifkan</translation>
 <translation id="6614557704487944013">Izinkan pengguna menggunakan browser <ph name="LACROS_NAME" /></translation>
@@ -8167,6 +8170,10 @@ juga aman.</translation>
 <translation id="8078297389450285582">Jika kebijakan disetel ke Aktif atau tidak disetel, model redup smart akan diaktifkan dan dapat memperpanjang waktu hingga layar diredupkan. Jika model tersebut menunda waktu peredupan, penundaan penonaktifan layar, penguncian layar, dan tidak ada aktivitas akan disesuaikan untuk mempertahankan jarak waktu yang sama dari penundaan peredupan layar seperti yang disetel sebelumnya.
 
       Jika kebijakan disetel ke Nonaktif, model redup smart tidak akan memengaruhi peredupan layar.</translation>
+<translation id="8078540622602481084">Fitur ini memungkinkan penggunaan encoding konten khusus kamus di header permintaan Accept-Encoding ("sbr" dan "zst-d") saat kamus tersedia untuk digunakan.
+
+Jika kebijakan disetel ke Aktif atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menerima konten web yang menggunakan fitur transpor kamus kompresi.
+Jika kebijakan disetel ke Nonaktif, fitur transpor kamus kompresi akan dinonaktifkan.</translation>
 <translation id="8079544387901313374">Perlu diperhatikan bahwa kebijakan ini tidak digunakan lagi dan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 88. Sesi publik tidak lagi didukung. Sebagai gantinya, gunakan <ph name="DEVICE_LOCAL_ACCOUNTS_POLICY_NAME" /> untuk mengonfigurasi sesi tamu terkelola.
       Jika kebijakan ini disetel ke salah (false), sesi tamu terkelola akan berperilaku seperti yang didokumentasikan di https://support.google.com/chrome/a/answer/3017014 - "Sesi Publik" standar.
 
