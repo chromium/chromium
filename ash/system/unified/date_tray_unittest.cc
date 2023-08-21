@@ -347,7 +347,7 @@ INSTANTIATE_TEST_SUITE_P(GlanceablesV2,
 
 // Tests that toggling the `CalendarView` via the date tray accelerator does not
 // result in a crash when the unified system tray bubble is set to immediately
-// close upon activation. See crrev/c/1419499 for details.
+// close upon activation. See crbug/1419499 for details.
 TEST_P(DateTrayTest, AcceleratorOpenAndImmediateCloseDoesNotCrash) {
   ImmediatelyCloseBubbleOnActivation();
   ShellTestApi().PressAccelerator(
