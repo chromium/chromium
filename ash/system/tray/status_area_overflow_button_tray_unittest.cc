@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "ui/events/event.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/types/event_type.h"
@@ -41,6 +42,42 @@ TEST_F(StatusAreaOverflowButtonTrayTest, ToggleExpanded) {
 
   EXPECT_EQ(StatusAreaOverflowButtonTray::CLICK_TO_EXPAND,
             overflow_button_tray->state());
+}
+
+TEST_F(StatusAreaOverflowButtonTrayTest, UMATracking) {
+  // No metrics logged before showing the tray.
+  auto histogram_tester = std::make_unique<base::HistogramTester>();
+  histogram_tester->ExpectTotalCount("Ash.StatusArea.TrayBackgroundView.Shown",
+                                     /*count=*/0);
+
+  auto* overflow_button_tray =
+      StatusAreaWidgetTestHelper::GetStatusAreaWidget()->overflow_button_tray();
+  overflow_button_tray->SetVisiblePreferred(true);
+
+  histogram_tester->ExpectTotalCount("Ash.StatusArea.TrayBackgroundView.Shown",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.StatusArea.TrayBackgroundView.Shown",
+      TrayBackgroundViewCatalogName::kStatusAreaOverflowButton,
+      /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.StatusArea.TrayBackgroundView.Hidden",
+      TrayBackgroundViewCatalogName::kStatusAreaOverflowButton,
+      /*expected_count=*/0);
+
+  overflow_button_tray->SetVisiblePreferred(false);
+  histogram_tester->ExpectTotalCount("Ash.StatusArea.TrayBackgroundView.Shown",
+                                     /*count=*/1);
+  histogram_tester->ExpectTotalCount("Ash.StatusArea.TrayBackgroundView.Hidden",
+                                     /*count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.StatusArea.TrayBackgroundView.Shown",
+      TrayBackgroundViewCatalogName::kStatusAreaOverflowButton,
+      /*expected_count=*/1);
+  histogram_tester->ExpectBucketCount(
+      "Ash.StatusArea.TrayBackgroundView.Hidden",
+      TrayBackgroundViewCatalogName::kStatusAreaOverflowButton,
+      /*expected_count=*/1);
 }
 
 }  // namespace ash

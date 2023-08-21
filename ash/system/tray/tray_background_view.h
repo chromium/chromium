@@ -280,6 +280,9 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
     set_context_menu_controller(should_enable_menu ? this : nullptr);
   }
 
+  // Logs the tray's visibility UMA.
+  void TrackVisibilityUMA(bool visible_preferred) const;
+
   void set_show_with_virtual_keyboard(bool show_with_virtual_keyboard) {
     show_with_virtual_keyboard_ = show_with_virtual_keyboard;
   }

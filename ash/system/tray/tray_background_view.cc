@@ -351,10 +351,8 @@ void TrayBackgroundView::SetVisiblePreferred(bool visible_preferred) {
   for (auto& observer : observers_) {
     observer.OnVisiblePreferredChanged(visible_preferred_);
   }
-  base::UmaHistogramEnumeration(
-      visible_preferred_ ? "Ash.StatusArea.TrayBackgroundView.Shown"
-                         : "Ash.StatusArea.TrayBackgroundView.Hidden",
-      catalog_name_);
+
+  TrackVisibilityUMA(visible_preferred);
 
   // Calling `StartVisibilityAnimation(GetEffectiveVisibility())` doesn't work
   // for the case of a collapsed status area (see b/265165818). Passing
@@ -1022,6 +1020,13 @@ void TrayBackgroundView::StopPulseAnimation() {
       gfx::RectF(GetLocalBounds()).CenterPoint(), kNormalScaleFactor);
   layer()->SetTransform(normal_transform);
   RemoveRippleLayer();
+}
+
+void TrayBackgroundView::TrackVisibilityUMA(bool visible_preferred) const {
+  base::UmaHistogramEnumeration(
+      visible_preferred ? "Ash.StatusArea.TrayBackgroundView.Shown"
+                        : "Ash.StatusArea.TrayBackgroundView.Hidden",
+      catalog_name_);
 }
 
 views::PaintInfo::ScaleType TrayBackgroundView::GetPaintScaleType() const {

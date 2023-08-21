@@ -134,6 +134,7 @@ void StatusAreaOverflowButtonTray::SetVisiblePreferred(bool visible_preferred) {
   // `StatusAreaWidget`, so we bypass all default visibility logic from
   // `TrayBackgroundView`.
   views::View::SetVisible(visible_preferred);
+  TrackVisibilityUMA(visible_preferred);
 }
 
 void StatusAreaOverflowButtonTray::UpdateAfterStatusAreaCollapseChange() {
