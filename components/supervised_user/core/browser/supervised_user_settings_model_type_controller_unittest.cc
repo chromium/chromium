@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_sync_model_type_controller.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_model_type_controller.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -10,7 +10,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
-#include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/service/data_type_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,7 +18,7 @@
 using syncer::DataTypeController;
 using ::testing::Return;
 
-class SupervisedUserSyncModelTypeControllerTest : public testing::Test {
+class SupervisedUserSettingsModelTypeControllerTest : public testing::Test {
  public:
   void SetUp() override {
     pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
@@ -30,12 +29,11 @@ class SupervisedUserSyncModelTypeControllerTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(SupervisedUserSyncModelTypeControllerTest,
+TEST_F(SupervisedUserSettingsModelTypeControllerTest,
        SupervisedUserMeetsPreconditions) {
   pref_service_.SetString(prefs::kSupervisedUserId,
                           supervised_user::kChildAccountSUID);
-  SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS,
+  SupervisedUserSettingsModelTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
@@ -43,10 +41,9 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
             controller.GetPreconditionState());
 }
 
-TEST_F(SupervisedUserSyncModelTypeControllerTest,
+TEST_F(SupervisedUserSettingsModelTypeControllerTest,
        NonSupervisedUserDoesNotMeetPreconditions) {
-  SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS,
+  SupervisedUserSettingsModelTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
@@ -54,9 +51,9 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
             controller.GetPreconditionState());
 }
 
-TEST_F(SupervisedUserSyncModelTypeControllerTest, HasTransportModeDelegate) {
-  SupervisedUserSyncModelTypeController controller(
-      syncer::SUPERVISED_USER_SETTINGS,
+TEST_F(SupervisedUserSettingsModelTypeControllerTest,
+       HasTransportModeDelegate) {
+  SupervisedUserSettingsModelTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);

@@ -232,7 +232,8 @@ void SupervisedUserService::SetActive(bool active) {
   settings_service_->SetActive(active_);
 
   // Trigger a sync reconfig to enable/disable the right SU data types.
-  // The logic to do this lives in the SupervisedUserSyncModelTypeController.
+  // The logic to do this lives in the
+  // SupervisedUserSettingsModelTypeController.
   // TODO(crbug.com/946473): Get rid of this hack and instead call
   // DataTypePreconditionChanged from the controller.
   if (sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {

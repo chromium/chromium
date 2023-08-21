@@ -65,8 +65,8 @@
 #include "components/sync_user_events/user_event_model_type_controller.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/browser/supervised_user_settings_model_type_controller.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/supervised_user/core/browser/supervised_user_sync_model_type_controller.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USER)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -566,8 +566,8 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (supervised_user_settings_service_) {
     controllers.push_back(
-        std::make_unique<SupervisedUserSyncModelTypeController>(
-            syncer::SUPERVISED_USER_SETTINGS, dump_stack,
+        std::make_unique<SupervisedUserSettingsModelTypeController>(
+            dump_stack,
             sync_client_->GetModelTypeStoreService()->GetStoreFactory(),
             supervised_user_settings_service_->AsWeakPtr(),
             sync_client_->GetPrefService()));
