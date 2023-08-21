@@ -32,9 +32,10 @@ AppRestoreServiceFactory::AppRestoreServiceFactory()
 
 AppRestoreServiceFactory::~AppRestoreServiceFactory() = default;
 
-KeyedService* AppRestoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppRestoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AppRestoreService(context);
+  return std::make_unique<AppRestoreService>(context);
 }
 
 bool AppRestoreServiceFactory::ServiceIsCreatedWithBrowserContext() const {
