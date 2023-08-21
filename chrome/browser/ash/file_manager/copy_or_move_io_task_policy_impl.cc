@@ -186,11 +186,15 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
-  bool connectors_new_ui_enabled = base::FeatureList::IsEnabled(
-      features::kFileTransferEnterpriseConnectorUI);
-  if (!connectors_new_ui_enabled || connectors_blocked_files_.empty()) {
+  if (connectors_blocked_files_.empty()) {
     return;
   }
+
+  // Blocked files are only added if kFileTransferEnterpriseConnectorUI is
+  // enabled.
+  CHECK(base::FeatureList::IsEnabled(
+      features::kFileTransferEnterpriseConnectorUI));
+
   auto* files_policy_manager =
       policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
           profile_);
@@ -206,12 +210,11 @@ void CopyOrMoveIOTaskPolicyImpl::MaybeSendConnectorsBlockedFilesNotification() {
 }
 
 void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
-  if (blocked_files_ > 0) {
-    // It doesn't matter here which policy error we set because the panel
-    // strings in the files app are the same for all of them.
-
+  if (blocked_files_ > 0 &&
+      base::FeatureList::IsEnabled(features::kNewFilesPolicyUX)) {
     bool has_dlp_errors = connectors_blocked_files_.size() < blocked_files_;
     bool has_connector_errors = !connectors_blocked_files_.empty();
+
     CHECK(has_dlp_errors || has_connector_errors);
     // TODO(b/293425493): Support combined error type (if both dlp and connector
     // errors exist).
@@ -429,8 +432,12 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
       result ==
           enterprise_connectors::FileTransferAnalysisDelegate::RESULT_BLOCKED);
 
-  blocked_files_++;
-  connectors_blocked_files_.push_back(source_url.path());
+  if (base::FeatureList::IsEnabled(
+          features::kFileTransferEnterpriseConnectorUI)) {
+    blocked_files_++;
+    connectors_blocked_files_.push_back(source_url.path());
+  }
+
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }
 

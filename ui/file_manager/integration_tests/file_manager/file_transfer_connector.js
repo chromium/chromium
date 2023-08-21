@@ -249,8 +249,17 @@ Object.freeze(TRANSFER_LOCATIONS);
 
 // TODO(crbug.com/1361898): Remove these ones proper error details are
 // displayed.
-const COPY_FAIL_MESSAGE = 'File blocked from copying';
-const MOVE_FAIL_MESSAGE = `File blocked from moving`;
+const OLD_COPY_FAIL_MESSAGE =
+    'Copy operation failed. The file could not be accessed ' +
+    'for security reasons.';
+const OLD_MOVE_FAIL_DIRECTORY_MESSAGE =
+    `Can't move file. The file could not be modified.`;
+const OLD_MOVE_FAIL_FILE_MESSAGE =
+    `Can't move file. The file could not be accessed ` +
+    'for security reasons.';
+
+const NEW_COPY_FAIL_MESSAGE = 'File blocked from copying';
+const NEW_MOVE_FAIL_MESSAGE = `File blocked from moving`;
 
 /**
  * Opens a Files app's main window and creates the source and destination
@@ -594,7 +603,7 @@ testcase.transferConnectorFromAndroidFilesToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromAndroidFilesToDownloadsFlat = () => {
@@ -604,7 +613,7 @@ testcase.transferConnectorFromAndroidFilesToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 
@@ -618,7 +627,7 @@ testcase.transferConnectorFromCrostiniToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromCrostiniToDownloadsFlat = () => {
@@ -628,7 +637,7 @@ testcase.transferConnectorFromCrostiniToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 
@@ -642,7 +651,7 @@ testcase.transferConnectorFromDriveToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromDriveToDownloadsFlat = () => {
@@ -652,7 +661,7 @@ testcase.transferConnectorFromDriveToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 
@@ -667,7 +676,7 @@ testcase.transferConnectorFromDriveToDownloadsMoveDeep = () => {
         isMove: true,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      MOVE_FAIL_MESSAGE,
+      OLD_MOVE_FAIL_DIRECTORY_MESSAGE,
   );
 };
 testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
@@ -678,7 +687,7 @@ testcase.transferConnectorFromDriveToDownloadsMoveFlat = () => {
         isMove: true,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      MOVE_FAIL_MESSAGE,
+      OLD_MOVE_FAIL_FILE_MESSAGE,
   );
 };
 
@@ -692,7 +701,7 @@ testcase.transferConnectorFromMtpToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromMtpToDownloadsFlat = () => {
@@ -702,7 +711,7 @@ testcase.transferConnectorFromMtpToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 
@@ -716,7 +725,7 @@ testcase.transferConnectorFromSmbfsToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromSmbfsToDownloadsFlat = () => {
@@ -726,7 +735,7 @@ testcase.transferConnectorFromSmbfsToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 
@@ -740,7 +749,7 @@ testcase.transferConnectorFromUsbToDownloadsDeep = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_DEEP,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
 testcase.transferConnectorFromUsbToDownloadsFlat = () => {
@@ -750,6 +759,6 @@ testcase.transferConnectorFromUsbToDownloadsFlat = () => {
         destination: TRANSFER_LOCATIONS.downloads,
       }),
       CONNECTOR_ENTRIES_FLAT,
-      COPY_FAIL_MESSAGE,
+      OLD_COPY_FAIL_MESSAGE,
   );
 };
