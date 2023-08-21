@@ -45,20 +45,20 @@ interface KeyMintServer {
   // Generates a new cryptographic key, specifying associated parameters, which
   // must be cryptographically bound to the key.
   GenerateKey@2(GenerateKeyRequest request) =>
-      (int32 error, KeyCreationResult? result);
+      (KeyCreationResultOrError response);
 
   // Imports key material into an IKeyMintDevice.
   ImportKey@3(ImportKeyRequest request) =>
-      (int32 error, KeyCreationResult? result);
+      (KeyCreationResultOrError response);
 
   // Securely imports a key, or key pair, returning a key blob and a description
   // of the imported key.
   ImportWrappedKey@4(ImportWrappedKeyRequest request) =>
-      (int32 error, KeyCreationResult? result);
+      (KeyCreationResultOrError response);
 
   // Upgrades an old key blob.
   UpgradeKey@5(UpgradeKeyRequest request) =>
-      (int32 error, array<uint8>? upgraded_key_blob);
+      (ByteArrayOrError response);
 
   // Deletes the key, or key pair, associated with the key blob.
   DeleteKey@6(array<uint8> key_blob) => (int32 error);
@@ -74,7 +74,7 @@ interface KeyMintServer {
   // Begins a cryptographic operation using the specified key. If all is well,
   // begin() must create an KeyMintOperation handle which will be used to
   // perform the cryptographic operation.
-  Begin@9(BeginRequest request) => (int32 error, BeginResult? result);
+  Begin@9(BeginRequest request) => (BeginResultOrError response);
 
   // Called by client to notify the IKeyMintDevice that the device is now
   // locked, and keys with the UNLOCKED_DEVICE_REQUIRED tag should no longer be
@@ -105,23 +105,23 @@ interface KeyMintServer {
   // |ephemeral_key_blob| is the per-boot ephemeral keyblob that should
   // henceforth be used in place of the input |storage_key_blob|.
   ConvertStorageKeyToEphemeral@12(array<uint8> storage_key_blob) =>
-      (int32 error, array<uint8>? ephemeral_key_blob);
+      (ByteArrayOrError response);
 
   // Returns KeyMint-enforced parameters associated with the provided key.
   //
   // |key_characteristics| is the characteristics of the generated key.
   GetKeyCharacteristics@13(GetKeyCharacteristicsRequest request) =>
-      (int32 error, array<KeyCharacteristics>? key_characteristics);
+      (KeyCharacteristicsArrayOrError response);
 
   // Returns a 16-byte random challenge nonce, used to prove freshness when
   // exchanging root of trust data. This method may only be implemented by
   // StrongBox KeyMint. TEE KeyMint implementations must return error.
-  GetRootOfTrustChallenge@14() => (int32 error, array<uint8, 16>? challenge);
+  GetRootOfTrustChallenge@14() => (ByteArrayOrError response);
 
   // Returns the TEE KeyMint Root of Trust data. This method is required for TEE
   // KeyMint.  StrongBox KeyMint implementations MUST return error.
   GetRootOfTrust@15(array<uint8, 16> challenge) =>
-      (int32 error, array<uint8>? root_of_trust);
+      (ByteArrayOrError response);
 
   // Delivers the TEE KeyMint Root of Trust data to StrongBox KeyMint.
   // The implementation must verify the MAC on the RootOfTrust data.  If it is
@@ -140,11 +140,11 @@ interface KeyMintServer {
 
   // Provides data to, and possibly receives output from, an ongoing
   // cryptographic operation begun with begin().
-  Update@18(UpdateRequest request) => (int32 error, array<uint8>? output);
+  Update@18(UpdateRequest request) => (ByteArrayOrError response);
 
   // Finalizes a cryptographic operation begun with begin() and invalidates the
   // operation.
-  Finish@19(FinishRequest request) => (int32 error, array<uint8>? output);
+  Finish@19(FinishRequest request) => (ByteArrayOrError response);
 
   // Aborts this cryptographic operation.
   // |op_handle| is the handle of the operation to abort.
@@ -384,21 +384,37 @@ struct FinishRequest {
   array<uint8>? confirmation_token;
 };
 
+union KeyCharacteristicsArrayOrError {
+  array<KeyCharacteristics> key_characteristics;
+  int32 error;
+};
+
+union BeginResultOrError {
+  BeginResult begin_result;
+  int32 error;
+};
+
+// Used for Key Creation methods.
+union KeyCreationResultOrError {
+  KeyCreationResult key_creation_result;
+  int32 error;
+};
+
 // Result used for Array outputs.
 union ByteArrayOrError {
-  int32 error;
   array<uint8> output;
+  int32 error;
 };
 
 // Result used for GetSharedSecretParameters.
 union SharedSecretParametersOrError {
-  int32 error;
   SharedSecretParameters secret_parameters;
+  int32 error;
 };
 
 union TimeStampTokenOrError {
-  int32 error;
   TimeStampToken timestamp_token;
+  int32 error;
 };
 
 // String used as label in the shared key derivation.
