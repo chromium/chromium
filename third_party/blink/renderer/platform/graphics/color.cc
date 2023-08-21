@@ -396,14 +396,8 @@ Color Color::InterpolateColors(
                                     color2.param0_, color2.param0_is_none_)
       : (interpolation_space == ColorSpace::kHSL ||
          interpolation_space == ColorSpace::kHWB)
-          // TODO(aaronhk): Historically we store hue in the range [0, 6] for
-          // hsl and hwb. This is so that primary and secondary colors are
-          // integers. With the addition of lch and oklch, this makes less
-          // sense. We should transform these to degrees [0, 360] which is
-          // what HueInterpolation() relies on.
-          ? HueInterpolation(color1.param0_ * 60.f, color2.param0_ * 60.f,
-                             percentage, hue_method.value()) /
-                60.f
+          ? HueInterpolation(color1.param0_, color2.param0_, percentage,
+                             hue_method.value())
           : blink::Blend(color1.param0_, color2.param0_, percentage);
 
   absl::optional<float> param1 =

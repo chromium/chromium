@@ -430,6 +430,7 @@ std::tuple<float, float, float> SRGBToXYZD50(float r, float g, float b) {
 }
 
 std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
+  // See https://www.w3.org/TR/css-color-4/#rgb-to-hsl
   float max = std::max({r, g, b});
   float min = std::min({r, g, b});
   float hue = 0.0f, saturation = 0.0f, ligth = (max + min) / 2.0f;
@@ -446,12 +447,15 @@ std::tuple<float, float, float> SRGBToHSL(float r, float g, float b) {
     } else {  // if(max == b)
       hue = (r - g) / d + 4.0f;
     }
+    hue *= 60.0f;
   }
 
   return std::make_tuple(hue, saturation, ligth);
 }
 
 std::tuple<float, float, float> SRGBToHWB(float r, float g, float b) {
+  // Leverage RGB to HSL conversion to find RGB to HWB, see
+  // https://www.w3.org/TR/css-color-4/#rgb-to-hwb
   auto [hue, saturation, light] = SRGBToHSL(r, g, b);
   float white = std::min({r, g, b});
   float black = 1.0f - std::max({r, g, b});
@@ -522,35 +526,18 @@ SkColor4f OklchToSkColor4f(float l_input,
 }
 
 SkColor4f HSLToSkColor4f(float h, float s, float l, float alpha) {
-  // Explanation of this algorithm can be found in the CSS Color 4 Module
-  // specification at https://drafts.csswg.org/css-color-4/#hsl-to-rgb with
-  // further explanation available at
-  // http://en.wikipedia.org/wiki/HSL_color_space
-
-  // Hue is in the range of 0.0 to 6.0, the remainder are in the range 0.0
-  // to 1.0. Out parameters r, g, and b are also returned in range 0.0 to 1.0.
+  // See https://www.w3.org/TR/css-color-4/#hsl-to-rgb
   if (!s) {
     return SkColor4f{l, l, l, alpha};
   }
-  float temp2 = l <= 0.5 ? l * (1.0 + s) : l + s - l * s;
-  float temp1 = 2.0 * l - temp2;
 
-  auto CalcHue = [](float temp1, float temp2, float hue_val) {
-    if (hue_val < 0.0f)
-      hue_val += 6.0f;
-    else if (hue_val >= 6.0f)
-      hue_val -= 6.0f;
-    if (hue_val < 1.0f)
-      return temp1 + (temp2 - temp1) * hue_val;
-    if (hue_val < 3.0f)
-      return temp2;
-    if (hue_val < 4.0f)
-      return temp1 + (temp2 - temp1) * (4.0f - hue_val);
-    return temp1;
+  auto f = [&h, &l, &s](float n) {
+    float k = fmod(n + h / 30.0f, 12.0);
+    float a = s * std::min(l, 1.0f - l);
+    return l - a * std::max(-1.0f, std::min({k - 3.0f, 9.0f - k, 1.0f}));
   };
 
-  return SkColor4f{CalcHue(temp1, temp2, h + 2.0), CalcHue(temp1, temp2, h),
-                   CalcHue(temp1, temp2, h - 2.0), alpha};
+  return SkColor4f{f(0), f(8), f(4), alpha};
 }
 
 SkColor4f HWBToSkColor4f(float h, float w, float b, float alpha) {

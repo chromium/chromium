@@ -105,11 +105,9 @@ void CSSHWB::setAlpha(const V8CSSNumberish* alpha,
 }
 
 Color CSSHWB::ToColor() const {
-  // FromHSLA expects hue in the range [0, 6)
-  return Color::FromHWBA(
-      h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value() / 60.f,
-      ComponentToColorInput(w_), ComponentToColorInput(b_),
-      ComponentToColorInput(alpha_));
+  return Color::FromHWBA(h_->to(CSSPrimitiveValue::UnitType::kDegrees)->value(),
+                         ComponentToColorInput(w_), ComponentToColorInput(b_),
+                         ComponentToColorInput(alpha_));
 }
 
 }  // namespace blink

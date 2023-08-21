@@ -991,34 +991,32 @@ static bool FastParseColorInternal(Color& color,
       return false;
     }
 
-    // We need to convert the hue to the 0..6 scale that FromHSLA() expects.
     switch (hue_unit) {
       case CSSPrimitiveValue::UnitType::kNumber:
       case CSSPrimitiveValue::UnitType::kDegrees:
         // Unitless numbers are to be treated as degrees.
-        hue *= (6.0 / 360.0);
         break;
       case CSSPrimitiveValue::UnitType::kRadians:
-        hue = Rad2deg(hue) * (6.0 / 360.0);
+        hue = Rad2deg(hue);
         break;
       case CSSPrimitiveValue::UnitType::kGradians:
-        hue = Grad2deg(hue) * (6.0 / 360.0);
+        hue = Grad2deg(hue);
         break;
       case CSSPrimitiveValue::UnitType::kTurns:
-        hue *= 6.0;
+        hue *= 360.0;
         break;
       default:
         NOTREACHED();
         return false;
     }
 
-    // Deal with wraparound so that we end up in 0..6,
+    // Deal with wraparound so that we end up in [0, 360],
     // roughly analogous to the code in ParseHSLParameters().
     // Taking these branches should be rare.
     if (hue < 0.0) {
-      hue = fmod(hue, 6.0) + 6.0;
-    } else if (hue > 6.0) {
-      hue = fmod(hue, 6.0);
+      hue = fmod(hue, 360.0) + 360.0;
+    } else if (hue > 360.0) {
+      hue = fmod(hue, 360.0);
     }
 
     current += hue_length;

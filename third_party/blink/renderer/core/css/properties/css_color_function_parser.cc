@@ -221,14 +221,6 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     }
   }
 
-  // For historical reasons, the "hue" of hwb() and hsl() are stored in the
-  // range [0, 6].
-  if ((color_space_ == Color::ColorSpace::kHSL ||
-       color_space_ == Color::ColorSpace::kHWB) &&
-      channel_types_[0] == ChannelType::kNumber) {
-    channels_[0].value() /= 60.0;
-  }
-
   // Lightness is stored in the range [0, 100] for lab(), oklab(), lch() and
   // oklch(). For oklab() and oklch() input for lightness is in the range [0,
   // 1].
