@@ -371,14 +371,20 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
   DCHECK_EQ(item_type_, SearchResultTextItemType::kIconCode);
   DCHECK(icon_code_.has_value());
   switch (icon_code_.value()) {
+    // Browser.
     case kKeyboardShortcutBrowserBack:
       return &kKsvBrowserBackIcon;
     case kKeyboardShortcutBrowserForward:
       return &kKsvBrowserForwardIcon;
     case kKeyboardShortcutBrowserRefresh:
       return &kKsvReloadIcon;
+    // Emoji picker.
+    case kKeyboardShortcutEmojiPicker:
+      return &kKsEmojiPickerIcon;
+    // Zoom.
     case kKeyboardShortcutZoom:
       return &kKsvFullscreenIcon;
+    // Media.
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
     case kKeyboardShortcutMediaFastForward:
@@ -393,16 +399,19 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsMediaTrackNextIcon;
     case kKeyboardShortcutMediaTrackPrevious:
       return &kKsMediaTrackPreviousIcon;
+    // Brightness.
     case kKeyboardShortcutBrightnessDown:
       return &kKsvBrightnessDownIcon;
     case kKeyboardShortcutBrightnessUp:
       return &kKsvBrightnessUpIcon;
+    // Volume.
     case kKeyboardShortcutVolumeMute:
       return &kKsvMuteIcon;
     case kKeyboardShortcutVolumeDown:
       return &kKsvVolumeDownIcon;
     case kKeyboardShortcutVolumeUp:
       return &kKsvVolumeUpIcon;
+    // Arrows.
     case kKeyboardShortcutUp:
       return &kKsvArrowUpIcon;
     case kKeyboardShortcutDown:
@@ -411,8 +420,10 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvArrowLeftIcon;
     case kKeyboardShortcutRight:
       return &kKsvArrowRightIcon;
+    // Privacy.
     case kKeyboardShortcutPrivacyScreenToggle:
       return &kKsvPrivacyScreenToggleIcon;
+    // Snapshot.
     case kKeyboardShortcutSnapshot:
       return &kKsvSnapshotIcon;
     default:

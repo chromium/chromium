@@ -69,6 +69,8 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutBrowserForward;
     case (KeyboardCode::VKEY_BROWSER_REFRESH):
       return IconCode::kKeyboardShortcutBrowserRefresh;
+    case (KeyboardCode::VKEY_EMOJI_PICKER):
+      return IconCode::kKeyboardShortcutEmojiPicker;
     case (KeyboardCode::VKEY_ZOOM):
       return IconCode::kKeyboardShortcutZoom;
     case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP1):
