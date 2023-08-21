@@ -701,6 +701,11 @@ bool OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled() {
       omnibox::kCr2023ActionChipsIcons);
 }
 
+bool OmniboxFieldTrial::IsChromeRefreshActionChipShapeEnabled() {
+  return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
+      omnibox::kCr2023ActionChips);
+}
+
 bool OmniboxFieldTrial::IsChromeRefreshSuggestHoverFillShapeEnabled() {
   return omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
       omnibox::kSuggestionHoverFillShape);

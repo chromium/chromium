@@ -97,11 +97,8 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
   canvas->DrawRoundRect(fill_rect, scaled_radius, flags);
 
   if (stroke_color_ != SK_ColorTRANSPARENT) {
-    constexpr float kStrokeWidth = 1.0f;
+    const float kStrokeWidth = should_border_scale_ ? scale : 1.0f;
     float stroke_inset = kStrokeWidth / 2;
-    if (should_border_scale_) {
-      stroke_inset *= scale;
-    }
     stroke_rect.Inset(gfx::InsetsF(stroke_inset));
     scaled_radius -= kStrokeWidth / 2;
     flags.setStyle(cc::PaintFlags::kStroke_Style);

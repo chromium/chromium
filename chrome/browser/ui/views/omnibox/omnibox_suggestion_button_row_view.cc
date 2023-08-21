@@ -152,7 +152,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
         color_provider->GetColor(GetOmniboxBackgroundColorId(theme_state_));
     SetBackground(CreateBackgroundFromPainter(
         views::Painter::CreateRoundRectWith1PxBorderPainter(
-            fill_color, stroke_color, GetCornerRadiusValue())));
+            fill_color, stroke_color, GetCornerRadiusValue(),
+            SkBlendMode::kSrcOver, /*antialias=*/true,
+            /*should_border_scale=*/
+            OmniboxFieldTrial::IsChromeRefreshActionChipShapeEnabled())));
   }
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {

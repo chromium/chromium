@@ -367,6 +367,9 @@ bool IsChromeRefreshSuggestIconsEnabled();
 // Returns true if the feature to enable CR23 action chip icons is enabled.
 bool IsChromeRefreshActionChipIconsEnabled();
 
+// Omnibox CR23 - action chip shape.
+// Returns true if the feature to enable CR23 action chip shape is enabled.
+bool IsChromeRefreshActionChipShapeEnabled();
 // Omnibox CR23 - suggestion hover fill shape.
 // Returns true if the feature to enable CR23 suggestion hover fill shape is
 // enabled.
