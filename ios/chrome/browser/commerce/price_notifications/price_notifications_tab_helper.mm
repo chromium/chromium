@@ -38,7 +38,7 @@ namespace {
 void OnProductInfoUrl(
     WeakPriceNotificationsPresenter* presenter,
     const GURL& product_url,
-    const absl::optional<commerce::ProductInfo>& product_info) {
+    const absl::optional<const commerce::ProductInfo>& product_info) {
   DCHECK(presenter);
   if (!product_info) {
     return;

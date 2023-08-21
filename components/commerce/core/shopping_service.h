@@ -253,7 +253,8 @@ enum class ShoppingPageType {
 // Callbacks for querying a single URL or observing information from all
 // navigated urls.
 using ProductInfoCallback =
-    base::OnceCallback<void(const GURL&, const absl::optional<ProductInfo>&)>;
+    base::OnceCallback<void(const GURL&,
+                            const absl::optional<const ProductInfo>&)>;
 using MerchantInfoCallback =
     base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
 using PriceInsightsInfoCallback =

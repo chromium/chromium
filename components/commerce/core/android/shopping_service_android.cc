@@ -93,7 +93,7 @@ void ShoppingServiceAndroid::HandleProductInfoCallback(
     JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
-    const absl::optional<ProductInfo>& info) {
+    const absl::optional<const ProductInfo>& info) {
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     info_java_object = Java_ShoppingService_createProductInfo(

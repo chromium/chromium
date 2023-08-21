@@ -105,7 +105,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse) {
       GURL(kProductUrl),
       base::BindOnce(
           [](base::RunLoop* run_loop, const GURL& url,
-             const absl::optional<ProductInfo>& info) {
+             const absl::optional<const ProductInfo>& info) {
             ASSERT_EQ(kProductUrl, url.spec());
             ASSERT_TRUE(info.has_value());
 
@@ -139,7 +139,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_ApiDisabled) {
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
+                                const absl::optional<const ProductInfo>& info) {
                                ASSERT_EQ(kProductUrl, url.spec());
                                ASSERT_FALSE(info.has_value());
                                run_loop->Quit();
@@ -171,7 +171,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_CurrencyMismatch) {
       GURL(kProductUrl),
       base::BindOnce(
           [](base::RunLoop* run_loop, const GURL& url,
-             const absl::optional<ProductInfo>& info) {
+             const absl::optional<const ProductInfo>& info) {
             ASSERT_EQ(kProductUrl, url.spec());
             ASSERT_TRUE(info.has_value());
 
@@ -205,7 +205,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoResponse_OptGuideFalse) {
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
+                                const absl::optional<const ProductInfo>& info) {
                                ASSERT_EQ(kProductUrl, url.spec());
                                ASSERT_FALSE(info.has_value());
                                run_loop->Quit();
@@ -296,7 +296,7 @@ TEST_F(ShoppingServiceTest, TestProductInfoCacheFullLifecycle) {
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
+                                const absl::optional<const ProductInfo>& info) {
                                ASSERT_EQ(kProductUrl, url.spec());
                                ASSERT_TRUE(info.has_value());
 
@@ -357,7 +357,7 @@ TEST_F(ShoppingServiceTest,
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
+                                const absl::optional<const ProductInfo>& info) {
                                ASSERT_EQ(kProductUrl, url.spec());
                                ASSERT_TRUE(info.has_value());
 
@@ -435,7 +435,7 @@ TEST_F(ShoppingServiceTest,
   shopping_service_->GetProductInfoForUrl(
       GURL(kProductUrl), base::BindOnce(
                              [](base::RunLoop* run_loop, const GURL& url,
-                                const absl::optional<ProductInfo>& info) {
+                                const absl::optional<const ProductInfo>& info) {
                                ASSERT_EQ(kProductUrl, url.spec());
                                ASSERT_TRUE(info.has_value());
 

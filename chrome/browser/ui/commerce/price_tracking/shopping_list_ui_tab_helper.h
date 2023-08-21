@@ -112,7 +112,7 @@ class ShoppingListUiTabHelper
   friend class ShoppingListUiTabHelperTest;
 
   void HandleProductInfoResponse(const GURL& url,
-                                 const absl::optional<ProductInfo>& info);
+                                 const absl::optional<const ProductInfo>& info);
 
   void HandlePriceInsightsInfoResponse(
       const GURL& url,

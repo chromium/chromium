@@ -286,7 +286,7 @@ bool ShoppingListUiTabHelper::ShouldShowPriceInsightsIconView() {
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
     const GURL& url,
-    const absl::optional<ProductInfo>& info) {
+    const absl::optional<const ProductInfo>& info) {
   if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
     return;
   }

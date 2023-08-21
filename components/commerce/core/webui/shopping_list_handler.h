@@ -125,7 +125,7 @@ class ShoppingListHandler : public shopping_list::mojom::ShoppingListHandler,
   void OnFetchProductInfoForCurrentUrl(
       GetProductInfoForCurrentUrlCallback callback,
       const GURL& url,
-      const absl::optional<ProductInfo>& info);
+      const absl::optional<const ProductInfo>& info);
 
   void OnFetchPriceInsightsInfoForCurrentUrl(
       GetPriceInsightsInfoForCurrentUrlCallback callback,

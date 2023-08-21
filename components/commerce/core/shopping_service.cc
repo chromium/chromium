@@ -220,8 +220,8 @@ void ShoppingService::HandleDidNavigatePrimaryMainFrameForProductInfo(
 
             service->HandleOptGuideProductInfoResponse(
                 url, web_wrapper.get(),
-                base::BindOnce(
-                    [](const GURL&, const absl::optional<ProductInfo>&) {}),
+                base::BindOnce([](const GURL&,
+                                  const absl::optional<const ProductInfo>&) {}),
                 decision, metadata);
 
             service->PDPMetricsCallback(web_wrapper->IsOffTheRecord(), decision,

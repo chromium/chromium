@@ -30,7 +30,7 @@ namespace {
 
 shopping_list::mojom::ProductInfoPtr ProductInfoToMojoProduct(
     const GURL& url,
-    const absl::optional<ProductInfo>& info,
+    const absl::optional<const ProductInfo>& info,
     const std::string& locale) {
   auto product_info = shopping_list::mojom::ProductInfo::New();
 
@@ -448,7 +448,7 @@ void ShoppingListHandler::ShowBookmarkEditorForCurrentUrl() {
 void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
     GetProductInfoForCurrentUrlCallback callback,
     const GURL& url,
-    const absl::optional<ProductInfo>& info) {
+    const absl::optional<const ProductInfo>& info) {
   std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
 }
 

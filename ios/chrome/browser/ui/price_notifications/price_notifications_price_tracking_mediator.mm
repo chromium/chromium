@@ -294,7 +294,7 @@ using PriceNotificationItems =
       item.entryURL,
       base::BindOnce(^(
           const GURL& productURL,
-          const absl::optional<commerce::ProductInfo>& productInfo) {
+          const absl::optional<const commerce::ProductInfo>& productInfo) {
         PriceNotificationsPriceTrackingMediator* strongSelf = weakSelf;
         if (!strongSelf) {
           return;
@@ -368,7 +368,7 @@ using PriceNotificationItems =
       currentSiteURL,
       base::BindOnce(
           ^(const GURL& productURL,
-            const absl::optional<commerce::ProductInfo>& productInfo) {
+            const absl::optional<const commerce::ProductInfo>& productInfo) {
             PriceNotificationsPriceTrackingMediator* strongSelf = weakSelf;
             if (!strongSelf) {
               return;
