@@ -23,7 +23,6 @@
 #include "net/socket/tcp_server_socket.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -52,8 +51,9 @@ class SandboxedSocketBrokerBrowserTest : public ContentBrowserTest {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
-    if (!sandbox::features::IsAppContainerSandboxSupported())
+    if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
       check_sandbox_ = false;
+    }
 #endif  // BUILDFLAG(IS_WIN)
 
     if (check_sandbox_) {

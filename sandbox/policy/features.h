@@ -45,6 +45,13 @@ SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kForceSpectreVariant2Mitigation);
 SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kCacheMacSandboxProfiles);
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+// Returns whether the network sandbox is supported. This is different from
+// IsAppContainerSandboxSupported as the Network Service uses some newer APIs to
+// correctly function when sandboxed.
+SANDBOX_POLICY_EXPORT bool IsNetworkSandboxSupported();
+#endif  // BUILDFLAG(IS_WIN)
+
 // Returns whether the network sandbox is enabled for the current platform
 // configuration. This might be overridden by the content embedder so prefer
 // calling ContentBrowserClient::ShouldSandboxNetworkService().

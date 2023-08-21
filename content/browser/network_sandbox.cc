@@ -24,7 +24,7 @@
 
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
-#include "sandbox/features.h"
+#include "sandbox/policy/features.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
@@ -220,8 +220,9 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
 
 #if BUILDFLAG(IS_WIN)
   // On platforms that don't support the LPAC sandbox, do nothing.
-  if (!sandbox::features::IsAppContainerSandboxSupported())
+  if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
     return true;
+  }
   DCHECK(!sandbox_params.lpac_capability_name.empty());
   auto ac_sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox_params.lpac_capability_name});

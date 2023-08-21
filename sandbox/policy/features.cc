@@ -110,13 +110,21 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_WIN)
+bool IsNetworkSandboxSupported() {
+  // Delegate to the sandbox for support, for now.
+  return sandbox::features::IsAppContainerSandboxSupported();
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool IsNetworkSandboxEnabled() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
   return true;
 #else
 #if BUILDFLAG(IS_WIN)
-  if (!sandbox::features::IsAppContainerSandboxSupported())
+  if (!IsNetworkSandboxSupported()) {
     return false;
+  }
 #endif  // BUILDFLAG(IS_WIN)
   // Check feature status.
   return base::FeatureList::IsEnabled(kNetworkServiceSandbox);

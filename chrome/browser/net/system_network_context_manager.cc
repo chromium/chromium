@@ -70,7 +70,6 @@
 #include "net/cookies/cookie_util.h"
 #include "net/net_buildflags.h"
 #include "net/third_party/uri_template/uri_template.h"
-#include "sandbox/features.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -258,7 +257,7 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
-  if (!sandbox::features::IsAppContainerSandboxSupported()) {
+  if (!sandbox::policy::features::IsNetworkSandboxSupported()) {
     return NetworkSandboxState::kDisabledByPlatform;
   }
 #endif  // BUILDFLAG(IS_WIN)
