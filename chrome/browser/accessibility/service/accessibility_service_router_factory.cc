@@ -43,9 +43,10 @@ AccessibilityServiceRouterFactory::AccessibilityServiceRouterFactory()
 AccessibilityServiceRouterFactory::~AccessibilityServiceRouterFactory() =
     default;
 
-KeyedService* AccessibilityServiceRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccessibilityServiceRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AccessibilityServiceRouter();
+  return std::make_unique<AccessibilityServiceRouter>();
 }
 
 // static
