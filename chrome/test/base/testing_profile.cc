@@ -111,7 +111,6 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "components/guest_view/browser/guest_view_manager.h"
-#include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_prefs.h"
@@ -390,9 +389,6 @@ void TestingProfile::Init(bool is_supervised_profile) {
 
     extensions::ExtensionSystemFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&extensions::TestExtensionSystem::Build));
-
-    extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
-        this, BrowserContextKeyedServiceFactory::TestingFactory());
 
     web_app::WebAppProviderFactory::GetInstance()->SetTestingFactory(
         this, base::BindRepeating(&web_app::FakeWebAppProvider::BuildDefault));

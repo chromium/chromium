@@ -31,6 +31,7 @@ class EventRouterFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
+  bool ServiceIsNULLWhileTesting() const override;
 };
 
 }  // namespace extensions

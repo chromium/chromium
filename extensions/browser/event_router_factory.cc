@@ -50,4 +50,8 @@ BrowserContext* EventRouterFactory::GetBrowserContextToUse(
       context, /*force_guest_profile=*/true);
 }
 
+bool EventRouterFactory::ServiceIsNULLWhileTesting() const {
+  return true;
+}
+
 }  // namespace extensions
