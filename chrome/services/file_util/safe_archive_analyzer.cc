@@ -71,6 +71,7 @@ void SafeArchiveAnalyzer::AnalyzeDmgFile(
 
 void SafeArchiveAnalyzer::AnalyzeRarFile(
     base::File rar_file,
+    const absl::optional<std::string>& password,
     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
     AnalyzeRarFileCallback callback) {
   DCHECK(rar_file.IsValid());
@@ -85,10 +86,8 @@ void SafeArchiveAnalyzer::AnalyzeRarFile(
                               weak_factory_.GetWeakPtr());
   timeout_timer_.Start(FROM_HERE, kArchiveAnalysisTimeout, this,
                        &SafeArchiveAnalyzer::Timeout);
-  // TODO(crbug/1466287): Update RAR analyzer to use passwords and provide the
-  // password here.
   rar_analyzer_.Analyze(std::move(rar_file), base::FilePath(),
-                        /*password=*/absl::nullopt,
+                        /*password=*/password,
                         std::move(analysis_finished_callback),
                         std::move(temp_file_getter_callback), &results_);
 }

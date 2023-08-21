@@ -54,6 +54,7 @@ class MockSafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       void,
       AnalyzeRarFile,
       (base::File rar_file,
+       const absl::optional<std::string>& password,
        mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
        AnalyzeRarFileCallback callback),
       (override));

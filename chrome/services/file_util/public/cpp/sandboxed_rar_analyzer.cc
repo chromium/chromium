@@ -59,19 +59,22 @@ void PrepareFileToAnalyze(
 std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>
 SandboxedRarAnalyzer::CreateAnalyzer(
     const base::FilePath& rar_file_path,
+    const std::string& password,
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::FileUtilService> service) {
   return std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter>(
-      new SandboxedRarAnalyzer(rar_file_path, std::move(callback),
+      new SandboxedRarAnalyzer(rar_file_path, password, std::move(callback),
                                std::move(service)),
       base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({})));
 }
 
 SandboxedRarAnalyzer::SandboxedRarAnalyzer(
     const base::FilePath& rar_file_path,
+    const std::string& password,
     ResultCallback callback,
     mojo::PendingRemote<chrome::mojom::FileUtilService> service)
     : file_path_(rar_file_path),
+      password_(password),
       callback_(std::move(callback)),
       service_(std::move(service)) {
   DCHECK(callback_);
@@ -107,7 +110,7 @@ void SandboxedRarAnalyzer::AnalyzeFile(base::File file) {
         temp_file_getter_remote =
             temp_file_getter_.GetRemoteTemporaryFileGetter();
     remote_analyzer_->AnalyzeRarFile(
-        std::move(file), std::move(temp_file_getter_remote),
+        std::move(file), password_, std::move(temp_file_getter_remote),
         base::BindOnce(&SandboxedRarAnalyzer::AnalyzeFileDone, GetWeakPtr()));
   } else {
     AnalyzeFileDone(safe_browsing::ArchiveAnalyzerResults());

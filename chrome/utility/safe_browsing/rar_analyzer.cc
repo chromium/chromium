@@ -34,10 +34,10 @@ bool RarAnalyzer::ResumeExtraction() {
   while (reader_.ExtractNextEntry()) {
     const third_party_unrar::RarReader::EntryInfo& entry =
         reader_.current_entry();
-    if (!UpdateResultsForEntry(
-            temp_file_.Duplicate(), GetRootPath().Append(entry.file_path),
-            entry.file_size, entry.is_encrypted, entry.is_directory,
-            /*contents_valid=*/!entry.is_encrypted)) {
+    if (!UpdateResultsForEntry(temp_file_.Duplicate(),
+                               GetRootPath().Append(entry.file_path),
+                               entry.file_size, entry.is_encrypted,
+                               entry.is_directory, entry.contents_valid)) {
       return false;
     }
   }
@@ -63,6 +63,11 @@ void RarAnalyzer::OnGetTempFile(base::File temp_file) {
     InitComplete(ArchiveAnalysisResult::kTooLarge);
     return;
   }
+
+  if (password()) {
+    reader_.SetPassword(*password());
+  }
+
   // `rar_file_` is consumed by the reader and cannot be used after
   // this point.
   if (!reader_.Open(std::move(GetArchiveFile()), temp_file_.Duplicate())) {

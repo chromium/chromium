@@ -235,6 +235,7 @@ void FileAnalysisRequest::OnGotFileData(
   } else if (IsRarFile(ext, mime_type)) {
     rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
         path_,
+        /*password=*/"",
         base::BindOnce(&FileAnalysisRequest::OnCheckedForEncryption,
                        weakptr_factory_.GetWeakPtr(),
                        std::move(result_and_data.second)),

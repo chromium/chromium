@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "third_party/unrar/src/rar.hpp"
 
@@ -34,7 +35,8 @@ bool RarReader::Open(base::File rar_file, base::File temp_file) {
     return false;
 
   command_ = std::make_unique<CommandData>();
-  command_->ParseArg(const_cast<wchar_t*>(L"-p"));
+  std::wstring password_flag = L"-p" + base::UTF8ToWide(password_);
+  command_->ParseArg(password_flag.data());
   command_->ParseArg(const_cast<wchar_t*>(L"x"));
   command_->ParseDone();
 
@@ -66,14 +68,18 @@ bool RarReader::ExtractNextEntry() {
       current_entry_.is_encrypted = archive_->FileHead.Encrypted;
       current_entry_.file_size =
           current_entry_.is_directory ? 0 : extractor_->GetCurrentFileSize();
+      current_entry_.contents_valid =
+          success && ErrHandler.GetErrorCode() == RARX_SUCCESS;
+      ErrHandler.Clean();
 
       if (success) {
         return true;
       }
 
       if (archive_->FileHead.Encrypted) {
-        // Since Chromium doesn't have the password, manually skip over the
-        // encrypted data and fill in the metadata we do have.
+        // Since Chromium doesn't have the password or the password was
+        // incorrect, manually skip over the encrypted data and fill in the
+        // metadata we do have.
         archive_->SeekToNext();
         return true;
       }
@@ -88,6 +94,10 @@ bool RarReader::ExtractNextEntry() {
   }
 
   return false;
+}
+
+void RarReader::SetPassword(const std::string& password) {
+  password_ = password;
 }
 
 }  // namespace third_party_unrar

@@ -33,8 +33,10 @@ interface SafeArchiveAnalyzer {
 
   // Build flag FULL_SAFE_BROWSING: Analyze the `rar_file` for malicious
   // download protection. Uses the `temporary_file` to extract files from the
-  // `rar_file` archive.
+  // `rar_file` archive. Uses `password` to decrypt encrypted entries in the
+  // archive, if provided.
   AnalyzeRarFile(mojo_base.mojom.ReadOnlyFile rar_file,
+                 string? password,
                  pending_remote<TemporaryFileGetter> temp_file_getter)
       => (SafeArchiveAnalyzerResults results);
 

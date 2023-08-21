@@ -33,6 +33,9 @@ class RarReader {
 
     // The actual size of the entry.
     size_t file_size;
+
+    // Whether the contents are valid
+    bool contents_valid;
   };
 
   RarReader();
@@ -50,6 +53,8 @@ class RarReader {
   // archive.
   const EntryInfo& current_entry() { return current_entry_; }
 
+  void SetPassword(const std::string& password);
+
  private:
   // The temporary file used for extracting each entry. This allows RAR
   // extraction to safely occur within a sandbox.
@@ -65,6 +70,9 @@ class RarReader {
   std::unique_ptr<Archive> archive_;
   std::unique_ptr<CmdExtract> extractor_;
   std::unique_ptr<CommandData> command_;
+
+  // Password used for encrypted entries.
+  std::string password_;
 };
 
 }  // namespace third_party_unrar

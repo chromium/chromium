@@ -54,12 +54,19 @@ class SandboxedRarAnalyzerTest : public testing::Test {
 
   void AnalyzeFile(const base::FilePath& path,
                    safe_browsing::ArchiveAnalyzerResults* results) {
+    AnalyzeFile(path, /*password=*/"", results);
+  }
+
+  void AnalyzeFile(const base::FilePath& path,
+                   const std::string& password,
+                   safe_browsing::ArchiveAnalyzerResults* results) {
     mojo::PendingRemote<chrome::mojom::FileUtilService> remote;
     FileUtilService service(remote.InitWithNewPipeAndPassReceiver());
     base::RunLoop run_loop;
     ResultsGetter results_getter(run_loop.QuitClosure(), results);
     std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-        SandboxedRarAnalyzer::CreateAnalyzer(path, results_getter.GetCallback(),
+        SandboxedRarAnalyzer::CreateAnalyzer(path, /*password=*/password,
+                                             results_getter.GetCallback(),
                                              std::move(remote));
     analyzer->Start();
     run_loop.Run();
@@ -186,40 +193,77 @@ TEST_F(SandboxedRarAnalyzerTest, AnalyzeBenignRar) {
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
-TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPassword) {
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRar) {
   // Can list files inside an archive that has password protected data.
-  // passwd.rar contains 1 file: file1.txt
+  // passwd1234.rar contains 1 file: signed.exe
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd.rar"));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd1234.rar"));
 
   safe_browsing::ArchiveAnalyzerResults results;
   AnalyzeFile(path, &results);
 
   ASSERT_TRUE(results.success);
-  EXPECT_FALSE(results.has_executable);
+  EXPECT_TRUE(results.has_executable);
   ASSERT_EQ(results.archived_binary.size(), 1);
-  EXPECT_EQ(results.archived_binary[0].file_path(), "file1.txt");
-  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+}
+
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithCorrectPassword) {
+  // Can list files inside an archive that has password protected data.
+  // passwd1234.rar contains 1 file: signed.exe
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd1234.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, /*password=*/"1234", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  ExpectBinary(kSignedExe, results.archived_binary.Get(0));
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
+  EXPECT_FALSE(results.archived_binary[0].is_archive());
+  EXPECT_TRUE(results.archived_archive_filenames.empty());
+}
+
+TEST_F(SandboxedRarAnalyzerTest, AnalyzeEncryptedRarWithIncorrectPassword) {
+  // Can list files inside an archive that has password protected data.
+  // passwd1234.rar contains 1 file: signed.exe
+  base::FilePath path;
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd1234.rar"));
+
+  safe_browsing::ArchiveAnalyzerResults results;
+  AnalyzeFile(path, /*password=*/"5678", &results);
+
+  ASSERT_TRUE(results.success);
+  EXPECT_TRUE(results.has_executable);
+  ASSERT_EQ(results.archived_binary.size(), 1);
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
 }
 
 TEST_F(SandboxedRarAnalyzerTest, AnalyzeRarWithPasswordMultipleFiles) {
   // Can list files inside an archive that has password protected data.
-  // passwd_two_fiels.rar contains 2 files: file1.txt and file2.txt
+  // passwd1234_two_files.rar contains 2 files: signed.exe and text.txt
   base::FilePath path;
-  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd_two_files.rar"));
+  ASSERT_NO_FATAL_FAILURE(path = GetFilePath("passwd1234_two_files.rar"));
 
   safe_browsing::ArchiveAnalyzerResults results;
   AnalyzeFile(path, &results);
 
   ASSERT_TRUE(results.success);
-  EXPECT_FALSE(results.has_executable);
+  EXPECT_TRUE(results.has_executable);
   ASSERT_EQ(results.archived_binary.size(), 2);
-  EXPECT_EQ(results.archived_binary[0].file_path(), "file1.txt");
-  EXPECT_FALSE(results.archived_binary[0].is_executable());
+  EXPECT_EQ(results.archived_binary[0].file_path(), "signed.exe");
+  EXPECT_TRUE(results.archived_binary[0].is_executable());
   EXPECT_FALSE(results.archived_binary[0].is_archive());
-  EXPECT_EQ(results.archived_binary[1].file_path(), "file2.txt");
+  EXPECT_EQ(results.archived_binary[1].file_path(), "text.txt");
   EXPECT_FALSE(results.archived_binary[1].is_executable());
   EXPECT_FALSE(results.archived_binary[1].is_archive());
   EXPECT_TRUE(results.archived_archive_filenames.empty());
@@ -375,8 +419,9 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
   base::RunLoop run_loop;
 
   FakeFileUtilService service(remote.InitWithNewPipeAndPassReceiver());
-  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeRarFile(_, _, _))
+  EXPECT_CALL(service.GetSafeArchiveAnalyzer(), AnalyzeRarFile(_, _, _, _))
       .WillOnce([&](base::File rar_file,
+                    const absl::optional<std::string>& password,
                     mojo::PendingRemote<chrome::mojom::TemporaryFileGetter>
                         temp_file_getter,
                     chrome::mojom::SafeArchiveAnalyzer::AnalyzeRarFileCallback
@@ -386,8 +431,8 @@ TEST_F(SandboxedRarAnalyzerTest, CanDeleteDuringExecution) {
         run_loop.Quit();
       });
   std::unique_ptr<SandboxedRarAnalyzer, base::OnTaskRunnerDeleter> analyzer =
-      SandboxedRarAnalyzer::CreateAnalyzer(temp_path, base::DoNothing(),
-                                           std::move(remote));
+      SandboxedRarAnalyzer::CreateAnalyzer(
+          temp_path, /*password=*/"", base::DoNothing(), std::move(remote));
   analyzer->Start();
   run_loop.Run();
 }

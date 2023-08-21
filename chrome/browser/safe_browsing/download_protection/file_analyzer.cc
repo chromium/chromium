@@ -191,6 +191,7 @@ void FileAnalyzer::StartExtractRarFeatures() {
   // analyzer is refcounted, it might outlive the request.
   rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
       tmp_path_,
+      /*password=*/"",
       base::BindOnce(&FileAnalyzer::OnRarAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
       LaunchFileUtilService());

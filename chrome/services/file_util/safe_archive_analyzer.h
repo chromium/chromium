@@ -46,6 +46,7 @@ class SafeArchiveAnalyzer : public chrome::mojom::SafeArchiveAnalyzer {
       AnalyzeDmgFileCallback callback) override;
   void AnalyzeRarFile(
       base::File rar_file,
+      const absl::optional<std::string>& password,
       mojo::PendingRemote<chrome::mojom::TemporaryFileGetter> temp_file_getter,
       AnalyzeRarFileCallback callback) override;
   void AnalyzeSevenZipFile(
