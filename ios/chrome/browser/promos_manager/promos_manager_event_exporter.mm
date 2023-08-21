@@ -12,9 +12,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 PromosManagerEventExporter::PromosManagerEventExporter(PrefService* local_state)
-    : local_state_(local_state) {
-  DCHECK(local_state_);
-}
+    : local_state_(local_state) {}
 
 PromosManagerEventExporter::~PromosManagerEventExporter() = default;
 

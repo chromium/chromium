@@ -330,6 +330,9 @@ TEST_F(PromosManagerImplTest, DetectsNoImpressionLimitTriggered) {
 // Tests PromosManager::CanShowPromo() correctly allows a promo to be shown
 // because it hasn't met any impression limits.
 TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
 
   const std::vector<promos_manager::Impression> zeroImpressions = {};
@@ -341,6 +344,9 @@ TEST_F(PromosManagerImplTest, DecidesCanShowPromo) {
 // Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
 // promo specific limits.
 TEST_F(PromosManagerImplTest, CanShowPromo_TestPromoSpecifLimits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
   SetPromoLimits();
 
@@ -379,6 +385,9 @@ TEST_F(PromosManagerImplTest, CanShowPromo_TestPromoSpecifLimits) {
 // Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
 // global per promo impression limits.
 TEST_F(PromosManagerImplTest, CanShowPromo_TestGlobalPerPromoImpressionLimits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
   SetPromoLimits();
 
@@ -404,6 +413,9 @@ TEST_F(PromosManagerImplTest, CanShowPromo_TestGlobalPerPromoImpressionLimits) {
 // Tests PromosManager::CanShowPromo() correctly allows/denies promos based on
 // global impression limits.
 TEST_F(PromosManagerImplTest, CanShowPromo_TestGlobalImpressionLimits) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
   SetPromoLimits();
 
@@ -1592,6 +1604,9 @@ TEST_F(PromosManagerImplTest,
 // Tests `NextPromoForDisplay` returns a pending promo that has become active
 // and takes precedence over other active promos.
 TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
 
   promos_manager_->single_display_active_promos_ = {
@@ -1618,6 +1633,9 @@ TEST_F(PromosManagerImplTest, NextPromoForDisplayReturnsPendingPromo) {
 // promos.
 TEST_F(PromosManagerImplTest,
        NextPromoForDisplayReturnsActivePromoOfPrioritizedType) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kPromosManagerUsesFET);
+
   CreatePromosManager();
 
   promos_manager_->single_display_active_promos_ = {
