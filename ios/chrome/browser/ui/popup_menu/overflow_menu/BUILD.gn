@@ -14,8 +14,6 @@ source_set("overflow_menu_constants") {
 
 source_set("overflow_menu") {
   sources = [
-    "menu_customization_coordinator.h",
-    "menu_customization_coordinator.mm",
     "overflow_menu_mediator.h",
     "overflow_menu_mediator.mm",
     "overflow_menu_orderer.h",
@@ -100,12 +98,14 @@ swift_source_set("overflow_menu_swift") {
     "destination_customization_model.swift",
     "destination_drag_handler.swift",
     "destination_edit_button.swift",
+    "menu_customization_animation_id.swift",
     "menu_customization_view.swift",
     "overflow_menu_action.swift",
     "overflow_menu_action_group.swift",
     "overflow_menu_action_list.swift",
     "overflow_menu_action_row.swift",
     "overflow_menu_action_section.swift",
+    "overflow_menu_container_view.swift",
     "overflow_menu_destination.swift",
     "overflow_menu_destination_list.swift",
     "overflow_menu_destination_view.swift",

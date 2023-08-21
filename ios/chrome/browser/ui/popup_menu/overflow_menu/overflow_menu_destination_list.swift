@@ -81,6 +81,9 @@ struct OverflowMenuDestinationList: View {
   // The drag handler to use for drag interactions on this list
   var dragHandler: DestinationDragHandler?
 
+  /// The namespace for the animation of this view appearing or disappearing.
+  let namespace: Namespace.ID
+
   /// Tracks the list's current offset, to see when it scrolls. When the offset
   /// is `nil`, scroll tracking is not set up yet. This is necessary because
   /// in RTL languages, the scroll view has to manually scroll to the right edge
@@ -162,6 +165,9 @@ struct OverflowMenuDestinationList: View {
                     .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
                 }
               }
+              .matchedGeometryEffect(
+                id: MenuCustomizationAnimationID.from(destination), in: namespace
+              )
 
             }
           }.alignmentGuide(.bottom) { $0[.bottom] + Constants.bottomMargin }

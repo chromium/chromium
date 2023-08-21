@@ -14,6 +14,8 @@ struct MenuCustomizationView: View {
   /// Leading padding for any views that require it.
   static let leadingPadding: CGFloat = 16
 
+  static let headerHeight: CGFloat = 56
+
   @ObservedObject var actionCustomizationModel: ActionCustomizationModel
 
   @ObservedObject var destinationCustomizationModel: DestinationCustomizationModel
@@ -24,88 +26,121 @@ struct MenuCustomizationView: View {
 
   weak var eventHandler: MenuCustomizationEventHandler?
 
+  /// The namespace for the animation of this view appearing or disappearing.
+  let namespace: Namespace.ID
+
   init(
     actionCustomizationModel: ActionCustomizationModel,
     destinationCustomizationModel: DestinationCustomizationModel,
     uiConfiguration: OverflowMenuUIConfiguration,
-    eventHandler: MenuCustomizationEventHandler
+    eventHandler: MenuCustomizationEventHandler?,
+    namespace: Namespace.ID
   ) {
     self.actionCustomizationModel = actionCustomizationModel
     self.destinationCustomizationModel = destinationCustomizationModel
     self.uiConfiguration = uiConfiguration
     self.eventHandler = eventHandler
+    self.namespace = namespace
 
     _dragHandler = StateObject(
       wrappedValue: DestinationDragHandler(destinationModel: destinationCustomizationModel))
   }
 
   var body: some View {
-    NavigationView {
-      VStack(alignment: .leading, spacing: 0) {
+    VStack(alignment: .leading, spacing: 0) {
+      header
+      OverflowMenuDestinationList(
+        destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
+        uiConfiguration: uiConfiguration, dragHandler: dragHandler, namespace: namespace
+      )
+      .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
+      .frame(height: OverflowMenuListStyle.destinationListHeight)
+      if destinationCustomizationModel.hiddenDestinations.count > 0 {
+        Text(
+          L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE)
+        )
+        .fontWeight(.semibold)
+        .padding([.leading], Self.leadingPadding)
         OverflowMenuDestinationList(
-          destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
-          uiConfiguration: uiConfiguration, dragHandler: dragHandler
+          destinations: $destinationCustomizationModel.hiddenDestinations, metricsHandler: nil,
+          uiConfiguration: uiConfiguration, namespace: namespace
         ).frame(height: OverflowMenuListStyle.destinationListHeight)
-        if destinationCustomizationModel.hiddenDestinations.count > 0 {
-          Text(
-            L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE)
-          )
-          .fontWeight(.semibold)
-          .padding([.leading], Self.leadingPadding)
-          OverflowMenuDestinationList(
-            destinations: $destinationCustomizationModel.hiddenDestinations, metricsHandler: nil,
-            uiConfiguration: uiConfiguration
-          ).frame(height: OverflowMenuListStyle.destinationListHeight)
-        }
-        Divider()
-        List {
-          createDefaultSection {
-            HStack {
-              VStack(alignment: .leading) {
-                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
-                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION))
-                  .font(.caption)
-              }
-              Spacer()
-              Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
-                .labelsHidden()
-                .tint(.chromeBlue)
+      }
+      Divider()
+      List {
+        createDefaultSection {
+          HStack {
+            VStack(alignment: .leading) {
+              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
+              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION))
+                .font(.caption)
             }
+            Spacer()
+            Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {}
+              .labelsHidden()
+              .tint(.chromeBlue)
           }
-          ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
-            group in
-            OverflowMenuActionSection(actionGroup: group, metricsHandler: nil)
-          }
+        }
+        ForEach([actionCustomizationModel.shownActions, actionCustomizationModel.hiddenActions]) {
+          group in
+          OverflowMenuActionSection(actionGroup: group, metricsHandler: nil)
         }
       }
-      .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-      .overflowMenuListStyle()
-      .environment(\.editMode, .constant(.active))
-      .navigationTitle(
-        L10nUtils.stringWithFixup(
-          messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE)
-      )
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .cancellationAction) {
-          Button(
-            L10nUtils.stringWithFixup(
-              messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
-          ) {
-            eventHandler?.cancelWasTapped()
-          }
+      .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
+    }
+    .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+    .overflowMenuListStyle()
+    .environment(\.editMode, .constant(.active))
+  }
+
+  /// Custom header for this view. This should look like a `NavigationView`'s
+  /// toolbar, but that can't be animated.
+  @ViewBuilder
+  var header: some View {
+    HStack(alignment: .center, spacing: 0) {
+      // The 3 nested HStacks mean that the space is divided equally between the
+      // three. Specifically, this means that the middle HStack is centered in
+      // the entire width, rather than centered between the two side buttons
+      // (as they are different lengths).
+      HStack {
+        Button(
+          L10nUtils.stringWithFixup(
+            messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_CANCEL)
+        ) {
+          eventHandler?.cancelWasTapped()
         }
-        ToolbarItem(placement: .confirmationAction) {
-          Button(
+        .padding([.leading])
+        Spacer()
+      }
+
+      HStack {
+        Text(
+          L10nUtils.stringWithFixup(
+            messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_TITLE)
+        )
+        .fontWeight(.semibold)
+        .lineLimit(1)
+      }
+      .layoutPriority(1000)
+
+      HStack {
+        Spacer()
+        Button {
+          eventHandler?.doneWasTapped()
+        } label: {
+          Text(
             L10nUtils.stringWithFixup(
               messageId: IDS_IOS_OVERFLOW_MENU_CUSTOMIZE_MENU_DONE)
-          ) {
-            eventHandler?.doneWasTapped()
-          }.disabled(
-            !destinationCustomizationModel.hasChanged && !actionCustomizationModel.hasChanged)
+          )
+          .bold()
         }
+        .disabled(
+          !destinationCustomizationModel.hasChanged && !actionCustomizationModel.hasChanged
+        )
+        .padding([.trailing])
       }
     }
+    .frame(minHeight: Self.headerHeight)
   }
 
   /// Creates a section with default spacing in the header and footer.

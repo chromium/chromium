@@ -12,6 +12,9 @@ struct OverflowMenuView: View {
 
   weak var metricsHandler: PopupMenuMetricsHandler?
 
+  /// The namespace for the animation of this view appearing or disappearing.
+  let namespace: Namespace.ID
+
   var body: some View {
     GeometryReader { geometry in
       VStack(
@@ -22,13 +25,15 @@ struct OverflowMenuView: View {
       ) {
         OverflowMenuDestinationList(
           destinations: $model.destinations, metricsHandler: metricsHandler,
-          uiConfiguration: uiConfiguration
+          uiConfiguration: uiConfiguration, namespace: namespace
         )
+        .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
         .frame(
           height: OverflowMenuListStyle.destinationListHeight
             + OverflowMenuListStyle.destinationListGrabberHeight)
         Divider()
-        OverflowMenuActionList(actionGroups: model.actionGroups, metricsHandler: metricsHandler)
+        OverflowMenuActionList(
+          actionGroups: model.actionGroups, metricsHandler: metricsHandler, namespace: namespace)
         // Add a spacer on iPad to make sure there's space below the list.
         if uiConfiguration.presentingViewControllerHorizontalSizeClass == .regular
           && uiConfiguration.presentingViewControllerVerticalSizeClass == .regular

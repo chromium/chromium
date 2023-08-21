@@ -54,7 +54,6 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
-#import "ios/chrome/browser/ui/popup_menu/overflow_menu/menu_customization_coordinator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_mediator.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -91,7 +90,8 @@ enum class IOSOverflowMenuActionType {
 
 }  // namespace
 
-@interface PopupMenuCoordinator () <OverflowMenuCustomizationCommands,
+@interface PopupMenuCoordinator () <MenuCustomizationEventHandler,
+                                    OverflowMenuCustomizationCommands,
                                     PopupMenuCommands,
                                     PopupMenuMetricsHandler,
                                     PopupMenuPresenterDelegate,
@@ -131,8 +131,6 @@ enum class IOSOverflowMenuActionType {
   OverflowMenuModel* _overflowMenuModel;
 
   OverflowMenuOrderer* _overflowMenuOrderer;
-
-  MenuCustomizationCoordinator* _menuCustomizationCoordinator;
 }
 
 @synthesize mediator = _mediator;
@@ -349,7 +347,8 @@ enum class IOSOverflowMenuActionType {
       UIViewController* menu = [OverflowMenuViewProvider
           makeViewControllerWithModel:_overflowMenuModel
                       uiConfiguration:uiConfiguration
-                       metricsHandler:self];
+                       metricsHandler:self
+            customizationEventHandler:self];
 
       LayoutGuideCenter* layoutGuideCenter =
           LayoutGuideCenterForBrowser(self.browser);
@@ -369,31 +368,7 @@ enum class IOSOverflowMenuActionType {
       popoverPresentationController.backgroundColor =
           [UIColor colorNamed:kBackgroundColor];
 
-      // The adaptive controller adjusts styles based on window size: sheet
-      // for slim windows on iPhone and iPad, popover for larger windows on
-      // ipad.
-      UISheetPresentationController* sheetPresentationController =
-          popoverPresentationController.adaptiveSheetPresentationController;
-      if (sheetPresentationController) {
-        sheetPresentationController.delegate = self;
-        sheetPresentationController.prefersGrabberVisible = YES;
-        sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
-        sheetPresentationController
-            .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
-
-        NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
-          [UISheetPresentationControllerDetent mediumDetent],
-          [UISheetPresentationControllerDetent largeDetent]
-        ];
-
-        NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
-            @[ [UISheetPresentationControllerDetent largeDetent] ];
-
-        BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
-            menu.traitCollection.preferredContentSizeCategory);
-        sheetPresentationController.detents =
-            hasLargeText ? largeTextDetents : regularDetents;
-      }
+      [self setupSheetForMenu:menu isCustomizationScreen:NO];
 
       __weak __typeof(self) weakSelf = self;
       [self.baseViewController
@@ -535,16 +510,37 @@ enum class IOSOverflowMenuActionType {
 #pragma mark - OverflowMenuCustomizationCommands
 
 - (void)showActionCustomization {
-  _menuCustomizationCoordinator = [[MenuCustomizationCoordinator alloc]
-      initWithBaseViewController:self.baseViewController
-                         browser:self.browser];
-  _menuCustomizationCoordinator.menuOrderer = _overflowMenuOrderer;
-  [_menuCustomizationCoordinator start];
+  [_overflowMenuModel
+      startCustomizationWithActions:_overflowMenuOrderer
+                                        .actionCustomizationModel
+                       destinations:_overflowMenuOrderer
+                                        .destinationCustomizationModel];
+
+  [self setupSheetForMenu:self.baseViewController.presentedViewController
+      isCustomizationScreen:YES];
 }
 
 - (void)hideActionCustomization {
-  [_menuCustomizationCoordinator stop];
-  _menuCustomizationCoordinator = nil;
+  [self setupSheetForMenu:self.baseViewController.presentedViewController
+      isCustomizationScreen:NO];
+
+  [_overflowMenuModel endCustomization];
+}
+
+#pragma mark - MenuCustomizationEventHandler
+
+- (void)doneWasTapped {
+  [_overflowMenuOrderer commitActionsUpdate];
+  [_overflowMenuOrderer commitDestinationsUpdate];
+
+  [self hideActionCustomization];
+}
+
+- (void)cancelWasTapped {
+  [_overflowMenuOrderer cancelActionsUpdate];
+  [_overflowMenuOrderer cancelDestinationsUpdate];
+
+  [self hideActionCustomization];
 }
 
 #pragma mark - ContainedPresenterDelegate
@@ -619,6 +615,44 @@ enum class IOSOverflowMenuActionType {
 
   tracker->NotifyEvent(
       feature_engagement::events::kOverflowMenuNoHorizontalScrollOrAction);
+}
+
+- (void)setupSheetForMenu:(UIViewController*)menu
+    isCustomizationScreen:(BOOL)isCustomizationScreen {
+  // The adaptive controller adjusts styles based on window size: sheet
+  // for slim windows on iPhone and iPad, popover for larger windows on
+  // iPad.
+  UISheetPresentationController* sheetPresentationController =
+      menu.popoverPresentationController.adaptiveSheetPresentationController;
+  if (!sheetPresentationController) {
+    return;
+  }
+
+  sheetPresentationController.delegate = self;
+  sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
+  sheetPresentationController.widthFollowsPreferredContentSizeWhenEdgeAttached =
+      YES;
+
+  if (isCustomizationScreen) {
+    sheetPresentationController.prefersGrabberVisible = NO;
+    sheetPresentationController.detents =
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
+  } else {
+    sheetPresentationController.prefersGrabberVisible = YES;
+
+    NSArray<UISheetPresentationControllerDetent*>* regularDetents = @[
+      [UISheetPresentationControllerDetent mediumDetent],
+      [UISheetPresentationControllerDetent largeDetent]
+    ];
+
+    NSArray<UISheetPresentationControllerDetent*>* largeTextDetents =
+        @[ [UISheetPresentationControllerDetent largeDetent] ];
+
+    BOOL hasLargeText = UIContentSizeCategoryIsAccessibilityCategory(
+        menu.traitCollection.preferredContentSizeCategory);
+    sheetPresentationController.detents =
+        hasLargeText ? largeTextDetents : regularDetents;
+  }
 }
 
 @end
