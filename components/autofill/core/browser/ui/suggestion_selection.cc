@@ -66,8 +66,6 @@ Suggestion GetEditAddressProfileSuggestion(Suggestion::BackendId backend_id) {
 }
 
 // Creates the suggestion that will open the delete address profile dialog.
-// TODO(crbug.com/1459990): Use this once the new popup with submenus
-// implementation is complete.
 Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_DELETE_ADDRESS_PROFILE_POPUP_OPTION_SELECTED));
@@ -80,8 +78,6 @@ Suggestion GetDeleteAddressProfileSuggestion(Suggestion::BackendId backend_id) {
 }
 
 // Creates the suggestion that will fill all address related fields.
-// TODO(crbug.com/1459990): Use this once the new submenu implementation is
-// complete.
 Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
@@ -93,8 +89,6 @@ Suggestion GetFillFullAddressSuggestion(Suggestion::BackendId backend_id) {
 }
 
 // Creates the suggestion that will fill all name related fields.
-// TODO(crbug.com/1459990): Use this once the delete the new popup with submenus
-// implementation is complete.
 Suggestion GetFillFullNameSuggestion(Suggestion::BackendId backend_id) {
   Suggestion suggestion(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
@@ -123,6 +117,7 @@ Suggestion GetFillEverythingFromAddressProfileSuggestion(
       IDS_AUTOFILL_A11Y_ANNOUNCE_FILL_EVERYTHING_FROM_ADDRESS_PROFILE_POPUP_OPTION_SELECTED);
   return suggestion;
 }
+
 // Append new suggestions to `suggestions` based on the `ServerFieldType` list
 // provided. Suggestions are not added if their info is not found in the
 // provided `profile`. Returns true if any suggestion was added.
@@ -154,6 +149,9 @@ bool CheckIfTypeContainsSubtype(ServerFieldType type,
 }
 
 // Adds name related child suggestions to build autofill popup submenu.
+// The param `type` refers to the triggering field type (clicked by the users)
+// and is used to define  whether the `PopupItemId::kFillFullName` suggestion
+// will be available.
 void AddNameChildSuggestions(const AutofillType& type,
                              const AutofillProfile& profile,
                              const std::string& app_locale,
@@ -174,6 +172,9 @@ void AddNameChildSuggestions(const AutofillType& type,
 }
 
 // Adds address related child suggestions to build autofill popup submenu.
+// The param `type` refers to the triggering field type (clicked by the users)
+// and is used to define  whether the `PopupItemId::kFillFullAddress` suggestion
+// will be available.
 void AddAddressChildSuggestions(const AutofillType& type,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
@@ -223,17 +224,38 @@ void AddAddressChildSuggestions(const AutofillType& type,
 }
 
 // Adds contact related child suggestions (i.e email and phone number) to
-// build autofill popup submenu.
-void AddContactChildSuggestions(const AutofillProfile& profile,
+// build autofill popup submenu. The param `type` refers to the triggering field
+// type (clicked by the users) and is used to define  whether the phone number
+// suggestion will behave as `PopupItemId::kFieldByFieldFilling` or as
+// `PopupItemId::kFillFullPhoneNumber`.
+void AddContactChildSuggestions(const AutofillType& type,
+                                const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
-  // TODO(crbug.com/1459990): Create phone number suggestion.
+  // Creates a phone number suggestion for the autofill submenu. When triggered
+  // from a phone number field this suggestion will fill every phone number
+  // field. Otherwise it fills a specific field.
+  bool phone_number_suggestion_added = false;
+  if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
+    Suggestion phone_number_suggestion(
+        profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
+    const bool is_phone_field = type.group() == FieldTypeGroup::kPhoneHome ||
+                                type.group() == FieldTypeGroup::kPhoneBilling;
+    phone_number_suggestion.popup_item_id =
+        is_phone_field ? PopupItemId::kFillFullPhoneNumber
+                       : PopupItemId::kFieldByFieldFilling;
+    phone_number_suggestion.payload = Suggestion::BackendId(profile.guid());
+    suggestion.children.push_back(std::move(phone_number_suggestion));
+    phone_number_suggestion_added = true;
+  }
   if (AddFieldByFieldSuggestions({EMAIL_ADDRESS}, profile, app_locale,
-                                 suggestion.children)) {
+                                 suggestion.children) ||
+      phone_number_suggestion_added) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }
 }
+
 // Adds footer child suggestions to build autofill popup submenu.
 void AddFooterChildSuggestions(const AutofillProfile& profile,
                                Suggestion& suggestion) {
@@ -256,7 +278,7 @@ void AddGranularFillingChildSuggestions(const AutofillType& type,
                                         Suggestion& suggestion) {
   AddNameChildSuggestions(type, profile, app_locale, suggestion);
   AddAddressChildSuggestions(type, profile, app_locale, suggestion);
-  AddContactChildSuggestions(profile, app_locale, suggestion);
+  AddContactChildSuggestions(type, profile, app_locale, suggestion);
   AddFooterChildSuggestions(profile, suggestion);
 }
 

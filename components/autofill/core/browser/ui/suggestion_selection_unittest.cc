@@ -230,11 +230,12 @@ TEST_F(SuggestionSelectionTest,
   // 7. address line 2
   // 8. Zip
   // 9. line separator
-  // 10. email
-  // 11. line separator
-  // 12. edit profile
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit profile
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
   EXPECT_THAT(
       suggestions[0].children,
       ElementsAre(
@@ -261,6 +262,10 @@ TEST_F(SuggestionSelectionTest,
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(
               PopupItemId::kFieldByFieldFilling,
+              profile.GetInfo(ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
+                              app_locale)),
+          EqualsSuggestion(
+              PopupItemId::kFieldByFieldFilling,
               profile.GetInfo(ServerFieldType::EMAIL_ADDRESS, app_locale)),
           EqualsSuggestion(PopupItemId::kSeparator),
           EqualsSuggestion(PopupItemId::kEditAddressProfile),
@@ -280,6 +285,46 @@ TEST_F(SuggestionSelectionTest,
               PopupItemId::kFieldByFieldFilling,
               profile.GetInfo(ServerFieldType::ADDRESS_HOME_STREET_NAME,
                               app_locale))));
+}
+
+// Asserts that when the triggering field is a phone field, the phone number
+// suggestion is of type `PopupItemId::kFillFullPhoneNumber`. In other
+// scenarios, phone number is of type `PopupItemId::kFieldByFieldFilling` as the
+// user expressed intent to use their phone number their phone number on a
+// "random" field.
+TEST_F(SuggestionSelectionTest,
+       GetPrefixMatchedSuggestions_ChildrenSuggestionsPhoneField) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kAutofillGranularFillingAvailable);
+
+  AutofillProfile profile = test::GetFullProfile();
+  std::string app_locale = comparator_.app_locale();
+  std::vector<AutofillProfile*> matched_profiles;
+  auto suggestions = GetPrefixMatchedSuggestions(
+      AutofillType(PHONE_HOME_WHOLE_NUMBER), u"", GetCanonicalUtf16Content(""),
+      app_locale,
+      /*field_is_autofilled=*/false, {&profile}, &matched_profiles);
+
+  // The child suggestions should be:
+  //
+  // 1. first name
+  // 2. middle name
+  // 3. family name
+  // 4. line separator
+  // 5. address line 1
+  // 6. address line 2
+  // 7. Zip
+  // 8. line separator
+  // 9. phone number
+  // 10. email
+  // 11. line separator
+  // 12. edit profile
+  // 13. delete address
+  ASSERT_EQ(13U, suggestions[0].children.size());
+  EXPECT_THAT(
+      suggestions[0].children[8],
+      Field(&Suggestion::popup_item_id, PopupItemId::kFillFullPhoneNumber));
 }
 
 TEST_F(SuggestionSelectionTest,
@@ -306,11 +351,12 @@ TEST_F(SuggestionSelectionTest,
   // 7. address line 2
   // 8. Zip
   // 9. line separator
-  // 10. email
-  // 11. line separator
-  // 12. edit address
-  // 13. delete address
-  ASSERT_EQ(13U, suggestions[0].children.size());
+  // 10. phone number
+  // 11. email
+  // 12. line separator
+  // 13. edit address
+  // 14. delete address
+  ASSERT_EQ(14U, suggestions[0].children.size());
   EXPECT_THAT(suggestions[0].children[4],
               Field(&Suggestion::popup_item_id, PopupItemId::kFillFullAddress));
 }

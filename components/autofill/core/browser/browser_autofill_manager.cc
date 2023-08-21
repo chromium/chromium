@@ -288,6 +288,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kFieldByFieldFilling:
     case PopupItemId::kFillExistingPlusAddress:
     case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kFillFullPhoneNumber:
       NOTREACHED();
   }
   NOTREACHED();
