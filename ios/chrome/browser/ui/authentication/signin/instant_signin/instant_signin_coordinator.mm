@@ -60,7 +60,9 @@
 }
 
 - (void)dealloc {
-  CHECK(!_mediator);
+  // TODO(crbug.com/1464966): Replace to DUMP_WILL_BE_CHECK(), when double tap
+  // is fixed.
+  DCHECK(!_mediator);
 }
 
 #pragma mark - ChromeCoordinator
