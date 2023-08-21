@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -49,6 +50,8 @@ const CGFloat kAccessorySymbolSize = 22;
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
                            action:@selector(cancelButtonTapped)];
+  self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
+      kFamilyPickerCancelButtonId;
   self.navigationItem.title =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_TITLE);
   UIBarButtonItem* shareButton = [[UIBarButtonItem alloc]

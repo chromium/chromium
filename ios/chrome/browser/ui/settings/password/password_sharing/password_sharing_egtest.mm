@@ -8,10 +8,12 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 using password_manager_test_utils::kScrollAmount;
@@ -43,6 +45,10 @@ using password_manager_test_utils::SavePasswordForm;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
+  // Make recipients fetcher return `FetchFamilyMembersRequestStatus::kSuccess`
+  // by default. Individual tests can override it.
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kFamilyStatus + "=1");
 
   if ([self isRunningTest:@selector
             (testShareButtonVisibilityWithSharingDisabled)]) {
@@ -97,6 +103,32 @@ using password_manager_test_utils::SavePasswordForm;
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testFamilyPickerCancelFlow {
+  SavePasswordForm();
+
+  OpenPasswordManager();
+
+  [[self interactionForSinglePasswordEntryWithDomain:@"example.com"]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFamilyPickerCancelButtonId)]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

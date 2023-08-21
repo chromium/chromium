@@ -56,6 +56,10 @@ std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
+std::unique_ptr<password_manager::RecipientsFetcher>
+GetOverriddenRecipientsFetcher() {
+  return nullptr;
+}
 void SetUpTestsIfPresent() {}
 void RunTestsIfPresent() {}
 

@@ -36,5 +36,6 @@ specific_include_rules = {
   "eg_tests_hook\.mm": [
    "+components/signin/internal/identity_manager",
    "+components/password_manager/ios",
+   "+components/password_manager/core/browser/sharing/fake_recipients_fetcher.h",
   ],
 }

@@ -71,6 +71,11 @@ GetOverriddenBulkLeakCheckService() {
   return nullptr;
 }
 
+std::unique_ptr<password_manager::RecipientsFetcher>
+GetOverriddenRecipientsFetcher() {
+  return nullptr;
+}
+
 void SetUpTestsIfPresent() {
   // No-op for XCUITest.
 }

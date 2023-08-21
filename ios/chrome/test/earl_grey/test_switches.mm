@@ -16,4 +16,7 @@ const char kAddFakeIdentitiesAtStartup[] = "add_fake_identities";
 // Sign in automatically at startup.
 const char kSignInAtStartup[] = "sign-in-at-startup";
 
+// Status of the Google Family fetch API call for the user.
+const char kFamilyStatus[] = "family-status";
+
 }  // namespace test_switches

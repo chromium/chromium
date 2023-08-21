@@ -25,6 +25,10 @@ extern const char kAddFakeIdentitiesAtStartup[];
 // Ignored if kForceRealSystemIdentityManager is used.
 extern const char kSignInAtStartup[];
 
+// Switch used to force the status of fetching the Google Family for the user in
+// Earl Grey tests. If not specified, unknown status is retuned for all tests.
+extern const char kFamilyStatus[];
+
 }  // namespace test_switches
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_TEST_SWITCHES_H_

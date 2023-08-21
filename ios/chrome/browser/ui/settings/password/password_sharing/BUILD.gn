@@ -22,6 +22,7 @@ source_set("password_sharing") {
     ":password_sharing_ui",
     "//components/password_manager/core/browser",
     "//components/version_info:channel",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
@@ -46,6 +47,7 @@ source_set("password_sharing_ui") {
     "recipient_info.mm",
   ]
   deps = [
+    ":password_sharing_constants",
     "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
@@ -62,11 +64,19 @@ source_set("password_sharing_ui") {
   ]
 }
 
+source_set("password_sharing_constants") {
+  sources = [
+    "password_sharing_constants.h",
+    "password_sharing_constants.mm",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [ "password_sharing_egtest.mm" ]
   deps = [
+    ":password_sharing_constants",
     "//components/password_manager/core/common:features",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
@@ -74,6 +84,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password/password_details:password_details_table_view_constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
   ]
 }

@@ -6,6 +6,7 @@
 
 #import "base/command_line.h"
 #import "base/logging.h"
+#import "components/password_manager/core/browser/sharing/fake_recipients_fetcher.h"
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 #import "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
 #import "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -130,6 +131,25 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager() {
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService() {
   return std::make_unique<password_manager::FakeBulkLeakCheckService>();
+}
+
+std::unique_ptr<password_manager::RecipientsFetcher>
+GetOverriddenRecipientsFetcher() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  password_manager::FetchFamilyMembersRequestStatus status =
+      password_manager::FetchFamilyMembersRequestStatus::kUnknown;
+  if (command_line->HasSwitch(test_switches::kFamilyStatus)) {
+    std::string command_line_value =
+        command_line->GetSwitchValueASCII(test_switches::kFamilyStatus);
+    int status_value = 0;
+    if (base::StringToInt(command_line_value, &status_value)) {
+      status = static_cast<password_manager::FetchFamilyMembersRequestStatus>(
+          status_value);
+    }
+  }
+
+  return std::make_unique<password_manager::FakeRecipientsFetcher>(status);
 }
 
 void SetUpTestsIfPresent() {

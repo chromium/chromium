@@ -16,6 +16,7 @@ class ConfigurationPolicyProvider;
 }
 namespace password_manager {
 class BulkLeakCheckServiceInterface;
+class RecipientsFetcher;
 }
 
 namespace tests_hook {
@@ -86,6 +87,11 @@ std::unique_ptr<SystemIdentityManager> CreateSystemIdentityManager();
 // factory will be used if this hook returns a nullptr.
 std::unique_ptr<password_manager::BulkLeakCheckServiceInterface>
 GetOverriddenBulkLeakCheckService();
+
+// Returns a recipients fetcher instance that should be used in EG tests. The
+// real instance will be used if this hook returns a nullptr.
+std::unique_ptr<password_manager::RecipientsFetcher>
+GetOverriddenRecipientsFetcher();
 
 // Global integration tests setup.
 void SetUpTestsIfPresent();
