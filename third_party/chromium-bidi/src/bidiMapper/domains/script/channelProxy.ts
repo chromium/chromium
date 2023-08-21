@@ -35,24 +35,6 @@ export class ChannelProxy {
   readonly #logger?: LoggerFn;
 
   constructor(channel: Script.ChannelProperties, logger?: LoggerFn) {
-    if (
-      ![0, null, undefined].includes(channel.serializationOptions?.maxDomDepth)
-    ) {
-      throw new Error(
-        'serializationOptions.maxDomDepth other than 0 or null is not supported'
-      );
-    }
-
-    if (
-      ![undefined, 'none'].includes(
-        channel.serializationOptions?.includeShadowTree
-      )
-    ) {
-      throw new Error(
-        'serializationOptions.includeShadowTree other than "none" is not supported'
-      );
-    }
-
     this.#properties = channel;
     this.#logger = logger;
   }
