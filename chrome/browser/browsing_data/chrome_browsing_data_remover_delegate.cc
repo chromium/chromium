@@ -1309,12 +1309,6 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           web_app_registrar.GetIsolatedWebAppStoragePartitionConfigs(
               web_app.app_id());
       for (const content::StoragePartitionConfig& partition : partitions) {
-        // Controlled frame StoragePartitions have non-empty partition_names.
-        if (!partition.partition_name().empty() &&
-            !(remove_mask & constants::DATA_TYPE_CONTROLLED_FRAME)) {
-          continue;
-        }
-
         // Only delete data types that live on a StoragePartition.
         uint64_t iwa_remove_mask =
             content::BrowsingDataRemover::DATA_TYPE_ON_STORAGE_PARTITION &

@@ -1722,7 +1722,7 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest, ClearData) {
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
-       ControlledFramesNotClearedIfNotInFilter) {
+       ForwardClearDataParameterToControlledFrame) {
   const GURL iwa_url(
       "isolated-app://"
       "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
@@ -1740,7 +1740,8 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
       UnorderedElementsAre(
           RemovalInfo{DATA_TYPE_INDEXED_DB},
           RemovalInfo{DATA_TYPE_INDEXED_DB,
-                      iwa_url_info.storage_partition_config(GetProfile())}));
+                      iwa_url_info.storage_partition_config(GetProfile())},
+          RemovalInfo{DATA_TYPE_INDEXED_DB, controlled_frame_partition}));
 }
 
 TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
@@ -1802,17 +1803,15 @@ TEST_F(IsolatedWebAppChromeBrowsingDataRemoverDelegateTest,
   content::StoragePartitionConfig controlled_frame_partition =
       CreateControlledFrameStoragePartition(iwa_url_info, "controlled_frame");
 
-  std::vector<RemovalInfo> removal_tasks = ClearDataAndWait(
-      AnHourAgo(), base::Time::Max(),
-      DATA_TYPE_INDEXED_DB | constants::DATA_TYPE_CONTROLLED_FRAME,
-      BrowsingDataFilterBuilder::Create(
-          BrowsingDataFilterBuilder::Mode::kPreserve));
+  std::vector<RemovalInfo> removal_tasks =
+      ClearDataAndWait(AnHourAgo(), base::Time::Max(), DATA_TYPE_INDEXED_DB,
+                       BrowsingDataFilterBuilder::Create(
+                           BrowsingDataFilterBuilder::Mode::kPreserve));
 
   EXPECT_THAT(
       removal_tasks,
       UnorderedElementsAre(
-          RemovalInfo{DATA_TYPE_INDEXED_DB |
-                      constants::DATA_TYPE_CONTROLLED_FRAME},
+          RemovalInfo{DATA_TYPE_INDEXED_DB},
           RemovalInfo{DATA_TYPE_INDEXED_DB,
                       iwa_url_info.storage_partition_config(GetProfile())},
           RemovalInfo{DATA_TYPE_INDEXED_DB, controlled_frame_partition}));
