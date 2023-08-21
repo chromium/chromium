@@ -44,6 +44,9 @@ class RestoreToDestinationIOTask : public IOTask {
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
 
+  // Passes the Pause on to the underlying `move_io_task_` if it exists.
+  void Pause(PauseParams params) override;
+
   // Passes the Resume on to the underlying `move_io_task_` if it exists.
   void Resume(ResumeParams params) override;
 

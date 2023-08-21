@@ -210,6 +210,13 @@ base::FilePath RestoreToDestinationIOTask::MakeRelativeFromBasePath(
   return base::FilePath(relative_path);
 }
 
+void RestoreToDestinationIOTask::Pause(PauseParams params) {
+  if (move_io_task_) {
+    // Delegate Pause to the underlying `move_io_task_`.
+    move_io_task_->Pause(std::move(params));
+  }
+}
+
 void RestoreToDestinationIOTask::Resume(ResumeParams params) {
   if (move_io_task_) {
     // Delegate Resume to the underlying `move_io_task_`.
