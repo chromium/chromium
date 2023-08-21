@@ -62,7 +62,6 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
       color_provider.GetColor(kColorNewTabPageMostVisitedTileBackground);
   most_visited->use_white_tile_icon =
       color_utils::IsDark(most_visited->background_color);
-  most_visited->use_title_pill = false;
   theme->text_color = color_provider.GetColor(kColorNewTabPageText);
   most_visited->is_dark = !color_utils::IsDark(theme->text_color);
   theme->color_background = color_utils::SkColorToRgbaString(GetThemeColor(
@@ -75,7 +74,6 @@ void NewTabPageThirdPartyHandler::NotifyAboutTheme() {
     theme->has_custom_background =
         theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND);
     theme->id = profile_->GetPrefs()->GetString(prefs::kCurrentThemeID);
-    most_visited->use_title_pill = false;
   }
   theme->most_visited = std::move(most_visited);
   page_->SetTheme(std::move(theme));

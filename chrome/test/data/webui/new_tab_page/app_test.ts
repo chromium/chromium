@@ -382,17 +382,6 @@ suite('NewTabPageAppTest', () => {
       assertTrue(mostVisited.hasAttribute('use-white-tile-icon_'));
     });
 
-    test('theme updates use title pill', async () => {
-      const theme = createTheme();
-      theme.mostVisited.useTitlePill = true;
-      callbackRouterRemote.setTheme(theme);
-      const mostVisited = $$(app, '#mostVisited');
-      assertTrue(!!mostVisited);
-      assertFalse(mostVisited.hasAttribute('use-title-pill_'));
-      await callbackRouterRemote.$.flushForTesting();
-      assertTrue(mostVisited.hasAttribute('use-title-pill_'));
-    });
-
     test('theme updates is dark', async () => {
       const theme = createTheme();
       theme.mostVisited.isDark = true;

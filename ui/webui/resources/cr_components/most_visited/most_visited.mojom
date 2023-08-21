@@ -26,8 +26,6 @@ struct MostVisitedTheme {
   skia.mojom.SkColor background_color;
   // True if |background_color| is dark.
   bool use_white_tile_icon;
-  // True if the shortcuts titles should be wrapped in a pill.
-  bool use_title_pill;
   // True if the theme is dark (e.g. NTP background color is dark).
   bool is_dark;
 };

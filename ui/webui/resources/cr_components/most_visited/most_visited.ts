@@ -118,15 +118,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
         computed: `computeUseWhiteTileIcon_(theme)`,
       },
 
-      /**
-       * If true wraps the tile titles in white pills.
-       */
-      useTitlePill_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        computed: `computeUseTitlePill_(theme)`,
-      },
-
       columnCount_: {
         type: Number,
         computed:
@@ -226,7 +217,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   public reflowOnOverflow: boolean;
   public singleRow: boolean;
   private useWhiteTileIcon_: boolean;
-  private useTitlePill_: boolean;
   private columnCount_: number;
   private rowCount_: number;
   private customLinksEnabled_: boolean;
@@ -427,10 +417,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private computeUseWhiteTileIcon_(): boolean {
     return this.theme ? this.theme.useWhiteTileIcon : false;
-  }
-
-  private computeUseTitlePill_(): boolean {
-    return this.theme ? this.theme.useTitlePill : false;
   }
 
   /**

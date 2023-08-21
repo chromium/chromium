@@ -486,7 +486,6 @@ TEST_P(NewTabPageHandlerThemeTest, SetTheme) {
   EXPECT_FALSE(theme->background_image_collection_id.has_value());
   ASSERT_TRUE(theme->most_visited);
   EXPECT_EQ(SkColorSetRGB(0, 0, 8), theme->most_visited->background_color);
-  EXPECT_FALSE(theme->most_visited->use_title_pill);
   EXPECT_TRUE(theme->most_visited->use_white_tile_icon);
   EXPECT_EQ(false, theme->most_visited->is_dark);
 }

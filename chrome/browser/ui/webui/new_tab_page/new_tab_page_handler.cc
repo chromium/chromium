@@ -170,7 +170,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   most_visited->use_white_tile_icon =
       color_utils::IsDark(most_visited->background_color);
   most_visited->is_dark = !color_utils::IsDark(text_color);
-  most_visited->use_title_pill = false;
   theme->text_color = text_color;
   theme->is_dark = !color_utils::IsDark(text_color);
   theme->theme_realbox_icons =
@@ -187,7 +186,6 @@ new_tab_page::mojom::ThemePtr MakeTheme(
           new_tab_page::mojom::NtpBackgroundImageSource::kThirdPartyTheme;
     }
     theme->is_custom_background = false;
-    most_visited->use_title_pill = false;
     auto theme_id = theme_service->GetThemeID();
     background_image->url = GURL(base::StrCat(
         {"chrome-untrusted://theme/IDR_THEME_NTP_BACKGROUND?", theme_id}));
