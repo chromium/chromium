@@ -76,6 +76,12 @@
 // The approach is simple: first call EstimateMemoryUsage() on all members,
 // then recursively fix compilation errors that are caused by types not
 // implementing EstimateMemoryUsage().
+//
+// Note that in the above example, the memory estimates for `id_` and `success_` are
+// intentionally omitted. This is because these members do not allocate any _dynamic_ memory.
+// If, for example, `MyClass` is declared as a heap-allocated `unique_ptr` member in some parent
+// class, then `EstimateMemoryUsage` on the `unique_ptr` will automatically take into account
+// `sizeof(MyClass)`.
 
 namespace base {
 namespace trace_event {
