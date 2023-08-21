@@ -49,7 +49,7 @@ TEST_F(BorealisSurveyHandlerTest, GetSurveyDataReturnsCorrectData) {
       FakeAppId("some_app"), "Some Game", absl::optional<int>(646570));
   base::flat_map<std::string, std::string> expected_data = {
       {"appName", "Some Game"},
-      {"board", "UNKNOWN"},
+      {"board", ""},
       {"specs",
        base::StringPrintf("%ldGB; %s",
                           (long)(base::SysInfo::AmountOfPhysicalMemory() /
