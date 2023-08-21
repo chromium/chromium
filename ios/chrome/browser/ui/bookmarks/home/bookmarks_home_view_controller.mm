@@ -144,11 +144,6 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
     UITableViewDataSource,
     UITableViewDelegate>
 
-// The Browser in which bookmarks are presented
-// TODO(crbug.com/1423926): Need to convert this property into:
-// base::WeakPtr<Browser> _browser.
-@property(nonatomic, assign) Browser* browser;
-
 // The user's browser state model used.
 @property(nonatomic, assign) ChromeBrowserState* browserState;
 
@@ -217,6 +212,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 @implementation BookmarksHomeViewController {
   // The localOrSyncable bookmark model used.
   base::WeakPtr<bookmarks::BookmarkModel> _localOrSyncableBookmarkModel;
+  // The Browser in which bookmarks are presented
+  base::WeakPtr<Browser> _browser;
   // The account bookmark model used.
   base::WeakPtr<bookmarks::BookmarkModel> _accountBookmarkModel;
   // Bridge to register for bookmark changes in the localOrSyncable model.
@@ -238,10 +235,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
-    _browser = browser;
-    _browserState =
-        _browser->GetBrowserState()->GetOriginalChromeBrowserState();
-    _webStateList = _browser->GetWebStateList();
+    _browser = browser->AsWeakPtr();
+    _browserState = browser->GetBrowserState()->GetOriginalChromeBrowserState();
+    _webStateList = browser->GetWebStateList();
 
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(_browserState);
@@ -272,7 +268,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.mediator disconnect];
   self.mediator.consumer = nil;
   self.mediator = nil;
-  self.browser = nullptr;
+  _browser = nullptr;
   self.browserState = nullptr;
   [self.searchController dismissViewControllerAnimated:YES completion:nil];
   [self dismissActionSheetCoordinator];
@@ -513,7 +509,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   // Create the mediator and hook up the table view.
   self.mediator = [[BookmarksHomeMediator alloc]
-                   initWithBrowser:_browser
+                   initWithBrowser:_browser.get()
                 baseViewController:self.navigationController
       localOrSyncableBookmarkModel:_localOrSyncableBookmarkModel.get()
               accountBookmarkModel:_accountBookmarkModel.get()
@@ -682,7 +678,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   // Record that this context menu was shown to the user.
   RecordMenuShown(MenuScenarioHistogram::kBookmarkEntry);
   BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-      initWithBrowser:self.browser
+      initWithBrowser:_browser.get()
              scenario:MenuScenarioHistogram::kBookmarkEntry];
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
   __weak __typeof(self) weakSelf = self;
@@ -801,7 +797,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   const BookmarkNode* selectedFolder = editedNode->parent();
   _folderChooserCoordinator = [[BookmarksFolderChooserCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:_browser
+                         browser:_browser.get()
                      hiddenNodes:nodes];
   [_folderChooserCoordinator setSelectedFolder:selectedFolder];
   _folderChooserCoordinator.delegate = self;
@@ -841,7 +837,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (void)ensureBookmarksCoordinator {
   if (!self.bookmarksCoordinator) {
     self.bookmarksCoordinator =
-        [[BookmarksCoordinator alloc] initWithBrowser:self.browser];
+        [[BookmarksCoordinator alloc] initWithBrowser:_browser.get()];
     self.bookmarksCoordinator.baseViewController = self;
     self.bookmarksCoordinator.delegate = self;
   }
@@ -886,7 +882,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
              newTab:(BOOL)newTab {
   if (inIncognito) {
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
+        agentFromScene:SceneStateBrowserAgent::FromBrowser(_browser.get())
                            ->GetSceneState()];
     if (reauthAgent.authenticationRequired) {
       __weak BookmarksHomeViewController* weakSelf = self;
@@ -1383,7 +1379,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   UrlLoadParams params = UrlLoadParams::InCurrentTab(url);
   params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  UrlLoadingBrowserAgent::FromBrowser(_browser.get())->Load(params);
 }
 
 - (void)addNewFolder {
@@ -1427,7 +1423,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (BookmarksHomeViewController*)createControllerWithDisplayedFolderNode:
     (const bookmarks::BookmarkNode*)displayedFolderNode {
   BookmarksHomeViewController* controller =
-      [[BookmarksHomeViewController alloc] initWithBrowser:self.browser];
+      [[BookmarksHomeViewController alloc] initWithBrowser:_browser.get()];
   controller.displayedFolderNode = displayedFolderNode;
   controller.homeDelegate = self.homeDelegate;
   controller.applicationCommandsHandler = self.applicationCommandsHandler;
@@ -1664,7 +1660,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   UIView* cellView = [self.tableView cellForRowAtIndexPath:indexPath];
   self.sharingCoordinator =
       [[SharingCoordinator alloc] initWithBaseViewController:self
-                                                     browser:self.browser
+                                                     browser:_browser.get()
                                                       params:params
                                                   originView:cellView];
   [self.sharingCoordinator start];
@@ -1672,12 +1668,13 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 // Returns whether the incognito mode is forced.
 - (BOOL)isIncognitoForced {
-  return IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+  return IsIncognitoModeForced(_browser.get()->GetBrowserState()->GetPrefs());
 }
 
 // Returns whether the incognito mode is available.
 - (BOOL)isIncognitoAvailable {
-  return !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
+  return !IsIncognitoModeDisabled(
+      _browser.get()->GetBrowserState()->GetPrefs());
 }
 
 #pragma mark - Loading and Empty States
@@ -1814,7 +1811,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
-                         browser:_browser
+                         browser:_browser.get()
                            title:nil
                          message:nil
                    barButtonItem:self.moreButton];
@@ -2264,7 +2261,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
-                         browser:_browser
+                         browser:_browser.get()
                            title:nil
                          message:nil
                             rect:CGRectMake(touchPoint.x, touchPoint.y, 1, 1)
