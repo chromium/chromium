@@ -266,6 +266,7 @@ static_library("test_support") {
     "../public/test/render_frame_host_test_support.h",
     "../public/test/render_view_test.cc",
     "../public/test/render_view_test.h",
+    "../public/test/scoped_accessibility_mode_override.h",
     "../public/test/scoped_overscroll_modes.cc",
     "../public/test/scoped_overscroll_modes.h",
     "../public/test/scoped_page_focus_override.cc",
@@ -502,6 +503,7 @@ static_library("test_support") {
     "//third_party/blink/public/common:headers",
     "//third_party/blink/public/strings:accessibility_strings",
     "//third_party/blink/public/strings:strings_grit",
+    "//ui/accessibility:ax_base",
     "//ui/gl:test_support",
   ]
 

@@ -9,11 +9,11 @@
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
@@ -77,7 +77,7 @@ class AccessibilityTreeLinkageWinBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(AccessibilityTreeLinkageWinBrowserTest, Linkage) {
-  testing::ScopedContentAXModeSetter ax_mode_setter(ui::kAXModeBasic.flags());
+  ScopedAccessibilityModeOverride ax_mode_override(ui::kAXModeBasic.flags());
 
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 

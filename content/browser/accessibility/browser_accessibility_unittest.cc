@@ -7,8 +7,8 @@
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_position.h"
 
@@ -33,11 +33,11 @@ class BrowserAccessibilityTest : public ::testing::Test {
   void SetUp() override;
 
   BrowserTaskEnvironment task_environment_;
-  content::testing::ScopedContentAXModeSetter ax_mode_setter_;
+  ScopedAccessibilityModeOverride ax_mode_override_;
 };
 
 BrowserAccessibilityTest::BrowserAccessibilityTest()
-    : ax_mode_setter_(ui::kAXModeComplete) {}
+    : ax_mode_override_(ui::kAXModeComplete) {}
 
 BrowserAccessibilityTest::~BrowserAccessibilityTest() = default;
 

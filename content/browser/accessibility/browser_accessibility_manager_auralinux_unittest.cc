@@ -9,8 +9,8 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -35,18 +35,17 @@ class BrowserAccessibilityManagerAuraLinuxTest : public ::testing::Test {
 
  private:
   void SetUp() override;
-  std::unique_ptr<content::testing::ScopedContentAXModeSetter> ax_mode_setter_;
+  std::unique_ptr<ScopedAccessibilityModeOverride> ax_mode_override_;
 
   // See crbug.com/1349124
-  content::BrowserTaskEnvironment task_environment_;
+  BrowserTaskEnvironment task_environment_;
 };
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
   test_browser_accessibility_delegate_ =
       std::make_unique<TestBrowserAccessibilityDelegate>();
-  ax_mode_setter_ =
-      std::make_unique<content::testing::ScopedContentAXModeSetter>(
-          ui::kAXModeComplete);
+  ax_mode_override_ =
+      std::make_unique<ScopedAccessibilityModeOverride>(ui::kAXModeComplete);
 }
 
 TEST_F(BrowserAccessibilityManagerAuraLinuxTest, TestEmitChildrenChanged) {

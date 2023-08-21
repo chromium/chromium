@@ -58,7 +58,7 @@
 #include "ui/gfx/text_utils.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -795,7 +795,7 @@ class AutofillPopupControllerAccessibilityUnitTest
   static constexpr int kAxUniqueId = 123;
 
   AutofillPopupControllerAccessibilityUnitTest()
-      : accessibility_mode_setter_(ui::AXMode::kScreenReader) {}
+      : accessibility_mode_override_(ui::AXMode::kScreenReader) {}
   AutofillPopupControllerAccessibilityUnitTest(
       AutofillPopupControllerAccessibilityUnitTest&) = delete;
   AutofillPopupControllerAccessibilityUnitTest& operator=(
@@ -821,12 +821,12 @@ class AutofillPopupControllerAccessibilityUnitTest
     // This needs to bo reset explicit because having the mode set to
     // `kScreenReader` causes mocked functions to get called  with
     // `mock_ax_platform_node_delegate` after it has been destroyed.
-    accessibility_mode_setter_.ResetMode();
+    accessibility_mode_override_.ResetMode();
     AutofillPopupControllerUnitTest::TearDown();
   }
 
  protected:
-  content::testing::ScopedContentAXModeSetter accessibility_mode_setter_;
+  content::ScopedAccessibilityModeOverride accessibility_mode_override_;
   MockAxPlatformNodeDelegate mock_ax_platform_node_delegate_;
   MockAxPlatformNode mock_ax_platform_node_;
   ui::AXTreeID test_tree_id_ = ui::AXTreeID::CreateNewAXTreeID();

@@ -20,7 +20,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #else
-#include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -93,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrMenuObserverTest,
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
-  content::testing::ScopedContentAXModeSetter scoped_accessibility_mode(
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   menu()->GetPrefs()->SetBoolean(prefs::kAccessibilityPdfOcrAlwaysActive,
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrMenuObserverTest,
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
-  content::testing::ScopedContentAXModeSetter scoped_accessibility_mode(
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrMenuObserverTest,
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
-  content::testing::ScopedContentAXModeSetter scoped_accessibility_mode(
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(PdfOcrMenuObserverTest,
   ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
 #else
   // Spoof a screen reader.
-  content::testing::ScopedContentAXModeSetter scoped_accessibility_mode(
+  content::ScopedAccessibilityModeOverride scoped_accessibility_mode(
       ui::AXMode::kScreenReader);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
