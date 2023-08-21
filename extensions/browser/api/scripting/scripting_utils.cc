@@ -18,7 +18,6 @@ namespace extensions::scripting {
 
 namespace {
 
-constexpr char kDuplicateScriptId[] = "Duplicate script ID '*'";
 constexpr char kEmptyScriptIdError[] = "Script's ID must not be empty";
 constexpr char kFilesExceededSizeLimitError[] =
     "Scripts could not be loaded because '*' exceeds the maximum script size "
@@ -60,28 +59,6 @@ bool IsScriptIdValid(const std::string& script_id, std::string* error) {
   }
 
   return true;
-}
-
-std::string CreateDynamicScriptId(
-    const std::string& script_id,
-    UserScript::Source source,
-    const std::set<std::string>& existing_script_ids,
-    const std::set<std::string>& new_script_ids,
-    std::string* error) {
-  if (!IsScriptIdValid(script_id, error)) {
-    return std::string();
-  }
-
-  std::string new_script_id =
-      scripting::AddPrefixToDynamicScriptId(script_id, source);
-  if (base::Contains(existing_script_ids, new_script_id) ||
-      base::Contains(new_script_ids, new_script_id)) {
-    *error =
-        ErrorUtils::FormatErrorMessage(kDuplicateScriptId, script_id.c_str());
-    return std::string();
-  }
-
-  return new_script_id;
 }
 
 URLPatternSet GetPersistentScriptURLPatterns(

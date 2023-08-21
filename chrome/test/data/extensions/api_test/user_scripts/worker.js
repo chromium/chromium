@@ -76,6 +76,16 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Test that no scripts are registered when an empty array of scripts is
+  // passed to userScripts.register.
+  async function emptyScripts() {
+    await chrome.userScripts.register([]);
+    // TODO(crbug.com/1459670): Verify there are no registered scripts once
+    // userScripts.getScripts() is implemented.
+
+    chrome.test.succeed();
+  },
+
   // Test that an error is returned if a user script is specified with a file
   // that cannot be read.
   async function scriptFileError() {

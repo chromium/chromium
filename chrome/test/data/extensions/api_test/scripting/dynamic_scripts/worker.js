@@ -192,6 +192,18 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  // Test that no scripts are registered when an empty array of scripts is
+  // passed to scripting.registerContentScripts().
+  async function emptyScripts() {
+    await chrome.scripting.unregisterContentScripts();
+
+    await chrome.scripting.registerContentScripts([]);
+    let scripts = await chrome.scripting.getRegisteredContentScripts();
+    chrome.test.assertEq(0, scripts.length);
+
+    chrome.test.succeed();
+  },
+
   // Tests that an error is returned if a content script is specified with an
   // invalid ID.
   async function invalidScriptId() {

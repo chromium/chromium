@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_UTILS_H_
 #define EXTENSIONS_BROWSER_API_SCRIPTING_SCRIPTING_UTILS_H_
 
+#include "base/containers/contains.h"
 #include "extensions/browser/extension_user_script_loader.h"
+#include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/url_pattern_set.h"
@@ -26,15 +28,38 @@ std::string AddPrefixToDynamicScriptId(const std::string& script_id,
 // prefix) is valid. Populates `error` if invalid.
 bool IsScriptIdValid(const std::string& script_id, std::string* error);
 
-// Returns a dynamic script ID (with a prefix corresponding to `source`)
-// when the script is valid and is not duplicated in `existing_script_ids` or
-// `new_script_ids`. Otherwise populates error and returns an empty string.
-std::string CreateDynamicScriptId(
-    const std::string& script_id,
+// Returns a set of unique dynamic script IDs (with an added prefix
+// corresponding to `source`) for all given `scripts`. If the script is invalid
+// or duplicated in `existing_script_ids` or the new ids, populates error and
+// returns an empty set.
+template <typename Script>
+std::set<std::string> CreateDynamicScriptIds(
+    std::vector<Script>& scripts,
     UserScript::Source source,
     const std::set<std::string>& existing_script_ids,
-    const std::set<std::string>& new_script_ids,
-    std::string* error);
+    std::string* error) {
+  std::set<std::string> new_script_ids;
+
+  for (auto& script : scripts) {
+    if (!IsScriptIdValid(script.id, error)) {
+      return std::set<std::string>();
+    }
+
+    std::string new_script_id =
+        scripting::AddPrefixToDynamicScriptId(script.id, source);
+    if (base::Contains(existing_script_ids, new_script_id) ||
+        base::Contains(new_script_ids, new_script_id)) {
+      *error = ErrorUtils::FormatErrorMessage("Duplicate script ID '*'",
+                                              script.id.c_str());
+      return std::set<std::string>();
+    }
+
+    script.id = new_script_id;
+    new_script_ids.insert(script.id);
+  }
+
+  return new_script_ids;
+}
 
 // Returns the set of URL patterns from persistent dynamic content scripts.
 // Patterns are stored in prefs so UserScriptListener can access them

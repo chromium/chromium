@@ -917,20 +917,15 @@ ScriptingRegisterContentScriptsFunction::Run() {
           ->GetUserScriptLoaderForExtension(extension()->id());
 
   // Create script ids for dynamic content scripts.
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
-  std::set<std::string> new_script_ids;
   std::string error;
+  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> new_script_ids = scripting::CreateDynamicScriptIds(
+      scripts, UserScript::Source::kDynamicContentScript, existing_script_ids,
+      &error);
 
-  for (auto& script : scripts) {
-    script.id = scripting::CreateDynamicScriptId(
-        script.id, UserScript::Source::kDynamicContentScript,
-        existing_script_ids, new_script_ids, &error);
-    if (script.id.empty()) {
-      CHECK(!error.empty());
-      return RespondNow(Error(std::move(error)));
-    }
-
-    new_script_ids.insert(script.id);
+  if (!error.empty()) {
+    CHECK(new_script_ids.empty());
+    return RespondNow(Error(std::move(error)));
   }
 
   // Parse content scripts.

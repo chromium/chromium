@@ -113,20 +113,15 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
           ->GetUserScriptLoaderForExtension(extension()->id());
 
   // Create script ids for dynamic user scripts.
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
-  std::set<std::string> new_script_ids;
   std::string error;
+  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> new_script_ids = scripting::CreateDynamicScriptIds(
+      scripts, UserScript::Source::kDynamicUserScript, existing_script_ids,
+      &error);
 
-  for (auto& script : scripts) {
-    script.id = scripting::CreateDynamicScriptId(
-        script.id, UserScript::Source::kDynamicUserScript, existing_script_ids,
-        new_script_ids, &error);
-    if (script.id.empty()) {
-      DCHECK(!error.empty());
-      return RespondNow(Error(std::move(error)));
-    }
-
-    new_script_ids.insert(script.id);
+  if (!error.empty()) {
+    CHECK(new_script_ids.empty());
+    return RespondNow(Error(std::move(error)));
   }
 
   // Parse user scripts.
