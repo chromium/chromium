@@ -230,6 +230,9 @@ bool DawnContextProvider::Initialize(wgpu::BackendType backend_type,
   if (adapter.HasFeature(wgpu::FeatureName::TransientAttachments)) {
     features.push_back(wgpu::FeatureName::TransientAttachments);
   }
+  if (adapter.HasFeature(wgpu::FeatureName::MSAARenderToSingleSampled)) {
+    features.push_back(wgpu::FeatureName::MSAARenderToSingleSampled);
+  }
 
   descriptor.requiredFeatures = features.data();
 #ifdef WGPU_BREAKING_CHANGE_COUNT_RENAME
