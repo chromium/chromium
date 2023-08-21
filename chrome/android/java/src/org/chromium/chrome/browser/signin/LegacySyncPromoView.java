@@ -236,7 +236,8 @@ public class LegacySyncPromoView
         // State is updated before this view is removed, so this invalid state happens, but is not
         // visible. I want there to be a guarantee that this state is never seen, but to do so would
         // require some code restructuring.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)
+                && mAccessPoint != SigninAccessPoint.BOOKMARK_MANAGER) {
             int emptyViewImageResId =
                     DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())
                     ? R.drawable.tablet_recent_tab_empty_state_illustration
