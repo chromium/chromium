@@ -381,6 +381,18 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvFullscreenIcon;
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
+    case kKeyboardShortcutMediaFastForward:
+      return &kKsMediaFastForwardIcon;
+    case kKeyboardShortcutMediaPause:
+      return &kKsMediaPauseIcon;
+    case kKeyboardShortcutMediaPlay:
+      return &kKsMediaPlayIcon;
+    case kKeyboardShortcutMediaPlayPause:
+      return &kKsMediaPlayPauseIcon;
+    case kKeyboardShortcutMediaTrackNext:
+      return &kKsMediaTrackNextIcon;
+    case kKeyboardShortcutMediaTrackPrevious:
+      return &kKsMediaTrackPreviousIcon;
     case kKeyboardShortcutBrightnessDown:
       return &kKsvBrightnessDownIcon;
     case kKeyboardShortcutBrightnessUp:

@@ -73,6 +73,18 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutZoom;
     case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP1):
       return IconCode::kKeyboardShortcutMediaLaunchApp1;
+    case (KeyboardCode::VKEY_MEDIA_NEXT_TRACK):
+      return IconCode::kKeyboardShortcutMediaTrackNext;
+    case (KeyboardCode::VKEY_MEDIA_PREV_TRACK):
+      return IconCode::kKeyboardShortcutMediaTrackPrevious;
+    case (KeyboardCode::VKEY_MEDIA_PLAY):
+      return IconCode::kKeyboardShortcutMediaPlay;
+    case (KeyboardCode::VKEY_MEDIA_PAUSE):
+      return IconCode::kKeyboardShortcutMediaPause;
+    case (KeyboardCode::VKEY_MEDIA_PLAY_PAUSE):
+      return IconCode::kKeyboardShortcutMediaPlayPause;
+    case (KeyboardCode::VKEY_OEM_104):
+      return IconCode::kKeyboardShortcutMediaFastForward;
     case (KeyboardCode::VKEY_BRIGHTNESS_DOWN):
       return IconCode::kKeyboardShortcutBrightnessDown;
     case (KeyboardCode::VKEY_BRIGHTNESS_UP):
