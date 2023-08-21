@@ -2234,7 +2234,12 @@ void BookmarkBarView::UpdateBookmarksSeparatorVisibility() {
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS does not paint the bookmarks separator line because it looks odd
   // on the flat background. We keep it present for layout, but don't draw it.
-  bookmarks_separator_view_->SetVisible(false);
+  if (features::IsChromeRefresh2023()) {
+    bookmarks_separator_view_->SetVisible(
+        other_bookmarks_button_->GetVisible());
+  } else {
+    bookmarks_separator_view_->SetVisible(false);
+  }
 #else
   bookmarks_separator_view_->SetVisible(other_bookmarks_button_->GetVisible());
 #endif
