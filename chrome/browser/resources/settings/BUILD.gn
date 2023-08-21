@@ -343,6 +343,11 @@ build_webui("build") {
     non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
   }
 
+  if (is_mac) {
+    non_web_component_files +=
+        [ "a11y_page/mac_system_settings_browser_proxy.ts" ]
+  }
+
   # -----------------non_web_component_files end -------------------------------
 
   icons_html_files = [
