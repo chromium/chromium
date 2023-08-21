@@ -160,8 +160,8 @@ const gfx::Image& TestBrowserAutofillManager::GetCardImage(
 
 void TestBrowserAutofillManager::ScheduleRefill(
     const FormData& form,
-    const AutofillTriggerSource trigger_source) {
-  test_api(*this).TriggerRefill(form, trigger_source);
+    const AutofillTriggerDetails& trigger_details) {
+  test_api(*this).TriggerRefill(form, trigger_details);
 }
 
 bool TestBrowserAutofillManager::MaybeStartVoteUploadProcess(

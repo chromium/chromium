@@ -27,7 +27,7 @@
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_filler.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_autofill_history.h"
@@ -156,12 +156,13 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       Suggestion::BackendId backend_id,
-      const AutofillTriggerSource trigger_source);
-  void FillCreditCardFormImpl(const FormData& form,
-                              const FormFieldData& field,
-                              const CreditCard& credit_card,
-                              const std::u16string& cvc,
-                              AutofillTriggerSource trigger_source) override;
+      const AutofillTriggerDetails& trigger_details);
+  void FillCreditCardFormImpl(
+      const FormData& form,
+      const FormFieldData& field,
+      const CreditCard& credit_card,
+      const std::u16string& cvc,
+      const AutofillTriggerDetails& trigger_details) override;
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`, virtual for testing. `renderer_action` denotes whether
   // this is an actual filling or a preview operation on the renderer side.
@@ -182,13 +183,14 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       const CreditCard* credit_card,
-      const AutofillTriggerSource trigger_source);
+      const AutofillTriggerDetails& trigger_details);
 
   // TODO(crbug.com/1330108): Clean up the API.
-  void FillProfileFormImpl(const FormData& form,
-                           const FormFieldData& field,
-                           const AutofillProfile& profile,
-                           AutofillTriggerSource trigger_source) override;
+  void FillProfileFormImpl(
+      const FormData& form,
+      const FormFieldData& field,
+      const AutofillProfile& profile,
+      const AutofillTriggerDetails& trigger_details) override;
 
   // Fetches the related virtual card information given the related actual card
   // |guid| and fills the information into the form.
@@ -198,7 +200,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::string& guid,
       const FormData& form,
       const FormFieldData& field,
-      const AutofillTriggerSource trigger_source);
+      const AutofillTriggerDetails& trigger_details);
 
   // Returns true if the value/identifier is deletable. Fills out
   // |title| and |body| with relevant user-facing text.
@@ -518,7 +520,7 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       const AutofillProfile& profile,
-      const AutofillTriggerSource trigger_source);
+      const AutofillTriggerDetails& trigger_details);
 
   // Fills or previews |data_model| in the |form|.
   // TODO(crbug.com/1330108): Clean up the API.
@@ -531,7 +533,7 @@ class BrowserAutofillManager : public AutofillManager,
       const std::u16string* optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
-      const AutofillTriggerSource trigger_source,
+      const AutofillTriggerDetails trigger_details,
       bool is_refill = false);
 
   // Returns true if the field value should not be overridden by Autofill.
@@ -656,12 +658,12 @@ class BrowserAutofillManager : public AutofillManager,
 
   // Schedules a call of TriggerRefill. Virtual for testing.
   virtual void ScheduleRefill(const FormData& form,
-                              const AutofillTriggerSource trigger_source);
+                              const AutofillTriggerDetails& trigger_details);
 
   // Attempts to refill the form that was changed dynamically. Should only be
   // called if ShouldTriggerRefill returns true.
   void TriggerRefill(const FormData& form,
-                     const AutofillTriggerSource trigger_source);
+                     const AutofillTriggerDetails& trigger_details);
 
   // This function is called by JavaScriptChangedAutofilledValue and may trigger
   // a refill in case the website used JavaScript to reformat an expiration date
@@ -671,7 +673,7 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       const std::u16string& old_value,
-      const AutofillTriggerSource trigger_source);
+      const AutofillTriggerDetails& trigger_details);
 
   // Checks whether JavaScript cleared an autofilled value within
   // kLimitBeforeRefill after the filling and records metrics for this. This

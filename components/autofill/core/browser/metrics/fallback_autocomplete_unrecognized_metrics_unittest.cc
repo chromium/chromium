@@ -73,7 +73,8 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   // Fill the suggestion.
   autofill_manager().FillOrPreviewForm(
       mojom::AutofillActionPersistence::kFill, form, form.fields[0],
-      Suggestion::BackendId(kTestProfileId), AutofillTriggerSource::kPopup);
+      Suggestion::BackendId(kTestProfileId),
+      {.trigger_source = AutofillTriggerSource::kPopup});
 
   base::HistogramTester histogram_tester;
   ResetDriverToCommitMetrics();

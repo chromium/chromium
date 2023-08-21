@@ -8,6 +8,7 @@
 
 #include <utility>
 
+#include "autofill_trigger_details.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -22,7 +23,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
@@ -258,7 +259,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
     case PopupItemId::kFillEverythingFromAddressProfile:
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, true,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source));
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
     case PopupItemId::kAutocompleteEntry:
     case PopupItemId::kIbanEntry:
@@ -272,7 +274,8 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       manager_->FillOrPreviewVirtualCardInformation(
           mojom::AutofillActionPersistence::kPreview, backend_id.value(),
           query_form_, query_field_,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source));
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
     default:
       break;
@@ -368,7 +371,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->FillOrPreviewVirtualCardInformation(
           mojom::AutofillActionPersistence::kFill,
           suggestion.GetPayload<Suggestion::BackendId>().value(), query_form_,
-          query_field_, AutofillTriggerSource::kPopup);
+          query_field_, {.trigger_source = AutofillTriggerSource::kPopup});
       break;
     case PopupItemId::kSeePromoCodeDetails:
       manager_->OnSeePromoCodeOfferDetailsSelected(
@@ -401,7 +404,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       FillAutofillFormData(
           suggestion.popup_item_id,
           suggestion.GetPayload<Suggestion::BackendId>(), false,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source));
+          {.trigger_source =
+               TriggerSourceFromSuggestionTriggerSource(trigger_source)});
       break;
   }
 
@@ -489,7 +493,8 @@ void AutofillExternalDelegate::OnCreditCardScanned(
     const AutofillTriggerSource trigger_source,
     const CreditCard& card) {
   manager_->FillCreditCardFormImpl(query_form_, query_field_, card,
-                                   std::u16string(), trigger_source);
+                                   std::u16string(),
+                                   {.trigger_source = trigger_source});
 }
 
 void AutofillExternalDelegate::OnPlusAddressCreated(
@@ -502,7 +507,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
     PopupItemId popup_item_id,
     Suggestion::BackendId backend_id,
     bool is_preview,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   // If the selected element is a warning we don't want to do anything.
   if (IsAutofillWarningEntry(popup_item_id)) {
     return;
@@ -515,7 +520,7 @@ void AutofillExternalDelegate::FillAutofillFormData(
   DCHECK(manager_->driver().RendererIsAvailable());
   // Fill the values for the whole form.
   manager_->FillOrPreviewForm(action_persistence, query_form_, query_field_,
-                              backend_id, trigger_source);
+                              backend_id, trigger_details);
 }
 
 void AutofillExternalDelegate::PossiblyRemoveAutofillWarnings(

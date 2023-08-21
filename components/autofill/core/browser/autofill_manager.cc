@@ -259,13 +259,13 @@ void AutofillManager::FillCreditCardForm(
     const FormFieldData& field,
     const CreditCard& credit_card,
     const std::u16string& cvc,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillCreditCardFormImpl(form, field, credit_card, cvc, trigger_source);
+    FillCreditCardFormImpl(form, field, credit_card, cvc, trigger_details);
     return;
   }
   ParseFormAsync(form, ParsingCallback(&AutofillManager::FillCreditCardFormImpl,
-                                       field, credit_card, cvc, trigger_source)
+                                       field, credit_card, cvc, trigger_details)
                            .Then(NotifyNoObserversCallback()));
 }
 
@@ -273,13 +273,13 @@ void AutofillManager::FillProfileForm(
     const AutofillProfile& profile,
     const FormData& form,
     const FormFieldData& field,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   if (!base::FeatureList::IsEnabled(features::kAutofillParseAsync)) {
-    FillProfileFormImpl(form, field, profile, trigger_source);
+    FillProfileFormImpl(form, field, profile, trigger_details);
     return;
   }
   ParseFormAsync(form, ParsingCallback(&AutofillManager::FillProfileFormImpl,
-                                       field, profile, trigger_source)
+                                       field, profile, trigger_details)
                            .Then(NotifyNoObserversCallback()));
 }
 

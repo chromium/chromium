@@ -107,14 +107,14 @@ class MockAutofillManager : public AutofillManager {
                const FormFieldData& field,
                const CreditCard& credit_card,
                const std::u16string& cvc,
-               const AutofillTriggerSource trigger_source),
+               const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
               FillProfileFormImpl,
               (const FormData& form,
                const FormFieldData& field,
                const AutofillProfile& profile,
-               const AutofillTriggerSource trigger_source),
+               const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,

@@ -181,7 +181,8 @@ class AutofillMetricsBaseTest {
   void FillTestProfile(const FormData& form) {
     autofill_manager().FillOrPreviewForm(
         mojom::AutofillActionPersistence::kFill, form, form.fields.front(),
-        Suggestion::BackendId(kTestProfileId), AutofillTriggerSource::kPopup);
+        Suggestion::BackendId(kTestProfileId),
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   [[nodiscard]] FormData CreateEmptyForm() {

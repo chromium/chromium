@@ -56,8 +56,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void TriggerRefill(const FormData& form,
-                     const AutofillTriggerSource trigger_source) {
-    manager_->TriggerRefill(form, trigger_source);
+                     const AutofillTriggerDetails& trigger_details) {
+    manager_->TriggerRefill(form, trigger_details);
   }
 
   void PreProcessStateMatchingTypes(
@@ -111,7 +111,8 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
       AutofillField* autofill_field) {
     return manager_->FillOrPreviewDataModelForm(
         action_persistence, form, field, profile_or_credit_card, optional_cvc,
-        form_structure, autofill_field, AutofillTriggerSource::kPopup);
+        form_structure, autofill_field,
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   base::flat_map<std::string, VirtualCardUsageData::VirtualCardLastFour>

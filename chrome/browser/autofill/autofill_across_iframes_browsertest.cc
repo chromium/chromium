@@ -124,9 +124,9 @@ void FillCard(content::RenderFrameHost* rfh,
   CreditCard card;
   test::SetCreditCardInfo(&card, kNameFull, kNumber, kExpMonth, kExpYear, "");
   auto* manager = TestAutofillManager::GetForRenderFrameHost(rfh);
-  manager->FillCreditCardFormImpl(form, triggered_field, card,
-                                  base::ASCIIToUTF16(base::StringPiece(kCvc)),
-                                  AutofillTriggerSource::kPopup);
+  manager->FillCreditCardFormImpl(
+      form, triggered_field, card, base::ASCIIToUTF16(base::StringPiece(kCvc)),
+      AutofillTriggerDetails(AutofillTriggerSource::kPopup));
 }
 
 // Returns the values of all fields in the  frames of `web_contents`.

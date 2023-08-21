@@ -418,7 +418,8 @@ void FastCheckoutClientImpl::TryToFillForms() {
                                    run_id_);
         autofill_manager_->FillProfileForm(
             *autofill_profile, form->ToFormData(), *field,
-            autofill::AutofillTriggerSource::kFastCheckout);
+            autofill::AutofillTriggerDetails(
+                autofill::AutofillTriggerSource::kFastCheckout));
       }
     }
 
@@ -457,7 +458,7 @@ void FastCheckoutClientImpl::FillCreditCardForm(
       ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
   autofill_manager_->FillCreditCardForm(
       form.ToFormData(), field, credit_card, cvc,
-      autofill::AutofillTriggerSource::kFastCheckout);
+      {.trigger_source = autofill::AutofillTriggerSource::kFastCheckout});
 }
 
 autofill::AutofillProfile*

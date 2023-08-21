@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -67,7 +67,7 @@ class ProfileTokenQualityTest : public testing::Test {
                 const AutofillProfile& profile,
                 size_t triggering_field_index = 0) {
     bam_.FillProfileForm(profile, form, form.fields[triggering_field_index],
-                         AutofillTriggerSource::kPopup);
+                         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
  protected:

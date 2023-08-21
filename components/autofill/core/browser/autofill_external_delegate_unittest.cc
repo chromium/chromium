@@ -42,11 +42,21 @@
 #include "url/origin.h"
 
 using testing::_;
+using testing::Field;
+using testing::Matcher;
 using testing::NiceMock;
 
 namespace autofill {
 
 namespace {
+
+Matcher<const AutofillTriggerDetails&> EqualsAutofilltriggerDetails(
+    AutofillTriggerDetails details) {
+  return AllOf(
+      Field(&AutofillTriggerDetails::trigger_source, details.trigger_source),
+      Field(&AutofillTriggerDetails::filling_granularity,
+            details.filling_granularity));
+}
 
 constexpr auto kDefaultTriggerSource =
     AutofillSuggestionTriggerSource::kFormControlElementClicked;
@@ -165,7 +175,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const std::string& guid,
                const FormData& form,
                const FormFieldData& field,
-               const AutofillTriggerSource trigger_source),
+               const AutofillTriggerDetails& trigger_details),
               (override));
 
   bool ShouldShowCardsFromAccountOption(const FormData& form,
@@ -188,7 +198,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const FormData& form,
                const FormFieldData& field,
                Suggestion::BackendId backend_id,
-               const AutofillTriggerSource trigger_source),
+               const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
               FillCreditCardFormImpl,
@@ -196,7 +206,7 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
                const FormFieldData& field,
                const CreditCard& credit_card,
                const std::u16string& cvc,
-               const AutofillTriggerSource trigger_source),
+               const AutofillTriggerDetails& trigger_details),
               (override));
 
  private:
@@ -761,9 +771,11 @@ TEST_F(AutofillExternalDelegateUnitTest,
 #else
       AutofillTriggerSource::kPopup;
 #endif
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _,
-                                _, expected_source));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewForm(
+          mojom::AutofillActionPersistence::kFill, _, _, _,
+          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 
@@ -773,9 +785,11 @@ TEST_F(AutofillExternalDelegateUnitTest,
       kManualFallbackForAutocompleteUnrecognized;
   expected_source =
       AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized;
-  EXPECT_CALL(*browser_autofill_manager_,
-              FillOrPreviewForm(mojom::AutofillActionPersistence::kFill, _, _,
-                                _, expected_source));
+  EXPECT_CALL(
+      *browser_autofill_manager_,
+      FillOrPreviewForm(
+          mojom::AutofillActionPersistence::kFill, _, _, _,
+          EqualsAutofilltriggerDetails({.trigger_source = expected_source})));
   external_delegate_->DidAcceptSuggestion(suggestion, /*position=*/1,
                                           suggestion_source);
 }

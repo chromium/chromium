@@ -13,7 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -144,7 +144,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   void FillAutofillFormData(PopupItemId popup_item_id,
                             Suggestion::BackendId backend_id,
                             bool is_preview,
-                            const AutofillTriggerSource trigger_source);
+                            const AutofillTriggerDetails& trigger_details);
 
   // Will remove Autofill warnings from |suggestions| if there are also
   // autocomplete entries in the vector. Note: at this point, it is assumed that

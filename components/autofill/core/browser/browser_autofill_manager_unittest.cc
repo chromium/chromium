@@ -795,7 +795,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown);
     browser_autofill_manager_->FillOrPreviewForm(
         mojom::AutofillActionPersistence::kFill, form, field,
-        Suggestion::BackendId(guid), AutofillTriggerSource::kPopup);
+        Suggestion::BackendId(guid),
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   // Calls |browser_autofill_manager_->OnFillAutofillFormData()| with the
@@ -823,7 +824,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          Return(std::vector<FieldGlobalId>{}))));
     browser_autofill_manager_->FillOrPreviewVirtualCardInformation(
         action_persistence, guid, input_form, input_field,
-        AutofillTriggerSource::kPopup);
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   bool WillFillCreditCardNumber(const FormData& form,
@@ -896,7 +897,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         .Times(AtLeast(1));
     browser_autofill_manager_->FillOrPreviewCreditCardForm(
         mojom::AutofillActionPersistence::kFill, *form, form->fields[0], card,
-        AutofillTriggerSource::kPopup);
+        {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
   void OnDidGetRealPan(AutofillClient::PaymentsRpcResult result,
@@ -2656,7 +2657,7 @@ TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   CreditCard credit_card = test::GetMaskedServerCard();
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
       mojom::AutofillActionPersistence::kFill, form, form.fields[0],
-      &credit_card, AutofillTriggerSource::kPopup);
+      &credit_card, {.trigger_source = AutofillTriggerSource::kPopup});
 
   test_api(*browser_autofill_manager_)
       .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card,
@@ -3702,7 +3703,8 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteUnrecognizedFillingBehavior) {
   browser_autofill_manager_->FillOrPreviewForm(
       mojom::AutofillActionPersistence::kFill, form, form.fields[0],
       Suggestion::BackendId(kElvisProfileGuid),
-      AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized);
+      {.trigger_source =
+           AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized});
   ExpectFilledForm(filled_form, kElvisAddressFillData,
                    /*card_fill_data=*/absl::nullopt);
 }

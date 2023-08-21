@@ -55,7 +55,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_optimization_guide.h"
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_delegate.h"
 #include "components/autofill/core/browser/data_model/autofill_data_model.h"
@@ -1403,7 +1403,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     const FormData& form,
     const FormFieldData& field,
     const CreditCard* credit_card,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
@@ -1429,7 +1429,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
     // CreditCardAccessManager::FetchCreditCard() will call
     // OnCreditCardFetched() in this class after successfully fetching the card.
-    fetched_credit_card_trigger_source_ = trigger_source;
+    fetched_credit_card_trigger_source_ = trigger_details.trigger_source;
     credit_card_access_manager_->FetchCreditCard(
         credit_card, weak_ptr_factory_.GetWeakPtr());
     return;
@@ -1437,7 +1437,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
   FillOrPreviewDataModelForm(action_persistence, form, field, &credit_card_,
                              /*optional_cvc=*/nullptr, form_structure,
-                             autofill_field, trigger_source);
+                             autofill_field, trigger_details);
 }
 
 void BrowserAutofillManager::FillOrPreviewProfileForm(
@@ -1445,14 +1445,14 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
     const FormData& form,
     const FormFieldData& field,
     const AutofillProfile& profile,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field))
     return;
   FillOrPreviewDataModelForm(action_persistence, form, field, &profile,
                              /*optional_cvc=*/nullptr, form_structure,
-                             autofill_field, trigger_source);
+                             autofill_field, trigger_details);
 }
 
 void BrowserAutofillManager::UndoAutofill(
@@ -1500,7 +1500,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
     const FormData& form,
     const FormFieldData& field,
     Suggestion::BackendId backend_id,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field))
     return;
 
@@ -1515,10 +1515,10 @@ void BrowserAutofillManager::FillOrPreviewForm(
 
   if (credit_card) {
     FillOrPreviewCreditCardForm(action_persistence, form, field, credit_card,
-                                trigger_source);
+                                trigger_details);
   } else if (profile) {
     FillOrPreviewProfileForm(action_persistence, form, field, *profile,
-                             trigger_source);
+                             trigger_details);
   }
 }
 
@@ -1527,7 +1527,7 @@ void BrowserAutofillManager::FillCreditCardFormImpl(
     const FormFieldData& field,
     const CreditCard& credit_card,
     const std::u16string& cvc,
-    AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
       !driver().RendererIsAvailable()) {
     return;
@@ -1540,7 +1540,7 @@ void BrowserAutofillManager::FillCreditCardFormImpl(
 
   FillOrPreviewDataModelForm(mojom::AutofillActionPersistence::kFill, form,
                              field, &credit_card, &cvc, form_structure,
-                             autofill_field, trigger_source,
+                             autofill_field, trigger_details,
                              /*is_refill=*/false);
 }
 
@@ -1548,9 +1548,9 @@ void BrowserAutofillManager::FillProfileFormImpl(
     const FormData& form,
     const FormFieldData& field,
     const AutofillProfile& profile,
-    AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   FillOrPreviewProfileForm(mojom::AutofillActionPersistence::kFill, form, field,
-                           profile, trigger_source);
+                           profile, trigger_details);
 }
 
 void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
@@ -1558,7 +1558,7 @@ void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     const std::string& guid,
     const FormData& form,
     const FormFieldData& field,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   if (!IsValidFormData(form) || !IsValidFormFieldData(field) ||
       !RefreshDataModels() || !driver().RendererIsAvailable()) {
     return;
@@ -1570,7 +1570,7 @@ void BrowserAutofillManager::FillOrPreviewVirtualCardInformation(
     CreditCard copy = *credit_card;
     copy.set_record_type(CreditCard::RecordType::kVirtualCard);
     FillOrPreviewCreditCardForm(action_persistence, form, field, &copy,
-                                trigger_source);
+                                trigger_details);
   }
 }
 
@@ -1880,7 +1880,8 @@ void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
   driver().SendAutofillTypePredictionsToRenderer({form_structure});
 
   if (ShouldTriggerRefill(*form_structure))
-    TriggerRefill(form, AutofillTriggerSource::kSelectOptionsChanged);
+    TriggerRefill(
+        form, {.trigger_source = AutofillTriggerSource::kSelectOptionsChanged});
 }
 
 void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
@@ -1925,14 +1926,15 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
   AnalyzeJavaScriptChangedAutofilledValue(form, field);
   MaybeTriggerRefillForExpirationDate(
       form, field, old_value,
-      AutofillTriggerSource::kJavaScriptChangedAutofilledValue);
+      {.trigger_source =
+           AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
 }
 
 void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
     const FormData& form,
     const FormFieldData& field,
     const std::u16string& old_value,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   // We currently support a single case of refilling credit card expiration
   // dates: If we filled the expiration date in a format "05/2023" and the
   // website turned it into "05 / 20" (i.e. it broke the year by cutting the
@@ -1977,7 +1979,7 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
     FillingContext* filling_context = GetFillingContext(*form_structure);
     DCHECK(filling_context);  // This is enforced by ShouldTriggerRefill.
     filling_context->forced_fill_values[field.global_id()] = refill_value;
-    ScheduleRefill(form, trigger_source);
+    ScheduleRefill(form, trigger_details);
   }
 }
 
@@ -2057,10 +2059,10 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
   client().GetFormDataImporter()->SetFetchedCardInstrumentId(
       credit_card->instrument_id());
 
-  FillCreditCardFormImpl(credit_card_form_, credit_card_field_, *credit_card,
-                         cvc,
-                         fetched_credit_card_trigger_source_.value_or(
-                             AutofillTriggerSource::kCreditCardCvcPopup));
+  FillCreditCardFormImpl(
+      credit_card_form_, credit_card_field_, *credit_card, cvc,
+      {.trigger_source = fetched_credit_card_trigger_source_.value_or(
+           AutofillTriggerSource::kCreditCardCvcPopup)});
   if (credit_card->record_type() == CreditCard::RecordType::kFullServerCard ||
       credit_card->record_type() == CreditCard::RecordType::kVirtualCard) {
     credit_card_access_manager_->CacheUnmaskedCardInfo(*credit_card, cvc);
@@ -2459,7 +2461,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     const std::u16string* optional_cvc,
     FormStructure* form_structure,
     AutofillField* autofill_trigger_field,
-    const AutofillTriggerSource trigger_source,
+    const AutofillTriggerDetails trigger_details,
     bool is_refill) {
   bool is_credit_card =
       absl::holds_alternative<const CreditCard*>(profile_or_credit_card);
@@ -2557,7 +2559,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                 *absl::get<const CreditCard*>(profile_or_credit_card))
           : absl::nullopt,
       filling_context->type_groups_originally_filled,
-      /*skip_unrecognized_autocomplete_fields=*/trigger_source !=
+      /*skip_unrecognized_autocomplete_fields=*/
+      trigger_details.trigger_source !=
           AutofillTriggerSource::kManualFallbackForAutocompleteUnrecognized,
       is_refill);
 
@@ -2665,7 +2668,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       });
   std::vector<FieldGlobalId> safe_fields = driver().FillOrPreviewForm(
       action_persistence, result, field.origin, field_types);
-  client().DidFillOrPreviewForm(action_persistence, trigger_source, is_refill);
+  client().DidFillOrPreviewForm(action_persistence,
+                                trigger_details.trigger_source, is_refill);
 
   // This will hold the fields (and corresponding autofill fields) in the
   // intersection of safe_fields and newly_filled_fields.
@@ -2718,7 +2722,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           credit_card_, *form_structure, *autofill_trigger_field,
           newly_filled_fields,
           base::flat_set<FieldGlobalId>(std::move(safe_fields)),
-          signin_state_for_metrics_, trigger_source);
+          signin_state_for_metrics_, trigger_details.trigger_source);
     } else {
       // An address form was filled.
       CHECK(absl::holds_alternative<const AutofillProfile*>(
@@ -2730,7 +2734,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         address_form_event_logger_->OnDidFillSuggestion(
             *absl::get<const AutofillProfile*>(profile_or_credit_card),
             *form_structure, *autofill_trigger_field, signin_state_for_metrics_,
-            trigger_source);
+            trigger_details.trigger_source);
       }
     }
   }
@@ -3028,7 +3032,7 @@ void BrowserAutofillManager::OnFormProcessed(
   // been a refill attempt on that form yet, start the process of triggering a
   // refill.
   if (ShouldTriggerRefill(form_structure))
-    ScheduleRefill(form, AutofillTriggerSource::kFormsSeen);
+    ScheduleRefill(form, {.trigger_source = AutofillTriggerSource::kFormsSeen});
 }
 
 void BrowserAutofillManager::OnAfterProcessParsedForms(
@@ -3381,7 +3385,7 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
 
 void BrowserAutofillManager::ScheduleRefill(
     const FormData& form,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure)
     return;
@@ -3399,12 +3403,12 @@ void BrowserAutofillManager::ScheduleRefill(
       FROM_HERE, kWaitTimeForDynamicForms,
       base::BindRepeating(&BrowserAutofillManager::TriggerRefill,
                           weak_ptr_factory_.GetWeakPtr(), form,
-                          trigger_source));
+                          trigger_details));
 }
 
 void BrowserAutofillManager::TriggerRefill(
     const FormData& form,
-    const AutofillTriggerSource trigger_source) {
+    const AutofillTriggerDetails& trigger_details) {
   FormStructure* form_structure = FindCachedFormById(form.global_id());
   if (!form_structure)
     return;
@@ -3462,7 +3466,7 @@ void BrowserAutofillManager::TriggerRefill(
             filling_context->profile_or_credit_card_with_cvc);
     FillOrPreviewDataModelForm(mojom::AutofillActionPersistence::kFill, form,
                                field, &credit_card, &cvc, form_structure,
-                               autofill_field, trigger_source,
+                               autofill_field, trigger_details,
                                /*is_refill=*/true);
   } else if (absl::holds_alternative<AutofillProfile>(
                  filling_context->profile_or_credit_card_with_cvc)) {
@@ -3471,7 +3475,7 @@ void BrowserAutofillManager::TriggerRefill(
         &absl::get<AutofillProfile>(
             filling_context->profile_or_credit_card_with_cvc),
         /*optional_cvc=*/nullptr, form_structure, autofill_field,
-        trigger_source,
+        trigger_details,
         /*is_refill=*/true);
   } else {
     NOTREACHED();
