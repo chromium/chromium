@@ -8,7 +8,6 @@ import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Process;
 
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationCompat;
@@ -87,15 +86,5 @@ public class CastBrowserService extends Service {
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
         stopSelf();
-        // Force teardown of the whole process. If we don't do this, the command line flags we
-        // received via the Intent in onStartCommand() will be stale the next time the service is
-        // started, because CastBrowserHelper.initializeBrowser() is idempotent and will not update
-        // the new flags.
-        //
-        // TODO(sanfin): either make CastBrowserHelper.initializeBrowser() not idempotent, by
-        // allowing it to construct a new ContentMain instance, or allow changing the
-        // --runtime-service-path during the process's lifetime.
-        Log.d(TAG, "Force Stopping Process.");
-        Process.killProcess(Process.myPid());
     }
 }
