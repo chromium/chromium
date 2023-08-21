@@ -391,6 +391,7 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::DidExecuteScript(
 
 void AnimationFrameTimingMonitor::OnMicrotasksCompleted(
     ExecutionContext* context) {
+  user_callback_depth_--;
   if (!ShouldAddScript(context)) {
     pending_script_info_ = absl::nullopt;
     return;
@@ -440,6 +441,8 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
       .execution_start_time = now,
       .class_like_name = class_like_name,
       .property_like_name = property_like_name};
+
+  user_callback_depth_++;
 }
 
 void AnimationFrameTimingMonitor::Will(
