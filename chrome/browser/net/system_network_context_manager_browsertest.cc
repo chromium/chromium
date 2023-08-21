@@ -56,6 +56,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
 
 const char* kCookieName = "Cookie";
@@ -228,6 +232,12 @@ class SystemNetworkContextManagerNetworkServiceSandboxEnabledBrowsertest
   }
 
   void SetUpOnMainThread() override {
+    // If the sandbox or the seccomp policy is disabled, these tests are
+    // meaningless.
+    if (!sandbox::policy::SandboxSeccompBPF::IsSeccompBPFDesired()) {
+      GTEST_SKIP();
+    }
+
     SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
 
     content::ServiceProcessHost::AddObserver(this);
