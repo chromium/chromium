@@ -22,7 +22,7 @@
 namespace gl {
 
 struct GLDisplayEGL::ObjCStorage {
-  base::scoped_nsprotocol<id<MTLSharedEvent>> metal_shared_event;
+  base::apple::scoped_nsprotocol<id<MTLSharedEvent>> metal_shared_event;
   uint64_t metal_signaled_value = 0;
 };
 

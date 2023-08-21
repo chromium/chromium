@@ -109,14 +109,14 @@ class BASE_EXPORT MachPortRendezvousServer {
   friend struct MachPortRendezvousFuzzer;
 
   struct ClientData {
-    ClientData(ScopedDispatchObject<dispatch_source_t> exit_watcher,
+    ClientData(apple::ScopedDispatchObject<dispatch_source_t> exit_watcher,
                MachPortsForRendezvous ports);
     ClientData(ClientData&&);
     ~ClientData();
 
     // A DISPATCH_SOURCE_TYPE_PROC / DISPATCH_PROC_EXIT dispatch source. When
     // the source is triggered, it calls OnClientExited().
-    ScopedDispatchObject<dispatch_source_t> exit_watcher;
+    apple::ScopedDispatchObject<dispatch_source_t> exit_watcher;
 
     MachPortsForRendezvous ports;
   };
@@ -150,7 +150,7 @@ class BASE_EXPORT MachPortRendezvousServer {
   apple::ScopedMachReceiveRight server_port_;
 
   // Mach message dispatch source for |server_port_|.
-  std::unique_ptr<DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<apple::DispatchSourceMach> dispatch_source_;
 
   Lock lock_;
   // Association of pid-to-ports.

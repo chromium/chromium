@@ -64,7 +64,7 @@ class MachBootstrapAcceptor {
   mojo::NamedPlatformChannel::ServerName server_name_;
   raw_ptr<Delegate, AcrossTasksDanglingUntriaged> delegate_;
   mojo::PlatformChannelServerEndpoint endpoint_;
-  std::unique_ptr<base::DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<base::apple::DispatchSourceMach> dispatch_source_;
 };
 
 }  // namespace apps

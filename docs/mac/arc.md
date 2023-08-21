@@ -186,9 +186,9 @@ not compile with ARC, but that are no longer needed with ARC code. Because there
 are still parts of Chromium that cannot be compiled with ARC, these utilities
 remain, however they should not (or sometimes cannot) be used from ARC:
 
-- `base::scoped_nsobject<>`: This only exists to handle scoping of Objective-C
-  objects in non-ARC code. It cannot be used in ARC code; use `__strong`
-  instead.
+- `scoped_nsobject<>`/`scoped_nsprotocol<>`: These only exists to handle scoping
+  of Objective-C objects in non-ARC code. They cannot be used in ARC code; use
+  `__strong` instead.
 - `ScopedNSAutoreleasePool`: Use `@autoreleasepool` instead, and remove any use
   of `ScopedNSAutoreleasePool` that you encounter, if possible.
   `ScopedNSAutoreleasePool` was rewritten to be able to work in ARC code, but

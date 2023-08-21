@@ -116,9 +116,10 @@ void MachPortRendezvousServer::RegisterPortsForPid(
   DCHECK_LT(ports.size(), kMaximumRendezvousPorts);
   DCHECK(!ports.empty());
 
-  ScopedDispatchObject<dispatch_source_t> exit_watcher(dispatch_source_create(
-      DISPATCH_SOURCE_TYPE_PROC, static_cast<uintptr_t>(pid),
-      DISPATCH_PROC_EXIT, dispatch_source_->Queue()));
+  apple::ScopedDispatchObject<dispatch_source_t> exit_watcher(
+      dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
+                             static_cast<uintptr_t>(pid), DISPATCH_PROC_EXIT,
+                             dispatch_source_->Queue()));
   dispatch_source_set_event_handler(exit_watcher, ^{
     OnClientExited(pid);
   });
@@ -130,7 +131,7 @@ void MachPortRendezvousServer::RegisterPortsForPid(
 }
 
 MachPortRendezvousServer::ClientData::ClientData(
-    ScopedDispatchObject<dispatch_source_t> exit_watcher,
+    apple::ScopedDispatchObject<dispatch_source_t> exit_watcher,
     MachPortsForRendezvous ports)
     : exit_watcher(exit_watcher), ports(ports) {}
 
@@ -147,7 +148,7 @@ MachPortRendezvousServer::MachPortRendezvousServer() {
   BOOTSTRAP_CHECK(kr == KERN_SUCCESS, kr)
       << "bootstrap_check_in " << bootstrap_name;
 
-  dispatch_source_ = std::make_unique<DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<apple::DispatchSourceMach>(
       bootstrap_name.c_str(), server_port_.get(), ^{
         HandleRequest();
       });

@@ -22,7 +22,7 @@
 
 @class NSAutoreleasePool;
 
-namespace base {
+namespace base::apple {
 
 // scoped_nsobject<> is patterned after std::unique_ptr<>, but maintains
 // ownership of an NSObject subclass object.  Style deviations here are solely
@@ -97,6 +97,6 @@ class scoped_nsobject<id> : public scoped_nsprotocol<id> {
   using scoped_nsprotocol<id>::scoped_nsprotocol;
 };
 
-}  // namespace base
+}  // namespace base::apple
 
 #endif  // BASE_APPLE_SCOPED_NSOBJECT_H_

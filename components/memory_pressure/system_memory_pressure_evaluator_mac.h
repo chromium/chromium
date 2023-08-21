@@ -51,7 +51,8 @@ class SystemMemoryPressureEvaluator
   void OnMemoryPressureChanged();
 
   // The dispatch source that generates memory pressure change notifications.
-  base::ScopedDispatchObject<dispatch_source_t> memory_level_event_source_;
+  base::apple::ScopedDispatchObject<dispatch_source_t>
+      memory_level_event_source_;
 
   // Timer that will re-notify with the current vote at regular interval.
   base::RepeatingTimer renotify_current_vote_timer_;

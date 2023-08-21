@@ -82,7 +82,7 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   base::apple::ScopedMachReceiveRight notification_port_;
 
   // Dispatch source for |notification_port_|.
-  std::unique_ptr<base::DispatchSourceMach> notification_source_;
+  std::unique_ptr<base::apple::DispatchSourceMach> notification_source_;
 };
 
 }  // namespace content

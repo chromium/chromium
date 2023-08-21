@@ -91,21 +91,21 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
 
 #if BUILDFLAG(SKIA_USE_METAL)
 
-base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
+base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
     id<MTLDevice> mtl_device,
     IOSurfaceRef io_surface,
     const gfx::Size& size,
     viz::SharedImageFormat format,
     int plane_index) {
   TRACE_EVENT0("gpu", "IOSurfaceImageBackingFactory::CreateMetalTexture");
-  base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
+  base::apple::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
   MTLPixelFormat mtl_pixel_format =
       static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
   if (mtl_pixel_format == MTLPixelFormatInvalid) {
     return mtl_texture;
   }
 
-  base::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
+  base::apple::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
       [MTLTextureDescriptor new]);
   [mtl_tex_desc setTextureType:MTLTextureType2D];
   [mtl_tex_desc
@@ -134,7 +134,7 @@ base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
 }
 
 std::vector<skgpu::graphite::BackendTexture> CreateGraphiteMetalTextures(
-    std::vector<base::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
+    std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures,
     const viz::SharedImageFormat format,
     const gfx::Size& size) {
   int num_planes = format.NumberOfPlanes();
@@ -399,7 +399,7 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
       SharedImageBacking* backing,
       MemoryTypeTracker* tracker,
       skgpu::graphite::Recorder* recorder,
-      std::vector<base::scoped_nsprotocol<id<MTLTexture>>> mtl_textures)
+      std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures)
       : SkiaGraphiteImageRepresentation(manager, backing, tracker),
         recorder_(recorder),
         mtl_textures_(std::move(mtl_textures)) {
@@ -482,7 +482,7 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   }
 
   const raw_ptr<skgpu::graphite::Recorder> recorder_;
-  std::vector<base::scoped_nsprotocol<id<MTLTexture>>> mtl_textures_;
+  std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures_;
   std::vector<sk_sp<SkSurface>> write_surfaces_;
 };
 #endif
@@ -1125,14 +1125,15 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
   } else {
     CHECK_EQ(context_state->gr_context_type(), GrContextType::kGraphiteMetal);
 #if BUILDFLAG(SKIA_USE_METAL)
-    std::vector<base::scoped_nsprotocol<id<MTLTexture>>> mtl_textures;
+    std::vector<base::apple::scoped_nsprotocol<id<MTLTexture>>> mtl_textures;
     mtl_textures.reserve(format().NumberOfPlanes());
 
     for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
       auto plane_size = format().GetPlaneSize(plane, size());
-      base::scoped_nsprotocol<id<MTLTexture>> mtl_texture = CreateMetalTexture(
-          context_state->metal_context_provider()->GetMTLDevice(),
-          io_surface_.get(), plane_size, format(), plane);
+      base::apple::scoped_nsprotocol<id<MTLTexture>> mtl_texture =
+          CreateMetalTexture(
+              context_state->metal_context_provider()->GetMTLDevice(),
+              io_surface_.get(), plane_size, format(), plane);
       if (!mtl_texture) {
         LOG(ERROR) << "Failed to create MTLTexture from IOSurface";
         return nullptr;

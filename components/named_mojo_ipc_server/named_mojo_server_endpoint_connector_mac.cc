@@ -52,7 +52,7 @@ class NamedMojoServerEndpointConnectorMac final
 
   // Note: |server_endpoint_| must outlive |dispatch_source_|.
   mojo::PlatformChannelServerEndpoint server_endpoint_;
-  std::unique_ptr<base::DispatchSourceMach> dispatch_source_;
+  std::unique_ptr<base::apple::DispatchSourceMach> dispatch_source_;
 };
 
 NamedMojoServerEndpointConnectorMac::NamedMojoServerEndpointConnectorMac(
@@ -120,7 +120,7 @@ bool NamedMojoServerEndpointConnectorMac::TryStart() {
   }
 
   server_endpoint_ = std::move(server_endpoint);
-  dispatch_source_ = std::make_unique<base::DispatchSourceMach>(
+  dispatch_source_ = std::make_unique<base::apple::DispatchSourceMach>(
       options_.server_name.c_str(), port(), ^{
         HandleRequest();
       });

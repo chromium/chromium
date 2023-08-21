@@ -11,7 +11,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
+namespace base::apple {
 
 // This class encapsulates a MACH_RECV dispatch source. When this object is
 // destroyed, the source will be cancelled and it will wait for the source
@@ -50,6 +50,6 @@ class BASE_EXPORT DispatchSourceMach {
   std::unique_ptr<Storage> storage_;
 };
 
-}  // namespace base
+}  // namespace base::apple
 
 #endif  // BASE_APPLE_DISPATCH_SOURCE_MACH_H_

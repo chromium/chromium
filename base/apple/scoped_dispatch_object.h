@@ -17,7 +17,7 @@
 #error Do not use this file, or allow it to be included, in Objective-C code.
 #endif
 
-namespace base {
+namespace base::apple {
 
 namespace internal {
 
@@ -37,6 +37,6 @@ template <typename T>
 using ScopedDispatchObject =
     ScopedTypeRef<T, internal::ScopedDispatchObjectTraits<T>>;
 
-}  // namespace base
+}  // namespace base::apple
 
 #endif  // BASE_APPLE_SCOPED_DISPATCH_OBJECT_H_

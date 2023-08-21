@@ -12,7 +12,7 @@
 
 @interface ZombieCxxDestructTest : NSObject
 {
-  base::scoped_nsobject<id> _aRef;
+  base::apple::scoped_nsobject<id> _aRef;
 }
 - (instancetype)initWith:(id)anObject;
 @end
@@ -53,12 +53,12 @@ namespace {
 // NOTE(shess): To test the negative, comment out the |g_objectDestruct()|
 // call in |ZombieDealloc()|.
 TEST(ObjcZombieTest, CxxDestructors) {
-  base::scoped_nsobject<id> anObject([[NSObject alloc] init]);
+  base::apple::scoped_nsobject<id> anObject([[NSObject alloc] init]);
   EXPECT_EQ(1u, [anObject retainCount]);
 
   ASSERT_TRUE(ObjcEvilDoers::ZombieEnable(YES, 100));
 
-  base::scoped_nsobject<ZombieCxxDestructTest> soonInfected(
+  base::apple::scoped_nsobject<ZombieCxxDestructTest> soonInfected(
       [[ZombieCxxDestructTest alloc] initWith:anObject]);
   EXPECT_EQ(2u, [anObject retainCount]);
 
@@ -75,12 +75,12 @@ TEST(ObjcZombieTest, CxxDestructors) {
 // Verify that the associated objects are released when the object is
 // released.
 TEST(ObjcZombieTest, AssociatedObjectsReleased) {
-  base::scoped_nsobject<id> anObject([[NSObject alloc] init]);
+  base::apple::scoped_nsobject<id> anObject([[NSObject alloc] init]);
   EXPECT_EQ(1u, [anObject retainCount]);
 
   ASSERT_TRUE(ObjcEvilDoers::ZombieEnable(YES, 100));
 
-  base::scoped_nsobject<ZombieAssociatedObjectTest> soonInfected(
+  base::apple::scoped_nsobject<ZombieAssociatedObjectTest> soonInfected(
       [[ZombieAssociatedObjectTest alloc] initWithAssociatedObject:anObject]);
   EXPECT_EQ(2u, [anObject retainCount]);
 

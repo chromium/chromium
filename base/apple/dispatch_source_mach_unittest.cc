@@ -13,7 +13,7 @@
 #include "base/test/test_timeouts.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
+namespace base::apple {
 
 class DispatchSourceMachTest : public testing::Test {
  public:
@@ -122,4 +122,4 @@ TEST_F(DispatchSourceMachTest, NoMessagesAfterDestruction) {
   dispatch_release(queue);
 }
 
-}  // namespace base
+}  // namespace base::apple

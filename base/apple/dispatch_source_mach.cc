@@ -6,7 +6,7 @@
 
 #include "base/apple/scoped_dispatch_object.h"
 
-namespace base {
+namespace base::apple {
 
 struct DispatchSourceMach::Storage {
   // The dispatch queue used to service the source_.
@@ -62,4 +62,4 @@ dispatch_queue_t DispatchSourceMach::Queue() const {
   return storage_->queue.get();
 }
 
-}  // namespace base
+}  // namespace base::apple

@@ -221,7 +221,7 @@ class SharedEventAndSignalValue : public BackpressureMetalSharedEvent {
   uint64_t signaled_value() const { return signaled_value_; }
 
  private:
-  base::scoped_nsprotocol<id<MTLSharedEvent>> shared_event_;
+  base::apple::scoped_nsprotocol<id<MTLSharedEvent>> shared_event_;
   uint64_t signaled_value_;
 };
 
