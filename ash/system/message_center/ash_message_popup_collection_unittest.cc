@@ -1456,6 +1456,93 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleAndSlider) {
   }
 }
 
+// b/293660273
+TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForSliderMultiDisplay) {
+  UpdateDisplay("0+0-801x800,0+800-801x800");
+
+  display::Display second_display = GetSecondaryDisplay();
+  AshMessagePopupCollection secondary_popup_collection(
+      Shell::GetRootWindowControllerWithDisplayId(second_display.id())
+          ->shelf());
+  UpdateWorkArea(&secondary_popup_collection, second_display);
+
+  auto* primary_popup_collection = GetPrimaryPopupCollection();
+
+  EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+  EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+
+  // Add a notification popup.
+  AddNotification();
+  auto* primary_popup = GetLastPopUpAdded();
+  auto* secondary_popup =
+      GetLastPopUpAddedForCollection(&secondary_popup_collection);
+  EXPECT_TRUE(primary_popup);
+  EXPECT_TRUE(secondary_popup);
+
+  // Open primary system tray bubble.
+  auto* primary_system_tray = GetPrimaryUnifiedSystemTray();
+
+  primary_system_tray->ShowVolumeSliderBubble();
+  auto* slider_view = primary_system_tray->GetSliderView();
+  ASSERT_TRUE(slider_view);
+
+  if (IsNotifierCollisionEnabled()) {
+    // Popup on primary display should move up, and popup on secondary display
+    // stay the same.
+    EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
+              primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
+                  message_center::kMarginBetweenPopups,
+              slider_view->GetBoundsInScreen().y());
+
+    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
+              secondary_popup_collection.GetBaseline());
+  } else {
+    // The popup on both display should stay the same if the feature is
+    // disabled.
+    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
+              primary_popup_collection->GetBaseline());
+    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
+              secondary_popup_collection.GetBaseline());
+  }
+
+  auto* secondary_system_tray =
+      StatusAreaWidgetTestHelper::GetSecondaryStatusAreaWidget()
+          ->unified_system_tray();
+  secondary_system_tray->ShowVolumeSliderBubble();
+  auto* secondary_slider_view = secondary_system_tray->GetSliderView();
+  ASSERT_TRUE(secondary_slider_view);
+
+  if (IsNotifierCollisionEnabled()) {
+    // Popup on both displays should move up since there are sliders on both
+    // displays.
+    EXPECT_EQ(slider_view->height() + message_center::kMarginBetweenPopups,
+              primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
+                  message_center::kMarginBetweenPopups,
+              slider_view->GetBoundsInScreen().y());
+
+    EXPECT_EQ(
+        secondary_slider_view->height() + message_center::kMarginBetweenPopups,
+        secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom() +
+                  message_center::kMarginBetweenPopups,
+              secondary_slider_view->GetBoundsInScreen().y());
+  } else {
+    // The popup on both display should stay the same if the feature is
+    // disabled.
+    EXPECT_EQ(0, primary_popup_collection->baseline_offset_for_test());
+    EXPECT_EQ(primary_popup->GetBoundsInScreen().bottom(),
+              primary_popup_collection->GetBaseline());
+    EXPECT_EQ(0, secondary_popup_collection.baseline_offset_for_test());
+    EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
+              secondary_popup_collection.GetBaseline());
+  }
+}
+
 // b/291988617
 TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
   // Skip since b/291988617 only happens when both features are enabled.

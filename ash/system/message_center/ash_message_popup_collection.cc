@@ -428,9 +428,9 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnSecondaryBubble(
     bool visible) {
   CHECK(features::IsNotifierCollisionEnabled());
 
-  DCHECK(tray_bubble);
-  DCHECK_EQ(tray_bubble->GetBubbleType(),
-            TrayBubbleView::TrayBubbleType::kSecondaryBubble);
+  CHECK(tray_bubble);
+  CHECK_EQ(tray_bubble->GetBubbleType(),
+           TrayBubbleView::TrayBubbleType::kSecondaryBubble);
 
   auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
   auto* current_open_shelf_pod_bubble =
@@ -440,6 +440,12 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnSecondaryBubble(
   // that bubble, not on top of the secondary bubble, so do nothing here.
   if (current_open_shelf_pod_bubble &&
       current_open_shelf_pod_bubble != tray_bubble) {
+    return;
+  }
+
+  // Only adjust the baseline if the secondary bubble is in the same display.
+  if (display::Screen::GetScreen()->GetDisplayNearestWindow(
+          tray_bubble->parent_window()) != GetCurrentDisplay()) {
     return;
   }
 
