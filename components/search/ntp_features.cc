@@ -171,7 +171,7 @@ BASE_FEATURE(kNtpModulesDragAndDrop,
 // If enabled, the first run experience for Modular NTP Desktop v1 will show.
 BASE_FEATURE(kNtpModulesFirstRunExperience,
              "NtpModulesFirstRunExperience",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, modules will be loaded but not shown. This is useful to determine
 // if a user would have seen modules in order to counterfactually log or
