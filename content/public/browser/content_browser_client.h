@@ -2592,6 +2592,11 @@ class CONTENT_EXPORT ContentBrowserClient {
       const storage::FileSystemURL& url,
       FileSystemAccessPermissionContext::HandleType handle_type,
       GetCloudIdentifiersCallback callback);
+
+  // Checks if the given BrowserContext allows to store the page loaded with
+  // "Cache-control: no-store" header in BFCache.
+  virtual bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+      content::BrowserContext* browser_context);
 };
 
 }  // namespace content

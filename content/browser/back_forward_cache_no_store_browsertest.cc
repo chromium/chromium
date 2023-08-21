@@ -1872,48 +1872,4 @@ IN_PROC_BROWSER_TEST_F(
           BlockListedFeatures()));
 }
 
-class BackForwardCacheBrowserTestHasDisablingSwitch
-    : public BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTestRestoreUnlessHTTPOnlyCookieChange::
-        SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        switches::kDisableBackForwardCacheForCacheControlNoStorePage);
-  }
-};
-
-// Test that a page without cache-control:no-store can not enter
-// BackForwardCache if the `kDisableBackForwardCacheForCacheControlNoStorePage`
-// switch exists.
-IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTestHasDisablingSwitch,
-    PageWithCacheControlNoStoreNotRestoredFromBackForwardCache) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  GURL url_a(embedded_test_server()->GetURL(
-      "a.com", "/set-header?Cache-Control: no-store"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
-
-  // 1) Load the document and specify no-store for the main resource.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImplWrapper rfh_a(current_frame_host());
-
-  // 2) Navigate away. `rfh_a` should not enter BFCache.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-
-  // 3) Verify that the page without CCNS is eligible for BFCache.
-  EXPECT_TRUE(NavigateToURL(shell(), url_c));
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectRestored(FROM_HERE);
-
-  // 4) Go back. `rfh_a` should not be restored from BFCache.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {BlocklistedFeature::kMainResourceHasCacheControlNoStore},
-                    {}, {}, {}, FROM_HERE);
-}
-
 }  // namespace content

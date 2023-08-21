@@ -1154,35 +1154,6 @@ TEST_F(ChromeContentBrowserClientSwitchTest, DataUrlInSvgEnabled) {
   EXPECT_TRUE(result.HasSwitch(blink::switches::kDataUrlInSvgUseEnabled));
 }
 
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       AllowBackForwardCacheForCacheControlNoStorePageDefault) {
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(
-      switches::kDisableBackForwardCacheForCacheControlNoStorePage));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       AllowBackForwardCacheForCacheControlNoStorePageDisabled) {
-  profile()->GetPrefs()->SetBoolean(
-      policy::policy_prefs::
-          kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
-      false);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_TRUE(result.HasSwitch(
-      switches::kDisableBackForwardCacheForCacheControlNoStorePage));
-}
-
-TEST_F(ChromeContentBrowserClientSwitchTest,
-       AllowBackForwardCacheForCacheControlNoStorePageEnabled) {
-  profile()->GetPrefs()->SetBoolean(
-      policy::policy_prefs::
-          kAllowBackForwardCacheForCacheControlNoStorePageEnabled,
-      true);
-  base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
-  EXPECT_FALSE(result.HasSwitch(
-      switches::kDisableBackForwardCacheForCacheControlNoStorePage));
-}
-
 TEST_F(ChromeContentBrowserClientSwitchTest, LegacyTechReportDisabled) {
   base::CommandLine result = FetchCommandLineSwitchesForRendererProcess();
   EXPECT_FALSE(

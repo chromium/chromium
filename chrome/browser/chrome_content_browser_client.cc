@@ -2744,16 +2744,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
         command_line->AppendSwitch(blink::switches::kDataUrlInSvgUseEnabled);
       }
 
-      if (prefs->HasPrefPath(
-              policy::policy_prefs::
-                  kAllowBackForwardCacheForCacheControlNoStorePageEnabled) &&
-          !prefs->GetBoolean(
-              policy::policy_prefs::
-                  kAllowBackForwardCacheForCacheControlNoStorePageEnabled)) {
-        command_line->AppendSwitch(
-            switches::kDisableBackForwardCacheForCacheControlNoStorePage);
-      }
-
       // The policy is "enabled" to follow policy naming convention but the
       // switch is "disable" because we want the default to have no switch since
       // this is the default case.
@@ -7971,4 +7961,22 @@ void ChromeContentBrowserClient::GetCloudIdentifiers(
   return ContentBrowserClient::GetCloudIdentifiers(url, handle_type,
                                                    std::move(callback));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+}
+
+bool ChromeContentBrowserClient::
+    ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+        content::BrowserContext* browser_context) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const PrefService::Preference* pref =
+      Profile::FromBrowserContext(browser_context)
+          ->GetPrefs()
+          ->FindPreference(
+              policy::policy_prefs::
+                  kAllowBackForwardCacheForCacheControlNoStorePageEnabled);
+  if (pref && pref->IsManaged() && pref->GetValue()->is_bool()) {
+    return pref->GetValue()->GetBool();
+  }
+  // If the pref is not found or not managed, BFCaching CCNS page should be
+  // enabled by default.
+  return true;
 }

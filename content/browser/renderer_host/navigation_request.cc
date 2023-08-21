@@ -2675,7 +2675,10 @@ bool NavigationRequest::ShouldAddCookieChangeListener() {
   // (4) the navigation is a primary main frame navigation, as the cookie
   // change information will only be used in the inactive document control
   // logic.
-  return BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() &&
+  return frame_tree_node_->navigator()
+             .controller()
+             .GetBackForwardCache()
+             .should_allow_storing_pages_with_cache_control_no_store() &&
          !IsPageActivation() && !IsSameDocument() && IsInPrimaryMainFrame() &&
          common_params_->url.SchemeIsHTTPOrHTTPS();
 }

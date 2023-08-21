@@ -196,7 +196,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
     std::unique_ptr<StoredPage> stored_page_;
   };
 
-  BackForwardCacheImpl();
+  explicit BackForwardCacheImpl(BrowserContext* browser_context);
 
   BackForwardCacheImpl(const BackForwardCacheImpl&) = delete;
   BackForwardCacheImpl& operator=(const BackForwardCacheImpl&) = delete;
@@ -433,9 +433,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
       RenderFrameHostImpl& rfh,
       BackForwardCacheCanStoreDocumentResult& eviction_reason);
 
-  // Returns true if the flag is on for pages with cache-control:no-store to
-  // get restored from back/forward cache unless cookies change.
-  static bool AllowStoringPagesWithCacheControlNoStore();
+  bool should_allow_storing_pages_with_cache_control_no_store() {
+    return should_allow_storing_pages_with_cache_control_no_store_;
+  }
 
  private:
   // Destroys all evicted frames in the BackForwardCache.
@@ -521,7 +521,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // RenderViewHost in the Entry and so will be valid.
   std::multiset<RenderProcessHost*> observed_processes_;
 
-  // Only used in tests. Whether the BackforwardCached has been disabled for
+  // Whether the BackForwardCache has been enabled for pages loaded with
+  // "Cache-Control: no-store" header.
+  bool should_allow_storing_pages_with_cache_control_no_store_;
+
+  // Only used in tests. Whether the BackforwardCache has been disabled for
   // testing.
   bool is_disabled_for_testing_ = false;
 

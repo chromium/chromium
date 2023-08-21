@@ -925,6 +925,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::FileSystemAccessPermissionContext::HandleType handle_type,
       GetCloudIdentifiersCallback callback) override;
 
+  bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+      content::BrowserContext* browser_context) override;
+
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
   static bool HandleWebUIReverse(GURL* url,

@@ -580,11 +580,20 @@ BackForwardCacheTestDelegate::~BackForwardCacheTestDelegate() {
   g_bfcache_disabled_test_observer = nullptr;
 }
 
-BackForwardCacheImpl::BackForwardCacheImpl()
+BackForwardCacheImpl::BackForwardCacheImpl(BrowserContext* browser_context)
     : allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
       blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
-      weak_factory_(this) {}
+      weak_factory_(this) {
+  should_allow_storing_pages_with_cache_control_no_store_ =
+      browser_context &&
+      GetContentClient()
+          ->browser()
+          ->ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+              browser_context) &&
+      GetCacheControlNoStoreLevel() >
+          CacheControlNoStoreExperimentLevel::kDoNotStore;
+}
 
 BackForwardCacheImpl::~BackForwardCacheImpl() {
   Shutdown();
@@ -679,8 +688,9 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
     BackForwardCacheCanStoreDocumentResult& result,
     RenderFrameHostImpl* render_frame_host) {
   // If the feature is disabled, do nothing.
-  if (!AllowStoringPagesWithCacheControlNoStore())
+  if (!should_allow_storing_pages_with_cache_control_no_store()) {
     return;
+  }
   // If the page didn't have cache-control: no-store, do nothing.
   if (!render_frame_host->LoadedWithCacheControlNoStoreHeader()) {
     return;
@@ -906,7 +916,7 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // change the HTTP headers, so if it's not possible to cache this page now due
   // to this, it's impossible to cache this page later.
   if (rfh->LoadedWithCacheControlNoStoreHeader()) {
-    if (!AllowStoringPagesWithCacheControlNoStore()) {
+    if (!should_allow_storing_pages_with_cache_control_no_store()) {
       // Block pages with cache-control: no-store when
       // |should_cache_control_no_store_enter| flag is false.
       MarkNoWithSingleFeature(
@@ -1542,18 +1552,6 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   for (const auto& rvh : bfcache_entry.render_view_hosts()) {
     rvh->PrepareToLeaveBackForwardCache(cb);
   }
-}
-
-// static
-bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
-  if (base::CommandLine::InitializedForCurrentProcess() &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableBackForwardCacheForCacheControlNoStorePage)) {
-    return false;
-  }
-
-  return GetCacheControlNoStoreLevel() >
-         CacheControlNoStoreExperimentLevel::kDoNotStore;
 }
 
 bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(

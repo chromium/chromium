@@ -1572,4 +1572,10 @@ void ContentBrowserClient::GetCloudIdentifiers(
   return;
 }
 
+bool ContentBrowserClient::
+    ShouldAllowBackForwardCacheForCacheControlNoStorePage(
+        content::BrowserContext* browser_context) {
+  return true;
+}
+
 }  // namespace content
