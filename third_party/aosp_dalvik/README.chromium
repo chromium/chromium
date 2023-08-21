@@ -1,6 +1,6 @@
 Name: platform/dalvik dx
 Short Name: dalvik-dx
-URL: 
+URL: https://android.googlesource.com/platform/dalvik/+/main/dx/README.txt
 Version: 13.0.0_r24
 License: Apache License Version 2.0
 License File: LICENSE
