@@ -3199,10 +3199,6 @@ const char kSyncAutofillWalletUsageDataName[] =
 const char kSyncAutofillWalletUsageDataDescription[] =
     "When enabled, allows syncing of the autofill wallet usage data type.";
 
-const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
-const char kSyncEnableHistoryDataTypeDescription[] =
-    "Enables the History sync data type instead of TypedURLs";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

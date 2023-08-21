@@ -901,10 +901,6 @@ extern const char kSyncSegmentsDataDescription[];
 extern const char kSynthesizedRestoreSessionName[];
 extern const char kSynthesizedRestoreSessionDescription[];
 
-// Title and description for the flag to enable the Sync History data type.
-extern const char kSyncEnableHistoryDataTypeName[];
-extern const char kSyncEnableHistoryDataTypeDescription[];
-
 // Title and description for the flag to enable TFLite for language detection.
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];

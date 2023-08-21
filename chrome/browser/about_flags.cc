@@ -9895,11 +9895,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kEnableWebHidOnExtensionServiceWorker)},
 #endif
 
-    {"enable-sync-history-datatype",
-     flag_descriptions::kSyncEnableHistoryDataTypeName,
-     flag_descriptions::kSyncEnableHistoryDataTypeDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncEnableHistoryDataType)},
-
     {"autofill-enable-remade-downstream-metrics",
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsDescription,

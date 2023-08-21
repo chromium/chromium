@@ -1024,10 +1024,6 @@ const char kSynthesizedRestoreSessionDescription[] =
     "Enable instant session restoration by synthesizing WKWebView session "
     "restoration data (iOS15 only).";
 
-const char kSyncEnableHistoryDataTypeName[] = "Enable History sync data type";
-const char kSyncEnableHistoryDataTypeDescription[] =
-    "Enables the History sync data type instead of TypedURLs";
-
 const char kStartSurfaceName[] = "Start Surface";
 const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
