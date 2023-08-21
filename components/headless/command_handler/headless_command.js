@@ -272,11 +272,6 @@ async function handleCommands(dp, commands) {
 //
 // Target.exposeDevToolsProtocol() communication functions.
 //
-window.cdp.onmessage = json => {
-  // console.log('[recv] ' + json);
-  cdpClient.dispatchMessage(json);
-};
-
 function sendDevToolsMessage(json) {
   // console.log('[send] ' + json);
   window.cdp.send(json);
@@ -286,6 +281,11 @@ function sendDevToolsMessage(json) {
 // This is called from the host.
 //
 async function executeCommands(commands) {
+  window.cdp.onmessage = json => {
+    // console.log('[recv] ' + json);
+    cdpClient.dispatchMessage(json);
+  };
+
   const browserSession = new CDPSession();
   const targetPage = await TargetPage.create(browserSession);
   const dp = targetPage.session().protocol();

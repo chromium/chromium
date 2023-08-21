@@ -61,8 +61,6 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
       scoped_refptr<base::SequencedTaskRunner> io_task_runner);
   ~HeadlessCommandHandler() override;
 
-  void ExecuteCommands();
-
   // content::WebContentsObserver implementation:
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
