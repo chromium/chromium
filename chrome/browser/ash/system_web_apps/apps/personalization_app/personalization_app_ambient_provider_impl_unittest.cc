@@ -473,6 +473,39 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
+       OnAmbientModeEnabled_ShouldCancelPendingUpdateSettingsRequest) {
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_TRUE(pref_service);
+  UpdateSettings();
+  UpdateSettings();
+  // The second call creates pending updates for the provider.
+  EXPECT_TRUE(HasPendingUpdatesAtProvider());
+
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
+
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       OnAmbientModeEnabled_ShouldCancelDelayedUpdateSettingsRequest) {
+  PrefService* pref_service = profile()->GetPrefs();
+  EXPECT_TRUE(pref_service);
+  UpdateSettings();
+  // A failed response to UpdateSettings creates a new scheduled request to
+  // UpdateSettings.
+  ReplyUpdateSettings(/*success=*/false);
+
+  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
+
+  base::TimeDelta delay1 = GetUpdateSettingsDelay();
+  FastForwardBy(delay1 * 1.5);
+  // Since ambient mode has been disabled, the pending update has been cleared.
+  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
+  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest,
        ShouldCallOnAnimationThemeChanged) {
   // When ambient mode is first enabled during test set up, the video theme
   // should become active by default since the corresponding experiment flags

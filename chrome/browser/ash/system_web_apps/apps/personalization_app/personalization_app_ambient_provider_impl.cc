@@ -365,6 +365,13 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
     }
   }
   BroadcastAmbientModeEnabledStatus(enabled);
+  if (!enabled) {
+    // UpdateSettings assumes that ambient is enabled. Since ambient is now
+    // disabled, cancel any requests to update settings.
+    write_weak_factory_.InvalidateWeakPtrs();
+    has_pending_updates_for_backend_ = false;
+    is_updating_backend_ = false;
+  }
 }
 
 void PersonalizationAppAmbientProviderImpl::BroadcastAmbientModeEnabledStatus(
