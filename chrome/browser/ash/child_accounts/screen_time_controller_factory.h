@@ -36,7 +36,7 @@ class ScreenTimeControllerFactory : public ProfileKeyedServiceFactory {
   ~ScreenTimeControllerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
