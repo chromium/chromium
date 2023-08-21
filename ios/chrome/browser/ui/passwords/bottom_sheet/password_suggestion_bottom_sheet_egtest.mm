@@ -332,9 +332,8 @@ id<GREYMatcher> DeleteConfirmationButton() {
 
   [[EarlGrey
       selectElementWithMatcher:
-          grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                         l10n_util::GetNSString(
-                             IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS)),
+          grey_allOf(chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                         IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS),
                      grey_interactable(), nullptr)] performAction:grey_tap()];
 
   [ChromeEarlGreyUI waitForAppToIdle];
