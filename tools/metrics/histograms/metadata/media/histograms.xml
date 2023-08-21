@@ -1912,6 +1912,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Controls.OverlayCastButtonIsCovered" enum="Boolean"
+    expires_after="2023-11-12">
+  <owner>takumif@chromium.org</owner>
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records how often the overlay cast button is hidden because it is covered by
+    another html element. Emitted when the overlay cast button is tried to be
+    shown.
+  </summary>
+</histogram>
+
 <histogram name="Media.Controls.PlaybackSpeed"
     enum="MediaControlsPlaybackSpeed" expires_after="2023-11-12">
   <owner>steimel@chromium.org</owner>

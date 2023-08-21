@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_cast_button_element.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -52,8 +53,10 @@ void MediaControlCastButtonElement::TryShowOverlay() {
   SetIsWanted(true);
   if (ElementFromCenter(*this) != &MediaElement()) {
     SetIsWanted(false);
-    return;
   }
+
+  base::UmaHistogramBoolean("Media.Controls.OverlayCastButtonIsCovered",
+                            !IsWanted());
 }
 
 void MediaControlCastButtonElement::UpdateDisplayType() {
