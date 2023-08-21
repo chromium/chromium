@@ -1795,7 +1795,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.DefaultSearchEngine.SearchTermExtractorCorrectness"
-    enum="Boolean" expires_after="2023-08-13">
+    enum="Boolean" expires_after="2023-10-31">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderLoadingFailureError{PrerenderTriggerType}"
-    enum="NetErrorCodes" expires_after="2023-08-27">
+    enum="NetErrorCodes" expires_after="2023-10-31">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1978,7 +1978,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.Search.FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration"
-    units="ms" expires_after="2023-08-20">
+    units="ms" expires_after="2023-10-31">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
