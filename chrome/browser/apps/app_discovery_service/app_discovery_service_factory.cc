@@ -41,9 +41,11 @@ AppDiscoveryServiceFactory::AppDiscoveryServiceFactory()
 
 AppDiscoveryServiceFactory::~AppDiscoveryServiceFactory() = default;
 
-KeyedService* AppDiscoveryServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppDiscoveryServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AppDiscoveryService(Profile::FromBrowserContext(context));
+  return std::make_unique<AppDiscoveryService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace apps
