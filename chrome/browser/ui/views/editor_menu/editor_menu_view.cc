@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
+#include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -46,6 +47,9 @@ constexpr int kChipsContainerVerticalSpacingDip = 16;
 constexpr gfx::Insets kChipsMargin =
     gfx::Insets::TLBR(0, 8, kChipsContainerVerticalSpacingDip, 0);
 constexpr gfx::Insets kChipsContainerInsets = gfx::Insets::TLBR(0, 8, 0, 8);
+
+constexpr gfx::Insets kTextfieldContainerInsets =
+    gfx::Insets::TLBR(0, 16, 10, 16);
 
 // Spacing between this view and the anchor view (context menu).
 constexpr int kMarginDip = 8;
@@ -121,6 +125,7 @@ void EditorMenuView::InitLayout() {
 
   AddTitleContainer();
   AddChipsContainer();
+  AddTextfield();
 }
 
 void EditorMenuView::AddTitleContainer() {
@@ -179,6 +184,15 @@ void EditorMenuView::AddChipsContainer() {
     }
     chips_.emplace_back(row->AddChildView(std::move(chip)));
   }
+}
+
+void EditorMenuView::AddTextfield() {
+  textfield_ = AddChildView(std::make_unique<EditorMenuTextfieldView>());
+  textfield_->SetProperty(views::kMarginsKey, kTextfieldContainerInsets);
+
+  int width = kContainerMinWidthDip - kTextfieldContainerInsets.width();
+  int height = textfield_->GetHeightForWidth(width);
+  textfield_->SetPreferredSize(gfx::Size(width, height));
 }
 
 BEGIN_METADATA(EditorMenuView, views::View)

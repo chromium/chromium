@@ -18,6 +18,7 @@ class FlexLayoutView;
 namespace chromeos::editor_menu {
 
 class EditorMenuChipView;
+class EditorMenuTextfieldView;
 
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public views::View {
@@ -43,14 +44,16 @@ class EditorMenuView : public views::View {
   void InitLayout();
   void AddTitleContainer();
   void AddChipsContainer();
+  void AddTextfield();
 
   // Containing title, badge, and icons.
   raw_ptr<views::View> title_container_ = nullptr;
 
   // Containing chips.
   raw_ptr<views::FlexLayoutView> chips_container_ = nullptr;
-
   std::vector<raw_ptr<EditorMenuChipView>> chips_;
+
+  raw_ptr<EditorMenuTextfieldView> textfield_ = nullptr;
 };
 
 }  // namespace chromeos::editor_menu
