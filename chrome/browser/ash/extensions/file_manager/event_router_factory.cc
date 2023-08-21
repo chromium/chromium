@@ -54,9 +54,10 @@ EventRouterFactory::EventRouterFactory()
 
 EventRouterFactory::~EventRouterFactory() = default;
 
-KeyedService* EventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+EventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new EventRouter(Profile::FromBrowserContext(context));
+  return std::make_unique<EventRouter>(Profile::FromBrowserContext(context));
 }
 
 bool EventRouterFactory::ServiceIsCreatedWithBrowserContext() const {
