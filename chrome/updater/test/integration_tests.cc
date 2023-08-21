@@ -348,6 +348,10 @@ class IntegrationTest : public ::testing::Test {
 
   void DeleteUpdaterDirectory() { test_commands_->DeleteUpdaterDirectory(); }
 
+  void DeleteActiveUpdaterExecutable() {
+    test_commands_->DeleteActiveUpdaterExecutable();
+  }
+
   void DeleteFile(const base::FilePath& path) {
     test_commands_->DeleteFile(path);
   }
@@ -515,42 +519,51 @@ TEST_F(IntegrationTest, Install) {
 // same version. It should have no notable effect.
 TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(Install());
-  ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
+
+  ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 TEST_F(IntegrationTest, MAYBE_OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   // A new version hands off installation to the old version, and doesn't
   // change the active version of the updater.
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionNotActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
 TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdaterLowerVersion());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(DeleteUpdaterDirectory());
+  ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
 
   // Since the old version is not working, the new version should install and
   // become active.
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 
@@ -564,20 +577,10 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBroken) {
 
 TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
   ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  absl::optional<base::FilePath> exe_path =
-      GetUpdaterExecutablePath(GetTestScope());
-  ASSERT_TRUE(exe_path.has_value());
-  ASSERT_NO_FATAL_FAILURE(DeleteFile(*exe_path));
-#if BUILDFLAG(IS_LINUX)
-  // On Linux, a qualified service makes a full copy of itself, so we have to
-  // delete the copy that systemd uses too.
-  absl::optional<base::FilePath> launcher_path =
-      GetUpdateServiceLauncherPath(GetTestScope());
-  ASSERT_TRUE(launcher_path.has_value());
-  ASSERT_NO_FATAL_FAILURE(DeleteFile(*launcher_path));
-#endif  // BUILDFLAG(IS_LINUX)
+  ASSERT_NO_FATAL_FAILURE(DeleteActiveUpdaterExecutable());
 
   // Since the existing version is now not working, it should reinstall. This
   // will ultimately result in no visible change to the prefs file since the
@@ -586,6 +589,7 @@ TEST_F(IntegrationTest, MAYBE_OverinstallBrokenSameVersion) {
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

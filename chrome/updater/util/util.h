@@ -83,6 +83,12 @@ absl::optional<base::FilePath> GetUpdaterAppBundlePath(UpdaterScope scope);
 // For system installations:
 // /Library/Google/GoogleUpdater/88.0.4293.0/GoogleUpdater.app/Contents/
 //    MacOS/GoogleUpdater
+absl::optional<base::FilePath> GetUpdaterExecutablePath(
+    UpdaterScope scope,
+    const base::Version& version);
+
+// Simpler form of GetUpdaterExecutablePath for the currently running version
+// of the updater.
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope);
 
 // Returns a relative path to the executable from GetVersionedInstallDirectory.

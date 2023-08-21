@@ -268,6 +268,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("delete_updater_directory", {});
   }
 
+  void DeleteActiveUpdaterExecutable() const override {
+    RunCommand("delete_active_updater_executable", {});
+  }
+
   void DeleteFile(const base::FilePath& path) const override {
     RunCommand("delete_file", {Param("path", path.MaybeAsASCII())});
   }

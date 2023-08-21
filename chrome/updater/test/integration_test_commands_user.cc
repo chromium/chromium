@@ -238,6 +238,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::DeleteUpdaterDirectory(updater_scope_);
   }
 
+  void DeleteActiveUpdaterExecutable() const override {
+    updater::test::DeleteActiveUpdaterExecutable(updater_scope_);
+  }
+
   void DeleteFile(const base::FilePath& path) const override {
     updater::test::DeleteFile(updater_scope_, path);
   }

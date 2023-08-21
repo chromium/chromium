@@ -152,6 +152,13 @@ void DeleteFile(UpdaterScope scope, const base::FilePath& path);
 // a common mode of breaking the updater, so we can test how it recovers.
 void DeleteUpdaterDirectory(UpdaterScope scope);
 
+// DeleteActiveUpdaterExecutable is a more narrowly-targeted tool for simulating
+// a broken updater. Finds the executable for the active updater (including
+// any copy owned by systemd), according to the active version on the global
+// prefs file, and deletes it. Does not clean up service registrations, updater
+// configuration, app registration, etc.
+void DeleteActiveUpdaterExecutable(UpdaterScope scope);
+
 // Runs the command and waits for it to exit or time out.
 void Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code);
 

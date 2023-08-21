@@ -104,6 +104,7 @@ class IntegrationTestCommands
   virtual void GetAppStates(
       const base::Value::Dict& expected_app_states) const = 0;
   virtual void DeleteUpdaterDirectory() const = 0;
+  virtual void DeleteActiveUpdaterExecutable() const = 0;
   virtual void DeleteFile(const base::FilePath& path) const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;

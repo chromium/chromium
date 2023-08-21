@@ -349,6 +349,8 @@ void AppTestHelper::FirstTaskRun() {
      WithSwitch("expected_app_states", WithSystemScope(Wrap(&GetAppStates)))},
     {"delete_updater_directory",
      WithSystemScope(Wrap(&DeleteUpdaterDirectory))},
+    {"delete_active_updater_executable",
+     WithSystemScope(Wrap(&DeleteActiveUpdaterExecutable))},
     {"delete_file", (WithSwitch("path", WithSystemScope(Wrap(&DeleteFile))))},
     {"install_app",
      WithSwitch("version",

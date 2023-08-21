@@ -78,6 +78,7 @@
 #include "chrome/updater/win/win_constants.h"
 #elif BUILDFLAG(IS_LINUX)
 #include "chrome/updater/util/linux_util.h"
+#include "chrome/updater/util/posix_util.h"
 #endif
 
 namespace updater::test {
@@ -621,8 +622,36 @@ void DeleteUpdaterDirectory(UpdaterScope scope) {
   ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
 }
 
+void DeleteActiveUpdaterExecutable(UpdaterScope scope) {
+  base::Version active_version;
+  {
+    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+    ASSERT_TRUE(global_prefs) << "No global prefs.";
+    active_version = base::Version(global_prefs->GetActiveVersion());
+    ASSERT_TRUE(active_version.IsValid()) << "No active updater.";
+  }
+
+  absl::optional<base::FilePath> exe_path =
+      GetUpdaterExecutablePath(scope, active_version);
+  ASSERT_TRUE(exe_path.has_value())
+      << "No path for active updater. Version: " << active_version;
+  DeleteFile(*exe_path);
+#if BUILDFLAG(IS_LINUX)
+  // On Linux, a qualified service makes a full copy of itself, so we have to
+  // delete the copy that systemd uses too.
+  absl::optional<base::FilePath> launcher_path =
+      GetUpdateServiceLauncherPath(GetTestScope());
+  ASSERT_TRUE(launcher_path.has_value()) << "No launcher path.";
+  DeleteFile(*launcher_path);
+#endif  // BUILDFLAG(IS_LINUX)
+
+  // The broken updater should still be active. Tests using this method will
+  // probably not test the scenario they expect to test if it's not.
+  ExpectVersionActive(scope, active_version.GetString());
+}
+
 void DeleteFile(UpdaterScope /*scope*/, const base::FilePath& path) {
-  ASSERT_TRUE(base::DeleteFile(path));
+  ASSERT_TRUE(base::DeleteFile(path)) << "Can't delete " << path;
 }
 
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope) {
