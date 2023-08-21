@@ -230,14 +230,25 @@ void GeolocationController::OnGeoposition(const Geoposition& position,
   StoreCachedGeoposition();
 
   if (previous_sunset && previous_sunrise) {
-    // If the change in geoposition results in an hour or more in either sunset
-    // or sunrise times indicates of a possible timezone change.
-    constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
-    possible_change_in_timezone =
-        (GetSunsetTime() - previous_sunset.value()).magnitude() >
-            kOneHourDuration ||
-        (GetSunriseTime() - previous_sunrise.value()).magnitude() >
-            kOneHourDuration;
+    const base::Time new_sunset = GetSunsetTime();
+    const base::Time new_sunrise = GetSunriseTime();
+    if (previous_sunset.value() == kNoSunRiseSet ||
+        previous_sunrise.value() == kNoSunRiseSet ||
+        new_sunrise == kNoSunRiseSet || new_sunset == kNoSunRiseSet) {
+      // Any time an area with no sunrise|set is involved, consider it a
+      // *possible* change. Sunrise|set timestamps for these areas are all the
+      // same, so there's no way to tell if it implies a timezone change.
+      possible_change_in_timezone = true;
+    } else {
+      // If the change in geoposition results in an hour or more in either
+      // sunset or sunrise times indicates of a possible timezone change.
+      constexpr base::TimeDelta kOneHourDuration = base::Hours(1);
+      possible_change_in_timezone =
+          (GetSunsetTime() - previous_sunset.value()).magnitude() >
+              kOneHourDuration ||
+          (GetSunriseTime() - previous_sunrise.value()).magnitude() >
+              kOneHourDuration;
+    }
   }
 
   NotifyGeopositionChange(possible_change_in_timezone);

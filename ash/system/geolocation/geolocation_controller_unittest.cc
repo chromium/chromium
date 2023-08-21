@@ -47,6 +47,20 @@ constexpr double kTestLongitude2 = -100.5;
 constexpr base::StringPiece kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
 constexpr base::StringPiece kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
 
+constexpr SimpleGeoposition kSanJoseGeoposition = {37.335480, -121.893028};
+
+constexpr SimpleGeoposition kSanFranciscoGeoposition = {37.773972, -122.431297};
+
+constexpr SimpleGeoposition kNewYorkGeoposition = {40.730610, -73.935242};
+
+// Kiruna, Sweden
+constexpr SimpleGeoposition kNoDarknessGeoposition = {67.855800, 20.225282};
+
+// Belgrano II Base, Antarctica
+constexpr SimpleGeoposition kNoDaylightGeoposition = {-77.87361, -34.62745};
+
+constexpr char kNoDaylightDarknessTimestamp[] = "07 Jun 2023 20:30:00.000";
+
 constexpr int kDefaultSunsetTimeOffsetMinutes = 18 * 60;
 constexpr int kDefaultSunriseTimeOffsetMinutes = 6 * 60;
 
@@ -418,16 +432,14 @@ TEST_F(GeolocationControllerTest, GetSunRiseSet) {
 // Tests that when there is a geoposition with 24 hours of daylight or darkness,
 // sunrise and sunset times honor the API.
 TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
-  static constexpr base::StringPiece kNow = "07 Jun 2023 20:30:00.000";
-  test_clock()->SetNow(ToUTCTime(kNow));
+  test_clock()->SetNow(ToUTCTime(kNoDaylightDarknessTimestamp));
 
-  // 24 hours of daylight (Kiruna, Sweden)
   Geoposition position;
-  position.latitude = 67.855800;
-  position.longitude = 20.225282;
+  position.latitude = kNoDarknessGeoposition.latitude;
+  position.longitude = kNoDarknessGeoposition.longitude;
   position.status = Geoposition::STATUS_OK;
   position.accuracy = 10;
-  position.timestamp = ToUTCTime(kNow);
+  position.timestamp = test_clock()->Now();
 
   // Test that after sending the new position, sunrise and sunset time are
   // updated correctly.
@@ -438,9 +450,8 @@ TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
   EXPECT_EQ(controller()->GetSunriseTime(),
             GeolocationController::kNoSunRiseSet);
 
-  // 24 hours of darkness (Belgrano II Base, Antarctica)
-  position.latitude = -77.87361f;
-  position.longitude = -34.62745;
+  position.latitude = kNoDaylightGeoposition.latitude;
+  position.longitude = kNoDaylightGeoposition.longitude;
 
   // Test that after sending the new position, sunrise and sunset time are
   // updated correctly.
@@ -575,6 +586,78 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
                                 prefs::kDeviceGeolocationCachedLatitude));
   EXPECT_EQ(kTestLongitude2, user2_pref_service()->GetDouble(
                                  prefs::kDeviceGeolocationCachedLongitude));
+}
+
+// Tests that the `possible_change_in_timezone` is correct.
+TEST_F(GeolocationControllerTest, ObserverPossibleChangeInTimezone) {
+  test_clock()->SetNow(ToUTCTime(kTestNow));
+
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+
+  Geoposition position;
+  position.latitude = kSanJoseGeoposition.latitude;
+  position.longitude = kSanJoseGeoposition.longitude;
+  position.status = Geoposition::STATUS_OK;
+  position.accuracy = 10;
+  position.timestamp = test_clock()->Now();
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+  // First geoposition should always count as a possible change.
+  ASSERT_EQ(observer.position_received_num(), 1);
+  EXPECT_TRUE(observer.possible_change_in_timezone());
+
+  position.latitude = kSanFranciscoGeoposition.latitude;
+  position.longitude = kSanFranciscoGeoposition.longitude;
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+  ASSERT_EQ(observer.position_received_num(), 2);
+  EXPECT_FALSE(observer.possible_change_in_timezone());
+
+  position.latitude = kNewYorkGeoposition.latitude;
+  position.longitude = kNewYorkGeoposition.longitude;
+  SetServerPosition(position);
+  FireTimerToFetchGeoposition();
+  ASSERT_EQ(observer.position_received_num(), 3);
+  EXPECT_TRUE(observer.possible_change_in_timezone());
+
+  controller()->RemoveObserver(&observer);
+}
+
+// Tests that the `possible_change_in_timezone` is correct when areas with no
+// daylight/darkness are involved.
+TEST_F(GeolocationControllerTest,
+       ObserverPossibleChangeInTimezoneNoDaylightDarkness) {
+  test_clock()->SetNow(ToUTCTime(kNoDaylightDarknessTimestamp));
+
+  Geoposition position;
+  position.status = Geoposition::STATUS_OK;
+  position.accuracy = 10;
+  position.timestamp = test_clock()->Now();
+
+  GeolocationControllerObserver observer;
+  controller()->AddObserver(&observer);
+  int expected_position_received_num = 1;
+  const auto test_new_geoposition = [this, &position,
+                                     &expected_position_received_num,
+                                     &observer](
+                                        const SimpleGeoposition& new_lat_long) {
+    position.latitude = new_lat_long.latitude;
+    position.longitude = new_lat_long.longitude;
+    SetServerPosition(position);
+    FireTimerToFetchGeoposition();
+    ASSERT_EQ(observer.position_received_num(), expected_position_received_num);
+    EXPECT_TRUE(observer.possible_change_in_timezone());
+    expected_position_received_num++;
+  };
+
+  test_new_geoposition(kSanJoseGeoposition);
+  test_new_geoposition(kNoDarknessGeoposition);
+  test_new_geoposition(kSanFranciscoGeoposition);
+  test_new_geoposition(kNoDaylightGeoposition);
+  test_new_geoposition(kNoDarknessGeoposition);
+
+  controller()->RemoveObserver(&observer);
 }
 
 }  // namespace
