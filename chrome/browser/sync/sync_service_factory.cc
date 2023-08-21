@@ -73,6 +73,7 @@
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -282,6 +283,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(web_app::WebAppProviderFactory::GetInstance());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  DependsOn(app_list::AppListSyncableServiceFactory::GetInstance());
   DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
   DependsOn(
       ash::printing::oauth2::AuthorizationZonesManagerFactory::GetInstance());
