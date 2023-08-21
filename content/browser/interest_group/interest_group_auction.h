@@ -1103,6 +1103,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // AuctionWorkletManager.
   bool seller_worklet_received_ = false;
 
+  // True once we enter the bidding and scoring phase.
+  bool started_bidding_and_scoring_phase_ = false;
+
   // Number of things that are pending that are needed to score everything.
   // This includes bidders that are still attempting to generate bids ---
   // both BuyerHelpers and component auctions. BuyerHelpers may generate

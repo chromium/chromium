@@ -2030,6 +2030,9 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
   DCHECK(!non_kanon_enforced_auction_leader_.top_bid);
   DCHECK(!kanon_enforced_auction_leader_.top_bid);
   DCHECK_EQ(pending_component_seller_worklet_requests_, 0u);
+  DCHECK(!started_bidding_and_scoring_phase_);
+
+  started_bidding_and_scoring_phase_ = true;
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "bidding_and_scoring_phase",
                                     *trace_id_);
@@ -2355,6 +2358,15 @@ void InterestGroupAuction::NotifyConfigPromisesResolved() {
   DCHECK(!config_promises_resolved_);
   DCHECK_EQ(0, config_->NumPromises());
   config_promises_resolved_ = true;
+
+  // If we haven't started the bidding and scoring phase, we will just handle
+  // this information at its start; setting `config_promises_resolved_` is
+  // enough both for us and the BuyerHelper.
+  if (!started_bidding_and_scoring_phase_) {
+    DCHECK(unscored_bids_.empty());
+    return;
+  }
+
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->NotifyConfigPromisesResolved();
   }
