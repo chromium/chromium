@@ -27,3 +27,9 @@ IN_PROC_BROWSER_TEST_F(DownloadsTest, Toolbar) {
 IN_PROC_BROWSER_TEST_F(DownloadsTest, SearchService) {
   RunTest("downloads/search_service_test.js", "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(DownloadsTest, NonExistentUrl) {
+  // Invoking the test from a non existent URL chrome://downloads/a/b/.
+  set_test_loader_host(std::string(chrome::kChromeUIDownloadsHost) + "/a/b");
+  RunTestWithoutTestLoader("downloads/non_existent_url_test.js", "mocha.run()");
+}

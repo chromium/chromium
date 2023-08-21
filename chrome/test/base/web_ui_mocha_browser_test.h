@@ -20,15 +20,30 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
  protected:
   WebUIMochaBrowserTest();
 
-  // Loads a file holding Mocha tests, via test_loader.html, and triggers the
-  // Mocha tests by executing `trigger`, which is usually just "mocha.run();".
-  virtual void RunTest(const std::string& file, const std::string& trigger);
-
-  // Same as RunTest above, but also focuses the web contents before running the
-  // test, if `requires_focus` is true.
+  // Runs the specified test.
+  // - file: The module file holding the Mocha test.
+  // - trigger: A JS string used to trigger the tests, defaults to
+  //            "mocha.run()".
+  // - requires_focus: Whether to focus the web contents before running the
+  //                   test, used for tests running as interactive_ui_tests.
+  //                   Defaults to false.
+  // - skip_test_loader: Whether to skip loading the test from
+  //                     chrome://<test_loader_host_>/test_loader.html and load
+  //                     it directly from chrome://<test_loader_host>. Defaults
+  //                     to false.
   virtual void RunTest(const std::string& file,
                        const std::string& trigger,
-                       const bool& requires_focus);
+                       const bool& requires_focus,
+                       const bool& skip_test_loader);
+
+  // Convenience overloaded version of the RunTest above, which uses the default
+  // values for `requires_focus` and `skip_test_loader` (both false).
+  virtual void RunTest(const std::string& file, const std::string& trigger);
+
+  // Convenience overloaded version of the RunTest above, which uses the default
+  // value for `requires_focus` and `skip_test_loader=true`.
+  virtual void RunTestWithoutTestLoader(const std::string& file,
+                                        const std::string& trigger);
 
   // InProcessBrowserTest overrides.
   void SetUpOnMainThread() override;
@@ -40,6 +55,7 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // The host to use when invoking the test loader URL, like
   // "chrome://<host>/test_loader.html=...". Defaults to
   // `chrome::kChromeUIWebUITestHost`.
+  // Note: It is also used by RunTest even when |skip_test_loader| is true.
   std::string test_loader_host_;
 
   // Handles collection of code coverage.

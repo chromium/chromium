@@ -21,5 +21,5 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsOptionsPageTest, DISABLED_All) {
   set_test_loader_host(chrome::kChromeUIExtensionsHost);
   InstallExtensionWithInPageOptions();
   RunTest("extensions/extension_options_dialog_test.js", "mocha.run()",
-          /*requires_focus=*/true);
+          /*requires_focus=*/true, /*skip_test_loader=*/false);
 }

@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
@@ -74,17 +75,21 @@ void WebUIMochaBrowserTest::SetUpOnMainThread() {
 
 void WebUIMochaBrowserTest::RunTest(const std::string& file,
                                     const std::string& trigger) {
-  RunTest(file, trigger, /*requires_focus=*/false);
+  RunTest(file, trigger, /*requires_focus=*/false, /*skip_test_loader=*/false);
 }
 
 void WebUIMochaBrowserTest::RunTest(const std::string& file,
                                     const std::string& trigger,
-                                    const bool& requires_focus) {
+                                    const bool& requires_focus,
+                                    const bool& skip_test_loader) {
   // Construct URL to load the test module file.
   GURL url(
-      std::string("chrome://" + test_loader_host_ +
-                  "/test_loader.html?adapter=mocha_adapter_simple.js&module=") +
-      file);
+      skip_test_loader
+          ? std::string("chrome://" + test_loader_host_)
+          : std::string(
+                "chrome://" + test_loader_host_ +
+                "/test_loader.html?adapter=mocha_adapter_simple.js&module=") +
+                file);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* web_contents =
@@ -102,6 +107,31 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
       content::PageType::PAGE_TYPE_ERROR;
   if (is_error_page) {
     FAIL() << "Navigation to '" << url.spec() << "' failed.";
+  }
+
+  if (skip_test_loader) {
+    // Perform setup steps normally done by test_loader.html.
+    // TODO(dpapad): Figure out why moving this logic in a private
+    // SimulateTestloaderSteps() helper method causes ASSERT_TRUE() failures to
+    // not propagate to the parent caller. Inlining logic here as a workaround.
+
+    // Step 1: Programmatically loads mocha.js and mocha_adapter_simple.js.
+    std::string loadMochaScript(base::StringPrintf(
+        R"(
+      async function load() {
+        await import('chrome://%s/mocha.js');
+        await import('chrome://%s/mocha_adapter_simple.js');
+      }
+      load();)",
+        chrome::kChromeUIWebUITestHost, chrome::kChromeUIWebUITestHost));
+    ASSERT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), loadMochaScript));
+
+    // Step 2: Programmatically loads the Mocha test file.
+    std::string loadTestModuleScript(
+        base::StringPrintf("import('chrome://%s/%s');",
+                           chrome::kChromeUIWebUITestHost, file.c_str()));
+    ASSERT_TRUE(
+        ExecJs(web_contents->GetPrimaryMainFrame(), loadTestModuleScript));
   }
 
   // Trigger the Mocha tests, and wait for completion.
@@ -125,7 +155,14 @@ void WebUIMochaBrowserTest::RunTest(const std::string& file,
   }
 }
 
+void WebUIMochaBrowserTest::RunTestWithoutTestLoader(
+    const std::string& file,
+    const std::string& trigger) {
+  RunTest(file, trigger, /*requires_focus=*/false, /*skip_test_loader=*/true);
+}
+
 void WebUIMochaFocusTest::RunTest(const std::string& file,
                                   const std::string& trigger) {
-  WebUIMochaBrowserTest::RunTest(file, trigger, /*requires_focus=*/true);
+  WebUIMochaBrowserTest::RunTest(file, trigger, /*requires_focus=*/true,
+                                 /*skip_test_loader=*/false);
 }
