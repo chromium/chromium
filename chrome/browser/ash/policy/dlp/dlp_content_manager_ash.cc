@@ -680,6 +680,11 @@ void DlpContentManagerAsh::CheckScreenCaptureRestriction(
     ConfidentialContentsInfo info,
     ash::OnCaptureModeDlpRestrictionChecked callback) {
   if (IsBlocked(info.restriction_info)) {
+    // TODO(296534642): Remove once proper tooling is added.
+    LOG(WARNING) << "Screenshot blocked due to following URL(s) visible:";
+    for (const auto& content : info.confidential_contents.GetContents()) {
+      LOG(WARNING) << content.url;
+    }
     ShowDlpScreenCaptureDisabledNotification();
     std::move(callback).Run(false);
     return;
