@@ -34,12 +34,23 @@ bool RarAnalyzer::ResumeExtraction() {
   while (reader_.ExtractNextEntry()) {
     const third_party_unrar::RarReader::EntryInfo& entry =
         reader_.current_entry();
+    results()->encryption_info.is_encrypted |= entry.is_encrypted;
+    if (entry.is_encrypted && !entry.contents_valid) {
+      results()->encryption_info.password_status =
+          EncryptionInfo::kKnownIncorrect;
+    }
     if (!UpdateResultsForEntry(temp_file_.Duplicate(),
                                GetRootPath().Append(entry.file_path),
                                entry.file_size, entry.is_encrypted,
                                entry.is_directory, entry.contents_valid)) {
       return false;
     }
+  }
+
+  if (results()->encryption_info.password_status !=
+          EncryptionInfo::kKnownIncorrect &&
+      results()->encryption_info.is_encrypted) {
+    results()->encryption_info.password_status = EncryptionInfo::kKnownCorrect;
   }
 
   results()->success = true;
