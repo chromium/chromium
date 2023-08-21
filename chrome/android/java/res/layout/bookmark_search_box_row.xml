@@ -6,45 +6,45 @@ found in the LICENSE file.
 -->
 
 <org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bookmark_toolbar"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:layout_marginBottom="16dp"
-    android:paddingHorizontal="14dp"
-    android:orientation="vertical"
-    android:clickable="true"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:importantForAccessibility="no" >
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/bookmark_toolbar"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_marginBottom="16dp"
+  android:clickable="true"
+  android:focusable="true"
+  android:focusableInTouchMode="true"
+  android:importantForAccessibility="no"
+  android:orientation="vertical"
+  android:paddingHorizontal="14dp">
 
   <EditText
-      tools:ignore="Autofill,LabelFor"
-      android:id="@+id/search_text"
-      android:background="@drawable/search_row_modern_bg"
-      android:hint="@string/bookmark_toolbar_search"
-      android:imeOptions="flagNoExtractUi|actionSearch"
-      android:inputType="text"
-      android:layout_height="40dp"
-      android:layout_width="match_parent"
-      android:paddingHorizontal="16dp"
-      android:layout_marginBottom="2dp"
-      android:singleLine="true"
-      android:textColorHint="@macro/search_box_hint"
-      android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    android:id="@+id/search_text"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:layout_marginBottom="2dp"
+    android:background="@drawable/search_row_modern_bg"
+    android:hint="@string/bookmark_toolbar_search"
+    android:imeOptions="flagNoExtractUi|actionSearch"
+    android:inputType="text"
+    android:paddingHorizontal="16dp"
+    android:singleLine="true"
+    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+    android:textColorHint="@macro/search_box_hint"
+    tools:ignore="Autofill,LabelFor" />
 
-    <LinearLayout
-        android:layout_height="48dp"
-        android:layout_width="match_parent"
-        android:layout_marginTop="6dp"
-        android:orientation="horizontal" >
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:layout_marginTop="6dp"
+    android:orientation="horizontal">
 
     <org.chromium.components.browser_ui.widget.chips.ChipView
-        android:id="@+id/shopping_filter_chip"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content" />
+      android:id="@+id/shopping_filter_chip"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent" />
 
-    </LinearLayout>
+  </LinearLayout>
 
 </org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow>
