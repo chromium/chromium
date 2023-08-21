@@ -42,9 +42,25 @@
               </template>
             </select>
           </div>
+          <cr-button id="execute-button" class="internals-button"
+              on-click="perform_action">Execute
+            </cr-button>
         </div>
       </div>
     </div>
+
+    <div class='control' id='remote-devices-control'>
+      <div class='control-title'>Returned Objects</div>
+
+      <iron-list items="[[npDiscoveredDevicesList_]]" as="generic-object"
+        id="devices-section">
+        <template>
+          <np-object device="[[generic-object]]">
+          </np-object>
+        </template>
+      </iron-list>
+    </div>
+
   </section>
 
   <logging-tab id="logs-panel" feature="nearby-share"></logging-tab>

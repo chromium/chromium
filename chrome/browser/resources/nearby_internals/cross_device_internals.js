@@ -9,13 +9,15 @@ import './np_list_object.js';
 import './logging_tab.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
+import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cross_device_internals.html.js';
 import {NearbyPresenceBrowserProxy} from './nearby_presence_browser_proxy.js';
-import {PresenceDevice, SelectOption} from './types.js';
+import {ActionValues, FeatureValues, PresenceDevice, SelectOption} from './types.js';
 
 Polymer({
   is: 'cross-device-internals',
@@ -40,10 +42,10 @@ Polymer({
     featuresList: {
       type: Array,
       value: [
-        {name: 'Nearby Presence', value: 'NearbyPresence'},
-        {name: 'Nearby Share', value: 'NearbyShare'},
-        {name: 'Nearby Connections', value: 'NearbyConnections'},
-        {name: 'Fast Pair', value: 'FastPair'},
+        {name: 'Nearby Presence', value: FeatureValues.NP},
+        {name: 'Nearby Share', value: FeatureValues.NS},
+        {name: 'Nearby Connections', value: FeatureValues.NC},
+        {name: 'Fast Pair', value: FeatureValues.FP},
       ],
     },
 
@@ -51,10 +53,10 @@ Polymer({
     nearbyPresenceActionList: {
       type: Array,
       value: [
-        {name: 'Start Scan', value: 'StartScan'},
-        {name: 'Stop Scan', value: 'StopScan'},
-        {name: 'Sync Credentials', value: 'SyncCredentials'},
-        {name: 'First time flow', value: 'FirstTimeFlow'},
+        {name: 'Start Scan', value: ActionValues.STARTSCAN},
+        {name: 'Stop Scan', value: ActionValues.STOPSCAN},
+        {name: 'Sync Credentials', value: ActionValues.SYNCCREDENTIALS},
+        {name: 'First time flow', value: ActionValues.FIRSTTIMEFLOW},
       ],
     },
 
@@ -110,20 +112,40 @@ Polymer({
 
   updateActionsSelect() {
     switch (this.$.actionGroup.value) {
-      case 'NearbyPresence':
+      case FeatureValues.NP:
         this.set('actionsSelectList', this.nearbyPresenceActionList);
         break;
-      case 'NearbyConnections':
+      case FeatureValues.NC:
         this.set('actionsSelectList', this.nearbyConnectionsActionList);
         break;
-      case 'NearbyShare':
+      case FeatureValues.NS:
         this.set('actionsSelectList', this.nearbyShareActionList);
         break;
-      case 'FastPair':
+      case FeatureValues.FP:
         this.set('actionsSelectList', this.fastPairActionList);
         break;
     }
   },
+
+  perform_action() {
+    switch (this.$.actionSelect.value) {
+      case ActionValues.STARTSCAN:
+        this.browserProxy_.SendStartScan();
+        break;
+      case ActionValues.STOPSCAN:
+        this.browserProxy_.SendStopScan();
+        break;
+      case ActionValues.SYNCCREDENTIALS:
+        this.browserProxy_.SendSyncCredentials();
+        break;
+      case ActionValues.FIRSTTIMEFLOW:
+        this.browserProxy_.SendFirstTimeFlow();
+        break;
+      default:
+        break;
+    }
+  },
+
 
   onStopScanClicked() {
     this.browserProxy_.SendStopScan();

@@ -3,6 +3,30 @@
 // found in the LICENSE file.
 
 /**
+ * Enum of values to use for the feature select dropdown. If a new feature is
+ * added, add it here.
+ * @enum {string}
+ */
+export const FeatureValues = {
+  NS: '0',
+  NC: '1',
+  NP: '2',
+  FP: '3',
+};
+
+/**
+ * Enum of values to use for the action select dropdown. If a new action is
+ * added, add it here.
+ * @enum {string}
+ */
+export const ActionValues = {
+  STARTSCAN: '0',
+  STOPSCAN: '1',
+  SYNCCREDENTIALS: '2',
+  FIRSTTIMEFLOW: '3',
+};
+
+/**
  * Severity enum based on LogMessage format. Needs to stay in sync with the
  * NearbyInternalsLogsHandler.
  * @enum {number}
