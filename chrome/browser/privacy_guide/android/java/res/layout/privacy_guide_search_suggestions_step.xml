@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/search_suggestions_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/search_suggestions_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_marginHorizontal="@dimen/standard_illustration_marginHorizontal"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:maxHeight="@dimen/illustration_maxHeight"
+            android:adjustViewBounds="true"
+            android:src="@drawable/privacy_guide_search_suggestions_image"
+            android:importantForAccessibility="no" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/search_suggestions_switch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="@dimen/all_content_marginHorizontal"
+            android:showText="false"
+            android:text="@string/improve_search_suggestions_title"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:foreground="?attr/selectableItemBackground"
+            android:background="@null" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/all_content_marginHorizontal"
+            android:orientation="vertical">
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="@string/privacy_guide_when_on" />
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_manage_search_24dp"
+                app:summaryText="@string/privacy_guide_search_suggestions_item_one" />
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:titleText="@string/privacy_guide_things_to_consider" />
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_youtube_searched_for_24dp"
+                app:summaryText="@string/privacy_guide_search_suggestions_item_two" />
+
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_link_24dp"
+                app:summaryText="@string/privacy_guide_search_suggestions_item_three" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>
