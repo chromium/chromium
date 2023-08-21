@@ -11,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -273,6 +272,19 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
     if (drm->device_path().value().find(event_dev_path) == std::string::npos)
       continue;
 
+    // Get the connector's ID and convert it to an int.
+    const std::string connector_id_str =
+        GetEventPropertyByKey("CONNECTOR", event_props);
+    if (connector_id_str.empty()) {
+      break;
+    }
+    uint32_t connector_id;
+    {
+      const bool conversion_success =
+          base::StringToUint(connector_id_str, &connector_id);
+      DCHECK(conversion_success);
+    }
+
     // Get the trigger property's ID and convert to an int.
     const std::string trigger_prop_id_str =
         GetEventPropertyByKey("PROPERTY", event_props);
@@ -280,15 +292,27 @@ bool DrmGpuDisplayManager::ShouldDisplayEventTriggerConfiguration(
       break;
 
     uint32_t trigger_prop_id;
-    const bool conversion_success =
-        base::StringToUint(trigger_prop_id_str, &trigger_prop_id);
-    DCHECK(conversion_success);
+    {
+      const bool conversion_success =
+          base::StringToUint(trigger_prop_id_str, &trigger_prop_id);
+      DCHECK(conversion_success);
+    }
+
+    ScopedDrmObjectPropertyPtr property_values(
+        drm->GetObjectProperties(connector_id, DRM_MODE_OBJECT_CONNECTOR));
+    DCHECK(property_values);
 
     // Fetch the name of the property from the device.
     ScopedDrmPropertyPtr drm_property(drm->GetProperty(trigger_prop_id));
     DCHECK(drm_property);
+    const std::string enum_value =
+        GetEnumNameForProperty(*drm_property, *property_values);
+    DCHECK(!enum_value.empty());
+
     trigger_prop_log =
-        "[trigger property: " + std::string(drm_property->name) + "] ";
+        "[CONNECTOR:" + connector_id_str +
+        "] trigger property: " + std::string(drm_property->name) + "=" +
+        enum_value + ", ";
     for (const char* blocked_prop : kBlockedEventsByTriggerProperty) {
       if (strcmp(drm_property->name, blocked_prop) == 0) {
         VLOG(1) << log_prefix << trigger_prop_log
