@@ -4,6 +4,8 @@
 
 module webui_examples.mojom;
 
+import "url/mojom/url.mojom";
+
 // Used by the WebUI page to bootstrap communication to the browser process.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -13,7 +15,7 @@ interface PageHandlerFactory {
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // Navigates the WebView with `view_instance_id` to `src`.
-  Navigate(int32 view_instance_id, string src);
+  Navigate(int32 view_instance_id, url.mojom.Url src);
 
   // Navigates the WebView with `view_instance_id` to back in the nav stack.
   GoBack(int32 view_instance_id);

@@ -5,8 +5,6 @@
 #ifndef UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_PAGE_HANDLER_H_
 #define UI_WEBUI_EXAMPLES_BROWSER_UI_WEB_BROWSER_PAGE_HANDLER_H_
 
-#include <string>
-
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/examples/browser/ui/web/browser.mojom.h"
@@ -22,7 +20,7 @@ class BrowserPageHandler : public webui_examples::mojom::PageHandler {
   ~BrowserPageHandler() override;
 
   // webui_examples::mojom::PageHandler
-  void Navigate(int32_t view_instance_id, const std::string& src) override;
+  void Navigate(int32_t view_instance_id, const GURL& src) override;
   void GoBack(int32_t view_instance_id) override;
   void GoForward(int32_t view_instance_id) override;
 

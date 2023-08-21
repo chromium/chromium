@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
@@ -48,7 +49,7 @@ class WebviewElement extends HTMLElement {
     this.viewInstanceId = -1;
   }
 
-  navigate(src: string) {
+  navigate(src: Url) {
     BrowserProxy.getInstance().navigate(this.viewInstanceId, src);
   }
 
@@ -69,7 +70,9 @@ function navigateToAddressBarUrl() {
   const webview = document.getElementById("webview") as WebviewElement;
   const addressBar = document.getElementById("address") as HTMLInputElement;
   if (webview && addressBar) {
-    webview.navigate(addressBar.value);
+    const src = new Url();
+    src.url = addressBar.value;
+    webview.navigate(src);
   }
 }
 

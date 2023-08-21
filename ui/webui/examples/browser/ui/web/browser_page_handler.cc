@@ -14,8 +14,7 @@ BrowserPageHandler::BrowserPageHandler(
 
 BrowserPageHandler::~BrowserPageHandler() = default;
 
-void BrowserPageHandler::Navigate(int32_t view_instance_id,
-                                  const std::string& src) {
+void BrowserPageHandler::Navigate(int32_t view_instance_id, const GURL& src) {
   NOTIMPLEMENTED();
 }
 
