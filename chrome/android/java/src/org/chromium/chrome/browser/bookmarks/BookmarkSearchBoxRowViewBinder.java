@@ -20,13 +20,22 @@ class BookmarkSearchBoxRowViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
         BookmarkSearchBoxRow row = (BookmarkSearchBoxRow) view;
         ChipView shoppingChip = view.findViewById(R.id.shopping_filter_chip);
-        if (key == BookmarkSearchBoxRowProperties.QUERY_CALLBACK) {
-            row.setQueryCallback(model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK));
+        if (key == BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK) {
+            row.setSearchTextCallback(
+                    model.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK));
+        } else if (key == BookmarkSearchBoxRowProperties.SEARCH_TEXT) {
+            row.setSearchText(model.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
         } else if (key == BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK) {
             row.setFocusChangeCallback(
                     model.get(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK));
         } else if (key == BookmarkSearchBoxRowProperties.HAS_FOCUS) {
             row.setHasFocus(model.get(BookmarkSearchBoxRowProperties.HAS_FOCUS));
+        } else if (key == BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE) {
+            row.setClearSearchTextButtonRunnable(
+                    model.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE));
+        } else if (key == BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY) {
+            row.setClearSearchTextButtonVisibility(
+                    model.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
         } else if (key == BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY) {
             boolean isVisible = model.get(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY);
             ((View) shoppingChip.getParent()).setVisibility(isVisible ? View.VISIBLE : View.GONE);

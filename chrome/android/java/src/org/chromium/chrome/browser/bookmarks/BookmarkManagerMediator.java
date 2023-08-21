@@ -181,7 +181,7 @@ class BookmarkManagerMediator
             clearHighlight();
 
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING
-                    && TextUtils.isEmpty(getCurrentQueryString())
+                    && TextUtils.isEmpty(getCurrentSearchText())
                     && getCurrentSearchPowerFilter().isEmpty()) {
                 onEndSearch();
             } else {
@@ -533,7 +533,7 @@ class BookmarkManagerMediator
      * @param query The query text to search for.
      */
     void search(@Nullable String query) {
-        onQueryCallback(query);
+        onSearchTextChangeCallback(query);
     }
 
     public void setOrder() {
@@ -675,7 +675,7 @@ class BookmarkManagerMediator
 
     @Override
     public void openSearchUi() {
-        onQueryCallback("");
+        onSearchTextChangeCallback("");
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
     }
 
@@ -825,10 +825,10 @@ class BookmarkManagerMediator
                 mNativePage.onStateChange(state.mUrl, false);
             }
         } else if (state.mUiMode == BookmarkUiMode.SEARCHING) {
-            String queryString = getCurrentQueryString();
-            if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(queryString)) {
+            String searchText = getCurrentSearchText();
+            if (!preserveFolderBookmarksOnEmptySearch || !TextUtils.isEmpty(searchText)) {
                 setBookmarks(mBookmarkQueryHandler.buildBookmarkListForSearch(
-                        queryString, getCurrentSearchPowerFilter()));
+                        searchText, getCurrentSearchPowerFilter()));
             }
         }
 
@@ -1120,7 +1120,12 @@ class BookmarkManagerMediator
         boolean hasAnyShopping = true;
         PropertyModel propertyModel =
                 new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
-                        .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, this::onQueryCallback)
+                        .with(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
+                                this::onSearchTextChangeCallback)
+                        .with(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
+                                this::onClearSearchTextRunnable)
+                        .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
+                                this::onSearchBoxFocusChange)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY,
                                 hasAnyShopping)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_START_ICON_RES,
@@ -1129,8 +1134,6 @@ class BookmarkManagerMediator
                                 R.string.price_tracking_bookmarks_filter_title)
                         .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
                                 this::onShoppingFilterToggle)
-                        .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
-                                this::onSearchBoxFocusChange)
                         .build();
         return new ListItem(ViewType.SEARCH_BOX, propertyModel);
     }
@@ -1357,9 +1360,19 @@ class BookmarkManagerMediator
         return true;
     }
 
-    private void onQueryCallback(String query) {
-        query = query == null ? "" : query.trim();
-        onSearchChange(query, getCurrentSearchPowerFilter());
+    private void onSearchTextChangeCallback(String searchText) {
+        searchText = searchText == null ? "" : searchText.trim();
+        if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+            getSearchBoxPropertyModel().set(
+                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY,
+                    !TextUtils.isEmpty(searchText));
+        }
+        onSearchChange(searchText, getCurrentSearchPowerFilter());
+    }
+
+    private void onClearSearchTextRunnable() {
+        getSearchBoxPropertyModel().set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "");
     }
 
     private void onSearchBoxFocusChange(Boolean hasFocus) {
@@ -1373,22 +1386,22 @@ class BookmarkManagerMediator
         final @NonNull Set<PowerBookmarkType> powerFilter = isFiltering
                 ? Collections.singleton(PowerBookmarkType.SHOPPING)
                 : Collections.emptySet();
-        onSearchChange(getCurrentQueryString(), powerFilter);
+        onSearchChange(getCurrentSearchText(), powerFilter);
     }
 
     private void onSearchChange(
-            @Nullable String query, @NonNull Set<PowerBookmarkType> powerFilter) {
-        if (TextUtils.isEmpty(query) && powerFilter.isEmpty()
+            @Nullable String searchText, @NonNull Set<PowerBookmarkType> powerFilter) {
+        if (TextUtils.isEmpty(searchText) && powerFilter.isEmpty()
                 && getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
             onEndSearch();
         } else {
-            query = query == null ? "" : query;
-            setState(BookmarkUiState.createSearchState(query, powerFilter));
+            searchText = searchText == null ? "" : searchText;
+            setState(BookmarkUiState.createSearchState(searchText, powerFilter));
         }
     }
 
-    private @Nullable String getCurrentQueryString() {
-        return mStateStack.isEmpty() ? "" : mStateStack.peek().mQueryString;
+    private @Nullable String getCurrentSearchText() {
+        return mStateStack.isEmpty() ? "" : mStateStack.peek().mSearchText;
     }
 
     private @NonNull Set<PowerBookmarkType> getCurrentSearchPowerFilter() {

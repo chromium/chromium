@@ -6,14 +6,19 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
 import android.view.KeyEvent;
@@ -69,7 +74,9 @@ public class BookmarkSearchBoxRowTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
-    private Callback<String> mQueryCallback;
+    private Callback<String> mSearchTextChangeCallback;
+    @Mock
+    private Runnable mClearSearchTextRunnable;
     @Mock
     private Callback<Boolean> mFocusChangeCallback;
     @Mock
@@ -106,7 +113,10 @@ public class BookmarkSearchBoxRowTest {
             mPropertyModel =
                     new PropertyModel.Builder(BookmarkSearchBoxRowProperties.ALL_KEYS)
                             .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true)
-                            .with(BookmarkSearchBoxRowProperties.QUERY_CALLBACK, mQueryCallback)
+                            .with(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK,
+                                    mSearchTextChangeCallback)
+                            .with(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE,
+                                    mClearSearchTextRunnable)
                             .with(BookmarkSearchBoxRowProperties.FOCUS_CHANGE_CALLBACK,
                                     mFocusChangeCallback)
                             .with(BookmarkSearchBoxRowProperties.SHOPPING_CHIP_TOGGLE_CALLBACK,
@@ -142,11 +152,14 @@ public class BookmarkSearchBoxRowTest {
 
     @Test
     @MediumTest
-    public void testQueryCallback() {
-        String query = "foo";
-        // TODO(https://crbug.com/1467376): Use a model property instead to set the query text.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mEditText.setText(query));
-        verify(mQueryCallback).onResult(eq(query));
+    public void testSearchTextAndChangeCallback() {
+        String searchText = "foo";
+        setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        verify(mSearchTextChangeCallback).onResult(eq(searchText));
+
+        reset(mSearchTextChangeCallback);
+        setProperty(BookmarkSearchBoxRowProperties.SEARCH_TEXT, searchText);
+        verifyNoInteractions(mSearchTextChangeCallback);
     }
 
     @Test
@@ -209,5 +222,17 @@ public class BookmarkSearchBoxRowTest {
 
         onView(withChild(withId(R.id.shopping_filter_chip))).perform(click());
         verify(mFocusChangeCallback).onResult(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testClearSearchTextButtonAndRunnable() {
+        onView(withId(R.id.clear_text_button)).check(matches(not(isDisplayed())));
+
+        setProperty(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, true);
+        onView(withId(R.id.clear_text_button)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.clear_text_button)).perform(click());
+        verify(mClearSearchTextRunnable).run();
     }
 }

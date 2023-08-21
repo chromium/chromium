@@ -1147,7 +1147,9 @@ public class BookmarkManagerMediatorTest {
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
 
         mModelList.addObserver(mListObserver);
-        mModelList.get(0).model.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK).onResult("3");
+        mModelList.get(0)
+                .model.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK)
+                .onResult("3");
         verifyCurrentViewTypes(ViewType.SEARCH_BOX, ViewType.IMPROVED_BOOKMARK_COMPACT);
         verify(mListObserver, never()).onItemRangeChanged(any(), eq(0), anyInt(), any());
         verify(mListObserver, never()).onItemRangeRemoved(any(), eq(0), anyInt());
@@ -1181,25 +1183,30 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
-    public void testQueryCallback() {
+    public void testSearchTextChangeCallback() {
         finishLoading();
         mMediator.openFolder(mFolderId1);
         assertEquals(3, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
 
         PropertyModel propertyModel = mModelList.get(0).model;
-        Callback<String> queryCallback =
-                propertyModel.get(BookmarkSearchBoxRowProperties.QUERY_CALLBACK);
-        assertNotNull(queryCallback);
+        Callback<String> searchTextChangeCallback =
+                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        assertNotNull(searchTextChangeCallback);
 
-        queryCallback.onResult("foo");
+        String searchText = "foo";
+        searchTextChangeCallback.onResult(searchText);
         assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
-        verify(mBookmarkModel).searchBookmarks(eq("foo"), anyInt());
+        verify(mBookmarkModel).searchBookmarks(eq(searchText), anyInt());
+        assertTrue(mModelList.get(0).model.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
 
-        queryCallback.onResult("");
+        searchTextChangeCallback.onResult("");
         assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
         verify(mBookmarkModel, never()).searchBookmarks(eq(""), anyInt());
         verify(mBookmarkModel, never()).searchBookmarks(eq(null), anyInt());
+        assertFalse(mModelList.get(0).model.get(
+                BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY));
     }
 
     @Test
@@ -1271,6 +1278,7 @@ public class BookmarkManagerMediatorTest {
         when(mBookmarkModel.searchBookmarks(eq("test"), anyInt()))
                 .thenReturn(Arrays.asList(mFolderId1, mFolderId2));
         finishLoading();
+        mMediator.openFolder(mFolderId1);
 
         mMediator.search("test");
         verifyCurrentBookmarkIds(null, mFolderId1, mFolderId2);
@@ -1378,5 +1386,28 @@ public class BookmarkManagerMediatorTest {
 
         assertEquals(1, mModelList.size());
         assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testClearSearchTextRunnable() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(ViewType.SEARCH_BOX, mModelList.get(0).type);
+
+        PropertyModel propertyModel = mModelList.get(0).model;
+        Callback<String> searchTextCallback =
+                propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        assertNotNull(searchTextCallback);
+        Runnable clearSearchTextRunnable =
+                propertyModel.get(BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_RUNNABLE);
+        assertNotNull(clearSearchTextRunnable);
+
+        String searchText = "foo";
+        searchTextCallback.onResult(searchText);
+        assertEquals(searchText, propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
+
+        clearSearchTextRunnable.run();
+        assertEquals("", propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
     }
 }

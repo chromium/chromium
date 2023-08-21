@@ -7,6 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.bookmarks.BookmarkSearchBoxRow
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:id="@+id/bookmark_toolbar"
   android:layout_width="match_parent"
@@ -19,20 +20,42 @@ found in the LICENSE file.
   android:orientation="vertical"
   android:paddingHorizontal="14dp">
 
-  <EditText
-    android:id="@+id/search_text"
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="40dp"
     android:layout_marginBottom="2dp"
     android:background="@drawable/search_row_modern_bg"
-    android:hint="@string/bookmark_toolbar_search"
-    android:imeOptions="flagNoExtractUi|actionSearch"
-    android:inputType="text"
-    android:paddingHorizontal="16dp"
-    android:singleLine="true"
-    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-    android:textColorHint="@macro/search_box_hint"
-    tools:ignore="Autofill,LabelFor" />
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp">
+
+    <EditText
+      android:id="@+id/search_text"
+      android:layout_width="0dp"
+      android:layout_height="match_parent"
+      android:layout_weight="1"
+      android:background="@null"
+      android:hint="@string/bookmark_toolbar_search"
+      android:imeOptions="flagNoExtractUi|actionSearch"
+      android:inputType="text"
+      android:singleLine="true"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:textColorHint="@macro/search_box_hint"
+      tools:ignore="Autofill,LabelFor" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+      android:id="@+id/clear_text_button"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:background="@null"
+      android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
+      android:paddingStart="16dp"
+      android:paddingEnd="@dimen/clear_text_button_end_padding"
+      android:scaleType="center"
+      android:src="@drawable/btn_delete_24dp"
+      android:visibility="invisible"
+      app:tint="@color/default_icon_color_tint_list" />
+
+  </LinearLayout>
 
   <LinearLayout
     android:layout_width="match_parent"

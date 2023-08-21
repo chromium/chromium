@@ -40,7 +40,7 @@ public class BookmarkUiState {
     final @Nullable BookmarkId mFolder;
 
     // The following fields be non-null if and only if in SEARCHING mode.
-    final @Nullable String mQueryString;
+    final @Nullable String mSearchText;
     final @Nullable Set<PowerBookmarkType> mSearchPowerFilter;
 
     static BookmarkUiState createLoadingState() {
@@ -117,13 +117,13 @@ public class BookmarkUiState {
         mUiMode = uiMode;
         mUrl = url;
         mFolder = folder;
-        mQueryString = queryString;
+        mSearchText = queryString;
         mSearchPowerFilter = searchPowerFilter;
     }
 
     @Override
     public int hashCode() {
-        return 31 * mUrl.hashCode() + mUiMode + Objects.hashCode(mQueryString)
+        return 31 * mUrl.hashCode() + mUiMode + Objects.hashCode(mSearchText)
                 + Objects.hashCode(mSearchPowerFilter);
     }
 
@@ -132,7 +132,7 @@ public class BookmarkUiState {
         if (!(obj instanceof BookmarkUiState)) return false;
         BookmarkUiState other = (BookmarkUiState) obj;
         return mUiMode == other.mUiMode && TextUtils.equals(mUrl, other.mUrl)
-                && Objects.equals(mQueryString, other.mQueryString)
+                && Objects.equals(mSearchText, other.mSearchText)
                 && Objects.equals(mSearchPowerFilter, other.mSearchPowerFilter);
     }
 
