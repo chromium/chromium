@@ -37,7 +37,7 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   USING_FAST_MALLOC(UserLevelMemoryPressureSignalGenerator);
 
  public:
-  static UserLevelMemoryPressureSignalGenerator& Instance();
+  static UserLevelMemoryPressureSignalGenerator* Instance();
 
   // Returns the shared instance.
   static void Initialize(

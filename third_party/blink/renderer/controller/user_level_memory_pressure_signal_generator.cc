@@ -27,10 +27,10 @@ UserLevelMemoryPressureSignalGenerator* g_instance = nullptr;
 }  // namespace
 
 // static
-UserLevelMemoryPressureSignalGenerator&
+UserLevelMemoryPressureSignalGenerator*
 UserLevelMemoryPressureSignalGenerator::Instance() {
   DCHECK(g_instance);
-  return *g_instance;
+  return g_instance;
 }
 
 // static
@@ -194,8 +194,17 @@ void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
 }
 
 void RequestUserLevelMemoryPressureSignal() {
-  UserLevelMemoryPressureSignalGenerator::Instance()
-      .RequestMemoryPressureSignal();
+  // TODO(crbug.com/1473814): AndroidWebView creates renderer processes
+  // without appending extra commandline switches,
+  // c.f. ChromeContentBrowserClient::AppendExtraCommandLineSwitches(),
+  // So renderer processes do not initialize user-level memory pressure
+  // siginal generators but the browser code expects they have already been
+  // initialized. So when requesting memory pressure signals, g_instance is
+  // nullptr and g_instance->clock_ will crash.
+  if (UserLevelMemoryPressureSignalGenerator* generator =
+          UserLevelMemoryPressureSignalGenerator::Instance()) {
+    generator->RequestMemoryPressureSignal();
+  }
 }
 
 }  // namespace blink
