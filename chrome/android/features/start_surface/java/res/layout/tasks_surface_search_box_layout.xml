@@ -37,7 +37,7 @@ found in the LICENSE file.
         android:ellipsize="end"
         android:focusable="false"
         android:focusableInTouchMode="false"
-        android:hint="@string/search_or_type_web_address"
+        android:hint="@string/omnibox_empty_hint"
         android:inputType="text"
         android:singleLine="true"
         tools:ignore="Autofill,LabelFor" />

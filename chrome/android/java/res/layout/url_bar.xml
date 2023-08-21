@@ -14,6 +14,6 @@ found in the LICENSE file.
     android:gravity="center_vertical"
     android:singleLine="true"
     android:imeOptions="actionGo|flagNoExtractUi|flagNoFullscreen"
-    android:textSize="@dimen/location_bar_url_text_size"
-    android:hint="@string/search_or_type_web_address"
+    android:textAppearance="@style/TextAppearance.SearchBoxText"
+    android:hint="@string/omnibox_empty_hint"
     android:importantForAutofill="no" />

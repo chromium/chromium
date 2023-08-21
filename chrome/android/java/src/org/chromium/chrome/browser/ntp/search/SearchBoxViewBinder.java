@@ -75,10 +75,9 @@ class SearchBoxViewBinder
             searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {
             boolean isHintVisible = model.get(SearchBoxProperties.SEARCH_HINT_VISIBILITY);
-            searchBoxTextView.setHint(isHintVisible
-                            ? view.getContext().getString(
-                                    org.chromium.chrome.R.string.search_or_type_web_address)
-                            : null);
+            searchBoxTextView.setHint(isHintVisible ? view.getContext().getString(
+                                              org.chromium.chrome.R.string.omnibox_empty_hint)
+                                                    : null);
         } else if (SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK == propertyKey) {
             voiceSearchButton.setOnClickListener(
                     model.get(SearchBoxProperties.VOICE_SEARCH_CLICK_CALLBACK));

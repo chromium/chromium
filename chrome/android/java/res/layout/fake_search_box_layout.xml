@@ -41,7 +41,7 @@ found in the LICENSE file.
             android:focusable="false"
             android:inputType="text"
             android:singleLine="true"
-            android:hint="@string/search_or_type_web_address" />
+            android:hint="@string/omnibox_empty_hint" />
     </RelativeLayout>
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"
