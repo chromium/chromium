@@ -498,6 +498,10 @@ public final class ProductionSupportedFlagList {
                     "Queues all gesture scrolls regardless of blocking status on the"
                             + "compositor for more consistency and scrolling performance"
                             + "improvement"),
+            Flag.baseFeature(BaseFeatures.PARTITION_ALLOC_MEMORY_RECLAIMER,
+                    "Enables PartitionAlloc's MemoryReclaimer, which tries decommitting unused "
+                            + "system pages as much as possible so that other applications can "
+                            + "reuse the memory pages."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
