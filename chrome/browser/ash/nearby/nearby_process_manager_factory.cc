@@ -77,7 +77,8 @@ NearbyProcessManagerFactory::NearbyProcessManagerFactory()
 
 NearbyProcessManagerFactory::~NearbyProcessManagerFactory() = default;
 
-KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NearbyProcessManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -87,8 +88,7 @@ KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
   if (CanBeLaunchedForProfile(profile) ||
       g_bypass_primary_user_check_for_testing) {
     return NearbyProcessManagerImpl::Factory::Create(
-               NearbyDependenciesProviderFactory::GetForProfile(profile))
-        .release();
+        NearbyDependenciesProviderFactory::GetForProfile(profile));
   }
 
   return nullptr;
