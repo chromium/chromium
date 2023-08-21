@@ -69,9 +69,11 @@ BASE_FEATURE(kNormalPriorityImageDecoding,
              "NormalPriorityImageDecoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Note that kUseDMSAAForTiles only controls vulkan launch on android. We will
+// be using a separate flag to control the launch on GL.
 BASE_FEATURE(kUseDMSAAForTiles,
              "UseDMSAAForTiles",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
