@@ -2374,8 +2374,15 @@ class ContentAnalysisPrintBrowserTestBase
                 &ContentAnalysisPrintBrowserTestBase::ScanningResponse,
                 base::Unretained(this)),
             kFakeDmToken));
+
+    // These overrides make the overall tests faster as the content analysis
+    // dialog won't stay in each state for mandatory minimum times.
+    enterprise_connectors::ContentAnalysisDialog::
+        SetMinimumPendingDialogTimeForTesting(base::Milliseconds(0));
     enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
         base::Milliseconds(0));
+    enterprise_connectors::ContentAnalysisDialog::
+        SetSuccessDialogTimeoutForTesting(base::Milliseconds(0));
   }
 
   enterprise_connectors::ContentAnalysisResponse ScanningResponse(
@@ -2945,6 +2952,74 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
+                       OpenPdfInPreviewFromPrintPreview) {
+  AddPrinter("printer_name");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+  // Since the content analysis scan happens before the Print Preview dialog,
+  // checking behavior when requesting opening in Preview from the print preview
+  // preview only is possible if the scan permits it.
+  if (ContentAnalysisAllowsPrint()) {
+    if (UseService()) {
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning before Print Preview is destroyed.
+      // 3.  Ask the user for settings.
+      // 4.  A print job is started for actual printing.
+      // 5.  The print compositor will complete generating the document.
+      // 6.  Completes with document done.
+      // 7.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/7);
+    } else {
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/3);
+    }
+    OpenPdfInPreviewOnceReadyAndLoaded();
+  } else {
+    // The expected events for this are:
+    // 1.  The document is composited for content analysis.
+    // 2.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/2);
+    test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
+    WaitUntilCallbackReceived();
+  }
+
+  ASSERT_EQ(print_view_manager->preview_allowed(),
+            ContentAnalysisAllowsPrint());
+  EXPECT_EQ(composited_for_content_analysis_count(), 1);
+  EXPECT_EQ(scanning_responses_count(), 1);
+
+  // A separate print job is always used for each scan, and if printing is
+  // allowed then another print job will be used for actual printing.
+  EXPECT_EQ(print_job_destruction_count(),
+            ContentAnalysisAllowsPrint() ? 2 : 1);
+  EXPECT_EQ(print_view_manager->got_snapshot_count(),
+            ContentAnalysisAllowsPrint() ? 1 : 1);
+
+  // Validate that `NewDocument()` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
                        PrintWithPreview) {
   AddPrinter("printer_name");
@@ -3020,11 +3095,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   auto* print_view_manager =
       SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
 
-  // Since the content analysis scan happens before the Print Preview dialog,
-  // checking behavior when requesting the system print dialog from print
-  // preview only is possible if the scan permits it.
-  // TODO(http://b/266119859):  Update test behavior and expectations for when
-  // scans are done after hitting Print from Print Preview.
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
 #if BUILDFLAG(IS_WIN)
@@ -3106,6 +3176,70 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   // gets called in both the browser process and in the Print Backend service.
   EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
+
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
+                       OpenPdfInPreviewFromPrintPreview) {
+  AddPrinter("printer_name");
+
+  if (UseService() && !ContentAnalysisAllowsPrint()) {
+    // This results in a stranded context left in the Print Backend service.
+    // It will persist harmlessly until the service terminates after a short
+    // period of no printing activity.
+    SkipPersistentContextsCheckOnShutdown();
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  auto* print_view_manager =
+      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+  if (ContentAnalysisAllowsPrint()) {
+    if (UseService()) {
+      // The expected events for this are:
+      // 1.  Ask the user for settings.
+      // 2.  A print job is started for actual printing.
+      // 3.  The print compositor will complete generating the document.
+      // 4.  Completes with document done.
+      // 5.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/5);
+    } else {
+      // The expected events for this are:
+      // 1.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/1);
+    }
+  } else {
+    print_view_manager->set_on_print_preview_done_closure(base::BindOnce(
+        &ContentAnalysisBeforePrintPreviewBrowserTest::CheckForQuit,
+        base::Unretained(this)));
+    // Expect an extra message for the print job created after content
+    // analysis to be destroyed.
+    SetNumExpectedMessages(/*num=*/ContentAnalysisAllowsPrint() ? 2 : 1);
+  }
+  OpenPdfInPreviewOnceReadyAndLoaded();
+
+  EXPECT_THAT(print_view_manager->preview_allowed(), testing::Optional(true));
+
+  EXPECT_EQ(composited_for_content_analysis_count(), 0);
+  EXPECT_EQ(print_job_destruction_count(),
+            ContentAnalysisAllowsPrint() ? 1 : 0);
+  EXPECT_EQ(print_view_manager->got_snapshot_count(), 0);
+  EXPECT_EQ(scanning_responses_count(), 1);
+
+  // Validate that `NewDocument()` is only called for actual printing, not as
+  // part of content analysis, since that can needlessly prompt the user.
+  // When printing OOP, an extra call for a new document will occur since it
+  // gets called in both the browser process and in the Print Backend service.
+  EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 IN_PROC_BROWSER_TEST_P(
     ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest,
