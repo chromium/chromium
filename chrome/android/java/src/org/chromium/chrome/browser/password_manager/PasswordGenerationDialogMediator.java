@@ -58,17 +58,11 @@ public class PasswordGenerationDialogMediator {
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, resources,
                                 R.string.password_generation_dialog_use_password_button)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, resources,
-                                R.string.password_generation_dialog_cancel_button);
-        if (PasswordManagerHelper.usesUnifiedPasswordManagerBranding()) {
-            builder = builder.with(ModalDialogProperties.TITLE_ICON, customView.getContext(),
-                                     new PasswordManagerResourceProviderImpl()
-                                             .getPasswordManagerIcon())
-                              .with(ModalDialogProperties.TITLE, resources,
-                                      R.string.password_generation_dialog_title_upm_branded);
-        } else {
-            builder = builder.with(ModalDialogProperties.TITLE, resources,
-                    R.string.password_generation_dialog_title);
-        }
+                                R.string.password_generation_dialog_cancel_button)
+                        .with(ModalDialogProperties.TITLE_ICON, customView.getContext(),
+                                new PasswordManagerResourceProviderImpl().getPasswordManagerIcon())
+                        .with(ModalDialogProperties.TITLE, resources,
+                                R.string.password_generation_dialog_title);
         return builder;
     }
 }

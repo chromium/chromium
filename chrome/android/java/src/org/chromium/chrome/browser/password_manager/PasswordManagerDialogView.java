@@ -77,17 +77,6 @@ public class PasswordManagerDialogView extends ScrollView {
         mInlineHelpButtonView.setVisibility(usesInlineIcon ? VISIBLE : GONE);
     }
 
-    void cropImageToText() {
-        LinearLayout.LayoutParams marginParams =
-                new LinearLayout.LayoutParams(mIllustrationView.getLayoutParams());
-        marginParams.setMarginStart(getContext().getResources().getDimensionPixelSize(
-                R.dimen.password_manager_dialog_text_margin));
-        marginParams.setMarginEnd(getContext().getResources().getDimensionPixelSize(
-                R.dimen.password_manager_dialog_text_margin));
-        mIllustrationView.setLayoutParams(marginParams);
-        mIllustrationView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-    }
-
     void setTitle(String title) {
         mTitleView.setText(title);
     }

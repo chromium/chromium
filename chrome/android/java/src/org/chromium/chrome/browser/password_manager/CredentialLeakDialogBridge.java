@@ -51,9 +51,7 @@ public class CredentialLeakDialogBridge {
 
         @DrawableRes
         int headerDrawableId;
-        headerDrawableId = PasswordManagerHelper.usesUnifiedPasswordManagerBranding()
-                ? R.drawable.password_check_header_red
-                : R.drawable.password_checkup_warning;
+        headerDrawableId = R.drawable.password_check_header_red;
 
         PasswordManagerDialogContents contents = createDialogContents(credentialLeakTitle,
                 credentialLeakDetails, headerDrawableId, positiveButton, negativeButton);
