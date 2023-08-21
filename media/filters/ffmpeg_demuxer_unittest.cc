@@ -1348,15 +1348,6 @@ TEST_F(FFmpegDemuxerTest, HEVC_in_MP4_container) {
 TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
   CreateDemuxer("bear-ac3-only-frag.mp4");
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  // AC3 is not supported by default media platform. Embedders who add support
-  // must declare it via MediaClient.
-  MockMediaClient media_client;
-  SetMediaClient(&media_client);
-
-  AudioType ac3_type = {AudioCodec::kAC3};
-  EXPECT_CALL(media_client, IsSupportedAudioType(Eq(ac3_type)))
-      .WillRepeatedly(Return(true));
-
   InitializeDemuxer();
 
   // Attempt a read from the audio stream and run the message loop until done.
@@ -1365,8 +1356,6 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
   // Read the first two frames and check that we are getting expected data
   Read(audio, FROM_HERE, 834, 0, true);
   Read(audio, FROM_HERE, 836, 34830, true);
-
-  SetMediaClient(nullptr);
 #else
   InitializeDemuxerAndExpectPipelineStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
 #endif
@@ -1375,15 +1364,6 @@ TEST_F(FFmpegDemuxerTest, Read_AC3_Audio) {
 TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
   CreateDemuxer("bear-eac3-only-frag.mp4");
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
-  // EAC3 is not supported by default media platform. Embedders who add support
-  // must declare it via MediaClient.
-  MockMediaClient media_client;
-  SetMediaClient(&media_client);
-
-  AudioType eac3_type = {AudioCodec::kEAC3};
-  EXPECT_CALL(media_client, IsSupportedAudioType(Eq(eac3_type)))
-      .WillRepeatedly(Return(true));
-
   InitializeDemuxer();
 
   // Attempt a read from the audio stream and run the message loop until done.
@@ -1392,8 +1372,6 @@ TEST_F(FFmpegDemuxerTest, Read_EAC3_Audio) {
   // Read the first two frames and check that we are getting expected data
   Read(audio, FROM_HERE, 870, 0, true);
   Read(audio, FROM_HERE, 872, 34830, true);
-
-  SetMediaClient(nullptr);
 #else
   InitializeDemuxerAndExpectPipelineStatus(DEMUXER_ERROR_NO_SUPPORTED_STREAMS);
 #endif
