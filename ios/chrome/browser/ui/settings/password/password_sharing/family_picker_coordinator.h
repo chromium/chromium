@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol FamilyPickerCoordinatorDelegate;
 @class RecipientInfoForIOSDisplay;
 
 // This coordinator presents a list of Google Family members of a user that
@@ -21,6 +22,9 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Delegate handling coordinator dismissal.
+@property(nonatomic, weak) id<FamilyPickerCoordinatorDelegate> delegate;
 
 @end
 

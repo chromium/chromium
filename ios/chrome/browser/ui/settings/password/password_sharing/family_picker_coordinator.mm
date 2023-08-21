@@ -6,11 +6,14 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 
-@interface FamilyPickerCoordinator () {
+@interface FamilyPickerCoordinator () <
+    FamilyPickerViewControllerPresentationDelegate> {
   NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 }
 
@@ -45,6 +48,7 @@
 
   self.viewController =
       [[FamilyPickerViewController alloc] initWithStyle:ChromeTableViewStyle()];
+  self.viewController.delegate = self;
   self.mediator = [[FamilyPickerMediator alloc] initWithRecipients:_recipients];
   self.mediator.consumer = self.viewController;
   self.navigationController =
@@ -71,6 +75,12 @@
                          completion:nil];
   self.viewController = nil;
   self.mediator = nil;
+}
+
+#pragma mark - FamilyPickerViewControllerPresentationDelegate
+
+- (void)familyPickerWasDismissed:(FamilyPickerViewController*)controller {
+  [self.delegate familyPickerCoordinatorWasDismissed:self];
 }
 
 @end

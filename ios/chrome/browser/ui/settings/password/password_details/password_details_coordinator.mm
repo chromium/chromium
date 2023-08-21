@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_coordinator.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -51,7 +52,8 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler,
                                           PasswordDetailsMediatorDelegate,
-                                          ReauthenticationCoordinatorDelegate> {
+                                          ReauthenticationCoordinatorDelegate,
+                                          PasswordSharingCoordinatorDelegate> {
   password_manager::AffiliatedGroup _affiliatedGroup;
   password_manager::CredentialUIEntry _credential;
 
@@ -389,6 +391,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   self.passwordSharingCoordinator = [[PasswordSharingCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
+  self.passwordSharingCoordinator.delegate = self;
   [self.passwordSharingCoordinator start];
 }
 
@@ -457,6 +460,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
   [self dismissPasswordSharingCoordinator];
+}
+
+#pragma mark - PasswordSharingCoordinatorDelegate
+
+- (void)passwordSharingCoordinatorDidRemove:
+    (PasswordSharingCoordinator*)coordinator {
+  if (self.passwordSharingCoordinator == coordinator) {
+    [self.passwordSharingCoordinator stop];
+    self.passwordSharingCoordinator.delegate = nil;
+    self.passwordSharingCoordinator = nil;
+  }
 }
 
 #pragma mark - Private

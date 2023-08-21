@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_view_controller.h"
@@ -19,7 +21,8 @@
 
 using password_manager::FetchFamilyMembersRequestStatus;
 
-@interface PasswordSharingCoordinator () <PasswordSharingMediatorDelegate>
+@interface PasswordSharingCoordinator () <FamilyPickerCoordinatorDelegate,
+                                          PasswordSharingMediatorDelegate>
 
 // The navigation controller displaying the view controller.
 @property(nonatomic, strong)
@@ -81,6 +84,19 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.viewController = nil;
   self.navigationController = nil;
   self.mediator = nil;
+
+  [self stopFamilyPickerCoordinator];
+}
+
+#pragma mark - FamilyPickerCoordinatorDelegate
+
+- (void)familyPickerCoordinatorWasDismissed:
+    (FamilyPickerCoordinator*)coordinator {
+  if (self.familyPickerCoordinator == coordinator) {
+    [self stopFamilyPickerCoordinator];
+  }
+
+  [self.delegate passwordSharingCoordinatorDidRemove:self];
 }
 
 #pragma mark - PasswordSharingMediatorDelegate
@@ -97,6 +113,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
           initWithBaseViewController:self.viewController
                              browser:self.browser
                           recipients:familyMembers];
+      self.familyPickerCoordinator.delegate = self;
       [self.familyPickerCoordinator start];
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
@@ -108,6 +125,14 @@ using password_manager::FetchFamilyMembersRequestStatus;
       // TODO(crbug.com/1463882): Implement error view.
       break;
   }
+}
+
+#pragma mark - Private
+
+- (void)stopFamilyPickerCoordinator {
+  [self.familyPickerCoordinator stop];
+  self.familyPickerCoordinator.delegate = nil;
+  self.familyPickerCoordinator = nil;
 }
 
 @end

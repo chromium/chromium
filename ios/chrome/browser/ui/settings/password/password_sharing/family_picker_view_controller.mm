@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_view_controller_presentation_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/recipient_info.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -75,6 +76,11 @@ const CGFloat kAccessorySymbolSize = 22;
     [model addItem:[self recipientItem:recipient]
         toSectionWithIdentifier:SectionIdentifierRecipients];
   }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [self.delegate familyPickerWasDismissed:self];
+  [super viewDidDisappear:animated];
 }
 
 #pragma mark - UITableViewDelegate
@@ -222,7 +228,7 @@ const CGFloat kAccessorySymbolSize = 22;
 }
 
 - (void)cancelButtonTapped {
-  // TODO(crbug.com/1463882): Handle cancel tap.
+  [self.delegate familyPickerWasDismissed:self];
 }
 
 - (void)shareButtonTapped {
