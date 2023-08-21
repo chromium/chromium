@@ -396,3 +396,18 @@ ci.builder(
         ],
     },
 )
+
+ci.builder(
+    name = "rts-suite-analysis",
+    executable = "recipe:chromium_rts/rts_analyze",
+    schedule = "0 9 * * *",  # at 1AM or 2AM PT (depending on DST), once a day.
+    triggered_by = [],
+    builderless = False,
+    cores = None,
+    console_view_entry = consoles.console_view_entry(
+        category = "analysis|rts",
+        short_name = "suite-analysis",
+    ),
+    execution_timeout = 10 * time.hour,
+    service_account = "chromium-cipd-builder@chops-service-accounts.iam.gserviceaccount.com",
+)
