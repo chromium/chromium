@@ -1313,7 +1313,7 @@ void* PartitionRoot::ReallocWithFlags(unsigned int flags,
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
   size_t old_usable_size;
-  if (PA_UNLIKELY(!no_hooks && hooks_enabled)) {
+  if (!no_hooks && hooks_enabled) {
     overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
         &old_usable_size, ptr);
   }

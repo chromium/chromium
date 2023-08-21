@@ -1901,7 +1901,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocWithFlagsInternal(
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   void* object = nullptr;
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
-  if (PA_UNLIKELY(hooks_enabled)) {
+  if (hooks_enabled) {
     unsigned int additional_flags = 0;
 #if PA_CONFIG(HAS_MEMORY_TAGGING)
     if (IsMemoryTaggingEnabled()) {
