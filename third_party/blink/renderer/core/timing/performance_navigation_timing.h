@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/timing/not_restored_reasons.h"
 #include "third_party/blink/renderer/core/timing/performance_resource_timing.h"
 
 namespace blink {
@@ -49,7 +50,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
   DOMHighResTimeStamp loadEventEnd() const;
   AtomicString type() const;
   uint16_t redirectCount() const;
-  ScriptValue notRestoredReasons(ScriptState* script_state) const;
+  NotRestoredReasons* notRestoredReasons() const;
   AtomicString systemEntropy() const;
   DOMHighResTimeStamp criticalCHRestart(ScriptState* script_state) const;
 
@@ -80,8 +81,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
 
   bool AllowRedirectDetails() const;
 
-  ScriptValue NotRestoredReasonsBuilder(
-      ScriptState* script_state,
+  NotRestoredReasons* BuildNotRestoredReasons(
       const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const;
 };
 }  // namespace blink

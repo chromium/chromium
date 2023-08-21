@@ -524,6 +524,8 @@ generated_enumeration_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_premultiply_alpha.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_premultiply_alpha.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_prevented_back_forward_cache.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_prevented_back_forward_cache.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_version.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_private_token_version.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.cc",
@@ -1181,6 +1183,8 @@ generated_interface_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_list.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_part.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_node_part.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_not_restored_reasons.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_overscroll_event.cc",
@@ -1653,6 +1657,10 @@ generated_namespace_sources_in_core = [
 generated_observable_array_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_not_restored_reasons.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_not_restored_reasons.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_string.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_observable_array_string.h",
 ]
 
 generated_sync_iterator_sources_in_core = [
