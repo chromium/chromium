@@ -1848,7 +1848,7 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     }
 
 #if BUILDFLAG(IS_MAC)
-    if (*transport_availability_.make_credential_attachment ==
+    if (transport_availability_.make_credential_attachment ==
         device::AuthenticatorAttachment::kPlatform) {
       // For platform attachments, either we have iCloud Keychain available
       // or not. If not, then there's only a single active mechanism (the

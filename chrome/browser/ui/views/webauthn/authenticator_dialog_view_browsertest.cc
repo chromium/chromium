@@ -124,6 +124,8 @@ class AuthenticatorDialogViewTest : public DialogBrowserTest {
       // "Manage devices" button to be shown.
       device::FidoRequestHandlerBase::TransportAvailabilityInfo
           transport_availability;
+      transport_availability.request_type =
+          device::FidoRequestType::kGetAssertion;
       transport_availability.available_transports = {
           AuthenticatorTransport::kUsbHumanInterfaceDevice,
           AuthenticatorTransport::kHybrid};
@@ -171,7 +173,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
 // Test that the models decide to show the "Manage devices" button when a phone
 // is listed.
 // TODO(crbug.com/1474278): Re-enable this test
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
-                       DISABLED_InvokeUi_manage_devices) {
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_manage_devices) {
   ShowAndVerifyUi();
 }
