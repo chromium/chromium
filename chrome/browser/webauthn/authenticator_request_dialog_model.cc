@@ -1087,18 +1087,37 @@ void AuthenticatorRequestDialogModel::RecordMacOsStartedHistogram() {
       transport_availability_.make_credential_attachment.has_value() &&
       *transport_availability_.make_credential_attachment ==
           device::AuthenticatorAttachment::kPlatform) {
-    v = has_icloud_drive_enabled_
-            ? MacOsHistogramValues::
-                  kStartedCreateForProfileAuthenticatorICloudDriveEnabled
-            : MacOsHistogramValues::
-                  kStartedCreateForProfileAuthenticatorICloudDriveDisabled;
+    if (should_create_in_icloud_keychain_) {
+      v = has_icloud_drive_enabled_
+              ? MacOsHistogramValues::
+                    kStartedCreateForICloudKeychainICloudDriveEnabled
+              : MacOsHistogramValues::
+                    kStartedCreateForICloudKeychainICloudDriveDisabled;
+    } else {
+      v = has_icloud_drive_enabled_
+              ? MacOsHistogramValues::
+                    kStartedCreateForProfileAuthenticatorICloudDriveEnabled
+              : MacOsHistogramValues::
+                    kStartedCreateForProfileAuthenticatorICloudDriveDisabled;
+    }
   } else if (transport_availability_.request_type ==
                  device::FidoRequestType::kGetAssertion &&
-             !use_conditional_mediation_ &&
-             transport_availability_.has_platform_authenticator_credential ==
-                 device::FidoRequestHandlerBase::RecognizedCredential::
-                     kHasRecognizedCredential) {
-    v = MacOsHistogramValues::kStartedGetOnlyProfileAuthenticatorRecognised;
+             !use_conditional_mediation_) {
+    const bool profile =
+        transport_availability_.has_platform_authenticator_credential ==
+        device::FidoRequestHandlerBase::RecognizedCredential::
+            kHasRecognizedCredential;
+    const bool icloud =
+        transport_availability_.has_icloud_keychain_credential ==
+        device::FidoRequestHandlerBase::RecognizedCredential::
+            kHasRecognizedCredential;
+    if (profile && !icloud) {
+      v = MacOsHistogramValues::kStartedGetOnlyProfileAuthenticatorRecognised;
+    } else if (icloud && !profile) {
+      v = MacOsHistogramValues::kStartedGetOnlyICloudKeychainRecognised;
+    } else if (icloud && profile) {
+      v = MacOsHistogramValues::kStartedGetBothRecognised;
+    }
   }
 
   if (v) {
@@ -1119,11 +1138,20 @@ void AuthenticatorRequestDialogModel::RecordMacOsSuccessHistogram(
 
   if (transport_availability_.request_type ==
       device::FidoRequestType::kMakeCredential) {
-    v = has_icloud_drive_enabled_
-            ? MacOsHistogramValues::
-                  kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled
-            : MacOsHistogramValues::
-                  kSuccessfulCreateForProfileAuthenticatorICloudDriveDisabled;
+    if (authenticator_type == device::AuthenticatorType::kTouchID) {
+      v = has_icloud_drive_enabled_
+              ? MacOsHistogramValues::
+                    kSuccessfulCreateForProfileAuthenticatorICloudDriveEnabled
+              : MacOsHistogramValues::
+                    kSuccessfulCreateForProfileAuthenticatorICloudDriveDisabled;
+    } else if (authenticator_type ==
+               device::AuthenticatorType::kICloudKeychain) {
+      v = has_icloud_drive_enabled_
+              ? MacOsHistogramValues::
+                    kSuccessfulCreateForICloudKeychainICloudDriveEnabled
+              : MacOsHistogramValues::
+                    kSuccessfulCreateForICloudKeychainICloudDriveDisabled;
+    }
   } else {
     if (authenticator_type == device::AuthenticatorType::kTouchID) {
       v = MacOsHistogramValues::kSuccessfulGetFromProfileAuthenticator;

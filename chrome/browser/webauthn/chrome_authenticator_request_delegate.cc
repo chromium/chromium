@@ -529,18 +529,19 @@ void ChromeAuthenticatorRequestDelegate::OnTransactionSuccessful(
     device::FidoRequestType request_type,
     device::AuthenticatorType authenticator_type) {
 #if BUILDFLAG(IS_MAC)
-  if (request_source != RequestSource::kWebAuthentication ||
-      authenticator_type != device::AuthenticatorType::kTouchID) {
+  if (request_source != RequestSource::kWebAuthentication) {
     return;
   }
 
-  base::Time::Exploded exploded;
-  base::Time::Now().UTCExplode(&exploded);
-  Profile::FromBrowserContext(GetBrowserContext())
-      ->GetPrefs()
-      ->SetString(kWebAuthnTouchIdLastUsed,
-                  base::StringPrintf("%04d-%02d-%02d", exploded.year,
-                                     exploded.month, exploded.day_of_month));
+  if (authenticator_type == device::AuthenticatorType::kTouchID) {
+    base::Time::Exploded exploded;
+    base::Time::Now().UTCExplode(&exploded);
+    Profile::FromBrowserContext(GetBrowserContext())
+        ->GetPrefs()
+        ->SetString(kWebAuthnTouchIdLastUsed,
+                    base::StringPrintf("%04d-%02d-%02d", exploded.year,
+                                       exploded.month, exploded.day_of_month));
+  }
 
   dialog_model_->RecordMacOsSuccessHistogram(request_type, authenticator_type);
 #endif
