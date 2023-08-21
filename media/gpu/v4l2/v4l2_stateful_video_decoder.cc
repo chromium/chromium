@@ -318,6 +318,14 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
       return;
     }
+
+    if (!event_task_runner_) {
+      // Receiving Flush before any "normal" Decode() calls. This is a bit of a
+      // contrived situation but possible, nonetheless ,and also a test case.
+      std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+      return;
+    }
+
     RearmCAPTUREQueueMonitoring();
     flush_cb_ = std::move(decode_cb);
     return;
