@@ -16,7 +16,8 @@
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR, AnyOr
 from test_helpers import (ANY_TIMESTAMP, AnyExtending, execute_command,
-                          read_JSON_message, send_JSON_command, subscribe)
+                          goto_url, read_JSON_message, send_JSON_command,
+                          subscribe)
 
 
 @pytest.mark.asyncio
@@ -92,15 +93,7 @@ async def test_network_global_subscription_enabled_in_new_context(
 @pytest.mark.asyncio
 async def test_network_before_request_sent_event_with_cookies_emitted(
         websocket, context_id):
-    await execute_command(
-        websocket, {
-            "method": "browsingContext.navigate",
-            "params": {
-                "url": "http://example.com",
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+    await goto_url(websocket, context_id, "http://example.com")
 
     await execute_command(
         websocket, {
@@ -342,3 +335,60 @@ async def test_network_specific_context_subscription_does_not_enable_cdp_network
         resp = await read_JSON_message(websocket)
 
     assert resp == AnyExtending({"type": "success", "id": command_id})
+
+
+@pytest.mark.asyncio
+async def test_network_sends_only_included_cookies(websocket, context_id):
+
+    await goto_url(websocket, context_id, "https://example.com")
+
+    await execute_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "document.cookie = 'foo=bar;secure'",
+                "target": {
+                    "context": context_id,
+                },
+                "awaitPromise": True,
+                "resultOwnership": "root"
+            }
+        })
+
+    await subscribe(websocket, ["network.beforeRequestSent"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": "http://example.com/",
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        'type': 'event',
+        "method": "network.beforeRequestSent",
+        "params": {
+            "isBlocked": False,
+            "context": context_id,
+            "navigation": ANY_STR,
+            "redirectCount": 0,
+            "request": {
+                "request": ANY_STR,
+                "url": "http://example.com/",
+                "method": "GET",
+                "headers": ANY_LIST,
+                "cookies": [],
+                "headersSize": -1,
+                "bodySize": 0,
+                "timings": ANY_DICT
+            },
+            "initiator": {
+                "type": "other"
+            },
+            "timestamp": ANY_TIMESTAMP
+        }
+    }

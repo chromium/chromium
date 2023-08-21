@@ -431,24 +431,26 @@ export class NetworkRequest {
   static #getCookies(
     associatedCookies: Protocol.Network.BlockedCookieWithReason[]
   ): Network.Cookie[] {
-    return associatedCookies.map((cookieInfo) => {
-      return {
-        name: cookieInfo.cookie.name,
-        value: {
-          type: 'string',
-          value: cookieInfo.cookie.value,
-        },
-        domain: cookieInfo.cookie.domain,
-        path: cookieInfo.cookie.path,
-        expires: cookieInfo.cookie.expires,
-        size: cookieInfo.cookie.size,
-        httpOnly: cookieInfo.cookie.httpOnly,
-        secure: cookieInfo.cookie.secure,
-        sameSite: NetworkRequest.#getCookiesSameSite(
-          cookieInfo.cookie.sameSite
-        ),
-      };
-    });
+    return associatedCookies
+      .filter(({blockedReasons}) => {
+        return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+      })
+      .map(({cookie}) => {
+        return {
+          name: cookie.name,
+          value: {
+            type: 'string',
+            value: cookie.value,
+          },
+          domain: cookie.domain,
+          path: cookie.path,
+          expires: cookie.expires,
+          size: cookie.size,
+          httpOnly: cookie.httpOnly,
+          secure: cookie.secure,
+          sameSite: NetworkRequest.#getCookiesSameSite(cookie.sameSite),
+        };
+      });
   }
 
   static #getCookiesSameSite(
