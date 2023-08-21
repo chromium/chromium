@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/platform/drm/common/scoped_drm_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
 
@@ -94,10 +95,12 @@ bool HardwareDisplayPlaneAtomic::Initialize(DrmDevice* drm) {
 }
 
 bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
+    DrmDevice* drm,
     uint32_t crtc_id,
     uint32_t framebuffer,
     const gfx::Rect& crtc_rect,
     const gfx::Rect& src_rect,
+    const gfx::Rect& damage_rect,
     const gfx::OverlayTransform transform,
     int in_fence_fd,
     uint32_t format_fourcc,
@@ -129,6 +132,18 @@ bool HardwareDisplayPlaneAtomic::AssignPlaneProps(
         OverlayTransformToDrmRotationPropertyValue(transform);
   }
 
+  const bool clip_in_bounds = src_rect.Contains(damage_rect);
+  if (!clip_in_bounds) {
+    LOG(ERROR) << "Damage clip not contained inside source plane";
+  }
+  if (drm && assigned_props_.plane_fb_damage_clips.id && clip_in_bounds) {
+    ScopedDrmModeRectPtr dmg_clip_blob_data = CreateDCBlob(damage_rect);
+    // dmg_clip_blob needs to live long enough to be committed.
+    static ScopedDrmPropertyBlob dmg_clip_blob = drm->CreatePropertyBlob(
+        dmg_clip_blob_data.get(), sizeof(drm_mode_rect));
+    assigned_props_.plane_fb_damage_clips.value = dmg_clip_blob->id();
+  }
+
   if (assigned_props_.in_fence_fd.id)
     assigned_props_.in_fence_fd.value = static_cast<uint64_t>(in_fence_fd);
 
@@ -151,6 +166,11 @@ bool HardwareDisplayPlaneAtomic::SetPlaneProps(drmModeAtomicReq* property_set) {
   if (assigned_props_.rotation.id) {
     plane_set_succeeded &=
         AddPropertyIfValid(property_set, id_, assigned_props_.rotation);
+  }
+
+  if (assigned_props_.plane_fb_damage_clips.id) {
+    plane_set_succeeded &= AddPropertyIfValid(
+        property_set, id_, assigned_props_.plane_fb_damage_clips);
   }
 
   if (assigned_props_.in_fence_fd.id) {

@@ -86,6 +86,35 @@ ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix) {
   return ctm;
 }
 
+ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect) {
+  // Damage rect should be non empty and non negative, otherwise there is
+  // risk of artifacting and black screens.
+  if (rect.width() <= 0) {
+    LOG(ERROR) << "Damage rect width must be positive: " << rect.ToString();
+    return nullptr;
+  }
+  if (rect.height() <= 0) {
+    LOG(ERROR) << "Damage rect height must be positive: " << rect.ToString();
+    return nullptr;
+  }
+  if (rect.x() < 0) {
+    LOG(ERROR) << "Damage rect x1 is negative: " << rect.x();
+    return nullptr;
+  }
+  if (rect.y() < 0) {
+    LOG(ERROR) << "Damage rect y1 is negative: " << rect.y();
+    return nullptr;
+  }
+
+  ScopedDrmModeRectPtr dmg_rect(
+      static_cast<drm_mode_rect*>(malloc(sizeof(drm_mode_rect))));
+  dmg_rect->x1 = rect.x();
+  dmg_rect->y1 = rect.y();
+  dmg_rect->x2 = rect.right();
+  dmg_rect->y2 = rect.bottom();
+  return dmg_rect;
+}
+
 std::vector<display::GammaRampRGBEntry> ResampleLut(
     const std::vector<display::GammaRampRGBEntry>& lut_in,
     size_t desired_size) {

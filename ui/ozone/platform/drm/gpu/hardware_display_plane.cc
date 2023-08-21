@@ -198,6 +198,10 @@ void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
                         &properties_.plane_color_encoding);
   GetDrmPropertyForName(drm, props.get(), "COLOR_RANGE",
                         &properties_.plane_color_range);
+  if (display::features::IsPanelSelfRefresh2Enabled()) {
+    GetDrmPropertyForName(drm, props.get(), "FB_DAMAGE_CLIPS",
+                          &properties_.plane_fb_damage_clips);
+  }
 }
 
 }  // namespace ui

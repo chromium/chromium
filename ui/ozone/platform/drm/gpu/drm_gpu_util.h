@@ -6,6 +6,7 @@
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_GPU_UTIL_H_
 
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/common/drm_wrapper.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -31,6 +32,9 @@ ScopedDrmColorLutPtr CreateLutBlob(
 // significant bit is the sign.
 // |color_matrix| represents a 3x3 matrix in vector form.
 ScopedDrmColorCtmPtr CreateCTMBlob(const std::vector<float>& color_matrix);
+
+// Creates a FB Damage Clip Blob
+ScopedDrmModeRectPtr CreateDCBlob(const gfx::Rect& rect);
 
 // Creates a new look-up table of the desired size to fit the expectations of
 // the DRM driver.

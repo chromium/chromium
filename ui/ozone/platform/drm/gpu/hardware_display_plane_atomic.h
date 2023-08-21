@@ -31,10 +31,12 @@ class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
   bool Initialize(DrmDevice* drm) override;
 
   // Saves the props locally onto the plane to be committed later.
-  virtual bool AssignPlaneProps(uint32_t crtc_id,
+  virtual bool AssignPlaneProps(DrmDevice* drm,
+                                uint32_t crtc_id,
                                 uint32_t framebuffer,
                                 const gfx::Rect& crtc_rect,
                                 const gfx::Rect& src_rect,
+                                const gfx::Rect& damage_rect,
                                 const gfx::OverlayTransform transform,
                                 int in_fence_fd,
                                 uint32_t format_fourcc,

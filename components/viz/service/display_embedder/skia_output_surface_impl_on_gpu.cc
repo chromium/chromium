@@ -2287,9 +2287,12 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     }
 
     if (overlays_.size()) {
+      for (auto& each : overlays_) {
+        DBG_DRAW_RECT("output.overlay.rect", each.display_rect);
+        DBG_DRAW_RECT("output.overlay.damage", each.damage_rect);
+      }
       TRACE_EVENT1("viz", "SkiaOutputDevice->ScheduleOverlays()",
                    "num_overlays", overlays_.size());
-
       constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
       constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
       constexpr int kHistogramTimeBuckets = 50;

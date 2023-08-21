@@ -31,6 +31,7 @@ DrmOverlayPlane::DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
                                  std::unique_ptr<gfx::GpuFence> gpu_fence)
     : buffer(buffer),
       plane_transform(gfx::OVERLAY_TRANSFORM_NONE),
+      damage_rect(buffer->size()),
       display_bounds(gfx::Point(), buffer->size()),
       crop_rect(0, 0, 1, 1),
       enable_blend(false),
@@ -39,6 +40,7 @@ DrmOverlayPlane::DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
 DrmOverlayPlane::DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
                                  int z_order,
                                  gfx::OverlayTransform plane_transform,
+                                 const gfx::Rect& damage_rect,
                                  const gfx::Rect& display_bounds,
                                  const gfx::RectF& crop_rect,
                                  bool enable_blend,
@@ -46,6 +48,7 @@ DrmOverlayPlane::DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
     : buffer(buffer),
       z_order(z_order),
       plane_transform(plane_transform),
+      damage_rect(damage_rect),
       display_bounds(display_bounds),
       crop_rect(crop_rect),
       enable_blend(enable_blend),
@@ -59,6 +62,7 @@ DrmOverlayPlane::DrmOverlayPlane(
           buffer,
           overlay_plane_data.z_order,
           absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform),
+          overlay_plane_data.damage_rect,
           gfx::ToNearestRect(overlay_plane_data.display_bounds),
           overlay_plane_data.crop_rect,
           overlay_plane_data.enable_blend,
@@ -73,14 +77,15 @@ DrmOverlayPlane::~DrmOverlayPlane() = default;
 // static
 DrmOverlayPlane DrmOverlayPlane::Error() {
   return DrmOverlayPlane(nullptr, 0, gfx::OVERLAY_TRANSFORM_INVALID,
-                         gfx::Rect(), gfx::RectF(), /* enable_blend */ true,
-                         /* gpu_fence */ nullptr);
+                         gfx::Rect(), gfx::Rect(), gfx::RectF(),
+                         /* enable_blend */ true, /* gpu_fence */ nullptr);
 }
 
 bool DrmOverlayPlane::operator<(const DrmOverlayPlane& plane) const {
-  return std::tie(z_order, display_bounds, crop_rect, plane_transform) <
-         std::tie(plane.z_order, plane.display_bounds, plane.crop_rect,
-                  plane.plane_transform);
+  return std::tie(z_order, damage_rect, display_bounds, crop_rect,
+                  plane_transform) <
+         std::tie(plane.z_order, plane.damage_rect, plane.display_bounds,
+                  plane.crop_rect, plane.plane_transform);
 }
 
 // static
@@ -96,8 +101,9 @@ const DrmOverlayPlane* DrmOverlayPlane::GetPrimaryPlane(
 }
 
 DrmOverlayPlane DrmOverlayPlane::Clone() const {
-  return DrmOverlayPlane(buffer, z_order, plane_transform, display_bounds,
-                         crop_rect, enable_blend, CloneGpuFence(gpu_fence));
+  return DrmOverlayPlane(buffer, z_order, plane_transform, damage_rect,
+                         display_bounds, crop_rect, enable_blend,
+                         CloneGpuFence(gpu_fence));
 }
 
 void DrmOverlayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
@@ -106,6 +112,7 @@ void DrmOverlayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("framebuffer_id", buffer ? buffer->framebuffer_id() : -1);
   dict.Add("z_order", z_order);
   dict.Add("plane_transform", plane_transform);
+  dict.Add("damage_rect", damage_rect.ToString());
   dict.Add("display_bounds", display_bounds.ToString());
   dict.Add("crop_rect", crop_rect.ToString());
   dict.Add("enable_blend", enable_blend);

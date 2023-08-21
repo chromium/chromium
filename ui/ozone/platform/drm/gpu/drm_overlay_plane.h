@@ -35,6 +35,7 @@ struct DrmOverlayPlane {
   DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
                   int z_order,
                   gfx::OverlayTransform plane_transform,
+                  const gfx::Rect& damage_rect,
                   const gfx::Rect& display_bounds,
                   const gfx::RectF& crop_rect,
                   bool enable_blend,
@@ -67,6 +68,7 @@ struct DrmOverlayPlane {
   scoped_refptr<DrmFramebuffer> buffer;
   int z_order = 0;
   gfx::OverlayTransform plane_transform;
+  gfx::Rect damage_rect;
   gfx::Rect display_bounds;
   gfx::RectF crop_rect;
   bool enable_blend;

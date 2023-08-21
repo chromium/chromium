@@ -81,6 +81,7 @@ class HardwareDisplayPlane {
     DrmWrapper::Property plane_ctm;
     DrmWrapper::Property plane_color_encoding;
     DrmWrapper::Property plane_color_range;
+    DrmWrapper::Property plane_fb_damage_clips;
   };
 
   const uint32_t id_;
