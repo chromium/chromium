@@ -8,7 +8,9 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/subset_font.h"
+#include "third_party/skia/include/codec/SkBmpDecoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
+#include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/codec/SkWebpDecoder.h"
@@ -103,6 +105,15 @@ sk_sp<SkData> SerializeTypeface(SkTypeface* typeface, void* ctx) {
   return subset_data;
 }
 
+static bool is_supported_codec(sk_sp<SkData> data) {
+  CHECK(data);
+  return SkBmpDecoder::IsBmp(data->data(), data->size()) ||
+         SkGifDecoder::IsGif(data->data(), data->size()) ||
+         SkPngDecoder::IsPng(data->data(), data->size()) ||
+         SkJpegDecoder::IsJpeg(data->data(), data->size()) ||
+         SkWebpDecoder::IsWebp(data->data(), data->size());
+}
+
 sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   ImageSerializationContext* context =
       reinterpret_cast<ImageSerializationContext*>(ctx);
@@ -124,7 +135,7 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
 
   // If there already exists encoded data use it directly.
   sk_sp<SkData> encoded_data = image->refEncodedData();
-  if (!encoded_data) {
+  if (!encoded_data || !is_supported_codec(encoded_data)) {
     // Use the default PNG at quality 100 as it is safe.
     // TODO(crbug/1198304): Investigate supporting JPEG at quality 100 for
     // opaque images.
@@ -134,10 +145,6 @@ sk_sp<SkData> SerializeImage(SkImage* image, void* ctx) {
   if (!encoded_data) {
     return SkData::MakeEmpty();
   }
-
-  CHECK(SkPngDecoder::IsPng(encoded_data->data(), encoded_data->size()) ||
-        SkJpegDecoder::IsJpeg(encoded_data->data(), encoded_data->size()) ||
-        SkWebpDecoder::IsWebp(encoded_data->data(), encoded_data->size()));
 
   // Ensure the encoded data fits in the size restriction if present.
   // OOM Prevention: This avoids creating/keeping large serialized images
@@ -170,6 +177,12 @@ sk_sp<SkImage> DeserializeImage(const void* bytes, size_t length, void*) {
   };
   if (SkPngDecoder::IsPng(bytes, length)) {
     return get_image(SkPngDecoder::Decode(data, nullptr));
+  }
+  if (SkBmpDecoder::IsBmp(bytes, length)) {
+    return get_image(SkBmpDecoder::Decode(data, nullptr));
+  }
+  if (SkGifDecoder::IsGif(bytes, length)) {
+    return get_image(SkGifDecoder::Decode(data, nullptr));
   }
   if (SkJpegDecoder::IsJpeg(bytes, length)) {
     return get_image(SkJpegDecoder::Decode(data, nullptr));
