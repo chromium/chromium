@@ -47,6 +47,9 @@ struct SiteInstanceInfo {
   // Specifies whether this SiteInstance is for a <webview> guest.
   bool is_guest;
 
+  // Specifies whether this SiteInstance is for a PDF.
+  bool is_pdf;
+
   // If this SiteInstance uses a non-default StoragePartition, this specifies a
   // string representation of that StoragePartition.
   string? storage_partition;
