@@ -9,6 +9,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
 
+#if !BUILDFLAG(IS_IOS)
+#include "content/public/browser/color_chooser.h"
+#endif
+
 namespace content {
 
 void ShellPlatformDelegate::DidCreateOrAttachWebContents(
