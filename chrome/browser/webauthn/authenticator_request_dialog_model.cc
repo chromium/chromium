@@ -1893,6 +1893,12 @@ void AuthenticatorRequestDialogModel::
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
   offer_try_again_in_ui_ = false;
+#elif BUILDFLAG(IS_MAC)
+  // If there are multiple platform authenticators, one of them is the default.
+  if (!type.has_value() &&
+      base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain)) {
+    type = device::AuthenticatorType::kTouchID;
+  }
 #endif
 
   auto& authenticators =

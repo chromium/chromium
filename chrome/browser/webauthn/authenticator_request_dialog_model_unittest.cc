@@ -1766,6 +1766,32 @@ class MultiplePlatformAuthenticatorsTest
       device::kWebAuthnNewPasskeyUI};
 };
 
+class RequestCallbackReceiver {
+ public:
+  base::RepeatingCallback<void(const std::string&)> Callback() {
+    return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
+                               base::Unretained(this));
+  }
+
+  std::string WaitForResult() {
+    if (!authenticator_id_) {
+      run_loop_->Run();
+    }
+    std::string ret = std::move(*authenticator_id_);
+    authenticator_id_.reset();
+    run_loop_ = std::make_unique<base::RunLoop>();
+    return ret;
+  }
+
+ private:
+  void OnRequest(const std::string& authenticator_id) {
+    authenticator_id_ = authenticator_id;
+    run_loop_->Quit();
+  }
+  absl::optional<std::string> authenticator_id_;
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+};
+
 TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
   using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   const struct {
@@ -1801,6 +1827,54 @@ TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
   }
 }
 
+#if BUILDFLAG(IS_MAC)
+
+TEST_F(MultiplePlatformAuthenticatorsTest, Dispatch) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnICloudKeychain};
+
+  for (const bool should_create_in_icloud_keychain : {false, true}) {
+    SCOPED_TRACE(should_create_in_icloud_keychain);
+
+    TransportAvailabilityInfo transports_info;
+    transports_info.has_icloud_keychain = true;
+    transports_info.available_transports = {AuthenticatorTransport::kInternal};
+    transports_info.request_type = device::FidoRequestType::kMakeCredential;
+    transports_info.make_credential_attachment =
+        device::AuthenticatorAttachment::kPlatform;
+
+    AuthenticatorRequestDialogModel model(main_rfh());
+    model.set_allow_icloud_keychain(true);
+    model.set_should_create_in_icloud_keychain(
+        should_create_in_icloud_keychain);
+
+    RequestCallbackReceiver request_callback;
+    model.SetRequestCallback(request_callback.Callback());
+
+    const std::string kProfileAuthenticatorId = "platauth";
+    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+        kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
+        device::AuthenticatorType::kTouchID));
+    const std::string kICloudKeychainId = "ickc";
+    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+        kICloudKeychainId, AuthenticatorTransport::kInternal,
+        device::AuthenticatorType::kICloudKeychain));
+
+    model.StartFlow(std::move(transports_info),
+                    /*is_conditional_mediation=*/false);
+    if (should_create_in_icloud_keychain) {
+      EXPECT_EQ(request_callback.WaitForResult(), kICloudKeychainId);
+    } else {
+      EXPECT_EQ(model.current_step(),
+                AuthenticatorRequestDialogModel::Step::kCreatePasskey);
+      model.HideDialogAndDispatchToPlatformAuthenticator();
+      EXPECT_EQ(request_callback.WaitForResult(), kProfileAuthenticatorId);
+    }
+  }
+}
+
+#endif
+
 class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -1830,32 +1904,6 @@ class RepeatingValueCallbackReceiver {
     run_loop_->Quit();
   }
   absl::optional<Value> value_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
-};
-
-class RequestCallbackReceiver {
- public:
-  base::RepeatingCallback<void(const std::string&)> Callback() {
-    return base::BindRepeating(&RequestCallbackReceiver::OnRequest,
-                               base::Unretained(this));
-  }
-
-  std::string WaitForResult() {
-    if (!authenticator_id_) {
-      run_loop_->Run();
-    }
-    std::string ret = std::move(*authenticator_id_);
-    authenticator_id_.reset();
-    run_loop_ = std::make_unique<base::RunLoop>();
-    return ret;
-  }
-
- private:
-  void OnRequest(const std::string& authenticator_id) {
-    authenticator_id_ = authenticator_id;
-    run_loop_->Quit();
-  }
-  absl::optional<std::string> authenticator_id_;
   std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
 };
 
