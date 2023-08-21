@@ -105,6 +105,7 @@ apps::IntentPtr MakeShareIntent(const GURL& filesystem_url,
     intent->mime_type = mime_type;
     intent->files = std::vector<apps::IntentFilePtr>{};
     auto file = std::make_unique<apps::IntentFile>(filesystem_url);
+    file->mime_type = mime_type;
     intent->files.push_back(std::move(file));
   }
   if (!drive_share_url.is_empty()) {

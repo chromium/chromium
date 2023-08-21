@@ -788,6 +788,25 @@ TEST_F(IntentUtilTest, FileWithDlpSourceUrls) {
   EXPECT_TRUE(intent->MatchFilter(filter));
 }
 
+/*
+ * Tests that the MakeShareIntent function overload for making intent for a
+ * single files creates an intent with consistent mime types.
+ */
+TEST_F(IntentUtilTest, ShareSingleIntent) {
+  const std::string mime_type = "image/jpeg";
+  const GURL file_url = GURL("https://www.google.com/");
+  const GURL drive_share_url = GURL("https://drive.google.com/");
+
+  auto intent = apps_util::MakeShareIntent(file_url, mime_type, drive_share_url,
+                                           /* is_directory: */ false);
+
+  ASSERT_EQ(1u, intent->files.size());
+  ASSERT_TRUE(intent->mime_type);
+  EXPECT_EQ(mime_type, intent->mime_type.value());
+  ASSERT_TRUE(intent->files[0]->mime_type);
+  EXPECT_EQ(mime_type, intent->files[0]->mime_type.value());
+}
+
 TEST_F(IntentUtilTest, TextMatch) {
   std::string mime_type1 = "text/plain";
   std::string mime_type2 = "image/jpeg";
