@@ -18,24 +18,9 @@
 
 using ::testing::_;
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 namespace {
-
-class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
- public:
-  explicit PostTaskAndReplyTaskRunner(TaskRunner* destination)
-      : destination_(destination) {}
-
- private:
-  bool PostTask(const Location& from_here, OnceClosure task) override {
-    return destination_->PostTask(from_here, std::move(task));
-  }
-
-  // Non-owning.
-  const raw_ptr<TaskRunner> destination_;
-};
 
 class ObjectToDelete : public RefCounted<ObjectToDelete> {
  public:
@@ -120,13 +105,15 @@ class PostTaskAndReplyImplTest : public testing::Test {
   PostTaskAndReplyImplTest() = default;
 
   bool PostTaskAndReplyToMockObject() {
-    return PostTaskAndReplyTaskRunner(post_runner_.get())
-        .PostTaskAndReply(
-            FROM_HERE,
-            BindOnce(&MockObject::Task, Unretained(&mock_object_),
-                     MakeRefCounted<ObjectToDelete>(&delete_task_flag_)),
-            BindOnce(&MockObject::Reply, Unretained(&mock_object_),
-                     MakeRefCounted<ObjectToDelete>(&delete_reply_flag_)));
+    return PostTaskAndReplyImpl(
+        [this](const Location& location, OnceClosure task) {
+          return post_runner_->PostTask(location, std::move(task));
+        },
+        FROM_HERE,
+        BindOnce(&MockObject::Task, Unretained(&mock_object_),
+                 MakeRefCounted<ObjectToDelete>(&delete_task_flag_)),
+        BindOnce(&MockObject::Reply, Unretained(&mock_object_),
+                 MakeRefCounted<ObjectToDelete>(&delete_reply_flag_)));
   }
 
   void ExpectPostTaskAndReplyToMockObjectSucceeds() {
@@ -231,5 +218,4 @@ TEST_F(PostTaskAndReplyImplTest,
   EXPECT_TRUE(delete_reply_flag_);
 }
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

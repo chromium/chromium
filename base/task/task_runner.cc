@@ -15,34 +15,6 @@
 
 namespace base {
 
-namespace {
-
-// TODO(akalin): There's only one other implementation of
-// PostTaskAndReplyImpl in post_task.cc.  Investigate whether it'll be
-// possible to merge the two.
-class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
- public:
-  explicit PostTaskAndReplyTaskRunner(TaskRunner* destination);
-
- private:
-  bool PostTask(const Location& from_here, OnceClosure task) override;
-
-  // Non-owning.
-  raw_ptr<TaskRunner, AcrossTasksDanglingUntriaged> destination_;
-};
-
-PostTaskAndReplyTaskRunner::PostTaskAndReplyTaskRunner(
-    TaskRunner* destination) : destination_(destination) {
-  DCHECK(destination_);
-}
-
-bool PostTaskAndReplyTaskRunner::PostTask(const Location& from_here,
-                                          OnceClosure task) {
-  return destination_->PostTask(from_here, std::move(task));
-}
-
-}  // namespace
-
 bool TaskRunner::PostTask(const Location& from_here, OnceClosure task) {
   return PostDelayedTask(from_here, std::move(task), base::TimeDelta());
 }
@@ -50,7 +22,10 @@ bool TaskRunner::PostTask(const Location& from_here, OnceClosure task) {
 bool TaskRunner::PostTaskAndReply(const Location& from_here,
                                   OnceClosure task,
                                   OnceClosure reply) {
-  return PostTaskAndReplyTaskRunner(this).PostTaskAndReply(
+  return internal::PostTaskAndReplyImpl(
+      [this](const Location& location, OnceClosure task) {
+        return PostTask(location, std::move(task));
+      },
       from_here, std::move(task), std::move(reply));
 }
 
