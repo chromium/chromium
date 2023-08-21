@@ -34,7 +34,7 @@ class OobeCompletionTrackerFactory : public ProfileKeyedServiceFactory {
   ~OobeCompletionTrackerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
