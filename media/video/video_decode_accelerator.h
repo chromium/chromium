@@ -168,10 +168,6 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
 
     OutputMode output_mode = OutputMode::ALLOCATE;
 
-    // The list of picture buffer formats that the client knows how to use. An
-    // empty list means any format is supported.
-    std::vector<VideoPixelFormat> supported_output_formats;
-
     // The H264 SPS and PPS configuration data. Not all clients populate these
     // fields, so they should be parsed from the bitstream instead, if required.
     // Each SPS and PPS is prefixed with the Annex B framing bytes: 0, 0, 0, 1.
