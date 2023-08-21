@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "components/media_message_center/media_controls_progress_view.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -180,7 +181,8 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   }
 
   void SimulateMediaSessionChanged(
-      media_session::mojom::MediaPlaybackState playback_state) {
+      media_session::mojom::MediaPlaybackState playback_state,
+      bool is_sensitive = false) {
     // Simulate media session change.
     media_controls_view_->MediaSessionChanged(base::UnguessableToken::Create());
 
@@ -188,6 +190,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     media_session::mojom::MediaSessionInfoPtr session_info(
         media_session::mojom::MediaSessionInfo::New());
     session_info->playback_state = playback_state;
+    session_info->is_sensitive = is_sensitive;
 
     // Simulate media session information change.
     media_controls_view_->MediaSessionInfoChanged(session_info.Clone());
@@ -523,6 +526,29 @@ TEST_F(LockScreenMediaControlsViewTest, CloseButtonVisibility) {
   EXPECT_TRUE(media_controls_view_->IsDrawn());
   EXPECT_TRUE(close_button()->IsDrawn());
   EXPECT_FALSE(CloseButtonHasImage());
+}
+
+TEST_F(LockScreenMediaControlsViewTest,
+       MediaControlsNotShownIfSensitiveWithHideMetadataFeatureFlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndDisableFeature(
+      media::kHideIncognitoMediaMetadata);
+  SimulateMediaSessionChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying,
+      /*is_sensitive=*/true);
+
+  EXPECT_FALSE(media_controls_view_->IsDrawn());
+}
+
+TEST_F(LockScreenMediaControlsViewTest,
+       MediaControlsShownIfSensitiveWithHideMetadataFeatureFlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(media::kHideIncognitoMediaMetadata);
+  SimulateMediaSessionChanged(
+      media_session::mojom::MediaPlaybackState::kPlaying,
+      /*is_sensitive=*/true);
+
+  EXPECT_TRUE(media_controls_view_->IsDrawn());
 }
 
 TEST_F(LockScreenMediaControlsViewTest, CloseButtonClick) {

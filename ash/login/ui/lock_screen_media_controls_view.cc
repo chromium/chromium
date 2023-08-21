@@ -22,6 +22,7 @@
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "components/vector_icons/vector_icons.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -505,8 +506,16 @@ void LockScreenMediaControlsView::MediaSessionInfoChanged(
     return;
   }
 
+  // We only consider the session as sensitive if its metadata comes from an OTR
+  // session and the kHideIncognitoMediaMetadata flag is off. When the flag is
+  // on, the session's metadata is obscured (in Incognito mode), so don't need
+  // to hide the media controls.
+  bool is_sensitive =
+      !base::FeatureList::IsEnabled(media::kHideIncognitoMediaMetadata) &&
+      session_info->is_sensitive;
+
   // If the session is marked as sensitive then don't show the controls.
-  if (session_info->is_sensitive && !IsDrawn()) {
+  if (is_sensitive && !IsDrawn()) {
     SetShown(Shown::kNotShownSessionSensitive);
     return;
   }
