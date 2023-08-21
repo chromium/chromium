@@ -103,7 +103,7 @@ class ChromeDriver(object):
             for p in processes:
               p.terminate()
 
-            gone, alive = psutil.wait_procs(processes, timeout=3)
+            _, alive = psutil.wait_procs(processes, timeout=3)
             if len(alive):
               print('Killing', len(alive), 'processes')
               for p in alive:
@@ -136,6 +136,7 @@ class ChromeDriver(object):
     self._executor = command_executor.CommandExecutor(server_url)
     self._server_url = server_url
     self.w3c_compliant = False
+    self.debuggerAddress = None
 
     options = {}
 
@@ -208,7 +209,6 @@ class ChromeDriver(object):
       assert type(devtools_events_to_log) is list
       options['devToolsEventsToLog'] = devtools_events_to_log
 
-    download_prefs = {}
     if download_dir:
       if 'prefs' not in options:
         options['prefs'] = {}
@@ -262,8 +262,10 @@ class ChromeDriver(object):
       self.w3c_compliant = True
       self._session_id = response['value']['sessionId']
       self.capabilities = self._UnwrapValue(response['value']['capabilities'])
-      self.debuggerAddress = str(
-          self.capabilities['goog:chromeOptions']['debuggerAddress'])
+      if ('goog:chromeOptions' in self.capabilities
+          and 'debuggerAddress' in self.capabilities['goog:chromeOptions']):
+          self.debuggerAddress = str(
+              self.capabilities['goog:chromeOptions']['debuggerAddress'])
     elif isinstance(response['status'], int):
       self.w3c_compliant = False
       self._session_id = response['sessionId']
