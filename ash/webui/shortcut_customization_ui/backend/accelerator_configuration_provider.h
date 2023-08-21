@@ -38,6 +38,17 @@ class PrefService;
 
 namespace ash::shortcut_ui {
 
+// Enum for histograms, must be kept in sync with the equivalent enum in
+// enums.xml.
+enum class ShortcutCustomizationAction {
+  kAddAccelerator,
+  kRemoveAccelerator,
+  kReplaceAccelerator,
+  kResetAction,
+  kResetAll,
+  kMaxValue = kResetAll,
+};
+
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,

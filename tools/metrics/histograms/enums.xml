@@ -98154,6 +98154,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
              on the server."/>
 </enum>
 
+<enum name="ShortcutCustomizationAction">
+  <summary>
+    Customization actions that can be done in the Key Shortcuts App
+  </summary>
+  <int value="0" label="AddAccelerator"/>
+  <int value="1" label="RemoveAccelerator"/>
+  <int value="2" label="ReplaceAccelerator"/>
+  <int value="3" label="ResetAction"/>
+  <int value="4" label="ResetAll"/>
+</enum>
+
 <enum name="ShortcutsCreationResult">
   <summary>Result of creating shortcuts for PWA.</summary>
   <int value="0" label="Success"/>

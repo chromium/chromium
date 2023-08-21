@@ -29,6 +29,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -58,6 +59,9 @@ using HiddenAcceleratorMap =
 using ReservedAcceleratorMap = std::map<ui::Accelerator, int>;
 
 constexpr size_t kMaxAcceleratorsAllowed = 5;
+
+constexpr char kShortcutCustomizationHistogramName[] =
+    "Ash.ShortcutCustomization.CustomizationAction";
 
 // The following map are accelerators that will not appear in the app and cannot
 // be used as a custom accelerator. For example, if you have an accelerator
@@ -870,6 +874,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   result_data->result = ash_accelerator_configuration_->AddUserAccelerator(
       action_id, accelerator);
   LogAddAccelerator(source, accelerator, result_data->result);
+  base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
+                                ShortcutCustomizationAction::kAddAccelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -898,6 +904,9 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
                                                         accelerator_to_remove);
   result_data->result = result;
   LogRemoveAccelerator(source, accelerator_to_remove, result_data->result);
+  base::UmaHistogramEnumeration(
+      kShortcutCustomizationHistogramName,
+      ShortcutCustomizationAction::kRemoveAccelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -958,6 +967,10 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
       action_id, accelerator_to_replace, new_accelerator);
   LogReplaceAccelerator(source, accelerator_to_replace, new_accelerator,
                         result_data->result);
+
+  base::UmaHistogramEnumeration(
+      kShortcutCustomizationHistogramName,
+      ShortcutCustomizationAction::kReplaceAccelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -979,6 +992,8 @@ void AcceleratorConfigurationProvider::RestoreDefault(
   AcceleratorConfigResult result =
       ash_accelerator_configuration_->RestoreDefault(action_id);
   result_data->result = result;
+  base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
+                                ShortcutCustomizationAction::kResetAction);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -991,6 +1006,8 @@ void AcceleratorConfigurationProvider::RestoreAllDefaults(
   result_data->result = result;
   VLOG(1) << "RestoreAllDefaults completed with error code: "
           << result_data->result;
+  base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
+                                ShortcutCustomizationAction::kResetAll);
   std::move(callback).Run(std::move(result_data));
 }
 

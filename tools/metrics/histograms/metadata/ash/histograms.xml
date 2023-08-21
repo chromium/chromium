@@ -6103,6 +6103,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.ShortcutCustomization.CustomizationAction"
+    enum="ShortcutCustomizationAction" expires_after="2024-08-17">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Tracks the number of times a shortcut customization action has taken place
+    from the Key Shortcuts App.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Smoothness.PercentDroppedFrames_1sWindow2{Stage}"
     units="%" expires_after="2024-01-29">
   <owner>xiyuan@chromium.org</owner>

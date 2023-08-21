@@ -33,6 +33,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
 #include "device/udev_linux/fake_udev_loader.h"
@@ -358,6 +359,8 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     // After adding a fake keyboard, clear the observer call count.
     observer_.clear_num_times_notified();
     EXPECT_EQ(0, observer_.num_times_notified());
+
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
@@ -368,6 +371,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
     AshTestBase::TearDown();
     input_method::InputMethodManager::Shutdown();
     input_method_manager_ = nullptr;
+    histogram_tester_.reset();
   }
 
  protected:
@@ -430,6 +434,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   raw_ptr<TestInputMethodManager, DanglingUntriaged> input_method_manager_;
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_;
   FakeAcceleratorsUpdatedObserver observer_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(AcceleratorConfigurationProviderTest, ResetReceiverOnBindInterface) {
@@ -1149,6 +1154,10 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator, 0);
+
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
@@ -1191,6 +1200,10 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
         EXPECT_EQ(mojom::AcceleratorState::kDisabledByUser,
                   actual_infos[0]->state);
         EXPECT_EQ(mojom::AcceleratorType::kDefault, actual_infos[0]->type);
+        histogram_tester_->ExpectBucketCount(
+            "Ash.ShortcutCustomization.CustomizationAction",
+            ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator,
+            1);
       }));
   base::RunLoop().RunUntilIdle();
 }
@@ -1246,6 +1259,9 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAcceleratorNonAsh) {
 TEST_F(AcceleratorConfigurationProviderTest, RemoveAndRestoreAllDefaults) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kResetAll, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1300,6 +1316,10 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndRestoreAllDefaults) {
 
   base::RunLoop().RunUntilIdle();
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kResetAll, 1);
+
   // Verify accelerators were restored.
   updated_accelerators = config->GetAllAccelerators();
   EXPECT_EQ(1u, updated_accelerators.size());
@@ -1320,6 +1340,10 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndRestoreAllDefaults) {
 TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1373,6 +1397,10 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
                           AcceleratorAction::kToggleMirrorMode, &result);
 
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 1);
 
   // Verify the accelerator was restored.
   updated_accelerators = config->GetAllAccelerators();
@@ -1735,6 +1763,10 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {
       Shell::Get()->ash_accelerator_configuration();
   config->Initialize(test_data);
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
+
   // Ctrl + H is used by the Browser Shortcut, Open History Page.
   const ui::Accelerator accelerator(ui::VKEY_H, ui::EF_CONTROL_DOWN);
   NonConfigurableActionsMap non_config_map = {
@@ -1753,11 +1785,20 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_BROWSER_ACCELERATOR_DESCRIPTION_SHOW_HISTORY),
             result->shortcut_name);
+
+  // Expect no counts with an error with adding an accelerator.
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
 
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
@@ -1797,6 +1838,10 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
       observer.config();
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
                                updated_test_data, actual_config);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddHiddenAccelerator) {
@@ -2193,6 +2238,10 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   FakeAcceleratorsUpdatedMojoObserver observer;
   SetUpObserver(&observer);
 
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kReplaceAccelerator, 0);
+
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
@@ -2215,6 +2264,10 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
 
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kReplaceAccelerator, 1);
 
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
