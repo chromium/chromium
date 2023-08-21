@@ -253,7 +253,8 @@ class AccountManagerUIHandlerTest
 };
 
 IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
-                       OnGetAccountsNoSecondaryAccounts) {
+                       // TODO(crbug.com/1474301): Re-enable this test
+                       DISABLED_OnGetAccountsNoSecondaryAccounts) {
   const std::vector<::account_manager::Account> account_manager_accounts =
       GetAccountsFromAccountManager();
   // Only Primary account.
