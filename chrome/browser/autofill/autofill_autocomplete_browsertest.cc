@@ -206,16 +206,14 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
                                   MockSuggestionsHandler& handler) {
-    FormFieldData field;
     AutofillClient& autofill_client =
         ContentAutofillDriverFactory::FromWebContents(web_contents())
             ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
             ->autofill_manager()
             ->client();
-    test::CreateTestFormField(/*label=*/"", input_name.c_str(), prefix.c_str(),
-                              "input", &field);
     EXPECT_TRUE(autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        AutofillSuggestionTriggerSource::kFormControlElementClicked, field,
+        AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        test::CreateTestFormField(/*label=*/"", input_name, prefix, "input"),
         autofill_client, handler.GetWeakPtr(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.

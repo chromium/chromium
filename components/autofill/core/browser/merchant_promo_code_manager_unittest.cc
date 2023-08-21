@@ -13,20 +13,22 @@
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using testing::_;
-using testing::Field;
-using testing::Truly;
-using testing::UnorderedElementsAre;
-
 namespace autofill {
 
 namespace {
+
+using test::CreateTestFormField;
+using ::testing::_;
+using ::testing::Field;
+using ::testing::Truly;
+using ::testing::UnorderedElementsAre;
 
 class MockSuggestionsHandler
     : public MerchantPromoCodeManager::SuggestionsHandler {
@@ -61,8 +63,8 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     merchant_promo_code_manager_ = std::make_unique<MerchantPromoCodeManager>();
     merchant_promo_code_manager_->Init(personal_data_manager_.get(),
                                        /*is_off_the_record=*/false);
-    test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
-                              "Some Type", &test_field_);
+    test_field_ = CreateTestFormField(/*label=*/"", "Some Field Name",
+                                      "SomePrefix", "Some Type");
   }
 
   // Sets up the TestPersonalDataManager with a promo code offer for the given
@@ -147,9 +149,8 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
 
   // Trigger offers suggestions popup again to be able to test that we log
   // metrics more than once if it is a different field.
-  FormFieldData other_field;
-  test::CreateTestFormField(/*label=*/"", "Some Other Name", "SomePrefix",
-                            "Some Type", &other_field);
+  FormFieldData other_field = CreateTestFormField(
+      /*label=*/"", "Some Other Name", "SomePrefix", "Some Type");
   EXPECT_TRUE(merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       trigger_source, other_field, autofill_client_,
       suggestions_handler->GetWeakPtr(),

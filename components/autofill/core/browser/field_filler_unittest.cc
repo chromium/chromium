@@ -48,6 +48,7 @@ using ::i18n::addressinput::NullStorage;
 using ::i18n::addressinput::Source;
 using ::i18n::addressinput::Storage;
 using ::i18n::addressinput::TestdataSource;
+using test::CreateTestFormField;
 using test::CreateTestSelectField;
 
 std::u16string kMidlineEllipsis2Dots = CreditCard::GetMidlineEllipsisDots(2);
@@ -1949,8 +1950,7 @@ TEST_F(AutofillFieldFillerTest, FillStateAbbreviationInTextField) {
   test::ClearAlternativeStateNameMapForTesting();
   test::PopulateAlternativeStateNameMapForTesting();
 
-  AutofillField field;
-  test::CreateTestFormField("State", "state", "", "text", &field);
+  AutofillField field(CreateTestFormField("State", "state", "", "text"));
   field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 
@@ -2048,8 +2048,7 @@ TEST_F(AutofillFieldFillerTest, FillUpperCaseAbbreviationInStateTextField) {
                                                     .abbreviations = {"by"},
                                                     .alternative_names = {}}});
 
-  AutofillField field;
-  test::CreateTestFormField("State", "state", "", "text", &field);
+  AutofillField field{CreateTestFormField("State", "state", "", "text")};
   field.set_heuristic_type(GetActivePatternSource(), ADDRESS_HOME_STATE);
   field.max_length = 4;
 

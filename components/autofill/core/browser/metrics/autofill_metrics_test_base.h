@@ -205,11 +205,11 @@ class AutofillMetricsBaseTest {
   // Forwards to test::CreateTestFormField(). This is a hack meant as an
   // intermediate step towards removing the out-parameters from
   // autofill_form_util.h.
+  // TODO(crbug.com/1465839): Replace the short-hand by `CreateTestFormField`
+  // now that that also returns by value.
   template <typename... Args>
   [[nodiscard]] FormFieldData CreateField(Args... args) {
-    FormFieldData field;
-    test::CreateTestFormField(args..., &field);
-    return field;
+    return test::CreateTestFormField(args...);
   }
 
   TestBrowserAutofillManager& autofill_manager() {

@@ -126,37 +126,18 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
                                                 std::string_view name,
                                                 std::string_view value,
                                                 std::string_view type);
-void CreateTestFormField(std::string_view label,
-                         std::string_view name,
-                         std::string_view value,
-                         std::string_view type,
-                         FormFieldData* field);
 
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
                                                 std::string_view type,
                                                 std::string_view autocomplete);
-void CreateTestFormField(std::string_view label,
-                         std::string_view name,
-                         std::string_view value,
-                         std::string_view type,
-                         std::string_view autocomplete,
-                         FormFieldData* field);
-
 [[nodiscard]] FormFieldData CreateTestFormField(std::string_view label,
                                                 std::string_view name,
                                                 std::string_view value,
                                                 std::string_view type,
                                                 std::string_view autocomplete,
                                                 uint64_t max_length);
-void CreateTestFormField(std::string_view label,
-                         std::string_view name,
-                         std::string_view value,
-                         std::string_view type,
-                         std::string_view autocomplete,
-                         uint64_t max_length,
-                         FormFieldData* field);
 
 // Provides a quick way to populate a select field.
 [[nodiscard]] FormFieldData CreateTestSelectField(

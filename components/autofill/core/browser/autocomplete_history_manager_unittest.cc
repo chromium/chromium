@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
@@ -33,15 +34,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 
-using testing::_;
-using testing::Eq;
-using testing::Field;
-using testing::Return;
-using testing::UnorderedElementsAre;
-
 namespace autofill {
 
 namespace {
+
+using test::CreateTestFormField;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
@@ -83,11 +85,10 @@ class AutocompleteHistoryManagerTest : public testing::Test {
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
-    test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
-                              "Some Type", &test_field_);
-    test::CreateTestFormField(/*label=*/"", "Another Field Name",
-                              "AnotherPrefix", "Another Type",
-                              &second_test_field_);
+    test_field_ = CreateTestFormField(/*label=*/"", "Some Field Name",
+                                      "SomePrefix", "Some Type");
+    second_test_field_ = CreateTestFormField(/*label=*/"", "Another Field Name",
+                                             "AnotherPrefix", "Another Type");
   }
 
   void TearDown() override {
@@ -507,8 +508,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_FilterSubStringName) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-  test::CreateTestFormField(/*label=*/"", "payment_cvv_info", /*value=*/"",
-                            "Some Type", &test_field_);
+  test_field_ = CreateTestFormField(/*label=*/"", "payment_cvv_info",
+                                    /*value=*/"", "Some Type");
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
@@ -537,8 +538,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_FilterName) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
-  test::CreateTestFormField(/*label=*/"", "input_123", /*value=*/"",
-                            "Some Type", &test_field_);
+  test_field_ =
+      CreateTestFormField(/*label=*/"", "input_123", /*value=*/"", "Some Type");
 
   // Only expect a call when the name is not filtered out.
   EXPECT_CALL(*web_data_service_,
@@ -568,8 +569,8 @@ TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_PassNameWithSubstring) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int mocked_db_query_id = 100;
-  test::CreateTestFormField(/*label=*/"", "foOTPace", /*value=*/"", "Some Type",
-                            &test_field_);
+  test_field_ =
+      CreateTestFormField(/*label=*/"", "foOTPace", /*value=*/"", "Some Type");
 
   std::vector<AutofillEntry> expected_values;
 
@@ -604,8 +605,8 @@ TEST_F(AutocompleteHistoryManagerTest,
        DoQuerySuggestionsForMeaninglessFieldNames_PassName) {
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int mocked_db_query_id = 100;
-  test::CreateTestFormField(/*label=*/"", "addressline_1", /*value=*/"",
-                            "Some Type", &test_field_);
+  test_field_ = CreateTestFormField(/*label=*/"", "addressline_1", /*value=*/"",
+                                    "Some Type");
 
   std::vector<AutofillEntry> expected_values;
 
@@ -1047,8 +1048,8 @@ TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
-  FormFieldData field;
-  test::CreateTestFormField("Address", "address", "", "textarea", &field);
+  FormFieldData field =
+      CreateTestFormField("Address", "address", "", "textarea");
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   EXPECT_CALL(*suggestions_handler.get(),

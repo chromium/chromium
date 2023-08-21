@@ -161,39 +161,34 @@ void CreateTestAddressFormData(FormData* form,
   form->submission_event =
       mojom::SubmissionIndicatorEvent::SAME_DOCUMENT_NAVIGATION;
 
-  FormFieldData field;
-  test::CreateTestFormField("First Name", "firstname", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("First Name", "firstname", "", "text"));
   types->push_back({NAME_FIRST});
-  test::CreateTestFormField("Middle Name", "middlename", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Middle Name", "middlename", "", "text"));
   types->push_back({NAME_MIDDLE});
-  test::CreateTestFormField("Last Name", "lastname", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Last Name", "lastname", "", "text"));
   types->push_back({NAME_LAST, NAME_LAST_SECOND});
-  test::CreateTestFormField("Address Line 1", "addr1", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Address Line 1", "addr1", "", "text"));
   types->push_back({ADDRESS_HOME_LINE1});
-  test::CreateTestFormField("Address Line 2", "addr2", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Address Line 2", "addr2", "", "text"));
   types->push_back({ADDRESS_HOME_SUBPREMISE, ADDRESS_HOME_LINE2});
-  test::CreateTestFormField("City", "city", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(CreateTestFormField("City", "city", "", "text"));
   types->push_back({ADDRESS_HOME_CITY});
-  test::CreateTestFormField("State", "state", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(CreateTestFormField("State", "state", "", "text"));
   types->push_back({ADDRESS_HOME_STATE});
-  test::CreateTestFormField("Postal Code", "zipcode", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Postal Code", "zipcode", "", "text"));
   types->push_back({ADDRESS_HOME_ZIP});
-  test::CreateTestFormField("Country", "country", "", "text", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(CreateTestFormField("Country", "country", "", "text"));
   types->push_back({ADDRESS_HOME_COUNTRY});
-  test::CreateTestFormField("Phone Number", "phonenumber", "", "tel", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(
+      CreateTestFormField("Phone Number", "phonenumber", "", "tel"));
   types->push_back({PHONE_HOME_WHOLE_NUMBER});
-  test::CreateTestFormField("Email", "email", "", "email", &field);
-  form->fields.push_back(field);
+  form->fields.push_back(CreateTestFormField("Email", "email", "", "email"));
   types->push_back({EMAIL_ADDRESS});
 }
 

@@ -17,21 +17,23 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using testing::_;
-using testing::ElementsAre;
-using testing::ElementsAreArray;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Ref;
-using testing::Return;
-
 namespace autofill {
 
 namespace {
+
+using test::CreateTestCreditCardFormData;
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Ref;
+using ::testing::Return;
 
 class MockAutofillClient : public TestAutofillClient {
  public:
