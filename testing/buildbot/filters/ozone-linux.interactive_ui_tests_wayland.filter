@@ -1,6 +1,12 @@
 # TODO(crbug.com/1195712): implement the feature for Wayland.
 -GlobalCommandsApiTest.GlobalCommand
 
+# TODO(crbug.com/1474372): This test relies on popups being destroyed when the user clicks on the
+# desktop. This currently only works in Chromium when passing `--use-wayland-explicit-grab` (see
+# crbug.com/1220274 for more context). Re-enable the test once the default popup dismissal behaviour
+# is fixed.
+-BookmarkBarViewTest2.HideOnDesktopClick
+
 # Failing interactive ui tests
 -BookmarkBarViewTest12.CloseWithModalDialog
 -BookmarkBarViewTest13.ClickOnContextMenuSeparator
