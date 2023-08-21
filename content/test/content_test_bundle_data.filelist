@@ -6630,6 +6630,7 @@ data/scrollable_page.html
 data/scrollable_page_with_anchor.html
 data/scrollable_page_with_content.html
 data/scrollable_page_with_iframe.html
+data/send-beacon-in-iframe.html
 data/send-beacon.html
 data/service_worker/add_save_data_to_title.js
 data/service_worker/add_save_data_to_title.js.mock-http-headers

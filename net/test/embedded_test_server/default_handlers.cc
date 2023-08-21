@@ -631,9 +631,12 @@ std::unique_ptr<HttpResponse> HandleAuthDigest(const HttpRequest& request) {
   return http_response;
 }
 
-// /server-redirect?URL (Also /server-redirect-xxx?URL)
-// Returns a server redirect to URL.
+// 1. /server-redirect?URL or /server-redirect-xxx?URL
+//    Returns a server redirect to URL.
+// 2. /no-cors-server-redirect?URL or /no-cors-server-redirect-xxx?URL
+//    Returns a server redirect to URL which does not allow CORS.
 std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
+                                                   bool allow_cors,
                                                    const HttpRequest& request) {
   GURL request_url = request.GetURL();
   std::string dest =
@@ -643,16 +646,20 @@ std::unique_ptr<HttpResponse> HandleServerRedirect(HttpStatusCode redirect_code,
   if (request.method == METHOD_OPTIONS) {
     auto http_response = std::make_unique<BasicHttpResponse>();
     http_response->set_code(HTTP_OK);
-    http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
-    http_response->AddCustomHeader("Access-Control-Allow-Methods", "*");
-    http_response->AddCustomHeader("Access-Control-Allow-Headers", "*");
+    if (allow_cors) {
+      http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+      http_response->AddCustomHeader("Access-Control-Allow-Methods", "*");
+      http_response->AddCustomHeader("Access-Control-Allow-Headers", "*");
+    }
     return http_response;
   }
 
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(redirect_code);
   http_response->AddCustomHeader("Location", dest);
-  http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+  if (allow_cors) {
+    http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+  }
   http_response->set_content_type("text/html");
   http_response->set_content(
       base::StringPrintf("<!doctype html><p>Redirecting to %s", dest.c_str()));
@@ -1000,6 +1007,28 @@ EmbeddedTestServer::HandleRequestCallback PrefixHandler(
 EmbeddedTestServer::HandleRequestCallback ServerRedirectHandler(
     const std::string& prefix,
     std::unique_ptr<HttpResponse> (*handler)(HttpStatusCode redirect_code,
+                                             bool allow_cors,
+                                             const HttpRequest& request),
+    HttpStatusCode redirect_code) {
+  return base::BindRepeating(
+      &HandlePrefixedRequest, prefix,
+      base::BindRepeating(handler, redirect_code, /*allow_cors=*/true));
+}
+
+EmbeddedTestServer::HandleRequestCallback NoCorsServerRedirectHandler(
+    const std::string& prefix,
+    std::unique_ptr<HttpResponse> (*handler)(HttpStatusCode redirect_code,
+                                             bool allow_cors,
+                                             const HttpRequest& request),
+    HttpStatusCode redirect_code) {
+  return base::BindRepeating(
+      &HandlePrefixedRequest, prefix,
+      base::BindRepeating(handler, redirect_code, /*allow_cors=*/false));
+}
+
+EmbeddedTestServer::HandleRequestCallback ServerRedirectWithCookieHandler(
+    const std::string& prefix,
+    std::unique_ptr<HttpResponse> (*handler)(HttpStatusCode redirect_code,
                                              const HttpRequest& request),
     HttpStatusCode redirect_code) {
   return base::BindRepeating(&HandlePrefixedRequest, prefix,
@@ -1056,10 +1085,27 @@ void RegisterDefaultHandlers(EmbeddedTestServer* server) {
   server->RegisterDefaultHandler(ServerRedirectHandler(
       "/server-redirect-308", &HandleServerRedirect, HTTP_PERMANENT_REDIRECT));
 
-  server->RegisterDefaultHandler(ServerRedirectHandler(
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect", &HandleServerRedirect,
+      HTTP_MOVED_PERMANENTLY));
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect-301", &HandleServerRedirect,
+      HTTP_MOVED_PERMANENTLY));
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect-302", &HandleServerRedirect, HTTP_FOUND));
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect-303", &HandleServerRedirect, HTTP_SEE_OTHER));
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect-307", &HandleServerRedirect,
+      HTTP_TEMPORARY_REDIRECT));
+  server->RegisterDefaultHandler(NoCorsServerRedirectHandler(
+      "/no-cors-server-redirect-308", &HandleServerRedirect,
+      HTTP_PERMANENT_REDIRECT));
+
+  server->RegisterDefaultHandler(ServerRedirectWithCookieHandler(
       "/server-redirect-with-cookie", &HandleServerRedirectWithCookie,
       HTTP_MOVED_PERMANENTLY));
-  server->RegisterDefaultHandler(ServerRedirectHandler(
+  server->RegisterDefaultHandler(ServerRedirectWithCookieHandler(
       "/server-redirect-with-secure-cookie",
       &HandleServerRedirectWithSecureCookie, HTTP_MOVED_PERMANENTLY));
 

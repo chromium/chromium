@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_LOADER_KEEP_ALIVE_URL_LOADER_H_
 
 #include <stdint.h>
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -126,8 +127,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
    public:
     virtual void OnReceiveRedirectForwarded(KeepAliveURLLoader* loader) = 0;
     virtual void OnReceiveRedirectProcessed(KeepAliveURLLoader* loader) = 0;
+    virtual void OnReceiveResponse(KeepAliveURLLoader* loader) = 0;
     virtual void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) = 0;
     virtual void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) = 0;
+    virtual void OnComplete(
+        KeepAliveURLLoader* loader,
+        const network::URLLoaderCompletionStatus& completion_status) = 0;
     virtual void OnCompleteForwarded(
         KeepAliveURLLoader* loader,
         const network::URLLoaderCompletionStatus& completion_status) = 0;
@@ -174,6 +179,20 @@ class CONTENT_EXPORT KeepAliveURLLoader
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
 
+  // Whether `OnReceiveResponse()` has been called.
+  bool HasReceivedResponse() const;
+  // Forwards the stored chain of redriects, response, completion status to the
+  // renderer that initiates this loader, such that the renderer knows what URL
+  // the response come from when parsing the response.
+  //
+  // This method must be called when `IsRendererConnected()` is true.
+  // This method may be called more than one time until it deletes `this`.
+  // WARNING: Calling this method may result in the deletion of `this`.
+  // See also the "Proposed Call Sequences After Migration" section in
+  // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit?pli=1#heading=h.d006i46pmq9
+  void ForwardURLLoad();
+  // Tells if `ForwardURLLoad()` has ever been called.
+  bool IsForwardURLLoadStarted() const;
   // Tells if this loader is still able to forward actions to the
   // URLLoaderClient in renderer.
   bool IsRendererConnected() const;
@@ -219,6 +238,12 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // URLLoader. An extra refptr is required here to support deferred loading.
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
+  struct StoredURLLoad;
+  // Stores the chain of redriects, response, and completion status, such that
+  // they can be forwarded to renderer after handled in browser.
+  // See also `ForwardURLLoad()`.
+  std::unique_ptr<StoredURLLoad> stored_url_load_;
+
   // A refptr to keep the `PolicyContainerHost` from the RenderFrameHost that
   // initiates this loader alive until `this` is destroyed.
   // It is never null.
@@ -229,14 +254,14 @@ class CONTENT_EXPORT KeepAliveURLLoader
   // which owns this loader.
   const raw_ptr<BrowserContext> browser_context_;
 
+  // TODO(crbug.com/1356128): Remove custom throttle logic here with blink's.
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles_;
+
   // Tells if this loader has been started or not.
   bool is_started_ = false;
 
   // A callback to delete this loader object and clean up resource.
   OnDeleteCallback on_delete_callback_;
-
-  // Whether `OnReceiveResponse()` has been called.
-  bool has_received_response_ = false;
 
   // Records the initial request URL to help veryfing redirect request.
   const GURL initial_url_;

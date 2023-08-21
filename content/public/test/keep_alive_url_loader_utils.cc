@@ -99,6 +99,10 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   void WaitForTotalOnReceiveRedirectProcessed(size_t total) {
     on_receive_redirect_processed_count_.WaitUntil(total);
   }
+  // Waits for `OnReceiveResponse()` to be called `total` times.
+  void WaitForTotalOnReceiveResponse(size_t total) {
+    on_receive_response_count_.WaitUntil(total);
+  }
   // Waits for `OnReceiveResponseForwarded()` to be called `total` times.
   void WaitForTotalOnReceiveResponseForwarded(size_t total) {
     on_receive_response_forwarded_count_.WaitUntil(total);
@@ -106,6 +110,14 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   // Waits for `OnReceiveResponseProcessed()` to be called `total` times.
   void WaitForTotalOnReceiveResponseProcessed(size_t total) {
     on_receive_response_processed_count_.WaitUntil(total);
+  }
+  // Waits for `OnComplete()` to be called `error_codes.size()` times,
+  // and the error codes from `on_complete_forwarded_status_` should match
+  // `error_codes`.
+  void WaitForTotalOnComplete(const std::vector<int>& error_codes) {
+    on_complete_count_.WaitUntil(error_codes.size());
+    EXPECT_THAT(on_complete_status_,
+                testing::Pointwise(ErrorCodeEq(), error_codes));
   }
   // Waits for `OnCompleteForwarded()` to be called `error_codes.size()` times,
   // and the error codes from `on_complete_forwarded_status_` should match
@@ -142,11 +154,20 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   void OnReceiveRedirectProcessed(KeepAliveURLLoader* loader) override {
     on_receive_redirect_processed_count_.Increment();
   }
+  void OnReceiveResponse(KeepAliveURLLoader* loader) override {
+    on_receive_response_count_.Increment();
+  }
   void OnReceiveResponseForwarded(KeepAliveURLLoader* loader) override {
     on_receive_response_forwarded_count_.Increment();
   }
   void OnReceiveResponseProcessed(KeepAliveURLLoader* loader) override {
     on_receive_response_processed_count_.Increment();
+  }
+  void OnComplete(
+      KeepAliveURLLoader* loader,
+      const network::URLLoaderCompletionStatus& completion_status) override {
+    on_complete_count_.Increment();
+    on_complete_status_.push_back(completion_status);
   }
   void OnCompleteForwarded(
       KeepAliveURLLoader* loader,
@@ -172,15 +193,18 @@ class TestObserverImpl : public KeepAliveURLLoader::TestObserver {
   AtomicCounter on_receive_redirect_forwarded_count_;
   AtomicCounter on_receive_redirect_processed_count_;
   // OnReceiveResponse*:
+  AtomicCounter on_receive_response_count_;
   AtomicCounter on_receive_response_forwarded_count_;
   AtomicCounter on_receive_response_processed_count_;
   // OnComplete*:
+  AtomicCounter on_complete_count_;
   AtomicCounter on_complete_forwarded_count_;
   AtomicCounter on_complete_processed_count_;
 
   AtomicCounter pause_reading_body_from_net_processed_count_;
   AtomicCounter resume_reading_body_from_net_processed_count_;
 
+  std::vector<network::URLLoaderCompletionStatus> on_complete_status_;
   std::vector<network::URLLoaderCompletionStatus> on_complete_forwarded_status_;
   std::vector<network::URLLoaderCompletionStatus> on_complete_processed_status_;
 };
@@ -221,6 +245,11 @@ void KeepAliveURLLoadersTestObserver::WaitForTotalOnReceiveRedirectProcessed(
   impl_->get()->WaitForTotalOnReceiveRedirectProcessed(total);
 }
 
+void KeepAliveURLLoadersTestObserver::WaitForTotalOnReceiveResponse(
+    size_t total) {
+  impl_->get()->WaitForTotalOnReceiveResponse(total);
+}
+
 void KeepAliveURLLoadersTestObserver::WaitForTotalOnReceiveResponseForwarded(
     size_t total) {
   impl_->get()->WaitForTotalOnReceiveResponseForwarded(total);
@@ -229,6 +258,11 @@ void KeepAliveURLLoadersTestObserver::WaitForTotalOnReceiveResponseForwarded(
 void KeepAliveURLLoadersTestObserver::WaitForTotalOnReceiveResponseProcessed(
     size_t total) {
   impl_->get()->WaitForTotalOnReceiveResponseProcessed(total);
+}
+
+void KeepAliveURLLoadersTestObserver::WaitForTotalOnComplete(
+    const std::vector<int>& error_codes) {
+  impl_->get()->WaitForTotalOnComplete(error_codes);
 }
 
 void KeepAliveURLLoadersTestObserver::WaitForTotalOnCompleteForwarded(

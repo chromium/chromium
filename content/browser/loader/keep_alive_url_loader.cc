@@ -216,6 +216,64 @@ class KeepAliveURLLoader::ThrottleEntry {
   std::unique_ptr<blink::URLLoaderThrottle> throttle_;
 };
 
+// Stores the chain of redriects, response, and completion status, such that
+// they can be forwarded to renderer after handled in browser first.
+// See also `ForwardURLLoad()`.
+struct KeepAliveURLLoader::StoredURLLoad {
+  StoredURLLoad() = default;
+
+  // Not copyable.
+  StoredURLLoad(const StoredURLLoad&) = delete;
+  StoredURLLoad& operator=(const StoredURLLoad&) = delete;
+
+  // Stores data for a redirect received from `OnReceiveRedirect()`.
+  struct RedirectData {
+    RedirectData(const net::RedirectInfo& redirect_info,
+                 network::mojom::URLResponseHeadPtr response_head)
+        : info(redirect_info), head(std::move(response_head)) {}
+    // Not copyable.
+    RedirectData(const RedirectData&) = delete;
+    RedirectData& operator=(const RedirectData&) = delete;
+
+    // A copy of the RedirectInfo.
+    net::RedirectInfo info;
+    // The original URLResponseHead not yet passed to renderer.
+    network::mojom::URLResponseHeadPtr head;
+  };
+
+  // Stores data for a response received from `OnReceiveResponse()`.
+  struct ResponseData {
+    ResponseData(network::mojom::URLResponseHeadPtr response_head,
+                 mojo::ScopedDataPipeConsumerHandle body_handle,
+                 absl::optional<mojo_base::BigBuffer> cached_metadata)
+        : head(std::move(response_head)),
+          body(std::move(body_handle)),
+          metadata(std::move(cached_metadata)) {}
+    // Not copyable.
+    ResponseData(const ResponseData&) = delete;
+    ResponseData& operator=(const ResponseData&) = delete;
+
+    // The original URLResponseHead not yet passed to renderer.
+    network::mojom::URLResponseHeadPtr head;
+    // The original body handle not yet passed to renderer.
+    mojo::ScopedDataPipeConsumerHandle body;
+    // The original cached metadata not yet passed to renderer.
+    absl::optional<mojo_base::BigBuffer> metadata;
+  };
+
+  // Stores all intermediate redirect data received from `OnReceiveRedirect()`.
+  std::queue<std::unique_ptr<RedirectData>> redirects;
+  // Stores the response data received from `OnReceiveResponse()` for later use
+  // in renderer.
+  std::unique_ptr<ResponseData> response = nullptr;
+  // Stores the completion status received from `OnComplete()` for later use in
+  // renderer.
+  absl::optional<network::URLLoaderCompletionStatus> completion_status =
+      absl::nullopt;
+  // Tells whether any of the above field has been used (forwarded to renderer).
+  bool forwarding = false;
+};
+
 KeepAliveURLLoader::KeepAliveURLLoader(
     int32_t request_id,
     uint32_t options,
@@ -233,6 +291,7 @@ KeepAliveURLLoader::KeepAliveURLLoader(
       forwarding_client_(std::move(forwarding_client)),
       traffic_annotation_(traffic_annotation),
       network_loader_factory_(std::move(network_loader_factory)),
+      stored_url_load_(std::make_unique<StoredURLLoad>()),
       policy_container_host_(std::move(policy_container_host)),
       browser_context_(browser_context),
       initial_url_(resource_request.url),
@@ -326,9 +385,24 @@ void KeepAliveURLLoader::FollowRedirect(
   TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",
               request_id_, "url", new_url);
 
-  // Forwards the action to `loader_` in the network service.
-  loader_->FollowRedirect(removed_headers, modified_headers,
-                          modified_cors_exempt_headers, new_url);
+  if (new_url != absl::nullopt) {
+    mojo::ReportBadMessage(
+        "Unexpected `new_url` in KeepAliveURLLoader::FollowRedirect(): "
+        "must be null");
+    return;
+  }
+
+  if (IsRendererConnected()) {
+    // Continue forwarding the stored data to renderer.
+    // Note: we may or may not have response at this point.
+    ForwardURLLoad();
+    // DO NOT touch any members after this line. `this` may be already deleted
+    // if `OnComplete()` has been triggered.
+    return;
+  }
+  // No need to forward anymore as the target renderer is gone.
+  DeleteSelf();
+  // DO NOT touch any members after this line. `this` is deleted.
 }
 
 void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
@@ -343,12 +417,11 @@ void KeepAliveURLLoader::SetPriority(net::RequestPriority priority,
 
 void KeepAliveURLLoader::PauseReadingBodyFromNet() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::FollowRedirect", "request_id",
-              request_id_);
-  if (IsRendererConnected()) {
-    // If the renderer is alive, simply forwards the action to the network
-    // service as the checks are already handled in the renderer.
-    loader_->PauseReadingBodyFromNet();
+  TRACE_EVENT("loading", "KeepAliveURLLoader::PauseReadingBodyFromNet",
+              "request_id", request_id_);
+  if (HasReceivedResponse()) {
+    // This may come from a renderer that tries to process a redirect which has
+    // been previously handled in this loader.
     return;
   }
 
@@ -370,10 +443,9 @@ void KeepAliveURLLoader::ResumeReadingBodyFromNet() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT("loading", "KeepAliveURLLoader::ResumeReadingBodyFromNet",
               "request_id", request_id_);
-  if (IsRendererConnected()) {
-    // If the renderer is alive, simply forwards the action to the network
-    // service as the checks are already handled in the renderer.
-    loader_->ResumeReadingBodyFromNet();
+  if (HasReceivedResponse()) {
+    // This may come from a renderer that tries to process a redirect which has
+    // been previously handled in this loader.
     return;
   }
 
@@ -404,49 +476,6 @@ void KeepAliveURLLoader::OnReceiveEarlyHints(
   // TODO(crbug.com/1356128): Handle in browser process.
 }
 
-void KeepAliveURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response,
-    mojo::ScopedDataPipeConsumerHandle body,
-    absl::optional<mojo_base::BigBuffer> cached_metadata) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveResponse", "request_id",
-              request_id_, "url", last_url_);
-
-  has_received_response_ = true;
-  // TODO(crbug.com/1424731): The renderer might exit before `OnReceiveRedirect`
-  // or `OnReceiveResponse` is called, or during their execution. In such case,
-  // `forwarding_client_` can't finish response handling. Figure out a way to
-  // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
-  // invalidate `forwarding_client_`.
-  if (IsRendererConnected()) {
-    // The renderer is alive, forwards the action.
-
-    // The receiver may fail to finish reading `response`, so response caching
-    // is not guaranteed.
-    forwarding_client_->OnReceiveResponse(std::move(response), std::move(body),
-                                          std::move(cached_metadata));
-    // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
-    // migrated to browser process.
-
-    if (observer_for_testing_) {
-      CHECK_IS_TEST();
-      observer_for_testing_->OnReceiveResponseForwarded(this);
-    }
-    return;
-  }
-
-  if (observer_for_testing_) {
-    CHECK_IS_TEST();
-    observer_for_testing_->OnReceiveResponseProcessed(this);
-  }
-
-  // No need to wait for `OnComplete()`.
-  // This loader should be deleted immediately to avoid hanged requests taking
-  // up resources.
-  DeleteSelf();
-  // DO NOT touch any members after this line. `this` is already deleted.
-}
-
 void KeepAliveURLLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
@@ -454,26 +483,14 @@ void KeepAliveURLLoader::OnReceiveRedirect(
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveRedirect", "request_id",
               request_id_);
 
-  // TODO(crbug.com/1424731): The renderer might exit before `OnReceiveRedirect`
-  // or `OnReceiveResponse` is called, or during their execution. In such case,
-  // `forwarding_client_` can't finish response handling. Figure out a way to
-  // negotiate shutdown timing via RenderFrameHostImpl::OnUnloadAck() and
-  // invalidate `forwarding_client_`.
-  if (IsRendererConnected()) {
-    // The renderer is alive, forwards the action.
-    // Redirects must be handled by the renderer so that it know what URL the
-    // response come from when parsing responses.
-    forwarding_client_->OnReceiveRedirect(redirect_info, std::move(head));
+  // Stores the redirect data for later use by renderer.
+  stored_url_load_->redirects.emplace(
+      std::make_unique<StoredURLLoad::RedirectData>(redirect_info,
+                                                    std::move(head)));
 
-    if (observer_for_testing_) {
-      CHECK_IS_TEST();
-      observer_for_testing_->OnReceiveRedirectForwarded(this);
-    }
-    return;
-  }
-
-  // Handles redirect in browser. See also the call sequence from renderer:
-  // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit#heading=h.6uwqtijf7dvd
+  // Handles all redirects in browser first.
+  // See also the call sequence from renderer:
+  // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY/edit?pli=1#heading=h.d006i46pmq9
 
   // Runs throttles from content embedder.
   ModifiedHeaders modified;
@@ -485,8 +502,9 @@ void KeepAliveURLLoader::OnReceiveRedirect(
     net::RedirectInfo redirect_info_copy = redirect_info;
     auto weak_ptr = GetWeakPtr();
     throttle_entry->throttle().WillRedirectRequest(
-        &redirect_info_copy, *head, &throttle_deferred,
-        &throttle_modified.removed_headers, &throttle_modified.modified_headers,
+        &redirect_info_copy, *(stored_url_load_->redirects.back()->head),
+        &throttle_deferred, &throttle_modified.removed_headers,
+        &throttle_modified.modified_headers,
         &throttle_modified.modified_cors_exempt_headers);
     if (!weak_ptr) {
       // `this` is already destroyed by throttle.
@@ -528,13 +546,59 @@ void KeepAliveURLLoader::OnReceiveRedirect(
     observer_for_testing_->OnReceiveRedirectProcessed(this);
   }
 
+  // Directly forwards the action to `loader_` in the network service.
+  //
   // Follows redirect only after all current throttle UI tasks are executed.
   // Note: there may be throttles running in IO thread, which may send signals
   // in between `FollowRedirect()` and the next `OnReceiveRedirect()` or
   // `OnReceiveResponse()`.
-  FollowRedirect(modified.removed_headers, modified.modified_headers,
-                 modified.modified_cors_exempt_headers,
-                 /*new_url=*/absl::nullopt);
+  loader_->FollowRedirect(modified.removed_headers, modified.modified_headers,
+                          modified.modified_cors_exempt_headers,
+                          /*new_url=*/absl::nullopt);
+}
+
+void KeepAliveURLLoader::OnReceiveResponse(
+    network::mojom::URLResponseHeadPtr response,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("loading", "KeepAliveURLLoader::OnReceiveResponse", "request_id",
+              request_id_, "url", last_url_);
+
+  if (observer_for_testing_) {
+    CHECK_IS_TEST();
+    observer_for_testing_->OnReceiveResponse(this);
+  }
+
+  // In case the renderer is alive, the stored response data will be forwarded
+  // at the end of `ForwardURLLoad()`.
+  stored_url_load_->response = std::make_unique<StoredURLLoad::ResponseData>(
+      std::move(response), std::move(body), std::move(cached_metadata));
+
+  // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
+  // migrated to browser process here so that it works even when renderer is
+  // disconnected.
+  // For now, it happens in the renderer after response is forwarded.
+
+  if (IsRendererConnected()) {
+    // Starts to forward the stored redirects/response to renderer.
+    // Note that `OnComplete()` may be triggered in between the forwarding.
+    ForwardURLLoad();
+    // DO NOT touch any members after this line. `this` may be already deleted
+    // if `OnComplete()` has been triggered.
+    return;
+  }
+
+  if (observer_for_testing_) {
+    CHECK_IS_TEST();
+    observer_for_testing_->OnReceiveResponseProcessed(this);
+  }
+
+  // No need to wait for `OnComplete()`.
+  // This loader should be deleted immediately to avoid hanged requests taking
+  // up resources.
+  DeleteSelf();
+  // DO NOT touch any members after this line. `this` is already deleted.
 }
 
 void KeepAliveURLLoader::OnUploadProgress(int64_t current_position,
@@ -574,16 +638,26 @@ void KeepAliveURLLoader::OnComplete(
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnComplete", "request_id",
               request_id_);
 
-  if (IsRendererConnected()) {
-    // The renderer is alive, forwards the action.
-    forwarding_client_->OnComplete(completion_status);
+  if (observer_for_testing_) {
+    CHECK_IS_TEST();
+    observer_for_testing_->OnComplete(this, completion_status);
+  }
 
-    if (observer_for_testing_) {
-      CHECK_IS_TEST();
-      observer_for_testing_->OnCompleteForwarded(this, completion_status);
+  // In case the renderer is alive, the stored status will be forwarded
+  // at the end of `ForwardURLLoad()`.
+  stored_url_load_->completion_status = completion_status;
+
+  if (IsRendererConnected()) {
+    if (HasReceivedResponse()) {
+      // Do nothing. `completion_status` will be forwarded at the end of
+      // `ForwardURLLoad()`.
+      return;
     }
 
-    DeleteSelf();
+    // Either (1) an error happens in between redirect handling in browser, or
+    // (2) the redirects and response have all been forwarded.
+    // Starts forwarding stored redirects and the completion status to renderer.
+    ForwardURLLoad();
     // DO NOT touch any members after this line. `this` is already deleted.
     return;
   }
@@ -596,6 +670,79 @@ void KeepAliveURLLoader::OnComplete(
 
   DeleteSelf();
   // DO NOT touch any members after this line. `this` is already deleted.
+}
+
+bool KeepAliveURLLoader::HasReceivedResponse() const {
+  return stored_url_load_ && stored_url_load_->response != nullptr;
+}
+
+void KeepAliveURLLoader::ForwardURLLoad() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(IsRendererConnected());
+  CHECK(stored_url_load_);
+
+  // Forwards the redirects/response/completion in the exact sequence.
+  stored_url_load_->forwarding = true;
+
+  if (!stored_url_load_->redirects.empty()) {
+    // All redirects have been handled in the browser. However, redirects must
+    // also be processed by the renderer so that it knows what URL the
+    // response come from when parsing the response.
+    //
+    // Note: The renderer might get shut down before
+    // `forwarding_client_->OnReceiveRedirect()` finish all redirect handling.
+    // In such case, the handling will be taken over by browser from
+    // `OnRendererConnectionError()`.
+    forwarding_client_->OnReceiveRedirect(
+        stored_url_load_->redirects.front()->info,
+        std::move(stored_url_load_->redirects.front()->head));
+    stored_url_load_->redirects.pop();
+
+    if (observer_for_testing_) {
+      CHECK_IS_TEST();
+      observer_for_testing_->OnReceiveRedirectForwarded(this);
+    }
+    // The rest of `stored_url_load_->redirects` will be forwarded in the next
+    // visit to this method when `FollowRedirect()` is called by the renderer.
+    return;
+  }
+
+  if (stored_url_load_->response) {
+    // Note: The receiver may fail to finish reading the entire
+    // `stored_url_load_->response`response`, so response caching is not
+    // guaranteed.
+    // Note: The renderer might get shut down before
+    // `forwarding_client_->OnReceiveResponse()` finish response handling.
+    // In such case, the attributionsrc handling cannot be dropped and should be
+    // taken over by browser in `OnRendererConnectionError().
+    forwarding_client_->OnReceiveResponse(
+        std::move(stored_url_load_->response->head),
+        std::move(stored_url_load_->response->body),
+        std::move(stored_url_load_->response->metadata));
+    stored_url_load_->response = nullptr;
+
+    if (observer_for_testing_) {
+      CHECK_IS_TEST();
+      observer_for_testing_->OnReceiveResponseForwarded(this);
+    }
+  }
+
+  if (stored_url_load_->completion_status.has_value()) {
+    forwarding_client_->OnComplete(*(stored_url_load_->completion_status));
+    if (observer_for_testing_) {
+      CHECK_IS_TEST();
+      observer_for_testing_->OnCompleteForwarded(
+          this, *(stored_url_load_->completion_status));
+    }
+    stored_url_load_ = nullptr;
+
+    DeleteSelf();
+    // DO NOT touch any members after this line. `this` is already deleted.
+  }
+}
+
+bool KeepAliveURLLoader::IsForwardURLLoadStarted() const {
+  return stored_url_load_ && stored_url_load_->forwarding;
 }
 
 bool KeepAliveURLLoader::IsRendererConnected() const {
@@ -639,9 +786,23 @@ void KeepAliveURLLoader::OnNetworkConnectionError() {
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnNetworkConnectionError",
               "request_id", request_id_);
 
-  // The network loader has an error; we should let the client know it's
-  // closed by dropping this, which will in turn make this loader destroyed.
-  forwarding_client_.reset();
+  // The network loader either has an error or gets disconnected after response
+  // handling is completed.
+  if (IsRendererConnected()) {
+    if (!IsForwardURLLoadStarted()) {
+      // The network service disconnects before this loader forwards anything to
+      // renderer.
+      ForwardURLLoad();
+      // DO NOT touch any members after this line. `this` may be deleted.
+      return;
+    }
+    // Otherwise, let `ForwardURLLoad()` continue forwarding the rest.
+    return;
+  }
+
+  // We should let the renderer know it's closed by deleting `this`.
+  DeleteSelf();
+  // DO NOT touch any members after this line. `this` is already deleted.
 }
 
 void KeepAliveURLLoader::OnRendererConnectionError() {
@@ -649,17 +810,22 @@ void KeepAliveURLLoader::OnRendererConnectionError() {
   TRACE_EVENT("loading", "KeepAliveURLLoader::OnRendererConnectionError",
               "request_id", request_id_);
 
-  if (has_received_response_) {
-    // No need to wait for `OnComplete()`.
-    DeleteSelf();
-    // DO NOT touch any members after this line. `this` is already deleted.
+  // Dropping the client as renderer is gone.
+  forwarding_client_.reset();
+
+  if (!IsForwardURLLoadStarted() && !HasReceivedResponse()) {
+    // The renderer disconnects before this loader forwards anything to it.
+    // But the in-browser request processing may not complete yet.
+
+    // TODO(crbug.com/1422645): Ensure that attributionsrc response handling is
+    // taken over by browser.
     return;
   }
-  // Otherwise, let this loader continue to handle responses.
-  forwarding_client_.reset();
-  // TODO(crbug.com/1424731): When we reach here while the renderer is
-  // processing a redirect, we should take over the redirect handling in the
-  // browser process. See TODOs in `OnReceiveRedirect()`.
+
+  // Renderer disconnects in-between forwarding, no need to call
+  // `ForwardURLLoad()` anymore.
+  DeleteSelf();
+  // DO NOT touch any members after this line. `this` is already deleted.
 }
 
 void KeepAliveURLLoader::DeleteSelf() {

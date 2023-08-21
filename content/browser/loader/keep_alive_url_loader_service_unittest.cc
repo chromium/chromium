@@ -476,7 +476,7 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   EXPECT_EQ(loader_service().NumLoadersForTesting(), 0u);
 }
 
-TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
+TEST_F(KeepAliveURLLoaderServiceTest, DoNotForwardOnReceiveRedirect) {
   FakeRemoteURLLoaderFactory renderer_loader_factory;
   MockReceiverURLLoaderClient renderer_loader_client;
   BindKeepAliveURLLoaderFactory(renderer_loader_factory);
@@ -489,11 +489,13 @@ TEST_F(KeepAliveURLLoaderServiceTest, ForwardOnReceiveRedirect) {
   ASSERT_EQ(loader_service().NumLoadersForTesting(), 1u);
 
   // OnReceiveRedirect:
-  // Expects underlying KeepAliveURLLoader forwards to `renderer_loader_client`.
+  // Expects underlying KeepAliveURLLoader NOT forwards to
+  // `renderer_loader_client`: all redirects are processed in browser, and will
+  // only be forwarded after request completes/fails.
   EXPECT_CALL(renderer_loader_client,
               OnReceiveRedirect(_, ResponseHasHeader(kTestResponseHeaderName,
                                                      kTestResponseHeaderValue)))
-      .Times(1);
+      .Times(0);
   // Simluates receiving redirect in the network service.
   GetLastPendingRequest()->client->OnReceiveRedirect(
       CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),

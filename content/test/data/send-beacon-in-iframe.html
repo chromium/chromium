@@ -1,0 +1,56 @@
+<!doctype html>
+<!--
+  This page appends an iframe that calls `navigator.sendBeacon()` with the provided encoded URL and
+  payload specs.
+-->
+<head>
+<title>navigator.sendBeacon() in iframe</title>
+</head>
+<body>
+<script>
+const PARAMS = new URL(location.href).searchParams;
+const TARGET_URL = PARAMS.get('url') ? decodeURIComponent(PARAMS.get('url')) : '';
+const PAYLOAD_TYPE = PARAMS.get('payload_type');
+const PAYLOAD_CONTENT_TYPE= PARAMS.get('payload_content_type');
+const PAYLOAD_SIZE = 100;
+const DELAY_IFRAME_REMOVAL_MS = parseInt(PARAMS.get('delay_iframe_removal_ms'), 10);
+
+function makePayload(payloadType, payloadSize, payloadContentType) {
+  if (!payloadType) return null;
+
+  const prefix = String(payloadSize) + ':';
+  const data = prefix + '*'.repeat(payloadSize - prefix.length);
+
+  switch (payloadType) {
+    case 'string':
+      return data;
+    case 'arraybuffer':
+      return new TextEncoder().encode(data).buffer;
+    case 'form':
+      const formData = new FormData()
+      formData.append('payload', data);
+      return formData;
+    case 'blob':
+      const options = payloadContentType ? {type: payloadContentType} : undefined;
+      const blob = new Blob([data], options);
+      return blob;
+    default:
+      throw Error('invalid payload type');
+  }
+}
+
+const iframe = document.createElement('iframe');
+document.body.appendChild(iframe);
+const payload = makePayload(PAYLOAD_TYPE, PAYLOAD_SIZE, PAYLOAD_CONTENT_TYPE);
+if (payload) {
+  iframe.contentWindow.navigator.sendBeacon(TARGET_URL, payload);
+} else {
+  iframe.contentWindow.navigator.sendBeacon(TARGET_URL);
+}
+if (!isNaN(DELAY_IFRAME_REMOVAL_MS) && DELAY_IFRAME_REMOVAL_MS >= 0) {
+  setTimeout(() => iframe.remove(), DELAY_IFRAME_REMOVAL_MS);
+} else {
+  iframe.remove();
+}
+</script>
+</body>
