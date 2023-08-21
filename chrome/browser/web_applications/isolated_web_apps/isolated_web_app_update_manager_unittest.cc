@@ -57,16 +57,13 @@ namespace web_app {
 namespace {
 
 using base::test::DictionaryHasValue;
-using ::testing::AllOf;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::IsEmpty;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
-using ::testing::NotNull;
 using ::testing::Optional;
-using ::testing::Pointee;
-using ::testing::Property;
 using ::testing::SizeIs;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
@@ -81,39 +78,6 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
   manifest->version = base::UTF8ToUTF16(version.GetString());
 
   return manifest;
-}
-
-MATCHER_P(IsInDir, directory, "") {
-  *result_listener << "where the directory is " << directory;
-  return arg.DirName() == directory;
-}
-
-auto WebAppMatches(const auto& untranslated_name_matcher,
-                   const auto& isolation_data_matcher) {
-  return Pointee(AllOf(Property("untranslated_name", &WebApp::untranslated_name,
-                                untranslated_name_matcher),
-                       Property("isolation_data", &WebApp::isolation_data,
-                                isolation_data_matcher)));
-}
-
-auto IsolationDataMatches(const auto& location_matcher,
-                          const auto& version_matcher,
-                          const auto& pending_update_info_matcher) {
-  return Optional(AllOf(
-      Field("location", &WebApp::IsolationData::location, location_matcher),
-      Field("version", &WebApp::IsolationData::version, version_matcher),
-      Property("pending_update_info",
-               &WebApp::IsolationData::pending_update_info,
-               pending_update_info_matcher)));
-}
-
-auto PendingUpdateInfoMatches(const auto& location_matcher,
-                              const auto& version_matcher) {
-  return Optional(AllOf(
-      Field("location", &WebApp::IsolationData::PendingUpdateInfo::location,
-            location_matcher),
-      Field("version", &WebApp::IsolationData::PendingUpdateInfo::version,
-            version_matcher)));
 }
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -297,7 +261,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
     EXPECT_TRUE(base::GetTempDir(&temp_dir));
 
     return VariantWith<InstalledBundle>(
-        Field("path", &InstalledBundle::path, IsInDir(temp_dir)));
+        Field("path", &InstalledBundle::path, test::IsInDir(temp_dir)));
   }
 
   absl::optional<IwaInfo> iwa_info1_;
@@ -348,15 +312,15 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   task_environment()->FastForwardBy(base::Hours(5));
   task_environment()->RunUntilIdle();
 
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      WebAppMatches(Eq("installed iwa 1"),
-                    IsolationDataMatches(
-                        Eq(iwa_info1_->installed_location),
-                        Eq(iwa_info1_->installed_version),
-                        PendingUpdateInfoMatches(UpdateLocationMatcher(),
-                                                 Eq(base::Version("2.0.0"))))));
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              IwaIs(Eq("installed iwa 1"),
+                    test::IsolationDataIs(Eq(iwa_info1_->installed_location),
+                                          Eq(iwa_info1_->installed_version),
+                                          /*controlled_frame_partitions=*/_,
+                                          test::PendingUpdateInfoIs(
+                                              UpdateLocationMatcher(),
+                                              Eq(base::Version("2.0.0"))))));
 
   ASSERT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(
@@ -386,12 +350,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(
       fake_provider().registrar_unsafe().GetAppById(
           iwa_info1_->url_info.app_id()),
-      WebAppMatches(Eq("installed app"),
-                    IsolationDataMatches(Eq(iwa_info1_->installed_location),
-                                         Eq(iwa_info1_->installed_version),
-                                         PendingUpdateInfoMatches(
-                                             UpdateLocationMatcher(),
-                                             Eq(iwa_info1_->update_version)))));
+      IwaIs(Eq("installed app"),
+            test::IsolationDataIs(
+                Eq(iwa_info1_->installed_location),
+                Eq(iwa_info1_->installed_version),
+                /*controlled_frame_partitions=*/_,
+                test::PendingUpdateInfoIs(UpdateLocationMatcher(),
+                                          Eq(iwa_info1_->update_version)))));
 
   ASSERT_THAT(UpdateDiscoveryLog(), SizeIs(1));
   EXPECT_THAT(
@@ -407,13 +372,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(UpdateApplyLog()[0].GetDict(),
               DictionaryHasValue("result", base::Value("Success")));
 
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      WebAppMatches(iwa_info1_->update_app_name,
-                    IsolationDataMatches(
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              IwaIs(iwa_info1_->update_app_name,
+                    test::IsolationDataIs(
                         UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
-                        /*pending_update_info_matcher=*/Eq(absl::nullopt))));
+                        /*controlled_frame_partitions=*/_,
+                        /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
@@ -467,20 +432,20 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
                   [](base::Value* value) { return *base::ValueToTime(value); }),
               IsTrue());
 
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info1_->url_info.app_id()),
-      WebAppMatches(iwa_info1_->update_app_name,
-                    IsolationDataMatches(
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info1_->url_info.app_id()),
+              IwaIs(iwa_info1_->update_app_name,
+                    test::IsolationDataIs(
                         UpdateLocationMatcher(), Eq(iwa_info1_->update_version),
-                        /*pending_update_info_matcher=*/Eq(absl::nullopt))));
-  EXPECT_THAT(
-      fake_provider().registrar_unsafe().GetAppById(
-          iwa_info2_->url_info.app_id()),
-      WebAppMatches(iwa_info2_->update_app_name,
-                    IsolationDataMatches(
+                        /*controlled_frame_partitions=*/_,
+                        /*pending_update_info=*/Eq(absl::nullopt))));
+  EXPECT_THAT(fake_provider().registrar_unsafe().GetAppById(
+                  iwa_info2_->url_info.app_id()),
+              IwaIs(iwa_info2_->update_app_name,
+                    test::IsolationDataIs(
                         UpdateLocationMatcher(), Eq(iwa_info2_->update_version),
-                        /*pending_update_info_matcher=*/Eq(absl::nullopt))));
+                        /*controlled_frame_partitions=*/_,
+                        /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {

@@ -91,16 +91,16 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
   WebAppTestInstallObserver observer(browser()->profile());
   AppId id = observer.BeginListeningAndWait();
 
-  ASSERT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
-
-  EXPECT_THAT(
-      GetWebAppRegistrar().GetAppById(id),
-      Pointee(Property(
-          &WebApp::isolation_data,
-          Optional(Field(&WebApp::IsolationData::location,
-                         VariantWith<DevModeProxy>(
-                             Field(&DevModeProxy::proxy_url,
-                                   Eq(url::Origin::Create(GetAppUrl())))))))));
+  EXPECT_THAT(GetWebAppRegistrar().IsInstalled(id), IsTrue());
+  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
+              test::IwaIs(Eq("Simple Isolated App"),
+                          test::IsolationDataIs(
+                              VariantWith<DevModeProxy>(
+                                  Field(&DevModeProxy::proxy_url,
+                                        Eq(url::Origin::Create(GetAppUrl())))),
+                              Eq(base::Version("1.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 class InstallIsolatedWebAppFromCommandLineFromFileBrowserTest
@@ -161,13 +161,14 @@ IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromFileBrowserTest,
     absolute_path = base::MakeAbsoluteFilePath(signed_web_bundle_path_);
   }
 
-  EXPECT_THAT(
-      GetWebAppRegistrar().GetAppById(id),
-      Pointee(Property(
-          &WebApp::isolation_data,
-          Optional(Field(&WebApp::IsolationData::location,
-                         VariantWith<DevModeBundle>(Field(
-                             &DevModeBundle::path, Eq(absolute_path))))))));
+  EXPECT_THAT(GetWebAppRegistrar().GetAppById(id),
+              test::IwaIs(Eq("Simple Isolated App"),
+                          test::IsolationDataIs(
+                              VariantWith<DevModeBundle>(Field(
+                                  &DevModeBundle::path, Eq(absolute_path))),
+                              Eq(base::Version("1.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 }  // namespace

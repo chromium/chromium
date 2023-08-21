@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -83,6 +85,61 @@ AppId AddDummyIsolatedAppToRegistry(
     const WebApp::IsolationData& isolation_data =
         WebApp::IsolationData(InstalledBundle{.path = base::FilePath()},
                               base::Version("1.0.0")));
+
+// TODO(cmfcmf): Move more test utils into this `test` namespace
+namespace test {
+
+using ::testing::AllOf;
+using ::testing::ExplainMatchResult;
+using ::testing::Field;
+using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::Property;
+
+MATCHER_P(IsInDir, directory, "") {
+  *result_listener << "where the directory is " << directory;
+  return arg.DirName() == directory;
+}
+
+MATCHER_P2(IwaIs, untranslated_name, isolation_data, "") {
+  return ExplainMatchResult(
+      Pointee(AllOf(
+          Property("untranslated_name", &WebApp::untranslated_name,
+                   untranslated_name),
+          Property("isolation_data", &WebApp::isolation_data, isolation_data))),
+      arg, result_listener);
+}
+
+MATCHER_P4(IsolationDataIs,
+           location,
+           version,
+           controlled_frame_partitions,
+           pending_update_info,
+           "") {
+  return ExplainMatchResult(
+      Optional(
+          AllOf(Field("location", &WebApp::IsolationData::location, location),
+                Field("version", &WebApp::IsolationData::version, version),
+                Field("controlled_frame_partitions",
+                      &WebApp::IsolationData::controlled_frame_partitions,
+                      controlled_frame_partitions),
+                Property("pending_update_info",
+                         &WebApp::IsolationData::pending_update_info,
+                         pending_update_info))),
+      arg, result_listener);
+}
+
+MATCHER_P2(PendingUpdateInfoIs, location, version, "") {
+  return ExplainMatchResult(
+      Optional(AllOf(
+          Field("location", &WebApp::IsolationData::PendingUpdateInfo::location,
+                location),
+          Field("version", &WebApp::IsolationData::PendingUpdateInfo::version,
+                version))),
+      arg, result_listener);
+}
+
+}  // namespace test
 
 }  // namespace web_app
 

@@ -41,14 +41,11 @@
 namespace web_app {
 namespace {
 
-using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
 using ::testing::IsNull;
 using ::testing::IsTrue;
-using ::testing::Matcher;
-using ::testing::Property;
 using ::testing::Return;
 
 constexpr base::StringPiece kIconPath = "/icon.png";
@@ -71,14 +68,6 @@ blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
   manifest->icons.push_back(icon);
 
   return manifest;
-}
-
-Matcher<const WebApp*> HasNameAndIsolationData(
-    base::StringPiece name,
-    const absl::optional<WebApp::IsolationData>& isolation_data) {
-  return AllOf(
-      Property("untranslated_name", &WebApp::untranslated_name, Eq(name)),
-      Property("isolation_data", &WebApp::isolation_data, Eq(isolation_data)));
 }
 
 class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
@@ -192,12 +181,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app",
-                  WebApp::IsolationData(installed_location_, installed_version_,
-                                        /*controlled_frame_partitions=*/{},
-                                        pending_update_info())));
+  EXPECT_THAT(web_app, test::IwaIs(Eq("installed app"),
+                                   Eq(WebApp::IsolationData(
+                                       installed_location_, installed_version_,
+                                       /*controlled_frame_partitions=*/{},
+                                       pending_update_info()))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsWhenShuttingDown) {
@@ -236,7 +224,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(web_app, HasNameAndIsolationData("installed app", absl::nullopt));
+  EXPECT_THAT(web_app, test::IwaIs("installed app",
+                                   /*isolation_data=*/Eq(absl::nullopt)));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -254,11 +243,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -279,11 +268,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
@@ -300,11 +289,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfUrlLoadingFails) {
@@ -320,11 +309,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfUrlLoadingFails) {
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -345,11 +334,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -367,11 +356,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -388,11 +377,11 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              HasNameAndIsolationData(
-                  "installed app", WebApp::IsolationData(
-                                       installed_location_, installed_version_,
-                                       /*controlled_frame_partitions=*/{},
-                                       /*pending_update_info=*/absl::nullopt)));
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              /*pending_update_info=*/absl::nullopt))));
 }
 
 }  // namespace

@@ -33,41 +33,9 @@ namespace {
 
 using base::test::HasValue;
 using ::testing::_;
-using ::testing::AllOf;
 using ::testing::Eq;
-using ::testing::Field;
 using ::testing::Optional;
-using ::testing::Pointee;
-using ::testing::Property;
 using ::testing::VariantWith;
-
-auto WebAppMatches(const auto& untranslated_name_matcher,
-                   const auto& isolation_data_matcher) {
-  return Pointee(AllOf(Property("untranslated_name", &WebApp::untranslated_name,
-                                untranslated_name_matcher),
-                       Property("isolation_data", &WebApp::isolation_data,
-                                isolation_data_matcher)));
-}
-
-auto IsolationDataMatches(const auto& location_matcher,
-                          const auto& version_matcher,
-                          const auto& pending_update_info_matcher) {
-  return Optional(AllOf(
-      Field("location", &WebApp::IsolationData::location, location_matcher),
-      Field("version", &WebApp::IsolationData::version, version_matcher),
-      Property("pending_update_info",
-               &WebApp::IsolationData::pending_update_info,
-               pending_update_info_matcher)));
-}
-
-auto PendingUpdateInfoMatches(const auto& location_matcher,
-                              const auto& version_matcher) {
-  return Optional(AllOf(
-      Field("location", &WebApp::IsolationData::PendingUpdateInfo::location,
-            location_matcher),
-      Field("version", &WebApp::IsolationData::PendingUpdateInfo::version,
-            version_matcher)));
-}
 
 constexpr base::StringPiece kUpdateManifestFileName = "update_manifest.json";
 constexpr base::StringPiece kBundle304FileName = "bundle304.swbn";
@@ -161,10 +129,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
   const WebApp* web_app =
       provider().registrar_unsafe().GetAppById(url_info_.app_id());
   EXPECT_THAT(web_app,
-              WebAppMatches("app-7.0.6", IsolationDataMatches(
-                                             VariantWith<InstalledBundle>(_),
-                                             Eq(base::Version("7.0.6")),
-                                             Eq(absl::nullopt))));
+              test::IwaIs(Eq("app-7.0.6"),
+                          test::IsolationDataIs(
+                              VariantWith<InstalledBundle>(_),
+                              Eq(base::Version("7.0.6")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))));
 }
 
 }  // namespace

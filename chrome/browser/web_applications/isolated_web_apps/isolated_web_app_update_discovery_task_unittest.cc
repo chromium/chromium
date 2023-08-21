@@ -43,19 +43,9 @@
 namespace web_app {
 namespace {
 
-using ::testing::AllOf;
+using ::testing::_;
 using ::testing::Eq;
 using ::testing::Field;
-using ::testing::IsFalse;
-using ::testing::IsTrue;
-using ::testing::NotNull;
-using ::testing::Optional;
-using ::testing::Property;
-
-MATCHER_P(IsInDir, directory, "") {
-  *result_listener << "where the directory is " << directory;
-  return arg.DirName() == directory;
-}
 
 class IsolatedWebAppUpdateDiscoveryTaskTest : public WebAppTest {
  public:
@@ -397,17 +387,13 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Fails) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  ASSERT_THAT(web_app, NotNull());
-  EXPECT_THAT(web_app->untranslated_name(), Eq("installed iwa"));
-  EXPECT_THAT(
-      web_app->isolation_data(),
-      Optional(AllOf(Field("location", &WebApp::IsolationData::location,
-                           Eq(installed_bundle_location_)),
-                     Field("version", &WebApp::IsolationData::version,
-                           Eq(base::Version("1.0.0"))),
-                     Property("pending_update_info",
-                              &WebApp::IsolationData::pending_update_info,
-                              Eq(absl::nullopt)))))
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed iwa"),
+                          test::IsolationDataIs(
+                              Eq(installed_bundle_location_),
+                              Eq(base::Version("1.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(absl::nullopt))))
       << task.AsDebugValue();
 }
 
@@ -432,27 +418,17 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest, Succeeds) {
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  ASSERT_THAT(web_app, NotNull());
-  EXPECT_THAT(web_app->untranslated_name(), Eq("installed iwa"));
   EXPECT_THAT(
-      web_app->isolation_data(),
-      Optional(AllOf(
-          Field("location", &WebApp::IsolationData::location,
-                Eq(installed_bundle_location_)),
-          Field("version", &WebApp::IsolationData::version,
-                Eq(base::Version("1.0.0"))),
-          Property(
-              "pending_update_info",
-              &WebApp::IsolationData::pending_update_info,
-              Optional(AllOf(
-                  Field(
-                      "location",
-                      &WebApp::IsolationData::PendingUpdateInfo::location,
-                      VariantWith<InstalledBundle>(Field(
-                          "path", &InstalledBundle::path, IsInDir(temp_dir)))),
-                  Field("version",
-                        &WebApp::IsolationData::PendingUpdateInfo::version,
-                        Eq(base::Version("3.0.0")))))))))
+      web_app,
+      test::IwaIs(
+          Eq("installed iwa"),
+          test::IsolationDataIs(
+              Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              test::PendingUpdateInfoIs(
+                  VariantWith<InstalledBundle>(Field(
+                      "path", &InstalledBundle::path, test::IsInDir(temp_dir))),
+                  base::Version("3.0.0")))))
       << task.AsDebugValue();
 }
 
@@ -485,27 +461,17 @@ TEST_F(IsolatedWebAppUpdateDiscoveryTaskPrepareUpdateTest,
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());
-  ASSERT_THAT(web_app, NotNull());
-  EXPECT_THAT(web_app->untranslated_name(), Eq("installed iwa"));
   EXPECT_THAT(
-      web_app->isolation_data(),
-      Optional(AllOf(
-          Field("location", &WebApp::IsolationData::location,
-                Eq(installed_bundle_location_)),
-          Field("version", &WebApp::IsolationData::version,
-                Eq(base::Version("1.0.0"))),
-          Property(
-              "pending_update_info",
-              &WebApp::IsolationData::pending_update_info,
-              Optional(AllOf(
-                  Field(
-                      "location",
-                      &WebApp::IsolationData::PendingUpdateInfo::location,
-                      VariantWith<InstalledBundle>(Field(
-                          "path", &InstalledBundle::path, IsInDir(temp_dir)))),
-                  Field("version",
-                        &WebApp::IsolationData::PendingUpdateInfo::version,
-                        Eq(base::Version("2.0.0")))))))))
+      web_app,
+      test::IwaIs(
+          Eq("installed iwa"),
+          test::IsolationDataIs(
+              Eq(installed_bundle_location_), Eq(base::Version("1.0.0")),
+              /*controlled_frame_partitions=*/_,
+              test::PendingUpdateInfoIs(
+                  VariantWith<InstalledBundle>(Field(
+                      "path", &InstalledBundle::path, test::IsInDir(temp_dir))),
+                  base::Version("2.0.0")))))
       << task.AsDebugValue();
 }
 
