@@ -1515,8 +1515,11 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
  protected:
   void SetUp() override {
     IntegrationTest::SetUp();
-    DMCleanup();
     test_server_ = std::make_unique<ScopedServer>(test_commands_);
+    if (!IsSystemInstall(GetTestScope())) {
+      GTEST_SKIP();
+    }
+    DMCleanup();
     ASSERT_NO_FATAL_FAILURE(SetMachineManaged(true));
   }
 

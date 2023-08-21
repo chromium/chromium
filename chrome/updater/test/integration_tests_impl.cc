@@ -1069,6 +1069,7 @@ void DMCleanup(UpdaterScope scope) {
 
 #if BUILDFLAG(IS_WIN)
   RegDeleteKey(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement);
+  RegDeleteKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY);
 #endif
 }
 
