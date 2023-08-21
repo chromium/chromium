@@ -26542,6 +26542,14 @@ Called by update_debug_scenarios.py.-->
   <int value="9" label="Composited Not Axis Aligned - Shear Transform"/>
   <int value="10" label="Composited Not Axis Aligned - Rotated Transform"/>
   <int value="11" label="Composited Feature Disabled"/>
+  <int value="12" label="Composited Candidate Failed (Other)"/>
+  <int value="13" label="Composited Candidate Bad Blend Mode"/>
+  <int value="14" label="Composited Candidate Bad Quad Material"/>
+  <int value="15" label="Composited Candidate Bad Buffer Format"/>
+  <int value="16" label="Composited Candidate Has Near Filter"/>
+  <int value="17" label="Composited Candidate Not Shared Image"/>
+  <int value="18" label="Composited Candidate Bad Mask Filter"/>
+  <int value="19" label="Composited Candidate Has Transform Can't Clip"/>
 </enum>
 
 <enum name="DeleteBrowsingDataAction">

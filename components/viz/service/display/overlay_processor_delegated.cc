@@ -146,8 +146,10 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     return false;
   }
 
-  if (disable_delegation())
+  if (disable_delegation()) {
+    delegated_status_ = DelegationStatus::kCompositedFeatureDisabled;
     return false;
+  }
 
   // Do not delegate when we have copy requests on the root render pass or we
   // will end up with the delegated quads missing from the frame buffer.
@@ -244,7 +246,33 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
         case OverlayCandidate::CandidateStatus::kFailNotOverlay:
           delegated_status_ = DelegationStatus::kCompositedNotOverlay;
           break;
+        case OverlayCandidate::CandidateStatus::kFailBlending:
+          delegated_status_ = DelegationStatus::kCompositedCandidateBlending;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailQuadNotSupported:
+          delegated_status_ =
+              DelegationStatus::kCompositedCandidateQuadMaterial;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailBufferFormat:
+          delegated_status_ =
+              DelegationStatus::kCompositedCandidateBufferFormat;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNearFilter:
+          delegated_status_ = DelegationStatus::kCompositedCandidateNearFilter;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailNotSharedImage:
+          delegated_status_ =
+              DelegationStatus::kCompositedCandidateNotSharedImage;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailMaskFilterNotSupported:
+          delegated_status_ = DelegationStatus::kCompositedCandidateMaskFilter;
+          break;
+        case OverlayCandidate::CandidateStatus::kFailHasTransformButCantClip:
+          delegated_status_ =
+              DelegationStatus::kCompositedCandidateTransformCantClip;
+          break;
         default:
+          delegated_status_ = DelegationStatus::kCompositedCandidateFailed;
           break;
       }
     }
