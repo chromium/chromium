@@ -24,7 +24,7 @@ if (enable_base_tracing) {
     _rebased_all_chrome_metrics_descriptor =
         rebase_path(_all_chrome_metrics_descriptor, root_build_dir)
     _chrome_track_event_descriptor =
-        "$_protos_path/third_party/chromium/chrome_track_event.descriptor"
+        "$root_gen_dir/base/tracing/protos/chrome_track_event.descriptor"
     _rebased_chrome_track_event_descriptor =
         rebase_path(_chrome_track_event_descriptor, root_build_dir)
 
@@ -59,11 +59,11 @@ if (enable_base_tracing) {
     ]
 
     data_deps = [
+      "//base/tracing/protos:chrome_track_event",
       "//third_party/perfetto/protos/perfetto/metrics:descriptor",
       "//third_party/perfetto/protos/perfetto/metrics/chrome:descriptor",
       "//third_party/perfetto/protos/perfetto/trace:descriptor",
       "//third_party/perfetto/protos/perfetto/trace:test_extensions_descriptor",
-      "//third_party/perfetto/protos/third_party/chromium:descriptor",
       "//third_party/perfetto/src/trace_processor:trace_processor_shell",
     ]
 

@@ -27,6 +27,7 @@ def CheckSqlModules(input_api, output_api):
 _STDLIB_PATHS = (
   r"^base/tracing/stdlib/",
   r"^base/tracing/test/",
+  r"^base/tracing/protos/"
 )
 
 def CheckPerfettoTestsTag(input_api, output_api):
