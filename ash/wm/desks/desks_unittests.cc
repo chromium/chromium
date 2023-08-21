@@ -5820,6 +5820,9 @@ class PerDeskShelfTest : public AshTestBase,
     item.status = ShelfItemStatus::STATUS_RUNNING;
     item.type = type;
     item.id = shelf_id;
+    // Non-empty title for the shelf icon is important to not crash the tooltip.
+    // Please see b/293869853.
+    item.title = u"Test Window";
     ShelfModel::Get()->Add(item,
                            std::make_unique<TestShelfItemDelegate>(item.id));
     return window;
@@ -5998,9 +6001,7 @@ TEST_P(PerDeskShelfTest, RemoveActiveDesk) {
   VerifyViewVisibility(app2, true);
 }
 
-// TODO(b/293869853): Fix and re-enable the test.
-TEST_P(PerDeskShelfTest,
-       DISABLED_ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
+TEST_P(PerDeskShelfTest, ShelfViewTransformUpdatedForScrollWhenSwitchingDesks) {
   ScrollableShelfView* scrollable_shelf_view = GetPrimaryShelf()
                                                    ->shelf_widget()
                                                    ->hotseat_widget()
