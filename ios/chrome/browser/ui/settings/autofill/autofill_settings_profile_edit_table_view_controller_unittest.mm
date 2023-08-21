@@ -243,21 +243,20 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest,
   int rowCnt =
       base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableSupportForHonorificPrefixes)
-          ? 11
-          : 10;
+          ? 13
+          : 12;
 
-  EXPECT_EQ(2, [model numberOfSections]);
+  EXPECT_EQ(1, [model numberOfSections]);
   EXPECT_EQ(rowCnt, [model numberOfItemsInSection:0]);
-  EXPECT_EQ(2, [model numberOfItemsInSection:1]);
   NSString* migrateButtonDescription = l10n_util::GetNSStringF(
       IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION,
       kTestSyncingEmail);
-  TableViewItem* descriptionItem = GetTableViewItem(1, 0);
+  TableViewItem* descriptionItem = GetTableViewItem(0, rowCnt - 2);
   EXPECT_NSEQ(
       static_cast<SettingsImageDetailTextItem*>(descriptionItem).detailText,
       migrateButtonDescription);
   EXPECT_NSEQ(
-      static_cast<TableViewTextItem*>(GetTableViewItem(1, 1)).text,
+      static_cast<TableViewTextItem*>(GetTableViewItem(0, rowCnt - 1)).text,
       l10n_util::GetNSString(
           IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_TITLE));
 }
