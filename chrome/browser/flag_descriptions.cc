@@ -6283,6 +6283,11 @@ const char kFrameThrottleFps20[] = "20 fps";
 const char kFrameThrottleFps25[] = "25 fps";
 const char kFrameThrottleFps30[] = "30 fps";
 
+const char kFSPsInRecentsName[] =
+    "Enable chrome.fileSystemProviders in Recents";
+const char kFSPsInRecentsDescription[] =
+    "Enable chrome.fileSystemProvider file systems in Files app Recents view";
+
 const char kFuseBoxDebugName[] = "Debugging UI for ChromeOS FuseBox service";
 const char kFuseBoxDebugDescription[] =
     "Show additional debugging UI for ChromeOS FuseBox service.";

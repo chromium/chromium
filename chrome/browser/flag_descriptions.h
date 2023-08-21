@@ -3619,6 +3619,9 @@ extern const char kFrameThrottleFps20[];
 extern const char kFrameThrottleFps25[];
 extern const char kFrameThrottleFps30[];
 
+extern const char kFSPsInRecentsName[];
+extern const char kFSPsInRecentsDescription[];
+
 extern const char kFuseBoxDebugName[];
 extern const char kFuseBoxDebugDescription[];
 

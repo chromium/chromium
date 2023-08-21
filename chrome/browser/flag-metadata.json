@@ -4581,6 +4581,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "fsps-in-recents",
+    "owners": [ "simmonsjosh@google.com", "benhartney@google.com", "petermarshall", "majewski" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "fullscreen-popup-windows",
     "owners": [ "btriebw", "msw" ],
     "expiry_milestone": 120

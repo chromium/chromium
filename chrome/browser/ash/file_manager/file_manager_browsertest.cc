@@ -161,6 +161,11 @@ struct TestCase {
     return *this;
   }
 
+  TestCase& FakeFileSystemProvider() {
+    options.fake_file_system_provider = true;
+    return *this;
+  }
+
   TestCase& DontMountVolumes() {
     options.mount_volumes = false;
     return *this;
@@ -240,6 +245,11 @@ struct TestCase {
 
   TestCase& EnableSearchV2() {
     options.enable_search_v2 = true;
+    return *this;
+  }
+
+  TestCase& EnableFSPsInRecents() {
+    options.enable_fsps_in_recents = true;
     return *this;
   }
 
@@ -346,6 +356,10 @@ struct TestCase {
 
     if (options.enable_search_v2) {
       full_name += "_SearchV2";
+    }
+
+    if (options.enable_fsps_in_recents) {
+      full_name += "_FSPsInRecents";
     }
 
     if (options.enable_os_feedback) {
@@ -2389,7 +2403,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("recentImagesDownloadsAndDriveAndPlayFiles").EnableArc(),
         TestCase("recentVideosDownloads"),
         TestCase("recentVideosDownloadsAndDrive"),
-        TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc()));
+        TestCase("recentVideosDownloadsAndDriveAndPlayFiles").EnableArc(),
+        TestCase("recentFileSystemProviderFiles")
+            .FakeFileSystemProvider()
+            .EnableFSPsInRecents()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Metadata, /* metadata.js */

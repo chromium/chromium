@@ -78,6 +78,9 @@
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_system_provider/fake_extension_provider.h"
+#include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
@@ -147,6 +150,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/common/api/test.h"
+#include "extensions/common/extension_id.h"
 #include "google_apis/common/test_util.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "media/base/media_switches.h"
@@ -261,6 +265,7 @@ struct AddEntriesMessage {
     MEDIA_VIEW_DOCUMENTS,
     SMBFS_VOLUME,
     MTP_VOLUME,
+    PROVIDED_VOLUME,
   };
 
   // Represents the different types of entries (e.g. file, folder).
@@ -334,6 +339,8 @@ struct AddEntriesMessage {
       *volume = MEDIA_VIEW_VIDEOS;
     } else if (value == "media_view_documents") {
       *volume = MEDIA_VIEW_DOCUMENTS;
+    } else if (value == "provided") {
+      *volume = PROVIDED_VOLUME;
     } else if (value == "smbfs") {
       *volume = SMBFS_VOLUME;
     } else if (value == "mtp") {
@@ -1799,6 +1806,93 @@ class MediaViewTestVolume : public DocumentsProviderTestVolume {
   }
 };
 
+using ash::file_system_provider::Capabilities;
+using ash::file_system_provider::FakeExtensionProvider;
+using ash::file_system_provider::FakeProvidedFileSystem;
+using ash::file_system_provider::MountOptions;
+using ash::file_system_provider::ProvidedFileSystemInfo;
+
+// An extension provider that customizes the FakeExtensionProvider. The
+// FakeExtensionProvider creates an unwatchable volume, which is not suitable
+// for tests. Thus we expose the constructor to allow custom capabilities to be
+// passed.
+class TestExtensionProvider : public FakeExtensionProvider {
+ public:
+  TestExtensionProvider(const extensions::ExtensionId& extension_id,
+                        const Capabilities& capabilities)
+      : FakeExtensionProvider(extension_id, capabilities) {}
+};
+
+// Creates a fake file system provider. To use it in your test please add
+// .FakeFileSystemProvider() option in your test declaration.
+class FileSystemProviderTestVolume : public TestVolume {
+ public:
+  FileSystemProviderTestVolume()
+      : TestVolume("provided"),
+        extension_id_("test-file-system-provider-id"),
+        provider_id_(
+            ash::file_system_provider::ProviderId::CreateFromExtensionId(
+                extension_id_)) {}
+
+  FileSystemProviderTestVolume(const FileSystemProviderTestVolume&) = delete;
+  FileSystemProviderTestVolume& operator=(const FileSystemProviderTestVolume&) =
+      delete;
+
+  ~FileSystemProviderTestVolume() override = default;
+
+  void Mount(Profile* profile) {
+    // In order for the test file system provider volume to be correctly mounted
+    // we need to register a provider (ProviderInterface) with the file system
+    // provider service. We use a customized FakeExtensionProvider, which has
+    // a factory method that builds an instance of the FakeProvidedFileSystem
+    // which is a ProvidedFileSystemInterface. That instance is what does the
+    // creation of entries, reading of directories, etc.
+    Capabilities capabilities = {
+        .configurable = false,
+        .watchable = true,
+        .multiple_mounts = false,
+        .source = extensions::SOURCE_NETWORK,
+    };
+    std::unique_ptr<ash::file_system_provider::ProviderInterface> provider =
+        std::make_unique<TestExtensionProvider>(extension_id_, capabilities);
+    ash::file_system_provider::Service* service =
+        ash::file_system_provider::Service::Get(profile);
+    service->RegisterProvider(std::move(provider));
+
+    MountOptions options("test-fsp", "TestFSP");
+    EXPECT_EQ(base::File::FILE_OK,
+              service->MountFileSystem(provider_id_, options));
+  }
+
+  void CreateEntry(Profile* profile,
+                   const AddEntriesMessage::TestEntryInfo& entry) {
+    ash::file_system_provider::Service* service =
+        ash::file_system_provider::Service::Get(profile);
+    DCHECK(service) << "Unable to retrieve file system provider service";
+    std::vector<ash::file_system_provider::ProvidedFileSystemInfo>
+        file_systems = service->GetProvidedFileSystemInfoList(provider_id_);
+    DCHECK(file_systems.size() == 1)
+        << "Unexpected number " << file_systems.size()
+        << " of file systems for provider_id " << provider_id_.ToString();
+    FakeProvidedFileSystem* fake_file_system =
+        static_cast<FakeProvidedFileSystem*>(service->GetProvidedFileSystem(
+            provider_id_, file_systems[0].file_system_id()));
+    DCHECK(fake_file_system)
+        << "Unable to get fake file system for provider_id_ "
+        << provider_id_.ToString();
+    bool folder = entry.entry_type == AddEntriesMessage::EntryType::DIRECTORY;
+    std::string fileContents = folder ? "" : "abcdef";
+    fake_file_system->AddEntry(base::FilePath(entry.target_path), folder,
+                               entry.name_text, fileContents.length(),
+                               entry.last_modified_time, entry.mime_type,
+                               fileContents);
+  }
+
+ private:
+  extensions::ExtensionId extension_id_;
+  ash::file_system_provider::ProviderId provider_id_;
+};
+
 // An internal volume which is hidden from file manager.
 class HiddenTestVolume : public FakeTestVolume {
  public:
@@ -2228,6 +2322,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(search_features::kLauncherImageSearchOcr);
   }
 
+  if (options.enable_fsps_in_recents) {
+    enabled_features.push_back(ash::features::kFSPsInRecents);
+  } else {
+    disabled_features.push_back(ash::features::kFSPsInRecents);
+  }
+
   if (options.enable_os_feedback) {
     enabled_features.push_back(ash::features::kOsFeedback);
   } else {
@@ -2443,6 +2543,14 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
       }
     } else {
       EXPECT_FALSE(file_tasks::FileTasksNotifier::GetForProfile(profile()));
+    }
+
+    if (options.fake_file_system_provider) {
+      file_system_provider_volume_ =
+          std::make_unique<FileSystemProviderTestVolume>();
+      if (options.mount_volumes) {
+        file_system_provider_volume_->Mount(profile());
+      }
     }
   }
 
@@ -3001,6 +3109,14 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
             media_view_documents_->CreateEntry(*message.entries[i]);
           } else {
             LOG(FATAL) << "Add entry: but no MediaView Documents volume.";
+          }
+          break;
+        case AddEntriesMessage::PROVIDED_VOLUME:
+          if (file_system_provider_volume_) {
+            file_system_provider_volume_->CreateEntry(profile(),
+                                                      *message.entries[i]);
+          } else {
+            LOG(FATAL) << "Add entry: but no fileSystemProvider volume.";
           }
           break;
         case AddEntriesMessage::SMBFS_VOLUME:

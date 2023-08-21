@@ -64207,6 +64207,7 @@ from previous Chrome versions.
   <int value="-86243376" label="LayoutNG:enabled"/>
   <int value="-85706353" label="VirtualDesksGestures:enabled"/>
   <int value="-85704140" label="ImageServiceSuggestPoweredImages:disabled"/>
+  <int value="-83431306" label="FSPsInRecents:enabled"/>
   <int value="-82880083" label="CaptureModeDemoTools:enabled"/>
   <int value="-82530769" label="WebXRPlaneDetection:enabled"/>
   <int value="-82328138"
@@ -68504,6 +68505,7 @@ from previous Chrome versions.
   <int value="2077106718" label="EnableMessagesWebPush:enabled"/>
   <int value="2077172826" label="TabSearchFuzzySearch:enabled"/>
   <int value="2077695825" label="AvoidUnnecessaryBeforeUnloadCheck:enabled"/>
+  <int value="2077703516" label="FSPsInRecents:disabled"/>
   <int value="2077917024"
       label="enable-supervised-user-managed-bookmarks-folder"/>
   <int value="2078599705" label="ShelfAppScaling:enabled"/>

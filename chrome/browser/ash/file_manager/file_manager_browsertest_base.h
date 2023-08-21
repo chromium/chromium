@@ -53,17 +53,18 @@ enum TestAccountType {
 };
 enum DeviceMode { kDeviceModeNotSet, kConsumerOwned, kEnrolled };
 
+class AndroidFilesTestVolume;
+class CrostiniTestVolume;
+class DocumentsProviderTestVolume;
+class DownloadsTestVolume;
 class DriveFsTestVolume;
 class FakeTestVolume;
-class DownloadsTestVolume;
-class CrostiniTestVolume;
-class AndroidFilesTestVolume;
-class RemovableTestVolume;
-class DocumentsProviderTestVolume;
-class MediaViewTestVolume;
-class SmbfsTestVolume;
-class HiddenTestVolume;
+class FileSystemProviderTestVolume;
 class GuestOsTestVolume;
+class HiddenTestVolume;
+class MediaViewTestVolume;
+class RemovableTestVolume;
+class SmbfsTestVolume;
 
 ash::LoggedInUserMixin::LogInType LogInTypeFor(
     TestAccountType test_account_type);
@@ -100,6 +101,9 @@ class FileManagerBrowserTestBase
 
     // Whether test requires Android documents provider for Google Photos.
     bool photos_documents_provider = false;
+
+    // Whether test requires a fake file system provider.
+    bool fake_file_system_provider = false;
 
     // Whether test requires ARC++.
     bool arc = false;
@@ -177,6 +181,9 @@ class FileManagerBrowserTestBase
 
     // Whether tests should enable image content search.
     bool enable_image_content_search = false;
+
+    // Whether test should run with the fsps-in-recents flag.
+    bool enable_fsps_in_recents = false;
 
     // Whether tests should enable OS Feedback.
     bool enable_os_feedback = false;
@@ -342,6 +349,7 @@ class FileManagerBrowserTestBase
   std::unique_ptr<MediaViewTestVolume> media_view_documents_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
   std::unique_ptr<HiddenTestVolume> hidden_volume_;
+  std::unique_ptr<FileSystemProviderTestVolume> file_system_provider_volume_;
 
   // Map from source path (e.g. sftp://1:2) to volume.
   base::flat_map<std::string, std::unique_ptr<GuestOsTestVolume>>

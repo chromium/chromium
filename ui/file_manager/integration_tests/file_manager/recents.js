@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, formatDate, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, EntryType, formatDate, getCaller, getDateWithDayDiff, pending, repeatUntil, RootPath, sanitizeDate, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
@@ -30,6 +30,20 @@ const RECENT_MODIFIED_ANDROID_AUDIO =
     ENTRIES.musicAudio.cloneWithModifiedDate(getDateWithDayDiff(21));
 const RECENT_MODIFIED_ANDROID_VIDEO =
     ENTRIES.moviesVideo.cloneWithModifiedDate(getDateWithDayDiff(25));
+
+// Special file used with provided volume. Due to the fact that we rely on
+// ash::file_system_provider::FakeProvidedFileSystem we cannot clone it from
+// existing entries. Among differences is the targetPath and sizeText that are
+// set up differently.
+const RECENT_PROVIDED_HELLO = new TestEntryInfo({
+  type: EntryType.FILE,
+  targetPath: '/recent-hello.txt',
+  mimeType: 'text/plain',
+  lastModifiedTime: getDateWithDayDiff(8),
+  nameText: 'recent-hello.txt',
+  sizeText: '6 bytes',
+  typeText: 'Plain text',
+});
 
 /**
  * Enum for supported recent filter types.
@@ -1268,4 +1282,68 @@ testcase.recentsRespectSearchWhenSwitchingFilter = async () => {
   // Check there is still only tall.txt in the file list (no utf8.txt).
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([txtFile1]));
+};
+
+/**
+ * Checks that Recents folder shows files from file system provider.
+ */
+testcase.recentFileSystemProviderFiles = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
+  // Add 4 levels of folders to the provided file system. We wish to test that
+  // recently modified files appear in the Recent view, but also use this test
+  // to document the current limit of nesting enforced by the recent view for
+  // provided files.
+  const testFolders = [
+    new TestEntryInfo({
+      type: EntryType.DIRECTORY,
+      targetPath: '/Level1',
+      mimeType: 'text/plain',
+      lastModifiedTime: 'Fri, 25 Apr 2014 01:47:53',
+      nameText: 'Level1',
+      sizeText: '',
+      typeText: '',
+    }),
+    new TestEntryInfo({
+      type: EntryType.DIRECTORY,
+      targetPath: '/Level1/Level2',
+      mimeType: 'text/plain',
+      lastModifiedTime: 'Fri, 25 Apr 2014 01:47:53',
+      nameText: 'Level2',
+      sizeText: '',
+      typeText: '',
+    }),
+    new TestEntryInfo({
+      type: EntryType.DIRECTORY,
+      targetPath: '/Level1/Level2/Level3',
+      mimeType: 'text/plain',
+      lastModifiedTime: 'Fri, 25 Apr 2014 01:47:53',
+      nameText: 'Level3',
+      sizeText: '',
+      typeText: '',
+    }),
+  ];
+  const testEntries = [
+    RECENT_PROVIDED_HELLO,
+    RECENT_PROVIDED_HELLO.cloneWith({
+      targetPath: '/Level1/recent-hello1.txt',
+      nameText: 'recent-hello1.txt',
+    }),
+    RECENT_PROVIDED_HELLO.cloneWith({
+      targetPath: '/Level1/Level2/recent-hello2.txt',
+      nameText: 'recent-hello2.txt',
+    }),
+    RECENT_PROVIDED_HELLO.cloneWith({
+      targetPath: '/Level1/Level2/Level3/recent-hello3.txt',
+      nameText: 'recent-hello3.txt',
+    }),
+  ];
+  await addEntries(['provided'], testFolders.concat(testEntries));
+
+  // Expect that regardless of the depth of folder nesting, all recently
+  // modified files are present.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(
+      appId,
+      TestEntryInfo.getExpectedRows(RECENT_ENTRY_SET.concat(testEntries)));
 };

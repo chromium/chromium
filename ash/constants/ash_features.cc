@@ -1160,6 +1160,11 @@ BASE_FEATURE(kFloatingWorkspace,
              "FloatingWorkspace",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables chrome.fileSystemProvider file systems in Files app Recents view.
+BASE_FEATURE(kFSPsInRecents,
+             "FSPsInRecents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Maximum delay to wait for restoring Floating Workspace after login.
 constexpr base::FeatureParam<base::TimeDelta>
     kFloatingWorkspaceMaxTimeAvailableForRestoreAfterLogin{

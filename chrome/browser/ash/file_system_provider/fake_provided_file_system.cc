@@ -80,7 +80,8 @@ void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
                                       base::Time modification_time,
                                       std::string mime_type,
                                       std::string contents) {
-  DCHECK(entries_.find(entry_path) == entries_.end());
+  DCHECK(entries_.find(entry_path) == entries_.end())
+      << "Already present " << entry_path;
   std::unique_ptr<EntryMetadata> metadata(new EntryMetadata);
 
   metadata->is_directory = std::make_unique<bool>(is_directory);
@@ -203,7 +204,7 @@ AbortCallback FakeProvidedFileSystem::ReadDirectory(
   for (Entries::const_iterator it = entries_.begin(); it != entries_.end();
        ++it) {
     const base::FilePath file_path = it->first;
-    if (file_path == directory_path || directory_path.IsParent(file_path)) {
+    if (directory_path == file_path.DirName()) {
       const EntryMetadata* const metadata = it->second->metadata.get();
       filesystem::mojom::FsFileType entry_type =
           *metadata->is_directory ? filesystem::mojom::FsFileType::DIRECTORY
