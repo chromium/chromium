@@ -19,12 +19,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time_to_iso8601.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/demo_setup_screen.h"
@@ -1089,6 +1091,14 @@ class DemoSetupBlazeyDeviceTest : public DemoSetupArcSupportedTest {
 #endif
 IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
                        MAYBE_DeviceIsBlazeyEnabledDevice) {
+  // `LoginOrLockScreenVisibleWaiter::WaitImpl` has a time out equals to
+  // `TestTimeouts::test_launcher_timeout()` (which is equals to 135s in this
+  // test), but sometimes it might be longer than 2 minutes, which left 15s for
+  // this test to run. Increase the timeout of this test so that it has enough
+  // time.
+  base::test::ScopedRunLoopTimeout increase_timeout(
+      FROM_HERE, TestTimeouts::test_launcher_timeout() + base::Seconds(60));
+
   // Simulate successful online setup.
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION);
