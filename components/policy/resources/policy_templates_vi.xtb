@@ -5797,6 +5797,13 @@ Nếu bạn không đặt hoặc để trống chính sách này thì sẽ khôn
 
 Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Xác định xem trình xác minh chứng chỉ tích hợp sẵn có được dùng để xác minh chứng chỉ máy chủ hay không</translation>
+<translation id="6197455846673223644">Khi bạn đặt chính sách này thành Bật, tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ luôn hoạt động. Tính năng này gửi URL của các trang mà người dùng truy cập đến Google nhằm giúp cải thiện tính năng tìm kiếm và duyệt web.
+
+Khi bạn đặt chính sách này thành Tắt, tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ không hoạt động.
+
+Nếu bạn không đặt chính sách này, thì người dùng sẽ có thể thay đổi chế độ cài đặt này theo cách thủ công.
+
+Trong Kiosk <ph name="PRODUCT_OS_NAME" />, chính sách này không cung cấp lựa chọn "Cho phép người dùng quyết định". Nếu bạn không đặt chính sách này cho Kiosk <ph name="PRODUCT_OS_NAME" />, thì tính năng thu thập dữ liệu ẩn danh nhập dưới dạng URL sẽ luôn hoạt động.</translation>
 <translation id="6198947200418556248">Chính sách này không còn dùng nữa. Nếu vẫn cần hành vi cookie cũ, vui lòng sử dụng "<ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />". Cho phép bạn đưa tất cả cookie trở lại hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> cũ. Việc trở lại hành vi cũ sẽ (1) khiến những cookie không chỉ định thuộc tính <ph name="ATTRIBUTE_SAMESITE_NAME" /> được coi như thể là "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", (2) bỏ yêu cầu cookie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" phải mang thuộc tính "<ph name="ATTRIBUTE_SECURE_NAME" />" và (3) bỏ qua quy trình so sánh lược đồ khi đánh giá liệu hai trang web có phải là một hay không. Hãy truy cập https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies để xem mô tả đầy đủ.
 
           Nếu bạn không đặt chính sách này, thì hành vi <ph name="ATTRIBUTE_SAMESITE_NAME" /> mặc định đối với các cookie sẽ phụ thuộc vào cấu hình cá nhân của người dùng cho tính năng <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> và <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />. Bạn có thể đặt các tính năng này trong giai đoạn thử nghiệm hoặc bằng cách bật/tắt cờ <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> hoặc <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" /> tương ứng.</translation>

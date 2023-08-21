@@ -710,7 +710,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C – Velocidade atual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
 <translation id="4136724716305260864">Ativada até ao nascer do sol</translation>
 <translation id="4146671046252289537">Mover para o fim da próxima palavra</translation>
-<translation id="4146833061457621061">Tocar música</translation>
+<translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4150201353443180367">Visualização</translation>
 <translation id="4165275524535002941">O cabo pode não ser compatível com ecrãs</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo dentro de um dia}other{Atualize o dispositivo dentro de # dias}}</translation>
