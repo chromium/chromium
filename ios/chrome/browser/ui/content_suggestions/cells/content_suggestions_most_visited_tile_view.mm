@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -16,9 +17,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Favicon width when kMagicStack is enabled.
-const CGFloat kMagicStackFaviconWidth = 28;
 
 // Image container width when kMagicStack is enabled.
 const CGFloat kMagicStackImageContainerWidth = 50;
