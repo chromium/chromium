@@ -60,7 +60,7 @@ PasswordStatusCheckService::PasswordStatusCheckService(Profile* profile)
 PasswordStatusCheckService::~PasswordStatusCheckService() = default;
 
 void PasswordStatusCheckService::Shutdown() {
-  saved_passwords_presenter_observation_.Reset();
+  insecure_credentials_manager_observation_.Reset();
   bulk_leak_check_observation_.Reset();
   password_check_delegate_.reset();
   saved_passwords_presenter_.reset();
@@ -99,12 +99,16 @@ void PasswordStatusCheckService::UpdateInsecureCredentialCountAsync() {
 
   is_update_credential_count_pending_ = true;
 
+  // `InsecureCredentialsManager::OnSavedPasswordsChanged` will run weak and
+  // reuse checks on initialization. When both are concluded, observers are
+  // notified (`OnInsecureCredentialsChanged`). Information whether a credential
+  // is leaked is stored in the password manager and does not have to be re-run.
   InitializePasswordCheckInfrastructure();
 
-  CHECK(saved_passwords_presenter_);
-  if (!saved_passwords_presenter_observation_.IsObserving()) {
-    saved_passwords_presenter_observation_.Observe(
-        saved_passwords_presenter_.get());
+  CHECK(password_check_delegate_);
+  if (!insecure_credentials_manager_observation_.IsObserving()) {
+    insecure_credentials_manager_observation_.Observe(
+        password_check_delegate_->GetInsecureCredentialsManager());
   }
 }
 
@@ -128,8 +132,7 @@ void PasswordStatusCheckService::RunPasswordCheckAsync() {
   password_check_delegate_->StartPasswordCheck();
 }
 
-void PasswordStatusCheckService::OnSavedPasswordsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+void PasswordStatusCheckService::OnInsecureCredentialsChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(IsInfrastructureReady());
 
@@ -218,7 +221,7 @@ void PasswordStatusCheckService::MaybeResetInfrastructureAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!is_update_credential_count_pending_ && !is_password_check_running_) {
-    saved_passwords_presenter_observation_.Reset();
+    insecure_credentials_manager_observation_.Reset();
     bulk_leak_check_observation_.Reset();
 
     // The reset is done as a task rather than directly because when observers

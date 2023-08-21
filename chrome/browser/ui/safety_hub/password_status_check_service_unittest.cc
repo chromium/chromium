@@ -25,11 +25,14 @@
 namespace {
 
 constexpr char kTestEmail[] = "user@gmail.com";
-constexpr char kOrigin[] = "https://example.com/";
+constexpr char kOrigin1[] = "https://example1.com/";
+constexpr char kOrigin2[] = "https://example2.com/";
 constexpr char16_t kUsername1[] = u"alice";
 constexpr char16_t kUsername2[] = u"bob";
 constexpr char16_t kUsername3[] = u"charlie";
+constexpr char16_t kUsername4[] = u"dora";
 constexpr char16_t kPassword[] = u"fnlsr4@cm^mdls@fkspnsg3d";
+constexpr char16_t kWeakPassword[] = u"1234";
 
 using password_manager::BulkLeakCheckDelegateInterface;
 using password_manager::BulkLeakCheckService;
@@ -81,37 +84,24 @@ class MockObserver : public BulkLeakCheckService::Observer {
 };
 
 PasswordForm MakeCredential(base::StringPiece16 username,
-                            base::StringPiece16 password) {
+                            base::StringPiece16 password,
+                            std::string origin = kOrigin1,
+                            bool is_leaked = false) {
   PasswordForm form;
   form.username_value = username;
   form.password_value = password;
-  form.signon_realm = kOrigin;
-  form.url = GURL(kOrigin);
+  form.signon_realm = origin;
+  form.url = GURL(origin);
   form.in_store = PasswordForm::Store::kProfileStore;
-  return form;
-}
-
-PasswordForm MakeInsecureCredential(InsecureType type) {
-  // Use different usernames for different issue types so credentials with these
-  // issues can be stored in parallel.
-  base::StringPiece16 username;
-  switch (type) {
-    case InsecureType::kWeak:
-      username = kUsername1;
-      break;
-    case InsecureType::kReused:
-      username = kUsername2;
-      break;
-    case InsecureType::kPhished:
-    case InsecureType::kLeaked:
-      username = kUsername3;
-      break;
+  if (is_leaked) {
+    // Credential issues for weak and reused are detected automatically and
+    // don't need to be specified explicitly.
+    form.password_issues.insert_or_assign(
+        InsecureType::kLeaked,
+        password_manager::InsecurityMetadata(
+            base::Time::Now(), password_manager::IsMuted(false),
+            password_manager::TriggerBackendNotification(false)));
   }
-  PasswordForm form = MakeCredential(username, kPassword);
-  form.password_issues.insert_or_assign(
-      type, password_manager::InsecurityMetadata(
-                base::Time::Now(), password_manager::IsMuted(false),
-                password_manager::TriggerBackendNotification(false)));
   return form;
 }
 
@@ -124,9 +114,21 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void StoreCredentialWithIssue(InsecureType type) {
-    PasswordForm form = MakeInsecureCredential(type);
+  void StoreUndetectedWeakCredential() {
+    PasswordForm form = MakeCredential(kUsername1, kWeakPassword);
     password_store_->AddLogin(form);
+  }
+
+  void StoreLeakedCredential() {
+    PasswordForm form = MakeCredential(kUsername2, kPassword, kOrigin1, true);
+    password_store_->AddLogin(form);
+  }
+
+  void StoreUndetectedReusedCredentials() {
+    PasswordForm form1 = MakeCredential(kUsername3, kPassword);
+    PasswordForm form2 = MakeCredential(kUsername4, kPassword, kOrigin2);
+    password_store_->AddLogin(form1);
+    password_store_->AddLogin(form2);
   }
 
   void StoreCredential(base::StringPiece16 username,
@@ -164,7 +166,7 @@ class PasswordStatusCheckServiceBaseTest : public testing::Test {
   void ExpectInfrastructureUninitialized() {
     EXPECT_FALSE(service()->GetSavedPasswordsPresenterForTesting());
     EXPECT_FALSE(service()->GetPasswordCheckDelegateForTesting());
-    EXPECT_FALSE(service()->IsObservingSavedPasswordsPresenterForTesting());
+    EXPECT_FALSE(service()->IsObservingInsecureCredentialsManagerForTesting());
     EXPECT_FALSE(service()->IsObservingBulkLeakCheckForTesting());
     EXPECT_FALSE(service()->is_password_check_running());
     EXPECT_FALSE(service()->is_update_credential_count_pending());
@@ -209,13 +211,13 @@ TEST_P(PasswordStatusCheckServiceParameterizedTest,
        GetPreexistingMultipleIssueCounts) {
   // Based on test parameters, add different credential issues to the store.
   if (include_weak()) {
-    StoreCredentialWithIssue(InsecureType::kWeak);
+    StoreUndetectedWeakCredential();
   }
   if (include_compromised()) {
-    StoreCredentialWithIssue(InsecureType::kLeaked);
+    StoreLeakedCredential();
   }
   if (include_reused()) {
-    StoreCredentialWithIssue(InsecureType::kReused);
+    StoreUndetectedReusedCredentials();
   }
 
   // Service is restarted and existing issues are found during construction.
@@ -223,19 +225,19 @@ TEST_P(PasswordStatusCheckServiceParameterizedTest,
   EXPECT_EQ(service()->weak_credential_count(), include_weak() ? 1UL : 0UL);
   EXPECT_EQ(service()->compromised_credential_count(),
             include_compromised() ? 1UL : 0UL);
-  EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 1UL : 0UL);
+  EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
 }
 
 TEST_P(PasswordStatusCheckServiceParameterizedTest, GetMultipleIssueCounts) {
   // Based on test parameters, add different credential issues to the store.
   if (include_weak()) {
-    StoreCredentialWithIssue(InsecureType::kWeak);
+    StoreUndetectedWeakCredential();
   }
   if (include_compromised()) {
-    StoreCredentialWithIssue(InsecureType::kLeaked);
+    StoreLeakedCredential();
   }
   if (include_reused()) {
-    StoreCredentialWithIssue(InsecureType::kReused);
+    StoreUndetectedReusedCredentials();
   }
 
   // Expect to find credential issues that were added while service is active.
@@ -243,7 +245,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedTest, GetMultipleIssueCounts) {
   EXPECT_EQ(service()->weak_credential_count(), include_weak() ? 1UL : 0UL);
   EXPECT_EQ(service()->compromised_credential_count(),
             include_compromised() ? 1UL : 0UL);
-  EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 1UL : 0UL);
+  EXPECT_EQ(service()->reused_credential_count(), include_reused() ? 2UL : 0UL);
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, RepeatedlyUpdatingDoesNotCrash) {

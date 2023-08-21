@@ -10,11 +10,12 @@
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/ui/insecure_credentials_manager.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 class PasswordStatusCheckService
     : public KeyedService,
-      public password_manager::SavedPasswordsPresenter::Observer,
+      public password_manager::InsecureCredentialsManager::Observer,
       public password_manager::BulkLeakCheckServiceInterface::Observer {
  public:
   explicit PasswordStatusCheckService(Profile* profile);
@@ -55,8 +56,8 @@ class PasswordStatusCheckService
   void RunPasswordCheckAsync();
 
   // Testing functions.
-  bool IsObservingSavedPasswordsPresenterForTesting() const {
-    return saved_passwords_presenter_observation_.IsObserving();
+  bool IsObservingInsecureCredentialsManagerForTesting() const {
+    return insecure_credentials_manager_observation_.IsObserving();
   }
 
   bool IsObservingBulkLeakCheckForTesting() const {
@@ -74,11 +75,10 @@ class PasswordStatusCheckService
   }
 
  private:
-  // SavedPasswordsPresenter::Observer implementation.
-  // Getting notified about this indicates that the presenter is initialized
-  // and ready to be queried for credential issues.
-  void OnSavedPasswordsChanged(
-      const password_manager::PasswordStoreChangeList& changes) override;
+  // InsecureCredentialsManager::Observer implementation.
+  // Getting notified about this indicates that the presenter is initialized and
+  // that weak and reuse checks have concluded.
+  void OnInsecureCredentialsChanged() override;
 
   // BulkLeakCheckService::Observer implementation.
   // This is observed to get notified of the progress of the password check.
@@ -119,12 +119,13 @@ class PasswordStatusCheckService
   // initialized when needed.
   std::unique_ptr<extensions::PasswordCheckDelegate> password_check_delegate_;
 
-  // A scoped observer for `saved_passwords_presenter_`. This is used for
-  // detecting when `saved_passwords_presenter_` is initialized through
-  // `OnSavedPasswordsChanged`.
-  base::ScopedObservation<password_manager::SavedPasswordsPresenter,
-                          password_manager::SavedPasswordsPresenter::Observer>
-      saved_passwords_presenter_observation_{this};
+  // A scoped observer for `InsecureCredentialsManager`. This is used for
+  // detecting when password issues are available through
+  // `OnInsecureCredentialsChanged`.
+  base::ScopedObservation<
+      password_manager::InsecureCredentialsManager,
+      password_manager::InsecureCredentialsManager::Observer>
+      insecure_credentials_manager_observation_{this};
 
   // A scoped observer for `BulkLeakCheckService` which is used by
   // `PasswordCheckDelegate`. This is used for detecting when password check is
