@@ -5,7 +5,6 @@
 #include "components/query_tiles/test/fake_server_response.h"
 
 #include "base/strings/string_number_conversions.h"
-#include "components/query_tiles/internal/tile_fetcher.h"
 #include "components/query_tiles/proto/tile_response.pb.h"
 
 namespace query_tiles {
@@ -64,11 +63,6 @@ void InitResponseProto(proto::ServerResponse* response,
 }
 
 }  // namespace
-
-// static
-void FakeServerResponse::SetTileFetcherServerURL(const GURL& url) {
-  TileFetcher::SetOverrideURLForTesting(url);
-}
 
 // static
 std::string FakeServerResponse::CreateServerResponseProto(int levels,

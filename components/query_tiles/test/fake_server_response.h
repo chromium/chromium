@@ -16,8 +16,6 @@ namespace query_tiles {
 // query tiles server interaction for using in tests.
 class FakeServerResponse {
  public:
-  // Sets the query tile server endpoint to the given |url|.
-  static void SetTileFetcherServerURL(const GURL& url);
 
   // Creates a fake server response proto, which has |levels| tiers, and each
   // tier has |tiles_per_level| tiles.
