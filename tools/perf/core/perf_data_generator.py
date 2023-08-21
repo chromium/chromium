@@ -1036,7 +1036,7 @@ BUILDERS = {
         'dimension': {
             'cpu': 'arm',
             'mac_model': 'MacBookPro18,3',
-            'os': 'Mac',
+            'os': 'Mac-13',
             'pool': 'chrome.tests.perf',
         },
     },
