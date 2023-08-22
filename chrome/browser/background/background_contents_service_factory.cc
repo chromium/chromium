@@ -46,9 +46,11 @@ BackgroundContentsServiceFactory::BackgroundContentsServiceFactory()
 
 BackgroundContentsServiceFactory::~BackgroundContentsServiceFactory() = default;
 
-KeyedService* BackgroundContentsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BackgroundContentsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new BackgroundContentsService(static_cast<Profile*>(profile));
+  return std::make_unique<BackgroundContentsService>(
+      static_cast<Profile*>(profile));
 }
 
 void BackgroundContentsServiceFactory::RegisterProfilePrefs(
