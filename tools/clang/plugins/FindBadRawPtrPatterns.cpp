@@ -172,7 +172,7 @@ class RawPtrFieldMatcher : public MatchFinder::MatchCallback {
     assert(type_source_info->getType()->isPointerType() &&
            "matcher should only match pointer types");
 
-    compiler_.getDiagnostics().Report(field_decl->getEndLoc(),
+    compiler_.getDiagnostics().Report(field_decl->getLocation(),
                                       error_need_raw_ptr_signature_);
   }
 

@@ -14,34 +14,40 @@
 #define SYS_TYPE_WITH_SUFFIX(TYP) TYP##Suffix
 #define SYS_SYMBOL(SYM) SYM
 #define SYS_SYMBOL_WITH_SUFFIX(SYM) SYM##_Suffix
+#define SYS_EQ =
+#define SYS_NULLPTR nullptr
 class SysTypSuffix;
 
 // OK: code owner has no control over system header.
 struct SysStructWithSysMacro {
-  int* ptr0;
-  SYS_INT* ptr1;
-  SYS_INTP ptr2;
-  int* SYS_CONST ptr3;
-  int* SYS_ATTR ptr4;
-  SYS_INTP_FIELD();
-  SYS_TYPE_WITH_SUFFIX(SysTyp) * ptr5;
-  int* SYS_SYMBOL(ptr6);
-  int* SYS_SYMBOL_WITH_SUFFIX(ptr7);
+  int* ptr0;                                     // OK.
+  SYS_INT* ptr1;                                 // OK.
+  SYS_INTP ptr2;                                 // OK.
+  int* SYS_CONST ptr3;                           // OK.
+  int* SYS_ATTR ptr4;                            // OK.
+  SYS_INTP_FIELD();                              // OK.
+  SYS_TYPE_WITH_SUFFIX(SysTyp) * ptr5;           // OK.
+  int* SYS_SYMBOL(ptr6);                         // OK.
+  int* SYS_SYMBOL_WITH_SUFFIX(ptr7);             // OK.
+  int* ptr8 SYS_EQ nullptr;                      // OK.
+  int* ptr9 = SYS_NULLPTR;                       // OK.
+  int* SYS_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;  // OK.
 };
 
-// These `CMD_***` macro should be defined before including this header,
-// in command line arguments.
-// OK: code owner has no control over system header.
+// OK: code owner has no control over system header and command line.
 struct SysStructWithCmdMacro {
-  int* ptr0;
-  CMD_INT* ptr1;
-  CMD_INTP ptr2;
-  int* CMD_CONST ptr3;
-  int* CMD_ATTR ptr4;
-  CMD_INTP_FIELD();
-  CMD_TYPE_WITH_SUFFIX(SysTyp) * ptr5;
-  int* CMD_SYMBOL(ptr6);
-  int* CMD_SYMBOL_WITH_SUFFIX(ptr7);
+  int* ptr0;                                     // OK.
+  CMD_INT* ptr1;                                 // OK.
+  CMD_INTP ptr2;                                 // OK.
+  int* CMD_CONST ptr3;                           // OK.
+  int* CMD_ATTR ptr4;                            // OK.
+  CMD_INTP_FIELD();                              // OK.
+  CMD_TYPE_WITH_SUFFIX(SysTyp) * ptr5;           // OK.
+  int* CMD_SYMBOL(ptr6);                         // OK.
+  int* CMD_SYMBOL_WITH_SUFFIX(ptr7);             // OK.
+  int* ptr8 CMD_EQ nullptr;                      // OK.
+  int* ptr9 = CMD_NULLPTR;                       // OK.
+  int* CMD_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;  // OK.
 };
 
 // These `USR_***` macro should be defined before including this header,
@@ -66,6 +72,61 @@ struct SysStructWithUsrMacro {
   // OK: the source location for this field declaration will be "<scratch
   // space>" and the real file path cannot be detected.
   int* USR_SYMBOL_WITH_SUFFIX(ptr7);
+  // OK: code owner has no control over system header.
+  int* ptr8 USR_EQ nullptr;
+  // OK: code owner has no control over system header.
+  int* ptr9 = USR_NULLPTR;
+  // OK: the source location for this field declaration will be "<scratch
+  // space>" and the real file path cannot be detected.
+  int* USR_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;
+};
+
+// Same as for SysStructWithSysMacro.
+struct SysStructWithThirdPartyMacro {
+  int* ptr0;                                    // OK.
+  TP_INT* ptr1;                                 // OK.
+  TP_INTP ptr2;                                 // OK.
+  int* TP_CONST ptr3;                           // OK.
+  int* TP_ATTR ptr4;                            // OK.
+  TP_INTP_FIELD();                              // OK.
+  TP_TYPE_WITH_SUFFIX(SysTyp) * ptr5;           // OK.
+  int* TP_SYMBOL(ptr6);                         // OK.
+  int* TP_SYMBOL_WITH_SUFFIX(ptr7);             // OK.
+  int* ptr8 TP_EQ nullptr;                      // OK.
+  int* ptr9 = TP_NULLPTR;                       // OK.
+  int* TP_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;  // OK.
+};
+
+// Same as for SysStructWithSysMacro.
+struct SysStructWithManuallyIgnoredMacro {
+  int* ptr0;                                    // OK.
+  IG_INT* ptr1;                                 // OK.
+  IG_INTP ptr2;                                 // OK.
+  int* IG_CONST ptr3;                           // OK.
+  int* IG_ATTR ptr4;                            // OK.
+  IG_INTP_FIELD();                              // OK.
+  IG_TYPE_WITH_SUFFIX(SysTyp) * ptr5;           // OK.
+  int* IG_SYMBOL(ptr6);                         // OK.
+  int* IG_SYMBOL_WITH_SUFFIX(ptr7);             // OK.
+  int* ptr8 IG_EQ nullptr;                      // OK.
+  int* ptr9 = IG_NULLPTR;                       // OK.
+  int* IG_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;  // OK.
+};
+
+// Same as for SysStructWithSysMacro.
+struct SysStructWithGeneratedMacro {
+  int* ptr0;                                     // OK.
+  GEN_INT* ptr1;                                 // OK.
+  GEN_INTP ptr2;                                 // OK.
+  int* GEN_CONST ptr3;                           // OK.
+  int* GEN_ATTR ptr4;                            // OK.
+  GEN_INTP_FIELD();                              // OK.
+  GEN_TYPE_WITH_SUFFIX(SysTyp) * ptr5;           // OK.
+  int* GEN_SYMBOL(ptr6);                         // OK.
+  int* GEN_SYMBOL_WITH_SUFFIX(ptr7);             // OK.
+  int* ptr8 GEN_EQ nullptr;                      // OK.
+  int* ptr9 = GEN_NULLPTR;                       // OK.
+  int* GEN_SYMBOL_WITH_SUFFIX(ptr10) = nullptr;  // OK.
 };
 
 #endif  // TOOLS_CLANG_PLUGINS_TESTS_SYSTEM_RAW_PTR_SYSTEM_TEST_H_
