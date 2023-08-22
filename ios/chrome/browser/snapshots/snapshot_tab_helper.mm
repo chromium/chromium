@@ -31,15 +31,12 @@ enum class PageLoadedSnapshotResult {
 };
 
 // Generates an ID for WebState's snapshot.
-NSString* GenerateSnapshotID(const web::WebState* web_state) {
+SnapshotID GenerateSnapshotID(const web::WebState* web_state) {
   DCHECK(web_state->GetUniqueIdentifier().is_valid());
   DCHECK_GT(web_state->GetUniqueIdentifier().id(), 0);
 
   static_assert(sizeof(SessionID::id_type) == sizeof(int32_t));
-  const uint32_t identifier =
-      static_cast<uint32_t>(web_state->GetUniqueIdentifier().id());
-
-  return [NSString stringWithFormat:@"%08u", identifier];
+  return SnapshotID(web_state->GetUniqueIdentifier().id());
 }
 
 }  // namespace
@@ -104,7 +101,7 @@ void SnapshotTabHelper::SaveGreyInBackground() {
   [snapshot_generator_ saveGreyInBackground];
 }
 
-NSString* SnapshotTabHelper::GetSnapshotID() const {
+SnapshotID SnapshotTabHelper::GetSnapshotID() const {
   return snapshot_generator_.snapshotID;
 }
 

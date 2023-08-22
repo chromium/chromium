@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_H_
 
+#include <vector>
+
 #import <UIKit/UIKit.h>
 
+class SnapshotID;
 namespace base {
 class FilePath;
 class Time;
@@ -20,10 +23,6 @@ class Time;
 // been purged from memory or when quickly switching tabs.
 // Persists to disk on a background thread each time a snapshot changes.
 @interface SnapshotCache : NSObject
-
-// Track snapshot IDs not to release on low memory and to reload on
-// `UIApplicationDidBecomeActiveNotification`.
-@property(nonatomic, strong) NSSet<NSString*>* pinnedSnapshotIDs;
 
 // Designated initializer. `storagePath` is the file path where all images
 // managed by this SnapshotCache are stored. `storagePath` is not guaranteed to
@@ -51,19 +50,19 @@ class Time;
 // callback if it exists. The callback is guaranteed to be called synchronously
 // if the image is in memory. It will be called asynchronously if the image is
 // on disk or with nil if the image is not present at all.
-- (void)retrieveImageForSnapshotID:(NSString*)snapshotID
+- (void)retrieveImageForSnapshotID:(SnapshotID)snapshotID
                           callback:(void (^)(UIImage*))callback;
 
 // Requests the grey snapshot for `snapshotID`. If the image is already loaded
 // in memory, this will immediately call back with `callback`.
-- (void)retrieveGreyImageForSnapshotID:(NSString*)snapshotID
+- (void)retrieveGreyImageForSnapshotID:(SnapshotID)snapshotID
                               callback:(void (^)(UIImage*))callback;
 
 // Sets the image in both the LRU and disk.
-- (void)setImage:(UIImage*)image withSnapshotID:(NSString*)snapshotID;
+- (void)setImage:(UIImage*)image withSnapshotID:(SnapshotID)snapshotID;
 
 // Removes the image from both the LRU and disk.
-- (void)removeImageWithSnapshotID:(NSString*)snapshotID;
+- (void)removeImageWithSnapshotID:(SnapshotID)snapshotID;
 
 // Removes all images from both the LRU and disk.
 - (void)removeAllImages;
@@ -71,27 +70,27 @@ class Time;
 // Purges the cache of snapshots that are older than `date`. The snapshots for
 // `liveSnapshotIDs` will be kept. This will be done asynchronously on a
 // background thread.
-- (void)purgeCacheOlderThan:(const base::Time&)date
-                    keeping:(NSSet<NSString*>*)liveSnapshotIDs;
+- (void)purgeCacheOlderThan:(base::Time)date
+                    keeping:(const std::vector<SnapshotID>&)liveSnapshotIDs;
 
 // Renames snapshots with names in `oldIDs` to names in `newIDs`. It is a
 // programmatic error if the two array do not have the same length.
 - (void)renameSnapshotsWithIDs:(NSArray<NSString*>*)oldIDs
-                         toIDs:(NSArray<NSString*>*)newIDs;
+                         toIDs:(const std::vector<SnapshotID>&)newIDs;
 
 // Moves the on-disk tab snapshot from the receiver cache to the destination
 // on-disk cache. If the snapshot was also in-memory, it is moved as well. The
 // grey image is handled as well if present.
-- (void)migrateImageWithSnapshotID:(NSString*)snapshotID
+- (void)migrateImageWithSnapshotID:(SnapshotID)snapshotID
                    toSnapshotCache:(SnapshotCache*)destinationCache;
 
 // Hints that the snapshot for `snapshotID` will likely be saved to disk when
 // the application is backgrounded.  The snapshot is then saved in memory, so it
 // does not need to be read off disk.
-- (void)willBeSavedGreyWhenBackgrounding:(NSString*)snapshotID;
+- (void)willBeSavedGreyWhenBackgrounding:(SnapshotID)snapshotID;
 
 // Creates temporary cache of grey images for tablet side-swipe.
-- (void)createGreyCache:(NSArray<NSString*>*)snapshotIDs;
+- (void)createGreyCache:(const std::vector<SnapshotID>&)snapshotIDs;
 
 // Releases alls images in grey cache.
 - (void)removeGreyCache;
@@ -100,12 +99,16 @@ class Time;
 // in memory, this will immediately call back with `callback`. Otherwise, only
 // uses `callback` for the most recent caller. The callback is not guaranteed to
 // be called.
-- (void)greyImageForSnapshotID:(NSString*)snapshotID
+- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
                       callback:(void (^)(UIImage*))callback;
 
 // Writes a grey copy of the snapshot for `snapshotID` to disk, but if and only
 // if a color version of the snapshot already exists in memory or on disk.
-- (void)saveGreyInBackgroundForSnapshotID:(NSString*)snapshotID;
+- (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID;
+
+// Sets snapshot IDs not to release on low memory and to reload on
+// `UIApplicationDidBecomeActiveNotification`.
+- (void)setPinnedSnapshotIDs:(const std::vector<SnapshotID>&)pinnedSnapshotIDs;
 
 // Adds an observer to this snapshot cache.
 - (void)addObserver:(id<SnapshotCacheObserver>)observer;
@@ -121,8 +124,8 @@ class Time;
 
 // Additionnal methods that should only be used for tests.
 @interface SnapshotCache (TestingAdditions)
-- (BOOL)hasImageInMemory:(NSString*)snapshotID;
-- (BOOL)hasGreyImageInMemory:(NSString*)snapshotID;
+- (BOOL)hasImageInMemory:(SnapshotID)snapshotID;
+- (BOOL)hasGreyImageInMemory:(SnapshotID)snapshotID;
 - (NSUInteger)lruCacheMaxSize;
 @end
 

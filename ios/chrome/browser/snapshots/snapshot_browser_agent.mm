@@ -144,14 +144,15 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
   // now identified by a snapshot ID.
   NSMutableArray<NSString*>* stable_identifiers =
       [NSMutableArray arrayWithCapacity:web_state_list_count];
-  NSMutableArray<NSString*>* snapshot_identifiers =
-      [NSMutableArray arrayWithCapacity:web_state_list_count];
+
+  std::vector<SnapshotID> snapshot_identifiers;
+  snapshot_identifiers.reserve(web_state_list_count);
 
   for (int index = 0; index < web_state_list_count; ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
     [stable_identifiers addObject:web_state->GetStableIdentifier()];
-    [snapshot_identifiers
-        addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
+    snapshot_identifiers.push_back(
+        SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID());
   }
 
   [snapshot_cache_ renameSnapshotsWithIDs:stable_identifiers
@@ -160,21 +161,24 @@ void SnapshotBrowserAgent::MigrateStorageIfNecessary() {
 
 void SnapshotBrowserAgent::PurgeUnusedSnapshots() {
   DCHECK(snapshot_cache_);
-  NSSet<NSString*>* snapshot_ids = GetSnapshotIDs();
+  std::vector<SnapshotID> snapshot_ids = GetSnapshotIDs();
   // Keep snapshots that are less than one minute old, to prevent a concurrency
   // issue if they are created while the purge is running.
   const base::Time one_minute_ago = base::Time::Now() - base::Minutes(1);
   [snapshot_cache_ purgeCacheOlderThan:one_minute_ago keeping:snapshot_ids];
 }
 
-NSSet<NSString*>* SnapshotBrowserAgent::GetSnapshotIDs() {
+std::vector<SnapshotID> SnapshotBrowserAgent::GetSnapshotIDs() {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  NSMutableSet<NSString*>* snapshot_ids =
-      [NSMutableSet setWithCapacity:web_state_list->count()];
-  for (int index = 0; index < web_state_list->count(); ++index) {
+  const int web_state_list_count = web_state_list->count();
+
+  std::vector<SnapshotID> snapshot_ids;
+  snapshot_ids.reserve(web_state_list_count);
+
+  for (int index = 0; index < web_state_list_count; ++index) {
     web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [snapshot_ids
-        addObject:SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID()];
+    snapshot_ids.push_back(
+        SnapshotTabHelper::FromWebState(web_state)->GetSnapshotID());
   }
   return snapshot_ids;
 }

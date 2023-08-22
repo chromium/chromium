@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
+#import "ios/chrome/browser/snapshots/snapshot_id.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
@@ -67,16 +68,16 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   std::unique_ptr<web::WebStateObserver> _webStateObserver;
 
   // The unique ID for WebState's snapshot.
-  __strong NSString* _snapshotID;
+  SnapshotID _snapshotID;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      snapshotID:(NSString*)snapshotID {
+                      snapshotID:(SnapshotID)snapshotID {
   if ((self = [super init])) {
     DCHECK(webState);
-    DCHECK(snapshotID.length > 0);
+    DCHECK(snapshotID.valid());
     _webState = webState;
-    _snapshotID = [snapshotID copy];
+    _snapshotID = snapshotID;
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _webState->AddObserver(_webStateObserver.get());

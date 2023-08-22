@@ -7,10 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+class SnapshotID;
+
 // This class implements a cache with a limited size. Once the cache reach its
 // size limit, it will start to evict items in a Least Recently Used order
 // (where the term "used" is determined in terms of query to the cache).
-@interface SnapshotLRUCache : NSObject
+@interface SnapshotLRUCache<ObjectType> : NSObject
 
 // The maximum amount of items that the cache can hold before starting to
 // evict. The value 0 is used to signify that the cache can hold an unlimited
@@ -28,16 +30,16 @@
 
 // Query the cache for an item corresponding to the `key`. Returns nil if there
 // is no item corresponding to that key.
-- (id)objectForKey:(id<NSObject>)key;
+- (ObjectType)objectForKey:(SnapshotID)key;
 
 // Adds the pair `key`, `obj` to the cache. If the value of the maxCacheSize
 // property is non zero, the cache may evict an elements if the maximum cache
 // size is reached. If the `key` is already present in the cache, the value for
 // that key is replaced by `object`.
-- (void)setObject:(id<NSObject>)object forKey:(NSObject*)key;
+- (void)setObject:(ObjectType)object forKey:(SnapshotID)key;
 
 // Remove the key, value pair corresponding to the given `key`.
-- (void)removeObjectForKey:(id<NSObject>)key;
+- (void)removeObjectForKey:(SnapshotID)key;
 
 // Remove all objects from the cache.
 - (void)removeAllObjects;

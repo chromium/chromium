@@ -15,9 +15,11 @@ class FilePath;
 
 @interface SnapshotCache (Internal)
 // Returns filepath to the color snapshot of `snapshotID`.
-- (base::FilePath)imagePathForSnapshotID:(NSString*)snapshotID;
+- (base::FilePath)imagePathForSnapshotID:(SnapshotID)snapshotID;
 // Returns filepath to the greyscale snapshot of `snapshotID`.
-- (base::FilePath)greyImagePathForSnapshotID:(NSString*)snapshotID;
+- (base::FilePath)greyImagePathForSnapshotID:(SnapshotID)snapshotID;
+// Returns filepath to the legacy color snapshot of `snapshotID`.
+- (base::FilePath)legacyImagePathForSnapshotID:(NSString*)snapshotID;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_INTERNAL_H_

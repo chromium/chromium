@@ -9,6 +9,7 @@ source_set("snapshots") {
     "snapshot_cache_internal.h",
     "snapshot_cache_observer.h",
     "snapshot_generator_delegate.h",
+    "snapshot_id.h",
     "snapshot_lru_cache.h",
     "snapshot_tab_helper.h",
   ]
@@ -62,6 +63,7 @@ source_set("unit_tests") {
     ":test_utils",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:session_id",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",

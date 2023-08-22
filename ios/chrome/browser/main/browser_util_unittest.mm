@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
+#import "ios/chrome/browser/snapshots/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -92,7 +93,7 @@ class BrowserUtilTest : public PlatformTest {
 
   // Returns the cached snapshot for the given snapshot ID in the given snapshot
   // cache.
-  UIImage* GetSnapshot(SnapshotCache* snapshot_cache, NSString* snapshot_id) {
+  UIImage* GetSnapshot(SnapshotCache* snapshot_cache, SnapshotID snapshot_id) {
     CHECK(snapshot_cache);
     base::RunLoop run_loop;
     base::RunLoop* run_loop_ptr = &run_loop;
@@ -203,7 +204,7 @@ TEST_F(BrowserUtilTest, TestMovedSnapshot) {
   UIImage* snapshot = UIImageWithSizeAndSolidColor({10, 20}, UIColor.redColor);
   SnapshotTabHelper* snapshot_tab_helper =
       SnapshotTabHelper::FromWebState(web_state);
-  NSString* snapshot_id = snapshot_tab_helper->GetSnapshotID();
+  SnapshotID snapshot_id = snapshot_tab_helper->GetSnapshotID();
   [snapshot_cache setImage:snapshot withSnapshotID:snapshot_id];
   ASSERT_TRUE(
       UIImagesAreEqual(snapshot, GetSnapshot(snapshot_cache, snapshot_id)));

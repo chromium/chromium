@@ -248,12 +248,12 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 #pragma mark - SnapshotCacheObserver
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForID:(NSString*)snapshotID {
+    didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = 0; i < _webStateList->count(); i++) {
     SnapshotTabHelper* snapshotTabHelper =
         SnapshotTabHelper::FromWebState(_webStateList->GetWebStateAt(i));
-    if ([snapshotID isEqualToString:snapshotTabHelper->GetSnapshotID()]) {
+    if (snapshotID == snapshotTabHelper->GetSnapshotID()) {
       webState = _webStateList->GetWebStateAt(i);
       break;
     }

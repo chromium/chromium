@@ -22,10 +22,10 @@ namespace {
 
 // Moves snapshot associated with `snapshot_id` from `source_browser` to
 // `destination_browser`'s snapshot cache.
-void MoveSnapshot(NSString* snapshot_id,
+void MoveSnapshot(SnapshotID snapshot_id,
                   Browser* source_browser,
                   Browser* destination_browser) {
-  DCHECK(snapshot_id.length);
+  DCHECK(snapshot_id.valid());
   SnapshotCache* source_cache =
       SnapshotBrowserAgent::FromBrowser(source_browser)->snapshot_cache();
   SnapshotCache* destination_cache =

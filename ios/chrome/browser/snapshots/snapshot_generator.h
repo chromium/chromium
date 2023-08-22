@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+class SnapshotID;
 @class SnapshotCache;
 @protocol SnapshotGeneratorDelegate;
 
@@ -24,7 +25,7 @@ class WebState;
 
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
-                      snapshotID:(NSString*)snapshotID
+                      snapshotID:(SnapshotID)snapshotID
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -69,7 +70,7 @@ class WebState;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate> delegate;
 
 // The snapshot ID.
-@property(nonatomic, readonly) NSString* snapshotID;
+@property(nonatomic, readonly) SnapshotID snapshotID;
 
 @end
 

@@ -207,8 +207,8 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 - (void)createGreyCache:(UISwipeGestureRecognizerDirection)direction {
   NSInteger dx = (direction == UISwipeGestureRecognizerDirectionLeft) ? -1 : 1;
   NSInteger index = _startingTabIndex + dx;
-  NSMutableArray* sessionIDs =
-      [NSMutableArray arrayWithCapacity:kIpadGreySwipeTabCount];
+  std::vector<SnapshotID> snapshotIDs;
+  snapshotIDs.reserve(kIpadGreySwipeTabCount);
   for (NSUInteger count = 0; count < kIpadGreySwipeTabCount; count++) {
     // Wrap around edges.
     if (index >= self.webStateList->count()) {
@@ -225,11 +225,12 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
     web::WebState* webState = self.webStateList->GetWebStateAt(index);
     if (webState && PagePlaceholderTabHelper::FromWebState(webState)
                         ->will_add_placeholder_for_next_navigation()) {
-      [sessionIDs addObject:webState->GetStableIdentifier()];
+      snapshotIDs.push_back(
+          SnapshotTabHelper::FromWebState(webState)->GetSnapshotID());
     }
     index = index + dx;
   }
-  [_snapshotBrowserAgent->snapshot_cache() createGreyCache:sessionIDs];
+  [_snapshotBrowserAgent->snapshot_cache() createGreyCache:snapshotIDs];
 }
 
 - (void)deleteGreyCache {

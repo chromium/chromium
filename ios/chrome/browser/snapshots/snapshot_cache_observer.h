@@ -14,9 +14,8 @@
 @optional
 // Tells the observing object that the `snapshotCache` was updated with a new
 // snapshot corresponding to `snapshotID`.
-// TODO(crbug.com/1450598): Migrate to unique identifier.
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForID:(NSString*)snapshotID;
+    didUpdateSnapshotForID:(SnapshotID)snapshotID;
 @end
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_SNAPSHOT_CACHE_OBSERVER_H_

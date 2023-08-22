@@ -4,37 +4,18 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 
-#import <stddef.h>
-
 #import <memory>
-#import <unordered_map>
 
 #import "base/containers/lru_cache.h"
-
-namespace {
-
-struct NSObjectEqualTo {
-  bool operator()(id<NSObject> obj1, id<NSObject> obj2) const {
-    return [obj1 isEqual:obj2];
-  }
-};
-
-struct NSObjectHash {
-  std::size_t operator()(id<NSObject> obj) const { return [obj hash]; }
-};
-
-using NSObjectLRUCache = base::
-    HashingLRUCache<id<NSObject>, id<NSObject>, NSObjectHash, NSObjectEqualTo>;
-
-}  // namespace
+#import "ios/chrome/browser/snapshots/snapshot_id.h"
 
 @implementation SnapshotLRUCache {
-  std::unique_ptr<NSObjectLRUCache> _cache;
+  std::unique_ptr<base::LRUCache<SnapshotID, id>> _cache;
 }
 
 - (instancetype)initWithCacheSize:(NSUInteger)maxCacheSize {
   if ((self = [super init])) {
-    _cache = std::make_unique<NSObjectLRUCache>(maxCacheSize);
+    _cache = std::make_unique<base::LRUCache<SnapshotID, id>>(maxCacheSize);
   }
   return self;
 }
@@ -43,18 +24,18 @@ using NSObjectLRUCache = base::
   return _cache->max_size();
 }
 
-- (id)objectForKey:(id<NSObject>)key {
+- (id)objectForKey:(SnapshotID)key {
   auto it = _cache->Get(key);
   if (it == _cache->end())
     return nil;
   return it->second;
 }
 
-- (void)setObject:(id<NSObject>)value forKey:(NSObject*)key {
-  _cache->Put([key copy], value);
+- (void)setObject:(id)value forKey:(SnapshotID)key {
+  _cache->Put(key, value);
 }
 
-- (void)removeObjectForKey:(id<NSObject>)key {
+- (void)removeObjectForKey:(SnapshotID)key {
   auto it = _cache->Peek(key);
   if (it != _cache->end())
     _cache->Erase(it);

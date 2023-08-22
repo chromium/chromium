@@ -377,13 +377,13 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
 #pragma mark - SnapshotCacheObserver
 
 - (void)snapshotCache:(SnapshotCache*)snapshotCache
-    didUpdateSnapshotForID:(NSString*)snapshotID {
+    didUpdateSnapshotForID:(SnapshotID)snapshotID {
   web::WebState* webState = nullptr;
   for (int i = self.webStateList->GetIndexOfFirstNonPinnedWebState();
        i < self.webStateList->count(); i++) {
     SnapshotTabHelper* snapshotTabHelper =
         SnapshotTabHelper::FromWebState(self.webStateList->GetWebStateAt(i));
-    if ([snapshotID isEqualToString:snapshotTabHelper->GetSnapshotID()]) {
+    if (snapshotID == snapshotTabHelper->GetSnapshotID()) {
       webState = self.webStateList->GetWebStateAt(i);
       break;
     }
