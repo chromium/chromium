@@ -111,6 +111,8 @@ class IntegrationTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
+    VLOG(2) << __func__ << " entered.";
+
     ASSERT_NO_FATAL_FAILURE(CleanProcesses());
     ASSERT_TRUE(WaitForUpdaterExit());
     ASSERT_NO_FATAL_FAILURE(Clean());
@@ -139,9 +141,13 @@ class IntegrationTest : public ::testing::Test {
     // Mark the device as de-registered. This stops sending DM requests
     // that mess up the request expectations in the mock server.
     ASSERT_NO_FATAL_FAILURE(DMDeregisterDevice());
+
+    VLOG(2) << __func__ << "completed.";
   }
 
   void TearDown() override {
+    VLOG(2) << __func__ << " entered.";
+
     ExitTestMode();
     if (!HasFailure()) {
       ExpectClean();
@@ -156,6 +162,8 @@ class IntegrationTest : public ::testing::Test {
     // Updater process must not be running for `Clean()` to succeed.
     ASSERT_TRUE(WaitForUpdaterExit());
     Clean();
+
+    VLOG(2) << __func__ << "completed.";
   }
 
   void ExpectNoCrashes() { test_commands_->ExpectNoCrashes(); }
