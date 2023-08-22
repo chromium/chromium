@@ -14,7 +14,6 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -77,11 +76,6 @@ public class ChromeSurveyControllerTest {
         mTestController.setTabModelSelector(mSelector);
         mSharedPreferences = SharedPreferencesManager.getInstance();
         Assert.assertNull("Tab should be null", mTestController.getLastTabPromptShown());
-    }
-
-    @After
-    public void after() {
-        FirstRunStatus.setFirstRunTriggered(false);
     }
 
     @Test
@@ -226,7 +220,7 @@ public class ChromeSurveyControllerTest {
 
     @Test
     public void testEligibilityFirstRun() {
-        FirstRunStatus.setFirstRunTriggered(true);
+        FirstRunStatus.setFirstRunTriggeredForTesting(true);
         mRiggedThrottler = new RiggedSurveyThrottler(0, 1, 10);
         Assert.assertFalse(
                 "Random selection should be false", mRiggedThrottler.isRandomlySelectedForSurvey());

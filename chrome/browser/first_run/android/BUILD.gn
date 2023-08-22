@@ -10,6 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/firstrun/MobileFreProgress.java",
   ]
   deps = [
+    "//base:base_java",
     "//chrome/browser/preferences:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]

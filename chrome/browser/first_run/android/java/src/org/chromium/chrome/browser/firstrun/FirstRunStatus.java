@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.firstrun;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
@@ -17,14 +18,22 @@ public class FirstRunStatus {
     private static boolean sFirstRunTriggered;
 
     /** @param triggered whether the first run flow is triggered in the current browser session. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void setFirstRunTriggered(boolean triggered) {
+    static void setFirstRunTriggered(boolean triggered) {
         sFirstRunTriggered = triggered;
     }
 
     /** @return whether first run flow is triggered in the current browser session. */
     public static boolean isFirstRunTriggered() {
         return sFirstRunTriggered;
+    }
+
+    /**
+     * Test only setter for #setFirstRunTriggered, which will be reset to false after test.
+     * @see #setFirstRunTriggered(boolean).
+     */
+    public static void setFirstRunTriggeredForTesting(boolean triggered) {
+        setFirstRunTriggered(triggered);
+        ResettersForTesting.register(() -> sFirstRunTriggered = false);
     }
 
     /**
