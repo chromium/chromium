@@ -5816,6 +5816,13 @@ correspondente for ativada, o fluxo de atestado poderá ser iniciado para o perf
 
 Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="6195802366906945965">Determina se o verificador integrado de certificados será usado para verificar os certificados do servidor</translation>
+<translation id="6197455846673223644">Se a política for definida como "Ativada", a coleta de dados anônimos inseridos no URL (que envia os URLs das páginas acessadas pelo usuário ao Google para melhorar a pesquisa e navegação) vai ficar sempre ativa.
+
+Se a política for definida como "Desativada", não haverá coleta de dados anônimos inseridos no URL.
+
+Se ela for deixada sem definição, o usuário poderá mudar a configuração manualmente.
+
+No quiosque do <ph name="PRODUCT_OS_NAME" />, esta política não oferece a opção "Permitir que o usuário decida". Se esta política não for definida para o quiosque do <ph name="PRODUCT_OS_NAME" />, a coleta de dados anônimos inseridos no URL vai estar sempre ativa.</translation>
 <translation id="6198947200418556248">Esta política foi descontinuada. Se você ainda precisa de um comportamento de cookies legado, use a <ph name="LEGACY_SAMESITE_COOKIE_BEHAVIOR_ENABLED_FOR_DOMAIN_LIST_POLICY_NAME" />. Com ela, é possível reverter todos os cookies para o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> legado. A reversão para o comportamento legado faz com que os cookies que não especificam um atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> sejam tratados como <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />, remove o requisito de que cookies <ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" /> precisam ter o atributo <ph name="ATTRIBUTE_SECURE_NAME" /> e ignora a comparação do esquema ao avaliar se dois sites são o mesmo. Para ver uma descrição completa, consulte https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies (em inglês).
 
           Quando esta política não é definida, o comportamento <ph name="ATTRIBUTE_SAMESITE_NAME" /> padrão para cookies depende da configuração pessoal do usuário para os recursos <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> e <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, que podem ser definidos por um teste de campo ou ativando e desativando as sinalizações <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> ou <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivamente.</translation>
