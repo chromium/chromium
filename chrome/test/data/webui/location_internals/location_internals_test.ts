@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://webui-test/mojo_webui_test_support.js';
-
 import {POSITION_CACHE_TABLE_ID, WIFI_DATA_TABLE_ID, WIFI_POLLING_POLICY_TABLE_ID} from 'chrome://location-internals/diagnose_info_view.js';
 import {GeolocationDiagnostics, GeolocationInternalsInterface, GeolocationInternalsObserverRemote, GeolocationInternalsPendingReceiver, GeolocationInternalsReceiver, INVALID_CHANNEL, INVALID_RADIO_SIGNAL_STRENGTH, INVALID_SIGNAL_TO_NOISE} from 'chrome://location-internals/geolocation_internals.mojom-webui.js';
 import {BAD_ACCURACY, BAD_ALTITUDE, BAD_HEADING, BAD_LATITUDE_LONGITUDE, BAD_SPEED} from 'chrome://location-internals/geoposition.mojom-webui.js';
