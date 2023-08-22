@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that nested pseudo elements and their styles are handled properly.\n`);
   await TestRunner.loadLegacyModule('elements');

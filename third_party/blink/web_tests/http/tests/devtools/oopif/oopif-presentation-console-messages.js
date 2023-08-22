@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Test that links to UISourceCode work correctly when navigating OOPIF`);

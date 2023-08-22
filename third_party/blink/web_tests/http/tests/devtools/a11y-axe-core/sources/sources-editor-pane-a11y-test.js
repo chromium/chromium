@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult('Tests accessibility in the editor pane in sources panel using the axe-core linter.');
 

@@ -7,6 +7,7 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);

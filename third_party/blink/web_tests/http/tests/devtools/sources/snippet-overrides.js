@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       'Verifies that snippets still map when local overrides is on.\n');

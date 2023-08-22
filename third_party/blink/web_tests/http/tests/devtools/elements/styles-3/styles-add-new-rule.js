@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule works after switching nodes.\n`);
   await TestRunner.loadLegacyModule('elements');

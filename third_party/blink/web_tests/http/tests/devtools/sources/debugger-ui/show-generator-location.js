@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that "Show Generator Location" jumps to the correct location.\n`);
   await TestRunner.loadLegacyModule('console');

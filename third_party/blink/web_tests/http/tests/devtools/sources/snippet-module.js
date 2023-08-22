@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       'Verifies that modules can be loaded via import() in snippets\n');
