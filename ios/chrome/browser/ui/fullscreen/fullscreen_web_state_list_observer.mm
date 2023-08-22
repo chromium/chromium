@@ -116,9 +116,11 @@ void FullscreenWebStateListObserver::WebStateWasActivated(
   if (!web_state) {
     return;
   }
-
-  DCHECK(web_state->IsRealized());
-  DCHECK(web_state->GetWebViewProxy());
+  if (!web_state->IsRealized() || !web_state->GetWebViewProxy()) {
+    // TODO(crbug.com/1473942): This should not be reached. Investigate when/why
+    // an active WebState doesn't have WebViewProxy.
+    return;
+  }
   if (!HasWebStateBeenActivated(web_state)) {
     MoveContentBelowHeader(web_state->GetWebViewProxy(), model_);
     activated_web_states_.insert(web_state);
