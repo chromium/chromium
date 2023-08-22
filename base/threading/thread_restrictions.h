@@ -180,7 +180,6 @@ class RTCVideoEncoder;
 class SourceStream;
 class VideoFrameResourceProvider;
 class WebRtcVideoFrameAdapter;
-class LegacyWebRtcVideoFrameAdapter;
 class VideoTrackRecorderImplContextProvider;
 class WorkerThread;
 namespace scheduler {
@@ -232,7 +231,6 @@ class RenderProcessHostImpl;
 class RenderProcessHost;
 class RenderWidgetHostViewMac;
 class RendererBlinkPlatformImpl;
-class RTCVideoDecoder;
 class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
 class ServiceWorkerContextClient;
@@ -282,9 +280,6 @@ class UnpackedInstaller;
 }  // namespace extensions
 namespace font_service::internal {
 class MappedFontFile;
-}
-namespace functions {
-class ExecScriptScopedAllowBaseSyncPrimitives;
 }
 namespace gl {
 struct GLImplementationParts;
@@ -437,10 +432,6 @@ class VrShell;
 namespace web {
 class WebMainLoop;
 }  // namespace web
-
-namespace webrtc {
-class DesktopConfigurationMonitor;
-}
 
 namespace base {
 class Environment;
@@ -767,7 +758,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class content::ServiceWorkerContextClient;
   friend class device::UsbContext;
   friend class enterprise_connectors::LinuxKeyRotationCommand;
-  friend class functions::ExecScriptScopedAllowBaseSyncPrimitives;
   friend class history_report::HistoryReportJniBridge;
   friend class internal::TaskTracker;
   friend class leveldb::port::CondVar;
@@ -785,7 +775,6 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   friend class syncer::HttpBridge;
   friend class syncer::GetLocalChangesRequest;
   friend class updater::SystemctlLauncherScopedAllowBaseSyncPrimitives;
-  friend class webrtc::DesktopConfigurationMonitor;
 
   // Usage that should be fixed:
   // Sorted by class name (with namespace).
@@ -837,7 +826,6 @@ class BASE_EXPORT
   friend class base::StackSamplingProfiler;
   friend class base::internal::JobTaskSource;
   friend class base::sequence_manager::internal::TaskQueueImpl;
-  friend class blink::LegacyWebRtcVideoFrameAdapter;
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;
   friend class blink::WebRtcVideoFrameAdapter;
@@ -849,7 +837,6 @@ class BASE_EXPORT
   friend class content::EmergencyTraceFinalisationCoordinator;
   friend class content::InProcessUtilityThread;
   friend class content::RenderProcessHost;
-  friend class content::RTCVideoDecoder;
   friend class content::SandboxHostLinux;
   friend class content::ScopedAllowWaitForDebugURL;
   friend class content::SynchronousCompositor;
