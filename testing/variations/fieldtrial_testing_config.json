@@ -15029,6 +15029,21 @@
             ]
         }
     ],
+    "TabStripStartupRefactoring": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TabStripStartupRefactoring"
+                    ]
+                }
+            ]
+        }
+    ],
     "TailoredSecurityIntegration": [
         {
             "platforms": [
