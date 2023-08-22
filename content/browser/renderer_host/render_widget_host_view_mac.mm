@@ -87,6 +87,18 @@ using blink::WebTouchEvent;
 
 namespace content {
 
+namespace {
+
+// If enabled, when the text input state changes `[NSApp updateWindows]` is
+// called after a delay. This is done as `updateWindows` can be quite
+// costly, and if the text input state is changing rapidly there is no need to
+// update it immediately.
+BASE_FEATURE(kDelayUpdateWindowsAfterTextInputStateChanged,
+             "DelayUpdateWindowsAfterTextInputStateChanged",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
 ////////////////////////////////////////////////////////////////////////////////
 // BrowserCompositorMacClient, public:
 
@@ -681,7 +693,13 @@ void RenderWidgetHostViewMac::OnUpdateTextInputStateCalled(
 
     // Let AppKit cache the new input context to make IMEs happy.
     // See http://crbug.com/73039.
-    [NSApp updateWindows];
+    if (base::FeatureList::IsEnabled(
+            kDelayUpdateWindowsAfterTextInputStateChanged)) {
+      update_windows_timer_.Start(FROM_HERE, base::Milliseconds(100), this,
+                                  &RenderWidgetHostViewMac::UpdateWindowsNow);
+    } else {
+      [NSApp updateWindows];
+    }
   }
 }
 
@@ -1642,6 +1660,7 @@ void RenderWidgetHostViewMac::SetTextInputActive(bool active) {
   } else {
     password_input_enabler_.reset();
   }
+  update_windows_timer_.Stop();
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {
@@ -2376,6 +2395,10 @@ void RenderWidgetHostViewMac::SetTooltipText(
   ns_view_->SetTooltipText(tooltip_text);
   if (tooltip_observer_for_testing_)
     tooltip_observer_for_testing_->OnTooltipTextUpdated(tooltip_text);
+}
+
+void RenderWidgetHostViewMac::UpdateWindowsNow() {
+  [NSApp updateWindows];
 }
 
 Class GetRenderWidgetHostViewCocoaClassForTesting() {

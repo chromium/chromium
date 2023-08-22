@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/browser/renderer_host/browser_compositor_view_mac.h"
@@ -553,6 +554,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // OnTooltipTextUpdated() function, if not null.
   void SetTooltipText(const std::u16string& tooltip_text);
 
+  void UpdateWindowsNow();
+
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.
   raw_ptr<remote_cocoa::mojom::RenderWidgetHostNSView> ns_view_ = nullptr;
@@ -696,6 +699,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   absl::optional<DisplayFeature> display_feature_;
 
   const uint64_t ns_view_id_;
+
+  // See description of `kDelayUpdateWindowsAfterTextInputStateChanged` for
+  // details.
+  base::OneShotTimer update_windows_timer_;
 
   // Factory used to safely scope delayed calls to ShutdownHost().
   base::WeakPtrFactory<RenderWidgetHostViewMac> weak_factory_;
