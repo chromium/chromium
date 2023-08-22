@@ -123,6 +123,7 @@ public class ImprovedBookmarkRowCoordinator {
             propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
+            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, null);
             if (useImages) {
                 mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
                     propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
