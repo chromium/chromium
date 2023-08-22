@@ -49,6 +49,8 @@ ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
     state_ = kDetached;
     resolver_.Clear();
   }
+  probe::DidCreateScriptPromiseResolver(ExecutionContext::From(script_state),
+                                        this);
 }
 
 ScriptPromiseResolver::ScriptPromiseResolver(
@@ -145,9 +147,7 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  probe::WillHandlePromise(GetExecutionContext(), script_state_,
-                           state_ == kResolving, class_like_name_,
-                           property_like_name_);
+  probe::WillHandlePromise(GetExecutionContext(), this);
   {
     if (state_ == kResolving) {
       resolver_.Resolve(value_.Get(script_state_->GetIsolate()));

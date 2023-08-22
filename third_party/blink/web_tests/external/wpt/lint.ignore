@@ -705,3 +705,6 @@ SET TIMEOUT: editing/crashtests/outdent-across-svg-boundary.html
 SET TIMEOUT: editing/crashtests/textarea-will-be-blurred-by-focus-event-listener.html
 SET TIMEOUT: mathml/crashtests/mozilla/*
 PARSE-FAILED: mathml/crashtests/mozilla/289180-1.xml
+
+# Test-harness step_timeout changes what this is supposed to test
+SET TIMEOUT: long-animation-frame/tentative/loaf-source-location-promise-resolver.html

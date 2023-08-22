@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<meta charset=utf-8>
+<title>Long Animation Frame Timing: source location extraction for promise resolvers</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<h1>Long Animation Frame: source location extraction for promise resolvers</h1>
+<div id="log"></div>
+<script>
+
+function create_promise_resolver_with_loaf() {
+  fetch("/common/dummy.xml").then(() => {
+    busy_wait(very_long_frame_duration);
+  })
+}
+
+promise_test(async t => {
+  const [entry, script] = await expect_long_frame_with_script(() => {
+    setTimeout(create_promise_resolver_with_loaf);
+  }, script => script.name === "Window.fetch.then", t);
+  assert_true(script.sourceLocation?.startsWith("create_promise_resolver_with_loaf"));
+}, "promise-resolver source location is attributed to callback who created the resolver");
+
+promise_test(async t => {
+  const [entry, script] = await expect_long_frame_with_script(() => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "/common/dummy.xml");
+    xhr.addEventListener("load", create_promise_resolver_with_loaf);
+    xhr.send();
+  }, script => script.name === "Window.fetch.then", t);
+  assert_true(script.sourceLocation?.startsWith("create_promise_resolver_with_loaf"));
+}, "promise-resolver source location is attributed to event listener who created the resolver");
+
+promise_test(async t => {
+  const [entry, script] = await expect_long_frame_with_script(() => {
+    const script_tag = document.createElement("script");
+    t.add_cleanup(() => script_tag.remove());
+    script_tag.src = "resources/busy_in_promise.js";
+    document.body.append(script_tag);
+  }, script => script.name === "Window.fetch.then", t);
+  assert_true(script.sourceLocation?.includes("busy_in_promise.js"));
+}, "promise-resolver source location is attributed to script block who created the resolver");
+
+
+</script>
+</body>

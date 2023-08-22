@@ -117,6 +117,9 @@ class CORE_EXPORT ScriptPromiseResolver
   void RejectWithWasmCompileError(const String& message);
 
   ScriptState* GetScriptState() const { return script_state_; }
+  const char* GetClassLikeName() const { return class_like_name_; }
+  const char* GetPropertyLikeName() const { return property_like_name_; }
+  bool isResolving() const { return state_ == ResolutionState::kResolving; }
 
   const ExceptionContext& GetExceptionContext() const {
     return exception_context_;
