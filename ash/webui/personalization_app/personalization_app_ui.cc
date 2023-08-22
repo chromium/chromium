@@ -486,9 +486,6 @@ void PersonalizationAppUI::AddBooleans(content::WebUIDataSource* source) {
   source->AddBoolean("isScreenSaverDurationEnabled",
                      features::IsScreenSaverDurationEnabled());
 
-  source->AddBoolean("isScreenSaverPreviewEnabled",
-                     features::IsScreenSaverPreviewEnabled());
-
   source->AddBoolean("isPersonalizationJellyEnabled",
                      features::IsPersonalizationJellyEnabled());
 

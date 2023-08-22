@@ -44,7 +44,6 @@ suite('AmbientSubpageTest', function() {
     loadTimeData.overrideValues({
       isAmbientModeAllowed: true,
       isPersonalizationJellyEnabled: true,
-      isScreenSaverPreviewEnabled: true,
       isScreenSaverDurationEnabled: true,
     });
     const mocks = baseSetup();

@@ -1719,9 +1719,6 @@ extern const char kThirdPartyStoragePartitioningDescription[];
 extern const char kScreenSaverDurationName[];
 extern const char kScreenSaverDurationDescription[];
 
-extern const char kScreenSaverPreviewName[];
-extern const char kScreenSaverPreviewDescription[];
-
 extern const char kScrollableTabStripFlagId[];
 extern const char kScrollableTabStripName[];
 extern const char kScrollableTabStripDescription[];

@@ -3005,11 +3005,6 @@ const char kScreenSaverDurationName[] = "Screen saver duration settings";
 const char kScreenSaverDurationDescription[] =
     "Allow users to customize screen saver running time.";
 
-const char kScreenSaverPreviewName[] = "Screen saver preview";
-const char kScreenSaverPreviewDescription[] =
-    "Enables the screen saver preview feature which allows the users to "
-    "preview current screen saver.";
-
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =

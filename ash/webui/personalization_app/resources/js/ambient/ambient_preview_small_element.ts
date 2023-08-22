@@ -18,7 +18,7 @@ import '../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {AmbientUiVisibility} from '../../personalization_app.mojom-webui.js';
-import {isAmbientModeAllowed, isScreenSaverPreviewEnabled} from '../load_time_booleans.js';
+import {isAmbientModeAllowed} from '../load_time_booleans.js';
 
 import {startScreenSaverPreview} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -50,18 +50,11 @@ export class AmbientPreviewSmall extends AmbientPreviewBase {
         type: Number,
         value: null,
       },
-      isScreenSaverPreviewEnabled_: {
-        type: Boolean,
-        value() {
-          return isScreenSaverPreviewEnabled();
-        },
-      },
     };
   }
 
   private screenSaverPreviewActive_: boolean;
   private ambientUiVisibility_: AmbientUiVisibility|null;
-  private isScreenSaverPreviewEnabled_: boolean;
 
   override connectedCallback() {
     assert(

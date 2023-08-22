@@ -2230,11 +2230,6 @@ BASE_FEATURE(kScreenSaverDuration,
              "ScreenSaverDuration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the "Preview" button for screensaver.
-BASE_FEATURE(kScreenSaverPreview,
-             "ScreenSaverPreview",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the system tray to show more information in larger screen.
 BASE_FEATURE(kSeamlessRefreshRateSwitching,
              "SeamlessRefreshRateSwitching",
@@ -3335,10 +3330,6 @@ bool IsHotspotEnabled() {
 
 bool IsScreenSaverDurationEnabled() {
   return base::FeatureList::IsEnabled(kScreenSaverDuration);
-}
-
-bool IsScreenSaverPreviewEnabled() {
-  return base::FeatureList::IsEnabled(kScreenSaverPreview);
 }
 
 bool IsSnoopingProtectionEnabled() {
