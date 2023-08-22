@@ -34,10 +34,10 @@ bool WeblayerPageLoadMetricsMemoryTrackerFactory::
   return base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring);
 }
 
-KeyedService*
-WeblayerPageLoadMetricsMemoryTrackerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new page_load_metrics::PageLoadMetricsMemoryTracker();
+std::unique_ptr<KeyedService> WeblayerPageLoadMetricsMemoryTrackerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<page_load_metrics::PageLoadMetricsMemoryTracker>();
 }
 
 content::BrowserContext*
