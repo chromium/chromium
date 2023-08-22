@@ -5,6 +5,7 @@
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="resources/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-actions.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
@@ -14,7 +15,8 @@
 promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext(
     {generator_api: 'fledge', automatic_beacon: true});
-  const new_url = new URL("resources/dummy.html", location.href);
+  const new_url = new URL("wpt_internal/fenced_frame/resources/dummy.html",
+      get_host_info().HTTPS_NOTSAMESITE_ORIGIN);
   const beacon_data = "This is the beacon data!";
 
   await fencedframe.execute((new_url, beacon_data) => {
@@ -47,6 +49,14 @@ promise_test(async(t) => {
 
   const received_beacon_data = await nextAutomaticBeacon();
   assert_equals(received_beacon_data, beacon_data);
+
+  // Also test automatic beacons with middle clicks
+  await fencedframe.execute(() => {
+    eventSender.mouseDown(1);
+    eventSender.mouseUp(1);
+  }, []);
+  const middle_click_nav_received_beacon_data = await nextAutomaticBeacon();
+  assert_equals(middle_click_nav_received_beacon_data, beacon_data);
 }, 'Trigger an automatic beacon from ctrl+clicking a link.');
 
 </script>

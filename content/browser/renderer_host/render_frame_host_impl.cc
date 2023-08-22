@@ -8699,22 +8699,17 @@ void RenderFrameHostImpl::MaybeSendFencedFrameReportingBeacon(
 
   // Automatic beacons can only be sent if the initiating frame had transient
   // user activation when it navigated. For navigations originating from the
-  // contextual menu (i.e. "Open Link in X"), the navigation initiator
-  // activation status will not be set, so we check the initiator frame's user
-  // activation directly.
-  // For navigations originating from clicking a link directly, the navigation
-  // initiator will be set, but the initiator frame's transient user activation
-  // might have been consumed by navigation commit time, so we check the
-  // navigation request's initiator navigation status.
+  // contextual menu (i.e. "Open Link in X"), or for navigations originating
+  // from clicking a link directly, the navigation initiator activation status
+  // will not be set, so we check the initiator frame's user activation directly
+  // through the navigation request's common parameters.
   // It is safe to check both values at once. If one is not properly set, it
   // will always be set to a false negative and not a false positive, so there
   // is no way for that to cause an accidental beacon to be sent.
   if (navigation_request.GetNavigationInitiatorActivationAndAdStatus() ==
           blink::mojom::NavigationInitiatorActivationAndAdStatus::
               kDidNotStartWithTransientActivation &&
-      !initiator_rfh->HasTransientUserActivation() &&
-      navigation_request.commit_params().was_activated !=
-          blink::mojom::WasActivatedOption::kYes) {
+      !navigation_request.common_params().has_user_gesture) {
     return;
   }
 
