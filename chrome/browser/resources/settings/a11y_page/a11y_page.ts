@@ -23,9 +23,6 @@ import './live_caption_section.js';
 
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 // </if>
-// <if expr="is_macosx">
-import {MacSystemSettingsBrowserProxyImpl} from '/shared/settings/mac_system_settings_browser_proxy.js';
-// </if>
 // clang-format on
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
@@ -41,8 +38,13 @@ import {getTemplate} from './a11y_page.html.js';
 // clang-format off
 // <if expr="not is_chromeos">
 import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.js';
+
+// </if>
+// <if expr="is_macosx">
+import {MacSystemSettingsBrowserProxyImpl} from './mac_system_settings_browser_proxy.js';
 // </if>
 // clang-format on
+
 
 const SettingsA11yPageElementBase =
     WebUiListenerMixin(BaseMixin(PolymerElement));

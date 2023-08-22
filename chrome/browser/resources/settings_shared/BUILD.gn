@@ -40,10 +40,6 @@ build_webui("build") {
     "privacy_page/privacy_page_browser_proxy.ts",
   ]
 
-  if (is_mac) {
-    non_web_component_files += [ "mac_system_settings_browser_proxy.ts" ]
-  }
-
   ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
