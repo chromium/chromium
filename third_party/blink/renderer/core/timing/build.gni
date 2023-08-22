@@ -26,6 +26,8 @@ blink_core_sources_timing = [
   "measure_memory/measure_memory_controller.h",
   "memory_info.cc",
   "memory_info.h",
+  "not_restored_reasons.cc",
+  "not_restored_reasons.h",
   "performance.cc",
   "performance.h",
   "performance_element_timing.cc",
