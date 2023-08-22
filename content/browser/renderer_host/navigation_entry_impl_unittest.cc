@@ -186,10 +186,8 @@ TEST_F(NavigationEntryTest, NavigationEntrySSLStatus) {
 // Test other basic accessors
 TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // SiteInstance
-  EXPECT_TRUE(entry1_->site_instance() == nullptr);
+  EXPECT_EQ(nullptr, entry1_->site_instance());
   EXPECT_EQ(instance_, entry2_->site_instance());
-  entry1_->set_site_instance(instance_);
-  EXPECT_EQ(instance_, entry1_->site_instance());
 
   // Page type
   EXPECT_EQ(PAGE_TYPE_NORMAL, entry1_->GetPageType());

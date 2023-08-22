@@ -122,12 +122,6 @@ class CONTENT_EXPORT FrameNavigationEntry
   // process.  This is a refcounted pointer that keeps the SiteInstance (not
   // necessarily the process) alive as long as this object remains in the
   // session history.
-  // TODO(nasko, creis): The SiteInstance of a FrameNavigationEntry should
-  // not change once it has been assigned.  See https://crbug.com/849430.
-  void set_site_instance(scoped_refptr<SiteInstanceImpl> site_instance) {
-    CHECK(!site_instance_ || site_instance_ == site_instance);
-    site_instance_ = std::move(site_instance);
-  }
   SiteInstanceImpl* site_instance() const { return site_instance_.get(); }
 
   // The |source_site_instance| is used to identify the SiteInstance of the
@@ -256,6 +250,8 @@ class CONTENT_EXPORT FrameNavigationEntry
   int64_t document_sequence_number_;
   std::string navigation_api_key_;
 
+  // TODO(nasko, creis): The SiteInstance of a FrameNavigationEntry should
+  // not change once it has been assigned.  See https://crbug.com/849430.
   scoped_refptr<SiteInstanceImpl> site_instance_;
   // This member is cleared at commit time and is not persisted.
   scoped_refptr<SiteInstanceImpl> source_site_instance_;

@@ -483,23 +483,23 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   SiteInstanceDestructionObserver observer(instance.get());
   EXPECT_FALSE(observer.site_instance_deleted());
 
-  NavigationEntryImpl* e1 = new NavigationEntryImpl(
-      instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string(),
-      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
-      false /* is_initial_entry */);
+  std::unique_ptr<NavigationEntryImpl> e1 =
+      std::make_unique<NavigationEntryImpl>(
+          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
+          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          ui::PAGE_TRANSITION_LINK, false,
+          nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
-  // Redundantly setting e1's SiteInstance shouldn't affect the ref count.
-  e1->set_site_instance(instance);
   EXPECT_FALSE(observer.site_instance_deleted());
   EXPECT_FALSE(observer.browsing_instance_deleted());
 
   // Add a second reference
-  NavigationEntryImpl* e2 = new NavigationEntryImpl(
-      instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
-      /* initiator_base_url= */ absl::nullopt, std::u16string(),
-      ui::PAGE_TRANSITION_LINK, false, nullptr /* blob_url_loader_factory */,
-      false /* is_initial_entry */);
+  std::unique_ptr<NavigationEntryImpl> e2 =
+      std::make_unique<NavigationEntryImpl>(
+          instance, url, Referrer(), /* initiator_origin= */ absl::nullopt,
+          /* initiator_base_url= */ absl::nullopt, std::u16string(),
+          ui::PAGE_TRANSITION_LINK, false,
+          nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
 
   instance = nullptr;
 
@@ -507,17 +507,18 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   EXPECT_FALSE(observer.browsing_instance_deleted());
 
   // Now delete both entries and be sure the SiteInstance goes away.
-  delete e1;
+  e1.reset();
   EXPECT_FALSE(observer.site_instance_deleted());
   EXPECT_FALSE(observer.browsing_instance_deleted());
-  delete e2;
+  e2.reset();
   // instance is now deleted
   EXPECT_TRUE(observer.site_instance_deleted());
   EXPECT_TRUE(observer.browsing_instance_deleted());
   // browsing_instance is now deleted
 
   // Ensure that instances are deleted when their RenderFrameHosts are gone.
-  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
+  std::unique_ptr<TestBrowserContext> browser_context =
+      std::make_unique<TestBrowserContext>();
   SiteInstanceDestructionObserver observer2;
   {
     std::unique_ptr<WebContents> web_contents(

@@ -332,7 +332,6 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // Note that the SiteInstance should usually not be changed after it is set,
   // but this may happen if the NavigationEntry was cloned and needs to use a
   // different SiteInstance.
-  void set_site_instance(scoped_refptr<SiteInstanceImpl> site_instance);
   SiteInstanceImpl* site_instance() const {
     return frame_tree_->frame_entry->site_instance();
   }

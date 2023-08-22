@@ -93,6 +93,8 @@ void FrameNavigationEntry::UpdateEntry(
   item_sequence_number_ = item_sequence_number;
   document_sequence_number_ = document_sequence_number;
   navigation_api_key_ = navigation_api_key;
+  // TODO(nasko, creis): The SiteInstance of a FrameNavigationEntry should
+  // not change once it has been assigned.  See https://crbug.com/849430.
   site_instance_ = site_instance;
   source_site_instance_ = std::move(source_site_instance);
   redirect_chain_ = redirect_chain;

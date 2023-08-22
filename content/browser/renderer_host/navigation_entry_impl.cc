@@ -559,12 +559,6 @@ blink::PageState NavigationEntryImpl::GetPageState() {
   return blink::PageState::CreateFromEncodedData(encoded_data);
 }
 
-void NavigationEntryImpl::set_site_instance(
-    scoped_refptr<SiteInstanceImpl> site_instance) {
-  // TODO(creis): Update all callers and remove this method.
-  frame_tree_->frame_entry->set_site_instance(std::move(site_instance));
-}
-
 const std::u16string& NavigationEntryImpl::GetTitleForDisplay() {
   // Most pages have real titles. Don't even bother caching anything if this is
   // the case.
