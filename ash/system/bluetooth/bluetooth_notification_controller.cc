@@ -18,6 +18,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -178,7 +179,7 @@ void BluetoothNotificationController::DeviceChanged(BluetoothAdapter* adapter,
                                                     BluetoothDevice* device) {
   // If the device is already in the list of bonded devices, then don't
   // notify.
-  if (bonded_devices_.find(device->GetAddress()) != bonded_devices_.end()) {
+  if (base::Contains(bonded_devices_, device->GetAddress())) {
     return;
   }
 

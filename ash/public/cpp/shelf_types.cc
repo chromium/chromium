@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/shelf_types.h"
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
@@ -116,8 +117,8 @@ bool ShelfID::IsNull() const {
 }
 
 std::string ShelfID::Serialize() const {
-  DCHECK_EQ(std::string::npos, app_id.find(kDelimiter)) << "Invalid ShelfID";
-  DCHECK_EQ(std::string::npos, launch_id.find(kDelimiter)) << "Invalid ShelfID";
+  DCHECK(!base::Contains(app_id, kDelimiter)) << "Invalid ShelfID";
+  DCHECK(!base::Contains(launch_id, kDelimiter)) << "Invalid ShelfID";
   return app_id + kDelimiter + launch_id;
 }
 

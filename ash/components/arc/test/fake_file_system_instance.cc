@@ -11,6 +11,7 @@
 #include <sstream>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -271,7 +272,7 @@ bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
                                             const std::string& document_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DocumentKey key(authority, document_id);
-  return documents_.find(key) != documents_.end();
+  return base::Contains(documents_, key);
 }
 
 bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
@@ -288,7 +289,7 @@ bool FakeFileSystemInstance::RootExists(const std::string& authority,
                                         const std::string& root_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RootKey key(authority, root_id);
-  return roots_.find(key) != roots_.end();
+  return base::Contains(roots_, key);
 }
 
 FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
@@ -819,7 +820,7 @@ std::string FakeFileSystemInstance::FindChildDocumentId(
 base::ScopedFD FakeFileSystemInstance::CreateRegularFileDescriptor(
     const File& file,
     uint32_t flags) {
-  if (regular_file_paths_.find(file.url) == regular_file_paths_.end()) {
+  if (!base::Contains(regular_file_paths_, file.url)) {
     base::FilePath path;
     bool create_success =
         base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &path);

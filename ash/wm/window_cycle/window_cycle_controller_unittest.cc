@@ -2837,13 +2837,12 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   EXPECT_EQ(1u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win0.get(), GetTargetWindow());
   std::string last_alert_message = client.last_alert_message();
-  EXPECT_TRUE(last_alert_message.find(kCurrentDeskSelected) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(l10n_util::GetStringFUTF8(
-                  IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE, win0->GetTitle())) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-              std::string::npos);
+  EXPECT_TRUE(base::Contains(last_alert_message, kCurrentDeskSelected));
+  EXPECT_TRUE(base::Contains(
+      last_alert_message,
+      l10n_util::GetStringFUTF8(IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE,
+                                win0->GetTitle())));
+  EXPECT_TRUE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   // Pressing (<-) announces the new mode, the new focused window and the
   // Down-arrow directional cue.
@@ -2853,12 +2852,12 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   EXPECT_EQ(3u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win1.get(), GetTargetWindow());
   last_alert_message = client.last_alert_message();
-  EXPECT_TRUE(last_alert_message.find(kAllDesksSelected) != std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(l10n_util::GetStringFUTF8(
-                  IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE, win1->GetTitle())) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-              std::string::npos);
+  EXPECT_TRUE(base::Contains(last_alert_message, kAllDesksSelected));
+  EXPECT_TRUE(base::Contains(
+      last_alert_message,
+      l10n_util::GetStringFUTF8(IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE,
+                                win1->GetTitle())));
+  EXPECT_TRUE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   // Clicking the current-desk button notifies the new mode and the new focused
   // window but not the Down-arrow directional cue because the focus is moved
@@ -2869,13 +2868,12 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   EXPECT_EQ(1u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win0.get(), GetTargetWindow());
   last_alert_message = client.last_alert_message();
-  EXPECT_TRUE(last_alert_message.find(kCurrentDeskSelected) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(l10n_util::GetStringFUTF8(
-                  IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE, win0->GetTitle())) !=
-              std::string::npos);
-  EXPECT_FALSE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-               std::string::npos);
+  EXPECT_TRUE(base::Contains(last_alert_message, kCurrentDeskSelected));
+  EXPECT_TRUE(base::Contains(
+      last_alert_message,
+      l10n_util::GetStringFUTF8(IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE,
+                                win0->GetTitle())));
+  EXPECT_FALSE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   // Pressing the Down arrow key while focusing the tab slider button should
   // alert only the focused window.
@@ -2886,13 +2884,12 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(win0.get(), GetTargetWindow());
   last_alert_message = client.last_alert_message();
-  EXPECT_FALSE(last_alert_message.find(kCurrentDeskSelected) !=
-               std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(l10n_util::GetStringFUTF8(
-                  IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE, win0->GetTitle())) !=
-              std::string::npos);
-  EXPECT_FALSE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-               std::string::npos);
+  EXPECT_FALSE(base::Contains(last_alert_message, kCurrentDeskSelected));
+  EXPECT_TRUE(base::Contains(
+      last_alert_message,
+      l10n_util::GetStringFUTF8(IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE,
+                                win0->GetTitle())));
+  EXPECT_FALSE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   CompleteCycling(cycle_controller);
   EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
@@ -3020,11 +3017,9 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   EXPECT_EQ(nullptr, GetTargetWindow());
   EXPECT_TRUE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
   std::string last_alert_message = client.last_alert_message();
-  EXPECT_TRUE(last_alert_message.find(kCurrentDeskSelected) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(kNoRecentItems) != std::string::npos);
-  EXPECT_FALSE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-               std::string::npos);
+  EXPECT_TRUE(base::Contains(last_alert_message, kCurrentDeskSelected));
+  EXPECT_TRUE(base::Contains(last_alert_message, kNoRecentItems));
+  EXPECT_FALSE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   // Pressing (<-) announces the new mode, the new focused window and the
   // Down-arrow directional cue.
@@ -3046,11 +3041,9 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   EXPECT_EQ(nullptr, GetTargetWindow());
   EXPECT_TRUE(GetWindowCycleNoRecentItemsLabel()->GetVisible());
   last_alert_message = client.last_alert_message();
-  EXPECT_TRUE(last_alert_message.find(kCurrentDeskSelected) !=
-              std::string::npos);
-  EXPECT_TRUE(last_alert_message.find(kNoRecentItems) != std::string::npos);
-  EXPECT_FALSE(last_alert_message.find(kFocusWindowDirectionalCue) !=
-               std::string::npos);
+  EXPECT_TRUE(base::Contains(last_alert_message, kCurrentDeskSelected));
+  EXPECT_TRUE(base::Contains(last_alert_message, kNoRecentItems));
+  EXPECT_FALSE(base::Contains(last_alert_message, kFocusWindowDirectionalCue));
 
   CompleteCycling(cycle_controller);
   EXPECT_FALSE(wm::IsActiveWindow(win0.get()));

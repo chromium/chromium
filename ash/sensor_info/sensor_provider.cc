@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/sensor_info/sensor_types.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -264,8 +265,7 @@ void SensorProvider::RegisterSensor(DeviceType device_type, int32_t id) {
     // Location of lid_angle device is meaningless, so set to kOther.
     sensor.location = SensorLocation::kOther;
     sensor.scale = 1.0;
-    if (type_to_sensor_id_.find(SensorType::kLidAngle) !=
-        type_to_sensor_id_.end()) {
+    if (base::Contains(type_to_sensor_id_, SensorType::kLidAngle)) {
       LOG(WARNING) << "Duplicated location source "
                    << "id_angle"
                    << " of sensor id: " << id << ", and sensor id: "
@@ -455,7 +455,7 @@ void SensorProvider::OnAttributes(
         source = SensorType::kGyroscopeLid;
       }
     }
-    if (type_to_sensor_id_.find(source) != type_to_sensor_id_.end()) {
+    if (base::Contains(type_to_sensor_id_, source)) {
       LOG(WARNING) << "Duplicated location source " << static_cast<int>(source)
                    << " of sensor id: " << id
                    << ", and sensor id: " << type_to_sensor_id_[source];

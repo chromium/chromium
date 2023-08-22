@@ -9,6 +9,7 @@
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
+#include "base/containers/contains.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
@@ -41,28 +42,28 @@ icu::UnicodeString getHoursPattern(const icu::UnicodeString& unicode_pattern) {
   std::string pattern;
   unicode_pattern.toUTF8String(pattern);
 
-  if (pattern.find("hh") != std::string::npos) {
+  if (base::Contains(pattern, "hh")) {
     return icu::UnicodeString("hh");
   }
-  if (pattern.find("h") != std::string::npos) {
+  if (base::Contains(pattern, "h")) {
     return icu::UnicodeString("h");
   }
-  if (pattern.find("HH") != std::string::npos) {
+  if (base::Contains(pattern, "HH")) {
     return icu::UnicodeString("HH");
   }
-  if (pattern.find("H") != std::string::npos) {
+  if (base::Contains(pattern, "H")) {
     return icu::UnicodeString("H");
   }
-  if (pattern.find("KK") != std::string::npos) {
+  if (base::Contains(pattern, "KK")) {
     return icu::UnicodeString("KK");
   }
-  if (pattern.find("K") != std::string::npos) {
+  if (base::Contains(pattern, "K")) {
     return icu::UnicodeString("K");
   }
-  if (pattern.find("kk") != std::string::npos) {
+  if (base::Contains(pattern, "kk")) {
     return icu::UnicodeString("kk");
   }
-  if (pattern.find("k") != std::string::npos) {
+  if (base::Contains(pattern, "k")) {
     return icu::UnicodeString("k");
   }
 

@@ -46,8 +46,9 @@ void TestPrefServiceProvider::CreateUserPrefs(const AccountId& account_id) {
 void TestPrefServiceProvider::SetUserPrefs(
     const AccountId& account_id,
     std::unique_ptr<PrefService> pref_service) {
-  DCHECK(user_prefs_map_.find(account_id) == user_prefs_map_.end());
-  user_prefs_map_[account_id] = std::move(pref_service);
+  const auto pair =
+      user_prefs_map_.emplace(account_id, std::move(pref_service));
+  DCHECK(pair.second);
 }
 
 PrefService* TestPrefServiceProvider::GetUserPrefs(

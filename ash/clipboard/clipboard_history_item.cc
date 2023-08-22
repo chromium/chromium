@@ -10,6 +10,7 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
@@ -35,8 +36,8 @@ crosapi::mojom::ClipboardHistoryDisplayFormat CalculateDisplayFormat(
     case ui::ClipboardInternalFormat::kPng:
       return crosapi::mojom::ClipboardHistoryDisplayFormat::kPng;
     case ui::ClipboardInternalFormat::kHtml:
-      if ((item.data().markup_data().find("<img") == std::string::npos) &&
-          (item.data().markup_data().find("<table") == std::string::npos)) {
+      if (!base::Contains(item.data().markup_data(), "<img") &&
+          !base::Contains(item.data().markup_data(), "<table")) {
         return crosapi::mojom::ClipboardHistoryDisplayFormat::kText;
       }
       return crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml;

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "ash/metrics/feature_discovery_duration_reporter_impl.h"
+
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
 #include "base/test/metrics/histogram_tester.h"
 
 namespace ash {
@@ -55,9 +57,8 @@ class FeatureDiscoveryDurationReporterImplTest : public AshTestBase {
   bool IsMockFeatureUnderActiveObservation() {
     const auto& active_time_recordings =
         GetFeatureDiscoveryDurationReporter()->active_time_recordings_;
-    return active_time_recordings.find(
-               feature_discovery::TrackableFeature::kMockFeature) !=
-           active_time_recordings.cend();
+    return base::Contains(active_time_recordings,
+                          feature_discovery::TrackableFeature::kMockFeature);
   }
 
   // AshTestBase:

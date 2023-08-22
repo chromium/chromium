@@ -39,8 +39,8 @@ void FakeMessageStreamLookup::NotifyMessageStreamConnected(
 void FakeMessageStreamLookup::AddMessageStream(
     const std::string& device_address,
     MessageStream* message_stream) {
-  DCHECK(message_streams_.find(device_address) == message_streams_.end());
-  message_streams_[device_address] = message_stream;
+  const auto pair = message_streams_.emplace(device_address, message_stream);
+  DCHECK(pair.second);
 }
 
 void FakeMessageStreamLookup::RemoveMessageStream(

@@ -26,6 +26,7 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -201,7 +202,7 @@ TEST_F(PrivacyIndicatorsControllerTest, NotificationMetadata) {
           notification_id);
 
   // Notification message should contains app name.
-  EXPECT_NE(std::string::npos, notification->message().find(app_name));
+  EXPECT_TRUE(base::Contains((notification->message()), app_name));
 
   // Privacy indicators notification should not be a popup. It is silently added
   // to the tray.

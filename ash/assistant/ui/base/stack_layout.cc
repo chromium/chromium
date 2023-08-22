@@ -56,8 +56,10 @@ void StackLayout::Layout(views::View* host) {
     int child_x = 0;
     uint32_t dimension = static_cast<uint32_t>(RespectDimension::kAll);
 
-    if (respect_dimension_map_.find(child) != respect_dimension_map_.end())
-      dimension = static_cast<uint32_t>(respect_dimension_map_[child]);
+    if (auto iter = respect_dimension_map_.find(child);
+        iter != respect_dimension_map_.end()) {
+      dimension = static_cast<uint32_t>(iter->second);
+    }
 
     if (dimension & static_cast<uint32_t>(RespectDimension::kWidth)) {
       child_width = std::min(child->GetPreferredSize().width(), host_width);

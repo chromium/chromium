@@ -7,6 +7,7 @@
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
+#include "base/containers/contains.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -140,8 +141,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeActivateObservation(
   update->Set(feature_name, std::move(observed_feature_data));
 
   // Record observation start time.
-  DCHECK(active_time_recordings_.find(feature) ==
-         active_time_recordings_.cend());
+  DCHECK(!base::Contains(active_time_recordings_, feature));
   active_time_recordings_.emplace(feature, base::TimeTicks::Now());
 }
 

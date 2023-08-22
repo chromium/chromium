@@ -14,6 +14,7 @@
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
+#include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -41,8 +42,7 @@ class GroupedNotificationList {
 
   void AddGroupedNotification(const std::string& notification_id,
                               const std::string& parent_id) {
-    if (notifications_in_parent_map_.find(parent_id) ==
-        notifications_in_parent_map_.end()) {
+    if (!base::Contains(notifications_in_parent_map_, parent_id)) {
       notifications_in_parent_map_[parent_id] = {};
     }
 
@@ -85,12 +85,11 @@ class GroupedNotificationList {
   }
 
   bool GroupedChildNotificationExists(const std::string& child_id) {
-    return child_parent_map_.find(child_id) != child_parent_map_.end();
+    return base::Contains(child_parent_map_, child_id);
   }
 
   bool ParentNotificationExists(const std::string& parent_id) {
-    return notifications_in_parent_map_.find(parent_id) !=
-           notifications_in_parent_map_.end();
+    return base::Contains(notifications_in_parent_map_, parent_id);
   }
 
   // Replaces all instances of `old_parent_id` with `new_parent_id` in

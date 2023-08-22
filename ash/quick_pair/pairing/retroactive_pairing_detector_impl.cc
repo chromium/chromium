@@ -268,8 +268,7 @@ void RetroactivePairingDetectorImpl::GetModelIdAndAddressFromMessageStream(
 
   // The device at |device_address| is expected to be added in
   // `AddDevicePairingInformation` once discovered.
-  DCHECK(device_pairing_information_.find(device_address) !=
-         device_pairing_information_.end());
+  DCHECK(base::Contains(device_pairing_information_, device_address));
 
   // If the MessageStream is immediately available and |DevicePairedChanged|
   // fires before FastPair's |OnDevicePaired|, it might be possible for us to
@@ -360,8 +359,7 @@ void RetroactivePairingDetectorImpl::CheckPairingInformation(
     const std::string& device_address) {
   // The device at |device_address| is expected to be added in
   // `AddDevicePairingInformation` once discovered.
-  DCHECK(device_pairing_information_.find(device_address) !=
-         device_pairing_information_.end());
+  DCHECK(base::Contains(device_pairing_information_, device_address));
 
   // If the MessageStream is immediately available and |DevicePairedChanged|
   // fires before FastPair's |OnDevicePaired|, it might be possible for us to

@@ -24,6 +24,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -587,7 +588,7 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, PopupMessage) {
   const std::vector<std::u16string> list_1 = {u"App title"};
   const std::u16string list_1_msg =
       hps_internal::GetTitlesBlockedMessage(list_1);
-  EXPECT_TRUE(list_1_msg.find(u"App title") != std::u16string::npos);
+  EXPECT_TRUE(base::Contains(list_1_msg, u"App title"));
 
   // Improper app names should use a reasonable default. In this case, the
   // default should be capitalized since it is the first word in the message.
@@ -595,10 +596,10 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, PopupMessage) {
       IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER)};
   const std::u16string list_2_msg =
       hps_internal::GetTitlesBlockedMessage(list_2);
-  EXPECT_TRUE(
-      list_2_msg.find(l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)) !=
-      std::u16string::npos);
+  EXPECT_TRUE(base::Contains(
+      list_2_msg,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)));
 
   // Subsequent improper app names should not be capitalized.
   const std::vector<std::u16string> list_3 = {
@@ -607,10 +608,10 @@ TEST(SnoopingProtectionNotificationBlockerInternalTest, PopupMessage) {
           IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_LOWER)};
   const std::u16string list_3_msg =
       hps_internal::GetTitlesBlockedMessage(list_3);
-  EXPECT_TRUE(
-      list_3_msg.find(l10n_util::GetStringUTF16(
-          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)) ==
-      std::u16string::npos);
+  EXPECT_FALSE(base::Contains(
+      list_3_msg,
+      l10n_util::GetStringUTF16(
+          IDS_ASH_SMART_PRIVACY_SNOOPING_NOTIFICATION_WEB_TITLE_UPPER)));
 }
 
 }  // namespace

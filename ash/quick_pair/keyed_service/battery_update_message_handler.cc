@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/common/logging.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -129,8 +130,9 @@ void BatteryUpdateMessageHandler::SetBatteryInfo(
 
 void BatteryUpdateMessageHandler::CleanUpMessageStream(
     const std::string& device_address) {
-  if (message_streams_.find(device_address) == message_streams_.end())
+  if (!base::Contains(message_streams_, device_address)) {
     return;
+  }
 
   message_streams_[device_address]->RemoveObserver(this);
   message_streams_.erase(device_address);

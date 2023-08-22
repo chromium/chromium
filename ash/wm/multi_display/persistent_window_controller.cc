@@ -12,6 +12,7 @@
 #include "ash/wm/window_state.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
@@ -159,8 +160,7 @@ void PersistentWindowController::OnDisplayMetricsChanged(
   }
 
   const bool was_landscape_before_rotation =
-      is_landscape_orientation_map_.find(display.id()) !=
-              is_landscape_orientation_map_.end()
+      base::Contains(is_landscape_orientation_map_, display.id())
           ? is_landscape_orientation_map_[display.id()]
           : false;
   for (auto* window : GetWindowList()) {

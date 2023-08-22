@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -211,7 +212,7 @@ HelpContentType ToHelpContentType(const std::string& result_type) {
     return HelpContentType::kArticle;
   }
 
-  if (result_type.find("FORUM") != std::string::npos) {
+  if (base::Contains(result_type, "FORUM")) {
     return HelpContentType::kForum;
   }
   LOG(WARNING) << "HelpContentProvider unknown content type: " << result_type;

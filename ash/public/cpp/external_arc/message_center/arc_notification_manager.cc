@@ -471,7 +471,7 @@ void ArcNotificationManager::SendNotificationButtonClickedOnChrome(
     const std::string& key,
     const int button_index,
     const std::string& input) {
-  if (items_.find(key) == items_.end()) {
+  if (!base::Contains(items_, key)) {
     VLOG(3) << "Chrome requests to fire a click event on notification (key: "
             << key << "), but it is gone.";
     return;
