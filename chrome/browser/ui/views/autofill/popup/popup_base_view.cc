@@ -51,6 +51,11 @@ namespace autofill {
 
 namespace {
 
+// The maximum size (in DIPs) of custom cursors that are permitted while the
+// popup is shown. The size is limited to avoid custom cursors that cover most
+// of the popup.
+constexpr int kMaximumAllowedCustomCursorDimension = 24;
+
 // The maximum number of pixels the suggestions dialog is shifted towards the
 // center the focused field.
 constexpr int kMaximumPixelsToMoveSuggestionToCenter = 120;
@@ -174,6 +179,9 @@ bool PopupBaseView::DoShow() {
     return false;
   }
   GetWidget()->Show();
+
+  custom_cursor_blocker_ = GetWebContents()->CreateDisallowCustomCursorScope(
+      /*max_dimension_dips=*/kMaximumAllowedCustomCursorDimension + 1);
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
