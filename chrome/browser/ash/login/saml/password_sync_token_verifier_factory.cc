@@ -42,7 +42,8 @@ PasswordSyncTokenVerifierFactory::PasswordSyncTokenVerifierFactory()
 
 PasswordSyncTokenVerifierFactory::~PasswordSyncTokenVerifierFactory() = default;
 
-KeyedService* PasswordSyncTokenVerifierFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordSyncTokenVerifierFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
@@ -52,7 +53,7 @@ KeyedService* PasswordSyncTokenVerifierFactory::BuildServiceInstanceFor(
       !user->using_saml()) {
     return nullptr;
   }
-  return new PasswordSyncTokenVerifier(profile);
+  return std::make_unique<PasswordSyncTokenVerifier>(profile);
 }
 
 }  // namespace ash
