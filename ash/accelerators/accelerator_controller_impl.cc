@@ -191,17 +191,6 @@ void RecordNewTab(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
-// Check if accelerator should trigger ToggleAssistant action.
-bool ShouldToggleAssistant(const ui::Accelerator& accelerator) {
-  // Search+A shortcut is disabled on device with an assistant key.
-  // Currently only Google branded device has the key. Some external keyboard
-  // may report it has the key but actually not.  This would cause keyboard
-  // shortcut stops working.  So we only check the key on these branded
-  // devices.
-  return !(accelerator.IsCmdDown() && accelerator.key_code() == ui::VKEY_A &&
-           IsGoogleBrandedDevice() && ui::DeviceKeyboardHasAssistantKey());
-}
-
 void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
   base::RecordAction(UserMetricsAction("Accel_Previous_Ime"));
   if (accelerator.key_state() == ui::Accelerator::KeyState::PRESSED) {
@@ -1241,11 +1230,8 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::ShowTaskManager();
       break;
     case AcceleratorAction::kStartAssistant:
-      // TODO(longbowei): Move this to CanToggleAssistant().
-      if (ShouldToggleAssistant(accelerator)) {
-        RecordToggleAssistant(accelerator);
-        accelerators::ToggleAssistant();
-      }
+      RecordToggleAssistant(accelerator);
+      accelerators::ToggleAssistant();
       break;
     case AcceleratorAction::kSuspend:
       base::RecordAction(UserMetricsAction("Accel_Suspend"));
