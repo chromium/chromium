@@ -1183,4 +1183,35 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   EXPECT_FALSE(ShouldShowTimeOfDayBanner());
 }
 
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       UpdateSettingsFailure_ShowsCachedSettings) {
+  SetAmbientObserver();
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  // The cached settings have Celsius stored.
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            ObservedTemperatureUnit());
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            GetCurrentTemperatureUnitInServer());
+
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kFahrenheit);
+
+  // The value updates to Fahrenheit optimistically.
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kFahrenheit,
+            ObservedTemperatureUnit());
+
+  // Fail through all the retries.
+  ReplyUpdateSettings(/*success=*/false);
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+  ReplyUpdateSettings(/*success=*/false);
+  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
+
+  // After all the failures, restore to the cached value.
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            ObservedTemperatureUnit());
+}
 }  // namespace ash::personalization_app

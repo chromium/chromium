@@ -35,7 +35,7 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       OnScreenUpdateInfoFetchedCallback callback) override;
   void FetchPreviewImages(const gfx::Size& preview_size,
                           OnPreviewImagesFetchedCallback callback) override;
-  void UpdateSettings(const AmbientSettings& settings,
+  void UpdateSettings(const AmbientSettings settings,
                       UpdateSettingsCallback callback) override;
   void FetchSettingsAndAlbums(
       int banner_width,

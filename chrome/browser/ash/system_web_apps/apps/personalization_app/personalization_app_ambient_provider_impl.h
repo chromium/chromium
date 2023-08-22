@@ -89,7 +89,7 @@ class PersonalizationAppAmbientProviderImpl
 
   // Called when the settings is updated.
   // `success` is true when update successfully.
-  void OnUpdateSettings(bool success);
+  void OnUpdateSettings(bool success, const AmbientSettings& settings);
 
   // Return true if a new update needed.
   // `success` is true when update successfully.
@@ -155,9 +155,6 @@ class PersonalizationAppAmbientProviderImpl
   // `UpdateSettings()` return successfully.
   // If `UpdateSettings()` fails, will restore to this value.
   absl::optional<ash::AmbientSettings> cached_settings_;
-
-  // A temporary settings sent to the server in `UpdateSettings()`.
-  absl::optional<ash::AmbientSettings> settings_sent_for_update_;
 
   ash::PersonalAlbums personal_albums_;
 

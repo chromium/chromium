@@ -531,19 +531,20 @@ void PersonalizationAppAmbientProviderImpl::UpdateSettings() {
   // weather information. See: b/158630188.
   settings_->show_weather = true;
 
-  settings_sent_for_update_ = settings_;
   ash::AmbientBackendController::Get()->UpdateSettings(
       *settings_,
       base::BindOnce(&PersonalizationAppAmbientProviderImpl::OnUpdateSettings,
                      write_weak_factory_.GetWeakPtr()));
 }
 
-void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(bool success) {
+void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(
+    bool success,
+    const AmbientSettings& settings) {
   is_updating_backend_ = false;
 
   if (success) {
     update_settings_retry_backoff_.Reset();
-    cached_settings_ = settings_sent_for_update_;
+    cached_settings_ = settings;
     if (needs_update_previews_) {
       FetchPreviewImages();
     }
@@ -752,7 +753,6 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
 
   settings_.reset();
   cached_settings_.reset();
-  settings_sent_for_update_.reset();
   update_settings_retry_backoff_.Reset();
   fetch_settings_retry_backoff_.Reset();
   has_pending_fetch_request_ = false;
