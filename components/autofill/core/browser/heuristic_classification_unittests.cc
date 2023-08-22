@@ -429,10 +429,9 @@ class HeuristicClassificationTests
 TEST_P(HeuristicClassificationTests, EndToEnd) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillEnableSupportForBetweenStreets,
-                            features::kAutofillEnableSupportForAdminLevel2,
-                            features::kAutofillEnableSupportForAddressOverflow,
-                            features::kAutofillEnableSupportForLandmark},
+      /*enabled_features=*/
+      {// This is always enabled to classify autocomplete=invalid fields.
+       features::kAutofillPredictionsForAutocompleteUnrecognized},
       /*disabled_features=*/{});
 
   base::FilePath input_file = GetParam();
