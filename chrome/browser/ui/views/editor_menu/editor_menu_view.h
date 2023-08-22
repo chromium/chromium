@@ -12,6 +12,7 @@
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace views {
+class ImageButton;
 class FlexLayoutView;
 }  // namespace views
 
@@ -48,6 +49,7 @@ class EditorMenuView : public views::View {
 
   // Containing title, badge, and icons.
   raw_ptr<views::View> title_container_ = nullptr;
+  raw_ptr<views::ImageButton> settings_button_ = nullptr;
 
   // Containing chips.
   raw_ptr<views::FlexLayoutView> chips_container_ = nullptr;

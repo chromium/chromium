@@ -23,9 +23,11 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view.h"
@@ -42,6 +44,10 @@ constexpr int kContainerMinWidthDip = 368;
 constexpr int kRadiusDip = 4;
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(10, 16, 10, 10);
+
+constexpr char16_t kSettingsTooltipString[] = u"Settings";
+constexpr int kSettingsButtonSizeDip = 32;
+constexpr int kSettingsIconSizeDip = 20;
 
 constexpr int kChipsContainerVerticalSpacingDip = 16;
 constexpr gfx::Insets kChipsMargin =
@@ -139,12 +145,32 @@ void EditorMenuView::AddTitleContainer() {
   auto* title = title_container_->AddChildView(
       std::make_unique<views::Label>(kContainerTitle));
 
-  // TODO(b/295078199): Add Settings icon.
+  auto* spacer =
+      title_container_->AddChildView(std::make_unique<views::View>());
+  layout->SetFlexForView(spacer, 1);
+
+  auto* button_container =
+      title_container_->AddChildView(std::make_unique<views::FlexLayoutView>());
+  button_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  button_container->SetPreferredSize(
+      gfx::Size(kSettingsButtonSizeDip, kSettingsButtonSizeDip));
+
+  settings_button_ =
+      button_container->AddChildView(std::make_unique<views::ImageButton>());
+  settings_button_->SetTooltipText(kSettingsTooltipString);
+  settings_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
+                                     cros_tokens::kCrosSysOnSurface,
+                                     kSettingsIconSizeDip));
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
-  title_container_->SetPreferredSize(
-      gfx::Size(kContainerMinWidthDip - kTitleContainerInsets.width(),
-                title->GetPreferredSize().height()));
+
+  int width = kContainerMinWidthDip - kTitleContainerInsets.width();
+  int height = std::max(title->GetPreferredSize().height(),
+                        settings_button_->GetPreferredSize().height());
+  title_container_->SetPreferredSize(gfx::Size(width, height));
 }
 
 void EditorMenuView::AddChipsContainer() {
