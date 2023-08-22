@@ -478,6 +478,12 @@ TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, HfpMicSrPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetHfpMicSrState());
+  audio_pref_handler_->SetHfpMicSrState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetHfpMicSrState());
+}
+
 TEST_P(AudioDevicesPrefHandlerTest, UserPriority) {
   AudioDevice device = GetDeviceWithVersion(2);
   EXPECT_EQ(kUserPriorityNone, GetUserPriority(device));

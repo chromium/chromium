@@ -158,4 +158,12 @@ void AudioDevicesPrefHandlerStub::SetForceRespectUiGainsState(
   force_respect_ui_gains_ = force_respect_ui_gains;
 }
 
+bool AudioDevicesPrefHandlerStub::GetHfpMicSrState() {
+  return hfp_mic_sr_;
+}
+
+void AudioDevicesPrefHandlerStub::SetHfpMicSrState(bool hfp_mic_sr_state) {
+  hfp_mic_sr_ = hfp_mic_sr_state;
+}
+
 }  // namespace ash

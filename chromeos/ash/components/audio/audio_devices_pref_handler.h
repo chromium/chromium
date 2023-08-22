@@ -88,6 +88,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandler
   // Sets the input force respect ui gains in profile prefs.
   virtual void SetForceRespectUiGainsState(bool force_respect_ui_gains) = 0;
 
+  // Reads whether hfp_mic_sr is on from profile prefs.
+  virtual bool GetHfpMicSrState() = 0;
+  // Sets the hfp_mic_sr in profile prefs.
+  virtual void SetHfpMicSrState(bool hfp_mic_sr_state) = 0;
+
  protected:
   virtual ~AudioDevicesPrefHandler() = default;
 

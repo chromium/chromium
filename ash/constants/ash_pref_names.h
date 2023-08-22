@@ -1786,6 +1786,11 @@ inline constexpr char kSixPackKeyPageDownNotificationsRemaining[] =
 inline constexpr char kSixPackKeyInsertNotificationsRemaining[] =
     "ash.settings.insert_six_pack_key_notifications_remaining";
 
+// A boolean pref that controls whether hands-free profile input super
+// resolution is enabled.
+inline constexpr char kHandsFreeProfileInputSuperResolution[] =
+    "ash.hands_free_profile_input_super_resolution";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
