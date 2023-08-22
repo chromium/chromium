@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/base/ui_features.gni")
+
+source_set("actions_headers") {
+  sources = [ "chrome_action_id.h" ]
+
+  public_deps = [
+    "//chrome/app:command_ids",
+    "//ui/actions:actions_headers",
+  ]
+}
+
+if (!is_ios && !is_android) {
+  executable("dump_actions") {
+    testonly = true
+
+    sources = [ "tools/dump_actions.cc" ]
+
+    deps = [
+      ":actions_headers",
+      "//ui/actions:actions_headers",
+    ]
+  }
+}
