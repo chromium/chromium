@@ -311,7 +311,11 @@ using ReauthenticationEvent::kSuccess;
 
 - (void)loadFaviconWithBlockHandler:
     (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock {
-  CHECK(_faviconLoader);
+  if (!_faviconLoader) {
+    // Mediator is disconnecting (bottom sheet is being closed). No need to
+    // fetch for the favicon anymore.
+    return;
+  }
   if (!_URL.is_empty()) {
     _faviconLoader->FaviconForPageUrl(
         _URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
