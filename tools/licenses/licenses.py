@@ -17,6 +17,8 @@ from __future__ import print_function
 
 import argparse
 import codecs
+import csv
+import io
 import json
 import logging
 import os
@@ -1073,14 +1075,88 @@ def GenerateLicenseFile(args: argparse.Namespace):
                                           args.spdx_doc_namespace)
   elif args.format == 'txt':
     license_txt = GenerateLicenseFilePlainText(metadatas)
+
+  elif args.format == 'csv':
+    license_txt = GenerateLicenseFileCsv(metadatas)
+
   else:
     raise ValueError(f'Unknown license format: {args.format}')
 
   if args.output_file:
     with open(args.output_file, 'w', encoding='utf-8') as f:
       f.write(license_txt)
+      print(f"\n ---- \nWrote license data to file {args.output_file}")
   else:
     print(license_txt)
+
+
+def GenerateLicenseFileCsv(
+    metadata: Dict[str, Dict[str, Any]],
+    repo_root: str = _REPOSITORY_ROOT,
+) -> str:
+  """Generates a CSV formatted file which contains license data to be used as
+    part of the submission to the Open Source Licensing Review process.
+  """
+  csv_content = io.StringIO()
+  csv_writer = csv.writer(csv_content, quoting=csv.QUOTE_NONNUMERIC)
+
+  # These values are applied statically to all dependencies which are included
+  # in the exported CSV.
+  # Static fields:
+  #   * Name of binary which uses dependency,
+  #   * License text for library included in product,
+  #   * Mirrored source for reciprocal licences.
+  #   * Signoff date.
+  static_data = ["Chromium", "Yes", "Yes", "N/A"]
+
+  # Add informative CSV header row to make it clear which columns represent
+  # which data in the review spreadsheet.
+  csv_writer.writerow([
+      "Library Name", "Link to LICENSE file", "License Name",
+      "Binary which uses library", "License text for library included?",
+      "Source code for library includes the mirrored source?",
+      "Authorization date"
+  ])
+
+  # Start with Chromium's LICENSE file
+  csv_writer.writerow([
+      "Chromium",
+      "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/LICENSE",
+      "Chromium"
+  ] + static_data)
+
+  # Add necessary third_party.
+  for directory in sorted(metadata):
+    dir_metadata = metadata[directory]
+
+    # Only third party libraries which are shipped as part of a final product
+    # are in scope for license review.
+    if dir_metadata['Shipped'] == NO:
+      continue
+
+    data_row = [dir_metadata['Name'] or "UNKNOWN"]
+
+    urls = []
+    for lic in dir_metadata['License File']:
+      # The review process requires that a link is provided to each license
+      # which is included. We can achieve this by combining a static
+      # Chromium googlesource URL with the relative path to the license
+      # file from the top level Chromium src directory.
+      lic_url = (
+          "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/"
+          + os.path.relpath(lic, repo_root))
+
+      # Since these are URLs and not paths, replace any Windows path `\`
+      # separators with a `/`
+      urls.append(lic_url.replace("\\", "/"))
+
+    data_row.append(", ".join(urls) or "UNKNOWN")
+    data_row.append(dir_metadata["License"] or "UNKNOWN")
+
+    # Join the default data which applies to each row
+    csv_writer.writerow(data_row + static_data)
+
+  return csv_content.getvalue()
 
 
 def GenerateLicenseFilePlainText(
@@ -1175,7 +1251,7 @@ def main():
   parser.add_argument('--gn-target', help='GN target to scan for dependencies.')
   parser.add_argument('--format',
                       default='txt',
-                      choices=['txt', 'spdx'],
+                      choices=['txt', 'spdx', 'csv'],
                       help='What format to output in')
   parser.add_argument('--spdx-root',
                       default=_REPOSITORY_ROOT,
