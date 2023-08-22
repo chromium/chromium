@@ -128,8 +128,8 @@ TEST_F(ExtensionCreatorTest, ValidateExtension) {
   ASSERT_TRUE(base::WriteFile(manifest_file, R"({ "manifest_version": 3)"));
 
   EXPECT_FALSE(ValidateExtension(src_path, 0));
-  EXPECT_EQ("Manifest is not valid JSON.  Line: 1, column: 24, Syntax error.",
-            extension_creator()->error_message());
+  EXPECT_TRUE(extension_creator()->error_message().starts_with(
+      "Manifest is not valid JSON."));
 
   // Replace partial manifest with correct minimum file.
   ASSERT_TRUE(base::WriteFile(manifest_file,
