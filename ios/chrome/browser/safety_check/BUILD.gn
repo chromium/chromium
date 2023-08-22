@@ -6,6 +6,8 @@ source_set("safety_check") {
   sources = [
     "ios_chrome_safety_check_manager.h",
     "ios_chrome_safety_check_manager.mm",
+    "ios_chrome_safety_check_manager_observer_bridge.h",
+    "ios_chrome_safety_check_manager_observer_bridge.mm",
   ]
   public_deps = [
     ":constants",
@@ -25,6 +27,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
   ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("factory") {

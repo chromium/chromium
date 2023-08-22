@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
@@ -125,8 +126,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     NSMutableArray<ContentSuggestionsShortcutTileView*>* shortcutsViews;
 // The SetUpListView, if it is currently being displayed.
 @property(nonatomic, strong) SetUpListView* setUpListView;
+// The current state of the Safety Check.
+@property(nonatomic, strong) SafetyCheckState* safetyCheckState;
 // The SafetyCheckView, if it is currently being displayed.
 @property(nonatomic, strong) SafetyCheckView* safetyCheckView;
+// Module Container for the `safetyCheckView` when being shown in Magic Stack.
+@property(nonatomic, strong)
+    MagicStackModuleContainer* safetyCheckModuleContainer;
 @end
 
 @implementation ContentSuggestionsViewController {
@@ -228,6 +234,10 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             constraintGreaterThanOrEqualToConstant:height]
       ]];
     }
+  }
+
+  if (IsSafetyCheckMagicStackEnabled() && self.safetyCheckState) {
+    [self createSafetyCheck:self.safetyCheckState];
   }
 
   // Only Create Magic Stack if the ranking has been received. It can be delayed
@@ -646,6 +656,29 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }];
 }
 
+- (void)showSafetyCheck:(SafetyCheckState*)state {
+  _safetyCheckState = state;
+
+  if (!self.viewLoaded) {
+    return;
+  }
+
+  if (self.safetyCheckModuleContainer) {
+    [self.safetyCheckModuleContainer removeFromSuperview];
+  }
+
+  [self createSafetyCheck:state];
+
+  int checkIssuesCount = CheckIssuesCount(state);
+
+  ContentSuggestionsModuleType type =
+      checkIssuesCount > 1 ? ContentSuggestionsModuleType::kSafetyCheckMultiRow
+                           : ContentSuggestionsModuleType::kSafetyCheck;
+
+  [_magicStack insertArrangedSubview:self.safetyCheckModuleContainer
+                             atIndex:[self indexForMagicStackModule:type]];
+}
+
 - (CGFloat)contentSuggestionsHeight {
   CGFloat height = 0;
   if ([self.mostVisitedViews count] > 0 &&
@@ -884,6 +917,25 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   }
 }
 
+- (void)createSafetyCheck:(SafetyCheckState*)state {
+  self.safetyCheckState = state;
+
+  self.safetyCheckView = [[SafetyCheckView alloc] initWithState:state];
+
+  self.safetyCheckView.delegate = self.audience;
+
+  int checkIssuesCount = CheckIssuesCount(state);
+
+  ContentSuggestionsModuleType type =
+      checkIssuesCount > 1 ? ContentSuggestionsModuleType::kSafetyCheckMultiRow
+                           : ContentSuggestionsModuleType::kSafetyCheck;
+
+  self.safetyCheckModuleContainer = [[MagicStackModuleContainer alloc]
+      initWithContentView:self.safetyCheckView
+                     type:type
+                 delegate:self];
+}
+
 // Add the elements in `mostVisitedViews` into `verticalStackView`.
 - (void)populateMostVisitedModule {
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
@@ -1025,28 +1077,9 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
       }
       case ContentSuggestionsModuleType::kSafetyCheck:
       case ContentSuggestionsModuleType::kSafetyCheckMultiRow: {
-        // TODO(crbug.com/1472382): In a follow-up CL, this information will
-        // come from the new Safety Check Manager. For now, this is placeholder
-        // showing the default state.
-        SafetyCheckState* defaultState = [[SafetyCheckState alloc]
-            initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
-                        passwordState:PasswordSafetyCheckState::kDefault
-                    safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
-                         runningState:RunningSafetyCheckState::kDefault];
-
-        self.safetyCheckView =
-            [[SafetyCheckView alloc] initWithState:defaultState];
-
-        self.safetyCheckView.delegate = self.audience;
-
-        MagicStackModuleContainer* safetyCheckModule =
-            [[MagicStackModuleContainer alloc]
-                initWithContentView:self.safetyCheckView
-                               type:type
-                           delegate:self];
-
-        [_magicStack addArrangedSubview:safetyCheckModule];
-
+        if (IsSafetyCheckMagicStackEnabled()) {
+          [_magicStack addArrangedSubview:self.safetyCheckModuleContainer];
+        }
         break;
       }
       default:

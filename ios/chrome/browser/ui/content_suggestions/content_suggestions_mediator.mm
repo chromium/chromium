@@ -44,6 +44,10 @@
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_factory.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -76,6 +80,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_tile_saver.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
@@ -118,6 +124,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                                           MostVisitedSitesObserving,
                                           ReadingListModelBridgeObserver,
                                           PrefObserverDelegate,
+                                          SafetyCheckManagerObserver,
                                           SceneStateObserver,
                                           SetUpListDelegate> {
   std::unique_ptr<ntp_tiles::MostVisitedSites> _mostVisitedSites;
@@ -199,6 +206,9 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   syncer::SyncService* _syncService;
   // Used by SetUpList to get signed-in status.
   AuthenticationService* _authenticationService;
+  // Used by the Safety Check (Magic Stack) module for the current Safety Check
+  // state.
+  SafetyCheckState* _safetyCheckState;
   // Used by SetUpList to observe changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -207,6 +217,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  // Observer for Safety Check changes.
+  std::unique_ptr<SafetyCheckObserverBridge> _safetyCheckManagerObserver;
 }
 
 #pragma mark - Public
@@ -282,7 +294,43 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
         SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
     [sceneState addObserver:self];
     _browser = browser;
+
+    if (IsSafetyCheckMagicStackEnabled()) {
+      IOSChromeSafetyCheckManager* safetyCheckManager =
+          IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+              browser->GetBrowserState());
+
+      UpdateChromeSafetyCheckState initialUpdateChromeState =
+          safetyCheckManager->GetUpdateChromeCheckState();
+      PasswordSafetyCheckState initialPasswordState =
+          safetyCheckManager->GetPasswordCheckState();
+      SafeBrowsingSafetyCheckState initialSafeBrowsingState =
+          safetyCheckManager->GetSafeBrowsingCheckState();
+
+      base::Time lastRunTime = safetyCheckManager->GetLastSafetyCheckRunTime();
+
+      bool shouldRunSafetyCheck = CanRunSafetyCheck(lastRunTime);
+
+      RunningSafetyCheckState initialRunningState =
+          shouldRunSafetyCheck ? RunningSafetyCheckState::kRunning
+                               : RunningSafetyCheckState::kDefault;
+
+      _safetyCheckState = [[SafetyCheckState alloc]
+          initWithUpdateChromeState:initialUpdateChromeState
+                      passwordState:initialPasswordState
+                  safeBrowsingState:initialSafeBrowsingState
+                       runningState:initialRunningState];
+
+      _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
+          self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+                    browser->GetBrowserState()));
+
+      if (shouldRunSafetyCheck) {
+        safetyCheckManager->StartSafetyCheck();
+      }
+    }
   }
+
   return self;
 }
 
@@ -667,6 +715,11 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       (IsMagicStackEnabled() || ![self shouldShowSetUpList])) {
     [self.consumer setShortcutTilesWithConfigs:self.actionButtonItems];
   }
+
+  if (IsSafetyCheckMagicStackEnabled() &&
+      _safetyCheckState.runningState == RunningSafetyCheckState::kDefault) {
+    [self.consumer showSafetyCheck:_safetyCheckState];
+  }
 }
 
 // Updates `prefs::kIosSyncSegmentsNewTabPageDisplayCount` with the number of
@@ -907,8 +960,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // different places in the Magic Stack depending on the Safety Check state(s).
   // However, for now, the module will simply be inserted at the front of the
   // Magic Stack.
-  [order insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))
-              atIndex:0];
+
+  int check_issues_count = CheckIssuesCount(_safetyCheckState);
+
+  if (check_issues_count > 1) {
+    [order
+        insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow))
+             atIndex:0];
+  } else {
+    [order insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))
+                atIndex:0];
+  }
 }
 
 // Returns YES if the conditions are right to display the Set Up List.
@@ -1054,6 +1116,29 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       [self hideSetUpList];
     }
   }
+}
+
+#pragma mark - SafetyCheckManagerObserver
+
+- (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {
+  _safetyCheckState.passwordState = state;
+}
+
+- (void)safeBrowsingCheckStateChanged:(SafeBrowsingSafetyCheckState)state {
+  _safetyCheckState.safeBrowsingState = state;
+}
+
+- (void)updateChromeCheckStateChanged:(UpdateChromeSafetyCheckState)state {
+  _safetyCheckState.updateChromeState = state;
+}
+
+- (void)runningStateChanged:(RunningSafetyCheckState)state {
+  _safetyCheckState.runningState = state;
+
+  // Ensures the consumer gets the latest Safety Check state only when the
+  // running state changes; this avoids calling the consumer every time an
+  // individual check state changes.
+  [self.consumer showSafetyCheck:_safetyCheckState];
 }
 
 #pragma mark - ReadingListModelBridgeObserver

@@ -9,6 +9,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/time/time.h"
+
 @protocol ApplicationCommands;
 namespace password_manager {
 struct CredentialUIEntry;
@@ -26,5 +28,11 @@ void HandleSafetyCheckUpdateChromeTap(const GURL& chrome_upgrade_url,
 void HandleSafetyCheckPasswordTap(
     std::vector<password_manager::CredentialUIEntry>& credentials,
     id<ApplicationCommands> handler);
+
+// Returns the number of check issues found given `state`.
+int CheckIssuesCount(SafetyCheckState* state);
+
+// Returns true if the Safety Check can be run given `last_run_time`.
+bool CanRunSafetyCheck(base::Time last_run_time);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_UTILS_H_

@@ -10,30 +10,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-
-namespace {
-
-// Returns the number of check issue types found given `state`.
-int CheckIssuesCount(SafetyCheckState* state) {
-  int count = 0;
-
-  if (state.updateChromeState != UpdateChromeSafetyCheckState::kUpToDate) {
-    count++;
-  }
-
-  if (state.safeBrowsingState != SafeBrowsingSafetyCheckState::kSafe) {
-    count++;
-  }
-
-  if (state.passwordState != PasswordSafetyCheckState::kSafe) {
-    count++;
-  }
-
-  return count;
-}
-
-}  // namespace
 
 @interface SafetyCheckView () <SafetyCheckItemViewTapDelegate>
 @end
@@ -175,6 +153,8 @@ int CheckIssuesCount(SafetyCheckState* state) {
 
     MultiRowContainerView* multiRowContainer =
         [[MultiRowContainerView alloc] initWithViews:safetyCheckItems];
+
+    multiRowContainer.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self addSubview:multiRowContainer];
 

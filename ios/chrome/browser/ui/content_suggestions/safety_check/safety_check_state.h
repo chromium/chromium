@@ -24,16 +24,16 @@ enum class RunningSafetyCheckState;
                  runningState:(RunningSafetyCheckState)runningState;
 
 // The current state of the Update Chrome check.
-@property(nonatomic, readonly) UpdateChromeSafetyCheckState updateChromeState;
+@property(nonatomic, readwrite) UpdateChromeSafetyCheckState updateChromeState;
 
 // The current state of the Password check.
-@property(nonatomic, readonly) PasswordSafetyCheckState passwordState;
+@property(nonatomic, readwrite) PasswordSafetyCheckState passwordState;
 
 // The current state of the Safe Browsing check.
-@property(nonatomic, readonly) SafeBrowsingSafetyCheckState safeBrowsingState;
+@property(nonatomic, readwrite) SafeBrowsingSafetyCheckState safeBrowsingState;
 
 // The Safety Check running state.
-@property(nonatomic, readonly) RunningSafetyCheckState runningState;
+@property(nonatomic, readwrite) RunningSafetyCheckState runningState;
 
 @end
 

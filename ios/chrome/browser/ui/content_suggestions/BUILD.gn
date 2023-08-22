@@ -85,6 +85,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/promos_manager:factory",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/safety_check",
+    "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/safety_check:factory",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/segmentation_platform",

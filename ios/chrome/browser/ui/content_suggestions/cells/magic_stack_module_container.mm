@@ -246,6 +246,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       break;
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       contentMargins.bottom = kReducedContentBottomInset;
       break;
     default:
@@ -353,7 +354,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kSetUpListAllSet:
-    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheck:
       return YES;
     default:
       return NO;

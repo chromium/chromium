@@ -12,6 +12,7 @@ enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsMostVisitedItem;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
+@class SafetyCheckState;
 enum class SetUpListItemType;
 @class SetUpListItemViewData;
 @class QuerySuggestionConfig;
@@ -77,6 +78,9 @@ enum class SetUpListItemType;
 // complete. Calls `animations` to allow other things to be simultaneously
 // animated.
 - (void)showSetUpListDoneWithAnimations:(ProceduralBlock)animations;
+
+// Shows the Safety Check (Magic Stack) module with `state`.
+- (void)showSafetyCheck:(SafetyCheckState*)state;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSUMER_H_

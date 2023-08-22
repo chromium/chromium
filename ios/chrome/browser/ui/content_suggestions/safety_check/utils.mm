@@ -9,12 +9,17 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/common/channel_info.h"
 #import "url/gurl.h"
 
 namespace {
+
+// The Safety Check should only be run once every 24 hours.
+constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 // Returns the number of unique warning types found in `counts`.
 //
@@ -112,4 +117,42 @@ void HandleSafetyCheckPasswordTap(
   // overview screen.
   [handler showPasswordCheckupPageForReferrer:
                password_manager::PasswordCheckReferrer::kSafetyCheckMagicStack];
+}
+
+int CheckIssuesCount(SafetyCheckState* state) {
+  bool invalid_update_chrome_state =
+      state.updateChromeState == UpdateChromeSafetyCheckState::kOutOfDate;
+
+  bool invalid_password_state =
+      state.passwordState ==
+          PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
+      state.passwordState == PasswordSafetyCheckState::kReusedPasswords ||
+      state.passwordState == PasswordSafetyCheckState::kWeakPasswords;
+
+  bool invalid_safe_browsing_state =
+      state.safeBrowsingState == SafeBrowsingSafetyCheckState::kUnsafe;
+
+  int invalid_check_count = 0;
+
+  std::vector<bool> invalid_checks = {invalid_update_chrome_state,
+                                      invalid_password_state,
+                                      invalid_safe_browsing_state};
+
+  for (bool invalid_check : invalid_checks) {
+    if (invalid_check) {
+      invalid_check_count++;
+    }
+  }
+
+  return invalid_check_count;
+}
+
+bool CanRunSafetyCheck(base::Time last_run_time) {
+  base::TimeDelta last_run_age = base::Time::Now() - last_run_time;
+
+  if (last_run_age > kSafetyCheckRunThreshold) {
+    return true;
+  }
+
+  return false;
 }
