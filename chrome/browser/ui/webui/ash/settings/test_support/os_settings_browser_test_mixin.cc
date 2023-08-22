@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_browser_test_mixin.h"
+#include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_browser_test_mixin.h"
 
 #include <memory>
 #include <string>

@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
+#include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"

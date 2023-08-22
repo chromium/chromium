@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_BROWSER_TEST_MIXIN_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_BROWSER_TEST_MIXIN_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_OS_SETTINGS_BROWSER_TEST_MIXIN_H_
+#define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_OS_SETTINGS_BROWSER_TEST_MIXIN_H_
 
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -114,4 +114,4 @@ class OSSettingsBrowserTestMixin : public InProcessBrowserTestMixin {
 
 }  // namespace ash::settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_OS_SETTINGS_BROWSER_TEST_MIXIN_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_OS_SETTINGS_BROWSER_TEST_MIXIN_H_

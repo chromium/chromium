@@ -4,7 +4,7 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_lock_screen_browser_test_base.h"
+#include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::settings {
