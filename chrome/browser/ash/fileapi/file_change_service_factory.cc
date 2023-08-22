@@ -34,12 +34,13 @@ FileChangeServiceFactory::FileChangeServiceFactory()
 
 FileChangeServiceFactory::~FileChangeServiceFactory() = default;
 
-KeyedService* FileChangeServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FileChangeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
   if (profile->IsOffTheRecord())
     CHECK(profile->IsGuestSession());
-  return new FileChangeService();
+  return std::make_unique<FileChangeService>();
 }
 
 }  // namespace ash
