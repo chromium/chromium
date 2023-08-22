@@ -38,10 +38,10 @@ class M1SensorsReader {
 
  protected:
   explicit M1SensorsReader(
-      base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system);
+      base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef> system);
 
  private:
-  base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system_;
+  base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef> system_;
 };
 
 }  // namespace power_metrics

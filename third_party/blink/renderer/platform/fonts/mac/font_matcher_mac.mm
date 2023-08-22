@@ -126,11 +126,11 @@ NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
     base::apple::CFToNSPtrCast(kCTFontNameAttribute) : desired_name,
     base::apple::CFToNSPtrCast(kCTFontSizeAttribute) : @(size)
   };
-  base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
+  base::apple::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
       CTFontDescriptorCreateWithAttributes(
           base::apple::NSToCFPtrCast(attributes)));
 
-  base::ScopedCFTypeRef<CTFontRef> matched_font(
+  base::apple::ScopedCFTypeRef<CTFontRef> matched_font(
       CTFontCreateWithFontDescriptor(descriptor, 0, nullptr));
   DCHECK(matched_font);
 

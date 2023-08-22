@@ -22,9 +22,9 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
 
   // Create a UIImage directly from a CGImage in order to control the exact
   // pixel size of the underlying image.
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       NULL, target_size.width, target_size.height, 8, target_size.width * 4,
       color_space,
       kCGImageAlphaPremultipliedFirst |
@@ -35,7 +35,7 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
   CGContextSetFillColorWithColor(context, [[UIColor redColor] CGColor]);
   CGContextFillRect(context, target_rect);
 
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       CGBitmapContextCreateImage(context));
   return [UIImage imageWithCGImage:cg_image
                              scale:scale

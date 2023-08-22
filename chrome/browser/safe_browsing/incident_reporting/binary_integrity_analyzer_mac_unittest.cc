@@ -106,7 +106,7 @@ TEST_F(BinaryIntegrityAnalyzerMacTest, GetCriticalPathsAndRequirements) {
     EXPECT_EQ(paths_and_requirements[i].requirement,
               paths_and_requirements_expected[i].requirement);
 
-    base::ScopedCFTypeRef<SecRequirementRef> requirement;
+    base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;
     EXPECT_EQ(
         errSecSuccess,
         SecRequirementCreateWithString(

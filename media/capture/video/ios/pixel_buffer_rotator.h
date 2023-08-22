@@ -34,7 +34,7 @@ class CAPTURE_EXPORT PixelBufferRotator {
               int rotation);
 
  private:
-  base::ScopedCFTypeRef<VTPixelRotationSessionRef> rotation_session_;
+  base::apple::ScopedCFTypeRef<VTPixelRotationSessionRef> rotation_session_;
 };
 
 }  // namespace media

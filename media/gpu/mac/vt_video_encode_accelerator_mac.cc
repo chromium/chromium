@@ -121,7 +121,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
 #if BUILDFLAG(IS_MAC)
   info.is_hardware_accelerated = false;
 
-  base::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
+  base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
   if (VTSessionCopyProperty(
           compression_session,
           kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
@@ -134,7 +134,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
 #endif
 
   absl::optional<int> max_frame_delay_property;
-  base::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
+  base::apple::ScopedCFTypeRef<CFNumberRef> max_frame_delay_count;
   if (VTSessionCopyProperty(
           compression_session, kVTCompressionPropertyKey_MaxFrameDelayCount,
           kCFAllocatorDefault, max_frame_delay_count.InitializeInto()) == 0) {
@@ -194,7 +194,7 @@ struct VTVideoEncodeAccelerator::EncodeOutput {
   EncodeOutput& operator=(const EncodeOutput&) = delete;
 
   const VTEncodeInfoFlags info;
-  const base::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
+  const base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   const base::TimeDelta capture_timestamp;
   const gfx::ColorSpace encoded_color_space;
 };
@@ -448,7 +448,7 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  base::ScopedCFTypeRef<CFDictionaryRef> frame_props =
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> frame_props =
       video_toolbox::DictionaryWithKeyValue(
           kVTEncodeFrameOptionKey_ForceKeyFrame,
           force_keyframe ? kCFBooleanTrue : kCFBooleanFalse);
@@ -758,7 +758,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
       encoder_values.push_back(kCFBooleanTrue);
     }
   }
-  base::ScopedCFTypeRef<CFDictionaryRef> encoder_spec =
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> encoder_spec =
       video_toolbox::DictionaryWithKeysAndValues(
           encoder_keys.data(), encoder_values.data(), encoder_keys.size());
 

@@ -31,7 +31,7 @@ class CAPTURE_EXPORT PixelBufferTransferer {
   bool TransferImage(CVPixelBufferRef source, CVPixelBufferRef destination);
 
  private:
-  base::ScopedCFTypeRef<VTPixelTransferSessionRef> transfer_session_;
+  base::apple::ScopedCFTypeRef<VTPixelTransferSessionRef> transfer_session_;
 };
 
 }  // namespace media

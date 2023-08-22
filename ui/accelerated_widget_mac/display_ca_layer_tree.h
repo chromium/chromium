@@ -35,7 +35,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT DisplayCALayerTree
 
  private:
   void GotCALayerFrame(uint32_t ca_context_id);
-  void GotIOSurfaceFrame(base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+  void GotIOSurfaceFrame(base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
                          const gfx::Size& dip_size,
                          float scale_factor);
 

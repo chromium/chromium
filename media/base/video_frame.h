@@ -834,7 +834,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
 #if BUILDFLAG(IS_APPLE)
   // CVPixelBuffer, if this frame is wrapping one.
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
 #endif
 
   base::Lock done_callbacks_lock_;

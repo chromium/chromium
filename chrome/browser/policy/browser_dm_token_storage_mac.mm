@@ -106,7 +106,7 @@ bool DeleteDMTokenFromAppDataDir(const std::string& client_id) {
 bool GetEnrollmentTokenFromPolicy(std::string* enrollment_token) {
   // Since the configuration management infrastructure is not initialized when
   // this code runs, read the policy preference directly.
-  base::ScopedCFTypeRef<CFPropertyListRef> value(
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
       CFPreferencesCopyAppValue(kEnrollmentTokenPolicyName, kBundleId));
 
   // Read the enrollment token from the new location. If that fails, try the old
@@ -138,8 +138,9 @@ bool GetEnrollmentTokenFromFile(std::string* enrollment_token) {
 }
 
 absl::optional<bool> IsEnrollmentMandatoryByPolicy() {
-  base::ScopedCFTypeRef<CFPropertyListRef> value(CFPreferencesCopyAppValue(
-      kEnrollmentMandatoryOptionPolicyName, kBundleId));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
+      CFPreferencesCopyAppValue(kEnrollmentMandatoryOptionPolicyName,
+                                kBundleId));
 
   if (!value || !CFPreferencesAppValueIsForced(
                     kEnrollmentMandatoryOptionPolicyName, kBundleId)) {

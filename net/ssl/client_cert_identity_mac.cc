@@ -14,7 +14,7 @@ namespace net {
 
 ClientCertIdentityMac::ClientCertIdentityMac(
     scoped_refptr<net::X509Certificate> cert,
-    base::ScopedCFTypeRef<SecIdentityRef> sec_identity)
+    base::apple::ScopedCFTypeRef<SecIdentityRef> sec_identity)
     : ClientCertIdentity(std::move(cert)), identity_(std::move(sec_identity)) {}
 
 ClientCertIdentityMac::~ClientCertIdentityMac() = default;
@@ -24,7 +24,7 @@ void ClientCertIdentityMac::AcquirePrivateKey(
         private_key_callback) {
   // This only adds a ref to and returns the private key from `identity_`, so it
   // doesn't need to run on a worker thread.
-  base::ScopedCFTypeRef<SecKeyRef> key;
+  base::apple::ScopedCFTypeRef<SecKeyRef> key;
   OSStatus status =
       SecIdentityCopyPrivateKey(identity_.get(), key.InitializeInto());
   if (status != noErr) {

@@ -61,7 +61,7 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
     return false;
   }
 
-  base::ScopedCFTypeRef<MDItemRef> md_item(
+  base::apple::ScopedCFTypeRef<MDItemRef> md_item(
       MDItemCreate(kCFAllocatorDefault, base::apple::NSToCFPtrCast(file_path)));
   if (!md_item) {
     LOG(WARNING) << "MDItemCreate failed for path " << file.value();

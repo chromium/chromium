@@ -40,7 +40,7 @@ class CRWCertVerificationControllerTest : public web::WebTest {
         net::ImportCertFromFile(net::GetTestCertsDirectory(), kCertFileName);
     ASSERT_TRUE(cert_);
 
-    base::ScopedCFTypeRef<CFMutableArrayRef> chain(
+    base::apple::ScopedCFTypeRef<CFMutableArrayRef> chain(
         net::x509_util::CreateSecCertificateArrayForX509Certificate(
             cert_.get()));
     ASSERT_TRUE(chain);
@@ -53,7 +53,7 @@ class CRWCertVerificationControllerTest : public web::WebTest {
 
   // Synchronously returns result of
   // decideLoadPolicyForTrust:host:completionHandler: call.
-  void DecidePolicy(const base::ScopedCFTypeRef<SecTrustRef>& trust,
+  void DecidePolicy(const base::apple::ScopedCFTypeRef<SecTrustRef>& trust,
                     NSString* host,
                     web::CertAcceptPolicy* policy,
                     net::CertStatus* status) {
@@ -75,7 +75,7 @@ class CRWCertVerificationControllerTest : public web::WebTest {
 
   // Synchronously returns result of
   // querySSLStatusForTrust:host:completionHandler: call.
-  void QueryStatus(const base::ScopedCFTypeRef<SecTrustRef>& trust,
+  void QueryStatus(const base::apple::ScopedCFTypeRef<SecTrustRef>& trust,
                    NSString* host,
                    SecurityStyle* style,
                    net::CertStatus* status) {
@@ -95,8 +95,8 @@ class CRWCertVerificationControllerTest : public web::WebTest {
   }
 
   scoped_refptr<net::X509Certificate> cert_;
-  base::ScopedCFTypeRef<SecTrustRef> valid_trust_;
-  base::ScopedCFTypeRef<SecTrustRef> invalid_trust_;
+  base::apple::ScopedCFTypeRef<SecTrustRef> valid_trust_;
+  base::apple::ScopedCFTypeRef<SecTrustRef> invalid_trust_;
   CRWCertVerificationController* controller_;
 };
 
@@ -137,7 +137,7 @@ TEST_F(CRWCertVerificationControllerTest, PolicyForInvalidTrustAcceptedByUser) {
 TEST_F(CRWCertVerificationControllerTest, PolicyForNullTrust) {
   web::CertAcceptPolicy policy = CERT_ACCEPT_POLICY_ALLOW;
   net::CertStatus status;
-  base::ScopedCFTypeRef<SecTrustRef> null_trust;
+  base::apple::ScopedCFTypeRef<SecTrustRef> null_trust;
   DecidePolicy(null_trust, kHostName, &policy, &status);
   EXPECT_EQ(CERT_ACCEPT_POLICY_NON_RECOVERABLE_ERROR, policy);
   EXPECT_EQ(net::CERT_STATUS_INVALID, status);

@@ -127,7 +127,7 @@ static AudioDeviceID FindFirstOutputSubdevice(
   const AudioObjectPropertyAddress property_address = {
       kAudioAggregateDevicePropertyFullSubDeviceList,
       kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain};
-  base::ScopedCFTypeRef<CFArrayRef> subdevices;
+  base::apple::ScopedCFTypeRef<CFArrayRef> subdevices;
   UInt32 size = sizeof(subdevices);
   OSStatus result = AudioObjectGetPropertyData(
       aggregate_device_id, &property_address, 0 /* inQualifierDataSize */,

@@ -39,7 +39,7 @@ bool GetBoolFromDictionary(CFDictionaryRef dict,
 
 void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
                            ProxyConfigWithAnnotation* config) {
-  base::ScopedCFTypeRef<CFDictionaryRef> config_dict(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> config_dict(
       CFNetworkCopySystemProxySettings());
   DCHECK(config_dict);
   ProxyConfig proxy_config;

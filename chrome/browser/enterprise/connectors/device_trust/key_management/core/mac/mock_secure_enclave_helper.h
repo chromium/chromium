@@ -21,11 +21,11 @@ class MockSecureEnclaveHelper : public SecureEnclaveHelper {
   MockSecureEnclaveHelper();
   ~MockSecureEnclaveHelper() override;
 
-  MOCK_METHOD(base::ScopedCFTypeRef<SecKeyRef>,
+  MOCK_METHOD(base::apple::ScopedCFTypeRef<SecKeyRef>,
               CreateSecureKey,
               (CFDictionaryRef, OSStatus*),
               (override));
-  MOCK_METHOD(base::ScopedCFTypeRef<SecKeyRef>,
+  MOCK_METHOD(base::apple::ScopedCFTypeRef<SecKeyRef>,
               CopyKey,
               (CFDictionaryRef, OSStatus*),
               (override));

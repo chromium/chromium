@@ -40,9 +40,10 @@ bool GrabViewSnapshot(gfx::NativeView native_view,
   DCHECK_LE(screen_snapshot_bounds.right(), view_bounds.right());
   DCHECK_LE(screen_snapshot_bounds.bottom(), view_bounds.bottom());
 
-  base::ScopedCFTypeRef<CGImageRef> windowSnapshot(CGWindowListCreateImage(
-      screen_snapshot_bounds.ToCGRect(), kCGWindowListOptionIncludingWindow,
-      window.windowNumber, kCGWindowImageBoundsIgnoreFraming));
+  base::apple::ScopedCFTypeRef<CGImageRef> windowSnapshot(
+      CGWindowListCreateImage(
+          screen_snapshot_bounds.ToCGRect(), kCGWindowListOptionIncludingWindow,
+          window.windowNumber, kCGWindowImageBoundsIgnoreFraming));
   if (CGImageGetWidth(windowSnapshot) <= 0)
     return false;
 

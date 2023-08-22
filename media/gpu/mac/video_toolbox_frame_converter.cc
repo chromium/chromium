@@ -132,7 +132,7 @@ void VideoToolboxFrameConverter::DestroyStub() {
 }
 
 void VideoToolboxFrameConverter::Convert(
-    base::ScopedCFTypeRef<CVImageBufferRef> image,
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata,
     OutputCB output_cb) {
   DVLOG(3) << __func__;
@@ -233,7 +233,7 @@ void VideoToolboxFrameConverter::Convert(
 
 void VideoToolboxFrameConverter::OnVideoFrameReleased(
     base::OnceCallback<void(const gpu::SyncToken&)> destroy_shared_image_cb,
-    base::ScopedCFTypeRef<CVImageBufferRef> image,
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
     const gpu::SyncToken& sync_token) {
   DVLOG(4) << __func__;
   DCHECK(gpu_task_runner_->RunsTasksInCurrentSequence());

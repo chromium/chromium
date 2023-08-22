@@ -17,7 +17,7 @@
 
 bool ChromeCrashReporterClient::ReportingIsEnforcedByPolicy(
     bool* breakpad_enabled) {
-  base::ScopedCFTypeRef<CFStringRef> key =
+  base::apple::ScopedCFTypeRef<CFStringRef> key =
       base::SysUTF8ToCFStringRef(policy::key::kMetricsReportingEnabled);
   Boolean key_valid;
   Boolean metrics_reporting_enabled = CFPreferencesGetAppBooleanValue(key,

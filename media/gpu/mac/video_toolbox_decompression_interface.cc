@@ -52,7 +52,7 @@ VideoToolboxDecompressionInterface::~VideoToolboxDecompressionInterface() {
 }
 
 void VideoToolboxDecompressionInterface::Decode(
-    base::ScopedCFTypeRef<CMSampleBufferRef> sample,
+    base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -120,7 +120,7 @@ bool VideoToolboxDecompressionInterface::Process() {
   }
 
   while (!pending_decodes_.empty()) {
-    base::ScopedCFTypeRef<CMSampleBufferRef>& sample =
+    base::apple::ScopedCFTypeRef<CMSampleBufferRef>& sample =
         pending_decodes_.front().first;
     std::unique_ptr<VideoToolboxDecodeMetadata>& metadata =
         pending_decodes_.front().second;
@@ -169,7 +169,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!decompression_session_->IsValid());
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
                                 1,  // capacity
                                 &kCFTypeDictionaryKeyCallBacks,
@@ -216,7 +216,7 @@ void VideoToolboxDecompressionInterface::OnOutput(
     void* context,
     OSStatus status,
     VTDecodeInfoFlags flags,
-    base::ScopedCFTypeRef<CVImageBufferRef> image) {
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 

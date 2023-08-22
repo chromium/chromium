@@ -60,13 +60,13 @@ class ClipboardMacTest : public PlatformTest,
     // loses its "retina-ness".
     uint8_t* buffer =
         static_cast<uint8_t*>(calloc(pixel_width * pixel_height, 4));
-    base::ScopedCFTypeRef<CGDataProviderRef> provider(
+    base::apple::ScopedCFTypeRef<CGDataProviderRef> provider(
         CGDataProviderCreateWithData(buffer, buffer,
                                      (pixel_width * pixel_height * 4),
                                      &CreateImageBufferReleaser));
-    base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+    base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
         CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
-    base::ScopedCFTypeRef<CGImageRef> image_ref(
+    base::apple::ScopedCFTypeRef<CGImageRef> image_ref(
         CGImageCreate(pixel_width, pixel_height, 8, 32, 4 * pixel_width,
                       color_space.get(), kCGBitmapByteOrderDefault,
                       provider.get(), nullptr, NO, kCGRenderingIntentDefault));

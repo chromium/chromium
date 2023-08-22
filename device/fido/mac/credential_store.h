@@ -31,7 +31,7 @@ namespace device::fido::mac {
 
 // Credential represents a WebAuthn credential from the keychain.
 struct COMPONENT_EXPORT(DEVICE_FIDO) Credential {
-  Credential(base::ScopedCFTypeRef<SecKeyRef> private_key,
+  Credential(base::apple::ScopedCFTypeRef<SecKeyRef> private_key,
              std::vector<uint8_t> credential_id,
              CredentialMetadata metadata,
              std::string rp_id);
@@ -48,7 +48,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Credential {
   bool RequiresUvForSignature() const;
 
   // An opaque reference to the private key that can be used for signing.
-  base::ScopedCFTypeRef<SecKeyRef> private_key;
+  base::apple::ScopedCFTypeRef<SecKeyRef> private_key;
 
   // The credential ID is a handle to the key that gets passed to the RP. This
   // ID is opaque to the RP, but is obtained by encrypting the credential
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // CreateCredential inserts a new credential into the keychain. It returns
   // the new credential and its public key, or absl::nullopt if an error
   // occurred.
-  absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
+  absl::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredential(const std::string& rp_id,
                    const PublicKeyCredentialUserEntity& user,
                    Discoverable discoverable) const;
@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
   // CreateCredentialLegacyCredentialForTesting inserts a credential for an old
   // `CredentialMetadata::Version`. Such credentials can't be created anymore,
   // but they still exist and we need to be able to exercise them.
-  absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
+  absl::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
   CreateCredentialLegacyCredentialForTesting(
       CredentialMetadata::Version version,
       const std::string& rp_id,

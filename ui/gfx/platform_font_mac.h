@@ -89,13 +89,14 @@ class GFX_EXPORT PlatformFontMac : public PlatformFont {
   void CalculateMetricsAndInitRenderParams();
 
   // Returns a CTFontRef created with the passed-in specifications.
-  base::ScopedCFTypeRef<CTFontRef> CTFontWithSpec(FontSpec font_spec) const;
+  base::apple::ScopedCFTypeRef<CTFontRef> CTFontWithSpec(
+      FontSpec font_spec) const;
 
   // The CTFontRef instance for this object. If this object was constructed from
   // a CTFontRef instance, this holds that instance. Otherwise this instance is
   // constructed from the name, size, and style. If there is no active font that
   // matched those criteria a default font is used.
-  base::ScopedCFTypeRef<CTFontRef> ct_font_;
+  base::apple::ScopedCFTypeRef<CTFontRef> ct_font_;
 
   // If the font is a system font, and if so, what kind.
   const absl::optional<SystemFontType> system_font_type_;

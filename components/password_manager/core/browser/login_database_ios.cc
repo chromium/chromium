@@ -21,7 +21,7 @@
 #include "components/password_manager/core/common/passwords_directory_util_ios.h"
 #include "sql/statement.h"
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 
 namespace password_manager {
 

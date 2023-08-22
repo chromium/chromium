@@ -50,12 +50,12 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   }
 
   impl_ = std::make_unique<TextDetectionImplMac>();
-  base::ScopedCFTypeRef<CGColorSpaceRef> rgb_colorspace(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> rgb_colorspace(
       CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
 
   const int width = 200;
   const int height = 50;
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr, width, height, 8 /* bitsPerComponent */,
       width * 4 /* rowBytes */, rgb_colorspace,
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
@@ -72,14 +72,14 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
       [[NSAttributedString alloc] initWithString:@"https://www.chromium.org"
                                       attributes:attributes];
 
-  base::ScopedCFTypeRef<CTLineRef> line(
+  base::apple::ScopedCFTypeRef<CTLineRef> line(
       CTLineCreateWithAttributedString(base::apple::NSToCFPtrCast(info)));
 
   CGContextSetTextPosition(context, 10.0, height / 2.0);
   CTLineDraw(line, context);
 
   // Extract a CGImage and its raw pixels from |context|.
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       CGBitmapContextCreateImage(context));
   EXPECT_EQ(static_cast<size_t>(width), CGImageGetWidth(cg_image));
   EXPECT_EQ(static_cast<size_t>(height), CGImageGetHeight(cg_image));

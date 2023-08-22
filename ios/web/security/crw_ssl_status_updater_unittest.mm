@@ -52,7 +52,7 @@
 #pragma mark CRWSSLStatusUpdaterDataSource
 
 - (void)SSLStatusUpdater:(CRWSSLStatusUpdater*)SSLStatusUpdater
-    querySSLStatusForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
+    querySSLStatusForTrust:(base::apple::ScopedCFTypeRef<SecTrustRef>)trust
                       host:(NSString*)host
          completionHandler:(StatusQueryHandler)completionHandler {
   _verificationCompletionHandler = [completionHandler copy];
@@ -100,7 +100,7 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
     scoped_refptr<net::X509Certificate> cert =
         net::ImportCertFromFile(net::GetTestCertsDirectory(), kCertFileName);
     ASSERT_TRUE(cert);
-    base::ScopedCFTypeRef<CFMutableArrayRef> chain(
+    base::apple::ScopedCFTypeRef<CFMutableArrayRef> chain(
         net::x509_util::CreateSecCertificateArrayForX509Certificate(
             cert.get()));
     ASSERT_TRUE(chain);
@@ -131,7 +131,7 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
   std::unique_ptr<NavigationManagerImpl> nav_manager_;
   FakeNavigationManagerDelegate fake_nav_delegate_;
   CRWSSLStatusUpdater* ssl_status_updater_;
-  base::ScopedCFTypeRef<SecTrustRef> trust_;
+  base::apple::ScopedCFTypeRef<SecTrustRef> trust_;
 };
 
 // Tests that CRWSSLStatusUpdater init returns non nil object.
@@ -193,7 +193,8 @@ TEST_F(CRWSSLStatusUpdaterTest, HttpsItemNoCert) {
   [ssl_status_updater_
       updateSSLStatusForNavigationItem:item
                           withCertHost:kHostName
-                                 trust:base::ScopedCFTypeRef<SecTrustRef>()
+                                 trust:base::apple::ScopedCFTypeRef<
+                                           SecTrustRef>()
                   hasOnlySecureContent:YES];
   // No certificate.
   EXPECT_FALSE(!!item->GetSSL().certificate);

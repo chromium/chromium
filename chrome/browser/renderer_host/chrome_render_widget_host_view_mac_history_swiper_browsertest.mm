@@ -146,8 +146,9 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 
   // Creates a mock scroll wheel event that is backed by a real CGEvent.
   id MockScrollWheelEvent(NSPoint delta, NSEventType type) {
-    base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
-        nullptr, kCGScrollEventUnitLine, 2, 0, 0));
+    base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
+        CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitLine, 2, 0,
+                                      0));
     CGEventSetIntegerValueField(cg_event, kCGScrollWheelEventIsContinuous, 1);
     CGEventSetIntegerValueField(
         cg_event, kCGScrollWheelEventPointDeltaAxis2, delta.x);

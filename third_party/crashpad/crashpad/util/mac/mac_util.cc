@@ -166,7 +166,7 @@ bool StringToVersionNumbers(const std::string& version,
 
 std::string IORegistryEntryDataPropertyAsString(io_registry_entry_t entry,
                                                 CFStringRef key) {
-  base::ScopedCFTypeRef<CFTypeRef> property(
+  base::apple::ScopedCFTypeRef<CFTypeRef> property(
       IORegistryEntryCreateCFProperty(entry, key, kCFAllocatorDefault, 0));
   CFDataRef data = base::apple::CFCast<CFDataRef>(property);
   if (data && CFDataGetLength(data) > 0) {
@@ -235,7 +235,7 @@ bool MacOSVersionComponents(int* major,
                             int* bugfix,
                             std::string* build,
                             std::string* version_string) {
-  base::ScopedCFTypeRef<CFDictionaryRef> dictionary(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> dictionary(
       TryCFCopySystemVersionDictionary());
   if (!dictionary) {
     LOG(ERROR) << "_CFCopySystemVersionDictionary failed";

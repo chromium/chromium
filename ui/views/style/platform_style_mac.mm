@@ -70,9 +70,10 @@ gfx::Range PlatformStyle::RangeToDeleteBackwards(const std::u16string& text,
   if (cursor_position == 0)
     return gfx::Range();
 
-  base::ScopedCFTypeRef<CFStringRef> cf_string(CFStringCreateWithCharacters(
-      kCFAllocatorDefault, reinterpret_cast<const UniChar*>(text.data()),
-      base::checked_cast<CFIndex>(text.size())));
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_string(
+      CFStringCreateWithCharacters(
+          kCFAllocatorDefault, reinterpret_cast<const UniChar*>(text.data()),
+          base::checked_cast<CFIndex>(text.size())));
   CFRange range_to_delete = CFStringGetRangeOfCharacterClusterAtIndex(
       cf_string, base::checked_cast<CFIndex>(cursor_position - 1),
       kCFStringBackwardDeletionCluster);

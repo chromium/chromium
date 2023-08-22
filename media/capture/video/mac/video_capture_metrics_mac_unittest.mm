@@ -30,7 +30,7 @@ TEST(VideoCaptureMetricsMacTest, NoMetricsLoggedIfNullRequestedCaptureFormat) {
 TEST(VideoCaptureMetricsMacTest, LogRequestedPixelFormat) {
   base::HistogramTester histogram_tester;
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> requested_format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> requested_format;
   OSStatus status = CMVideoFormatDescriptionCreate(
       kCFAllocatorDefault,
       kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange /*NV12*/, 320, 180,
@@ -49,7 +49,7 @@ TEST(VideoCaptureMetricsMacTest, LogRequestedPixelFormat) {
 TEST(VideoCaptureMetricsMacTest, LogFirstFrameWhenAsRequested) {
   base::HistogramTester histogram_tester;
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> requested_format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> requested_format;
   OSStatus status = CMVideoFormatDescriptionCreate(
       kCFAllocatorDefault,
       kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange /*NV12*/, 320, 180,
@@ -59,7 +59,7 @@ TEST(VideoCaptureMetricsMacTest, LogFirstFrameWhenAsRequested) {
   OCMStub([capture_format formatDescription]).andReturn(requested_format.get());
 
   // First frame equal.
-  base::ScopedCFTypeRef<CMSampleBufferRef> first_frame;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> first_frame;
   status = CMSampleBufferCreate(kCFAllocatorDefault, nullptr, false, nullptr,
                                 nullptr, requested_format, 0, 0, nullptr, 0,
                                 nullptr, first_frame.InitializeInto());

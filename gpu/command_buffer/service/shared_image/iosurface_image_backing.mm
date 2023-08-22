@@ -556,7 +556,7 @@ DawnIOSurfaceRepresentation::DawnIOSurfaceRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     wgpu::Device device,
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     const gfx::Size& io_surface_size,
     wgpu::TextureFormat wgpu_format,
     std::vector<wgpu::TextureFormat> view_formats)

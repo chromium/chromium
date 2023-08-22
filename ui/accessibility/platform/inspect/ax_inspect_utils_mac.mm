@@ -100,30 +100,30 @@ bool IsValidAXAttribute(const std::string& attribute) {
   return [valid_attributes containsObject:base::SysUTF8ToNSString(attribute)];
 }
 
-base::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
+base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXUIElement(
     const AXUIElementRef node,
     const AXFindCriteria& criteria) {
   if (criteria.Run(node)) {
-    return base::ScopedCFTypeRef<AXUIElementRef>(node,
-                                                 base::scoped_policy::RETAIN);
+    return base::apple::ScopedCFTypeRef<AXUIElementRef>(
+        node, base::scoped_policy::RETAIN);
   }
 
   NSArray* children = AXChildrenOf((__bridge id)node);
   for (id child in children) {
-    base::ScopedCFTypeRef<AXUIElementRef> found =
+    base::apple::ScopedCFTypeRef<AXUIElementRef> found =
         FindAXUIElement((__bridge AXUIElementRef)child, criteria);
     if (found) {
       return found;
     }
   }
 
-  return base::ScopedCFTypeRef<AXUIElementRef>();
+  return base::apple::ScopedCFTypeRef<AXUIElementRef>();
 }
 
-std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
+std::pair<base::apple::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     const AXTreeSelector& selector) {
   if (selector.widget) {
-    return {base::ScopedCFTypeRef<AXUIElementRef>(
+    return {base::apple::ScopedCFTypeRef<AXUIElementRef>(
                 AXUIElementCreateApplication(selector.widget)),
             selector.widget};
   }
@@ -138,7 +138,7 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
   else if (selector.types & AXTreeSelector::Safari)
     title = kSafariTitle;
   else
-    return {base::ScopedCFTypeRef<AXUIElementRef>(), 0};
+    return {base::apple::ScopedCFTypeRef<AXUIElementRef>(), 0};
 
   NSArray* windows =
       base::apple::CFToNSOwnershipCast(CGWindowListCopyWindowInfo(
@@ -151,7 +151,7 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     std::string window_name = base::SysNSStringToUTF8(
         base::apple::ObjCCast<NSString>(window_info[@"kCGWindowOwnerName"]));
 
-    base::ScopedCFTypeRef<AXUIElementRef> node;
+    base::apple::ScopedCFTypeRef<AXUIElementRef> node;
 
     // Application pre-defined selectors match or application title exact match.
     bool app_title_match = window_name == selector.pattern;
@@ -167,7 +167,7 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
         node.reset(AXUIElementCreateApplication(pid));
       }
 
-      base::ScopedCFTypeRef<AXUIElementRef> window =
+      base::apple::ScopedCFTypeRef<AXUIElementRef> window =
           FindAXWindowChild(node, selector.pattern);
       if (window) {
         node = window;
@@ -191,15 +191,15 @@ std::pair<base::ScopedCFTypeRef<AXUIElementRef>, int> FindAXUIElement(
     if (node)
       return {node, pid};
   }
-  return {base::ScopedCFTypeRef<AXUIElementRef>(), 0};
+  return {base::apple::ScopedCFTypeRef<AXUIElementRef>(), 0};
 }
 
-base::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
+base::apple::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
     AXUIElementRef parent,
     const std::string& pattern) {
   NSArray* children = AXChildrenOf((__bridge id)parent);
   if (children.count == 0) {
-    return base::ScopedCFTypeRef<AXUIElementRef>();
+    return base::apple::ScopedCFTypeRef<AXUIElementRef>();
   }
 
   id window = children.firstObject;
@@ -207,17 +207,17 @@ base::ScopedCFTypeRef<AXUIElementRef> FindAXWindowChild(
   AXElementWrapper ax_window(window);
   NSString* role = *ax_window.GetAttributeValue(NSAccessibilityRoleAttribute);
   if (base::SysNSStringToUTF8(role) != "AXWindow") {
-    return base::ScopedCFTypeRef<AXUIElementRef>();
+    return base::apple::ScopedCFTypeRef<AXUIElementRef>();
   }
 
   NSString* window_title =
       *ax_window.GetAttributeValue(NSAccessibilityTitleAttribute);
   if (base::MatchPattern(base::SysNSStringToUTF8(window_title), pattern)) {
-    return base::ScopedCFTypeRef<AXUIElementRef>(
+    return base::apple::ScopedCFTypeRef<AXUIElementRef>(
         (__bridge AXUIElementRef)window, base::scoped_policy::RETAIN);
   }
 
-  return base::ScopedCFTypeRef<AXUIElementRef>();
+  return base::apple::ScopedCFTypeRef<AXUIElementRef>();
 }
 
 }  // namespace ui

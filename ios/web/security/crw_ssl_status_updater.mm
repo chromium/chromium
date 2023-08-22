@@ -13,7 +13,7 @@
 #import "net/cert/x509_certificate.h"
 #import "url/gurl.h"
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 using net::CertStatus;
 using web::SecurityStyle;
 

@@ -42,7 +42,8 @@ const bool kUsesSkiaNatively = true;
 #if BUILDFLAG(IS_MAC)
 bool IsSystemColorSpaceSRGB() {
   CGColorSpaceRef color_space = base::mac::GetSystemColorSpace();
-  base::ScopedCFTypeRef<CFStringRef> name(CGColorSpaceCopyName(color_space));
+  base::apple::ScopedCFTypeRef<CFStringRef> name(
+      CGColorSpaceCopyName(color_space));
   return name &&
          CFStringCompare(name, kCGColorSpaceSRGB, 0) == kCFCompareEqualTo;
 }

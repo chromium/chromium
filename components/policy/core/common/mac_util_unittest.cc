@@ -61,7 +61,8 @@ TEST(PolicyMacUtilTest, ValueToPropertyRoundTrip) {
 
   const base::Value root_val(std::move(root));
   // base::Value -> property list -> base::Value.
-  base::ScopedCFTypeRef<CFPropertyListRef> property(ValueToProperty(root_val));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> property(
+      ValueToProperty(root_val));
   ASSERT_TRUE(property);
   std::unique_ptr<base::Value> value = PropertyToValue(property);
   ASSERT_TRUE(value);

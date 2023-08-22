@@ -231,7 +231,7 @@ class AppShimManager
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
 
-  static base::ScopedCFTypeRef<SecRequirementRef>
+  static base::apple::ScopedCFTypeRef<SecRequirementRef>
       BuildAppShimRequirementFromFrameworkRequirementString(CFStringRef);
 
   class AppShimObserver {

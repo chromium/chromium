@@ -21,17 +21,17 @@ namespace syncer {
 std::string GetPersonalizableDeviceNameInternal() {
   // Do not use NSHost currentHost, as it's very slow. http://crbug.com/138570
   SCDynamicStoreContext context = {0};
-  base::ScopedCFTypeRef<SCDynamicStoreRef> store(
+  base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store(
       SCDynamicStoreCreate(kCFAllocatorDefault, CFSTR("chrome_sync"),
                            /*callout=*/nullptr, &context));
-  base::ScopedCFTypeRef<CFStringRef> machine_name(
+  base::apple::ScopedCFTypeRef<CFStringRef> machine_name(
       SCDynamicStoreCopyLocalHostName(store));
   if (machine_name) {
     return base::SysCFStringRefToUTF8(machine_name);
   }
 
   // Fall back to get computer name.
-  base::ScopedCFTypeRef<CFStringRef> computer_name(
+  base::apple::ScopedCFTypeRef<CFStringRef> computer_name(
       SCDynamicStoreCopyComputerName(store, /*nameEncoding=*/nullptr));
   if (computer_name) {
     return base::SysCFStringRefToUTF8(computer_name);

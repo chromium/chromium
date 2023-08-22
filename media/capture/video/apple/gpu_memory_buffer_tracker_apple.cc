@@ -11,7 +11,7 @@ namespace media {
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple() {}
 
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple(
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface)
     : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
 
 GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() {}

@@ -132,7 +132,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   }
 
   // Allocate a buffer.
-  base::ScopedCFTypeRef<CMBlockBufferRef> data;
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
       kCFAllocatorDefault,
       nullptr,              // memory_block
@@ -187,7 +187,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   }
 
   // Wrap in a sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
                                 data,            // data_buffer
                                 true,            // data_ready

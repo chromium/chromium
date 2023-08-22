@@ -66,8 +66,8 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   raw_ptr<MediaKeysListener::Delegate> delegate_;
   const Scope scope_;
   // Event tap for intercepting mac media keys.
-  base::ScopedCFTypeRef<CFMachPortRef> event_tap_;
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> event_tap_source_;
+  base::apple::ScopedCFTypeRef<CFMachPortRef> event_tap_;
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> event_tap_source_;
   base::flat_set<KeyboardCode> key_codes_;
 };
 

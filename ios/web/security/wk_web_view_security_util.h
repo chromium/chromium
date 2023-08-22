@@ -36,8 +36,9 @@ scoped_refptr<net::X509Certificate> CreateCertFromTrust(SecTrustRef trust);
 // Returns null if `certs` is null or empty.
 // TODO(crbug.com/827554): This method is only used from tests and should be
 // removed from here.
-base::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(NSArray* certs,
-                                                              NSString* host);
+base::apple::ScopedCFTypeRef<SecTrustRef> CreateServerTrustFromChain(
+    NSArray* certs,
+    NSString* host);
 
 // Makes SecTrustEvaluate call to return kSecTrustResultProceed.
 // Should be called only if the user expilitely agreed to proceed with `trust`

@@ -35,9 +35,9 @@ class MediaLog;
 class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
     : public VP9Decoder::VP9Accelerator {
  public:
-  using DecodeCB =
-      base::RepeatingCallback<void(base::ScopedCFTypeRef<CMSampleBufferRef>,
-                                   scoped_refptr<CodecPicture>)>;
+  using DecodeCB = base::RepeatingCallback<void(
+      base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+      scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxVP9Accelerator(std::unique_ptr<MediaLog> media_log,
@@ -79,10 +79,10 @@ class MEDIA_GPU_EXPORT VideoToolboxVP9Accelerator
   absl::optional<gfx::HDRMetadata> active_hdr_metadata_;
   gfx::Size active_coded_size_;
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
   // The superframe currently being built.
-  base::ScopedCFTypeRef<CMBlockBufferRef> frame_data_;
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> frame_data_;
   std::vector<size_t> frame_sizes_;
 
   SEQUENCE_CHECKER(sequence_checker_);

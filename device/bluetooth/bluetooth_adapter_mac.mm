@@ -151,7 +151,7 @@ bool BluetoothAdapterMac::IsPresent() const {
     return false;
   }
 
-  base::ScopedCFTypeRef<CFBooleanRef> connected(
+  base::apple::ScopedCFTypeRef<CFBooleanRef> connected(
       base::apple::CFCast<CFBooleanRef>(IORegistryEntryCreateCFProperty(
           service, CFSTR("BluetoothTransportConnected"), kCFAllocatorDefault,
           0)));

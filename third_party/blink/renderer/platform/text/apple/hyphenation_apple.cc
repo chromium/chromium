@@ -14,7 +14,7 @@ namespace blink {
 
 class HyphenationCF final : public Hyphenation {
  public:
-  HyphenationCF(base::ScopedCFTypeRef<CFLocaleRef>& locale_cf)
+  HyphenationCF(base::apple::ScopedCFTypeRef<CFLocaleRef>& locale_cf)
       : locale_cf_(locale_cf) {
     DCHECK(locale_cf_);
   }
@@ -75,14 +75,14 @@ class HyphenationCF final : public Hyphenation {
   }
 
  private:
-  base::ScopedCFTypeRef<CFLocaleRef> locale_cf_;
+  base::apple::ScopedCFTypeRef<CFLocaleRef> locale_cf_;
 };
 
 scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
     const AtomicString& locale) {
-  base::ScopedCFTypeRef<CFStringRef> locale_cf_string(
+  base::apple::ScopedCFTypeRef<CFStringRef> locale_cf_string(
       locale.Impl()->CreateCFString());
-  base::ScopedCFTypeRef<CFLocaleRef> locale_cf(
+  base::apple::ScopedCFTypeRef<CFLocaleRef> locale_cf(
       CFLocaleCreate(kCFAllocatorDefault, locale_cf_string));
   if (!CFStringIsHyphenationAvailableForLocale(locale_cf)) {
     return nullptr;

@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/memory/scoped_policy.h"
 
-namespace base {
+namespace base::apple {
 
 // ScopedTypeRef<> is patterned after std::unique_ptr<>, but maintains ownership
 // of a reference to any type that is maintained by Retain and Release methods.
@@ -33,7 +33,7 @@ namespace base {
 // of ownership of the object. For example, continuing to use the above
 // CGLContextObj specialization:
 //
-//   base::ScopedTypeRef<CGLContextObj> context;
+//   base::apple::ScopedTypeRef<CGLContextObj> context;
 //   CGLCreateContext(pixel_format, share_group, context.InitializeInto());
 //
 // For initialization with an existing object, the caller may specify whether
@@ -146,6 +146,6 @@ class ScopedTypeRef {
   element_type object_;
 };
 
-}  // namespace base
+}  // namespace base::apple
 
 #endif  // BASE_APPLE_SCOPED_TYPEREF_H_

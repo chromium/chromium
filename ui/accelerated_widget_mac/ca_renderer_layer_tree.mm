@@ -94,7 +94,7 @@ void RecordIOSurfaceHistograms(
 bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
     AVSampleBufferDisplayLayer* av_layer,
     CVPixelBufferRef cv_pixel_buffer) {
-  base::ScopedCFTypeRef<CMVideoFormatDescriptionRef> video_info;
+  base::apple::ScopedCFTypeRef<CMVideoFormatDescriptionRef> video_info;
   OSStatus os_status = CMVideoFormatDescriptionCreateForImageBuffer(
       nullptr, cv_pixel_buffer, video_info.InitializeInto());
   if (os_status != noErr) {
@@ -108,7 +108,7 @@ bool AVSampleBufferDisplayLayerEnqueueCVPixelBuffer(
   CMTime frame_time = CMTimeMake(0, 1);
   CMSampleTimingInfo timing_info = {frame_time, frame_time, kCMTimeInvalid};
 
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer;
   os_status = CMSampleBufferCreateForImageBuffer(
       nullptr, cv_pixel_buffer, YES, nullptr, nullptr, video_info, &timing_info,
       sample_buffer.InitializeInto());
@@ -168,7 +168,7 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
     absl::optional<gfx::HDRMetadata> hdr_metadata) {
   CVReturn cv_return = kCVReturnSuccess;
 
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
   cv_return = CVPixelBufferCreateWithIOSurface(
       nullptr, io_surface, /*pixelBufferAttributes=*/nullptr,
       cv_pixel_buffer.InitializeInto());
@@ -249,7 +249,7 @@ class CARendererLayerTree::SolidColorContents
   friend class base::RefCounted<SolidColorContents>;
 
   SolidColorContents(SkColor4f color,
-                     base::ScopedCFTypeRef<IOSurfaceRef> io_surface);
+                     base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface);
   ~SolidColorContents();
 
   using Map = std::map<SkColor4f,
@@ -258,7 +258,7 @@ class CARendererLayerTree::SolidColorContents
   static Map* GetMap();
 
   const SkColor4f color_;
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
 };
 
 // static
@@ -283,7 +283,7 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     color_space = gfx::ColorSpace::CreateDisplayP3D65();
   }
 
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
       CreateIOSurface(size, buffer_format);
   if (!io_surface)
     return nullptr;
@@ -316,7 +316,7 @@ IOSurfaceRef CARendererLayerTree::SolidColorContents::GetIOSurfaceRef() const {
 
 CARendererLayerTree::SolidColorContents::SolidColorContents(
     SkColor4f color,
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface)
     : color_(color), io_surface_(std::move(io_surface)) {
   auto* map = GetMap();
   DCHECK(map->find(color_) == map->end());
@@ -746,8 +746,8 @@ CARendererLayerTree::TransformLayer::~TransformLayer() {
 
 CARendererLayerTree::ContentLayer::ContentLayer(
     TransformLayer* parent_layer,
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-    base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
     const gfx::RectF& contents_rect,
     const gfx::Rect& rect,
     SkColor4f background_color,
@@ -935,7 +935,7 @@ void CARendererLayerTree::ClipAndSortingLayer::AddContentLayer(
 void CARendererLayerTree::TransformLayer::AddContentLayer(
     const CARendererLayerParams& params) {
   content_layers_.emplace_back(
-      this, params.io_surface, base::ScopedCFTypeRef<CVPixelBufferRef>(),
+      this, params.io_surface, base::apple::ScopedCFTypeRef<CVPixelBufferRef>(),
       params.contents_rect, params.rect, params.background_color,
       params.io_surface_color_space, params.edge_aa_mask, params.opacity,
       params.nearest_neighbor_filter, params.hdr_metadata,
@@ -1270,9 +1270,9 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         background_color_.fB,
         background_color_.fA,
     };
-    base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+    base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
         CGColorSpaceCreateWithName(kCGColorSpaceExtendedSRGB));
-    base::ScopedCFTypeRef<CGColorRef> srgb_background_color(
+    base::apple::ScopedCFTypeRef<CGColorRef> srgb_background_color(
         CGColorCreate(color_space.get(), rgba_color_components));
     ca_layer_.backgroundColor = srgb_background_color;
   }
@@ -1352,7 +1352,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(
         is_render_pass_draw_quad_ ? 6 : (update_anything ? 2 : 1);
 
     // Set the layer color based on usage.
-    base::ScopedCFTypeRef<CGColorRef> color(
+    base::apple::ScopedCFTypeRef<CGColorRef> color(
         CGColorCreateGenericRGB(red, green, blue, alpha));
     ca_layer_.borderColor = color;
 

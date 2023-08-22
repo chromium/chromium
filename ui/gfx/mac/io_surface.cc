@@ -32,7 +32,7 @@ BASE_FEATURE(kIOSurfaceUseNamedSRGBForREC709,
 void AddIntegerValue(CFMutableDictionaryRef dictionary,
                      const CFStringRef key,
                      int32_t value) {
-  base::ScopedCFTypeRef<CFNumberRef> number(
+  base::apple::ScopedCFTypeRef<CFNumberRef> number(
       CFNumberCreate(nullptr, kCFNumberSInt32Type, &value));
   CFDictionaryAddValue(dictionary, key, number.get());
 }
@@ -215,7 +215,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
   // Package it as a CFDataRef and send it to the IOSurface.
   std::vector<char> icc_profile_data = icc_profile.GetData();
-  base::ScopedCFTypeRef<CFDataRef> cf_data_icc_profile(CFDataCreate(
+  base::apple::ScopedCFTypeRef<CFDataRef> cf_data_icc_profile(CFDataCreate(
       nullptr, reinterpret_cast<const UInt8*>(icc_profile_data.data()),
       icc_profile_data.size()));
 
@@ -226,7 +226,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 }  // namespace internal
 
-base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
+base::apple::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     const gfx::Size& size,
     gfx::BufferFormat format,
     bool should_clear,
@@ -234,7 +234,7 @@ base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> properties(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> properties(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
@@ -249,7 +249,7 @@ base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
   // http://crbug.com/527556
   size_t num_planes = gfx::NumberOfPlanesForLinearBufferFormat(format);
   if (num_planes > 1) {
-    base::ScopedCFTypeRef<CFMutableArrayRef> planes(CFArrayCreateMutable(
+    base::apple::ScopedCFTypeRef<CFMutableArrayRef> planes(CFArrayCreateMutable(
         kCFAllocatorDefault, num_planes, &kCFTypeArrayCallBacks));
     size_t total_bytes_alloc = 0;
     for (size_t plane = 0; plane < num_planes; ++plane) {
@@ -268,7 +268,7 @@ base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
       const size_t plane_offset =
           IOSurfaceAlignProperty(kIOSurfacePlaneOffset, total_bytes_alloc);
 
-      base::ScopedCFTypeRef<CFMutableDictionaryRef> plane_info(
+      base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> plane_info(
           CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                     &kCFTypeDictionaryKeyCallBacks,
                                     &kCFTypeDictionaryValueCallBacks));
@@ -301,11 +301,12 @@ base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
     AddIntegerValue(properties, kIOSurfaceAllocSize, bytes_alloc);
   }
 
-  base::ScopedCFTypeRef<IOSurfaceRef> surface(IOSurfaceCreate(properties));
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> surface(
+      IOSurfaceCreate(properties));
   if (!surface) {
     LOG(ERROR) << "Failed to allocate IOSurface of size " << size.ToString()
                << ".";
-    return base::ScopedCFTypeRef<IOSurfaceRef>();
+    return base::apple::ScopedCFTypeRef<IOSurfaceRef>();
   }
 
   if (should_clear) {
@@ -337,9 +338,10 @@ void IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   }
 }
 
-GFX_EXPORT base::ScopedCFTypeRef<IOSurfaceRef> IOSurfaceMachPortToIOSurface(
+GFX_EXPORT base::apple::ScopedCFTypeRef<IOSurfaceRef>
+IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
   if (!io_surface_mach_port) {
     DLOG(ERROR) << "Invalid mach port.";
     return io_surface;

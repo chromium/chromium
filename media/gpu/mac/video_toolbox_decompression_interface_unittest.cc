@@ -33,8 +33,8 @@ std::unique_ptr<VideoToolboxDecodeMetadata> CreateMetadata(int id) {
   return metadata;
 }
 
-base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormat() {
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormat() {
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   OSStatus status =
       CMFormatDescriptionCreate(kCFAllocatorDefault, kCMMediaType_Video, 'test',
                                 nullptr, format.InitializeInto());
@@ -42,9 +42,9 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateFormat() {
   return format;
 }
 
-base::ScopedCFTypeRef<CMSampleBufferRef> CreateSample(
+base::apple::ScopedCFTypeRef<CMSampleBufferRef> CreateSample(
     CMFormatDescriptionRef format) {
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   OSStatus status = CMSampleBufferCreate(
       kCFAllocatorDefault, nullptr, true, nullptr, nullptr, format, 0, 0,
       nullptr, 0, nullptr, sample.InitializeInto());
@@ -52,8 +52,8 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateSample(
   return sample;
 }
 
-base::ScopedCFTypeRef<CVImageBufferRef> CreateImage() {
-  base::ScopedCFTypeRef<CVImageBufferRef> image;
+base::apple::ScopedCFTypeRef<CVImageBufferRef> CreateImage() {
+  base::apple::ScopedCFTypeRef<CVImageBufferRef> image;
   OSStatus status =
       CVPixelBufferCreate(kCFAllocatorDefault, /*width=*/16, /*height=*/16,
                           kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
@@ -106,7 +106,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     void* context = pending_decodes_.front();
     OSStatus status = noErr;
     VTDecodeInfoFlags flags = 0;
-    base::ScopedCFTypeRef<CVImageBufferRef> image = CreateImage();
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image = CreateImage();
 
     pending_decodes_.pop();
     output_cb_.Run(context, status, flags, std::move(image));
@@ -119,7 +119,7 @@ class FakeDecompressionSession : public VideoToolboxDecompressionSession {
     void* context = pending_decodes_.front();
     OSStatus status = -1;
     VTDecodeInfoFlags flags = 0;
-    base::ScopedCFTypeRef<CVImageBufferRef> image;
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image;
 
     pending_decodes_.pop();
     output_cb_.Run(context, status, flags, std::move(image));
@@ -153,7 +153,7 @@ class VideoToolboxDecompressionInterfaceTest : public testing::Test {
  protected:
   MOCK_METHOD1(OnError, void(DecoderStatus));
   MOCK_METHOD2(OnOutput,
-               void(base::ScopedCFTypeRef<CVImageBufferRef>,
+               void(base::apple::ScopedCFTypeRef<CVImageBufferRef>,
                     std::unique_ptr<VideoToolboxDecodeMetadata>));
 
   base::test::TaskEnvironment task_environment_;

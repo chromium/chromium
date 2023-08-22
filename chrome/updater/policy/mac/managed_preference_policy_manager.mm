@@ -206,9 +206,10 @@ ManagedPreferencePolicyManager::GetAppsWithPolicy() const {
 }
 
 NSDictionary* ReadManagedPreferencePolicyDictionary() {
-  base::ScopedCFTypeRef<CFPropertyListRef> policies(CFPreferencesCopyAppValue(
-      base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
-      base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> policies(
+      CFPreferencesCopyAppValue(
+          base::apple::NSToCFPtrCast(kManagedPreferencesUpdatePolicies),
+          base::apple::NSToCFPtrCast(kKeystoneSharedPreferenceSuite)));
   if (!policies)
     return nil;
 

@@ -8,7 +8,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/check.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_policy.h"
 
-namespace partition_alloc::internal::base {
+namespace partition_alloc::internal::base::apple {
 
 // ScopedTypeRef<> is patterned after std::unique_ptr<>, but maintains ownership
 // of a reference to any type that is maintained by Retain and Release methods.
@@ -33,7 +33,7 @@ namespace partition_alloc::internal::base {
 // of ownership of the object. For example, continuing to use the above
 // CGLContextObj specialization:
 //
-//   base::ScopedTypeRef<CGLContextObj> context;
+//   base::apple::ScopedTypeRef<CGLContextObj> context;
 //   CGLCreateContext(pixel_format, share_group, context.InitializeInto());
 //
 // For initialization with an existing object, the caller may specify whether
@@ -146,6 +146,6 @@ class ScopedTypeRef {
   element_type object_;
 };
 
-}  // namespace partition_alloc::internal::base
+}  // namespace partition_alloc::internal::base::apple
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_TYPEREF_H_

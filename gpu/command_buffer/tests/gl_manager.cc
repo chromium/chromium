@@ -171,7 +171,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
 
  private:
   bool mapped_;
-  base::ScopedCFTypeRef<IOSurfaceRef> iosurface_;
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> iosurface_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
 };

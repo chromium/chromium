@@ -34,7 +34,7 @@ namespace {
 
 absl::optional<double> GetEventFloatValue(IOHIDServiceClientRef service,
                                           int64_t event_type) {
-  base::ScopedCFTypeRef<CFTypeRef> event(
+  base::apple::ScopedCFTypeRef<CFTypeRef> event(
       IOHIDServiceClientCopyEvent(service, event_type, 0, 0));
   if (!event)
     return absl::nullopt;
@@ -52,7 +52,7 @@ M1SensorsReader::~M1SensorsReader() = default;
 
 // static
 std::unique_ptr<M1SensorsReader> M1SensorsReader::Create() {
-  base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system(
+  base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef> system(
       IOHIDEventSystemClientCreate(kCFAllocatorDefault));
 
   if (system == nil)
@@ -68,7 +68,7 @@ std::unique_ptr<M1SensorsReader> M1SensorsReader::Create() {
 }
 
 M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
-  base::ScopedCFTypeRef<CFArrayRef> services(
+  base::apple::ScopedCFTypeRef<CFArrayRef> services(
       IOHIDEventSystemClientCopyServices(system_.get()));
 
   // There are multiple temperature sensors on P-Cores and E-Cores. Count and
@@ -82,8 +82,9 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
     IOHIDServiceClientRef service =
         (IOHIDServiceClientRef)CFArrayGetValueAtIndex(services, i);
 
-    base::ScopedCFTypeRef<CFStringRef> product(base::apple::CFCast<CFStringRef>(
-        IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
+    base::apple::ScopedCFTypeRef<CFStringRef> product(
+        base::apple::CFCast<CFStringRef>(
+            IOHIDServiceClientCopyProperty(service, CFSTR(kIOHIDProductKey))));
     if (product == nil) {
       continue;
     }
@@ -117,7 +118,7 @@ M1SensorsReader::TemperaturesCelsius M1SensorsReader::ReadTemperatures() {
 }
 
 M1SensorsReader::M1SensorsReader(
-    base::ScopedCFTypeRef<IOHIDEventSystemClientRef> system)
+    base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef> system)
     : system_(std::move(system)) {}
 
 }  // namespace power_metrics

@@ -439,7 +439,7 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
   // security CHECK.
   DCHECK_EQ(bitmap.colorType(), kN32_SkColorType);
 
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
       skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space);

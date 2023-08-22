@@ -43,7 +43,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
   NSArray* languages =
       [NSUserDefaults.standardUserDefaults stringArrayForKey:@"AppleLanguages"];
   CFArrayRef languages_cf = base::apple::NSToCFPtrCast(languages);
-  base::ScopedCFTypeRef<CFArrayRef> cascade_list(
+  base::apple::ScopedCFTypeRef<CFArrayRef> cascade_list(
       CTFontCopyDefaultCascadeListForLanguages(font.GetCTFont(), languages_cf));
 
   std::vector<Font> fallback_fonts;
@@ -55,7 +55,7 @@ std::vector<Font> GetFallbackFonts(const Font& font) {
     CTFontDescriptorRef descriptor =
         base::apple::CFCastStrict<CTFontDescriptorRef>(
             CFArrayGetValueAtIndex(cascade_list, i));
-    base::ScopedCFTypeRef<CTFontRef> fallback_font(
+    base::apple::ScopedCFTypeRef<CTFontRef> fallback_font(
         CTFontCreateWithFontDescriptor(descriptor, 0.0, nullptr));
     if (fallback_font.get()) {
       fallback_fonts.emplace_back(fallback_font.get());

@@ -34,13 +34,13 @@ class HidServiceMac : public HidService {
   base::WeakPtr<HidService> GetWeakPtr() override;
 
  private:
-  static base::ScopedCFTypeRef<IOHIDDeviceRef> OpenOnBlockingThread(
+  static base::apple::ScopedCFTypeRef<IOHIDDeviceRef> OpenOnBlockingThread(
       scoped_refptr<HidDeviceInfo> device_info);
   void DeviceOpened(scoped_refptr<HidDeviceInfo> device_info,
                     bool allow_protected_reports,
                     bool allow_fido_reports,
                     ConnectCallback callback,
-                    base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device);
+                    base::apple::ScopedCFTypeRef<IOHIDDeviceRef> hid_device);
 
   // IOService matching callbacks.
   static void FirstMatchCallback(void* context, io_iterator_t iterator);

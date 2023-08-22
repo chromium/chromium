@@ -115,7 +115,7 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
   //
   // New credentials are always discoverable. But older non-discoverable
   // credentials may exist.
-  absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
+  absl::optional<std::pair<Credential, base::apple::ScopedCFTypeRef<SecKeyRef>>>
       credential_result = credential_store_->CreateCredential(
           request_.rp.id, request_.user, TouchIdCredentialStore::kDiscoverable);
   if (!credential_result) {

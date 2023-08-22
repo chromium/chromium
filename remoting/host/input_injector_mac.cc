@@ -44,7 +44,7 @@ void CreateAndPostKeyEvent(int keycode,
                            bool pressed,
                            uint64_t flags,
                            const std::u16string& unicode) {
-  base::ScopedCFTypeRef<CGEventRef> eventRef(
+  base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
     CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
@@ -85,8 +85,9 @@ void PostMouseEvent(int32_t x,
 
 // Must be called on UI thread.
 void CreateAndPostScrollWheelEvent(int32_t delta_x, int32_t delta_y) {
-  base::ScopedCFTypeRef<CGEventRef> eventRef(CGEventCreateScrollWheelEvent(
-      nullptr, kCGScrollEventUnitPixel, 2, delta_y, delta_x));
+  base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
+      CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2,
+                                    delta_y, delta_x));
   if (eventRef) {
     CGEventPost(kCGSessionEventTap, eventRef);
   }

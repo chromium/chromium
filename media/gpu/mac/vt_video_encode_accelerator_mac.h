@@ -109,7 +109,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
 
   base::TimeDelta AssignMonotonicTimestamp();
 
-  base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
+  base::apple::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_ = 0;

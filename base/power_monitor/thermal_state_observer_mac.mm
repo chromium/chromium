@@ -111,7 +111,7 @@ ThermalStateObserverMac::GetCurrentThermalState() {
 }
 
 int ThermalStateObserverMac::GetCurrentSpeedLimit() {
-  base::ScopedCFTypeRef<CFDictionaryRef> dictionary;
+  apple::ScopedCFTypeRef<CFDictionaryRef> dictionary;
   IOReturn result = IOPMCopyCPUPowerStatus(dictionary.InitializeInto());
   if (result != kIOReturnSuccess) {
     DVLOG(1) << __func__

@@ -104,7 +104,7 @@ NSUInteger ModifierMaskForKeyEvent(NSEvent* event) {
 }
 
 - (void)updateInputSource {
-  base::ScopedCFTypeRef<TISInputSourceRef> inputSource(
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> inputSource(
       TISCopyCurrentKeyboardInputSource());
   NSString* layoutId = base::apple::CFToNSPtrCast(
       base::apple::CFCast<CFStringRef>(TISGetInputSourceProperty(

@@ -60,7 +60,7 @@ class GPU_EXPORT GpuMemoryBufferImplIOSurface : public GpuMemoryBufferImpl {
                                IOSurfaceRef io_surface,
                                uint32_t lock_flags);
 
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
   uint32_t lock_flags_;
   // Cache the color space, because re-assigning the same value can be
   // expensive.

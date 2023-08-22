@@ -56,8 +56,8 @@ base::StringPiece GetLabelFromKeyType(SecureEnclaveClient::KeyType type) {
 // Creates and returns the secure enclave private key attributes used
 // for key creation. These key attributes represent the key created in
 // the permanent key location.
-base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
+base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
@@ -75,13 +75,13 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
       attributes, kSecAttrLabel,
       base::SysUTF8ToCFStringRef(constants::kDeviceTrustSigningKeyLabel));
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(attributes, kSecPrivateKeyAttrs, private_key_params);
   CFDictionarySetValue(private_key_params, kSecAttrIsPermanent, kCFBooleanTrue);
-  base::ScopedCFTypeRef<SecAccessControlRef> access_control(
+  base::apple::ScopedCFTypeRef<SecAccessControlRef> access_control(
       SecAccessControlCreateWithFlags(
           kCFAllocatorDefault,
           // Private key can only be used when the device is unlocked.
@@ -95,11 +95,12 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateAttributesForKey() {
 
 // Creates the query used for querying the keychain for the secure key
 // reference.
-base::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
+base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> CreateQueryForKey(
     SecureEnclaveClient::KeyType type) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
-      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> query(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   CFDictionarySetValue(query, kSecAttrKeyType, kSecAttrKeyTypeECSECPrimeRandom);
   CFDictionarySetValue(query, kSecAttrLabel,
@@ -118,10 +119,11 @@ SecureEnclaveClientImpl::SecureEnclaveClientImpl()
 
 SecureEnclaveClientImpl::~SecureEnclaveClientImpl() = default;
 
-base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
+base::apple::ScopedCFTypeRef<SecKeyRef>
+SecureEnclaveClientImpl::CreatePermanentKey() {
   auto attributes = CreateAttributesForKey();
   if (!attributes)
-    return base::ScopedCFTypeRef<SecKeyRef>();
+    return base::apple::ScopedCFTypeRef<SecKeyRef>();
 
   // Deletes a permanent Secure Enclave key if it exists from a previous
   // key rotation.
@@ -137,7 +139,7 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CreatePermanentKey() {
   return key;
 }
 
-base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
+base::apple::ScopedCFTypeRef<SecKeyRef> SecureEnclaveClientImpl::CopyStoredKey(
     KeyType type) {
   OSStatus status;
   auto key_ref = helper_->CopyKey(CreateQueryForKey(type), &status);
@@ -153,7 +155,7 @@ bool SecureEnclaveClientImpl::UpdateStoredKeyLabel(KeyType current_key_type,
   // Deletes the `new_key_type` label if it exists in the keychain.
   DeleteKey(new_key_type);
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attributes_to_update(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
@@ -202,10 +204,10 @@ bool SecureEnclaveClientImpl::GetStoredKeyLabel(KeyType type,
 
 bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
                                               std::vector<uint8_t>& output) {
-  base::ScopedCFTypeRef<SecKeyRef> public_key =
-      base::ScopedCFTypeRef<SecKeyRef>(SecKeyCopyPublicKey(key));
-  base::ScopedCFTypeRef<CFErrorRef> error;
-  base::ScopedCFTypeRef<CFDataRef> data_ref(
+  base::apple::ScopedCFTypeRef<SecKeyRef> public_key =
+      base::apple::ScopedCFTypeRef<SecKeyRef>(SecKeyCopyPublicKey(key));
+  base::apple::ScopedCFTypeRef<CFErrorRef> error;
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref(
       SecKeyCopyExternalRepresentation(public_key, error.InitializeInto()));
 
   if (!data_ref)
@@ -244,12 +246,12 @@ bool SecureEnclaveClientImpl::ExportPublicKey(SecKeyRef key,
 bool SecureEnclaveClientImpl::SignDataWithKey(SecKeyRef key,
                                               base::span<const uint8_t> data,
                                               std::vector<uint8_t>& output) {
-  base::ScopedCFTypeRef<CFDataRef> data_ref(
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref(
       CFDataCreate(kCFAllocatorDefault, data.data(),
                    base::checked_cast<CFIndex>(data.size())));
 
-  base::ScopedCFTypeRef<CFErrorRef> error;
-  base::ScopedCFTypeRef<CFDataRef> signature(SecKeyCreateSignature(
+  base::apple::ScopedCFTypeRef<CFErrorRef> error;
+  base::apple::ScopedCFTypeRef<CFDataRef> signature(SecKeyCreateSignature(
       key, kSecKeyAlgorithmECDSASignatureMessageX962SHA256, data_ref,
       error.InitializeInto()));
 

@@ -42,7 +42,7 @@ class PLATFORM_EXPORT GraphicsContextCanvas {
 
   cc::PaintCanvas* canvas_;
 
-  base::ScopedCFTypeRef<CGContextRef> cg_context_;
+  base::apple::ScopedCFTypeRef<CGContextRef> cg_context_;
   SkBitmap offscreen_;
   SkScalar bitmap_scale_factor_;
 

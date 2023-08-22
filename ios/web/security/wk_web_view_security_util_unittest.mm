@@ -37,7 +37,7 @@ NSArray* MakeTestCertChain(const std::string& subject) {
       "CN=" + subject, 1, base::Time::Now(), base::Time::Now() + base::Days(1),
       &private_key, &der_cert);
 
-  base::ScopedCFTypeRef<SecCertificateRef> cert(
+  base::apple::ScopedCFTypeRef<SecCertificateRef> cert(
       net::x509_util::CreateSecCertificateFromBytes(
           reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size()));
   if (!cert)
@@ -54,12 +54,12 @@ NSDictionary* MakeTestSSLCertErrorUserInfo() {
 }
 
 // Returns SecTrustRef object for testing.
-base::ScopedCFTypeRef<SecTrustRef> CreateTestTrust(NSArray* cert_chain) {
-  base::ScopedCFTypeRef<SecPolicyRef> policy(SecPolicyCreateBasicX509());
+base::apple::ScopedCFTypeRef<SecTrustRef> CreateTestTrust(NSArray* cert_chain) {
+  base::apple::ScopedCFTypeRef<SecPolicyRef> policy(SecPolicyCreateBasicX509());
   SecTrustRef trust = nullptr;
   SecTrustCreateWithCertificates(base::apple::NSToCFPtrCast(cert_chain), policy,
                                  &trust);
-  return base::ScopedCFTypeRef<SecTrustRef>(trust);
+  return base::apple::ScopedCFTypeRef<SecTrustRef>(trust);
 }
 
 }  // namespace
@@ -88,7 +88,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationCertFromEmptyChain) {
 // Tests MakeTrustValid with self-signed cert.
 TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
   // Create invalid trust object.
-  base::ScopedCFTypeRef<SecTrustRef> trust =
+  base::apple::ScopedCFTypeRef<SecTrustRef> trust =
       CreateTestTrust(MakeTestCertChain(kTestSubject));
 
   CFErrorRef error;
@@ -104,7 +104,7 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
 
 // Tests CreateCertFromTrust.
 TEST_F(WKWebViewSecurityUtilTest, CreationCertFromTrust) {
-  base::ScopedCFTypeRef<SecTrustRef> trust =
+  base::apple::ScopedCFTypeRef<SecTrustRef> trust =
       CreateTestTrust(MakeTestCertChain(kTestSubject));
   scoped_refptr<net::X509Certificate> cert = CreateCertFromTrust(trust);
   ASSERT_TRUE(cert);
@@ -120,7 +120,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationCertFromNilTrust) {
 TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   // Create server trust.
   NSArray* chain = MakeTestCertChain(kTestSubject);
-  base::ScopedCFTypeRef<SecTrustRef> server_trust(
+  base::apple::ScopedCFTypeRef<SecTrustRef> server_trust(
       CreateServerTrustFromChain(chain, kTestHost));
   EXPECT_TRUE(server_trust);
 
@@ -132,7 +132,7 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
     // iOS 15.
     SecCertificateRef secCertificate = nil;
     if (@available(iOS 15.0, *)) {
-      base::ScopedCFTypeRef<CFArrayRef> certificateChain(
+      base::apple::ScopedCFTypeRef<CFArrayRef> certificateChain(
           SecTrustCopyCertificateChain(server_trust.get()));
       secCertificate = base::apple::CFCastStrict<SecCertificateRef>(
           CFArrayGetValueAtIndex(certificateChain, static_cast<CFIndex>(i)));
@@ -149,12 +149,12 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   }];
 
   // Verify policies.
-  base::ScopedCFTypeRef<CFArrayRef> policies;
+  base::apple::ScopedCFTypeRef<CFArrayRef> policies;
   EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(),
                                                 policies.InitializeInto()));
   EXPECT_EQ(1, CFArrayGetCount(policies));
   SecPolicyRef policy = (SecPolicyRef)CFArrayGetValueAtIndex(policies, 0);
-  base::ScopedCFTypeRef<CFDictionaryRef> properties(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> properties(
       SecPolicyCopyProperties(policy));
   NSString* name = static_cast<NSString*>(
       CFDictionaryGetValue(properties.get(), kSecPolicyName));

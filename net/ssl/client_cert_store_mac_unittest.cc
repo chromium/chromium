@@ -35,7 +35,7 @@ ClientCertIdentityMacListFromCertificateList(const CertificateList& certs) {
   identities.reserve(certs.size());
   for (const auto& cert : certs) {
     identities.push_back(std::make_unique<ClientCertIdentityMac>(
-        cert, base::ScopedCFTypeRef<SecIdentityRef>()));
+        cert, base::apple::ScopedCFTypeRef<SecIdentityRef>()));
   }
   return identities;
 }
@@ -100,7 +100,7 @@ class ClientCertStoreMacTest : public ::testing::Test {
       const SSLCertRequestInfo& request,
       ClientCertIdentityList* selected_certs) {
     auto preferred_identity = std::make_unique<ClientCertIdentityMac>(
-        preferred_cert, base::ScopedCFTypeRef<SecIdentityRef>());
+        preferred_cert, base::apple::ScopedCFTypeRef<SecIdentityRef>());
 
     return store_.SelectClientCertsGivenPreferredForTesting(
         std::move(preferred_identity),

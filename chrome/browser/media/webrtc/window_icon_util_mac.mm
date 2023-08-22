@@ -16,9 +16,9 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
 
   CGWindowID ids[1];
   ids[0] = id.id;
-  base::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
+  base::apple::ScopedCFTypeRef<CFArrayRef> window_id_array(CFArrayCreate(
       nullptr, reinterpret_cast<const void**>(&ids), std::size(ids), nullptr));
-  base::ScopedCFTypeRef<CFArrayRef> window_array(
+  base::apple::ScopedCFTypeRef<CFArrayRef> window_array(
       CGWindowListCreateDescriptionFromArray(window_id_array));
   if (!window_array || 0 == CFArrayGetCount(window_array)) {
     return gfx::ImageSkia();
@@ -59,7 +59,8 @@ gfx::ImageSkia GetWindowIcon(content::DesktopMediaID id) {
   }
 
   CGDataProviderRef provider = CGImageGetDataProvider(cg_icon_image);
-  base::ScopedCFTypeRef<CFDataRef> cf_data(CGDataProviderCopyData(provider));
+  base::apple::ScopedCFTypeRef<CFDataRef> cf_data(
+      CGDataProviderCopyData(provider));
 
   int width = CGImageGetWidth(cg_icon_image);
   int height = CGImageGetHeight(cg_icon_image);

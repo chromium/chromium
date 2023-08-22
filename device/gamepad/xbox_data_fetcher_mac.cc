@@ -131,7 +131,7 @@ void XboxDataFetcher::DeviceRemoved(void* context, io_iterator_t iterator) {
   io_service_t ref;
   while ((ref = IOIteratorNext(iterator))) {
     base::mac::ScopedIOObject<io_service_t> scoped_ref(ref);
-    base::ScopedCFTypeRef<CFNumberRef> number(
+    base::apple::ScopedCFTypeRef<CFNumberRef> number(
         base::apple::CFCastStrict<CFNumberRef>(IORegistryEntryCreateCFProperty(
             ref, CFSTR(kUSBDevicePropertyLocationID), kCFAllocatorDefault,
             kNilOptions)));
@@ -210,11 +210,11 @@ bool XboxDataFetcher::RegisterForNotifications() {
 
 bool XboxDataFetcher::RegisterForDeviceNotifications(int vendor_id,
                                                      int product_id) {
-  base::ScopedCFTypeRef<CFNumberRef> vendor_cf(
+  base::apple::ScopedCFTypeRef<CFNumberRef> vendor_cf(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &vendor_id));
-  base::ScopedCFTypeRef<CFNumberRef> product_cf(
+  base::apple::ScopedCFTypeRef<CFNumberRef> product_cf(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &product_id));
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
       IOServiceMatching(kIOUSBDeviceClassName));
   if (!matching_dict)
     return false;

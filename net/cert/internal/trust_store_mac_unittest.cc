@@ -191,7 +191,7 @@ TEST_P(TrustStoreMacImplTest, MultiRootNotTrusted) {
   // SecKeychainOpen does not fail if the file doesn't exist, so assert it here
   // for easier debugging.
   ASSERT_TRUE(base::PathExists(keychain_path));
-  base::ScopedCFTypeRef<SecKeychainRef> keychain;
+  base::apple::ScopedCFTypeRef<SecKeychainRef> keychain;
   OSStatus status = SecKeychainOpen(keychain_path.MaybeAsASCII().c_str(),
                                     keychain.InitializeInto());
   ASSERT_EQ(errSecSuccess, status);
@@ -309,7 +309,8 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
   base::HistogramTester histogram_tester;
   TrustStoreMac trust_store(kSecPolicyAppleX509Basic, trust_impl);
 
-  base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
+  base::apple::ScopedCFTypeRef<SecPolicyRef> sec_policy(
+      SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);
   std::vector<std::string> all_certs;
   std::set_union(find_certificate_default_search_list_certs.begin(),
@@ -339,7 +340,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
       continue;
     }
 
-    base::ScopedCFTypeRef<SecCertificateRef> cert_handle(
+    base::apple::ScopedCFTypeRef<SecCertificateRef> cert_handle(
         x509_util::CreateSecCertificateFromBytes(cert->der_cert().UnsafeData(),
                                                  cert->der_cert().Length()));
     if (!cert_handle) {
@@ -357,7 +358,7 @@ TEST_P(TrustStoreMacImplTest, SystemCerts) {
     }
 
     // Check if this cert is considered a trust anchor by the OS.
-    base::ScopedCFTypeRef<SecTrustRef> trust;
+    base::apple::ScopedCFTypeRef<SecTrustRef> trust;
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
       ASSERT_EQ(noErr,

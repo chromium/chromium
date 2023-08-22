@@ -65,7 +65,7 @@ class SecureEnclaveClientTest : public testing::Test {
 
   // Creates a test key.
   void CreateAndSetTestKey() {
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -75,7 +75,7 @@ class SecureEnclaveClientTest : public testing::Test {
                          kSecAttrKeyTypeECSECPrimeRandom);
     CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
                          base::apple::NSToCFPtrCast(@256));
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -83,7 +83,7 @@ class SecureEnclaveClientTest : public testing::Test {
                          kCFBooleanFalse);
     CFDictionarySetValue(test_attributes, kSecPrivateKeyAttrs,
                          private_key_params);
-    test_key_ = base::ScopedCFTypeRef<SecKeyRef>(
+    test_key_ = base::apple::ScopedCFTypeRef<SecKeyRef>(
         SecKeyCreateRandomKey(test_attributes, nullptr));
   }
 
@@ -99,7 +99,7 @@ class SecureEnclaveClientTest : public testing::Test {
   raw_ptr<MockSecureEnclaveHelper, DanglingUntriaged>
       mock_secure_enclave_helper_ = nullptr;
   std::unique_ptr<SecureEnclaveClient> secure_enclave_client_;
-  base::ScopedCFTypeRef<SecKeyRef> test_key_;
+  base::apple::ScopedCFTypeRef<SecKeyRef> test_key_;
 };
 
 // Tests that the CreatePermanentKey method invokes both the SE helper's
@@ -165,7 +165,7 @@ TEST_F(SecureEnclaveClientTest, CreateKey_Failure) {
       .Times(1)
       .WillOnce([](CFDictionaryRef attributes, OSStatus* status) {
         *status = errSecItemNotFound;
-        return base::ScopedCFTypeRef<SecKeyRef>();
+        return base::apple::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->CreatePermanentKey());
 
@@ -214,7 +214,7 @@ TEST_F(SecureEnclaveClientTest, CopyStoredKey_KeyNotFound) {
       .Times(2)
       .WillRepeatedly([](CFDictionaryRef query, OSStatus* status) {
         *status = errSecItemNotFound;
-        return base::ScopedCFTypeRef<SecKeyRef>();
+        return base::apple::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->CopyStoredKey(
       SecureEnclaveClient::KeyType::kPermanent));
@@ -506,7 +506,7 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_TemporaryKeyNotFound) {
       .Times(1)
       .WillOnce([](CFDictionaryRef query, OSStatus* status) {
         *status = errSecItemNotFound;
-        return base::ScopedCFTypeRef<SecKeyRef>();
+        return base::apple::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
       SecureEnclaveClient::KeyType::kTemporary, output));
@@ -565,7 +565,7 @@ TEST_F(SecureEnclaveClientTest, GetStoredKeyLabel_PermanentKeyNotFound) {
       .Times(1)
       .WillOnce([](CFDictionaryRef query, OSStatus* status) {
         *status = errSecItemNotFound;
-        return base::ScopedCFTypeRef<SecKeyRef>();
+        return base::apple::ScopedCFTypeRef<SecKeyRef>();
       });
   EXPECT_FALSE(secure_enclave_client_->GetStoredKeyLabel(
       SecureEnclaveClient::KeyType::kPermanent, output));

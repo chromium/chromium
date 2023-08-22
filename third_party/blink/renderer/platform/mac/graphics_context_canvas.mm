@@ -49,7 +49,7 @@ CGContextRef GraphicsContextCanvas::CgContext() {
 
   // Allocate an offscreen and draw into that, relying on the
   // compositing step to apply skia's clip.
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateWithName(kCGColorSpaceSRGB));
 
   bool result = offscreen_.tryAllocN32Pixels(

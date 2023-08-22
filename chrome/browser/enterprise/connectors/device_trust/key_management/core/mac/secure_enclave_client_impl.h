@@ -27,8 +27,8 @@ class SecureEnclaveClientImpl : public SecureEnclaveClient {
   ~SecureEnclaveClientImpl() override;
 
   // SecureEnclaveClient:
-  base::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() override;
-  base::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) override;
+  base::apple::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() override;
+  base::apple::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) override;
   bool UpdateStoredKeyLabel(KeyType current_key_type,
                             KeyType new_key_type) override;
   bool DeleteKey(KeyType type) override;

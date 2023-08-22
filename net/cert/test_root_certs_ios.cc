@@ -15,7 +15,7 @@
 namespace net {
 
 bool TestRootCerts::AddImpl(X509Certificate* certificate) {
-  base::ScopedCFTypeRef<SecCertificateRef> os_cert(
+  base::apple::ScopedCFTypeRef<SecCertificateRef> os_cert(
       x509_util::CreateSecCertificateFromX509Certificate(certificate));
   if (!os_cert) {
     return false;

@@ -79,7 +79,8 @@ TEST_F(CredentialStoreTest, CreateCredential) {
   Credential credential = std::move(result->first);
   EXPECT_EQ(credential.credential_id.size(), 32u);
   EXPECT_NE(credential.private_key, nullptr);
-  base::ScopedCFTypeRef<SecKeyRef> public_key = std::move(result->second);
+  base::apple::ScopedCFTypeRef<SecKeyRef> public_key =
+      std::move(result->second);
   EXPECT_NE(public_key, nullptr);
   EXPECT_EQ(
       credential.metadata,

@@ -46,9 +46,9 @@ SkBitmap CGImageToSkBitmap(CGImageRef image, CGSize size, bool is_opaque) {
             (SK_A32_SHIFT == (a) && SK_R32_SHIFT == (r) \
              && SK_G32_SHIFT == (g) && SK_B32_SHIFT == (b))
 #if defined(SK_CPU_LENDIAN) && HAS_ARGB_SHIFTS(24, 16, 8, 0)
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       data, size.width, size.height, 8, size.width * 4, color_space,
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 #else
@@ -75,7 +75,7 @@ UIImage* SkBitmapToUIImageWithColorSpace(const SkBitmap& skia_bitmap,
     return nil;
 
   // First convert SkBitmap to CGImageRef.
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       SkCreateCGImageRefWithColorspace(skia_bitmap, color_space));
 
   // Now convert to UIImage.
@@ -97,16 +97,16 @@ std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
   bool skip_images_88x88_or_larger =
       base::ios::IsRunningOnOrLater(8, 1, 1) && EncodesIcoImage(image_data);
 
-  base::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
       CFDictionaryCreate(NULL, NULL, NULL, 0, NULL, NULL));
   std::vector<SkBitmap> frames;
 
-  base::ScopedCFTypeRef<CGImageSourceRef> source(
+  base::apple::ScopedCFTypeRef<CGImageSourceRef> source(
       CGImageSourceCreateWithData((CFDataRef)image_data, empty_dictionary));
 
   size_t count = CGImageSourceGetCount(source);
   for (size_t index = 0; index < count; ++index) {
-    base::ScopedCFTypeRef<CGImageRef> cg_image(
+    base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
         CGImageSourceCreateImageAtIndex(source, index, empty_dictionary));
 
     CGSize size = CGSizeMake(CGImageGetWidth(cg_image),

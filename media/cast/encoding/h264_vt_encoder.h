@@ -116,7 +116,7 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   THREAD_CHECKER(thread_checker_);
 
   // The compression session.
-  base::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
+  base::apple::ScopedCFTypeRef<VTCompressionSessionRef> compression_session_;
 
   // Video frame factory tied to the encoder.
   scoped_refptr<VideoFrameFactoryImpl> video_frame_factory_;

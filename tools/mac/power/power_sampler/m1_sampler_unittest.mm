@@ -24,7 +24,7 @@ class TestM1SensorsReader : public power_metrics::M1SensorsReader {
  public:
   TestM1SensorsReader()
       : power_metrics::M1SensorsReader(
-            base::ScopedCFTypeRef<IOHIDEventSystemClientRef>()) {}
+            base::apple::ScopedCFTypeRef<IOHIDEventSystemClientRef>()) {}
 
   void set_temperatures(TemperaturesCelsius temperatures) {
     temperatures_ = temperatures;

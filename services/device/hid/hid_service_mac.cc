@@ -31,7 +31,7 @@ namespace {
 bool TryGetHidDataProperty(io_service_t service,
                            CFStringRef key,
                            std::vector<uint8_t>* result) {
-  base::ScopedCFTypeRef<CFDataRef> ref(base::apple::CFCast<CFDataRef>(
+  base::apple::ScopedCFTypeRef<CFDataRef> ref(base::apple::CFCast<CFDataRef>(
       IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
   if (!ref)
     return false;
@@ -142,17 +142,17 @@ base::WeakPtr<HidService> HidServiceMac::GetWeakPtr() {
 }
 
 // static
-base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
-    scoped_refptr<HidDeviceInfo> device_info) {
+base::apple::ScopedCFTypeRef<IOHIDDeviceRef>
+HidServiceMac::OpenOnBlockingThread(scoped_refptr<HidDeviceInfo> device_info) {
   DCHECK_EQ(device_info->platform_device_id_map().size(), 1u);
   const auto& platform_device_id =
       device_info->platform_device_id_map().front().platform_device_id;
-  base::ScopedCFTypeRef<CFDictionaryRef> matching_dict(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> matching_dict(
       IORegistryEntryIDMatching(platform_device_id));
   if (!matching_dict.get()) {
     HID_LOG(DEBUG) << "Failed to create matching dictionary for ID: "
                    << platform_device_id;
-    return base::ScopedCFTypeRef<IOHIDDeviceRef>();
+    return base::apple::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   // IOServiceGetMatchingService consumes a reference to the matching dictionary
@@ -161,20 +161,20 @@ base::ScopedCFTypeRef<IOHIDDeviceRef> HidServiceMac::OpenOnBlockingThread(
       kIOMasterPortDefault, matching_dict.release()));
   if (!service.get()) {
     HID_LOG(DEBUG) << "IOService not found for ID: " << platform_device_id;
-    return base::ScopedCFTypeRef<IOHIDDeviceRef>();
+    return base::apple::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
-  base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device(
+  base::apple::ScopedCFTypeRef<IOHIDDeviceRef> hid_device(
       IOHIDDeviceCreate(kCFAllocatorDefault, service));
   if (!hid_device) {
     HID_LOG(DEBUG) << "Unable to create IOHIDDevice object.";
-    return base::ScopedCFTypeRef<IOHIDDeviceRef>();
+    return base::apple::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   IOReturn result = IOHIDDeviceOpen(hid_device, kIOHIDOptionsTypeNone);
   if (result != kIOReturnSuccess) {
     HID_LOG(DEBUG) << "Failed to open device: " << HexErrorCode(result);
-    return base::ScopedCFTypeRef<IOHIDDeviceRef>();
+    return base::apple::ScopedCFTypeRef<IOHIDDeviceRef>();
   }
 
   return hid_device;
@@ -185,7 +185,7 @@ void HidServiceMac::DeviceOpened(
     bool allow_protected_reports,
     bool allow_fido_reports,
     ConnectCallback callback,
-    base::ScopedCFTypeRef<IOHIDDeviceRef> hid_device) {
+    base::apple::ScopedCFTypeRef<IOHIDDeviceRef> hid_device) {
   if (hid_device) {
     std::move(callback).Run(base::MakeRefCounted<HidConnectionMac>(
         std::move(hid_device), std::move(device_info), allow_protected_reports,

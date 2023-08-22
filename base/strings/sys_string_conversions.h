@@ -63,10 +63,10 @@ namespace base {
 // Converts between strings and CFStringRefs/NSStrings.
 
 // Converts a string to a CFStringRef. Returns null on failure.
-[[nodiscard]] BASE_EXPORT ScopedCFTypeRef<CFStringRef> SysUTF8ToCFStringRef(
-    StringPiece utf8);
-[[nodiscard]] BASE_EXPORT ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(
-    StringPiece16 utf16);
+[[nodiscard]] BASE_EXPORT apple::ScopedCFTypeRef<CFStringRef>
+SysUTF8ToCFStringRef(StringPiece utf8);
+[[nodiscard]] BASE_EXPORT apple::ScopedCFTypeRef<CFStringRef>
+SysUTF16ToCFStringRef(StringPiece16 utf16);
 
 // Converts a CFStringRef to a string. Returns an empty string on failure. It is
 // not valid to call these with a null `ref`.

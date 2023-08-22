@@ -44,7 +44,7 @@ class DesktopResizerMac : public DesktopResizer {
   bool GetSoleDisplayId(CGDirectDisplayID* display);
 
   void GetSupportedModesAndResolutions(
-      base::ScopedCFTypeRef<CFMutableArrayRef>* modes,
+      base::apple::ScopedCFTypeRef<CFMutableArrayRef>* modes,
       std::list<ScreenResolution>* resolutions);
 };
 
@@ -63,7 +63,7 @@ ScreenResolution DesktopResizerMac::GetCurrentResolution(
 std::list<ScreenResolution> DesktopResizerMac::GetSupportedResolutions(
     const ScreenResolution& preferred,
     webrtc::ScreenId screen_id) {
-  base::ScopedCFTypeRef<CFMutableArrayRef> modes;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> modes;
   std::list<ScreenResolution> resolutions;
   GetSupportedModesAndResolutions(&modes, &resolutions);
   return resolutions;
@@ -76,7 +76,7 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
     return;
   }
 
-  base::ScopedCFTypeRef<CFMutableArrayRef> modes;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> modes;
   std::list<ScreenResolution> resolutions;
   GetSupportedModesAndResolutions(&modes, &resolutions);
   // There may be many modes with the requested resolution. Pick the one with
@@ -93,7 +93,7 @@ void DesktopResizerMac::SetResolution(const ScreenResolution& resolution,
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
       // TODO(https://crbug.com/1394415): Find non-deprecated replacement.
-      base::ScopedCFTypeRef<CFStringRef> encoding(
+      base::apple::ScopedCFTypeRef<CFStringRef> encoding(
           CGDisplayModeCopyPixelEncoding(mode));
 #pragma clang diagnostic pop
       if (CFStringCompare(encoding, CFSTR(IO32BitDirectPixels),
@@ -134,14 +134,14 @@ void DesktopResizerMac::SetVideoLayout(const protocol::VideoLayout& layout) {
 }
 
 void DesktopResizerMac::GetSupportedModesAndResolutions(
-    base::ScopedCFTypeRef<CFMutableArrayRef>* modes,
+    base::apple::ScopedCFTypeRef<CFMutableArrayRef>* modes,
     std::list<ScreenResolution>* resolutions) {
   CGDirectDisplayID display;
   if (!GetSoleDisplayId(&display)) {
     return;
   }
 
-  base::ScopedCFTypeRef<CFArrayRef> all_modes(
+  base::apple::ScopedCFTypeRef<CFArrayRef> all_modes(
       CGDisplayCopyAllDisplayModes(display, nullptr));
   if (!all_modes) {
     return;

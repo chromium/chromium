@@ -40,7 +40,7 @@ SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
             (SK_A32_SHIFT == (a) && SK_R32_SHIFT == (r) \
              && SK_G32_SHIFT == (g) && SK_B32_SHIFT == (b))
 #if defined(SK_CPU_LENDIAN) && HAS_ARGB_SHIFTS(24, 16, 8, 0)
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       data, size.width, size.height, 8, size.width * 4, color_space,
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 #else
@@ -150,7 +150,7 @@ SkColor NSSystemColorToSkColor(NSColor* color) {
 }
 
 SkColor CGColorRefToSkColor(CGColorRef color) {
-  base::ScopedCFTypeRef<CGColorRef> cg_color(
+  base::apple::ScopedCFTypeRef<CGColorRef> cg_color(
       CGColorCreateCopyByMatchingToColorSpace(base::mac::GetSRGBColorSpace(),
                                               kCGRenderingIntentDefault, color,
                                               nullptr));
@@ -160,11 +160,12 @@ SkColor CGColorRefToSkColor(CGColorRef color) {
       .toSkColor();
 }
 
-base::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(SkColor color) {
+base::apple::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(
+    SkColor color) {
   CGFloat components[] = {
       SkColorGetR(color) / 255.0f, SkColorGetG(color) / 255.0f,
       SkColorGetB(color) / 255.0f, SkColorGetA(color) / 255.0f};
-  return base::ScopedCFTypeRef<CGColorRef>(
+  return base::apple::ScopedCFTypeRef<CGColorRef>(
       CGColorCreate(base::mac::GetSRGBColorSpace(), components));
 }
 
@@ -227,7 +228,7 @@ NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
     const SkBitmap& skiaBitmap,
     CGColorSpaceRef colorSpace) {
   // First convert SkBitmap to CGImageRef.
-  base::ScopedCFTypeRef<CGImageRef> cgimage(
+  base::apple::ScopedCFTypeRef<CGImageRef> cgimage(
       SkCreateCGImageRefWithColorspace(skiaBitmap, colorSpace));
   if (!cgimage)
     return nil;

@@ -92,7 +92,7 @@ bool VariableAxisChangeEffective(SkTypeface* typeface,
 }
 
 static bool CanLoadInProcess(NSFont* ns_font) {
-  base::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
+  base::apple::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
       base::apple::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
   NSString* font_name =
       base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font));

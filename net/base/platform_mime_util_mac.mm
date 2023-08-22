@@ -50,19 +50,19 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
      MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
   else {
-    base::ScopedCFTypeRef<CFStringRef> ext_ref(
+    base::apple::ScopedCFTypeRef<CFStringRef> ext_ref(
         base::SysUTF8ToCFStringRef(ext_nodot));
     if (!ext_ref) {
       return false;
     }
-    base::ScopedCFTypeRef<CFStringRef> uti(
+    base::apple::ScopedCFTypeRef<CFStringRef> uti(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
                                               ext_ref,
                                               /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
-    base::ScopedCFTypeRef<CFStringRef> mime_ref(
+    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
         UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
     if (!mime_ref) {
       return false;
@@ -97,18 +97,18 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
      MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
   else {
-    base::ScopedCFTypeRef<CFStringRef> mime_ref(
+    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
         base::SysUTF8ToCFStringRef(mime_type));
     if (!mime_ref) {
       return false;
     }
-    base::ScopedCFTypeRef<CFStringRef> uti(
+    base::apple::ScopedCFTypeRef<CFStringRef> uti(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mime_ref,
                                               /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
-    base::ScopedCFTypeRef<CFStringRef> ext_ref(
+    base::apple::ScopedCFTypeRef<CFStringRef> ext_ref(
         UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
     if (!ext_ref) {
       return false;
@@ -166,15 +166,16 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
      MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_11_0) || \
     (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_14_0)
   else {
-    base::ScopedCFTypeRef<CFStringRef> mime_ref(
+    base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
         base::SysUTF8ToCFStringRef(mime_type));
     if (mime_ref) {
       bool extensions_found = false;
-      base::ScopedCFTypeRef<CFArrayRef> types(UTTypeCreateAllIdentifiersForTag(
-          kUTTagClassMIMEType, mime_ref, nullptr));
+      base::apple::ScopedCFTypeRef<CFArrayRef> types(
+          UTTypeCreateAllIdentifiersForTag(kUTTagClassMIMEType, mime_ref,
+                                           nullptr));
       if (types) {
         for (CFIndex i = 0; i < CFArrayGetCount(types); i++) {
-          base::ScopedCFTypeRef<CFArrayRef> extensions_list(
+          base::apple::ScopedCFTypeRef<CFArrayRef> extensions_list(
               UTTypeCopyAllTagsWithClass(base::apple::CFCast<CFStringRef>(
                                              CFArrayGetValueAtIndex(types, i)),
                                          kUTTagClassFilenameExtension));

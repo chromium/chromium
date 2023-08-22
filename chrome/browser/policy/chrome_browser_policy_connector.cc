@@ -323,7 +323,7 @@ ChromeBrowserPolicyConnector::CreatePlatformProvider() {
   // policies.
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
 #else
-  base::ScopedCFTypeRef<CFStringRef> bundle_id(
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id(
       base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
 #endif
   auto loader = std::make_unique<PolicyLoaderMac>(

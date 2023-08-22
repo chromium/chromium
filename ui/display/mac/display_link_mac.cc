@@ -15,7 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 
-namespace base {
+namespace base::apple {
 
 template <>
 struct ScopedTypeRefTraits<CVDisplayLinkRef> {
@@ -26,7 +26,7 @@ struct ScopedTypeRefTraits<CVDisplayLinkRef> {
   static void Release(CVDisplayLinkRef object) { CVDisplayLinkRelease(object); }
 };
 
-}  // namespace base
+}  // namespace base::apple
 
 namespace ui {
 
@@ -120,7 +120,7 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   // created/destroyed on the same thread. Holding a lock here can result in
   // deadlock.
 
-  base::ScopedTypeRef<CVDisplayLinkRef> display_link;
+  base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link;
   ret = CVDisplayLinkCreateWithCGDisplay(display_id,
                                          display_link.InitializeInto());
   if (ret != kCVReturnSuccess) {
@@ -186,7 +186,7 @@ base::TimeTicks DisplayLinkMac::GetCurrentTime() {
 
 DisplayLinkMac::DisplayLinkMac(
     CGDirectDisplayID display_id,
-    base::ScopedTypeRef<CVDisplayLinkRef> display_link)
+    base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link)
     : display_id_(display_id), display_link_(display_link) {}
 
 DisplayLinkMac::~DisplayLinkMac() {

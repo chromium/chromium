@@ -17,11 +17,11 @@ namespace enterprise_connectors {
 
 SecureEnclaveHelperImpl::~SecureEnclaveHelperImpl() = default;
 
-base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CreateSecureKey(
-    CFDictionaryRef attributes,
-    OSStatus* error) {
-  base::ScopedCFTypeRef<CFErrorRef> error_ref;
-  base::ScopedCFTypeRef<SecKeyRef> key(
+base::apple::ScopedCFTypeRef<SecKeyRef>
+SecureEnclaveHelperImpl::CreateSecureKey(CFDictionaryRef attributes,
+                                         OSStatus* error) {
+  base::apple::ScopedCFTypeRef<CFErrorRef> error_ref;
+  base::apple::ScopedCFTypeRef<SecKeyRef> key(
       SecKeyCreateRandomKey(attributes, error_ref.InitializeInto()));
 
   if (error && error_ref) {
@@ -31,10 +31,10 @@ base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CreateSecureKey(
   return key;
 }
 
-base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
+base::apple::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
     CFDictionaryRef query,
     OSStatus* error) {
-  base::ScopedCFTypeRef<SecKeyRef> key;
+  base::apple::ScopedCFTypeRef<SecKeyRef> key;
   OSStatus status = SecItemCopyMatching(
       query, const_cast<CFTypeRef*>(
                  reinterpret_cast<const CFTypeRef*>(key.InitializeInto())));

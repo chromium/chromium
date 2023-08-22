@@ -18,7 +18,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 
 namespace {
 

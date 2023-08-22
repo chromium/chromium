@@ -59,8 +59,8 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
 
 @interface LocalInputMonitorManager : NSObject {
  @private
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> _mouseRunLoopSource;
-  base::ScopedCFTypeRef<CFMachPortRef> _mouseMachPort;
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> _mouseRunLoopSource;
+  base::apple::ScopedCFTypeRef<CFMachPortRef> _mouseMachPort;
   raw_ptr<remoting::LocalMouseInputMonitorMac::EventHandler> _monitor;
 }
 

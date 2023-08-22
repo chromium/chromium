@@ -27,14 +27,13 @@ namespace {
 
 // The caller is responsible for freeing |matching_services|.
 bool FindEthernetInterfaces(io_iterator_t* matching_services) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
       IOServiceMatching(kIOEthernetInterfaceClass));
   if (!matching_dict)
     return false;
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> primary_interface(
-      CFDictionaryCreateMutable(kCFAllocatorDefault,
-                                0,
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> primary_interface(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   if (!primary_interface)
@@ -72,11 +71,10 @@ bool GetMACAddressFromIterator(io_iterator_t primary_interface_iterator,
     if (!success)
       continue;
 
-    base::ScopedCFTypeRef<CFTypeRef> mac_data(
+    base::apple::ScopedCFTypeRef<CFTypeRef> mac_data(
         IORegistryEntryCreateCFProperty(primary_interface_parent,
                                         CFSTR(kIOMACAddress),
-                                        kCFAllocatorDefault,
-                                        0));
+                                        kCFAllocatorDefault, 0));
     CFDataRef mac_data_data = base::apple::CFCast<CFDataRef>(mac_data);
     if (mac_data_data) {
       CFDataGetBytes(

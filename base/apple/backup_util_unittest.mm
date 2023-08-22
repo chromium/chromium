@@ -44,7 +44,7 @@ TEST_F(BackupUtilTest, TestExcludeFileFromBackups_NotByPath) {
   ScopedTempDir temp_dir_;
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   FilePath excluded_file_path = temp_dir_.GetPath().Append("excluded");
-  base::ScopedCFTypeRef<CFURLRef> excluded_url =
+  ScopedCFTypeRef<CFURLRef> excluded_url =
       apple::FilePathToCFURL(excluded_file_path);
 
   constexpr char placeholder_data[] = "All your base are belong to us!";

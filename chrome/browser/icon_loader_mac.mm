@@ -62,9 +62,9 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
       // Remove the leading dot.
       extension_string.erase(extension_string.begin());
 
-      base::ScopedCFTypeRef<CFStringRef> extension_cf =
+      base::apple::ScopedCFTypeRef<CFStringRef> extension_cf =
           base::SysUTF8ToCFStringRef(extension_string);
-      base::ScopedCFTypeRef<CFStringRef> cftype(
+      base::apple::ScopedCFTypeRef<CFStringRef> cftype(
           UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
                                                 extension_cf,
                                                 /*inConformingToUTI=*/nullptr));

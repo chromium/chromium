@@ -67,11 +67,12 @@ bool TryPromptUserForScreenCapture() {
     // in the applications list in System permissions. Stream creation will
     // fail if the user denies permission, or if our application is already
     // in the system permission and is unchecked.
-    base::ScopedCFTypeRef<CGDisplayStreamRef> stream(wrapCGDisplayStreamCreate(
-        CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
-        ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
-          IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
-        }));
+    base::apple::ScopedCFTypeRef<CGDisplayStreamRef> stream(
+        wrapCGDisplayStreamCreate(
+            CGMainDisplayID(), 1, 1, 'BGRA', nullptr,
+            ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
+              IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
+            }));
     return stream != nullptr;
   }
 }
@@ -90,7 +91,7 @@ void WarmScreenCapture() {
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce([] {
         if (IsScreenCaptureAllowed()) {
-          base::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImage(
+          base::apple::ScopedCFTypeRef<CGImageRef>(CGWindowListCreateImage(
               CGRectInfinite, kCGWindowListOptionOnScreenOnly, kCGNullWindowID,
               kCGWindowImageDefault));
         }

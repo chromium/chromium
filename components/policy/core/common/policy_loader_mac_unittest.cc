@@ -27,7 +27,7 @@
 #include "components/policy/core/common/preferences_mock_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 
 namespace policy {
 

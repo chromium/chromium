@@ -94,7 +94,7 @@ class DISPLAY_EXPORT DisplayLinkMac
   friend class VSyncCallbackMac;
 
   DisplayLinkMac(CGDirectDisplayID display_id,
-                 base::ScopedTypeRef<CVDisplayLinkRef> display_link);
+                 base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link);
   virtual ~DisplayLinkMac();
 
   void UnregisterCallback(VSyncCallbackMac* callback);
@@ -112,7 +112,7 @@ class DISPLAY_EXPORT DisplayLinkMac
   CGDirectDisplayID display_id_;
 
   // CVDisplayLink for querying VSync timing info.
-  base::ScopedTypeRef<CVDisplayLinkRef> display_link_;
+  base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link_;
 
   // Each VSyncCallbackMac holds a reference to `this`. This member may
   // be accessed on any thread while |globals.lock| is held. But it can only be

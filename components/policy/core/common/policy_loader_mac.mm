@@ -111,9 +111,9 @@ PolicyBundle PolicyLoaderMac::Load() {
       schema_map()->GetSchema(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   for (Schema::Iterator it = schema->GetPropertiesIterator(); !it.IsAtEnd();
        it.Advance()) {
-    base::ScopedCFTypeRef<CFStringRef> name(
+    base::apple::ScopedCFTypeRef<CFStringRef> name(
         base::SysUTF8ToCFStringRef(it.key()));
-    base::ScopedCFTypeRef<CFPropertyListRef> value(
+    base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
         preferences_->CopyAppValue(name, application_id_));
     if (!value)
       continue;
@@ -204,15 +204,15 @@ void PolicyLoaderMac::LoadPolicyForComponent(
   if (!schema.valid())
     return;
 
-  base::ScopedCFTypeRef<CFStringRef> bundle_id =
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id =
       base::SysUTF8ToCFStringRef(bundle_id_string);
   preferences_->AppSynchronize(bundle_id);
 
   for (Schema::Iterator it = schema.GetPropertiesIterator(); !it.IsAtEnd();
        it.Advance()) {
-    base::ScopedCFTypeRef<CFStringRef> pref_name =
+    base::apple::ScopedCFTypeRef<CFStringRef> pref_name =
         base::SysUTF8ToCFStringRef(it.key());
-    base::ScopedCFTypeRef<CFPropertyListRef> value(
+    base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
         preferences_->CopyAppValue(pref_name, bundle_id));
     if (!value)
       continue;

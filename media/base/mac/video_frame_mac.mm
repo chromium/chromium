@@ -99,9 +99,9 @@ void SetCvPixelBufferColorSpace(const gfx::ColorSpace& frame_cs,
 
 }  // namespace
 
-MEDIA_EXPORT base::ScopedCFTypeRef<CVPixelBufferRef>
+MEDIA_EXPORT base::apple::ScopedCFTypeRef<CVPixelBufferRef>
 WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
-  base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
   if (!frame) {
     return pixel_buffer;
   }
@@ -219,7 +219,7 @@ WrapVideoFrameInCVPixelBuffer(scoped_refptr<VideoFrame> frame) {
       frame.get(), nullptr, pixel_buffer.InitializeInto());
   if (result != kCVReturnSuccess) {
     DLOG(ERROR) << " CVPixelBufferCreateWithPlanarBytes failed: " << result;
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(nullptr);
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>(nullptr);
   }
 
   // The CVPixelBuffer now references the data of the frame, so increment its

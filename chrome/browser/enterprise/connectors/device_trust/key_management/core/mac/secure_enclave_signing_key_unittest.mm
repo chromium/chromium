@@ -43,7 +43,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
  protected:
   // Creates a test key.
   void CreateTestKey() {
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -52,7 +52,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
                          kSecAttrKeyTypeECSECPrimeRandom);
     CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
                          base::apple::NSToCFPtrCast(@256));
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -60,7 +60,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
                          kCFBooleanFalse);
     CFDictionarySetValue(test_attributes, kSecPrivateKeyAttrs,
                          private_key_params);
-    test_key_ = base::ScopedCFTypeRef<SecKeyRef>(
+    test_key_ = base::apple::ScopedCFTypeRef<SecKeyRef>(
         SecKeyCreateRandomKey(test_attributes, nullptr));
   }
 
@@ -78,7 +78,7 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
   raw_ptr<MockSecureEnclaveClient, DanglingUntriaged>
       mock_secure_enclave_client_ = nullptr;
   std::unique_ptr<crypto::UnexportableSigningKey> key_;
-  base::ScopedCFTypeRef<SecKeyRef> test_key_;
+  base::apple::ScopedCFTypeRef<SecKeyRef> test_key_;
 };
 
 // Tests that the GenerateSigningKeySlowly method invokes the SE client's

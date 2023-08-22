@@ -179,8 +179,9 @@ bool GamepadDeviceMac::AddButtonsAndAxes(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
-  base::ScopedCFTypeRef<CFArrayRef> elements(IOHIDDeviceCopyMatchingElements(
-      device_ref_, /*matching=*/nullptr, kIOHIDOptionsTypeNone));
+  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
+      IOHIDDeviceCopyMatchingElements(device_ref_, /*matching=*/nullptr,
+                                      kIOHIDOptionsTypeNone));
   DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->buttons, 0, sizeof(gamepad->buttons));
@@ -259,8 +260,9 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
 }
 
 bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
-  base::ScopedCFTypeRef<CFArrayRef> elements(IOHIDDeviceCopyMatchingElements(
-      device_ref_, nullptr, kIOHIDOptionsTypeNone));
+  base::apple::ScopedCFTypeRef<CFArrayRef> elements(
+      IOHIDDeviceCopyMatchingElements(device_ref_, nullptr,
+                                      kIOHIDOptionsTypeNone));
   DCHECK(elements);
   DCHECK(gamepad);
   memset(gamepad->axes, 0, sizeof(gamepad->axes));

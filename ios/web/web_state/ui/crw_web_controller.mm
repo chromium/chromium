@@ -1433,7 +1433,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   }
   NSString* host = base::SysUTF8ToNSString(_documentURL.host());
   BOOL hasOnlySecureContent = [self.webView hasOnlySecureContent];
-  base::ScopedCFTypeRef<SecTrustRef> trust;
+  base::apple::ScopedCFTypeRef<SecTrustRef> trust;
   trust.reset([self.webView serverTrust], base::scoped_policy::RETAIN);
 
   [_SSLStatusUpdater updateSSLStatusForNavigationItem:currentNavItem
@@ -1622,7 +1622,7 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
 #pragma mark - CRWSSLStatusUpdaterDataSource
 
 - (void)SSLStatusUpdater:(CRWSSLStatusUpdater*)SSLStatusUpdater
-    querySSLStatusForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
+    querySSLStatusForTrust:(base::apple::ScopedCFTypeRef<SecTrustRef>)trust
                       host:(NSString*)host
          completionHandler:(StatusQueryHandler)completionHandler {
   [_certVerificationController querySSLStatusForTrust:std::move(trust)

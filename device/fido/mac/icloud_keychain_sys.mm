@@ -182,12 +182,12 @@ ASAuthorizationWebBrowserPublicKeyCredentialManager* GetManager() {
 }
 
 bool ProcessHasEntitlement() {
-  base::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
+  base::apple::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
   if (!task) {
     return false;
   }
 
-  base::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
+  base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
       SecTaskCopyValueForEntitlement(
           task, CFSTR("com.apple.developer.web-browser.public-key-credential"),
           nullptr));

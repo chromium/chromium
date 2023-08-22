@@ -82,7 +82,7 @@ void PowerSaveBlocker::Delegate::ApplyBlock() {
       break;
   }
   if (level) {
-    base::ScopedCFTypeRef<CFStringRef> cf_description(
+    base::apple::ScopedCFTypeRef<CFStringRef> cf_description(
         base::SysUTF8ToCFStringRef(description_));
     IOReturn result = IOPMAssertionCreateWithName(level, kIOPMAssertionLevelOn,
                                                   cf_description, &assertion_);

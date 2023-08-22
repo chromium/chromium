@@ -30,7 +30,7 @@ bool IsUsbDevice(io_object_t disk_obj) {
     current_obj = parent_obj;
     parent_obj_ref.reset(parent_obj);
 
-    base::ScopedCFTypeRef<CFStringRef> class_name(
+    base::apple::ScopedCFTypeRef<CFStringRef> class_name(
         IOObjectCopyClass(current_obj));
     if (!class_name) {
       LOG(ERROR) << "Could not get object class of IO Registry Entry.";
@@ -52,7 +52,7 @@ bool IsSuitableRemovableStorageDevice(io_object_t disk_obj,
                                       std::string* out_bsd_name,
                                       uint64_t* out_size_in_bytes,
                                       bool* out_removable) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
   kern_return_t result = IORegistryEntryCreateCFProperties(
       disk_obj, dict.InitializeInto(), kCFAllocatorDefault, 0);
   if (result != KERN_SUCCESS) {

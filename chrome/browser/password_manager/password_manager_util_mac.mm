@@ -70,7 +70,7 @@ bool AuthenticateUser(std::u16string prompt_string) {
   AuthorizationItem right_items[] = {{rightName.UTF8String, 0, nullptr, 0}};
   AuthorizationRights rights = {std::size(right_items), right_items};
 
-  base::ScopedCFTypeRef<CFStringRef> prompt =
+  base::apple::ScopedCFTypeRef<CFStringRef> prompt =
       base::SysUTF16ToCFStringRef(prompt_string);
 
   // Pass kAuthorizationFlagDestroyRights to prevent the OS from saving the

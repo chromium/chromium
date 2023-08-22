@@ -30,7 +30,7 @@ OSStatus CreateTargetAccess(CFStringRef service_name,
     return status;
   }
 
-  base::ScopedCFTypeRef<CFArrayRef> acl_list;
+  base::apple::ScopedCFTypeRef<CFArrayRef> acl_list;
   status = SecAccessCopyACLList(*access_ref, acl_list.InitializeInto());
   if (status != noErr) {
     return status;
@@ -39,8 +39,8 @@ OSStatus CreateTargetAccess(CFStringRef service_name,
   for (CFIndex i = 0; i < CFArrayGetCount(acl_list); ++i) {
     SecACLRef acl = (SecACLRef)CFArrayGetValueAtIndex(acl_list, i);
 
-    base::ScopedCFTypeRef<CFArrayRef> app_list;
-    base::ScopedCFTypeRef<CFStringRef> description;
+    base::apple::ScopedCFTypeRef<CFArrayRef> app_list;
+    base::apple::ScopedCFTypeRef<CFStringRef> description;
     SecKeychainPromptSelector dummy_prompt_selector;
     status = SecACLCopyContents(acl, app_list.InitializeInto(),
                                 description.InitializeInto(),
@@ -93,7 +93,7 @@ OSStatus WriteKeychainItem(const std::string& service_name,
        const_cast<char*>(account_name.data())}};
   SecKeychainAttributeList attribute_list = {std::size(attributes), attributes};
 
-  base::ScopedCFTypeRef<SecAccessRef> access_ref;
+  base::apple::ScopedCFTypeRef<SecAccessRef> access_ref;
   OSStatus status = CreateTargetAccess(base::SysUTF8ToCFStringRef(service_name),
                                        access_ref.InitializeInto());
   if (status != noErr) {
@@ -107,7 +107,7 @@ OSStatus WriteKeychainItem(const std::string& service_name,
 
 OSStatus VerifyKeychainForItemUnlocked(SecKeychainItemRef item_ref,
                                        bool* unlocked) {
-  base::ScopedCFTypeRef<SecKeychainRef> keychain;
+  base::apple::ScopedCFTypeRef<SecKeychainRef> keychain;
   OSStatus status =
       SecKeychainItemCopyKeychain(item_ref, keychain.InitializeInto());
   if (status != noErr) {
@@ -118,7 +118,7 @@ OSStatus VerifyKeychainForItemUnlocked(SecKeychainItemRef item_ref,
 }
 
 OSStatus VerifyDefaultKeychainUnlocked(bool* unlocked) {
-  base::ScopedCFTypeRef<SecKeychainRef> keychain;
+  base::apple::ScopedCFTypeRef<SecKeychainRef> keychain;
   OSStatus status = SecKeychainCopyDefault(keychain.InitializeInto());
   if (status != noErr) {
     return status;

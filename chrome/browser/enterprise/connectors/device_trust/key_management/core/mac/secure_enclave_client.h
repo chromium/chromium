@@ -43,11 +43,12 @@ class SecureEnclaveClient {
       base::span<const uint8_t> wrapped_key_label);
 
   // Creates a new Secure Enclave private key with a permanent key label.
-  virtual base::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() = 0;
+  virtual base::apple::ScopedCFTypeRef<SecKeyRef> CreatePermanentKey() = 0;
 
   // Queries for the secure key using its label determined by the key `type`.
   // Returns the secure key reference or a nullptr if no key was found.
-  virtual base::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(KeyType type) = 0;
+  virtual base::apple::ScopedCFTypeRef<SecKeyRef> CopyStoredKey(
+      KeyType type) = 0;
 
   // Deletes any key stored in `new_key_type` and updates the private key
   // storage in `current_key_type` to `new_key_type` and modifies the key label

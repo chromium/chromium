@@ -160,7 +160,7 @@ void SessionWatcher::ActivateCurtain() {
     return;
   }
 
-  base::ScopedCFTypeRef<CFDictionaryRef> session(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> session(
       CGSessionCopyCurrentDictionary());
 
   // CGSessionCopyCurrentDictionary has been observed to return nullptr in some

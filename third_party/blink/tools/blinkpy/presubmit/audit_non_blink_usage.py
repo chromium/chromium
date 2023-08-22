@@ -733,7 +733,7 @@ _CONFIG = [
             # Useful for platform-specific code.
             'base::apple::(CFToNSPtrCast|NSToCFPtrCast|CFToNSOwnershipCast|NSToCFOwnershipCast)',
             'base::mac::Is(AtMost|AtLeast)?OS.+',
-            'base::ScopedCFTypeRef',
+            'base::apple::ScopedCFTypeRef',
         ],
         'disallowed': [
             ('base::Bind(|Once|Repeating)',

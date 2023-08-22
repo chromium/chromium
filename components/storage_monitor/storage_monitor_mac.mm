@@ -87,7 +87,7 @@ StorageInfo BuildStorageInfo(
       dict, kDADiskDescriptionVolumeUUIDKey);
   std::string unique_id;
   if (uuid) {
-    base::ScopedCFTypeRef<CFStringRef> uuid_string(
+    base::apple::ScopedCFTypeRef<CFStringRef> uuid_string(
         CFUUIDCreateString(nullptr, uuid));
     if (uuid_string.get())
       unique_id = base::SysCFStringRefToUTF8(uuid_string);
@@ -119,7 +119,7 @@ StorageInfo BuildStorageInfo(
 struct EjectDiskOptions {
   std::string bsd_name;
   base::OnceCallback<void(StorageMonitor::EjectStatus)> callback;
-  base::ScopedCFTypeRef<DADiskRef> disk;
+  base::apple::ScopedCFTypeRef<DADiskRef> disk;
 };
 
 void PostEjectCallback(DADiskRef disk,
@@ -291,7 +291,7 @@ void StorageMonitorMac::EjectDevice(
 
   receiver()->ProcessDetach(device_id);
 
-  base::ScopedCFTypeRef<DADiskRef> disk(
+  base::apple::ScopedCFTypeRef<DADiskRef> disk(
       DADiskCreateFromBSDName(nullptr, session_, bsd_name.c_str()));
   if (!disk.get()) {
     std::move(callback).Run(StorageMonitor::EJECT_FAILURE);
@@ -339,7 +339,8 @@ void StorageMonitorMac::GetDiskInfoAndUpdate(
 
   pending_disk_updates_++;
 
-  base::ScopedCFTypeRef<CFDictionaryRef> dict(DADiskCopyDescription(disk));
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> dict(
+      DADiskCopyDescription(disk));
   std::string* bsd_name = new std::string;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},

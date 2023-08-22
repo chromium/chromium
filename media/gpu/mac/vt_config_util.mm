@@ -198,7 +198,7 @@ void SetVp9CodecConfigurationBox(NSMutableDictionary<NSString*, id>* extensions,
 
 namespace media {
 
-base::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
+base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
     CMVideoCodecType codec_type,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
@@ -244,7 +244,7 @@ base::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
   if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX)
     SetVp9CodecConfigurationBox(extensions, profile, color_space);
 
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
       base::apple::NSToCFOwnershipCast(extensions));
 }
 

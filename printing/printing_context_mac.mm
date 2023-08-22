@@ -259,7 +259,7 @@ bool PrintingContextMac::SetPrinter(const std::string& device_name) {
   if (!current_printer_id)
     return false;
 
-  base::ScopedCFTypeRef<CFStringRef> new_printer_id(
+  base::apple::ScopedCFTypeRef<CFStringRef> new_printer_id(
       base::SysUTF8ToCFStringRef(device_name));
   if (!new_printer_id.get())
     return false;
@@ -291,7 +291,7 @@ bool PrintingContextMac::UpdatePageFormatWithPaperInfo() {
 
   double page_width = 0.0;
   double page_height = 0.0;
-  base::ScopedCFTypeRef<CFStringRef> paper_name;
+  base::apple::ScopedCFTypeRef<CFStringRef> paper_name;
   PMPaperMargins margins = {0};
 
   const PrintSettings::RequestedMedia& media = settings_->requested_media();
@@ -463,8 +463,9 @@ bool PrintingContextMac::SetKeyValue(base::StringPiece key,
                                      base::StringPiece value) {
   PMPrintSettings print_settings =
       static_cast<PMPrintSettings>([print_info_ PMPrintSettings]);
-  base::ScopedCFTypeRef<CFStringRef> cf_key = base::SysUTF8ToCFStringRef(key);
-  base::ScopedCFTypeRef<CFStringRef> cf_value =
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_key =
+      base::SysUTF8ToCFStringRef(key);
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_value =
       base::SysUTF8ToCFStringRef(value);
 
   return PMPrintSettingsSetValue(print_settings, cf_key.get(), cf_value.get(),
@@ -499,7 +500,7 @@ mojom::ResultCode PrintingContextMac::NewDocument(
   PMPageFormat page_format =
       static_cast<PMPageFormat>([print_info_ PMPageFormat]);
 
-  base::ScopedCFTypeRef<CFStringRef> job_title =
+  base::apple::ScopedCFTypeRef<CFStringRef> job_title =
       base::SysUTF16ToCFStringRef(document_name);
   PMPrintSettingsSetJobName(print_settings, job_title.get());
 

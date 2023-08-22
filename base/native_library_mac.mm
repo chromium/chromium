@@ -64,7 +64,7 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
     native_lib->objc_status = OBJC_UNKNOWN;
     return native_lib;
   }
-  ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
+  apple::ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
       kCFAllocatorDefault, (const UInt8*)library_path.value().c_str(),
       checked_cast<CFIndex>(library_path.value().length()), true));
   if (!url)
@@ -103,7 +103,7 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 
   // Get the function pointer using the right API for the type.
   if (library->type == BUNDLE) {
-    ScopedCFTypeRef<CFStringRef> symbol_name(CFStringCreateWithCString(
+    apple::ScopedCFTypeRef<CFStringRef> symbol_name(CFStringCreateWithCString(
         kCFAllocatorDefault, name, kCFStringEncodingUTF8));
     function_pointer =
         CFBundleGetFunctionPointerForName(library->bundle, symbol_name);

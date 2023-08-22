@@ -181,20 +181,20 @@ gfx::Point GetBaselinePoint(LocalFrameView* frame_view,
 
 }  // namespace
 
-base::ScopedCFTypeRef<CFAttributedStringRef>
+base::apple::ScopedCFTypeRef<CFAttributedStringRef>
 SubstringUtil::AttributedWordAtPoint(WebFrameWidgetImpl* frame_widget,
                                      gfx::Point point,
                                      gfx::Point& baseline_point) {
   HitTestResult result = frame_widget->CoreHitTestResultAt(gfx::PointF(point));
 
   if (!result.InnerNode()) {
-    return base::ScopedCFTypeRef<CFAttributedStringRef>();
+    return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
   LocalFrame* frame = result.InnerNode()->GetDocument().GetFrame();
   EphemeralRange range =
       frame->GetEditor().RangeForPoint(result.RoundedPointInInnerNodeFrame());
   if (range.IsNull()) {
-    return base::ScopedCFTypeRef<CFAttributedStringRef>();
+    return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
 
   // Expand to word under point.
@@ -206,11 +206,11 @@ SubstringUtil::AttributedWordAtPoint(WebFrameWidgetImpl* frame_widget,
   // Convert to CFAttributedStringRef.
   NSAttributedString* string = AttributedSubstringFromRange(frame, word_range);
   baseline_point = GetBaselinePoint(frame->View(), word_range, string);
-  return base::ScopedCFTypeRef<CFAttributedStringRef>(
+  return base::apple::ScopedCFTypeRef<CFAttributedStringRef>(
       base::apple::NSToCFOwnershipCast(string));
 }
 
-base::ScopedCFTypeRef<CFAttributedStringRef>
+base::apple::ScopedCFTypeRef<CFAttributedStringRef>
 SubstringUtil::AttributedSubstringInRange(LocalFrame* frame,
                                           wtf_size_t location,
                                           wtf_size_t length,
@@ -219,18 +219,18 @@ SubstringUtil::AttributedSubstringInRange(LocalFrame* frame,
 
   Element* editable = frame->Selection().RootEditableElementOrDocumentElement();
   if (!editable) {
-    return base::ScopedCFTypeRef<CFAttributedStringRef>();
+    return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
   const EphemeralRange ephemeral_range(
       PlainTextRange(location, location + length).CreateRange(*editable));
   if (ephemeral_range.IsNull()) {
-    return base::ScopedCFTypeRef<CFAttributedStringRef>();
+    return base::apple::ScopedCFTypeRef<CFAttributedStringRef>();
   }
 
   NSAttributedString* string =
       AttributedSubstringFromRange(frame, ephemeral_range);
   baseline_point = GetBaselinePoint(frame->View(), ephemeral_range, string);
-  return base::ScopedCFTypeRef<CFAttributedStringRef>(
+  return base::apple::ScopedCFTypeRef<CFAttributedStringRef>(
       base::apple::NSToCFOwnershipCast(string));
 }
 

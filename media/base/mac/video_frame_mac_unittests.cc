@@ -115,7 +115,7 @@ TEST(VideoFrameMac, CheckWrapperFrame) {
   };
 
   for (const auto& format_pair : format_pairs) {
-    base::ScopedCFTypeRef<CVPixelBufferRef> pb;
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> pb;
     CVPixelBufferCreate(nullptr, kWidth, kHeight, format_pair.corevideo,
                         nullptr, pb.InitializeInto());
     ASSERT_TRUE(pb.get());

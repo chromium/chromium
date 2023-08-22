@@ -164,7 +164,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
 
   NSString* file_path = base::apple::FilePathToNSString(test_file_);
   ASSERT_NE(nullptr, file_path);
-  base::ScopedCFTypeRef<MDItemRef> md_item(
+  base::apple::ScopedCFTypeRef<MDItemRef> md_item(
       MDItemCreate(kCFAllocatorDefault, base::apple::NSToCFPtrCast(file_path)));
   if (!md_item) {
     // The quarantine code ignores it if adding origin metadata fails. If for
@@ -173,7 +173,7 @@ TEST_F(QuarantineMacTest, NoWhereFromsKeyIfNoURLs) {
     return;
   }
 
-  base::ScopedCFTypeRef<CFTypeRef> attr(
+  base::apple::ScopedCFTypeRef<CFTypeRef> attr(
       MDItemCopyAttribute(md_item, kMDItemWhereFroms));
   EXPECT_FALSE(attr);
 }

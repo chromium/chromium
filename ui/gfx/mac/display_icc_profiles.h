@@ -36,7 +36,7 @@ class COLOR_SPACE_EXPORT DisplayICCProfiles {
   DisplayICCProfiles& operator=(const DisplayICCProfiles&) = delete;
 
   // This will return null if |color_space| does not correspond to a display.
-  base::ScopedCFTypeRef<CFDataRef> GetDataForColorSpace(
+  base::apple::ScopedCFTypeRef<CFDataRef> GetDataForColorSpace(
       const ColorSpace& color_space);
 
  private:
@@ -51,7 +51,7 @@ class COLOR_SPACE_EXPORT DisplayICCProfiles {
 
   void UpdateIfNeeded();
 
-  base::flat_map<ColorSpace, base::ScopedCFTypeRef<CFDataRef>> map_;
+  base::flat_map<ColorSpace, base::apple::ScopedCFTypeRef<CFDataRef>> map_;
   bool needs_update_ = true;
 };
 

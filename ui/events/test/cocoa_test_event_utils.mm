@@ -72,7 +72,7 @@ NSEvent* MouseEventAtPoint(NSPoint point, NSEventType type,
     // appropriate buttonNumber field. NSEvent provides no way to create a
     // mouse event with a buttonNumber directly.
     CGPoint location = { point.x, point.y };
-    base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+    base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
         nullptr, kCGEventOtherMouseUp, location, kCGMouseButtonCenter));
     // Also specify the modifiers for the middle click case. This makes this
     // test resilient to external modifiers being pressed.
@@ -158,7 +158,7 @@ NSEvent* TestScrollEvent(NSPoint window_point,
   int32_t wheel2 = static_cast<int>(delta_x);
   CGScrollEventUnit units =
       has_precise_deltas ? kCGScrollEventUnitPixel : kCGScrollEventUnitLine;
-  base::ScopedCFTypeRef<CGEventRef> scroll(CGEventCreateScrollWheelEvent(
+  base::apple::ScopedCFTypeRef<CGEventRef> scroll(CGEventCreateScrollWheelEvent(
       nullptr, units, wheel_count, wheel1, wheel2));
   CGEventSetLocation(scroll, ScreenPointFromWindow(window_point, window));
 

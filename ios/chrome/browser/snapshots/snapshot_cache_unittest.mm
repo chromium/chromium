@@ -331,7 +331,7 @@ TEST_F(SnapshotCacheTest, SaveToDisk) {
     CGImageRef cgImage = [image CGImage];
     ASSERT_TRUE(cgImage != nullptr);
 
-    base::ScopedCFTypeRef<CFDataRef> pixelData(
+    base::apple::ScopedCFTypeRef<CFDataRef> pixelData(
         CGDataProviderCopyData(CGImageGetDataProvider(cgImage)));
     const char* pixels =
         reinterpret_cast<const char*>(CFDataGetBytePtr(pixelData));
@@ -339,7 +339,7 @@ TEST_F(SnapshotCacheTest, SaveToDisk) {
 
     UIImage* referenceImage = [testImages_ objectAtIndex:i];
     CGImageRef referenceCgImage = [referenceImage CGImage];
-    base::ScopedCFTypeRef<CFDataRef> referenceData(
+    base::apple::ScopedCFTypeRef<CFDataRef> referenceData(
         CGDataProviderCopyData(CGImageGetDataProvider(referenceCgImage)));
     const char* referencePixels =
         reinterpret_cast<const char*>(CFDataGetBytePtr(referenceData));

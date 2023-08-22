@@ -58,8 +58,8 @@ class DiskUnmounterMac {
   base::OnceClosure success_continuation_;
   base::OnceClosure failure_continuation_;
 
-  base::ScopedCFTypeRef<DADiskRef> disk_;
-  base::ScopedCFTypeRef<DASessionRef> session_;
+  base::apple::ScopedCFTypeRef<DADiskRef> disk_;
+  base::apple::ScopedCFTypeRef<DASessionRef> session_;
 
   // Thread is last to ensure it is stopped before the data members are
   // destroyed.

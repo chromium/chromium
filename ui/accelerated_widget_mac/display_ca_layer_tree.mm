@@ -89,7 +89,7 @@ void DisplayCALayerTree::UpdateCALayerTree(
   // IOSurfaces can be sent from software compositing, or if remote layers are
   // manually disabled.
   if (ca_layer_params.io_surface_mach_port) {
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface(
         IOSurfaceLookupFromMachPort(ca_layer_params.io_surface_mach_port));
     if (io_surface) {
       GotIOSurfaceFrame(io_surface, dip_size, ca_layer_params.scale_factor);
@@ -152,7 +152,7 @@ void DisplayCALayerTree::GotCALayerFrame(uint32_t ca_context_id) {
 }
 
 void DisplayCALayerTree::GotIOSurfaceFrame(
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
     const gfx::Size& dip_size,
     float scale_factor) {
   DCHECK(io_surface);

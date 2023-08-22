@@ -136,12 +136,12 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
       digest = *pss_storage;
     }
 
-    base::ScopedCFTypeRef<CFDataRef> digest_ref(
+    base::apple::ScopedCFTypeRef<CFDataRef> digest_ref(
         CFDataCreate(kCFAllocatorDefault, digest.data(),
                      base::checked_cast<CFIndex>(digest.size())));
 
-    base::ScopedCFTypeRef<CFErrorRef> error;
-    base::ScopedCFTypeRef<CFDataRef> signature_ref(SecKeyCreateSignature(
+    base::apple::ScopedCFTypeRef<CFErrorRef> error;
+    base::apple::ScopedCFTypeRef<CFDataRef> signature_ref(SecKeyCreateSignature(
         key_, sec_algorithm, digest_ref, error.InitializeInto()));
     if (!signature_ref) {
       LOG(ERROR) << error;
@@ -180,7 +180,7 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
 
   std::vector<uint16_t> preferences_;
   bssl::UniquePtr<EVP_PKEY> pubkey_;
-  base::ScopedCFTypeRef<SecKeyRef> key_;
+  base::apple::ScopedCFTypeRef<SecKeyRef> key_;
 };
 
 }  // namespace

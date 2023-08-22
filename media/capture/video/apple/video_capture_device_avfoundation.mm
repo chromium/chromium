@@ -1017,7 +1017,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
         media::GetSampleBufferSize(sampleBuffer), _rotation,
         kPixelBufferPoolSize);
-    base::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
         _sampleBufferTransformer->Transform(sampleBuffer);
     if (!pixelBuffer) {
       LOG(ERROR) << "Failed to transform captured frame. Dropping frame.";
@@ -1025,15 +1025,16 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
 
 #if BUILDFLAG(IS_MAC)
-    base::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer = pixelBuffer;
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
+        pixelBuffer;
 #else
     // The rotated_pixelBuffer might not be the same size as the source
     // pixelBuffer as it gets rotated by rotation_angle_. In order to restore
     // the original size, rotated_pixelBuffer need to scale it to its original
     // size by transforming it.
-    base::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixelBuffer =
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixelBuffer =
         _sampleBufferTransformer->Rotate(pixelBuffer);
-    base::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> final_pixel_buffer =
         _sampleBufferTransformer->Transform(rotated_pixelBuffer);
 
 #endif

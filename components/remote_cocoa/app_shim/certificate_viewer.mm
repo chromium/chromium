@@ -38,7 +38,7 @@ void ShowCertificateViewerForWindow(NSWindow* owning_window,
   // the certificate viewer UI from displaying which certificate is revoked.
   // This is acceptable, as certificate revocation will still be shown in
   // the page info bubble if a certificate in the chain is actually revoked.
-  base::ScopedCFTypeRef<CFMutableArrayRef> policies(
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> policies(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
   if (!policies.get()) {
     NOTREACHED();
@@ -46,7 +46,8 @@ void ShowCertificateViewerForWindow(NSWindow* owning_window,
   }
   // Add a basic X.509 policy, in order to match the behaviour of
   // SFCertificatePanel when no policies are specified.
-  base::ScopedCFTypeRef<SecPolicyRef> basic_policy(SecPolicyCreateBasicX509());
+  base::apple::ScopedCFTypeRef<SecPolicyRef> basic_policy(
+      SecPolicyCreateBasicX509());
   if (!basic_policy) {
     NOTREACHED();
     return;

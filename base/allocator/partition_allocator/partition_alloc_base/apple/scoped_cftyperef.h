@@ -9,7 +9,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/apple/scoped_typeref.h"
 
-namespace partition_alloc::internal::base {
+namespace partition_alloc::internal::base::apple {
 
 // ScopedCFTypeRef<> is patterned after std::unique_ptr<>, but maintains
 // ownership of a CoreFoundation object: any object that can be represented
@@ -43,6 +43,6 @@ template <typename CFT>
 using ScopedCFTypeRef =
     ScopedTypeRef<CFT, internal::ScopedCFTypeRefTraits<CFT>>;
 
-}  // namespace partition_alloc::internal::base
+}  // namespace partition_alloc::internal::base::apple
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_APPLE_SCOPED_CFTYPEREF_H_

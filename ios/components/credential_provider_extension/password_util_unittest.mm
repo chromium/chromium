@@ -38,7 +38,7 @@ void RemovePasswordForKey(NSString* key) {
 
 void AddPasswordForKey(NSString* key, NSString* password) {
   std::string utf8_password = base::SysNSStringToUTF8(password);
-  base::ScopedCFTypeRef<CFDataRef> data(CFDataCreate(
+  base::apple::ScopedCFTypeRef<CFDataRef> data(CFDataCreate(
       nullptr, reinterpret_cast<const UInt8*>(utf8_password.data()),
       utf8_password.size()));
 
@@ -60,7 +60,7 @@ void VerifyKeyNotFound(NSString* key) {
     (__bridge NSString*)kSecAttrAccount : KeyWithPrefix(key),
     (__bridge NSString*)kSecReturnData : @YES,
   };
-  base::ScopedCFTypeRef<CFTypeRef> cf_result;
+  base::apple::ScopedCFTypeRef<CFTypeRef> cf_result;
   OSStatus status = SecItemCopyMatching((__bridge CFDictionaryRef)query,
                                         cf_result.InitializeInto());
   ASSERT_EQ(errSecItemNotFound, status);

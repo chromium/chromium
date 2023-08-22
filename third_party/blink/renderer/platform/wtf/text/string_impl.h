@@ -478,7 +478,7 @@ class WTF_EXPORT StringImpl {
                  wtf_size_t length = UINT_MAX) const;
 
 #if BUILDFLAG(IS_APPLE)
-  base::ScopedCFTypeRef<CFStringRef> CreateCFString();
+  base::apple::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
 #ifdef __OBJC__
   operator NSString*();

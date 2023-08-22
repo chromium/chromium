@@ -21,7 +21,7 @@ struct ByteArrayPixelBuffer {
   ~ByteArrayPixelBuffer();
 
   std::vector<uint8_t> byte_array;
-  base::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> pixel_buffer;
 };
 
 // All pixels of the resulting buffer have the specified RGB. Alpha is 255.

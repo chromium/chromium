@@ -61,7 +61,7 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   // Returns whether initializing notifications has succeeded.
   bool InitNotificationsHelper();
 
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source_;
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source_;
   const raw_ptr<NetworkConfigWatcherMac::Delegate> delegate_;
 #if !BUILDFLAG(IS_IOS)
   int num_retry_ = 0;
@@ -135,7 +135,7 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
       nullptr,    // This is not reference counted.  No release function.
       nullptr,    // No description for this.
   };
-  base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
+  base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
       nullptr, CFSTR("org.chromium"), DynamicStoreCallback, &context));
   if (!store) {
     int error = SCError();

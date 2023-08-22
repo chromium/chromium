@@ -92,16 +92,16 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
     const base::FilePath& file_path) {
   SigningCertificatesPublicKeys public_keys;
 
-  base::ScopedCFTypeRef<CFURLRef> file_url =
+  base::apple::ScopedCFTypeRef<CFURLRef> file_url =
       base::apple::FilePathToCFURL(file_path);
-  base::ScopedCFTypeRef<SecStaticCodeRef> file_code;
+  base::apple::ScopedCFTypeRef<SecStaticCodeRef> file_code;
   if (SecStaticCodeCreateWithPath(file_url, kSecCSDefaultFlags,
                                   file_code.InitializeInto()) !=
       errSecSuccess) {
     return public_keys;
   }
 
-  base::ScopedCFTypeRef<CFDictionaryRef> signing_information;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> signing_information;
   if (SecCodeCopySigningInformation(file_code, kSecCSSigningInformation,
                                     signing_information.InitializeInto()) !=
       errSecSuccess) {
@@ -123,7 +123,8 @@ MacPlatformDelegate::GetSigningCertificatesPublicKeys(
   SecCertificateRef leaf_cert = reinterpret_cast<SecCertificateRef>(
       const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, 0)));
 
-  base::ScopedCFTypeRef<CFDataRef> der_data(SecCertificateCopyData(leaf_cert));
+  base::apple::ScopedCFTypeRef<CFDataRef> der_data(
+      SecCertificateCopyData(leaf_cert));
   if (!der_data) {
     return public_keys;
   }

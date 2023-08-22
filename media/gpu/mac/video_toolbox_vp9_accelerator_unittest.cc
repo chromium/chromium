@@ -24,7 +24,7 @@ class VideoToolboxVP9AcceleratorTest : public testing::Test {
 
  protected:
   MOCK_METHOD2(OnDecode,
-               void(base::ScopedCFTypeRef<CMSampleBufferRef>,
+               void(base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 
@@ -54,7 +54,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeRaw) {
   pic->frame_hdr->frame_size = 1;
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
   accelerator_->SubmitDecode(pic, segm_params, lf_params, reference_frames,
@@ -90,7 +90,7 @@ TEST_F(VideoToolboxVP9AcceleratorTest, DecodeSuperframe) {
   pic2->frame_hdr->frame_size = sizeof(frame_data2);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
   EXPECT_CALL(*this, OnOutput(_));
   accelerator_->SubmitDecode(pic1, segm_params, lf_params, reference_frames,

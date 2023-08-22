@@ -226,8 +226,8 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
   class ContentLayer {
    public:
     ContentLayer(TransformLayer* parent_layer,
-                 base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                 base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
+                 base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface,
+                 base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer,
                  const gfx::RectF& contents_rect,
                  const gfx::Rect& rect,
                  SkColor4f background_color,
@@ -259,7 +259,7 @@ class ACCELERATED_WIDGET_MAC_EXPORT CARendererLayerTree {
     // When they are committed to the window server, that will also increment
     // their use count.
     const gfx::ScopedInUseIOSurface io_surface_;
-    const base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
+    const base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
     scoped_refptr<SolidColorContents> solid_color_contents_;
     gfx::RectF contents_rect_;
     gfx::RectF rect_;

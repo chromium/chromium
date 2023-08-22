@@ -119,7 +119,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   {
     CGColorSpaceRef cg_color_space = screen.colorSpace.CGColorSpace;
     if (cg_color_space) {
-      base::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
+      base::apple::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
           CGColorSpaceCopyICCData(cg_color_space));
       if (cf_icc_profile) {
         icc_profile = gfx::ICCProfile::FromData(

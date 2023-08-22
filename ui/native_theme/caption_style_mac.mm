@@ -46,7 +46,7 @@ std::string MaybeAddCSSImportant(std::string css_string, bool important) {
 
 std::string GetMAForegroundColorAndOpacityAsCSSColor() {
   MACaptionAppearanceBehavior behavior;
-  base::ScopedCFTypeRef<CGColorRef> cg_color(
+  base::apple::ScopedCFTypeRef<CGColorRef> cg_color(
       MACaptionAppearanceCopyForegroundColor(kUserDomain, &behavior));
   bool important = behavior == kMACaptionAppearanceBehaviorUseValue;
   float opacity =
@@ -61,7 +61,7 @@ std::string GetMAForegroundColorAndOpacityAsCSSColor() {
 
 std::string GetMABackgroundColorAndOpacityAsCSSColor() {
   MACaptionAppearanceBehavior behavior;
-  base::ScopedCFTypeRef<CGColorRef> cg_color(
+  base::apple::ScopedCFTypeRef<CGColorRef> cg_color(
       MACaptionAppearanceCopyBackgroundColor(kUserDomain, &behavior));
   bool important = behavior == kMACaptionAppearanceBehaviorUseValue;
   float opacity =
@@ -127,17 +127,17 @@ std::string GetMATextEdgeStyleAsCSSShadow() {
 // each font face to be used in WebVTT captions, which is not implemented here.
 void GetMAFontAsCSSFontSpecifiers(std::string* font_family,
                                   std::string* font_variant) {
-  base::ScopedCFTypeRef<CTFontDescriptorRef> ct_font_desc(
+  base::apple::ScopedCFTypeRef<CTFontDescriptorRef> ct_font_desc(
       MACaptionAppearanceCopyFontDescriptorForStyle(
           kUserDomain, nullptr, kMACaptionAppearanceFontStyleDefault));
 
-  base::ScopedCFTypeRef<CFStringRef> ct_font_family_name(
+  base::apple::ScopedCFTypeRef<CFStringRef> ct_font_family_name(
       base::apple::CFCast<CFStringRef>(CTFontDescriptorCopyAttribute(
           ct_font_desc, kCTFontFamilyNameAttribute)));
   if (ct_font_family_name)
     *font_family = base::SysCFStringRefToUTF8(ct_font_family_name);
 
-  base::ScopedCFTypeRef<CFStringRef> ct_font_face_name(
+  base::apple::ScopedCFTypeRef<CFStringRef> ct_font_face_name(
       base::apple::CFCast<CFStringRef>(
           CTFontDescriptorCopyAttribute(ct_font_desc, kCTFontNameAttribute)));
   if (ct_font_face_name)
@@ -146,7 +146,7 @@ void GetMAFontAsCSSFontSpecifiers(std::string* font_family,
 
 std::string GetMAWindowColorAsCSSColor() {
   MACaptionAppearanceBehavior behavior;
-  base::ScopedCFTypeRef<CGColorRef> cg_color(
+  base::apple::ScopedCFTypeRef<CGColorRef> cg_color(
       MACaptionAppearanceCopyWindowColor(kUserDomain, &behavior));
   bool important = behavior == kMACaptionAppearanceBehaviorUseValue;
   float opacity = MACaptionAppearanceGetWindowOpacity(kUserDomain, &behavior);

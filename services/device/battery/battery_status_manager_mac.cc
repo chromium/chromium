@@ -109,8 +109,8 @@ void FetchBatteryStatus(CFDictionaryRef description,
 std::vector<mojom::BatteryStatus> GetInternalBatteriesStates() {
   std::vector<mojom::BatteryStatus> internal_sources;
 
-  base::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
-  base::ScopedCFTypeRef<CFArrayRef> power_sources_list(
+  base::apple::ScopedCFTypeRef<CFTypeRef> info(IOPSCopyPowerSourcesInfo());
+  base::apple::ScopedCFTypeRef<CFArrayRef> power_sources_list(
       IOPSCopyPowerSourcesList(info));
   CFIndex count = CFArrayGetCount(power_sources_list);
 
@@ -198,7 +198,7 @@ class BatteryStatusObserver {
   }
 
   BatteryCallback callback_;
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> notifier_run_loop_source_;
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> notifier_run_loop_source_;
 };
 
 class BatteryStatusManagerMac : public BatteryStatusManager {

@@ -182,7 +182,7 @@ absl::optional<std::string> GetBoardIdForThisMachine() {
 
   // This is what libpmenergy is observed to do in order to retrieve the correct
   // coefficients file for the local computer.
-  base::ScopedCFTypeRef<CFDataRef> board_id_data(
+  base::apple::ScopedCFTypeRef<CFDataRef> board_id_data(
       base::apple::CFCast<CFDataRef>(IORegistryEntryCreateCFProperty(
           platform_expert, CFSTR("board-id"), kCFAllocatorDefault, 0)));
 

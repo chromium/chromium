@@ -91,9 +91,9 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       for (const auto key_value_pair : value_dict) {
         // CFDictionaryAddValue() retains both |key| and |value|, so make sure
         // the references are balanced.
-        base::ScopedCFTypeRef<CFStringRef> key(
+        base::apple::ScopedCFTypeRef<CFStringRef> key(
             base::SysUTF8ToCFStringRef(key_value_pair.first));
-        base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
+        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
             ValueToProperty(key_value_pair.second));
         if (cf_value)
           CFDictionaryAddValue(dict, key, cf_value);
@@ -108,7 +108,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       for (const base::Value& entry : list) {
         // CFArrayAppendValue() retains |cf_value|, so make sure the reference
         // created by ValueToProperty() is released.
-        base::ScopedCFTypeRef<CFPropertyListRef> cf_value(
+        base::apple::ScopedCFTypeRef<CFPropertyListRef> cf_value(
             ValueToProperty(entry));
         if (cf_value)
           CFArrayAppendValue(array, cf_value);

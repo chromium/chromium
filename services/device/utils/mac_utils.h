@@ -21,7 +21,7 @@ absl::optional<T> GetIntegerProperty(io_service_t service,
                     std::is_same_v<T, int32_t>,
                 "Unsupported template type");
 
-  base::ScopedCFTypeRef<CFNumberRef> cf_number(
+  base::apple::ScopedCFTypeRef<CFNumberRef> cf_number(
       base::apple::CFCast<CFNumberRef>(IORegistryEntryCreateCFProperty(
           service, property, kCFAllocatorDefault, 0)));
 
@@ -56,7 +56,7 @@ absl::optional<T> GetStringProperty(io_service_t service,
       std::is_same_v<T, std::string> || std::is_same_v<T, std::u16string>,
       "Unsupported template type");
 
-  base::ScopedCFTypeRef<CFStringRef> ref(
+  base::apple::ScopedCFTypeRef<CFStringRef> ref(
       base::apple::CFCast<CFStringRef>(IORegistryEntryCreateCFProperty(
           service, property, kCFAllocatorDefault, 0)));
 

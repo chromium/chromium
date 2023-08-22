@@ -25,9 +25,9 @@ namespace {
 // created from PNG data. Logs error as well.
 UIImage* CreateErrorUIImage(float scale) {
   LOG(ERROR) << "Unable to decode PNG into UIImage.";
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr,  // Allow CG to allocate memory.
       16,       // width
       16,       // height
@@ -38,7 +38,7 @@ UIImage* CreateErrorUIImage(float scale) {
           static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
   CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 1.0);
   CGContextFillRect(context, CGRectMake(0.0, 0.0, 16, 16));
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       CGBitmapContextCreateImage(context));
   return [UIImage imageWithCGImage:cg_image.get()
                              scale:scale

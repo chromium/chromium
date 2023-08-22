@@ -671,7 +671,7 @@ void WebFrameWidgetImpl::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                           GetStringAtPointCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  base::ScopedCFTypeRef<CFAttributedStringRef> string =
+  base::apple::ScopedCFTypeRef<CFAttributedStringRef> string =
       SubstringUtil::AttributedWordAtPoint(this, point_in_local_root,
                                            baseline_point);
   if (string) {

@@ -44,7 +44,7 @@ bool GetBoolFromDictionary(CFDictionaryRef dict,
 
 void GetCurrentProxyConfig(const NetworkTrafficAnnotationTag traffic_annotation,
                            ProxyConfigWithAnnotation* config) {
-  base::ScopedCFTypeRef<CFDictionaryRef> config_dict(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> config_dict(
       SCDynamicStoreCopyProxies(nullptr));
   DCHECK(config_dict);
   ProxyConfig proxy_config;
@@ -241,9 +241,9 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
   // Called on notifier thread.
 
-  base::ScopedCFTypeRef<CFStringRef> proxies_key(
+  base::apple::ScopedCFTypeRef<CFStringRef> proxies_key(
       SCDynamicStoreKeyCreateProxies(nullptr));
-  base::ScopedCFTypeRef<CFArrayRef> key_array(CFArrayCreate(
+  base::apple::ScopedCFTypeRef<CFArrayRef> key_array(CFArrayCreate(
       nullptr, (const void**)(&proxies_key), 1, &kCFTypeArrayCallBacks));
 
   bool ret =

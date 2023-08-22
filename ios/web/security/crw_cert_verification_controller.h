@@ -60,7 +60,8 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 // compatible form (e.g. for "http://名がドメイン.com", it should be
 // "xn--v8jxj3d1dzdz08w.com"). `completionHandler` cannot be null and will be
 // called asynchronously on the UI thread.
-- (void)decideLoadPolicyForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
+- (void)decideLoadPolicyForTrust:
+            (base::apple::ScopedCFTypeRef<SecTrustRef>)trust
                             host:(NSString*)host
                completionHandler:(web::PolicyDecisionHandler)completionHandler;
 
@@ -72,7 +73,7 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 // It is possible for an untrusted certificate to return a net::CertStatus with
 // no errors if the cause could not be determined. Callers must handle this case
 // gracefully.
-- (void)querySSLStatusForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
+- (void)querySSLStatusForTrust:(base::apple::ScopedCFTypeRef<SecTrustRef>)trust
                           host:(NSString*)host
              completionHandler:(web::StatusQueryHandler)completionHandler;
 @end

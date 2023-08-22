@@ -145,7 +145,7 @@ class NET_EXPORT TrustStoreMac : public TrustStore {
   // macOS internally uses a normalized form of subject/issuer names for
   // comparing, roughly similar to RFC3280's normalization scheme. The
   // normalized form is used for any database lookups and comparisons.
-  static base::ScopedCFTypeRef<CFDataRef> GetMacNormalizedIssuer(
+  static base::apple::ScopedCFTypeRef<CFDataRef> GetMacNormalizedIssuer(
       const ParsedCertificate* cert);
 
   std::unique_ptr<TrustImpl> trust_cache_;

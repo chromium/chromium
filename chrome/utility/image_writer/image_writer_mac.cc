@@ -33,9 +33,9 @@ namespace image_writer {
 static const char kAuthOpenPath[] = "/usr/libexec/authopen";
 
 bool ImageWriter::IsValidDevice() {
-  base::ScopedCFTypeRef<CFStringRef> cf_bsd_name(
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_bsd_name(
       base::SysUTF8ToCFStringRef(device_path_.value()));
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> matching(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching(
       IOServiceMatching(kIOMediaClass));
   CFDictionaryAddValue(matching, CFSTR(kIOMediaWholeKey), kCFBooleanTrue);
   CFDictionaryAddValue(matching, CFSTR(kIOMediaWritableKey), kCFBooleanTrue);

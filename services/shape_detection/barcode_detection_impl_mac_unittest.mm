@@ -104,7 +104,7 @@ TEST_P(BarcodeDetectionImplMacTest, ScanOneBarcode) {
 
   CIContext* context = [[CIContext alloc] init];
 
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       [context createCGImage:qr_code_image fromRect:qr_code_image.extent]);
   EXPECT_EQ(static_cast<size_t>(size.width()), CGImageGetWidth(cg_image));
   EXPECT_EQ(static_cast<size_t>(size.height()), CGImageGetHeight(cg_image));

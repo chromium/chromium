@@ -52,7 +52,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputDeviceMac : public SoftwareOutputDevice {
   struct Buffer {
     Buffer();
     ~Buffer();
-    base::ScopedCFTypeRef<IOSurfaceRef> io_surface;
+    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface;
     // The damage of all BeginPaints since this buffer was the back buffer.
     SkRegion accumulated_damage;
   };

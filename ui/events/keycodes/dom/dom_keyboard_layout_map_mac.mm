@@ -51,7 +51,7 @@ ui::DomKey DomKeyboardLayoutMapMac::GetDomKeyFromDomCodeForLayout(
 
   UInt32 dead_key_state = 0;
   uint16_t key_code = ui::KeycodeConverter::DomCodeToNativeKeycode(dom_code);
-  base::ScopedCFTypeRef<TISInputSourceRef> input_source(
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> input_source(
       TISCopyCurrentASCIICapableKeyboardLayoutInputSource());
   UniChar char_value = ui::TranslatedUnicodeCharFromKeyCode(
       input_source.get(), key_code, kUCKeyActionDisplay, 0, LMGetKbdType(),

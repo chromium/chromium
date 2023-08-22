@@ -24,7 +24,7 @@
 @end
 
 @implementation FakeAVCaptureDeviceFormat {
-  base::ScopedCFTypeRef<CMVideoFormatDescriptionRef> _formatDescription;
+  base::apple::ScopedCFTypeRef<CMVideoFormatDescriptionRef> _formatDescription;
   FakeAVFrameRateRange* __strong _frameRateRange1;
   FakeAVFrameRateRange* __strong _frameRateRange2;
 }

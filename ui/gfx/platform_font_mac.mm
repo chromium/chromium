@@ -94,7 +94,7 @@ Weight GetFontWeightFromCTFont(CTFontRef font) {
       {0.60, 1.0, Weight::BLACK},           // NSFontWeightBlack
   };
 
-  base::ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font));
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font));
   DCHECK(traits);
   CFNumberRef cf_weight = base::apple::GetValueFromDictionary<CFNumberRef>(
       traits, kCTFontWeightTrait);
@@ -243,7 +243,7 @@ SystemFontTypeFromUndocumentedCTFontRefInternals(CTFontRef font) {
   // the provided font.
   //
   // TODO(avi, etienneb): Figure out this font stuff.
-  base::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
+  base::apple::ScopedCFTypeRef<CTFontDescriptorRef> descriptor(
       CTFontCopyFontDescriptor(font));
   if (CTFontDescriptorIsSystemUIFont(descriptor.get())) {
     // Assume it's the standard system font. The fact that this much is known is
@@ -352,7 +352,7 @@ Font PlatformFontMac::DeriveFont(int size_delta,
         base::apple::NSToCFPtrCast(derived), SystemFontType::kToolTip,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   } else {
-    base::ScopedCFTypeRef<CTFontRef> derived = CTFontWithSpec(
+    base::apple::ScopedCFTypeRef<CTFontRef> derived = CTFontWithSpec(
         {font_spec_.name, font_spec_.size + size_delta, style, weight});
     return Font(new PlatformFontMac(
         derived, absl::nullopt,
@@ -484,7 +484,7 @@ void PlatformFontMac::CalculateMetricsAndInitRenderParams() {
   render_params_ = gfx::GetFontRenderParams(query, nullptr);
 }
 
-base::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
+base::apple::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
     FontSpec font_spec) const {
   // One might think that a font descriptor with the NSFontWeightTrait/
   // kCTFontWeightTrait trait could be used to look up a font with a specific
@@ -509,7 +509,7 @@ base::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
                             weight:ToNSFontManagerWeight(font_spec.weight)
                               size:font_spec.size];
   if (font) {
-    return base::ScopedCFTypeRef<CTFontRef>(
+    return base::apple::ScopedCFTypeRef<CTFontRef>(
         base::apple::NSToCFOwnershipCast(font));
   }
 
@@ -531,7 +531,7 @@ base::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
 
   font = [NSFont fontWithDescriptor:descriptor size:font_spec.size];
   if (font) {
-    return base::ScopedCFTypeRef<CTFontRef>(
+    return base::apple::ScopedCFTypeRef<CTFontRef>(
         base::apple::NSToCFOwnershipCast(font));
   }
 
@@ -540,7 +540,7 @@ base::ScopedCFTypeRef<CTFontRef> PlatformFontMac::CTFontWithSpec(
   font = [NSFont systemFontOfSize:font_spec.size
                            weight:ToNSFontWeight(font_spec.weight)];
   font = [font_manager convertFont:font toHaveTrait:traits];
-  return base::ScopedCFTypeRef<CTFontRef>(
+  return base::apple::ScopedCFTypeRef<CTFontRef>(
       base::apple::NSToCFOwnershipCast(font));
 }
 

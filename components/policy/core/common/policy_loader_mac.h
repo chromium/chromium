@@ -86,7 +86,7 @@ class POLICY_EXPORT PolicyLoaderMac : public AsyncPolicyLoader {
   base::FilePathWatcher watcher_;
 
   // Application ID to pass into Mac's Preference Utilities API.
-  base::ScopedCFTypeRef<CFStringRef> application_id_;
+  base::apple::ScopedCFTypeRef<CFStringRef> application_id_;
 };
 
 }  // namespace policy

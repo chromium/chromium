@@ -74,7 +74,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   [super setFrameSize:newSize];
 
   if (!_shapeLayer.path || !NSEqualSizes(oldSize, newSize)) {
-    base::ScopedCFTypeRef<CGMutablePathRef> oval(CGPathCreateMutable());
+    base::apple::ScopedCFTypeRef<CGMutablePathRef> oval(CGPathCreateMutable());
     CGRect ovalRect = CGRectMake(0, 0, newSize.width, newSize.height);
     CGPathAddEllipseInRect(oval, nullptr, ovalRect);
     _shapeLayer.path = oval;
@@ -84,7 +84,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 - (void)setShieldAlpha:(CGFloat)shieldAlpha {
   if (shieldAlpha != _shieldAlpha) {
     _shieldAlpha = shieldAlpha;
-    base::ScopedCFTypeRef<CGColorRef> fillColor(
+    base::apple::ScopedCFTypeRef<CGColorRef> fillColor(
         CGColorCreateGenericGray(0, shieldAlpha));
     _shapeLayer.fillColor = fillColor;
   }

@@ -176,7 +176,7 @@ bool MacSignatureEvaluator::GetRelativePathComponent(
 }
 
 bool MacSignatureEvaluator::Initialize() {
-  base::ScopedCFTypeRef<CFURLRef> code_url =
+  base::apple::ScopedCFTypeRef<CFURLRef> code_url =
       base::apple::FilePathToCFURL(path_);
   if (!code_url)
     return false;
@@ -199,7 +199,7 @@ bool MacSignatureEvaluator::Initialize() {
 bool MacSignatureEvaluator::PerformEvaluation(
     ClientIncidentReport_IncidentData_BinaryIntegrityIncident* incident) {
   DCHECK(incident->contained_file_size() == 0);
-  base::ScopedCFTypeRef<CFErrorRef> errors;
+  base::apple::ScopedCFTypeRef<CFErrorRef> errors;
   OSStatus err = SecStaticCodeCheckValidityWithErrors(
       code_, kSecCSCheckAllArchitectures, requirement_,
       errors.InitializeInto());
@@ -210,7 +210,7 @@ bool MacSignatureEvaluator::PerformEvaluation(
   incident->set_sec_error(err);
   // We heuristically detect if we are in a bundle or not by checking if
   // the main executable is different from the path_.
-  base::ScopedCFTypeRef<CFDictionaryRef> info_dict;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> info_dict;
   base::FilePath exec_path;
   if (SecCodeCopySigningInformation(code_, kSecCSDefaultFlags,
                                     info_dict.InitializeInto()) ==
@@ -232,7 +232,8 @@ bool MacSignatureEvaluator::PerformEvaluation(
   }
 
   if (errors) {
-    base::ScopedCFTypeRef<CFDictionaryRef> info(CFErrorCopyUserInfo(errors));
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> info(
+        CFErrorCopyUserInfo(errors));
     static const CFStringRef keys[] = {
         kSecCFErrorResourceAltered, kSecCFErrorResourceMissing,
     };

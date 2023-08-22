@@ -50,7 +50,7 @@ NSString* const kDockPersistentAppsKey = @"persistent-apps";
 // A wrapper around _CFURLCopyPropertyListRepresentation that operates on
 // Foundation data types and returns an autoreleased NSDictionary.
 NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
-  base::ScopedCFTypeRef<CFPropertyListRef> property_list(
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> property_list(
       _CFURLCopyPropertyListRepresentation(base::apple::NSToCFPtrCast(url)));
   CFDictionaryRef dictionary =
       base::apple::CFCast<CFDictionaryRef>(property_list);
@@ -64,7 +64,7 @@ NSDictionary* DockFileDataDictionaryForURL(NSURL* url) {
 // A wrapper around _CFURLCreateFromPropertyListRepresentation that operates
 // on Foundation data types and returns an autoreleased NSURL.
 NSURL* URLFromDockFileDataDictionary(NSDictionary* dictionary) {
-  base::ScopedCFTypeRef<CFURLRef> url(
+  base::apple::ScopedCFTypeRef<CFURLRef> url(
       _CFURLCreateFromPropertyListRepresentation(
           kCFAllocatorDefault, base::apple::NSToCFPtrCast(dictionary)));
   if (!url)

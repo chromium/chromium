@@ -15,7 +15,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_switching_manager.h"
 
-namespace base {
+namespace base::apple {
 
 template <>
 struct ScopedTypeRefTraits<CGLContextObj> {
@@ -37,7 +37,7 @@ struct ScopedTypeRefTraits<CGLPixelFormatObj> {
   }
 };
 
-}  // namespace base
+}  // namespace base::apple
 
 namespace ui {
 
@@ -66,7 +66,7 @@ IOSurfaceContext::Get(Type type) {
     return found->second;
   }
 
-  base::ScopedTypeRef<CGLContextObj> cgl_context;
+  base::apple::ScopedTypeRef<CGLContextObj> cgl_context;
   CGLError error = kCGLNoError;
 
   // Create the pixel format object for the context.
@@ -77,7 +77,7 @@ IOSurfaceContext::Get(Type type) {
     attribs.push_back(kCGLPFAAllowOfflineRenderers);
   attribs.push_back(static_cast<CGLPixelFormatAttribute>(0));
   GLint number_virtual_screens = 0;
-  base::ScopedTypeRef<CGLPixelFormatObj> pixel_format;
+  base::apple::ScopedTypeRef<CGLPixelFormatObj> pixel_format;
   error = CGLChoosePixelFormat(&attribs.front(),
                                pixel_format.InitializeInto(),
                                &number_virtual_screens);
@@ -114,7 +114,7 @@ void IOSurfaceContext::PoisonContextAndSharegroup() {
 
 IOSurfaceContext::IOSurfaceContext(
     Type type,
-    base::ScopedTypeRef<CGLContextObj> cgl_context)
+    base::apple::ScopedTypeRef<CGLContextObj> cgl_context)
     : type_(type), cgl_context_(cgl_context) {
   auto* type_map = GetTypeMap();
   DCHECK(type_map->find(type_) == type_map->end());

@@ -38,9 +38,9 @@ bool UIImagesAreEqual(UIImage* image_1, UIImage* image_2) {
   if (!CGSizeEqualToSize(image_1.size, image_2.size))
     return false;
 
-  base::ScopedCFTypeRef<CFDataRef> data_ref_1(
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref_1(
       CGDataProviderCopyData(CGImageGetDataProvider(image_1.CGImage)));
-  base::ScopedCFTypeRef<CFDataRef> data_ref_2(
+  base::apple::ScopedCFTypeRef<CFDataRef> data_ref_2(
       CGDataProviderCopyData(CGImageGetDataProvider(image_2.CGImage)));
   CFIndex length_1 = CFDataGetLength(data_ref_1);
   CFIndex length_2 = CFDataGetLength(data_ref_2);

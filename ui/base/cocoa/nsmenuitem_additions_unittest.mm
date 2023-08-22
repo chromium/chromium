@@ -587,7 +587,7 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
   // can be fired on all layouts.
   NSMenuItem* item = MenuItem(@"m", NSEventModifierFlagCommand);
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> filter(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> filter(
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
@@ -596,7 +596,7 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
 
   // Docs say that including all layouts instead of just the active ones is
   // slow, but there's no way around that.
-  base::ScopedCFTypeRef<CFArrayRef> list(
+  base::apple::ScopedCFTypeRef<CFArrayRef> list(
       TISCreateInputSourceList(filter, /*includeAllInstalled=*/true));
 
   for (CFIndex i = 0; i < CFArrayGetCount(list); ++i) {

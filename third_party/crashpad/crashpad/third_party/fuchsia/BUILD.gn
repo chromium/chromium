@@ -18,7 +18,7 @@ if (crashpad_is_in_fuchsia) {
   group("fuchsia") {
     public_deps = [
       "//sdk/lib/fdio",
-      "//zircon/public/lib/zx",
+      "//zircon/system/ulib/zx",
     ]
   }
 } else if (crashpad_is_in_chromium) {

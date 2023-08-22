@@ -82,7 +82,7 @@ class NET_EXPORT TestRootCerts {
   void ClearImpl();
 
 #if BUILDFLAG(IS_IOS)
-  base::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
 #endif
 
   TrustStoreInMemory test_trust_store_;

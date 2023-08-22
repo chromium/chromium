@@ -26,7 +26,7 @@
 
 namespace device::fido::mac {
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 using cbor::Value;
 using cbor::Writer;
 
@@ -163,12 +163,12 @@ std::unique_ptr<PublicKey> SecKeyRefToECPublicKey(SecKeyRef public_key_ref) {
 }
 
 CodeSigningState ProcessIsSigned() {
-  base::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
+  base::apple::ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(nullptr));
   if (!task) {
     return CodeSigningState::kNotSigned;
   }
 
-  base::ScopedCFTypeRef<CFStringRef> sign_id(
+  base::apple::ScopedCFTypeRef<CFStringRef> sign_id(
       SecTaskCopySigningIdentifier(task.get(), /*error=*/nullptr));
   return static_cast<bool>(sign_id) ? CodeSigningState::kSigned
                                     : CodeSigningState::kNotSigned;

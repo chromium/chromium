@@ -95,7 +95,7 @@ class GamepadPlatformDataFetcherMac : public GamepadDataFetcher {
 
   bool enabled_ = false;
   bool paused_ = false;
-  base::ScopedCFTypeRef<IOHIDManagerRef> hid_manager_ref_;
+  base::apple::ScopedCFTypeRef<IOHIDManagerRef> hid_manager_ref_;
 
   // A map of all devices using this data fetcher with the source_id as the key.
   std::unordered_map<int, std::unique_ptr<GamepadDeviceMac>> devices_;

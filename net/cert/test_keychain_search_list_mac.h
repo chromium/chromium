@@ -40,7 +40,7 @@ class NET_EXPORT TestKeychainSearchList {
  private:
   TestKeychainSearchList();
 
-  base::ScopedCFTypeRef<CFMutableArrayRef> scoped_keychain_search_list;
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> scoped_keychain_search_list;
 };
 
 }  // namespace net

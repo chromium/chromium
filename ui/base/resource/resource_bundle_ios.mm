@@ -128,9 +128,9 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
       CGSize source_size = ui_image.size;
       CGSize target_size = CGSizeMake(source_size.width * target_scale,
                                       source_size.height * target_scale);
-      base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+      base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
           CGColorSpaceCreateDeviceRGB());
-      base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+      base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
           /*data=*/nullptr, target_size.width, target_size.height, 8,
           target_size.width * 4, color_space,
           kCGImageAlphaPremultipliedFirst |
@@ -141,7 +141,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
       CGContextSetBlendMode(context, kCGBlendModeCopy);
       CGContextDrawImage(context, target_rect, ui_image.CGImage);
 
-      base::ScopedCFTypeRef<CGImageRef> cg_image(
+      base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
           CGBitmapContextCreateImage(context));
       ui_image = [[UIImage alloc] initWithCGImage:cg_image
                                             scale:target_scale

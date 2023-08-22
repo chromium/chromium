@@ -41,26 +41,27 @@ class CAPTURE_EXPORT PixelBufferPool {
   //
   // Retaining a pixel buffer and preventing it from returning to the pool can
   // be done either by keeping a reference directly to the CVPixelBuffer, e.g.
-  // with a base::ScopedCFTypeRef<CVPixelBufferRef>, or by incrementing the use
-  // count of the IOSurface, i.e. with IOSurfaceIncrementUseCount().
+  // with a base::apple::ScopedCFTypeRef<CVPixelBufferRef>, or by incrementing
+  // the use count of the IOSurface, i.e. with IOSurfaceIncrementUseCount().
   //
   // WARNING: Retaining references to the pixel buffer's IOSurface (e.g. with
-  // base::ScopedCFTypeRef<IOSurfaceRef>) without incrementing its use count
-  // does NOT prevent it from being recycled!
-  base::ScopedCFTypeRef<CVPixelBufferRef> CreateBuffer();
+  // base::apple::ScopedCFTypeRef<IOSurfaceRef>) without incrementing its use
+  // count does NOT prevent it from being recycled!
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreateBuffer();
 
   // Frees the memory of any released buffers returned to the pool.
   void Flush();
 
  private:
   friend std::unique_ptr<PixelBufferPool> std::make_unique<PixelBufferPool>(
-      base::ScopedCFTypeRef<CVPixelBufferPoolRef>&& buffer_pool,
+      base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef>&& buffer_pool,
       absl::optional<size_t>&& max_buffers);
 
-  PixelBufferPool(base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
-                  absl::optional<size_t> max_buffers);
+  PixelBufferPool(
+      base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
+      absl::optional<size_t> max_buffers);
 
-  base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool_;
+  base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool_;
   const absl::optional<size_t> max_buffers_;
   size_t num_consecutive_errors_;
 };

@@ -191,7 +191,7 @@ PlatformImage CreatePlatformImage() {
     bitmap = CreateBitmap(size, size);
   }
 
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
       skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space);

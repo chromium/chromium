@@ -38,11 +38,12 @@ class NavigationManagerImpl;
 
 // Updates SSL status for the current navigation item. The SSL Status is
 // obtained from `host`, `chain` and `hasOnlySecureContent` flag.
-- (void)updateSSLStatusForNavigationItem:(web::NavigationItem*)navigationItem
-                            withCertHost:(NSString*)host
-                                   trust:
-                                       (base::ScopedCFTypeRef<SecTrustRef>)trust
-                    hasOnlySecureContent:(BOOL)hasOnlySecureContent;
+- (void)
+    updateSSLStatusForNavigationItem:(web::NavigationItem*)navigationItem
+                        withCertHost:(NSString*)host
+                               trust:(base::apple::ScopedCFTypeRef<SecTrustRef>)
+                                         trust
+                hasOnlySecureContent:(BOOL)hasOnlySecureContent;
 
 @end
 
@@ -59,7 +60,7 @@ typedef void (^StatusQueryHandler)(web::SecurityStyle, net::CertStatus);
 // `completionHandler` is called asynchronously when web::SecurityStyle and
 // net::CertStatus are computed.
 - (void)SSLStatusUpdater:(CRWSSLStatusUpdater*)SSLStatusUpdater
-    querySSLStatusForTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
+    querySSLStatusForTrust:(base::apple::ScopedCFTypeRef<SecTrustRef>)trust
                       host:(NSString*)host
          completionHandler:(StatusQueryHandler)completionHandler;
 

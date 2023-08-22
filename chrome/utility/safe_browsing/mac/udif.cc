@@ -457,7 +457,7 @@ bool UDIFParser::ParseBlkx() {
     return false;
   }
 
-  base::ScopedCFTypeRef<CFDataRef> plist_data(
+  base::apple::ScopedCFTypeRef<CFDataRef> plist_data(
       CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, plist_bytes.data(),
                                   plist_bytes.size(), kCFAllocatorNull));
   if (!plist_data) {
@@ -466,15 +466,15 @@ bool UDIFParser::ParseBlkx() {
   }
 
   CFErrorRef error = nullptr;
-  base::ScopedCFTypeRef<CFPropertyListRef> plist(
+  base::apple::ScopedCFTypeRef<CFPropertyListRef> plist(
       CFPropertyListCreateWithData(kCFAllocatorDefault, plist_data,
                                    kCFPropertyListImmutable, nullptr, &error));
 
   CFDictionaryRef plist_dict =
       base::apple::CFCast<CFDictionaryRef>(plist.get());
-  base::ScopedCFTypeRef<CFErrorRef> error_ref(error);
+  base::apple::ScopedCFTypeRef<CFErrorRef> error_ref(error);
   if (error) {
-    base::ScopedCFTypeRef<CFStringRef> error_string(
+    base::apple::ScopedCFTypeRef<CFStringRef> error_string(
         CFErrorCopyDescription(error));
     DLOG(ERROR) << "Failed to parse XML plist: "
                 << base::SysCFStringRefToUTF8(error_string);

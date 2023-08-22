@@ -83,7 +83,7 @@ NSArray* AXElementWrapper::Children() const {
     return [node_ children];
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFTypeRef> children_ref;
+    base::apple::ScopedCFTypeRef<CFTypeRef> children_ref;
     if ((AXUIElementCopyAttributeValue(
             (__bridge AXUIElementRef)node_, kAXChildrenAttribute,
             children_ref.InitializeInto())) == kAXErrorSuccess) {
@@ -151,7 +151,7 @@ NSArray* AXElementWrapper::AttributeNames() const {
   }
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFArrayRef> attributes_ref;
+    base::apple::ScopedCFTypeRef<CFArrayRef> attributes_ref;
     AXError result = AXUIElementCopyAttributeNames(
         (__bridge AXUIElementRef)node_, attributes_ref.InitializeInto());
     if (AXSuccess(result, "AXAttributeNamesOf")) {
@@ -171,7 +171,7 @@ NSArray* AXElementWrapper::ParameterizedAttributeNames() const {
   }
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFArrayRef> attributes_ref;
+    base::apple::ScopedCFTypeRef<CFArrayRef> attributes_ref;
     AXError result = AXUIElementCopyParameterizedAttributeNames(
         (__bridge AXUIElementRef)node_, attributes_ref.InitializeInto());
     if (AXSuccess(result, "AXParameterizedAttributeNamesOf")) {
@@ -192,7 +192,7 @@ AXOptionalNSObject AXElementWrapper::GetAttributeValue(
   }
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFTypeRef> value_ref;
+    base::apple::ScopedCFTypeRef<CFTypeRef> value_ref;
     AXError result = AXUIElementCopyAttributeValue(
         (__bridge AXUIElementRef)node_, (__bridge CFStringRef)attribute,
         value_ref.InitializeInto());
@@ -212,7 +212,8 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
                                                     forParameter:parameter]);
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFTypeRef> parameter_ref(CFBridgingRetain(parameter));
+    base::apple::ScopedCFTypeRef<CFTypeRef> parameter_ref(
+        CFBridgingRetain(parameter));
     if ([parameter isKindOfClass:[NSValue class]] &&
         !strcmp([parameter objCType], @encode(NSRange))) {
       NSRange range = [parameter rangeValue];
@@ -220,7 +221,7 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
     }
 
     // Get value.
-    base::ScopedCFTypeRef<CFTypeRef> value_ref;
+    base::apple::ScopedCFTypeRef<CFTypeRef> value_ref;
     AXError result = AXUIElementCopyParameterizedAttributeValue(
         (__bridge AXUIElementRef)node_, (__bridge CFStringRef)attribute,
         parameter_ref, value_ref.InitializeInto());
@@ -286,7 +287,7 @@ NSArray* AXElementWrapper::ActionNames() const {
     return [node_ accessibilityActionNames];
 
   if (IsAXUIElement()) {
-    base::ScopedCFTypeRef<CFArrayRef> attributes_ref;
+    base::apple::ScopedCFTypeRef<CFArrayRef> attributes_ref;
     if ((AXUIElementCopyActionNames((__bridge AXUIElementRef)node_,
                                     attributes_ref.InitializeInto())) ==
         kAXErrorSuccess) {

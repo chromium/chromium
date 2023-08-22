@@ -130,7 +130,7 @@ launch_data_t CFPropertyToLaunchData(CFPropertyListRef property_cf) {
           base::apple::CFCastStrict<CFDataRef>(property_cf));
       data_launch = LaunchDataNewOpaque([data_ns bytes], [data_ns length]);
     } else {
-      base::ScopedCFTypeRef<CFStringRef> type_name_cf(
+      base::apple::ScopedCFTypeRef<CFStringRef> type_name_cf(
           CFCopyTypeIDDescription(type_id_cf));
       DLOG(ERROR) << "unable to convert CFTypeID " << type_id_cf << " ("
                   << base::SysCFStringRefToUTF8(type_name_cf) << ")";

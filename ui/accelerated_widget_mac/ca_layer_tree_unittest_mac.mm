@@ -44,15 +44,15 @@ struct CALayerProperties {
   unsigned filter = GL_LINEAR;
   gfx::ScopedIOSurface io_surface;
   gfx::ColorSpace color_space;
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
 
   bool allow_av_layers = true;
   bool allow_solid_color_layers = true;
 };
 
-base::ScopedCFTypeRef<CVPixelBufferRef> CreateCVPixelBuffer(
+base::apple::ScopedCFTypeRef<CVPixelBufferRef> CreateCVPixelBuffer(
     gfx::ScopedIOSurface io_surface) {
-  base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer;
   CVPixelBufferCreateWithIOSurface(nullptr, io_surface, nullptr,
                                    cv_pixel_buffer.InitializeInto());
   return cv_pixel_buffer;

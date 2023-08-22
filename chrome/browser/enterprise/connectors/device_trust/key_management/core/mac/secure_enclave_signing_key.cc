@@ -23,7 +23,7 @@ namespace {
 // An implementation of crypto::UnexportableSigningKey.
 class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
  public:
-  SecureEnclaveSigningKey(base::ScopedCFTypeRef<SecKeyRef> key,
+  SecureEnclaveSigningKey(base::apple::ScopedCFTypeRef<SecKeyRef> key,
                           std::unique_ptr<SecureEnclaveClient> client,
                           SecureEnclaveClient::KeyType type);
   ~SecureEnclaveSigningKey() override;
@@ -36,13 +36,13 @@ class SecureEnclaveSigningKey : public crypto::UnexportableSigningKey {
       base::span<const uint8_t> data) override;
 
  private:
-  base::ScopedCFTypeRef<SecKeyRef> key_;
+  base::apple::ScopedCFTypeRef<SecKeyRef> key_;
   std::unique_ptr<SecureEnclaveClient> client_;
   SecureEnclaveClient::KeyType key_type_;
 };
 
 SecureEnclaveSigningKey::SecureEnclaveSigningKey(
-    base::ScopedCFTypeRef<SecKeyRef> key,
+    base::apple::ScopedCFTypeRef<SecKeyRef> key,
     std::unique_ptr<SecureEnclaveClient> client,
     SecureEnclaveClient::KeyType type)
     : key_(std::move(key)), client_(std::move(client)), key_type_(type) {

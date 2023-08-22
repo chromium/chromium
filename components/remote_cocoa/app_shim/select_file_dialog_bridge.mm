@@ -29,7 +29,8 @@ const int kFileTypePopupTag = 1234;
 
 // TODO(macOS 11): Remove this.
 CFStringRef CreateUTIFromExtension(const base::FilePath::StringType& ext) {
-  base::ScopedCFTypeRef<CFStringRef> ext_cf(base::SysUTF8ToCFStringRef(ext));
+  base::apple::ScopedCFTypeRef<CFStringRef> ext_cf(
+      base::SysUTF8ToCFStringRef(ext));
   return UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
                                                ext_cf.get(), nullptr);
 }
@@ -44,7 +45,7 @@ NSString* GetDescriptionFromExtension(const base::FilePath::StringType& ext) {
       return description;
     }
   } else {
-    base::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
+    base::apple::ScopedCFTypeRef<CFStringRef> uti(CreateUTIFromExtension(ext));
     NSString* description =
         base::apple::CFToNSOwnershipCast(UTTypeCopyDescription(uti.get()));
 

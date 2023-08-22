@@ -83,13 +83,14 @@ class MEDIA_GPU_EXPORT VideoToolboxVideoDecoder : public VideoDecoder {
   void ReleaseDecodeCallbacks();
 
   // |accelerator_| callbacks.
-  void OnAcceleratorDecode(base::ScopedCFTypeRef<CMSampleBufferRef> sample,
-                           scoped_refptr<CodecPicture> picture);
+  void OnAcceleratorDecode(
+      base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
+      scoped_refptr<CodecPicture> picture);
   void OnAcceleratorOutput(scoped_refptr<CodecPicture> picture);
 
   // |video_toolbox_| callbacks.
   void OnVideoToolboxOutput(
-      base::ScopedCFTypeRef<CVImageBufferRef> image,
+      base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
       std::unique_ptr<VideoToolboxDecodeMetadata> metadata);
   void OnVideoToolboxError(DecoderStatus status);
 

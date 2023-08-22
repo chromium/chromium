@@ -143,7 +143,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     gfx::Size image_size;
 
     // Decoded image, if decoding was successful.
-    base::ScopedCFTypeRef<CVImageBufferRef> image;
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image;
 
     // Dynamic HDR metadata, if any.
     absl::optional<gfx::HDRMetadata> hdr_metadata;
@@ -289,8 +289,8 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
   // Decoder thread state.
   //
   VTDecompressionOutputCallbackRecord callback_;
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format_;
-  base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format_;
+  base::apple::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
   H264Parser h264_parser_;
 
   // SPSs and PPSs seen in the bitstream.

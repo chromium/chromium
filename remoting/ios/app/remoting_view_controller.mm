@@ -55,7 +55,7 @@ ConnectionType GetConnectionType() {
   struct sockaddr_in addr = {0};
   addr.sin_len = sizeof(addr);
   addr.sin_family = AF_INET;
-  base::ScopedCFTypeRef<SCNetworkReachabilityRef> reachability(
+  base::apple::ScopedCFTypeRef<SCNetworkReachabilityRef> reachability(
       SCNetworkReachabilityCreateWithAddress(
           kCFAllocatorDefault, reinterpret_cast<struct sockaddr*>(&addr)));
   SCNetworkReachabilityFlags flags;

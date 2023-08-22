@@ -338,7 +338,7 @@ bool SuddenMotionSensor::Init() {
   const SensorDescriptor* sensor_candidate = nullptr;
 
   // Look for the current model in the supported sensor list.
-  base::ScopedCFTypeRef<CFDataRef> board_id_data;
+  base::apple::ScopedCFTypeRef<CFDataRef> board_id_data;
   const int kNumSensors = std::size(kSupportedSensors);
 
   for (int i = 0; i < kNumSensors; ++i) {

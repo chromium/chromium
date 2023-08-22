@@ -129,9 +129,9 @@ std::string GetMacAddress(const std::string& interface_name) {
 }
 
 std::string GetRandomId() {
-  base::ScopedCFTypeRef<CFUUIDRef> uuid_object(
+  base::apple::ScopedCFTypeRef<CFUUIDRef> uuid_object(
       CFUUIDCreate(kCFAllocatorDefault));
-  base::ScopedCFTypeRef<CFStringRef> uuid_string(
+  base::apple::ScopedCFTypeRef<CFStringRef> uuid_string(
       CFUUIDCreateString(kCFAllocatorDefault, uuid_object));
   return base::SysCFStringRefToUTF8(uuid_string);
 }
@@ -177,9 +177,9 @@ std::string GetSaltedString(const std::string& in_string,
             hash);
   CFUUIDBytes* uuid_bytes = reinterpret_cast<CFUUIDBytes*>(hash);
 
-  base::ScopedCFTypeRef<CFUUIDRef> uuid_object(
+  base::apple::ScopedCFTypeRef<CFUUIDRef> uuid_object(
       CFUUIDCreateFromUUIDBytes(kCFAllocatorDefault, *uuid_bytes));
-  base::ScopedCFTypeRef<CFStringRef> device_id(
+  base::apple::ScopedCFTypeRef<CFStringRef> device_id(
       CFUUIDCreateString(kCFAllocatorDefault, uuid_object));
   return base::SysCFStringRefToUTF8(device_id);
 }

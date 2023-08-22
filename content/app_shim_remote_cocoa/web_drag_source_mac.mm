@@ -137,7 +137,7 @@
             [UTType typeWithMIMEType:base::SysUTF8ToNSString(mimeType)];
         _fileUTType = type.identifier;
       } else {
-        base::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
+        base::apple::ScopedCFTypeRef<CFStringRef> mimeTypeCF(
             base::SysUTF8ToCFStringRef(mimeType));
         _fileUTType = base::apple::CFToNSOwnershipCast(
             UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,

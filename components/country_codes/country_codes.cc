@@ -157,7 +157,7 @@ int GetCurrentCountryID() {
 #elif BUILDFLAG(IS_APPLE)
 
 int GetCurrentCountryID() {
-  base::ScopedCFTypeRef<CFLocaleRef> locale(CFLocaleCopyCurrent());
+  base::apple::ScopedCFTypeRef<CFLocaleRef> locale(CFLocaleCopyCurrent());
   CFStringRef country =
       (CFStringRef)CFLocaleGetValue(locale.get(), kCFLocaleCountryCode);
   if (!country)

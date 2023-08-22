@@ -49,11 +49,11 @@ class IOSurfaceContext
 
   IOSurfaceContext(
       Type type,
-      base::ScopedTypeRef<CGLContextObj> clg_context_strong);
+      base::apple::ScopedTypeRef<CGLContextObj> clg_context_strong);
   ~IOSurfaceContext() override;
 
   Type type_;
-  base::ScopedTypeRef<CGLContextObj> cgl_context_;
+  base::apple::ScopedTypeRef<CGLContextObj> cgl_context_;
 
   bool poisoned_ = false;
 };

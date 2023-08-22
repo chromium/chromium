@@ -193,7 +193,7 @@ bool PixelBufferIsSingleColor(CVPixelBufferRef pixel_buffer,
                               uint8_t g,
                               uint8_t b) {
   OSType pixel_format = CVPixelBufferGetPixelFormatType(pixel_buffer);
-  base::ScopedCFTypeRef<CVPixelBufferRef> yuvs_pixel_buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> yuvs_pixel_buffer;
   if (pixel_format == kPixelFormatYuvs) {
     // The pixel buffer is already YUVS, so we know how to check its color.
     yuvs_pixel_buffer.reset(pixel_buffer, base::scoped_policy::RETAIN);

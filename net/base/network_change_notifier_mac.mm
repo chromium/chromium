@@ -263,9 +263,9 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
   // SCDynamicStore API does not exist on iOS.
   NOTREACHED();
 #else
-  base::ScopedCFTypeRef<CFMutableArrayRef> notification_keys(
+  base::apple::ScopedCFTypeRef<CFMutableArrayRef> notification_keys(
       CFArrayCreateMutable(kCFAllocatorDefault, 0, &kCFTypeArrayCallBacks));
-  base::ScopedCFTypeRef<CFStringRef> key(
+  base::apple::ScopedCFTypeRef<CFStringRef> key(
       SCDynamicStoreKeyCreateNetworkGlobalEntity(
           nullptr, kSCDynamicStoreDomainState, kSCEntNetInterface));
   CFArrayAppendValue(notification_keys.get(), key.get());

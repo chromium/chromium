@@ -54,7 +54,7 @@ void SetIOSurfaceColorSpace(IOSurfaceRef io_surface,
   }
 
 #if BUILDFLAG(IS_MAC)
-  base::ScopedCFTypeRef<CFDataRef> cf_data =
+  base::apple::ScopedCFTypeRef<CFDataRef> cf_data =
       gfx::DisplayICCProfiles::GetInstance()->GetDataForColorSpace(color_space);
   if (cf_data) {
     IOSurfaceSetValue(io_surface, CFSTR("IOSurfaceColorSpace"), cf_data);

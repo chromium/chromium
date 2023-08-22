@@ -65,14 +65,14 @@ class CAPTURE_EXPORT SampleBufferTransformer {
   // Converts the input buffer to an IOSurface-backed pixel buffer according to
   // current configurations. If no transformation is needed (input format is the
   // same as the configured output format), the input pixel buffer is returned.
-  base::ScopedCFTypeRef<CVPixelBufferRef> Transform(
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> Transform(
       CVPixelBufferRef pixel_buffer);
-  base::ScopedCFTypeRef<CVPixelBufferRef> Transform(
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> Transform(
       CMSampleBufferRef sample_buffer);
 
 #if BUILDFLAG(IS_IOS)
   // Rotates a source pixel buffer and returns rotated pixel buffer as a output.
-  base::ScopedCFTypeRef<CVPixelBufferRef> Rotate(
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> Rotate(
       CVPixelBufferRef source_pixel_buffer);
 #endif
 

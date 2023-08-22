@@ -529,8 +529,8 @@ void SampleBufferTransformer::Reconfigure(
   intermediate_nv12_buffer_.resize(0);
 }
 
-base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
-    CVPixelBufferRef pixel_buffer) {
+base::apple::ScopedCFTypeRef<CVPixelBufferRef>
+SampleBufferTransformer::Transform(CVPixelBufferRef pixel_buffer) {
   DCHECK(transformer_ != Transformer::kNotConfigured);
   DCHECK(pixel_buffer);
   // Fast path: If source and destination formats are identical, return the
@@ -543,24 +543,24 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
       destination_pixel_format_ ==
           CVPixelBufferGetPixelFormatType(pixel_buffer) &&
       CVPixelBufferGetIOSurface(pixel_buffer)) {
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(pixel_buffer,
-                                                   base::scoped_policy::RETAIN);
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>(
+        pixel_buffer, base::scoped_policy::RETAIN);
   }
   // Create destination buffer from pool.
-  base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
     // Most likely the buffer count was exceeded, but other errors are possible.
     LOG(ERROR) << "Failed to create a destination buffer";
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Do pixel transfer or libyuv conversion + rescale.
   TransformPixelBuffer(pixel_buffer, destination_pixel_buffer);
   return destination_pixel_buffer;
 }
 
-base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
-    CMSampleBufferRef sample_buffer) {
+base::apple::ScopedCFTypeRef<CVPixelBufferRef>
+SampleBufferTransformer::Transform(CMSampleBufferRef sample_buffer) {
   DCHECK(transformer_ != Transformer::kNotConfigured);
   DCHECK(sample_buffer);
   // If the sample buffer has a pixel buffer, run the pixel buffer path instead.
@@ -569,43 +569,43 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
     return Transform(pixel_buffer);
   }
   // Create destination buffer from pool.
-  base::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> destination_pixel_buffer =
       destination_pixel_buffer_pool_->CreateBuffer();
   if (!destination_pixel_buffer) {
     // Most likely the buffer count was exceeded, but other errors are possible.
     LOG(ERROR) << "Failed to create a destination buffer";
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
   if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
     LOG(ERROR) << "Failed to transform sample buffer.";
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   return destination_pixel_buffer;
 }
 
 #if BUILDFLAG(IS_IOS)
-base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Rotate(
+base::apple::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Rotate(
     CVPixelBufferRef source_pixel_buffer) {
   DCHECK(source_pixel_buffer);
   DCHECK(pixel_buffer_rotator_);
 
   // Create destination buffer from pool.
-  base::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixel_buffer =
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> rotated_pixel_buffer =
       rotated_destination_pixel_buffer_pool_->CreateBuffer();
   if (!rotated_pixel_buffer) {
     // Most likely the buffer count was exceeded, but other errors are possible.
     LOG(ERROR) << "Failed to create a destination buffer";
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
 
   // The rotated_pixel_buffer might not be the same size as source_pixel_buffer
   // since source_pixel_buffer gets rotated by rotation_angle_.
   if (pixel_buffer_rotator_->Rotate(source_pixel_buffer, rotated_pixel_buffer,
                                     rotation_angle_)) {
-    return base::ScopedCFTypeRef<CVPixelBufferRef>(rotated_pixel_buffer);
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>(rotated_pixel_buffer);
   } else {
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
 }
 #endif

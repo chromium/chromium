@@ -26,11 +26,11 @@ class CFNumber {
 
  private:
   T value_;
-  base::ScopedCFTypeRef<CFNumberRef> number_;
+  base::apple::ScopedCFTypeRef<CFNumberRef> number_;
 };
 
-base::ScopedCFTypeRef<CFDictionaryRef> CreateEmptyCFDictionary() {
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
+base::apple::ScopedCFTypeRef<CFDictionaryRef> CreateEmptyCFDictionary() {
+  return base::apple::ScopedCFTypeRef<CFDictionaryRef>(
       CFDictionaryCreate(nil, nil, nil, 0, &kCFTypeDictionaryKeyCallBacks,
                          &kCFTypeDictionaryValueCallBacks));
 }
@@ -52,7 +52,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
       sizeof(pixel_buffer_attribute_keys) /
       sizeof(pixel_buffer_attribute_keys[0]);
   // Rely on default IOSurface properties.
-  base::ScopedCFTypeRef<CFDictionaryRef> io_surface_options =
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> io_surface_options =
       CreateEmptyCFDictionary();
   CFNumber<int> pixel_buffer_format(kCFNumberSInt32Type, format);
   CFNumber<int> pixel_buffer_width(kCFNumberSInt32Type, width);
@@ -64,7 +64,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
                     sizeof(pixel_buffer_attribute_values) /
                         sizeof(pixel_buffer_attribute_values[0]),
                 "Key count and value count must match");
-  base::ScopedCFTypeRef<CFDictionaryRef> pixel_buffer_attributes(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> pixel_buffer_attributes(
       CFDictionaryCreate(nil, (const void**)pixel_buffer_attribute_keys,
                          (const void**)pixel_buffer_attribute_values,
                          pixel_buffer_attribute_count,
@@ -77,7 +77,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
   // kCVPixelBufferPoolMinimumBufferCountKey and
   // kCVPixelBufferPoolMaximumBufferAgeKey unless these are more auxiliary
   // attributes for CVPixelBufferPoolCreatePixelBufferWithAuxAttributes().
-  base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool;
+  base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool;
   CVReturn pool_creation_error = CVPixelBufferPoolCreate(
       nil, nil, pixel_buffer_attributes.get(), buffer_pool.InitializeInto());
   if (pool_creation_error != noErr) {
@@ -90,7 +90,7 @@ std::unique_ptr<PixelBufferPool> PixelBufferPool::Create(
 }
 
 PixelBufferPool::PixelBufferPool(
-    base::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
+    base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> buffer_pool,
     absl::optional<size_t> max_buffers)
     : buffer_pool_(std::move(buffer_pool)),
       max_buffers_(std::move(max_buffers)),
@@ -103,9 +103,9 @@ PixelBufferPool::~PixelBufferPool() {
   Flush();
 }
 
-base::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
+base::apple::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
   DCHECK(buffer_pool_);
-  base::ScopedCFTypeRef<CVPixelBufferRef> buffer;
+  base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer;
   CVReturn buffer_creation_error;
   if (!max_buffers_.has_value()) {
     buffer_creation_error = CVPixelBufferPoolCreatePixelBuffer(
@@ -121,7 +121,7 @@ base::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
     static_assert(attribute_count ==
                       sizeof(attribute_values) / sizeof(attribute_values[0]),
                   "Key count and value count must match");
-    base::ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> attributes(CFDictionaryCreate(
         nil, (const void**)attribute_keys, (const void**)attribute_values,
         attribute_count, &kCFTypeDictionaryKeyCallBacks,
         &kCFTypeDictionaryValueCallBacks));
@@ -132,7 +132,7 @@ base::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
     LOG(ERROR) << "Cannot exceed the pool's maximum buffer count";
     // kCVReturnWouldExceedAllocationThreshold does not count as an error.
     num_consecutive_errors_ = 0;
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   // If a different error occurred, crash on debug builds or log and return null
   // on release builds.
@@ -146,7 +146,7 @@ base::ScopedCFTypeRef<CVPixelBufferRef> PixelBufferPool::CreateBuffer() {
     CHECK_LE(num_consecutive_errors_, kMaxNumConsecutiveErrors)
         << "Exceeded maximum allowed consecutive error count with error code: "
         << buffer_creation_error;
-    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+    return base::apple::ScopedCFTypeRef<CVPixelBufferRef>();
   }
   num_consecutive_errors_ = 0;
   return buffer;

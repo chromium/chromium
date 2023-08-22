@@ -59,7 +59,7 @@ SK_API SkColor NSSystemColorToSkColor(NSColor* color);
 SK_API SkColor CGColorRefToSkColor(CGColorRef color);
 
 // Converts a Skia ARGB color to CGColorRef. Assumes sRGB color space.
-SK_API base::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(
+SK_API base::apple::ScopedCFTypeRef<CGColorRef> CGColorCreateFromSkColor(
     SkColor color);
 
 #ifdef __OBJC__

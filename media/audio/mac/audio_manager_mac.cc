@@ -196,7 +196,7 @@ AudioDeviceID AudioManagerMac::GetAudioDeviceIdByUId(
                                         &audio_device_id);
   } else {
     // Non-default device.
-    base::ScopedCFTypeRef<CFStringRef> uid(
+    base::apple::ScopedCFTypeRef<CFStringRef> uid(
         base::SysUTF8ToCFStringRef(device_id));
     AudioValueTranslation value;
     value.mInputData = &uid;

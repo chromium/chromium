@@ -116,7 +116,7 @@ bool UseMapJit() {
   // executable fails with EPERM. Although this is not enforced on x86_64,
   // MAP_JIT is harmless in that case.
 
-  base::ScopedCFTypeRef<SecTaskRef> task(
+  base::apple::ScopedCFTypeRef<SecTaskRef> task(
       SecTaskCreateFromSelf(kCFAllocatorDefault));
   if (!task) {
     return true;
@@ -134,7 +134,7 @@ bool UseMapJit() {
   // (EINVAL) to use MAP_JIT with the hardened runtime unless the JIT
   // entitlement is specified.
 
-  base::ScopedCFTypeRef<CFTypeRef> jit_entitlement(
+  base::apple::ScopedCFTypeRef<CFTypeRef> jit_entitlement(
       SecTaskCopyValueForEntitlement(
           task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
   if (!jit_entitlement) {

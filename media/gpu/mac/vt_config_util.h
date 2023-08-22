@@ -17,11 +17,11 @@
 
 namespace media {
 
-MEDIA_GPU_EXPORT base::ScopedCFTypeRef<CFDictionaryRef> CreateFormatExtensions(
-    CMVideoCodecType codec_type,
-    VideoCodecProfile profile,
-    const VideoColorSpace& color_space,
-    absl::optional<gfx::HDRMetadata> hdr_metadata);
+MEDIA_GPU_EXPORT base::apple::ScopedCFTypeRef<CFDictionaryRef>
+CreateFormatExtensions(CMVideoCodecType codec_type,
+                       VideoCodecProfile profile,
+                       const VideoColorSpace& color_space,
+                       absl::optional<gfx::HDRMetadata> hdr_metadata);
 
 }  // namespace media
 

@@ -130,7 +130,7 @@ class SynchronizedRunLoopObserver final {
   // avoid double locking and releasing.
   bool lock_acquired_ = false;
   // The underlying CFRunLoopObserverRef structure wrapped by this instance.
-  base::ScopedCFTypeRef<CFRunLoopObserverRef> observer_;
+  base::apple::ScopedCFTypeRef<CFRunLoopObserverRef> observer_;
   // Validates that all methods of this class are executed on the same thread.
   base::ThreadChecker thread_checker_;
 };
@@ -242,17 +242,17 @@ int ProxyResolverMac::GetProxyForURL(
     mutable_query_url = query_url.ReplaceComponents(replacements);
   }
 
-  base::ScopedCFTypeRef<CFStringRef> query_ref(
+  base::apple::ScopedCFTypeRef<CFStringRef> query_ref(
       base::SysUTF8ToCFStringRef(mutable_query_url.spec()));
-  base::ScopedCFTypeRef<CFURLRef> query_url_ref(
+  base::apple::ScopedCFTypeRef<CFURLRef> query_url_ref(
       CFURLCreateWithString(kCFAllocatorDefault, query_ref.get(), nullptr));
   if (!query_url_ref.get())
     return ERR_FAILED;
-  base::ScopedCFTypeRef<CFStringRef> pac_ref(base::SysUTF8ToCFStringRef(
+  base::apple::ScopedCFTypeRef<CFStringRef> pac_ref(base::SysUTF8ToCFStringRef(
       script_data_->type() == PacFileData::TYPE_AUTO_DETECT
           ? std::string()
           : script_data_->url().spec()));
-  base::ScopedCFTypeRef<CFURLRef> pac_url_ref(
+  base::apple::ScopedCFTypeRef<CFURLRef> pac_url_ref(
       CFURLCreateWithString(kCFAllocatorDefault, pac_ref.get(), nullptr));
   if (!pac_url_ref.get())
     return ERR_FAILED;
@@ -261,9 +261,9 @@ int ProxyResolverMac::GetProxyForURL(
   // CFNetworkCopyProxiesForURL initializes some state within CFNetwork that is
   // required by CFNetworkExecuteProxyAutoConfigurationURL.
 
-  base::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
       CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
-  base::ScopedCFTypeRef<CFArrayRef> dummy_result(
+  base::apple::ScopedCFTypeRef<CFArrayRef> dummy_result(
       CFNetworkCopyProxiesForURL(query_url_ref.get(), empty_dictionary));
 
   // We cheat here. We need to act as if we were synchronous, so we pump the
@@ -273,7 +273,7 @@ int ProxyResolverMac::GetProxyForURL(
 
   CFTypeRef result = nullptr;
   CFStreamClientContext context = {0, &result, nullptr, nullptr, nullptr};
-  base::ScopedCFTypeRef<CFRunLoopSourceRef> runloop_source(
+  base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> runloop_source(
       CFNetworkExecuteProxyAutoConfigurationURL(
           pac_url_ref.get(), query_url_ref.get(), ResultCallback, &context));
 #if LEAK_SANITIZER
@@ -319,7 +319,7 @@ int ProxyResolverMac::GetProxyForURL(
     CFRelease(result);
     return ERR_FAILED;
   }
-  base::ScopedCFTypeRef<CFArrayRef> proxy_array_ref(
+  base::apple::ScopedCFTypeRef<CFArrayRef> proxy_array_ref(
       base::apple::CFCastStrict<CFArrayRef>(result));
   DCHECK(proxy_array_ref != nullptr);
 

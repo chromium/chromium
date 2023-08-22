@@ -19,11 +19,11 @@ namespace x509_util {
 
 // Creates a SecCertificate handle from the DER-encoded representation.
 // Returns NULL on failure.
-NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
+NET_EXPORT base::apple::ScopedCFTypeRef<SecCertificateRef>
 CreateSecCertificateFromBytes(const uint8_t* data, size_t length);
 
 // Returns a SecCertificate representing |cert|, or NULL on failure.
-NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
+NET_EXPORT base::apple::ScopedCFTypeRef<SecCertificateRef>
 CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
 
 // Returns a new CFMutableArrayRef containing this certificate and its
@@ -31,7 +31,7 @@ CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
 // and Keychain Services, or NULL on failure.
 // The first item in the array will be this certificate, followed by its
 // intermediates, if any.
-NET_EXPORT base::ScopedCFTypeRef<CFMutableArrayRef>
+NET_EXPORT base::apple::ScopedCFTypeRef<CFMutableArrayRef>
 CreateSecCertificateArrayForX509Certificate(X509Certificate* cert);
 
 // Specify behavior if an intermediate certificate fails SecCertificate
@@ -45,7 +45,7 @@ enum class InvalidIntermediateBehavior { kFail, kIgnore };
 // and Keychain Services. Returns NULL if the certificate could not be
 // converted. |invalid_intermediate_behavior| specifies behavior if
 // intermediates of |cert| could not be converted.
-NET_EXPORT base::ScopedCFTypeRef<CFMutableArrayRef>
+NET_EXPORT base::apple::ScopedCFTypeRef<CFMutableArrayRef>
 CreateSecCertificateArrayForX509Certificate(
     X509Certificate* cert,
     InvalidIntermediateBehavior invalid_intermediate_behavior);
@@ -54,15 +54,17 @@ CreateSecCertificateArrayForX509Certificate(
 // |sec_chain|.
 NET_EXPORT scoped_refptr<X509Certificate>
 CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain);
+    base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>>&
+        sec_chain);
 
 // Creates an X509Certificate with non-standard parsing options.
 // Do not use without consulting //net owners.
 NET_EXPORT scoped_refptr<X509Certificate>
 CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
+    base::apple::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>>&
+        sec_chain,
     X509Certificate::UnsafeCreateOptions options);
 
 // Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
@@ -70,7 +72,7 @@ CreateX509CertificateFromSecCertificate(
 NET_EXPORT SHA256HashValue CalculateFingerprint256(SecCertificateRef cert);
 
 // Returns a new CFArrayRef containing the certificate chain built in |trust|.
-base::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
+base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
     SecTrustRef trust);
 
 }  // namespace x509_util

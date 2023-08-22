@@ -267,10 +267,10 @@ gfx::ColorSpace GetCoreVideoColorSpaceInternal(CFTypeRef primaries_untyped,
 }  // anonymous namespace
 
 gfx::ColorSpace GetImageBufferColorSpace(CVImageBufferRef image_buffer) {
-  base::ScopedCFTypeRef<CFTypeRef> color_primaries;
-  base::ScopedCFTypeRef<CFTypeRef> transfer_function;
-  base::ScopedCFTypeRef<CFTypeRef> gamma_level;
-  base::ScopedCFTypeRef<CFTypeRef> ycbcr_matrix;
+  base::apple::ScopedCFTypeRef<CFTypeRef> color_primaries;
+  base::apple::ScopedCFTypeRef<CFTypeRef> transfer_function;
+  base::apple::ScopedCFTypeRef<CFTypeRef> gamma_level;
+  base::apple::ScopedCFTypeRef<CFTypeRef> ycbcr_matrix;
 
   if (@available(macOS 12, iOS 15, *)) {
     color_primaries.reset(CVBufferCopyAttachment(

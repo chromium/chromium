@@ -22,7 +22,7 @@ namespace device {
 
 class HidConnectionMac : public HidConnection {
  public:
-  HidConnectionMac(base::ScopedCFTypeRef<IOHIDDeviceRef> device,
+  HidConnectionMac(base::apple::ScopedCFTypeRef<IOHIDDeviceRef> device,
                    scoped_refptr<HidDeviceInfo> device_info,
                    bool allow_protected_reports,
                    bool allow_fido_reports);
@@ -54,7 +54,7 @@ class HidConnectionMac : public HidConnection {
                       WriteCallback callback);
   void ReturnAsyncResult(base::OnceClosure callback);
 
-  base::ScopedCFTypeRef<IOHIDDeviceRef> device_;
+  base::apple::ScopedCFTypeRef<IOHIDDeviceRef> device_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::vector<uint8_t> inbound_buffer_;

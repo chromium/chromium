@@ -44,7 +44,7 @@ bool ConvertToUtf8(base::StringPiece text,
   if (!CharsetToCFStringEncoding(charset, &encoding))
     return false;
 
-  base::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytes(
+  base::apple::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytes(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(text.data()),
       base::checked_cast<CFIndex>(text.length()), encoding,
       /*isExternalRepresentation=*/false));
@@ -77,9 +77,9 @@ bool ConvertToUTF16WithSubstitutions(base::StringPiece text,
 }
 
 bool ToUpper(base::StringPiece16 str, std::u16string* output) {
-  base::ScopedCFTypeRef<CFStringRef> cfstring =
+  base::apple::ScopedCFTypeRef<CFStringRef> cfstring =
       base::SysUTF16ToCFStringRef(str);
-  base::ScopedCFTypeRef<CFMutableStringRef> mutable_cfstring(
+  base::apple::ScopedCFTypeRef<CFMutableStringRef> mutable_cfstring(
       CFStringCreateMutableCopy(kCFAllocatorDefault, /*maxLength=*/0,
                                 cfstring.get()));
   CFStringUppercase(mutable_cfstring.get(), /*locale=*/nullptr);

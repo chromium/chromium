@@ -93,7 +93,7 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
     }
 
     // Allocate a pixel buffer from the pool and return a wrapper VideoFrame.
-    base::ScopedCFTypeRef<CVPixelBufferRef> buffer;
+    base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer;
     auto status = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool_,
                                                      buffer.InitializeInto());
     if (status != kCVReturnSuccess) {
@@ -105,7 +105,7 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
     return VideoFrame::WrapCVPixelBuffer(buffer, timestamp);
   }
 
-  void Update(const base::ScopedCFTypeRef<CVPixelBufferPoolRef>& pool,
+  void Update(const base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef>& pool,
               const gfx::Size& frame_size) {
     base::AutoLock auto_lock(lock_);
     pool_ = pool;
@@ -117,7 +117,7 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
   ~VideoFrameFactoryImpl() override {}
 
   base::Lock lock_;
-  base::ScopedCFTypeRef<CVPixelBufferPoolRef> pool_;
+  base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> pool_;
   gfx::Size pool_frame_size_;
 
   // Weak back reference to the encoder and the cast envrionment so we can
@@ -221,7 +221,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
 
   // On OS X, allow the hardware encoder. Don't require it, it does not support
   // all configurations (some of which are used for testing).
-  base::ScopedCFTypeRef<CFDictionaryRef> encoder_spec;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> encoder_spec;
 #if !BUILDFLAG(IS_IOS)
   encoder_spec = video_toolbox::DictionaryWithKeyValue(
       kVTVideoEncoderSpecification_EnableHardwareAcceleratedVideoEncoder,
@@ -245,7 +245,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
       video_toolbox::DictionaryWithKeysAndValues(
           attachments_keys, attachments_values, std::size(attachments_keys))
           .release()};
-  const base::ScopedCFTypeRef<CFDictionaryRef> buffer_attributes =
+  const base::apple::ScopedCFTypeRef<CFDictionaryRef> buffer_attributes =
       video_toolbox::DictionaryWithKeysAndValues(
           buffer_attributes_keys, buffer_attributes_values,
           std::size(buffer_attributes_keys));
@@ -289,7 +289,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
   ConfigureCompressionSession();
 
   // Update the video frame factory.
-  base::ScopedCFTypeRef<CVPixelBufferPoolRef> pool(
+  base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> pool(
       VTCompressionSessionGetPixelBufferPool(compression_session_),
       base::scoped_policy::RETAIN);
   video_frame_factory_->Update(pool, frame_size_);
@@ -348,7 +348,8 @@ void H264VideoToolboxEncoder::DestroyCompressionSession() {
   // (ex: the dtor).
   if (compression_session_) {
     video_frame_factory_->Update(
-        base::ScopedCFTypeRef<CVPixelBufferPoolRef>(nullptr), frame_size_);
+        base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef>(nullptr),
+        frame_size_);
     VTCompressionSessionInvalidate(compression_session_);
     compression_session_.reset();
   }
@@ -404,7 +405,7 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
           reference_time, std::move(frame_encoded_callback)));
 
   // Build a suitable frame properties dictionary for keyframes.
-  base::ScopedCFTypeRef<CFDictionaryRef> frame_props;
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> frame_props;
   if (encode_next_frame_as_keyframe_) {
     frame_props = video_toolbox::DictionaryWithKeyValue(
         kVTEncodeFrameOptionKey_ForceKeyFrame, kCFBooleanTrue);

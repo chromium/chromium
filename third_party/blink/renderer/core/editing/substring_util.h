@@ -56,7 +56,7 @@ class SubstringUtil {
   // - the left baseline point of that word in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static base::ScopedCFTypeRef<CFAttributedStringRef>
+  CORE_EXPORT static base::apple::ScopedCFTypeRef<CFAttributedStringRef>
   AttributedWordAtPoint(WebFrameWidgetImpl*,
                         gfx::Point,
                         gfx::Point& baseline_point);
@@ -68,7 +68,7 @@ class SubstringUtil {
   // - the left baseline point of that substring in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static base::ScopedCFTypeRef<CFAttributedStringRef>
+  CORE_EXPORT static base::apple::ScopedCFTypeRef<CFAttributedStringRef>
   AttributedSubstringInRange(LocalFrame*,
                              wtf_size_t location,
                              wtf_size_t length,

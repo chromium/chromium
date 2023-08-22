@@ -45,7 +45,7 @@ class VideoToolboxH264AcceleratorTest : public testing::Test {
 
  protected:
   MOCK_METHOD2(OnDecode,
-               void(base::ScopedCFTypeRef<CMSampleBufferRef>,
+               void(base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
                     scoped_refptr<CodecPicture>));
   MOCK_METHOD1(OnOutput, void(scoped_refptr<CodecPicture>));
 
@@ -78,7 +78,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeOne) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample));
   accelerator_->SubmitDecode(pic);
 
@@ -115,7 +115,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
@@ -128,7 +128,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
@@ -156,7 +156,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
@@ -172,7 +172,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_Reset) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 
@@ -200,7 +200,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample0;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample0;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample0));
   accelerator_->SubmitDecode(pic0);
 
@@ -213,7 +213,7 @@ TEST_F(VideoToolboxH264AcceleratorTest, DecodeTwo_ConfigChange) {
                             kSliceData, sizeof(kSliceData), subsamples);
 
   // Save the resulting sample.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample1;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample1;
   EXPECT_CALL(*this, OnDecode(_, _)).WillOnce(SaveArg<0>(&sample1));
   accelerator_->SubmitDecode(pic1);
 

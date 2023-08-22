@@ -31,7 +31,7 @@ class MEDIA_GPU_EXPORT VP9SuperFrameBitstreamFilter {
   void Flush();
 
   // Releases any prepared buffer. Returns null if no buffers are available.
-  base::ScopedCFTypeRef<CMBlockBufferRef> take_buffer() {
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> take_buffer() {
     return std::move(data_);
   }
 
@@ -48,7 +48,7 @@ class MEDIA_GPU_EXPORT VP9SuperFrameBitstreamFilter {
 
   // Prepared CMBlockBuffer -- either by assembling |partial_buffers_| or when
   // a super frame is unnecessary, just by passing through DecoderBuffer.
-  base::ScopedCFTypeRef<CMBlockBufferRef> data_;
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data_;
 
   // Partial buffers which need to be assembled into a super frame.
   std::vector<scoped_refptr<DecoderBuffer>> partial_buffers_;

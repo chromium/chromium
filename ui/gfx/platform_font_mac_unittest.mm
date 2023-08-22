@@ -42,7 +42,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
   // |weight_tri| is either -1, 0, or 1 meaning "light", "normal", or "bold".
   auto CheckExpected = [GetValueFromDictionaryAndWorkAroundMacOS13Bug](
                            const Font& font, int weight_tri, bool isItalic) {
-    base::ScopedCFTypeRef<CFDictionaryRef> traits(
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> traits(
         CTFontCopyTraits(font.GetCTFont()));
     DCHECK(traits);
 

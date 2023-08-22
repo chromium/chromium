@@ -35,7 +35,7 @@ static void EventReceivedThunk(AXObserverRef observer_ref,
 AXEventRecorderMac::AXEventRecorderMac(base::ProcessId pid,
                                        const AXTreeSelector& selector)
     : observer_run_loop_source_(nullptr) {
-  base::ScopedCFTypeRef<AXUIElementRef> node;
+  base::apple::ScopedCFTypeRef<AXUIElementRef> node;
   if (pid) {
     node.reset(AXUIElementCreateApplication(pid));
     if (!node) {

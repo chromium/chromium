@@ -52,12 +52,13 @@ const std::vector<uint8_t> kUserId = {10, 11, 12, 13, 14, 15};
 // Returns a query to use with Keychain instance methods that returns all
 // credentials in the non-legacy keychain that are tagged with the keychain
 // access group used in this test.
-base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
-      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
-      &kCFTypeDictionaryValueCallBacks));
+base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> query(
+      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
+                                &kCFTypeDictionaryKeyCallBacks,
+                                &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
-  base::ScopedCFTypeRef<CFStringRef> access_group_ref(
+  base::apple::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
   CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
   CFDictionarySetValue(query, kSecAttrNoLegacy, kCFBooleanTrue);
@@ -69,14 +70,14 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
 // Returns all WebAuthn credentials stored in the keychain, regardless of which
 // profile they are associated with. May return a null reference if an error
 // occurred.
-base::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
-  base::ScopedCFTypeRef<CFArrayRef> items;
+base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
+  base::apple::ScopedCFTypeRef<CFArrayRef> items;
   OSStatus status = Keychain::GetInstance().ItemCopyMatching(
       BaseQuery(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
   if (status == errSecItemNotFound) {
     // The API returns null, but we should return an empty array instead to
     // distinguish from real errors.
-    items = base::ScopedCFTypeRef<CFArrayRef>(
+    items = base::apple::ScopedCFTypeRef<CFArrayRef>(
         CFArrayCreate(nullptr, nullptr, 0, nullptr));
   } else if (status != errSecSuccess) {
     OSSTATUS_DLOG(ERROR, status);
@@ -87,7 +88,7 @@ base::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
 // Returns the number of WebAuthn credentials in the keychain (for all
 // profiles), or -1 if an error occurs.
 ssize_t KeychainItemCount() {
-  base::ScopedCFTypeRef<CFArrayRef> items = QueryAllCredentials();
+  base::apple::ScopedCFTypeRef<CFArrayRef> items = QueryAllCredentials();
   return items ? CFArrayGetCount(items) : -1;
 }
 

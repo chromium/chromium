@@ -174,7 +174,7 @@ static bool FindDeviceWithVendorAndProductIds(int vendor_id,
                                               int product_id,
                                               io_iterator_t* usb_iterator) {
   // Compose a search dictionary with vendor and product ID.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query_dictionary(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> query_dictionary(
       IOServiceMatching(kIOUSBDeviceClassName));
   CFDictionarySetValue(query_dictionary, CFSTR(kUSBVendorName),
                        base::apple::NSToCFPtrCast(@(vendor_id)));

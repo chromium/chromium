@@ -40,7 +40,7 @@ GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
   DCHECK_EQ(framebuffer_size, size);
 
   bool should_clear = true;
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
       gfx::CreateIOSurface(size, format, should_clear);
   if (!io_surface) {
     LOG(ERROR) << "Failed to allocate IOSurface.";

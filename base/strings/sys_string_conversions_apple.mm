@@ -81,7 +81,7 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
     return OutStringType();
   }
 
-  base::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
+  apple::ScopedCFTypeRef<CFStringRef> cfstring(CFStringCreateWithBytesNoCopy(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
       checked_cast<CFIndex>(in_length *
                             sizeof(typename InStringType::value_type)),
@@ -97,15 +97,16 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
 // Given a StringPiece `in` with an encoding specified by `in_encoding`, returns
 // it as a CFStringRef. Returns null on failure.
 template <typename CharT>
-ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
+apple::ScopedCFTypeRef<CFStringRef> StringPieceToCFStringWithEncodingsT(
     BasicStringPiece<CharT> in,
     CFStringEncoding in_encoding) {
   const auto in_length = in.length();
   if (in_length == 0) {
-    return ScopedCFTypeRef<CFStringRef>(CFSTR(""), base::scoped_policy::RETAIN);
+    return apple::ScopedCFTypeRef<CFStringRef>(CFSTR(""),
+                                               base::scoped_policy::RETAIN);
   }
 
-  return ScopedCFTypeRef<CFStringRef>(CFStringCreateWithBytes(
+  return apple::ScopedCFTypeRef<CFStringRef>(CFStringCreateWithBytes(
       kCFAllocatorDefault, reinterpret_cast<const UInt8*>(in.data()),
       checked_cast<CFIndex>(in_length * sizeof(CharT)), in_encoding, false));
 }
@@ -136,11 +137,11 @@ std::wstring SysNativeMBToWide(StringPiece native_mb) {
   return SysUTF8ToWide(native_mb);
 }
 
-ScopedCFTypeRef<CFStringRef> SysUTF8ToCFStringRef(StringPiece utf8) {
+apple::ScopedCFTypeRef<CFStringRef> SysUTF8ToCFStringRef(StringPiece utf8) {
   return StringPieceToCFStringWithEncodingsT(utf8, kCFStringEncodingUTF8);
 }
 
-ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(StringPiece16 utf16) {
+apple::ScopedCFTypeRef<CFStringRef> SysUTF16ToCFStringRef(StringPiece16 utf16) {
   return StringPieceToCFStringWithEncodingsT(utf16, kCFStringEncodingUTF16LE);
 }
 

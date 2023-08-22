@@ -53,8 +53,8 @@ class MacKeyPersistenceDelegateTest : public testing::Test {
   }
 
   // Creates a test key.
-  base::ScopedCFTypeRef<SecKeyRef> CreateTestKey() {
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
+  base::apple::ScopedCFTypeRef<SecKeyRef> CreateTestKey() {
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> test_attributes(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -63,7 +63,7 @@ class MacKeyPersistenceDelegateTest : public testing::Test {
                          kSecAttrKeyTypeECSECPrimeRandom);
     CFDictionarySetValue(test_attributes, kSecAttrKeySizeInBits,
                          base::apple::NSToCFPtrCast(@256));
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> private_key_params(
         CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                   &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
@@ -71,7 +71,7 @@ class MacKeyPersistenceDelegateTest : public testing::Test {
                          kCFBooleanFalse);
     CFDictionarySetValue(test_attributes, kSecPrivateKeyAttrs,
                          private_key_params);
-    return base::ScopedCFTypeRef<SecKeyRef>(
+    return base::apple::ScopedCFTypeRef<SecKeyRef>(
         SecKeyCreateRandomKey(test_attributes, nullptr));
   }
 
@@ -227,7 +227,7 @@ TEST_F(MacKeyPersistenceDelegateTest, CreateKeyPair__EmptySigningKey) {
 
   SetMockClient();
   EXPECT_CALL(*mock_secure_enclave_client_, CreatePermanentKey())
-      .WillOnce([]() { return base::ScopedCFTypeRef<SecKeyRef>(); });
+      .WillOnce([]() { return base::apple::ScopedCFTypeRef<SecKeyRef>(); });
   EXPECT_FALSE(persistence_delegate_->CreateKeyPair());
 }
 

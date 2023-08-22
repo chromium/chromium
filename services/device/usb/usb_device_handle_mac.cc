@@ -265,7 +265,7 @@ void UsbDeviceHandleMac::ClaimInterface(int interface_number,
     }
 
     interfaces_[interface_number] = interface_interface;
-    base::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source;
+    base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source;
     kr = (*interface_interface)
              ->CreateInterfaceAsyncEventSource(
                  interface_interface, run_loop_source.InitializeInto());

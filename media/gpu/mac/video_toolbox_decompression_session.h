@@ -44,11 +44,11 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSession {
 class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
     : public VideoToolboxDecompressionSession {
  public:
-  using OutputCB =
-      base::RepeatingCallback<void(void*,
-                                   OSStatus,
-                                   VTDecodeInfoFlags,
-                                   base::ScopedCFTypeRef<CVImageBufferRef>)>;
+  using OutputCB = base::RepeatingCallback<void(
+      void*,
+      OSStatus,
+      VTDecodeInfoFlags,
+      base::apple::ScopedCFTypeRef<CVImageBufferRef>)>;
 
   VideoToolboxDecompressionSessionImpl(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -65,22 +65,23 @@ class MEDIA_GPU_EXPORT VideoToolboxDecompressionSessionImpl
   bool DecodeFrame(CMSampleBufferRef sample, void* context) override;
 
   // Called by OnOutputThunk().
-  void OnOutputOnAnyThread(void* context,
-                           OSStatus status,
-                           VTDecodeInfoFlags flags,
-                           base::ScopedCFTypeRef<CVImageBufferRef> image);
+  void OnOutputOnAnyThread(
+      void* context,
+      OSStatus status,
+      VTDecodeInfoFlags flags,
+      base::apple::ScopedCFTypeRef<CVImageBufferRef> image);
 
  private:
   void OnOutput(void* context,
                 OSStatus status,
                 VTDecodeInfoFlags flags,
-                base::ScopedCFTypeRef<CVImageBufferRef> image);
+                base::apple::ScopedCFTypeRef<CVImageBufferRef> image);
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   std::unique_ptr<MediaLog> media_log_;
   OutputCB output_cb_;
 
-  base::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
+  base::apple::ScopedCFTypeRef<VTDecompressionSessionRef> session_;
 
   // Used in OnOutputOnAnyThread() to hop to |task_runner_|.
   base::WeakPtr<VideoToolboxDecompressionSessionImpl> weak_this_;

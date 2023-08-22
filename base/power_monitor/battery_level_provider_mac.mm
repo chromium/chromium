@@ -71,7 +71,7 @@ BatteryLevelProviderMac::GetBatteryStateImpl() {
     return MakeBatteryState(/* battery_details=*/{});
   }
 
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
   kern_return_t result =
       IORegistryEntryCreateCFProperties(service.get(), dict.InitializeInto(),
                                         /*allocator=*/nullptr, /*options=*/0);

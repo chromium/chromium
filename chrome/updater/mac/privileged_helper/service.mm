@@ -189,9 +189,9 @@ int InstallUpdater(const base::FilePath& browser_path) {
 }  // namespace
 
 bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
-  base::ScopedCFTypeRef<SecRequirementRef> requirement;
-  base::ScopedCFTypeRef<SecStaticCodeRef> code;
-  base::ScopedCFTypeRef<CFErrorRef> errors;
+  base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;
+  base::apple::ScopedCFTypeRef<SecStaticCodeRef> code;
+  base::apple::ScopedCFTypeRef<CFErrorRef> errors;
   if (SecStaticCodeCreateWithPath(
           base::apple::FilePathToCFURL(updater_app_bundle), kSecCSDefaultFlags,
           code.InitializeInto()) != errSecSuccess) {

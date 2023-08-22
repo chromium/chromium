@@ -65,12 +65,13 @@ class LoginItemsFileList {
   // representing the specified bundle.  If such an item is found, returns a
   // retained reference to it. Caller is responsible for releasing the
   // reference.
-  ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForApp(NSURL* url) {
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForApp(
+      NSURL* url) {
     DCHECK(login_items_.get()) << "Initialize() failed or not called.";
 
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    ScopedCFTypeRef<CFArrayRef> login_items_array(
+    apple::ScopedCFTypeRef<CFArrayRef> login_items_array(
         LSSharedFileListCopySnapshot(login_items_, /*inList=*/nullptr));
 #pragma clang diagnostic pop
 
@@ -88,27 +89,27 @@ class LoginItemsFileList {
 #pragma clang diagnostic pop
 
       if (item_url && [item_url isEqual:url]) {
-        return ScopedCFTypeRef<LSSharedFileListItemRef>(
+        return apple::ScopedCFTypeRef<LSSharedFileListItemRef>(
             item, base::scoped_policy::RETAIN);
       }
     }
 
-    return ScopedCFTypeRef<LSSharedFileListItemRef>();
+    return apple::ScopedCFTypeRef<LSSharedFileListItemRef>();
   }
 
-  ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForMainApp() {
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> GetLoginItemForMainApp() {
     NSURL* url = [NSURL fileURLWithPath:base::apple::MainBundle().bundlePath];
     return GetLoginItemForApp(url);
   }
 
  private:
-  ScopedCFTypeRef<LSSharedFileListRef> login_items_;
+  apple::ScopedCFTypeRef<LSSharedFileListRef> login_items_;
 };
 
 bool IsHiddenLoginItem(LSSharedFileListItemRef item) {
 #pragma clang diagnostic push  // https://crbug.com/1154377
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  ScopedCFTypeRef<CFBooleanRef> hidden(
+  apple::ScopedCFTypeRef<CFBooleanRef> hidden(
       reinterpret_cast<CFBooleanRef>(LSSharedFileListItemCopyProperty(
           item, kLSSharedFileListLoginItemHidden)));
 #pragma clang diagnostic pop
@@ -164,7 +165,7 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
   }
 
   NSURL* app_bundle_url = base::apple::FilePathToNSURL(app_bundle_file_path);
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> item =
       login_items.GetLoginItemForApp(app_bundle_url);
 
   if (item.get() && (IsHiddenLoginItem(item) == hide_on_startup)) {
@@ -185,7 +186,7 @@ void AddToLoginItems(const FilePath& app_bundle_file_path,
   NSDictionary* properties =
       @{apple::CFToNSPtrCast(kLSSharedFileListLoginItemHidden) : @(hide)};
 
-  ScopedCFTypeRef<LSSharedFileListItemRef> new_item(
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> new_item(
       LSSharedFileListInsertItemURL(
           login_items.GetLoginFileList(), kLSSharedFileListItemLast,
           /*inDisplayName=*/nullptr,
@@ -205,7 +206,7 @@ void RemoveFromLoginItems(const FilePath& app_bundle_file_path) {
   }
 
   NSURL* app_bundle_url = base::apple::FilePathToNSURL(app_bundle_file_path);
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item =
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> item =
       login_items.GetLoginItemForApp(app_bundle_url);
   if (!item.get()) {
     return;
@@ -250,7 +251,7 @@ bool WasLaunchedAsLoginItemRestoreState() {
 
   CFStringRef app = CFSTR("com.apple.loginwindow");
   CFStringRef save_state = CFSTR("TALLogoutSavesState");
-  ScopedCFTypeRef<CFPropertyListRef> plist(
+  apple::ScopedCFTypeRef<CFPropertyListRef> plist(
       CFPreferencesCopyAppValue(save_state, app));
   // According to documentation, com.apple.loginwindow.plist does not exist on a
   // fresh installation until the user changes a login window setting.  The
@@ -278,7 +279,7 @@ bool WasLaunchedAsHiddenLoginItem() {
     return false;
   }
 
-  base::ScopedCFTypeRef<LSSharedFileListItemRef> item(
+  apple::ScopedCFTypeRef<LSSharedFileListItemRef> item(
       login_items.GetLoginItemForMainApp());
   if (!item.get()) {
     // The OS itself can launch items, usually for the resume feature.
@@ -407,7 +408,7 @@ std::string GetModelIdentifier() {
   ScopedIOObject<io_service_t> platform_expert(IOServiceGetMatchingService(
       kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice")));
   if (platform_expert) {
-    ScopedCFTypeRef<CFDataRef> model_data(
+    apple::ScopedCFTypeRef<CFDataRef> model_data(
         static_cast<CFDataRef>(IORegistryEntryCreateCFProperty(
             platform_expert, CFSTR("model"), kCFAllocatorDefault, 0)));
     if (model_data) {
@@ -462,7 +463,7 @@ std::string GetPlatformSerialNumber() {
     return std::string();
   }
 
-  base::ScopedCFTypeRef<CFTypeRef> serial_number(
+  apple::ScopedCFTypeRef<CFTypeRef> serial_number(
       IORegistryEntryCreateCFProperty(expert_device,
                                       CFSTR(kIOPlatformSerialNumberKey),
                                       kCFAllocatorDefault, 0));

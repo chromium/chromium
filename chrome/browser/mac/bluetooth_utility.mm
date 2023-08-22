@@ -16,7 +16,7 @@
 namespace bluetooth_utility {
 
 BluetoothAvailability GetBluetoothAvailability() {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching_dict(
       IOServiceMatching("IOBluetoothHCIController"));
   if (!matching_dict)
     return BLUETOOTH_AVAILABILITY_ERROR;
@@ -34,7 +34,7 @@ BluetoothAvailability GetBluetoothAvailability() {
   while (device.reset(IOIteratorNext(scoped_iter.get())), device) {
     bluetooth_available = true;
 
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
     kr = IORegistryEntryCreateCFProperties(device, dict.InitializeInto(),
                                            kCFAllocatorDefault, kNilOptions);
     if (kr != KERN_SUCCESS)

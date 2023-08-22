@@ -128,7 +128,7 @@ Sampler::Sample BatterySampler::GetSample(base::TimeTicks sample_time) {
 // static
 absl::optional<BatterySampler::BatteryData> BatterySampler::MaybeGetBatteryData(
     io_service_t power_source) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
   kern_return_t result = IORegistryEntryCreateCFProperties(
       power_source, dict.InitializeInto(), 0, 0);
   if (result != KERN_SUCCESS) {

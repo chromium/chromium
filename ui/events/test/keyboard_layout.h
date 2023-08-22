@@ -33,7 +33,7 @@ enum KeyboardLayout {
 #if BUILDFLAG(IS_WIN)
 using PlatformKeyboardLayout = HKL;
 #elif BUILDFLAG(IS_MAC)
-using PlatformKeyboardLayout = base::ScopedCFTypeRef<TISInputSourceRef>;
+using PlatformKeyboardLayout = base::apple::ScopedCFTypeRef<TISInputSourceRef>;
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)

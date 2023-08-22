@@ -28,7 +28,7 @@ AppShimHostBootstrap::Client* g_client = nullptr;
 // TODO(https://crbug.com/1052131): Remove NSLog logging, and move to an
 // internal debugging URL.
 void LogToNSLog(std::string format, ...) {
-  base::ScopedCFTypeRef<CFStringRef> cf_format(
+  base::apple::ScopedCFTypeRef<CFStringRef> cf_format(
       base::SysUTF8ToCFStringRef(format));
 
   va_list arguments;

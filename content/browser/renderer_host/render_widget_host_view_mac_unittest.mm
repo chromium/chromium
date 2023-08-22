@@ -240,7 +240,8 @@ blink::WebPointerProperties::PointerType GetPointerType(
 NSEvent* MockTabletEventWithParams(CGEventType type,
                                    bool is_entering_proximity,
                                    NSPointingDeviceType device_type) {
-  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreate(/*source=*/nullptr));
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
+      CGEventCreate(/*source=*/nullptr));
   CGEventSetType(cg_event, type);
   CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
@@ -260,7 +261,7 @@ NSEvent* MockMouseEventWithParams(CGEventType mouse_type,
   // an NSEvent, below, flips the location back to bottom left origin.
   CGPoint cg_location =
       CGPointMake(location.x, NSHeight(NSScreen.screens[0].frame) - location.y);
-  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
       /*source=*/nullptr, mouse_type, cg_location, button));
   CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
   CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
@@ -436,8 +437,9 @@ gfx::Rect GetExpectedRect(const gfx::Point& origin,
 // should correspond to a method in |MockPhaseMethods| that returns the desired
 // phase.
 NSEvent* MockScrollWheelEventWithPhase(SEL mockPhaseSelector, int32_t delta) {
-  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
-      /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
+      CGEventCreateScrollWheelEvent(
+          /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
   CGEventSetTimestamp(cg_event, timestamp);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
@@ -452,8 +454,9 @@ NSEvent* MockScrollWheelEventWithMomentumPhase(SEL mockPhaseSelector,
   // Create a fake event with phaseNone. This is for resetting the phase info
   // of CGEventRef.
   MockScrollWheelEventWithPhase(@selector(phaseNone), 0);
-  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
-      /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
+  base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
+      CGEventCreateScrollWheelEvent(
+          /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
   CGEventSetTimestamp(cg_event, timestamp);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];

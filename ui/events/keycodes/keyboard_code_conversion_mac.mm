@@ -564,7 +564,7 @@ std::tuple<UniChar, bool> NsKeyCodeAndModifiersToCharacter(
   UInt32 modifier_key_state = (unicode_modifiers >> 8) & 0xFF;
 
   UInt32 dead_key_state = 0;
-  base::ScopedCFTypeRef<TISInputSourceRef> input_source(
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> input_source(
       TISCopyCurrentKeyboardLayoutInputSource());
   UniChar translated_char = TranslatedUnicodeCharFromKeyCode(
       input_source.get(), static_cast<UInt16>(key_code), kUCKeyActionDown,

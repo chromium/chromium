@@ -28,7 +28,7 @@
 
 namespace device::fido::mac {
 
-using base::ScopedCFTypeRef;
+using base::apple::ScopedCFTypeRef;
 
 GetAssertionOperation::GetAssertionOperation(
     CtapGetAssertionRequest request,

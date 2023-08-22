@@ -26,9 +26,9 @@ class MediaLog;
 class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
     : public H264Decoder::H264Accelerator {
  public:
-  using DecodeCB =
-      base::RepeatingCallback<void(base::ScopedCFTypeRef<CMSampleBufferRef>,
-                                   scoped_refptr<CodecPicture>)>;
+  using DecodeCB = base::RepeatingCallback<void(
+      base::apple::ScopedCFTypeRef<CMSampleBufferRef>,
+      scoped_refptr<CodecPicture>)>;
   using OutputCB = base::RepeatingCallback<void(scoped_refptr<CodecPicture>)>;
 
   VideoToolboxH264Accelerator(std::unique_ptr<MediaLog> media_log,
@@ -77,7 +77,7 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   std::vector<uint8_t> active_sps_data_;
   std::vector<uint8_t> active_pps_data_;
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
   // Accumulated slice data for the current frame.
   std::vector<base::span<const uint8_t>> slice_nalu_data_;

@@ -140,11 +140,11 @@ constexpr int kMinOutputsBeforeRASL = 5;
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Build an |image_config| dictionary for VideoToolbox initialization.
-base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
+base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
     CMVideoDimensions coded_dimensions,
     bool is_hbd,
     bool has_alpha) {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> image_config;
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config;
 
   // Note that 4:2:0 textures cannot be used directly as RGBA in OpenGL, but are
   // lower power than 4:2:2 when composited directly by CoreAnimation.
@@ -157,9 +157,12 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
     pixel_format = kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar;
 
 #define CFINT(i) CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &i)
-  base::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(CFINT(pixel_format));
-  base::ScopedCFTypeRef<CFNumberRef> cf_width(CFINT(coded_dimensions.width));
-  base::ScopedCFTypeRef<CFNumberRef> cf_height(CFINT(coded_dimensions.height));
+  base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
+      CFINT(pixel_format));
+  base::apple::ScopedCFTypeRef<CFNumberRef> cf_width(
+      CFINT(coded_dimensions.width));
+  base::apple::ScopedCFTypeRef<CFNumberRef> cf_height(
+      CFINT(coded_dimensions.height));
 #undef CFINT
   if (!cf_pixel_format.get() || !cf_width.get() || !cf_height.get())
     return image_config;
@@ -181,7 +184,7 @@ base::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 // Create a CMFormatDescription using the provided |param_sets|.
-base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
+base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
     ParameterSets param_sets) {
   DCHECK(!param_sets.empty());
 
@@ -200,7 +203,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
   // we could get an OSStatus=-12906 kVTCouldNotFindVideoDecoderErr after
   // calling VTDecompressionSessionCreate(), so macOS 11+ is necessary
   // (https://crbug.com/1300444#c9)
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   if (__builtin_available(macOS 11.0, *)) {
     OSStatus status = CMVideoFormatDescriptionCreateFromHEVCParameterSets(
         kCFAllocatorDefault,
@@ -217,7 +220,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatHEVC(
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 // Create a CMFormatDescription using the provided |pps| and |sps|.
-base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
+base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
     const std::vector<uint8_t>& sps,
     const std::vector<uint8_t>& spsext,
     const std::vector<uint8_t>& pps) {
@@ -239,7 +242,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
   nalu_data_sizes.push_back(pps.size());
 
   // Construct a new format description from the parameter sets.
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   OSStatus status = CMVideoFormatDescriptionCreateFromH264ParameterSets(
       kCFAllocatorDefault,
       nalu_data_ptrs.size(),     // parameter_set_count
@@ -252,15 +255,16 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
   return format;
 }
 
-base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
+base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
     media::VideoColorSpace color_space,
     media::VideoCodecProfile profile,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
-  base::ScopedCFTypeRef<CFDictionaryRef> format_config = CreateFormatExtensions(
-      kCMVideoCodecType_VP9, profile, color_space, hdr_metadata);
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
+      CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
+                             hdr_metadata);
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   if (!format_config) {
     DLOG(ERROR) << "Failed to configure vp9 decoder.";
     return format;
@@ -282,10 +286,10 @@ bool CreateVideoToolboxSession(
     bool is_hbd,
     bool has_alpha,
     const VTDecompressionOutputCallbackRecord* callback,
-    base::ScopedCFTypeRef<VTDecompressionSessionRef>* session,
+    base::apple::ScopedCFTypeRef<VTDecompressionSessionRef>* session,
     gfx::Size* configured_size) {
   // Prepare VideoToolbox configuration dictionaries.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> decoder_config(
       CFDictionaryCreateMutable(kCFAllocatorDefault,
                                 1,  // capacity
                                 &kCFTypeDictionaryKeyCallBacks,
@@ -315,7 +319,7 @@ bool CreateVideoToolboxSession(
   CMVideoDimensions visible_dimensions = {
       base::ClampFloor(visible_rect.size.width),
       base::ClampFloor(visible_rect.size.height)};
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> image_config(
       BuildImageConfig(visible_dimensions, is_hbd, has_alpha));
   if (!image_config) {
     DLOG(ERROR) << "Failed to create decoder image configuration";
@@ -677,7 +681,7 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   DVLOG(2) << __func__;
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 
-  base::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   switch (codec_) {
     case VideoCodec::kH264:
       format = CreateVideoFormatH264(active_sps_, active_spsext_, active_pps_);
@@ -741,7 +745,7 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
 
   // Report whether hardware decode is being used.
   bool using_hardware = false;
-  base::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
+  base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
   if (VTSessionCopyProperty(
           session_,
           // kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder
@@ -807,7 +811,7 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
   }
 
   // Package the data in a CMSampleBuffer.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   OSStatus status = CMSampleBufferCreateReady(kCFAllocatorDefault,
                                               data,     // data_buffer
                                               format_,  // format_description
@@ -1138,7 +1142,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
 
   // Create a memory-backed CMBlockBuffer for the translated data.
   // TODO(sandersd): Pool of memory blocks.
-  base::ScopedCFTypeRef<CMBlockBufferRef> data;
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
       kCFAllocatorDefault,
       nullptr,              // &memory_block
@@ -1189,7 +1193,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   }
 
   // Package the data in a CMSampleBuffer.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
                                 data,        // data_buffer
                                 true,        // data_ready
@@ -1571,7 +1575,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
 
   // Create a memory-backed CMBlockBuffer for the translated data.
   // TODO(sandersd): Pool of memory blocks.
-  base::ScopedCFTypeRef<CMBlockBufferRef> data;
+  base::apple::ScopedCFTypeRef<CMBlockBufferRef> data;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
       kCFAllocatorDefault,
       nullptr,              // &memory_block
@@ -1622,7 +1626,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   }
 
   // Package the data in a CMSampleBuffer.
-  base::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
                                 data,        // data_buffer
                                 true,        // data_ready
@@ -2159,7 +2163,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     // will not reuse the IOSurface as long as the SharedImage is alive.
     auto destroy_shared_image_lambda =
         [](gpu::SharedImageStub::SharedImageDestructionCallback callback,
-           base::ScopedCFTypeRef<CVImageBufferRef> image,
+           base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
            scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
           task_runner->PostTask(
               FROM_HERE, base::BindOnce(std::move(callback), gpu::SyncToken()));

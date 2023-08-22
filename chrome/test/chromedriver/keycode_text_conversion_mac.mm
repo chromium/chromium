@@ -19,7 +19,7 @@ UniChar GetCharacter(UInt16 mac_key_code, UInt32 modifier_key_state) {
   UInt32 dead_key_state = 0;
 
   base::AutoLock lock(tis_lock_);
-  base::ScopedCFTypeRef<TISInputSourceRef> input_source(
+  base::apple::ScopedCFTypeRef<TISInputSourceRef> input_source(
       TISCopyCurrentKeyboardLayoutInputSource());
   return ui::TranslatedUnicodeCharFromKeyCode(
       input_source.get(), mac_key_code, kUCKeyActionDown, modifier_key_state,

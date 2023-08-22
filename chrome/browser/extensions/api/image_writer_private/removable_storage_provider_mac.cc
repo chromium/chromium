@@ -27,7 +27,7 @@ RemovableStorageProvider::PopulateDeviceList() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   // Match only writable whole-disks.
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> matching(
+  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> matching(
       IOServiceMatching(kIOMediaClass));
   CFDictionaryAddValue(matching, CFSTR(kIOMediaWholeKey), kCFBooleanTrue);
   CFDictionaryAddValue(matching, CFSTR(kIOMediaWritableKey), kCFBooleanTrue);
@@ -54,7 +54,7 @@ RemovableStorageProvider::PopulateDeviceList() {
     if (!is_suitable)
       continue;
 
-    base::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
+    base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> dict;
     if (IORegistryEntryCreateCFProperties(disk_obj, dict.InitializeInto(),
                                           kCFAllocatorDefault,
                                           0) != KERN_SUCCESS) {
@@ -62,12 +62,10 @@ RemovableStorageProvider::PopulateDeviceList() {
       continue;
     }
 
-    base::ScopedCFTypeRef<CFDictionaryRef> characteristics(
+    base::apple::ScopedCFTypeRef<CFDictionaryRef> characteristics(
         static_cast<CFDictionaryRef>(IORegistryEntrySearchCFProperty(
-            disk_obj,
-            kIOServicePlane,
-            CFSTR(kIOPropertyDeviceCharacteristicsKey),
-            kCFAllocatorDefault,
+            disk_obj, kIOServicePlane,
+            CFSTR(kIOPropertyDeviceCharacteristicsKey), kCFAllocatorDefault,
             kIORegistryIterateParents | kIORegistryIterateRecursively)));
 
     if (!characteristics) {

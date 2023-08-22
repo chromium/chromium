@@ -170,7 +170,7 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
   crypto::AppleKeychain keychain;
   UInt32 password_length = 0;
   void* password_data = nullptr;
-  base::ScopedCFTypeRef<SecKeychainItemRef> item_ref;
+  base::apple::ScopedCFTypeRef<SecKeychainItemRef> item_ref;
   status = keychain.FindGenericPassword(
       strlen(kServiceName), kServiceName, strlen(kAccountName), kAccountName,
       &password_length, &password_data, item_ref.InitializeInto());

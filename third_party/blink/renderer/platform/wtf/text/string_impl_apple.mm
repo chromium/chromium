@@ -26,8 +26,8 @@
 
 namespace WTF {
 
-base::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
-  return base::ScopedCFTypeRef<CFStringRef>(
+base::apple::ScopedCFTypeRef<CFStringRef> StringImpl::CreateCFString() {
+  return base::apple::ScopedCFTypeRef<CFStringRef>(
       Is8Bit()
           ? CFStringCreateWithBytes(
                 kCFAllocatorDefault,

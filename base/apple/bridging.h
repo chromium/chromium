@@ -144,7 +144,7 @@ CF_TO_NS_CAST_IMPL(CTFont, NSFont)
 namespace base::apple {
 
 template <typename CFT>
-id _Nullable CFToNSOwnershipCast(base::ScopedCFTypeRef<CFT>) {
+id _Nullable CFToNSOwnershipCast(ScopedCFTypeRef<CFT>) {
   static_assert(
       AlwaysFalse<CFT>,
       "Error: Do not pass a ScopedCFTypeRef to CFToNSOwnershipCast. "

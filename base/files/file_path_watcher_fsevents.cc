@@ -213,13 +213,13 @@ void FilePathWatcherFSEvents::UpdateEventStream(
   if (fsevent_stream_)
     DestroyEventStream();
 
-  ScopedCFTypeRef<CFStringRef> cf_path(CFStringCreateWithCString(
+  apple::ScopedCFTypeRef<CFStringRef> cf_path(CFStringCreateWithCString(
       NULL, resolved_target_.value().c_str(), kCFStringEncodingMacHFS));
-  ScopedCFTypeRef<CFStringRef> cf_dir_path(CFStringCreateWithCString(
+  apple::ScopedCFTypeRef<CFStringRef> cf_dir_path(CFStringCreateWithCString(
       NULL, resolved_target_.DirName().value().c_str(),
       kCFStringEncodingMacHFS));
   CFStringRef paths_array[] = { cf_path.get(), cf_dir_path.get() };
-  ScopedCFTypeRef<CFArrayRef> watched_paths(
+  apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));
 

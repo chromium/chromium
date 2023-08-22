@@ -247,14 +247,14 @@ class DisplayMetricsChangeObserver : public display::DisplayObserver {
 
 void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
                                  const gfx::Size& size) {
-  base::ScopedCFTypeRef<CGDisplayModeRef> current_display_mode(
+  base::apple::ScopedCFTypeRef<CGDisplayModeRef> current_display_mode(
       CGDisplayCopyDisplayMode(display_id));
   if (gfx::Size(CGDisplayModeGetWidth(current_display_mode),
                 CGDisplayModeGetHeight(current_display_mode)) == size) {
     return;
   }
 
-  base::ScopedCFTypeRef<CFArrayRef> display_modes(
+  base::apple::ScopedCFTypeRef<CFArrayRef> display_modes(
       CGDisplayCopyAllDisplayModes(display_id, nullptr));
   DCHECK(display_modes);
 

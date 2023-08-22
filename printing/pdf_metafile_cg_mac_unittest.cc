@@ -78,9 +78,9 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
   constexpr size_t kBytesPerPixel = 4;
   const size_t kStride = dest_size.width() * kBytesPerPixel;
   std::vector<uint8_t> rendered_bitmap(dest_size.height() * kStride);
-  base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
+  base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
-  base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
+  base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       rendered_bitmap.data(), dest_size.width(), dest_size.height(),
       kBitsPerComponent, kStride, color_space,
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Little));

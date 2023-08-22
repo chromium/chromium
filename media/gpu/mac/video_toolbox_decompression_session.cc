@@ -29,7 +29,7 @@ void OnOutputThunk(void* decompression_output_refcon,
       static_cast<VideoToolboxDecompressionSessionImpl*>(
           decompression_output_refcon);
   vtdsi->OnOutputOnAnyThread(source_frame_refcon, status, info_flags,
-                             base::ScopedCFTypeRef<CVImageBufferRef>(
+                             base::apple::ScopedCFTypeRef<CVImageBufferRef>(
                                  image_buffer, base::scoped_policy::RETAIN));
 }
 
@@ -134,7 +134,7 @@ void VideoToolboxDecompressionSessionImpl::OnOutputOnAnyThread(
     void* context,
     OSStatus status,
     VTDecodeInfoFlags flags,
-    base::ScopedCFTypeRef<CVImageBufferRef> image) {
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
   DVLOG(4) << __func__;
   task_runner_->PostTask(
       FROM_HERE,
@@ -146,7 +146,7 @@ void VideoToolboxDecompressionSessionImpl::OnOutput(
     void* context,
     OSStatus status,
     VTDecodeInfoFlags flags,
-    base::ScopedCFTypeRef<CVImageBufferRef> image) {
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image) {
   DVLOG(3) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(session_);

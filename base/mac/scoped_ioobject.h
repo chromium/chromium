@@ -27,7 +27,8 @@ struct ScopedIOObjectTraits {
 
 // Just like ScopedCFTypeRef but for io_object_t and subclasses.
 template <typename IOT>
-using ScopedIOObject = ScopedTypeRef<IOT, internal::ScopedIOObjectTraits<IOT>>;
+using ScopedIOObject =
+    apple::ScopedTypeRef<IOT, internal::ScopedIOObjectTraits<IOT>>;
 
 }  // namespace base::mac
 

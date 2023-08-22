@@ -51,7 +51,8 @@ class MEDIA_EXPORT AudioToolboxAudioDecoder : public AudioDecoder {
     static void Release(AudioConverterRef converter);
   };
   using ScopedAudioConverterRef =
-      base::ScopedTypeRef<AudioConverterRef, ScopedAudioConverterRefTraits>;
+      base::apple::ScopedTypeRef<AudioConverterRef,
+                                 ScopedAudioConverterRefTraits>;
 
   bool CreateDecoder(const AudioDecoderConfig& config);
 

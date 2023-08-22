@@ -10,7 +10,7 @@ namespace gfx {
 namespace {
 
 TEST(IOSurface, OddSizeMultiPlanar) {
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+  base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
       CreateIOSurface(gfx::Size(101, 99), gfx::BufferFormat::YUV_420_BIPLANAR);
   DCHECK(io_surface);
   // Plane sizes are rounded up.

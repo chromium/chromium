@@ -31,7 +31,7 @@ CIImage* CIImageFromSkBitmap(const SkBitmap& bitmap) {
   }
 
   // First convert SkBitmap to CGImageRef.
-  base::ScopedCFTypeRef<CGImageRef> cg_image(
+  base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
       SkCreateCGImageRefWithColorspace(bitmap, nullptr));
   if (!cg_image) {
     DLOG(ERROR) << "Failed to create CGImageRef";

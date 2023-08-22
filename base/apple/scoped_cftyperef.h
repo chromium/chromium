@@ -9,7 +9,7 @@
 
 #include "base/apple/scoped_typeref.h"
 
-namespace base {
+namespace base::apple {
 
 // ScopedCFTypeRef<> is patterned after std::unique_ptr<>, but maintains
 // ownership of a CoreFoundation object: any object that can be represented
@@ -43,6 +43,6 @@ template <typename CFT>
 using ScopedCFTypeRef =
     ScopedTypeRef<CFT, internal::ScopedCFTypeRefTraits<CFT>>;
 
-}  // namespace base
+}  // namespace base::apple
 
 #endif  // BASE_APPLE_SCOPED_CFTYPEREF_H_

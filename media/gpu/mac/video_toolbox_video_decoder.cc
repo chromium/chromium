@@ -294,7 +294,7 @@ void VideoToolboxVideoDecoder::ReleaseDecodeCallbacks() {
 }
 
 void VideoToolboxVideoDecoder::OnAcceleratorDecode(
-    base::ScopedCFTypeRef<CMSampleBufferRef> sample,
+    base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample,
     scoped_refptr<CodecPicture> picture) {
   DVLOG(4) << __func__;
   DCHECK(active_decode_);
@@ -323,7 +323,7 @@ void VideoToolboxVideoDecoder::OnAcceleratorOutput(
 }
 
 void VideoToolboxVideoDecoder::OnVideoToolboxOutput(
-    base::ScopedCFTypeRef<CVImageBufferRef> image,
+    base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
     std::unique_ptr<VideoToolboxDecodeMetadata> metadata) {
   DVLOG(4) << __func__;
 
