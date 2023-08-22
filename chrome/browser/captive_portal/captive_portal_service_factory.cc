@@ -32,8 +32,9 @@ CaptivePortalServiceFactory::CaptivePortalServiceFactory()
 
 CaptivePortalServiceFactory::~CaptivePortalServiceFactory() = default;
 
-KeyedService* CaptivePortalServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CaptivePortalServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new captive_portal::CaptivePortalService(
+  return std::make_unique<captive_portal::CaptivePortalService>(
       profile, static_cast<Profile*>(profile)->GetPrefs());
 }
