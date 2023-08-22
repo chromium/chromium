@@ -40,9 +40,10 @@ WarningBadgeServiceFactory::WarningBadgeServiceFactory()
 
 WarningBadgeServiceFactory::~WarningBadgeServiceFactory() = default;
 
-KeyedService* WarningBadgeServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WarningBadgeServiceFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new WarningBadgeService(static_cast<Profile*>(context));
+  return std::make_unique<WarningBadgeService>(static_cast<Profile*>(context));
 }
 
 bool WarningBadgeServiceFactory::ServiceIsCreatedWithBrowserContext() const {
