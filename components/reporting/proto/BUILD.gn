@@ -103,3 +103,11 @@ proto_library("upload_tracker_proto") {
 
   deps = [ ":status_proto" ]
 }
+
+proto_library("configuration_file_proto") {
+  proto_in_dir = "//"
+
+  sources = [ "synced/configuration_file.proto" ]
+
+  deps = [ ":record_constants" ]
+}

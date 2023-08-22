@@ -1,0 +1,32 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+import "components/reporting/proto/synced/record_constants.proto";
+
+// Proto returned from the reporting server if requested by the client, this
+// proto tells the client if any destinations should be blocked at the moment.
+message ConfigFile {
+  // Blocked destinations.
+  repeated EventConfig event_configs = 1;
+  // Verified by the client to make sure that the response wasn't altered.
+  optional bytes config_file_signature = 2;
+}
+
+// Control by destination.
+message EventConfig {
+  optional Destination destination = 1;
+  // Minimum version where a destination should be blocked.
+  // Inclusive. [minimum_release_version, current or maximum_release_version]
+  // If these fields are not included the destination will be blocked on
+  // all versions.
+  optional int32 minimum_release_version = 2;
+  // Maximum version where a destination should be blocked. See above.
+  optional int32 maximum_release_version = 3;
+}
