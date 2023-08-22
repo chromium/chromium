@@ -385,8 +385,6 @@ public abstract class Layout {
      * primary screen-filling tab.
      */
     protected void updateCacheVisibleIdsAndPrimary(List<Integer> visible, int primaryTabId) {
-        assert isActive() : "Only the active Layout should updateCacheVisibleIds{AndPrimary}.";
-
         if (mTabContentManager != null) mTabContentManager.updateVisibleIds(visible, primaryTabId);
     }
 
