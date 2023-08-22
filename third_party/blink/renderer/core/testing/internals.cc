@@ -2547,7 +2547,7 @@ bool Internals::isPageBoxVisible(Document* document, int page_number) {
   DCHECK(document);
   // Named pages aren't supported here, because this function may be called
   // without laying out first.
-  scoped_refptr<const ComputedStyle> style =
+  const ComputedStyle* style =
       document->StyleForPage(page_number, /* page_name */ AtomicString());
   return style->Visibility() !=
          EVisibility::kHidden;  // display property doesn't apply to @page.

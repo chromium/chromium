@@ -16,12 +16,12 @@ LayoutNGTableSection::LayoutNGTableSection(Element* element)
 
 LayoutNGTableSection* LayoutNGTableSection::CreateAnonymousWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRowGroup);
   auto* new_section = MakeGarbageCollected<LayoutNGTableSection>(nullptr);
   new_section->SetDocumentForAnonymous(&parent.GetDocument());
-  new_section->SetStyle(std::move(new_style));
+  new_section->SetStyle(new_style);
   return new_section;
 }
 

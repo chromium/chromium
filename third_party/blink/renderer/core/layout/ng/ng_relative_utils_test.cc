@@ -25,10 +25,10 @@ class NGRelativeUtilsTest : public testing::Test {
     initial_style_ = ComputedStyle::CreateInitialStyleSingleton();
   }
 
-  scoped_refptr<const ComputedStyle> CreateStyle(LayoutUnit top,
-                                                 LayoutUnit right,
-                                                 LayoutUnit bottom,
-                                                 LayoutUnit left) {
+  const ComputedStyle* CreateStyle(LayoutUnit top,
+                                   LayoutUnit right,
+                                   LayoutUnit bottom,
+                                   LayoutUnit left) {
     ComputedStyleBuilder builder(*initial_style_);
     builder.SetPosition(EPosition::kRelative);
     builder.SetTop(top == kAuto ? Length::Auto() : Length::Fixed(top.ToInt()));
@@ -41,7 +41,7 @@ class NGRelativeUtilsTest : public testing::Test {
     return builder.TakeStyle();
   }
 
-  scoped_refptr<const ComputedStyle> initial_style_;
+  Persistent<const ComputedStyle> initial_style_;
   LogicalSize container_size_;
 };
 
@@ -49,8 +49,7 @@ TEST_F(NGRelativeUtilsTest, HorizontalTB) {
   LogicalOffset offset;
 
   // Everything auto defaults to kZero,kZero
-  scoped_refptr<const ComputedStyle> style =
-      CreateStyle(kAuto, kAuto, kAuto, kAuto);
+  const ComputedStyle* style = CreateStyle(kAuto, kAuto, kAuto, kAuto);
   offset = ComputeRelativeOffset(
       *style, {WritingMode::kHorizontalTb, TextDirection::kLtr},
       container_size_);
@@ -87,8 +86,7 @@ TEST_F(NGRelativeUtilsTest, VerticalRightLeft) {
   LogicalOffset offset;
 
   // Set all sides
-  scoped_refptr<const ComputedStyle> style =
-      CreateStyle(kTop, kRight, kBottom, kLeft);
+  const ComputedStyle* style = CreateStyle(kTop, kRight, kBottom, kLeft);
 
   // kLtr
   offset = ComputeRelativeOffset(
@@ -114,8 +112,7 @@ TEST_F(NGRelativeUtilsTest, VerticalLeftRight) {
   LogicalOffset offset;
 
   // Set all sides
-  scoped_refptr<const ComputedStyle> style =
-      CreateStyle(kTop, kRight, kBottom, kLeft);
+  const ComputedStyle* style = CreateStyle(kTop, kRight, kBottom, kLeft);
 
   // kLtr
   offset = ComputeRelativeOffset(

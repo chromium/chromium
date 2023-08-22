@@ -65,8 +65,7 @@ class CORE_EXPORT PostStyleUpdateScope {
     friend class ContainerQueryTest;
 
     HeapHashSet<Member<Element>> elements_with_pending_updates_;
-    HeapHashMap<Member<const Element>, scoped_refptr<const ComputedStyle>>
-        old_styles_;
+    HeapHashMap<Member<const Element>, Member<const ComputedStyle>> old_styles_;
   };
 
   class PseudoData {

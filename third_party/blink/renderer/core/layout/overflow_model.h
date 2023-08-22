@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -168,7 +169,7 @@ class BoxVisualOverflowModel {
   bool has_subpixel_visual_effect_outsets_ = false;
 };
 
-struct BoxOverflowModel {
+struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
   absl::optional<BoxLayoutOverflowModel> layout_overflow;
   absl::optional<BoxVisualOverflowModel> visual_overflow;
 
@@ -181,7 +182,7 @@ struct BoxOverflowModel {
   };
   absl::optional<PreviousOverflowData> previous_overflow_data;
 
-  USING_FAST_MALLOC(BoxOverflowModel);
+  void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

@@ -765,7 +765,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
                                                   new_display);
 
   parent->UpdateAnonymousChildStyle(nullptr, new_style_builder);
-  scoped_refptr<const ComputedStyle> new_style = new_style_builder.TakeStyle();
+  const ComputedStyle* new_style = new_style_builder.TakeStyle();
 
   LayoutBlock* layout_block;
   if (new_display == EDisplay::kFlex) {
@@ -782,7 +782,7 @@ LayoutBlock* LayoutBlock::CreateAnonymousWithParentAndDisplay(
     layout_block = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
   }
   layout_block->SetDocumentForAnonymous(&parent->GetDocument());
-  layout_block->SetStyle(std::move(new_style));
+  layout_block->SetStyle(new_style);
   return layout_block;
 }
 

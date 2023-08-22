@@ -533,7 +533,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
 
   const LogicalSize border_spacing = table.Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(table);
-  scoped_refptr<const NGTableBorders> table_borders = table.GetTableBorders();
+  const NGTableBorders* table_borders = table.GetTableBorders();
 
   // Compute min/max inline constraints.
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
@@ -585,9 +585,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::Layout() {
   const bool is_fixed_layout = Style().IsFixedTableLayout();
   const LogicalSize border_spacing = Style().TableBorderSpacing();
   NGTableGroupedChildren grouped_children(Node());
-  const scoped_refptr<const NGTableBorders> table_borders =
-      Node().GetTableBorders();
-  DCHECK(table_borders.get());
+  const NGTableBorders* table_borders = Node().GetTableBorders();
+  DCHECK(table_borders);
   const NGBoxStrut border_padding = container_builder_.BorderPadding();
 
   // Algorithm:
@@ -715,10 +714,8 @@ MinMaxSizesResult NGTableLayoutAlgorithm::ComputeMinMaxSizes(
     text_autosizer.emplace(To<LayoutNGTable>(Node().GetLayoutBox()));
 
   const LogicalSize border_spacing = Style().TableBorderSpacing();
-  NGTableGroupedChildren grouped_children(Node());
-  const scoped_refptr<const NGTableBorders> table_borders =
-      Node().GetTableBorders();
   const NGBoxStrut border_padding = container_builder_.BorderPadding();
+  NGTableGroupedChildren grouped_children(Node());
 
   const scoped_refptr<const NGTableTypes::Columns> column_constraints =
       Node().GetColumnConstraints(grouped_children, border_padding);

@@ -45,6 +45,7 @@ class PhysicalFragmentRareData
   ~PhysicalFragmentRareData();
 
   void Trace(Visitor* visitor) const {
+    visitor->Trace(table_collapsed_borders_);
     visitor->Trace(table_column_geometries_);
   }
 
@@ -63,7 +64,6 @@ class PhysicalFragmentRareData
     kFrameSetLayoutData,
     kMathMLPaintInfo,
     kTableGridRect,
-    kTableCollapsedBorders,
     kTableCollapsedBordersGeometry,
     kTableCellColumnIndex,
     kTableSectionStartRowIndex,
@@ -157,7 +157,8 @@ class PhysicalFragmentRareData
   RareBitFieldType bit_field_;
   // A garbage-collected field is not stored in the Vector in order to avoid
   // troublesome conditional tracing.
-  Member<NGTableFragmentData::ColumnGeometries> table_column_geometries_;
+  Member<const NGTableBorders> table_collapsed_borders_;
+  Member<const NGTableFragmentData::ColumnGeometries> table_column_geometries_;
 };
 
 }  // namespace blink

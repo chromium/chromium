@@ -80,7 +80,7 @@ void NodeMutationObserverData::RemoveRegistration(
 }
 
 NodeData::NodeData(LayoutObject* layout_object,
-                   scoped_refptr<const ComputedStyle> computed_style)
+                   const ComputedStyle* computed_style)
     : computed_style_(computed_style),
       layout_object_(layout_object),
       bit_field_(RestyleFlags::encode(0) |
@@ -91,8 +91,7 @@ NodeData::NodeData(LayoutObject* layout_object,
 NodeData::NodeData(blink::NodeData&&) = default;
 NodeData::~NodeData() = default;
 
-void NodeData::SetComputedStyle(
-    scoped_refptr<const ComputedStyle> computed_style) {
+void NodeData::SetComputedStyle(const ComputedStyle* computed_style) {
   DCHECK_NE(&SharedEmptyData(), this);
   computed_style_ = computed_style;
 }
@@ -103,6 +102,7 @@ NodeData& NodeData::SharedEmptyData() {
   return *shared_empty_data;
 }
 void NodeData::Trace(Visitor* visitor) const {
+  visitor->Trace(computed_style_);
   visitor->Trace(layout_object_);
 }
 

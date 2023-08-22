@@ -458,12 +458,12 @@ class CORE_EXPORT NGFragmentBuilder {
 
  protected:
   NGFragmentBuilder(const NGLayoutInputNode& node,
-                    scoped_refptr<const ComputedStyle> style,
+                    const ComputedStyle* style,
                     const NGConstraintSpace& space,
                     WritingDirectionMode writing_direction)
       : node_(node),
         space_(space),
-        style_(std::move(style)),
+        style_(style),
         writing_direction_(writing_direction),
         style_variant_(NGStyleVariant::kStandard) {
     DCHECK(style_);
@@ -504,7 +504,7 @@ class CORE_EXPORT NGFragmentBuilder {
 
   NGLayoutInputNode node_;
   const NGConstraintSpace& space_;
-  scoped_refptr<const ComputedStyle> style_;
+  const ComputedStyle* style_;
   WritingDirectionMode writing_direction_;
   NGStyleVariant style_variant_;
   NGPhysicalFragment::NGBoxType box_type_ =

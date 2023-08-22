@@ -136,10 +136,13 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
   struct FloatingObject {
     DISALLOW_NEW();
 
-    void Trace(Visitor* visitor) const {}
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(float_style);
+      visitor->Trace(style);
+    }
 
-    const ComputedStyle& float_style;
-    const ComputedStyle& style;
+    Member<const ComputedStyle> float_style;
+    Member<const ComputedStyle> style;
     LayoutUnit float_inline_max_size_with_margin;
   };
 

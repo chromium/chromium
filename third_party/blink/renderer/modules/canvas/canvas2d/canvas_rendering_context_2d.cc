@@ -524,8 +524,7 @@ bool CanvasRenderingContext2D::ResolveFont(const String& new_font) {
           element_font_description.SpecifiedSize());
 
       font_style_builder.SetFontDescription(element_font_description);
-      scoped_refptr<const ComputedStyle> font_style =
-          font_style_builder.TakeStyle();
+      const ComputedStyle* font_style = font_style_builder.TakeStyle();
       Font font = canvas()->GetDocument().GetStyleEngine().ComputeFont(
           *canvas(), *font_style, *parsed_style);
 

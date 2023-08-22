@@ -2037,7 +2037,7 @@ void PaintLayer::UpdateFilters(const ComputedStyle* old_style,
                                const ComputedStyle& new_style) {
   if (!filter_on_effect_node_dirty_) {
     filter_on_effect_node_dirty_ =
-        old_style ? !old_style->FilterDataEquivalent(new_style) ||
+        old_style ? old_style->Filter() != new_style.Filter() ||
                         !old_style->ReflectionDataEquivalent(new_style)
                   : new_style.HasFilterInducingProperty();
   }
@@ -2057,7 +2057,7 @@ void PaintLayer::UpdateBackdropFilters(const ComputedStyle* old_style,
                                        const ComputedStyle& new_style) {
   if (!backdrop_filter_on_effect_node_dirty_) {
     backdrop_filter_on_effect_node_dirty_ =
-        old_style ? !old_style->BackdropFilterDataEquivalent(new_style)
+        old_style ? old_style->BackdropFilter() != new_style.BackdropFilter()
                   : new_style.HasBackdropFilter();
   }
 }

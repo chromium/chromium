@@ -9,6 +9,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -18,18 +20,12 @@ namespace blink {
 
 class ComputedStyle;
 using CustomHighlightsStyleMap =
-    HashMap<AtomicString, scoped_refptr<const ComputedStyle>>;
+    HeapHashMap<AtomicString, Member<const ComputedStyle>>;
 
-class CORE_EXPORT StyleHighlightData final
-    : public RefCounted<StyleHighlightData> {
+class CORE_EXPORT StyleHighlightData final {
+  DISALLOW_NEW();
+
  public:
-  StyleHighlightData(StyleHighlightData&& other) = delete;
-  StyleHighlightData& operator=(const StyleHighlightData& other) = delete;
-  StyleHighlightData& operator=(StyleHighlightData&& other) = delete;
-
-  static scoped_refptr<StyleHighlightData> Create();
-  scoped_refptr<StyleHighlightData> Copy() const;
-
   bool operator==(const StyleHighlightData&) const;
 
   const ComputedStyle* Style(
@@ -43,21 +39,19 @@ class CORE_EXPORT StyleHighlightData final
   const CustomHighlightsStyleMap& CustomHighlights() const {
     return custom_highlights_;
   }
-  void SetSelection(scoped_refptr<const ComputedStyle>&&);
-  void SetTargetText(scoped_refptr<const ComputedStyle>&&);
-  void SetSpellingError(scoped_refptr<const ComputedStyle>&&);
-  void SetGrammarError(scoped_refptr<const ComputedStyle>&&);
-  void SetCustomHighlight(const AtomicString&,
-                          scoped_refptr<const ComputedStyle>&&);
+  void SetSelection(const ComputedStyle*);
+  void SetTargetText(const ComputedStyle*);
+  void SetSpellingError(const ComputedStyle*);
+  void SetGrammarError(const ComputedStyle*);
+  void SetCustomHighlight(const AtomicString&, const ComputedStyle*);
+
+  void Trace(Visitor*) const;
 
  private:
-  StyleHighlightData();
-  StyleHighlightData(const StyleHighlightData& other);
-
-  scoped_refptr<const ComputedStyle> selection_;
-  scoped_refptr<const ComputedStyle> target_text_;
-  scoped_refptr<const ComputedStyle> spelling_error_;
-  scoped_refptr<const ComputedStyle> grammar_error_;
+  Member<const ComputedStyle> selection_;
+  Member<const ComputedStyle> target_text_;
+  Member<const ComputedStyle> spelling_error_;
+  Member<const ComputedStyle> grammar_error_;
   CustomHighlightsStyleMap custom_highlights_;
 };
 

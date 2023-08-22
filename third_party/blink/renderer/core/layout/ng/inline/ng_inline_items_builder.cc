@@ -195,8 +195,8 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::BoxInfo(
     : style(*item.Style()),
       item_index(item_index),
       should_create_box_fragment(item.ShouldCreateBoxFragment()),
-      text_metrics(style.GetFontHeight()) {
-  DCHECK(&style);
+      text_metrics(style->GetFontHeight()) {
+  DCHECK(style);
 }
 
 // True if this inline box should create a box fragment when it has |child|.
@@ -205,7 +205,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
     ShouldCreateBoxFragmentForChild(const BoxInfo& child) const {
   // When a child inline box has margins, the parent has different width/height
   // from the union of children.
-  const ComputedStyle& child_style = child.style;
+  const ComputedStyle& child_style = *child.style;
   if (child_style.MayHaveMargin())
     return true;
 

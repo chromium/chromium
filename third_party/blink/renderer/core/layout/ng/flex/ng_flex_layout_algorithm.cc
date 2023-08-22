@@ -2216,7 +2216,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizeOfRowContainerV3() {
         min_max_content_contributions.depends_on_block_constraints;
 
     MinMaxSizes item_final_contribution;
-    const ComputedStyle& child_style = item.style_;
+    const ComputedStyle& child_style = *item.style_;
     const LayoutUnit flex_base_size_border_box =
         item.flex_base_content_size_ + item.main_axis_border_padding_;
     const LayoutUnit hypothetical_main_size_border_box =

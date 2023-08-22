@@ -30,9 +30,8 @@
 namespace blink {
 
 struct SameSizeAsFillLayer {
-  FillLayer* next_;
-
-  Persistent<StyleImage> image_;
+  Member<FillLayerWrapper> next_;
+  Member<StyleImage> image_;
 
   Length position_x_;
   Length position_y_;
@@ -88,7 +87,8 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       cached_properties_computed_(false) {}
 
 FillLayer::FillLayer(const FillLayer& o)
-    : next_(o.next_ ? new FillLayer(*o.next_) : nullptr),
+    : next_(o.next_ ? MakeGarbageCollected<FillLayerWrapper>(*o.next_)
+                    : nullptr),
       image_(o.image_),
       position_x_(o.position_x_),
       position_y_(o.position_y_),
@@ -125,14 +125,15 @@ FillLayer::FillLayer(const FillLayer& o)
       any_layer_has_default_attachment_image_(false),
       cached_properties_computed_(false) {}
 
-FillLayer::~FillLayer() {
-  delete next_;
+void FillLayer::Trace(Visitor* visitor) const {
+  visitor->Trace(next_);
+  visitor->Trace(image_);
 }
 
 FillLayer& FillLayer::operator=(const FillLayer& o) {
   if (next_ != o.next_) {
-    delete next_;
-    next_ = o.next_ ? new FillLayer(*o.next_) : nullptr;
+    next_ =
+        o.next_ ? MakeGarbageCollected<FillLayerWrapper>(*o.next_) : nullptr;
   }
 
   image_ = o.image_;
@@ -184,7 +185,7 @@ bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
 
 bool FillLayer::operator==(const FillLayer& o) const {
   return LayerPropertiesEqual(o) &&
-         ((next_ && o.next_) ? *next_ == *o.next_ : next_ == o.next_);
+         ((Next() && o.Next()) ? *Next() == *o.Next() : Next() == o.Next());
 }
 
 bool FillLayer::VisuallyEqual(const FillLayer& o) const {
@@ -196,7 +197,7 @@ bool FillLayer::VisuallyEqual(const FillLayer& o) const {
     return false;
   }
   if (next_ && o.next_) {
-    return next_->VisuallyEqual(*o.next_);
+    return next_->layer.VisuallyEqual(o.next_->layer);
   }
   return next_ == o.next_;
 }
@@ -350,9 +351,8 @@ void FillLayer::FillUnsetProperties() {
 void FillLayer::CullEmptyLayers() {
   FillLayer* next;
   for (FillLayer* p = this; p; p = next) {
-    next = p->next_;
+    next = p->Next();
     if (next && !next->IsImageSet()) {
-      delete next;
       p->next_ = nullptr;
       break;
     }
@@ -378,19 +378,19 @@ void FillLayer::ComputeCachedProperties() const {
        To<StyleGeneratedImage>(image_.Get())->IsUsingCurrentColor());
   cached_properties_computed_ = true;
 
-  if (next_) {
-    next_->ComputeCachedPropertiesIfNeeded();
+  if (auto* next = Next()) {
+    next->ComputeCachedPropertiesIfNeeded();
     layers_clip_max_ = static_cast<unsigned>(
-        EnclosingFillBox(LayersClipMax(), next_->LayersClipMax()));
-    any_layer_uses_content_box_ |= next_->any_layer_uses_content_box_;
-    any_layer_has_image_ |= next_->any_layer_has_image_;
-    any_layer_has_url_image_ |= next_->any_layer_has_url_image_;
-    any_layer_has_local_attachment_ |= next_->any_layer_has_local_attachment_;
+        EnclosingFillBox(LayersClipMax(), next->LayersClipMax()));
+    any_layer_uses_content_box_ |= next->any_layer_uses_content_box_;
+    any_layer_has_image_ |= next->any_layer_has_image_;
+    any_layer_has_url_image_ |= next->any_layer_has_url_image_;
+    any_layer_has_local_attachment_ |= next->any_layer_has_local_attachment_;
     any_layer_has_fixed_attachment_image_ |=
-        next_->any_layer_has_fixed_attachment_image_;
+        next->any_layer_has_fixed_attachment_image_;
     any_layer_has_default_attachment_image_ |=
-        next_->any_layer_has_default_attachment_image_;
-    any_layer_uses_current_color_ |= next_->any_layer_uses_current_color_;
+        next->any_layer_has_default_attachment_image_;
+    any_layer_uses_current_color_ |= next->any_layer_uses_current_color_;
   }
 }
 

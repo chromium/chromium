@@ -27,8 +27,9 @@ FormattedTextRunInternal::FormattedTextRunInternal(
 
 void FormattedTextRunInternal::UpdateStyle(Document& document,
                                            const ComputedStyle& parent_style) {
-  auto style = document.GetStyleResolver().StyleForFormattedText(
-      /*is_text_run*/ true, parent_style, GetCssPropertySet());
+  const ComputedStyle* style =
+      document.GetStyleResolver().StyleForFormattedText(
+          /*is_text_run*/ true, parent_style, GetCssPropertySet());
   layout_text_->SetStyle(style, LayoutObject::ApplyStyleChanges::kNo);
 }
 

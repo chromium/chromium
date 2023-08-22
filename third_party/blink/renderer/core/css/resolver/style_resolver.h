@@ -24,7 +24,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_STYLE_RESOLVER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/animation/interpolation.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -66,10 +65,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ~StyleResolver();
   void Dispose();
 
-  scoped_refptr<const ComputedStyle> ResolveStyle(
-      Element*,
-      const StyleRecalcContext&,
-      const StyleRequest& = StyleRequest());
+  const ComputedStyle* ResolveStyle(Element*,
+                                    const StyleRecalcContext&,
+                                    const StyleRequest& = StyleRequest());
 
   // Return a reference to the initial style singleton.
   const ComputedStyle& InitialStyle() const;
@@ -85,7 +83,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // root element style. In addition to initial values things like zoom, font,
   // forced color mode etc. is set.
   ComputedStyleBuilder InitialStyleBuilderForElement() const;
-  scoped_refptr<const ComputedStyle> InitialStyleForElement() const {
+  const ComputedStyle* InitialStyleForElement() const {
     return InitialStyleBuilderForElement().TakeStyle();
   }
 
@@ -99,23 +97,22 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const CSSValue*,
       double offset);
 
-  scoped_refptr<const ComputedStyle> StyleForPage(
-      uint32_t page_index,
-      const AtomicString& page_name);
-  scoped_refptr<const ComputedStyle> StyleForText(Text*);
-  scoped_refptr<const ComputedStyle> StyleForViewport();
-  scoped_refptr<const ComputedStyle> StyleForFormattedText(
+  const ComputedStyle* StyleForPage(uint32_t page_index,
+                                    const AtomicString& page_name);
+  const ComputedStyle* StyleForText(Text*);
+  const ComputedStyle* StyleForViewport();
+  const ComputedStyle* StyleForFormattedText(
       bool is_text_run,
       const ComputedStyle& parent_style,
       const CSSPropertyValueSet* css_property_value_set);
-  scoped_refptr<const ComputedStyle> StyleForFormattedText(
+  const ComputedStyle* StyleForFormattedText(
       bool is_text_run,
       const FontDescription& default_font,
       const CSSPropertyValueSet* css_property_value_set);
   // Returns `ComputedStyle` for rendering initial letter text.
   // `initial_letter_box_style` should have non-normal `initial-letter`
   // property.
-  scoped_refptr<const ComputedStyle> StyleForInitialLetterText(
+  const ComputedStyle* StyleForInitialLetterText(
       const ComputedStyle& initial_letter_box_style,
       const ComputedStyle& paragraph_style);
 
@@ -127,7 +124,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   ComputedStyleBuilder CreateAnonymousStyleBuilderWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay);
-  scoped_refptr<const ComputedStyle> CreateAnonymousStyleWithDisplay(
+  const ComputedStyle* CreateAnonymousStyleWithDisplay(
       const ComputedStyle& parent_style,
       EDisplay display) {
     return CreateAnonymousStyleBuilderWithDisplay(parent_style, display)
@@ -136,8 +133,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   // Create ComputedStyle for anonymous wrappers between text boxes and
   // display:contents elements.
-  scoped_refptr<const ComputedStyle>
-  CreateInheritedDisplayContentsStyleIfNeeded(
+  const ComputedStyle* CreateInheritedDisplayContentsStyleIfNeeded(
       const ComputedStyle& parent_style,
       const ComputedStyle& layout_parent_style);
 
@@ -208,7 +204,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                            const Font&,
                                            const CSSValue&);
 
-  scoped_refptr<const ComputedStyle> StyleForInterpolations(
+  const ComputedStyle* StyleForInterpolations(
       Element& element,
       ActiveInterpolationsMap& animations);
 
@@ -217,16 +213,14 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   // ticked to the current time. Ticking the animations is required to ensure
   // smooth retargeting of transitions.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
-  scoped_refptr<const ComputedStyle> BeforeChangeStyleForTransitionUpdate(
+  const ComputedStyle* BeforeChangeStyleForTransitionUpdate(
       Element& element,
       const ComputedStyle& base_style,
       ActiveInterpolationsMap& transition_interpolations);
   StyleRulePositionFallback* ResolvePositionFallbackRule(
       const TreeScope* tree_scope,
       AtomicString position_fallback_name);
-  scoped_refptr<const ComputedStyle> ResolvePositionFallbackStyle(
-      Element&,
-      unsigned index);
+  const ComputedStyle* ResolvePositionFallbackStyle(Element&, unsigned index);
 
   // Check if the BODY or HTML element's display or containment stops
   // propagation of BODY style to HTML and viewport.
@@ -345,8 +339,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
                                 Functor& func) const;
 
   MatchedPropertiesCache matched_properties_cache_;
-  scoped_refptr<const ComputedStyle> initial_style_;
-  scoped_refptr<const ComputedStyle> initial_style_for_img_;
+
+  // Both these members are on a hot-path for creating ComputedStyle objects.
+  subtle::UncompressedMember<const ComputedStyle> initial_style_;
+  subtle::UncompressedMember<const ComputedStyle> initial_style_for_img_;
   SelectorFilter selector_filter_;
 
   Member<Document> document_;
@@ -364,7 +360,7 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
   FRIEND_TEST_ALL_PREFIXES(StyleResolverTest, TreeScopedReferences);
 
   Element& EnsureElementForFormattedText();
-  scoped_refptr<const ComputedStyle> StyleForFormattedText(
+  const ComputedStyle* StyleForFormattedText(
       bool is_text_run,
       const FontDescription* default_font,
       const ComputedStyle* parent_style,

@@ -61,7 +61,7 @@ class CORE_EXPORT HighlightStyleUtils {
       absl::optional<Color> previous_layer_color,
       PseudoId);
 
-  static scoped_refptr<const ComputedStyle> HighlightPseudoStyle(
+  static const ComputedStyle* HighlightPseudoStyle(
       Node* node,
       const ComputedStyle& style,
       PseudoId pseudo,

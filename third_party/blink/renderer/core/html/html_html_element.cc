@@ -95,9 +95,8 @@ bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
          layout_style.Direction() != propagated_style.Direction();
 }
 
-scoped_refptr<const ComputedStyle> CreateLayoutStyle(
-    const ComputedStyle& style,
-    const ComputedStyle& propagated_style) {
+const ComputedStyle* CreateLayoutStyle(const ComputedStyle& style,
+                                       const ComputedStyle& propagated_style) {
   ComputedStyleBuilder builder(style);
   builder.SetDirection(propagated_style.Direction());
   builder.SetWritingMode(propagated_style.GetWritingMode());
@@ -107,8 +106,8 @@ scoped_refptr<const ComputedStyle> CreateLayoutStyle(
 
 }  // namespace
 
-scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
-    scoped_refptr<const ComputedStyle> style) {
+const ComputedStyle* HTMLHtmlElement::LayoutStyleForElement(
+    const ComputedStyle* style) {
   DCHECK(style);
   DCHECK(GetDocument().InStyleRecalc());
   DCHECK(GetLayoutObject());
@@ -144,7 +143,7 @@ void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
     return;
 
   const ComputedStyle* const old_style = layout_object->Style();
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       LayoutStyleForElement(layout_object->Style());
 
   if (old_style == new_style)

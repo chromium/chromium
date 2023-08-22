@@ -286,11 +286,11 @@ void ElementStyleResources::LoadPendingSVGResources(
   for (CSSPropertyID property : pending_svg_resource_properties_) {
     switch (property) {
       case CSSPropertyID::kBackdropFilter:
-        LoadResourcesForFilter(builder.MutableBackdropFilter().Operations(),
+        LoadResourcesForFilter(builder.MutableBackdropFilterOperations(),
                                document);
         break;
       case CSSPropertyID::kFilter:
-        LoadResourcesForFilter(builder.MutableFilter().Operations(), document);
+        LoadResourcesForFilter(builder.MutableFilterOperations(), document);
         break;
       default:
         NOTREACHED();

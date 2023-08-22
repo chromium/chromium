@@ -40,7 +40,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
 
   // The style at the end of this break token. The next line should start with
   // this style.
-  const ComputedStyle* Style() const { return style_.get(); }
+  const ComputedStyle* Style() const { return style_.Get(); }
 
   // The point where the next layout should start, or where the previous layout
   // ended.
@@ -95,7 +95,7 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
  private:
   const Member<const NGBreakToken>* SubBreakTokenAddress() const;
 
-  scoped_refptr<const ComputedStyle> style_;
+  Member<const ComputedStyle> style_;
   NGInlineItemTextIndex start_;
 
   // This is an array of one item if |kHasSubBreakToken|, or zero.

@@ -5,13 +5,16 @@
 {{declare_field_group_class(subgroup)}}
 
 {% endfor %}
-class {{group.type_name}} : public RefCounted<{{group.type_name}}> {
+class {{group.type_name}} : public GarbageCollected<{{group.type_name}}> {
  public:
-  static scoped_refptr<{{group.type_name}}> Create() {
-    return base::AdoptRef(new {{group.type_name}});
+  explicit {{group.type_name}}();
+  CORE_EXPORT {{group.type_name}}(const {{group.type_name}}&);
+
+  static {{group.type_name}}* Create() {
+    return MakeGarbageCollected<{{group.type_name}}>();
   }
-  scoped_refptr<{{group.type_name}}> Copy() const {
-    return base::AdoptRef(new {{group.type_name}}(*this));
+  {{group.type_name}}* Copy() const {
+    return MakeGarbageCollected<{{group.type_name}}>(*this);
   }
 
   {% if group.all_fields|selectattr("is_inherited")|list|length > 0 and
@@ -25,23 +28,17 @@ class {{group.type_name}} : public RefCounted<{{group.type_name}}> {
     }
   {% endif %}
 
-  // See comments in ComputedStyle.
-  void* operator new(size_t size) {
-    DCHECK(IsMainThread());
-    if (freelist_ != nullptr) {
-      {{group.type_name}}* ret = freelist_;
-      freelist_ = nullptr;
-      return ret;
-    }
-    return ::WTF::Partitions::FastMalloc(size, "{{group.type_name}}");
-  }
-  void operator delete(void* p) {
-    DCHECK(IsMainThread());
-    if (freelist_ == nullptr) {
-      freelist_ = static_cast<{{group.type_name}}*>(p);
-    } else {
-      ::WTF::Partitions::FastFree(p);
-    }
+  CORE_EXPORT void Trace(Visitor* visitor) const {
+  {% for subgroup in group.subgroups %}
+    visitor->Trace({{subgroup.member_name}});
+  {% endfor %}
+  {% for field in group.fields %}
+    {% if field.wrapper_pointer_name == 'Member' %}
+    visitor->Trace({{field.name}});
+    {% elif not field.size and not field.wrapper_pointer_name %}
+    TraceIfNeeded<{{field.type_name}}>::Trace(visitor, {{field.name}});
+    {% endif %}
+  {% endfor %}
   }
 
   bool operator==(const {{group.type_name}}& other) const {
@@ -63,12 +60,6 @@ class {{group.type_name}} : public RefCounted<{{group.type_name}}> {
   {% for field in group.fields %}
   {{declare_storage(field)}}
   {% endfor %}
-
- private:
-  {{group.type_name}}();
-  CORE_EXPORT {{group.type_name}}(const {{group.type_name}}&);
-
-  CORE_EXPORT static {{group.type_name}}* freelist_;
 };
 {%- endmacro %}
 
@@ -100,7 +91,4 @@ ComputedStyleBase::{{group.type_name}}::{{group.type_name}}(const {{group.type_n
      {% endif %}
   {% endfor %}
   {}
-
-CORE_EXPORT ComputedStyleBase::{{group.type_name}}*
-ComputedStyleBase::{{group.type_name}}::freelist_ = nullptr;
 {%- endmacro %}

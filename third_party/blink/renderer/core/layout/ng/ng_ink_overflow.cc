@@ -666,7 +666,7 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
     const LogicalRect& ink_overflow,
     const NGInlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
-  auto pseudo_style =
+  auto* pseudo_style =
       fragment_item->Type() == NGFragmentItem::kSvgText
           ? nullptr
           : HighlightStyleUtils::HighlightPseudoStyle(
@@ -726,11 +726,11 @@ LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
 
     const CustomHighlightMarker& highlight_marker =
         To<CustomHighlightMarker>(*marker);
-    auto pseudo_style = fragment_item->Type() == NGFragmentItem::kSvgText
-                            ? nullptr
-                            : HighlightStyleUtils::HighlightPseudoStyle(
-                                  text_node, style, kPseudoIdHighlight,
-                                  highlight_marker.GetHighlightName());
+    const auto* pseudo_style = fragment_item->Type() == NGFragmentItem::kSvgText
+                                   ? nullptr
+                                   : HighlightStyleUtils::HighlightPseudoStyle(
+                                         text_node, style, kPseudoIdHighlight,
+                                         highlight_marker.GetHighlightName());
 
     LogicalRect decoration_bound;
     if (pseudo_style && pseudo_style->HasAppliedTextDecorations()) {

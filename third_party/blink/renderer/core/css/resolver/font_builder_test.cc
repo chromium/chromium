@@ -75,7 +75,7 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
   ComputedStyleBuilder builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
   builder.SetFontDescription(parent_description);
-  scoped_refptr<const ComputedStyle> parent_style = builder.TakeStyle();
+  const ComputedStyle* parent_style = builder.TakeStyle();
 
   builder =
       GetDocument().GetStyleResolver().CreateComputedStyleBuilderInheritingFrom(
@@ -83,9 +83,9 @@ TEST_P(FontBuilderAdditiveTest, OnlySetValueIsModified) {
 
   FontBuilder font_builder(&GetDocument());
   funcs.set_value(font_builder);
-  font_builder.CreateFont(builder, parent_style.get());
+  font_builder.CreateFont(builder, parent_style);
 
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
   FontDescription output_description = style->GetFontDescription();
 
   // FontBuilder should have overwritten our base value set in the parent,

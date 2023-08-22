@@ -18,6 +18,7 @@
 namespace blink {
 
 void LayoutObject::Trace(Visitor* visitor) const {
+  visitor->Trace(style_);
   visitor->Trace(node_);
   visitor->Trace(parent_);
   visitor->Trace(previous_);

@@ -41,7 +41,7 @@ bool ViewTransitionPseudoElementBase::CanGeneratePseudoElement(
   }
 }
 
-scoped_refptr<const ComputedStyle>
+const ComputedStyle*
 ViewTransitionPseudoElementBase::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   // Set the parent style to the style of our parent.

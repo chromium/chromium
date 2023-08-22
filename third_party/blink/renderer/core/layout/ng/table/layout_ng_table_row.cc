@@ -18,12 +18,12 @@ LayoutNGTableRow::LayoutNGTableRow(Element* element)
 
 LayoutNGTableRow* LayoutNGTableRow::CreateAnonymousWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRow);
   auto* new_row = MakeGarbageCollected<LayoutNGTableRow>(nullptr);
   new_row->SetDocumentForAnonymous(&parent.GetDocument());
-  new_row->SetStyle(std::move(new_style));
+  new_row->SetStyle(new_style);
   return new_row;
 }
 

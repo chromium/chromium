@@ -903,17 +903,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   //
   // This is appropriate to use if the cached version is invalid in a given
   // situation.
-  scoped_refptr<const ComputedStyle> UncachedStyleForPseudoElement(
-      const StyleRequest&);
+  const ComputedStyle* UncachedStyleForPseudoElement(const StyleRequest&);
 
   // This is the same as UncachedStyleForPseudoElement, except that the caller
   // must provide an appropriate StyleRecalcContext such that e.g. @container
   // queries are evaluated correctly.
   //
   // See StyleRecalcContext for more information.
-  scoped_refptr<const ComputedStyle> StyleForPseudoElement(
-      const StyleRecalcContext&,
-      const StyleRequest&);
+  const ComputedStyle* StyleForPseudoElement(const StyleRecalcContext&,
+                                             const StyleRequest&);
 
   // Returns the ComputedStyle after applying the declarations in the @try block
   // at the given index. Returns nullptr if the current element doesn't use
@@ -1011,8 +1009,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsSpellCheckingEnabled() const;
 
   // FIXME: public for LayoutTreeBuilder, we shouldn't expose this though.
-  scoped_refptr<const ComputedStyle> StyleForLayoutObject(
-      const StyleRecalcContext&);
+  const ComputedStyle* StyleForLayoutObject(const StyleRecalcContext&);
 
   // Called by StyleAdjuster during style resolution. Provides an opportunity to
   // make final Element-specific adjustments to the ComputedStyle.
@@ -1242,7 +1239,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual void WillRecalcStyle(const StyleRecalcChange);
   virtual void DidRecalcStyle(const StyleRecalcChange);
-  virtual scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
+  virtual const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&);
   virtual void AdjustStyle(ComputedStyleBuilder&);
 
@@ -1283,8 +1280,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   static bool AttributeValueIsJavaScriptURL(const Attribute&);
 
-  scoped_refptr<const ComputedStyle> OriginalStyleForLayoutObject(
-      const StyleRecalcContext&);
+  const ComputedStyle* OriginalStyleForLayoutObject(const StyleRecalcContext&);
 
   // Step 4 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   Node* InsertAdjacent(const String& where, Node* new_child, ExceptionState&);
@@ -1344,7 +1340,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // these changes can be directly propagated to this element (the child).
   // If these conditions are met, propagates the changes to the current style
   // and returns the new style. Otherwise, returns null.
-  scoped_refptr<const ComputedStyle> PropagateInheritedProperties();
+  const ComputedStyle* PropagateInheritedProperties();
 
   const ComputedStyle* EnsureOwnComputedStyle(
       const StyleRecalcContext&,

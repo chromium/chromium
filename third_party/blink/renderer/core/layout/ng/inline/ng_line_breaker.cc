@@ -3078,7 +3078,7 @@ void NGLineBreaker::HandleOverflow(NGLineInfo* line_info) {
           }
           continue;
         }
-        scoped_refptr<const ComputedStyle> was_current_style = current_style_;
+        const ComputedStyle* was_current_style = current_style_;
         SetCurrentStyle(*item.Style());
         const NGInlineItemResult item_result_before = *item_result;
         BreakText(item_result, item, *item.TextShapeResult(),
@@ -3424,7 +3424,7 @@ const ComputedStyle& NGLineBreaker::ComputeCurrentStyle(
 }
 
 void NGLineBreaker::SetCurrentStyle(const ComputedStyle& style) {
-  if (&style == current_style_.get()) {
+  if (&style == current_style_) {
 #if EXPENSIVE_DCHECKS_ARE_ON()
     // Check that cache fields are already setup correctly.
     DCHECK_EQ(auto_wrap_, ShouldAutoWrap(style));
@@ -3592,7 +3592,7 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
     // in inline in the current fragmentainer (and the block-in-inline part
     // won't be seen there).
     sub_break_token = NGInlineBreakToken::Create(
-        node_, current_style_.get(), current_, flags, sub_break_token);
+        node_, current_style_, current_, flags, sub_break_token);
 
     // Move past the block in inline, since we stopped at it. This is where
     // regular inline content will resume.
@@ -3600,8 +3600,8 @@ const NGInlineBreakToken* NGLineBreaker::CreateBreakToken(
     MoveToNextOf(items[current_.item_index]);
   }
 
-  return NGInlineBreakToken::Create(node_, current_style_.get(), current_,
-                                    flags, sub_break_token);
+  return NGInlineBreakToken::Create(node_, current_style_, current_, flags,
+                                    sub_break_token);
 }
 
 }  // namespace blink

@@ -136,9 +136,8 @@ struct SameSizeAsLayoutBox : public LayoutBoxModelObject {
   LayoutUnit intrinsic_logical_widths_initial_block_size;
   Member<void*> result;
   HeapVector<Member<const NGLayoutResult>, 1> layout_results;
-  void* pointers[1];
   wtf_size_t first_fragment_item_index_;
-  Member<void*> rare_data;
+  Member<void*> members[2];
 };
 
 ASSERT_SIZE(LayoutBox, SameSizeAsLayoutBox);
@@ -473,6 +472,7 @@ LayoutBox::LayoutBox(ContainerNode* node)
 void LayoutBox::Trace(Visitor* visitor) const {
   visitor->Trace(measure_result_);
   visitor->Trace(layout_results_);
+  visitor->Trace(overflow_);
   visitor->Trace(rare_data_);
   LayoutBoxModelObject::Trace(visitor);
 }
@@ -3532,7 +3532,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
 
   DCHECK(!LayoutOverflowIsSet());
   if (!overflow_)
-    overflow_ = std::make_unique<BoxOverflowModel>();
+    overflow_ = MakeGarbageCollected<BoxOverflowModel>();
   overflow_->layout_overflow.emplace(layout_overflow->ToLayoutRect());
 }
 
@@ -3657,7 +3657,7 @@ void LayoutBox::AddSelfVisualOverflow(const LayoutRect& rect) {
 
   if (!VisualOverflowIsSet()) {
     if (!overflow_)
-      overflow_ = std::make_unique<BoxOverflowModel>();
+      overflow_ = MakeGarbageCollected<BoxOverflowModel>();
 
     overflow_->visual_overflow.emplace(border_box);
   }
@@ -3681,7 +3681,7 @@ void LayoutBox::AddContentsVisualOverflow(const LayoutRect& rect) {
 
   if (!VisualOverflowIsSet()) {
     if (!overflow_)
-      overflow_ = std::make_unique<BoxOverflowModel>();
+      overflow_ = MakeGarbageCollected<BoxOverflowModel>();
 
     overflow_->visual_overflow.emplace(border_box);
   }
@@ -4208,7 +4208,7 @@ OverflowClipAxes LayoutBox::ComputeOverflowClipAxes() const {
 
 void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
   if (!GetLayoutBox().overflow_)
-    GetLayoutBox().overflow_ = std::make_unique<BoxOverflowModel>();
+    GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();
@@ -4230,7 +4230,7 @@ void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(
     return;
 
   if (!GetLayoutBox().overflow_)
-    GetLayoutBox().overflow_ = std::make_unique<BoxOverflowModel>();
+    GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
   auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
   if (!previous_overflow)
     previous_overflow.emplace();

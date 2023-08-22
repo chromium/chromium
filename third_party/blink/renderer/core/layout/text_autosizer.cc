@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
-#include "third_party/blink/renderer/core/layout/style_retain_scope.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -1224,7 +1223,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
 
   ComputedStyleBuilder builder(current_style);
   builder.SetTextAutosizingMultiplier(multiplier);
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
 
   if (multiplier > 1 && !did_check_cross_site_use_count_) {
     ReportIfCrossSiteFrame();
@@ -1233,16 +1232,8 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
 
   switch (relayout_behavior) {
     case kAlreadyInLayout:
-      // Don't free current_style until the end of the layout pass. This allows
-      // other parts of the system to safely hold raw ComputedStyle* pointers
-      // during layout, e.g. BreakingContext::current_style_.
-      if (auto* scope = StyleRetainScope::Current())
-        scope->Retain(current_style);
-      else
-        DCHECK(false);
-
       layout_object->SetModifiedStyleOutsideStyleRecalc(
-          std::move(style), LayoutObject::ApplyStyleChanges::kNo);
+          style, LayoutObject::ApplyStyleChanges::kNo);
       if (layout_object->IsText())
         To<LayoutText>(layout_object)->AutosizingMultiplerChanged();
       layout_object->SetNeedsLayoutAndFullPaintInvalidation(
@@ -1251,7 +1242,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
 
     case kLayoutNeeded:
       layout_object->SetModifiedStyleOutsideStyleRecalc(
-          std::move(style), LayoutObject::ApplyStyleChanges::kYes);
+          style, LayoutObject::ApplyStyleChanges::kYes);
       break;
   }
 

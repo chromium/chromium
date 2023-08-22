@@ -39,16 +39,16 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
 
  public:
   NGBoxFragmentBuilder(NGLayoutInputNode node,
-                       scoped_refptr<const ComputedStyle> style,
+                       const ComputedStyle* style,
                        const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
-      : NGFragmentBuilder(node, std::move(style), space, writing_direction),
+      : NGFragmentBuilder(node, style, space, writing_direction),
         is_inline_formatting_context_(node.IsInline()) {}
 
   // Build a fragment for LayoutObject without NGLayoutInputNode. LayoutInline
   // has NGInlineItem but does not have corresponding NGLayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
-                       scoped_refptr<const ComputedStyle> style,
+                       const ComputedStyle* style,
                        const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGFragmentBuilder(/* node */ nullptr,
@@ -723,7 +723,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final : public NGFragmentBuilder {
   // Table specific types.
   absl::optional<LogicalRect> table_grid_rect_;
   NGTableFragmentData::ColumnGeometries table_column_geometries_;
-  scoped_refptr<const NGTableBorders> table_collapsed_borders_;
+  const NGTableBorders* table_collapsed_borders_ = nullptr;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
       table_collapsed_borders_geometry_;
   absl::optional<wtf_size_t> table_column_count_;

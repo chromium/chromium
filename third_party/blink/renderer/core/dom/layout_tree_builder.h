@@ -102,7 +102,7 @@ class LayoutTreeBuilder {
 
   NodeType* node_;
   Node::AttachContext& context_;
-  scoped_refptr<const ComputedStyle> style_;
+  const ComputedStyle* style_;
 };
 
 class LayoutTreeBuilderForElement : public LayoutTreeBuilder<Element> {
@@ -128,8 +128,8 @@ class LayoutTreeBuilderForText : public LayoutTreeBuilder<Text> {
   void CreateLayoutObject();
 
  private:
-  scoped_refptr<const ComputedStyle>
-  CreateInlineWrapperStyleForDisplayContentsIfNeeded() const;
+  const ComputedStyle* CreateInlineWrapperStyleForDisplayContentsIfNeeded()
+      const;
   LayoutObject* CreateInlineWrapperForDisplayContentsIfNeeded(
       const ComputedStyle* wrapper_style) const;
 };

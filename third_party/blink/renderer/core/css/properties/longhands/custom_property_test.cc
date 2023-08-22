@@ -303,7 +303,7 @@ TEST_F(CustomPropertyTest, ValueMode) {
                              /* StyleRecalcContext */ nullptr, StyleRequest());
     state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kNormal);
-    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
     EXPECT_FALSE(
         style->GetVariableData(AtomicString("--x"))->IsAnimationTainted());
@@ -315,7 +315,7 @@ TEST_F(CustomPropertyTest, ValueMode) {
                              /* StyleRecalcContext */ nullptr, StyleRequest());
     state.SetStyle(*GetDocument().GetStyleResolver().InitialStyleForElement());
     property.ApplyValue(state, *declaration, CSSProperty::ValueMode::kAnimated);
-    scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+    const ComputedStyle* style = state.TakeStyle();
     ASSERT_TRUE(style->GetVariableData(AtomicString("--x")));
     EXPECT_TRUE(
         style->GetVariableData(AtomicString("--x"))->IsAnimationTainted());

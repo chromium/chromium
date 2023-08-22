@@ -151,7 +151,7 @@ class FlexItem {
 
   const FlexLayoutAlgorithm* algorithm_;
   wtf_size_t line_number_;
-  const ComputedStyle& style_;
+  Member<const ComputedStyle> style_;
   const LayoutUnit flex_base_content_size_;
   const MinMaxSizes min_max_main_sizes_;
   const absl::optional<MinMaxSizes> min_max_cross_sizes_;
@@ -430,7 +430,7 @@ class CORE_EXPORT FlexLayoutAlgorithm {
   friend class NGFlexLayoutAlgorithm;
   EOverflow MainAxisOverflowForChild(const LayoutBox& child) const;
 
-  const ComputedStyle* style_;
+  Member<const ComputedStyle> style_;
   const LayoutUnit line_break_length_;
   FlexItemVector all_items_;
   Vector<FlexLine> flex_lines_;

@@ -679,7 +679,7 @@ void LayoutView::CalculateScrollbarModes(
 PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
                                       const AtomicString& page_name) const {
   NOT_DESTROYED();
-  scoped_refptr<const ComputedStyle> page_style =
+  const ComputedStyle* page_style =
       GetDocument().StyleForPage(page_index, page_name);
   WebPrintPageDescription description = default_page_description_;
   GetDocument().GetPageDescription(*page_style, &description);

@@ -127,9 +127,6 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
                            nullptr /* StyleRecalcContext */,
                            StyleRequest(&parent_style));
 
-  scoped_refptr<const ComputedStyle> style1;
-  scoped_refptr<const ComputedStyle> style2;
-
   // grid-template-areas applied first.
   state.SetStyle(parent_style);
   StyleBuilder::ApplyProperty(grid_template_areas, state,
@@ -138,7 +135,7 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
                               *grid_template_columns_value);
   StyleBuilder::ApplyProperty(grid_template_rows, state,
                               *grid_template_rows_value);
-  style1 = state.TakeStyle();
+  const ComputedStyle* style1 = state.TakeStyle();
 
   // grid-template-areas applied last.
   state.SetStyle(parent_style);
@@ -148,7 +145,7 @@ TEST_F(StyleBuilderTest, GridTemplateAreasApplyOrder) {
                               *grid_template_rows_value);
   StyleBuilder::ApplyProperty(grid_template_areas, state,
                               *grid_template_areas_value);
-  style2 = state.TakeStyle();
+  const ComputedStyle* style2 = state.TakeStyle();
 
   ASSERT_TRUE(style1);
   ASSERT_TRUE(style2);

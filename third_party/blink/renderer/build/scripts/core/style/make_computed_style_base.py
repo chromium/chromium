@@ -30,6 +30,8 @@ ALIGNMENT_ORDER = [
     'RotateTransformOperation',
     'TranslateTransformOperation',
     'NGGridTrackList',
+    'StyleHighlightData',
+    'FilterOperations',
     'ComputedGridTrackList',
     'absl::optional<gfx::Size>',
     'double',
@@ -46,7 +48,6 @@ ALIGNMENT_ORDER = [
     'ScrollStartData',
     'AtomicString',
     'scoped_refptr',
-    'Persistent',
     'std::unique_ptr',
     'Vector<String>',
     'Font',
@@ -59,6 +60,8 @@ ALIGNMENT_ORDER = [
     'StyleIntrinsicLength',
     'absl::optional<StyleScrollbarColor>',
     'absl::optional<StyleOverflowClipMargin>',
+    # Compressed builds a Member can be 32 bits, vs. a pointer will be 64.
+    'Member',
     # Aligns like float
     'absl::optional<Length>',
     'StyleInitialLetter',

@@ -27,12 +27,12 @@ LayoutNGTableCell::LayoutNGTableCell(Element* element)
 
 LayoutNGTableCell* LayoutNGTableCell::CreateAnonymousWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableCell);
   auto* new_cell = MakeGarbageCollected<LayoutNGTableCell>(nullptr);
   new_cell->SetDocumentForAnonymous(&parent.GetDocument());
-  new_cell->SetStyle(std::move(new_style));
+  new_cell->SetStyle(new_style);
   return new_cell;
 }
 

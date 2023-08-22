@@ -80,13 +80,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void Trace(Visitor*) const override;
 
-  static LayoutText* CreateEmptyAnonymous(Document&,
-                                          scoped_refptr<const ComputedStyle>);
+  static LayoutText* CreateEmptyAnonymous(Document&, const ComputedStyle*);
 
-  static LayoutText* CreateAnonymousForFormattedText(
-      Document&,
-      scoped_refptr<const ComputedStyle>,
-      String);
+  static LayoutText* CreateAnonymousForFormattedText(Document&,
+                                                     const ComputedStyle*,
+                                                     String);
 
   const char* GetName() const override {
     NOT_DESTROYED();

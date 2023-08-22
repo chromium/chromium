@@ -188,14 +188,28 @@ class CORE_EXPORT CSSAnimations final {
 
   struct RunningTransition : public GarbageCollected<RunningTransition> {
    public:
-    virtual ~RunningTransition() = default;
+    RunningTransition(Animation* animation,
+                      const ComputedStyle* from,
+                      const ComputedStyle* to,
+                      const ComputedStyle* reversing_adjusted_start_value,
+                      double reversing_shortening_factor)
+        : animation(animation),
+          from(from),
+          to(to),
+          reversing_adjusted_start_value(reversing_adjusted_start_value),
+          reversing_shortening_factor(reversing_shortening_factor) {}
 
-    void Trace(Visitor* visitor) const { visitor->Trace(animation); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(animation);
+      visitor->Trace(from);
+      visitor->Trace(to);
+      visitor->Trace(reversing_adjusted_start_value);
+    }
 
     Member<Animation> animation;
-    scoped_refptr<const ComputedStyle> from;
-    scoped_refptr<const ComputedStyle> to;
-    scoped_refptr<const ComputedStyle> reversing_adjusted_start_value;
+    Member<const ComputedStyle> from;
+    Member<const ComputedStyle> to;
+    Member<const ComputedStyle> reversing_adjusted_start_value;
     double reversing_shortening_factor;
   };
 
@@ -261,7 +275,7 @@ class CORE_EXPORT CSSAnimations final {
     Element& animating_element;
     const ComputedStyle& old_style;
     const ComputedStyle& base_style;
-    scoped_refptr<const ComputedStyle> before_change_style;
+    const ComputedStyle* before_change_style;
     const TransitionMap* active_transitions;
     HashSet<PropertyHandle>* listed_properties;
     const CSSTransitionData* transition_data;
@@ -380,7 +394,7 @@ class CORE_EXPORT CSSAnimations final {
   // on the element as of the previous style change event, except with any
   // styles derived from declarative animations updated to the current time.
   // https://drafts.csswg.org/css-transitions-1/#before-change-style
-  static scoped_refptr<const ComputedStyle> CalculateBeforeChangeStyle(
+  static const ComputedStyle* CalculateBeforeChangeStyle(
       Element& animating_element,
       const ComputedStyle& base_style);
 

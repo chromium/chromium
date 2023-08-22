@@ -31,8 +31,6 @@ namespace blink {
 
 ElementResolveContext::ElementResolveContext(Element& element)
     : element_(&element),
-      parent_node_(nullptr),
-      layout_parent_(nullptr),
       element_link_state_(
           element.GetDocument().GetVisitedLinkState().DetermineLinkState(
               element)) {

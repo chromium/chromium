@@ -94,8 +94,7 @@ class NodeData : public GarbageCollected<NodeData> {
   virtual ~NodeData();
   virtual void Trace(Visitor*) const;
 
-  CORE_EXPORT NodeData(LayoutObject*,
-                       scoped_refptr<const ComputedStyle> computed_style);
+  CORE_EXPORT NodeData(LayoutObject*, const ComputedStyle* computed_style);
   NodeData(const NodeData&) = delete;
   NodeData(NodeData&&);
 
@@ -106,9 +105,9 @@ class NodeData : public GarbageCollected<NodeData> {
   }
 
   const ComputedStyle* GetComputedStyle() const {
-    return computed_style_.get();
+    return computed_style_.Get();
   }
-  void SetComputedStyle(scoped_refptr<const ComputedStyle> computed_style);
+  void SetComputedStyle(const ComputedStyle* computed_style);
 
   void SetIsPseudoElement(bool value) { is_pseudo_element_ = value; }
   bool IsPseudoElement() const { return is_pseudo_element_; }
@@ -134,7 +133,7 @@ class NodeData : public GarbageCollected<NodeData> {
   }
 
  protected:
-  scoped_refptr<const ComputedStyle> computed_style_;
+  subtle::UncompressedMember<const ComputedStyle> computed_style_;
   Member<LayoutObject> layout_object_;
   BitField bit_field_;
   bool is_pseudo_element_ = false;

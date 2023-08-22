@@ -389,7 +389,7 @@ bool NeedsWhitespaceLayoutObject(const ComputedStyle& style) {
 }  // namespace
 
 void Text::RecalcTextStyle(const StyleRecalcChange change) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       GetDocument().GetStyleResolver().StyleForText(this);
   if (LayoutText* layout_text = GetLayoutObject()) {
     const ComputedStyle* layout_parent_style =
@@ -401,7 +401,7 @@ void Text::RecalcTextStyle(const StyleRecalcChange change) {
       // display:contents text child changed.
       SetNeedsReattachLayoutTree();
     } else {
-      layout_text->SetStyle(std::move(new_style));
+      layout_text->SetStyle(new_style);
       if (NeedsStyleRecalc())
         layout_text->SetTextIfNeeded(data());
     }

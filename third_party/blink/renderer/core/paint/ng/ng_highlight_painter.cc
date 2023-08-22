@@ -162,28 +162,28 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
                                         const ComputedStyle& originating_style,
                                         PseudoId pseudo) {
   DCHECK(pseudo == kPseudoIdSpellingError || pseudo == kPseudoIdGrammarError);
-  if (scoped_refptr<const ComputedStyle> pseudo_style =
+  if (const ComputedStyle* pseudo_style =
           HighlightStyleUtils::HighlightPseudoStyle(node, originating_style,
                                                     pseudo)) {
     const Document& document = node->GetDocument();
     // If the ‘color’, ‘-webkit-text-fill-color’, ‘-webkit-text-stroke-color’,
     // or ‘-webkit-text-stroke-width’ differs from the originating style.
     Color pseudo_color = HighlightStyleUtils::ResolveColor(
-        document, originating_style, pseudo_style.get(), pseudo,
+        document, originating_style, pseudo_style, pseudo,
         GetCSSPropertyColor(), {});
     if (pseudo_color !=
         originating_style.VisitedDependentColor(GetCSSPropertyColor())) {
       return true;
     }
     if (HighlightStyleUtils::ResolveColor(
-            document, originating_style, pseudo_style.get(), pseudo,
+            document, originating_style, pseudo_style, pseudo,
             GetCSSPropertyWebkitTextFillColor(), {}) !=
         originating_style.VisitedDependentColor(
             GetCSSPropertyWebkitTextFillColor())) {
       return true;
     }
     if (HighlightStyleUtils::ResolveColor(
-            document, originating_style, pseudo_style.get(), pseudo,
+            document, originating_style, pseudo_style, pseudo,
             GetCSSPropertyWebkitTextStrokeColor(), {}) !=
         originating_style.VisitedDependentColor(
             GetCSSPropertyWebkitTextStrokeColor())) {
@@ -193,7 +193,7 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
       return true;
     // If there is a background color.
     if (!HighlightStyleUtils::ResolveColor(document, originating_style,
-                                           pseudo_style.get(), pseudo,
+                                           pseudo_style, pseudo,
                                            GetCSSPropertyBackgroundColor(), {})
              .IsFullyTransparent()) {
       return true;
@@ -227,7 +227,7 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
     // https://github.com/w3c/csswg-drafts/issues/7101
     if (originating_style.GetTextEmphasisMark() != TextEmphasisMark::kNone &&
         HighlightStyleUtils::ResolveColor(
-            document, originating_style, pseudo_style.get(), pseudo,
+            document, originating_style, pseudo_style, pseudo,
             GetCSSPropertyTextEmphasisColor(), {}) !=
             originating_style.VisitedDependentColor(
                 GetCSSPropertyTextEmphasisColor())) {
@@ -650,7 +650,7 @@ void NGHighlightPainter::Paint(Phase phase) {
                 highlight_pseudo_marker.GetPseudoId(), text_style, paint_info_,
                 highlight_pseudo_marker.GetPseudoArgument());
 
-        scoped_refptr<const ComputedStyle> pseudo_style =
+        const ComputedStyle* pseudo_style =
             HighlightStyleUtils::HighlightPseudoStyle(
                 node_, originating_style_,
                 highlight_pseudo_marker.GetPseudoId(),
@@ -699,7 +699,7 @@ NGHighlightPainter::Case NGHighlightPainter::ComputePaintCase() const {
     return kOverlay;
 
   if (selection_ && spelling_.empty() && grammar_.empty()) {
-    scoped_refptr<const ComputedStyle> pseudo_style =
+    const ComputedStyle* pseudo_style =
         HighlightStyleUtils::HighlightPseudoStyle(node_, originating_style_,
                                                   kPseudoIdSelection);
 
@@ -789,7 +789,7 @@ void NGHighlightPainter::PaintOneSpellingGrammarDecoration(
   }
 
   if (!text_painter_.GetSvgState()) {
-    if (auto pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
+    if (const auto* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
             node_, originating_style_, PseudoFor(type))) {
       const TextPaintStyle text_style =
           HighlightStyleUtils::HighlightPaintingStyle(
@@ -1140,7 +1140,7 @@ void NGHighlightPainter::PaintDecorationsExceptLineThrough(
         decoration_info->SetHighlightOverrideColor(
             HighlightStyleUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                decoration_layer.style.Get(), decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1205,7 +1205,7 @@ void NGHighlightPainter::PaintDecorationsOnlyLineThrough(
         decoration_info->SetHighlightOverrideColor(
             HighlightStyleUtils::ResolveColor(
                 layout_object_->GetDocument(), originating_style_,
-                decoration_layer.style.get(), decoration_layer.id.PseudoId(),
+                decoration_layer.style.Get(), decoration_layer.id.PseudoId(),
                 GetCSSPropertyTextDecorationColor(),
                 layers_[decoration_layer_index - 1].text_style.current_color));
       }
@@ -1267,14 +1267,14 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
 
 NGHighlightPainter::LayerPaintState::LayerPaintState(
     NGHighlightOverlay::HighlightLayer id,
-    const scoped_refptr<const ComputedStyle> style,
+    const ComputedStyle* style,
     TextPaintStyle text_style)
     : id(id),
       style(style),
       text_style(text_style),
       decorations_in_effect(style && style->HasAppliedTextDecorations()
-                                  ? style->TextDecorationsInEffect()
-                                  : TextDecorationLine::kNone) {}
+                                ? style->TextDecorationsInEffect()
+                                : TextDecorationLine::kNone) {}
 
 bool NGHighlightPainter::LayerPaintState::operator==(
     const HighlightLayer& other) const {

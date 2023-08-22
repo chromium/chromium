@@ -2749,8 +2749,8 @@ TEST_F(StyleEngineTest, GetComputedStyleOutsideFlatTree) {
   EXPECT_FALSE(innermost->GetComputedStyle());
 
   inner->EnsureComputedStyle();
-  scoped_refptr<const ComputedStyle> outer_style = outer->GetComputedStyle();
-  scoped_refptr<const ComputedStyle> inner_style = inner->GetComputedStyle();
+  const ComputedStyle* outer_style = outer->GetComputedStyle();
+  const ComputedStyle* inner_style = inner->GetComputedStyle();
 
   ASSERT_TRUE(outer_style);
   ASSERT_TRUE(inner_style);
@@ -3920,8 +3920,7 @@ TEST_F(StyleEngineContainerQueryTest, MarkStyleDirtyFromContainerRecalc) {
   auto* inner_editor = DynamicTo<HTMLInputElement>(input)->InnerEditorElement();
   ASSERT_TRUE(inner_editor);
 
-  scoped_refptr<const ComputedStyle> old_inner_style =
-      inner_editor->GetComputedStyle();
+  const ComputedStyle* old_inner_style = inner_editor->GetComputedStyle();
   EXPECT_TRUE(old_inner_style);
 
   unsigned start_count = GetStyleEngine().StyleForElementCount();
@@ -4787,14 +4786,14 @@ TEST_F(StyleEngineTest, NonSlottedStyleDirty) {
   // with ChildNeedsStyleRecalc(), but the child needs to be marked dirty to
   // make sure the next EnsureComputedStyle updates the style to reflect the
   // changes.
-  scoped_refptr<const ComputedStyle> old_style = span->EnsureComputedStyle();
+  const ComputedStyle* old_style = span->EnsureComputedStyle();
   span->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
   EXPECT_FALSE(host->ChildNeedsStyleRecalc());
   EXPECT_TRUE(span->NeedsStyleRecalc());
   UpdateAllLifecyclePhases();
 
   EXPECT_EQ(span->GetComputedStyle(), old_style);
-  scoped_refptr<const ComputedStyle> new_style = span->EnsureComputedStyle();
+  const ComputedStyle* new_style = span->EnsureComputedStyle();
   EXPECT_NE(new_style, old_style);
 
   EXPECT_EQ(Color::FromRGB(255, 0, 0),

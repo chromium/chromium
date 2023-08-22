@@ -53,8 +53,9 @@ void FormattedText::Dispose() {
 void FormattedText::UpdateComputedStylesIfNeeded(
     Document& document,
     const FontDescription& defaultFont) {
-  auto style = document.GetStyleResolver().StyleForFormattedText(
-      /*is_text_run*/ false, defaultFont, GetCssPropertySet());
+  const ComputedStyle* style =
+      document.GetStyleResolver().StyleForFormattedText(
+          /*is_text_run*/ false, defaultFont, GetCssPropertySet());
   block_->SetStyle(style, LayoutObject::ApplyStyleChanges::kNo);
   block_->SetHorizontalWritingMode(style->IsHorizontalWritingMode());
   for (auto& text_run : text_runs_)

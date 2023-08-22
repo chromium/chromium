@@ -402,14 +402,11 @@
     },
     {
         name: "UpdatePropertySpecificDifferencesFilter",
+        fields_to_diff: ["filter"],
         predicates_to_test: [
           {
             predicate: "a.ReflectionDataEquivalent(b)",
             field_dependencies: ["-webkit-box-reflect"]
-          },
-          {
-            predicate: "a.FilterDataEquivalent(b)",
-            field_dependencies: ["filter"]
           },
         ]
     },

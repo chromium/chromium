@@ -7,7 +7,7 @@
 
 namespace blink {
 
-StyleBaseData::StyleBaseData(scoped_refptr<const ComputedStyle> style,
+StyleBaseData::StyleBaseData(const ComputedStyle* style,
                              std::unique_ptr<CSSBitset> set)
     : computed_style_(style), important_set_(std::move(set)) {}
 

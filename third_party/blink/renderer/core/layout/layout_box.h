@@ -1283,7 +1283,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void ClearPreviousOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());
       DCHECK(!GetLayoutBox().HasLayoutOverflow());
-      GetLayoutBox().overflow_.reset();
+      GetLayoutBox().overflow_ = nullptr;
     }
     void SavePreviousContentBoxRect() {
       auto& rare_data = GetLayoutBox().EnsureRareData();
@@ -1660,13 +1660,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   friend class LayoutBoxTest;
 
  private:
-  std::unique_ptr<BoxOverflowModel> overflow_;
-
   // The index of the first fragment item associated with this object in
   // |NGFragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
   wtf_size_t first_fragment_item_index_ = 0u;
 
+  Member<BoxOverflowModel> overflow_;
   Member<LayoutBoxRareData> rare_data_;
 
   FRIEND_TEST_ALL_PREFIXES(LayoutMultiColumnSetTest, ScrollAnchroingCrash);

@@ -190,18 +190,17 @@ void LayoutText::Trace(Visitor* visitor) const {
   LayoutObject::Trace(visitor);
 }
 
-LayoutText* LayoutText::CreateEmptyAnonymous(
-    Document& doc,
-    scoped_refptr<const ComputedStyle> style) {
+LayoutText* LayoutText::CreateEmptyAnonymous(Document& doc,
+                                             const ComputedStyle* style) {
   auto* text = MakeGarbageCollected<LayoutText>(nullptr, StringImpl::empty_);
   text->SetDocumentForAnonymous(&doc);
-  text->SetStyle(std::move(style));
+  text->SetStyle(style);
   return text;
 }
 
 LayoutText* LayoutText::CreateAnonymousForFormattedText(
     Document& doc,
-    scoped_refptr<const ComputedStyle> style,
+    const ComputedStyle* style,
     String text) {
   auto* layout_text =
       MakeGarbageCollected<LayoutText>(nullptr, std::move(text));

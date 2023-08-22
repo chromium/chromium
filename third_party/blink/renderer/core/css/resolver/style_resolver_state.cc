@@ -145,7 +145,7 @@ EInsideLink StyleResolverState::InsideLink() const {
   return *inside_link_;
 }
 
-scoped_refptr<const ComputedStyle> StyleResolverState::TakeStyle() {
+const ComputedStyle* StyleResolverState::TakeStyle() {
   if (had_no_matched_properties_ &&
       pseudo_request_type_ == StyleRequest::kForRenderer) {
     return nullptr;
@@ -190,8 +190,7 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
   return UnzoomedLengthConversionData(style_builder_->GetFontSizeStyle());
 }
 
-void StyleResolverState::SetParentStyle(
-    scoped_refptr<const ComputedStyle> parent_style) {
+void StyleResolverState::SetParentStyle(const ComputedStyle* parent_style) {
   parent_style_ = std::move(parent_style);
   if (style_builder_) {
     // Need to update conversion data for 'lh' units.
@@ -200,8 +199,8 @@ void StyleResolverState::SetParentStyle(
 }
 
 void StyleResolverState::SetLayoutParentStyle(
-    scoped_refptr<const ComputedStyle> parent_style) {
-  layout_parent_style_ = std::move(parent_style);
+    const ComputedStyle* parent_style) {
+  layout_parent_style_ = parent_style;
 }
 
 void StyleResolverState::LoadPendingResources() {

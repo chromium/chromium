@@ -85,9 +85,8 @@ LayoutBlockFlow::LayoutBlockFlow(ContainerNode* node) : LayoutBlock(node) {
 
 LayoutBlockFlow::~LayoutBlockFlow() = default;
 
-LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(
-    Document* document,
-    scoped_refptr<const ComputedStyle> style) {
+LayoutBlockFlow* LayoutBlockFlow::CreateAnonymous(Document* document,
+                                                  const ComputedStyle* style) {
   auto* layout_block_flow = MakeGarbageCollected<LayoutNGBlockFlow>(nullptr);
   layout_block_flow->SetDocumentForAnonymous(document);
   layout_block_flow->SetStyle(style);

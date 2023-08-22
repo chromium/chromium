@@ -41,8 +41,7 @@ class CORE_EXPORT HTMLHtmlElement final : public HTMLElement {
   void ParseAttribute(const AttributeModificationParams&) override;
   bool HasNonInBodyInsertionMode() const override { return true; }
   void PropagateWritingModeAndDirectionFromBody();
-  scoped_refptr<const ComputedStyle> LayoutStyleForElement(
-      scoped_refptr<const ComputedStyle> style);
+  const ComputedStyle* LayoutStyleForElement(const ComputedStyle* style);
 
   BlockingAttribute& blocking() const { return *blocking_attribute_; }
   bool IsPotentiallyRenderBlocking() const override {

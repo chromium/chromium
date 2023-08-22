@@ -37,6 +37,8 @@ class CORE_EXPORT NGDecoratingBox {
   explicit NGDecoratingBox(const NGFragmentItem& item)
       : NGDecoratingBox(item, item.Style(), /* decorations */ nullptr) {}
 
+  void Trace(Visitor* visitor) const { visitor->Trace(style_); }
+
   const PhysicalOffset& ContentOffsetInContainer() const {
     return content_offset_in_container_;
   }
@@ -47,10 +49,12 @@ class CORE_EXPORT NGDecoratingBox {
 
  private:
   PhysicalOffset content_offset_in_container_;
-  const ComputedStyle* style_;
+  Member<const ComputedStyle> style_;
   const Vector<AppliedTextDecoration, 1>* decorations_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::NGDecoratingBox)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_DECORATING_BOX_H_

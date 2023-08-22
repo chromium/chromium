@@ -740,10 +740,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // Get the computed style for a given page and name. Note that when using the
   // function that doesn't provide a page name, layout needs to be complete,
   // since page names are determined during layout.
-  scoped_refptr<const ComputedStyle> StyleForPage(uint32_t page_index);
-  scoped_refptr<const ComputedStyle> StyleForPage(
-      uint32_t page_index,
-      const AtomicString& page_name);
+  const ComputedStyle* StyleForPage(uint32_t page_index);
+  const ComputedStyle* StyleForPage(uint32_t page_index,
+                                    const AtomicString& page_name);
 
   // Ensures that location-based data will be valid for a given node.
   //

@@ -206,14 +206,15 @@ class CORE_EXPORT NGHighlightPainter {
 
   SelectionPaintState* Selection() { return selection_; }
 
- private:
   struct LayerPaintState {
     DISALLOW_NEW();
 
    public:
     LayerPaintState(NGHighlightOverlay::HighlightLayer id,
-                    const scoped_refptr<const ComputedStyle> style,
+                    const ComputedStyle* style,
                     TextPaintStyle text_style);
+
+    void Trace(Visitor* visitor) const { visitor->Trace(style); }
 
     // Equality on HighlightLayer id only, for Vector::Find.
     bool operator==(const LayerPaintState&) const = delete;
@@ -222,11 +223,12 @@ class CORE_EXPORT NGHighlightPainter {
     bool operator!=(const NGHighlightOverlay::HighlightLayer&) const;
 
     const NGHighlightOverlay::HighlightLayer id;
-    const scoped_refptr<const ComputedStyle> style;
+    const Member<const ComputedStyle> style;
     const TextPaintStyle text_style;
     const TextDecorationLine decorations_in_effect;
   };
 
+ private:
   Case ComputePaintCase() const;
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
@@ -275,12 +277,15 @@ class CORE_EXPORT NGHighlightPainter {
   DocumentMarkerVector spelling_;
   DocumentMarkerVector grammar_;
   DocumentMarkerVector custom_;
-  Vector<LayerPaintState> layers_;
+  HeapVector<LayerPaintState> layers_;
   Vector<NGHighlightOverlay::HighlightPart> parts_;
   const bool skip_backgrounds_;
   Case paint_case_;
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::NGHighlightPainter::LayerPaintState)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_HIGHLIGHT_PAINTER_H_

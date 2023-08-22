@@ -101,6 +101,8 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
   explicit LayoutNGTable(Element*);
   ~LayoutNGTable() override;
 
+  void Trace(Visitor*) const override;
+
   static LayoutNGTable* CreateAnonymousWithParent(const LayoutObject&);
 
   bool IsFirstCell(const LayoutNGTableCell&) const;
@@ -118,10 +120,10 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
 
   const NGTableBorders* GetCachedTableBorders() const {
     NOT_DESTROYED();
-    return cached_table_borders_.get();
+    return cached_table_borders_.Get();
   }
 
-  void SetCachedTableBorders(scoped_refptr<const NGTableBorders>);
+  void SetCachedTableBorders(const NGTableBorders*);
 
   const NGTableTypes::Columns* GetCachedTableColumnConstraints();
 
@@ -225,7 +227,7 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock {
   void InvalidateCachedTableBorders();
 
   // Table borders are cached because computing collapsed borders is expensive.
-  scoped_refptr<const NGTableBorders> cached_table_borders_;
+  Member<const NGTableBorders> cached_table_borders_;
 
   // Table columns do not depend on any outside data (e.g. NGConstraintSpace).
   // They are cached because computing them is expensive.

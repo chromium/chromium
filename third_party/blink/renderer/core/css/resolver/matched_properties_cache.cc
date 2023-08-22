@@ -51,20 +51,31 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
   return hash;
 }
 
-void CachedMatchedProperties::Set(
-    scoped_refptr<const ComputedStyle>&& style,
-    scoped_refptr<const ComputedStyle>&& parent_style,
-    const MatchedPropertiesVector& properties) {
+CachedMatchedProperties::CachedMatchedProperties(
+    const ComputedStyle* style,
+    const ComputedStyle* parent_style,
+    const MatchedPropertiesVector& properties)
+    : computed_style(style), parent_computed_style(parent_style) {
+  matched_properties.ReserveInitialCapacity(properties.size());
+  matched_properties_types.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
     matched_properties.push_back(new_matched_properties.properties);
     matched_properties_types.push_back(new_matched_properties.types_);
   }
+}
 
-  // Note that we don't cache the original ComputedStyle instance. It may be
-  // further modified.  The ComputedStyle in the cache is really just a holder
-  // for the substructures and never used as-is.
-  this->computed_style = style;
-  this->parent_computed_style = parent_style;
+void CachedMatchedProperties::Set(const ComputedStyle* style,
+                                  const ComputedStyle* parent_style,
+                                  const MatchedPropertiesVector& properties) {
+  computed_style = style;
+  parent_computed_style = parent_style;
+
+  matched_properties.clear();
+  matched_properties_types.clear();
+  for (const auto& new_matched_properties : properties) {
+    matched_properties.push_back(new_matched_properties.properties);
+    matched_properties_types.push_back(new_matched_properties.types_);
+  }
 }
 
 void CachedMatchedProperties::Clear() {
@@ -191,23 +202,20 @@ bool CachedMatchedProperties::operator!=(
   return !(*this == properties);
 }
 
-void MatchedPropertiesCache::Add(
-    const Key& key,
-    scoped_refptr<const ComputedStyle>&& style,
-    scoped_refptr<const ComputedStyle>&& parent_style) {
+void MatchedPropertiesCache::Add(const Key& key,
+                                 const ComputedStyle* style,
+                                 const ComputedStyle* parent_style) {
   DCHECK(key.IsValid());
 
   Member<CachedMatchedProperties>& cache_item =
       cache_.insert(key.hash_, nullptr).stored_value->value;
 
   if (!cache_item) {
-    cache_item = MakeGarbageCollected<CachedMatchedProperties>();
+    cache_item = MakeGarbageCollected<CachedMatchedProperties>(
+        style, parent_style, key.result_.GetMatchedProperties());
   } else {
-    cache_item->Clear();
+    cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
   }
-
-  cache_item->Set(std::move(style), std::move(parent_style),
-                  key.result_.GetMatchedProperties());
 }
 
 void MatchedPropertiesCache::Clear() {

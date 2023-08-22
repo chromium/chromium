@@ -342,8 +342,7 @@ LayoutObject* FirstLetterPseudoElement::CreateLayoutObject(
   return PseudoElement::CreateLayoutObject(style);
 }
 
-scoped_refptr<const ComputedStyle>
-FirstLetterPseudoElement::CustomStyleForLayoutObject(
+const ComputedStyle* FirstLetterPseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   LayoutObject* first_letter_text =
       FirstLetterPseudoElement::FirstLetterTextLayoutObject(*this);
@@ -418,7 +417,7 @@ void FirstLetterPseudoElement::AttachFirstLetterTextLayoutObjects(
     // compute initial-letter font during layout to take proper effective style.
     const ComputedStyle& paragraph_style =
         paragraph.EffectiveStyle(NGStyleVariant::kFirstLine);
-    scoped_refptr<const ComputedStyle> initial_letter_text_style =
+    const ComputedStyle* initial_letter_text_style =
         GetDocument().GetStyleResolver().StyleForInitialLetterText(
             *letter_style, paragraph_style);
     letter->SetStyle(std::move(initial_letter_text_style));

@@ -16,6 +16,8 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 
+namespace blink {
+
 namespace {
 
 const unsigned CanvasFontCacheMaxFonts = 50;
@@ -24,12 +26,8 @@ const unsigned CanvasFontCacheHardMaxFonts = 250;
 const unsigned CanvasFontCacheHardMaxFontsLowEnd = 20;
 const unsigned CanvasFontCacheHiddenMaxFonts = 1;
 const int defaultFontSize = 10;
-}
 
-namespace blink {
-
-CanvasFontCache::CanvasFontCache(Document& document)
-    : document_(&document), pruning_scheduled_(false) {
+const ComputedStyle* CreateDefaultFontStyle(const Document& document) {
   const AtomicString& default_font_family = font_family_names::kSansSerif;
   FontFamily font_family;
   font_family.SetFamily(default_font_family,
@@ -43,8 +41,15 @@ CanvasFontCache::CanvasFontCache(Document& document)
           ? document.GetStyleResolver().CreateComputedStyleBuilder()
           : ComputedStyleBuilder(*ComputedStyle::CreateInitialStyleSingleton());
   builder.SetFontDescription(default_font_description);
-  default_font_style_ = builder.TakeStyle();
+  return builder.TakeStyle();
 }
+
+}  // namespace
+
+CanvasFontCache::CanvasFontCache(Document& document)
+    : document_(&document),
+      default_font_style_(CreateDefaultFontStyle(document)),
+      pruning_scheduled_(false) {}
 
 CanvasFontCache::~CanvasFontCache() {
 }
@@ -164,6 +169,7 @@ void CanvasFontCache::PruneAll() {
 void CanvasFontCache::Trace(Visitor* visitor) const {
   visitor->Trace(fetched_fonts_);
   visitor->Trace(document_);
+  visitor->Trace(default_font_style_);
 }
 
 void CanvasFontCache::Dispose() {

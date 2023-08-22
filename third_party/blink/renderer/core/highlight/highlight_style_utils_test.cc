@@ -26,11 +26,10 @@ namespace {
 Color SelectionWebkitTextFillColor(const Document& document,
                                    Node* node,
                                    const ComputedStyle& originating_style) {
-  scoped_refptr<const ComputedStyle> pseudo_style =
-      HighlightStyleUtils::HighlightPseudoStyle(node, originating_style,
-                                                kPseudoIdSelection);
+  const ComputedStyle* pseudo_style = HighlightStyleUtils::HighlightPseudoStyle(
+      node, originating_style, kPseudoIdSelection);
   return HighlightStyleUtils::ResolveColor(
-      document, originating_style, pseudo_style.get(), kPseudoIdSelection,
+      document, originating_style, pseudo_style, kPseudoIdSelection,
       GetCSSPropertyWebkitTextFillColor(), Color::kBlack);
 }
 

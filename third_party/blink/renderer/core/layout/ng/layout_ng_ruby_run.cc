@@ -196,12 +196,12 @@ LayoutNGRubyRun& LayoutNGRubyRun::Create(const LayoutObject* parent_ruby,
   DCHECK(parent_ruby->IsRuby());
   LayoutNGRubyRun* rr = MakeGarbageCollected<LayoutNGRubyRun>();
   rr->SetDocumentForAnonymous(&parent_ruby->GetDocument());
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       parent_ruby->GetDocument()
           .GetStyleResolver()
           .CreateAnonymousStyleWithDisplay(parent_ruby->StyleRef(),
                                            EDisplay::kInlineBlock);
-  rr->SetStyle(std::move(new_style));
+  rr->SetStyle(new_style);
   return *rr;
 }
 

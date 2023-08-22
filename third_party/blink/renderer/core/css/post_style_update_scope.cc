@@ -97,9 +97,8 @@ void PostStyleUpdateScope::AnimationData::SetPendingUpdate(
 
 void PostStyleUpdateScope::AnimationData::StoreOldStyleIfNeeded(
     Element& element) {
-  old_styles_.insert(
-      &element, scoped_refptr<const ComputedStyle>(
-                    ComputedStyle::NullifyEnsured(element.GetComputedStyle())));
+  old_styles_.insert(&element,
+                     ComputedStyle::NullifyEnsured(element.GetComputedStyle()));
 }
 
 const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
@@ -108,7 +107,7 @@ const ComputedStyle* PostStyleUpdateScope::AnimationData::GetOldStyle(
   if (iter == old_styles_.end()) {
     return ComputedStyle::NullifyEnsured(element.GetComputedStyle());
   }
-  return iter->value.get();
+  return iter->value.Get();
 }
 
 void PostStyleUpdateScope::PseudoData::AddPendingBackdrop(

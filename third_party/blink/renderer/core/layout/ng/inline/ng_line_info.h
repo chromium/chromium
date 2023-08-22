@@ -247,7 +247,7 @@ class CORE_EXPORT NGLineInfo {
       unsigned* end_offset_out = nullptr) const;
 
   const NGInlineItemsData* items_data_ = nullptr;
-  scoped_refptr<const ComputedStyle> line_style_;
+  const ComputedStyle* line_style_{nullptr};
   NGInlineItemResults results_;
 
   NGBfcOffset bfc_offset_;

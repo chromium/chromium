@@ -3744,12 +3744,11 @@ void StyleEngine::UpdateViewportStyle() {
     return;
   }
 
-  scoped_refptr<const ComputedStyle> viewport_style =
-      resolver_->StyleForViewport();
+  const ComputedStyle* viewport_style = resolver_->StyleForViewport();
   if (ComputedStyle::ComputeDifference(
-          viewport_style.get(), GetDocument().GetLayoutView()->Style()) !=
+          viewport_style, GetDocument().GetLayoutView()->Style()) !=
       ComputedStyle::Difference::kEqual) {
-    GetDocument().GetLayoutView()->SetStyle(std::move(viewport_style));
+    GetDocument().GetLayoutView()->SetStyle(viewport_style);
   }
 }
 

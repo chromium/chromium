@@ -52,7 +52,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
     block_flow_->SetStyle(style_, LayoutObject::ApplyStyleChanges::kNo);
   }
 
-  scoped_refptr<const ComputedStyle> GetStyle(EWhiteSpace whitespace) {
+  const ComputedStyle* GetStyle(EWhiteSpace whitespace) {
     if (whitespace == EWhiteSpace::kNormal)
       return style_;
     ComputedStyleBuilder builder =
@@ -67,7 +67,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
 
   void AppendText(const String& text, NGInlineItemsBuilder* builder) {
     LayoutText* layout_text =
-        LayoutText::CreateEmptyAnonymous(GetDocument(), style_.get());
+        LayoutText::CreateEmptyAnonymous(GetDocument(), style_);
     anonymous_objects_->push_back(layout_text);
     builder->AppendText(text, layout_text);
   }
@@ -190,7 +190,7 @@ class NGInlineItemsBuilderTest : public RenderingTest {
   Persistent<LayoutBlockFlow> block_flow_;
   Persistent<HeapVector<NGInlineItem>> items_;
   String text_;
-  scoped_refptr<const ComputedStyle> style_;
+  Persistent<const ComputedStyle> style_;
   Persistent<HeapVector<Member<LayoutObject>>> anonymous_objects_;
 };
 
@@ -423,9 +423,9 @@ TEST_F(NGInlineItemsBuilderTest, IgnorablePre) {
 TEST_F(NGInlineItemsBuilderTest, Empty) {
   HeapVector<NGInlineItem> items;
   NGInlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  scoped_refptr<const ComputedStyle> block_style =
+  const ComputedStyle* block_style =
       &GetDocument().GetStyleResolver().InitialStyle();
-  builder.EnterBlock(block_style.get());
+  builder.EnterBlock(block_style);
   builder.ExitBlock();
 
   EXPECT_EQ("", builder.ToString());
@@ -470,9 +470,8 @@ TEST_F(NGInlineItemsBuilderTest, BidiBlockOverride) {
       GetDocument().GetStyleResolver().InitialStyle());
   block_style_builder.SetUnicodeBidi(UnicodeBidi::kBidiOverride);
   block_style_builder.SetDirection(TextDirection::kRtl);
-  scoped_refptr<const ComputedStyle> block_style =
-      block_style_builder.TakeStyle();
-  builder.EnterBlock(block_style.get());
+  const ComputedStyle* block_style = block_style_builder.TakeStyle();
+  builder.EnterBlock(block_style);
   AppendText("Hello", &builder);
   builder.ExitBlock();
 

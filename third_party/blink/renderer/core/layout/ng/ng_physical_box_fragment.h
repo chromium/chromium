@@ -172,10 +172,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const NGTableBorders* TableCollapsedBorders() const {
-    if (const auto* field = GetRareField(FieldId::kTableCollapsedBorders)) {
-      return field->table_collapsed_borders.get();
-    }
-    return nullptr;
+    return rare_data_ ? rare_data_->table_collapsed_borders_ : nullptr;
   }
 
   const NGTableFragmentData::CollapsedBordersGeometry*

@@ -2132,15 +2132,6 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     if (suppressed_transitions.Contains(property))
       continue;
 
-    RunningTransition* running_transition =
-        MakeGarbageCollected<RunningTransition>();
-    running_transition->from = new_transition->from;
-    running_transition->to = new_transition->to;
-    running_transition->reversing_adjusted_start_value =
-        new_transition->reversing_adjusted_start_value;
-    running_transition->reversing_shortening_factor =
-        new_transition->reversing_shortening_factor;
-
     const InertEffect* inert_animation = new_transition->effect.Get();
     TransitionEventDelegate* event_delegate =
         MakeGarbageCollected<TransitionEventDelegate>(element, property);
@@ -2164,7 +2155,12 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
                               ASSERT_NO_EXCEPTION);
     }
     animation->Update(kTimingUpdateOnDemand);
-    running_transition->animation = animation;
+
+    RunningTransition* running_transition =
+        MakeGarbageCollected<RunningTransition>(
+            animation, new_transition->from, new_transition->to,
+            new_transition->reversing_adjusted_start_value,
+            new_transition->reversing_shortening_factor);
     transitions_.Set(property, running_transition);
   }
   ClearPendingUpdate();
@@ -2371,14 +2367,14 @@ void CSSAnimations::CalculateTransitionUpdateForPropertyHandle(
   }
 
   const ComputedStyle* reversing_adjusted_start_value =
-      state.before_change_style.get();
+      state.before_change_style;
   double reversing_shortening_factor = 1;
   if (interrupted_transition) {
     AnimationEffect* effect = interrupted_transition->animation->effect();
     const absl::optional<double> interrupted_progress =
         effect ? effect->Progress() : absl::nullopt;
     if (interrupted_progress) {
-      reversing_adjusted_start_value = interrupted_transition->to.get();
+      reversing_adjusted_start_value = interrupted_transition->to;
       reversing_shortening_factor =
           ClampTo((interrupted_progress.value() *
                    interrupted_transition->reversing_shortening_factor) +
@@ -2596,7 +2592,7 @@ void CSSAnimations::CalculateTransitionUpdate(
   CalculateTransitionActiveInterpolations(update, animating_element);
 }
 
-scoped_refptr<const ComputedStyle> CSSAnimations::CalculateBeforeChangeStyle(
+const ComputedStyle* CSSAnimations::CalculateBeforeChangeStyle(
     Element& animating_element,
     const ComputedStyle& base_style) {
   ActiveInterpolationsMap interpolations_map;

@@ -113,7 +113,8 @@ ASSERT_SIZE(BorderValue, SameSizeAsBorderValue);
 // inheritance structure. Make sure the fields have the same access specifiers
 // as in the "real" class since it can affect the layout. Reference the fields
 // so that they are not seen as unused (-Wunused-private-field).
-struct SameSizeAsComputedStyleBase {
+struct SameSizeAsComputedStyleBase
+    : public GarbageCollected<SameSizeAsComputedStyleBase> {
   SameSizeAsComputedStyleBase() {
     base::debug::Alias(&data_refs);
     base::debug::Alias(&pointers);
@@ -122,16 +123,15 @@ struct SameSizeAsComputedStyleBase {
 
  private:
   void* data_refs[8];
-  void* pointers[1];
+  Member<void*> pointers[1];
   unsigned bitfields[5];
 };
 
-struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase,
-                                 public RefCounted<SameSizeAsComputedStyle> {
+struct SameSizeAsComputedStyle : public SameSizeAsComputedStyleBase {
   SameSizeAsComputedStyle() { base::debug::Alias(&own_ptrs); }
 
  private:
-  void* own_ptrs[1];
+  Member<void*> own_ptrs[1];
 };
 
 // If this assert fails, it means that size of ComputedStyle has changed. Please
@@ -142,7 +142,7 @@ ASSERT_SIZE(ComputedStyle, SameSizeAsComputedStyle);
 
 StyleCachedData& ComputedStyle::EnsureCachedData() const {
   if (!cached_data_) {
-    cached_data_ = std::make_unique<StyleCachedData>();
+    cached_data_ = MakeGarbageCollected<StyleCachedData>();
   }
   return *cached_data_;
 }
@@ -154,7 +154,7 @@ bool ComputedStyle::HasCachedPseudoElementStyles() const {
 
 PseudoElementStyleCache* ComputedStyle::GetPseudoElementStyleCache() const {
   if (cached_data_) {
-    return cached_data_->pseudo_element_styles_.get();
+    return cached_data_->pseudo_element_styles_.Get();
   }
   return nullptr;
 }
@@ -162,13 +162,13 @@ PseudoElementStyleCache* ComputedStyle::GetPseudoElementStyleCache() const {
 PseudoElementStyleCache& ComputedStyle::EnsurePseudoElementStyleCache() const {
   if (!cached_data_ || !cached_data_->pseudo_element_styles_) {
     EnsureCachedData().pseudo_element_styles_ =
-        std::make_unique<PseudoElementStyleCache>();
+        MakeGarbageCollected<PseudoElementStyleCache>();
   }
   return *cached_data_->pseudo_element_styles_;
 }
 
-scoped_refptr<ComputedStyle> ComputedStyle::CreateInitialStyleSingleton() {
-  return base::MakeRefCounted<ComputedStyle>(PassKey());
+const ComputedStyle* ComputedStyle::CreateInitialStyleSingleton() {
+  return MakeGarbageCollected<ComputedStyle>(PassKey());
 }
 
 Vector<AtomicString>* ComputedStyle::GetVariableNamesCache() const {
@@ -187,10 +187,10 @@ Vector<AtomicString>& ComputedStyle::EnsureVariableNamesCache() const {
 }
 
 const ComputedStyle* ComputedStyle::AddCachedPositionFallbackStyle(
-    scoped_refptr<const ComputedStyle> style,
+    const ComputedStyle* style,
     unsigned index) const {
-  EnsurePositionFallbackStyleCache(index + 1)[index] = std::move(style);
-  return (*cached_data_->position_fallback_styles_)[index].get();
+  EnsurePositionFallbackStyleCache(index + 1)[index] = style;
+  return (*cached_data_->position_fallback_styles_)[index].Get();
 }
 
 const ComputedStyle* ComputedStyle::GetCachedPositionFallbackStyle(
@@ -199,14 +199,14 @@ const ComputedStyle* ComputedStyle::GetCachedPositionFallbackStyle(
       index >= cached_data_->position_fallback_styles_->size()) {
     return nullptr;
   }
-  return (*cached_data_->position_fallback_styles_)[index].get();
+  return (*cached_data_->position_fallback_styles_)[index].Get();
 }
 
 PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
     unsigned ensure_size) const {
   if (!cached_data_ || !cached_data_->position_fallback_styles_) {
     EnsureCachedData().position_fallback_styles_ =
-        std::make_unique<PositionFallbackStyleCache>();
+        MakeGarbageCollected<PositionFallbackStyleCache>();
   }
   if (cached_data_->position_fallback_styles_->size() < ensure_size) {
     cached_data_->position_fallback_styles_->resize(ensure_size);
@@ -214,24 +214,23 @@ PositionFallbackStyleCache& ComputedStyle::EnsurePositionFallbackStyleCache(
   return *cached_data_->position_fallback_styles_;
 }
 
-ALWAYS_INLINE ComputedStyle::ComputedStyle() : RefCounted<ComputedStyle>() {}
+ALWAYS_INLINE ComputedStyle::ComputedStyle() = default;
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& initial_style)
-    : ComputedStyleBase(initial_style), RefCounted<ComputedStyle>() {}
+    : ComputedStyleBase(initial_style) {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(const ComputedStyle& initial_style,
                                            const ComputedStyle& parent_style,
                                            ComputedStyleAccessFlags& access)
-    : ComputedStyleBase(initial_style, parent_style, access),
-      RefCounted<ComputedStyle>() {}
+    : ComputedStyleBase(initial_style, parent_style, access) {}
 
 ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key) : ComputedStyle() {}
 
-ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key,
+ALWAYS_INLINE ComputedStyle::ComputedStyle(BuilderPassKey key,
                                            const ComputedStyle& initial_style)
     : ComputedStyle(initial_style) {}
 
-ALWAYS_INLINE ComputedStyle::ComputedStyle(PassKey key,
+ALWAYS_INLINE ComputedStyle::ComputedStyle(BuilderPassKey key,
                                            const ComputedStyle& initial_style,
                                            const ComputedStyle& parent_style,
                                            ComputedStyleAccessFlags& access)
@@ -605,7 +604,7 @@ const ComputedStyle* ComputedStyle::GetCachedPseudoElementStyle(
     if (pseudo_style->StyleType() == pseudo_id &&
         (!PseudoElementHasArguments(pseudo_id) ||
          pseudo_style->PseudoArgument() == pseudo_argument)) {
-      return pseudo_style.get();
+      return pseudo_style.Get();
     }
   }
 
@@ -629,7 +628,7 @@ bool ComputedStyle::CachedPseudoElementStylesDependOnFontMetrics() const {
 }
 
 const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
-    scoped_refptr<const ComputedStyle> pseudo,
+    const ComputedStyle* pseudo,
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
   DCHECK(pseudo);
@@ -646,7 +645,7 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
   DCHECK(!GetCachedPseudoElementStyle(pseudo->StyleType(),
                                       pseudo->PseudoArgument()));
 
-  const ComputedStyle* result = pseudo.get();
+  const ComputedStyle* result = pseudo;
 
   EnsurePseudoElementStyleCache().push_back(std::move(pseudo));
 
@@ -654,7 +653,7 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
 }
 
 const ComputedStyle* ComputedStyle::ReplaceCachedPseudoElementStyle(
-    scoped_refptr<const ComputedStyle> pseudo_style,
+    const ComputedStyle* pseudo_style,
     PseudoId pseudo_id,
     const AtomicString& pseudo_argument) const {
   DCHECK(pseudo_style->StyleType() != kPseudoIdNone &&
@@ -666,7 +665,7 @@ const ComputedStyle* ComputedStyle::ReplaceCachedPseudoElementStyle(
            cached_style->PseudoArgument() == pseudo_argument)) {
         SECURITY_CHECK(cached_style->IsEnsuredInDisplayNone());
         cached_style = pseudo_style;
-        return pseudo_style.get();
+        return pseudo_style;
       }
     }
   }
@@ -680,14 +679,14 @@ void ComputedStyle::ClearCachedPseudoElementStyles() const {
 }
 
 const ComputedStyle* ComputedStyle::GetBaseComputedStyle() const {
-  if (auto* base_data = BaseData().get()) {
+  if (auto* base_data = BaseData().Get()) {
     return base_data->GetBaseComputedStyle();
   }
   return nullptr;
 }
 
 const CSSBitset* ComputedStyle::GetBaseImportantSet() const {
-  if (auto* base_data = BaseData().get()) {
+  if (auto* base_data = BaseData().Get()) {
     return base_data->GetBaseImportantSet();
   }
   return nullptr;
@@ -1152,7 +1151,7 @@ void ComputedStyle::UpdatePropertySpecificDifferences(
       ContainsPaint() != other.ContainsPaint() ||
       IsOverflowVisibleAlongBothAxes() !=
           other.IsOverflowVisibleAlongBothAxes() ||
-      !BackdropFilterDataEquivalent(other) ||
+      BackdropFilter() != other.BackdropFilter() ||
       PotentialCompositingReasonsFor3DTransformChanged(other)) {
     diff.SetCompositingReasonsChanged();
   }
@@ -1412,10 +1411,6 @@ void ComputedStyle::ApplyTransform(
   if (apply_transform_origin) {
     result.Translate3d(-origin_x, -origin_y, -origin_z);
   }
-}
-
-bool ComputedStyle::HasFilters() const {
-  return FilterInternal().Get() && !FilterInternal()->operations_.IsEmpty();
 }
 
 namespace {
@@ -2612,7 +2607,8 @@ bool ComputedStyle::IsRenderedInTopLayer(const Element& element) const {
 }
 
 ComputedStyleBuilder::ComputedStyleBuilder(const ComputedStyle& style) {
-  style_ = base::AdoptRef(new ComputedStyle(style));
+  style_ = MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
+                                               style);
   SetStyleBase(*style_);
 }
 
@@ -2620,8 +2616,9 @@ ComputedStyleBuilder::ComputedStyleBuilder(
     const ComputedStyle& initial_style,
     const ComputedStyle& parent_style,
     IsAtShadowBoundary is_at_shadow_boundary) {
-  style_ = base::AdoptRef(new ComputedStyle(initial_style, parent_style,
-                                            GetAccessFlagsForConstructor()));
+  style_ = MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
+                                               initial_style, parent_style,
+                                               GetAccessFlagsForConstructor());
   SetStyleBase(*style_);
 
   // Even if surrounding content is user-editable, shadow DOM should act as a
@@ -2640,10 +2637,11 @@ ComputedStyleBuilder::ComputedStyleBuilder(
   SetBaseTextDecorationData(parent_style.AppliedTextDecorationData());
 }
 
-scoped_refptr<const ComputedStyle> ComputedStyleBuilder::CloneStyle() const {
+const ComputedStyle* ComputedStyleBuilder::CloneStyle() const {
   DCHECK(style_);
   ResetAccess();
-  return base::AdoptRef(new ComputedStyle(*style_));
+  return MakeGarbageCollected<ComputedStyle>(ComputedStyle::BuilderPassKey(),
+                                             *style_);
 }
 
 void ComputedStyleBuilder::PropagateIndependentInheritedProperties(
@@ -2684,16 +2682,6 @@ bool ComputedStyleBuilder::SetEffectiveZoom(float f) {
       "Blink.EffectiveZoom",
       std::clamp<float>(clamped_effective_zoom * 100, 0, 400));
   return true;
-}
-
-StyleHighlightData& ComputedStyleBuilder::MutableHighlightData() {
-  scoped_refptr<StyleHighlightData>& data = MutableHighlightDataInternal();
-  if (!data) {
-    data = StyleHighlightData::Create();
-  } else if (!data->HasOneRef()) {
-    data = data->Copy();
-  }
-  return *data;
 }
 
 // Compute the FontOrientation from this style. It's derived from WritingMode
@@ -2831,7 +2819,5 @@ STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,
                    EOverscrollBehavior::kContain);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kNone,
                    EOverscrollBehavior::kNone);
-
-CORE_EXPORT ComputedStyle* ComputedStyle::freelist_ = nullptr;
 
 }  // namespace blink

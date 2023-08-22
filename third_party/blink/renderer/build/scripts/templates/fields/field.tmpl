@@ -210,7 +210,7 @@ const {{field.type_name}}&
   {% else -%}
     {{comma()}}{{member}}({{parent}} == {{noninherited}}
         ? {{parent}}
-        : DataRef(base::AdoptRef(new {{subgroup.type_name}}(*{{noninherited}}, *{{parent}}))))
+        : DataRef(MakeGarbageCollected<{{subgroup.type_name}}>(*{{noninherited}}, *{{parent}})))
   {% endif %}
 {% endfor %}
 {% for field in group.fields %}

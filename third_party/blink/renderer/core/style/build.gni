@@ -79,8 +79,6 @@ blink_core_sources_style = [
   "style_difference.h",
   "style_fetched_image.cc",
   "style_fetched_image.h",
-  "style_filter_data.cc",
-  "style_filter_data.h",
   "style_generated_image.cc",
   "style_generated_image.h",
   "style_highlight_data.cc",

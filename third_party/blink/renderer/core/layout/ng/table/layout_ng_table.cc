@@ -42,15 +42,20 @@ LayoutNGTable::LayoutNGTable(Element* element)
 
 LayoutNGTable::~LayoutNGTable() = default;
 
+void LayoutNGTable::Trace(Visitor* visitor) const {
+  visitor->Trace(cached_table_borders_);
+  LayoutNGBlock::Trace(visitor);
+}
+
 LayoutNGTable* LayoutNGTable::CreateAnonymousWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<const ComputedStyle> new_style =
+  const ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(),
           parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
   auto* new_table = MakeGarbageCollected<LayoutNGTable>(nullptr);
   new_table->SetDocumentForAnonymous(&parent.GetDocument());
-  new_table->SetStyle(std::move(new_style));
+  new_table->SetStyle(new_style);
   return new_table;
 }
 
@@ -189,10 +194,9 @@ bool LayoutNGTable::HasCollapsedBorders() const {
   return cached_table_borders_ && cached_table_borders_->IsCollapsed();
 }
 
-void LayoutNGTable::SetCachedTableBorders(
-    scoped_refptr<const NGTableBorders> table_borders) {
+void LayoutNGTable::SetCachedTableBorders(const NGTableBorders* table_borders) {
   NOT_DESTROYED();
-  cached_table_borders_ = std::move(table_borders);
+  cached_table_borders_ = table_borders;
 }
 
 void LayoutNGTable::InvalidateCachedTableBorders() {
@@ -200,7 +204,7 @@ void LayoutNGTable::InvalidateCachedTableBorders() {
   // TODO(layout-dev) When cached borders are invalidated, we could do a
   // special kind of relayout where fragments can replace only TableBorders,
   // keep the geometry, and repaint.
-  cached_table_borders_.reset();
+  cached_table_borders_ = nullptr;
 }
 
 const NGTableTypes::Columns* LayoutNGTable::GetCachedTableColumnConstraints() {
@@ -393,7 +397,7 @@ LayoutUnit LayoutNGTable::BorderLeft() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+  if (ShouldCollapseBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .left;
@@ -405,7 +409,7 @@ LayoutUnit LayoutNGTable::BorderRight() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+  if (ShouldCollapseBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .right;
@@ -417,7 +421,7 @@ LayoutUnit LayoutNGTable::BorderTop() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+  if (ShouldCollapseBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .top;
@@ -429,7 +433,7 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
   // ScrollAnchoring fails this DCHECK.
-  if (ShouldCollapseBorders() && cached_table_borders_.get()) {
+  if (ShouldCollapseBorders() && cached_table_borders_) {
     return cached_table_borders_->TableBorder()
         .ConvertToPhysical(Style()->GetWritingDirection())
         .bottom;

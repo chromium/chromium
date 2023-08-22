@@ -1760,8 +1760,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from the originating element's style (because we can cache only one
   // version), while the uncached pseudo style can inherit from any style.
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
-  scoped_refptr<const ComputedStyle> GetUncachedPseudoElementStyle(
-      const StyleRequest&) const;
+  const ComputedStyle* GetUncachedPseudoElementStyle(const StyleRequest&) const;
 
   // Returns the ::selection style, which may be stored in StyleCachedData (old
   // impl) or StyleHighlightData (new impl).
@@ -2303,11 +2302,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and new ComputedStyle like paint and size invalidations. If kNo, just set
   // the ComputedStyle member.
   enum class ApplyStyleChanges { kNo, kYes };
-  void SetStyle(scoped_refptr<const ComputedStyle>,
+  void SetStyle(const ComputedStyle*,
                 ApplyStyleChanges = ApplyStyleChanges::kYes);
 
   // Set the style of the object if it's generated content.
-  void SetPseudoElementStyle(scoped_refptr<const ComputedStyle>,
+  void SetPseudoElementStyle(const ComputedStyle*,
                              bool match_parent_size = false);
 
   // In some cases we modify the ComputedStyle after the style recalc, either
@@ -2317,7 +2316,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // that node with the new ComputedStyle. Modifying the ComputedStyle of a node
   // outside of style recalc can break invariants in the style engine, so this
   // function must not gain any new call sites.
-  void SetModifiedStyleOutsideStyleRecalc(scoped_refptr<const ComputedStyle>,
+  void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle*,
                                           ApplyStyleChanges);
 
   // This function returns an enclosing non-anonymous LayoutBlock for this
@@ -2547,7 +2546,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   const ComputedStyle* Style() const {
     NOT_DESTROYED();
-    return style_.get();
+    return style_.Get();
   }
 
   // style_ can only be nullptr before the first style is set, thus most
@@ -3595,7 +3594,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to
   // have changed (or from SetStyle).
-  void SetStyleInternal(scoped_refptr<const ComputedStyle> style) {
+  void SetStyleInternal(const ComputedStyle* style) {
     NOT_DESTROYED();
     style_ = std::move(style);
   }
@@ -4307,7 +4306,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   friend class LineLayoutItem;
   friend class LocalFrameView;
 
-  scoped_refptr<const ComputedStyle> style_;
+  subtle::UncompressedMember<const ComputedStyle> style_;
 
   Member<Node> node_;
 

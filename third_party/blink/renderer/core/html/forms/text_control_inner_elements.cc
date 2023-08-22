@@ -47,8 +47,8 @@ EditingViewPortElement::EditingViewPortElement(Document& document)
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdEditingViewPort);
 }
 
-scoped_refptr<const ComputedStyle>
-EditingViewPortElement::CustomStyleForLayoutObject(const StyleRecalcContext&) {
+const ComputedStyle* EditingViewPortElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
   ComputedStyleBuilder style_builder =
@@ -127,8 +127,7 @@ LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
   return MakeGarbageCollected<LayoutNGTextControlInnerEditor>(this);
 }
 
-scoped_refptr<const ComputedStyle>
-TextControlInnerEditorElement::CustomStyleForLayoutObject(
+const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
   Element* host = OwnerShadowHost();
   DCHECK(host);
@@ -199,7 +198,7 @@ TextControlInnerEditorElement::CustomStyleForLayoutObject(
   if (!is_visible_)
     style_builder.SetOpacity(0);
 
-  scoped_refptr<const ComputedStyle> style = style_builder.TakeStyle();
+  const ComputedStyle* style = style_builder.TakeStyle();
 
   if (style->HasPseudoElementStyle(kPseudoIdScrollbar)) {
     ComputedStyleBuilder no_scrollbar_style_builder =

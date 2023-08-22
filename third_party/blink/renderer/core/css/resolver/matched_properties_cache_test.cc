@@ -150,8 +150,7 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredInDisplayNone) {
   const auto& parent = InitialStyle();
   ComputedStyleBuilder ensured_parent_builder = CreateStyleBuilder();
   ensured_parent_builder.SetIsEnsuredInDisplayNone();
-  scoped_refptr<const ComputedStyle> ensured_parent =
-      ensured_parent_builder.TakeStyle();
+  const auto* ensured_parent = ensured_parent_builder.TakeStyle();
 
   TestKey key1("display:block", 1, GetDocument());
 
@@ -171,7 +170,7 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTree) {
   const auto& parent = InitialStyle();
   auto builder = CreateStyleBuilder();
   builder.SetIsEnsuredOutsideFlatTree();
-  auto ensured_style = builder.TakeStyle();
+  const auto* ensured_style = builder.TakeStyle();
 
   TestKey key1("display:block", 1, GetDocument());
   StyleRecalcContext context;
@@ -194,11 +193,11 @@ TEST_F(MatchedPropertiesCacheTest, EnsuredOutsideFlatTreeAndDisplayNone) {
 
   auto builder = CreateStyleBuilder();
   builder.SetIsEnsuredInDisplayNone();
-  auto parent_none = builder.TakeStyle();
+  const auto* parent_none = builder.TakeStyle();
 
   builder = CreateStyleBuilder();
   builder.SetIsEnsuredOutsideFlatTree();
-  auto style_flat = builder.TakeStyle();
+  const auto* style_flat = builder.TakeStyle();
 
   StyleRecalcContext context;
   context.is_outside_flat_tree = true;
@@ -220,8 +219,8 @@ TEST_F(MatchedPropertiesCacheTest, WritingModeDependency) {
   auto parent_builder_b = CreateStyleBuilder();
   parent_builder_b.SetWritingMode(WritingMode::kVerticalRl);
 
-  auto parent_a = parent_builder_a.TakeStyle();
-  auto parent_b = parent_builder_b.TakeStyle();
+  const auto* parent_a = parent_builder_a.TakeStyle();
+  const auto* parent_b = parent_builder_b.TakeStyle();
 
   const auto& style_a = InitialStyle();
   const auto& style_b = InitialStyle();
@@ -242,8 +241,8 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   auto parent_builder_b = CreateStyleBuilder();
   parent_builder_b.SetDirection(TextDirection::kRtl);
 
-  auto parent_a = parent_builder_a.TakeStyle();
-  auto parent_b = parent_builder_b.TakeStyle();
+  const auto* parent_a = parent_builder_a.TakeStyle();
+  const auto* parent_b = parent_builder_b.TakeStyle();
 
   const auto& style_a = InitialStyle();
   const auto& style_b = InitialStyle();
@@ -261,11 +260,11 @@ TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
 
   auto builder = CreateStyleBuilder();
   builder.SetDarkColorScheme(false);
-  auto parent_a = builder.TakeStyle();
+  const auto* parent_a = builder.TakeStyle();
 
   builder = CreateStyleBuilder();
   builder.SetDarkColorScheme(true);
-  auto parent_b = builder.TakeStyle();
+  const auto* parent_b = builder.TakeStyle();
 
   const auto& style_a = InitialStyle();
   const auto& style_b = InitialStyle();
@@ -287,15 +286,15 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependency) {
                                    CreateVariableData("1px"), true);
   parent_builder_b.SetVariableData(AtomicString("--x"),
                                    CreateVariableData("2px"), true);
-  auto parent_a = parent_builder_a.TakeStyle();
-  auto parent_b = parent_builder_b.TakeStyle();
+  const auto* parent_a = parent_builder_a.TakeStyle();
+  const auto* parent_b = parent_builder_b.TakeStyle();
 
   auto style_builder_a = CreateStyleBuilder();
   auto style_builder_b = CreateStyleBuilder();
   style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
   style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
-  auto style_a = style_builder_a.TakeStyle();
-  auto style_b = style_builder_b.TakeStyle();
+  const auto* style_a = style_builder_a.TakeStyle();
+  const auto* style_b = style_builder_b.TakeStyle();
 
   TestKey key("top:var(--x)", 1, GetDocument());
   cache.Add(key, *style_a, *parent_a);
@@ -314,8 +313,8 @@ TEST_F(MatchedPropertiesCacheTest, VariableDependencyNoVars) {
   auto style_builder_b = CreateStyleBuilder();
   style_builder_a.SetHasVariableReferenceFromNonInheritedProperty();
   style_builder_b.SetHasVariableReferenceFromNonInheritedProperty();
-  auto style_a = style_builder_a.TakeStyle();
-  auto style_b = style_builder_b.TakeStyle();
+  const auto* style_a = style_builder_a.TakeStyle();
+  const auto* style_b = style_builder_b.TakeStyle();
 
   TestKey key("top:var(--x)", 1, GetDocument());
 
@@ -335,8 +334,8 @@ TEST_F(MatchedPropertiesCacheTest, NoVariableDependency) {
                                    CreateVariableData("1px"), true);
   parent_builder_b.SetVariableData(AtomicString("--x"),
                                    CreateVariableData("2px"), true);
-  auto parent_a = parent_builder_a.TakeStyle();
-  auto parent_b = parent_builder_b.TakeStyle();
+  const auto* parent_a = parent_builder_a.TakeStyle();
+  const auto* parent_b = parent_builder_b.TakeStyle();
   const auto& style_a = InitialStyle();
   const auto& style_b = InitialStyle();
 

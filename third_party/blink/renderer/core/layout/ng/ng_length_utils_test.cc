@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 
-#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -88,7 +87,7 @@ class NGLengthUtilsTest : public testing::Test {
                                            length, content_size);
   }
 
-  scoped_refptr<const ComputedStyle> initial_style_;
+  Persistent<const ComputedStyle> initial_style_;
 };
 
 class NGLengthUtilsTestWithNode : public RenderingTest {
@@ -477,7 +476,7 @@ TEST_F(NGLengthUtilsTest, TestMargins) {
   builder.SetMarginRight(Length::Fixed(52));
   builder.SetMarginBottom(Length::Auto());
   builder.SetMarginLeft(Length::Percent(11));
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
 
   NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300);
 
@@ -500,7 +499,7 @@ TEST_F(NGLengthUtilsTest, TestBorders) {
   builder.SetBorderBottomStyle(EBorderStyle::kSolid);
   builder.SetBorderLeftStyle(EBorderStyle::kSolid);
   builder.SetWritingMode(WritingMode::kVerticalLr);
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
 
   NGBoxStrut borders = ComputeBordersForTest(*style);
 
@@ -517,7 +516,7 @@ TEST_F(NGLengthUtilsTest, TestPadding) {
   builder.SetPaddingBottom(Length::Auto());
   builder.SetPaddingLeft(Length::Percent(11));
   builder.SetWritingMode(WritingMode::kVerticalRl);
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
 
   NGConstraintSpace constraint_space = ConstructConstraintSpace(
       200, 300, false, false, WritingMode::kVerticalRl);
@@ -534,7 +533,7 @@ TEST_F(NGLengthUtilsTest, TestAutoMargins) {
   ComputedStyleBuilder builder(*initial_style_);
   builder.SetMarginRight(Length::Auto());
   builder.SetMarginLeft(Length::Auto());
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
 
   LayoutUnit kInlineSize(150);
   LayoutUnit kAvailableInlineSize(200);

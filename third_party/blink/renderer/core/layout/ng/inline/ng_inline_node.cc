@@ -1689,7 +1689,7 @@ static LayoutUnit ComputeContentSize(
       EFloat previous_float_type = EFloat::kNone;
       for (const auto& floating_object : floating_objects_) {
         const EClear float_clear =
-            floating_object.float_style.Clear(floating_object.style);
+            floating_object.float_style->Clear(*floating_object.style);
 
         // If this float clears the previous float we start a new "line".
         // This is subtly different to block layout which will only reset either
@@ -1708,7 +1708,7 @@ static LayoutUnit ComputeContentSize(
         floats_inline_size_ += floating_object.float_inline_max_size_with_margin
                                    .ClampNegativeToZero();
         previous_float_type =
-            floating_object.float_style.Floating(floating_object.style);
+            floating_object.float_style->Floating(*floating_object.style);
       }
       max_inline_size =
           std::max(max_inline_size, line_inline_size + floats_inline_size_);

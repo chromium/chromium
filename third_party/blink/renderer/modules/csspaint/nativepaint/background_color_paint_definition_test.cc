@@ -462,9 +462,8 @@ TEST_F(BackgroundColorPaintDefinitionTest,
   Element* element = GetElementById("target");
   StyleRecalcContext style_recalc_context;
   style_recalc_context.old_style = element->GetComputedStyle();
-  scoped_refptr<const ComputedStyle> style =
-      GetDocument().GetStyleResolver().ResolveStyle(element,
-                                                    style_recalc_context);
+  const ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, style_recalc_context);
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
 
   NonThrowableExceptionState exception_state;
@@ -537,9 +536,8 @@ TEST_F(BackgroundColorPaintDefinitionTest, TriggerRepaintChangedKeyframe) {
   Element* element = GetElementById("target");
   StyleRecalcContext style_recalc_context;
   style_recalc_context.old_style = element->GetComputedStyle();
-  scoped_refptr<const ComputedStyle> style =
-      GetDocument().GetStyleResolver().ResolveStyle(element,
-                                                    style_recalc_context);
+  const ComputedStyle* style = GetDocument().GetStyleResolver().ResolveStyle(
+      element, style_recalc_context);
   EXPECT_FALSE(style->HasCurrentBackgroundColorAnimation());
 
   NonThrowableExceptionState exception_state;

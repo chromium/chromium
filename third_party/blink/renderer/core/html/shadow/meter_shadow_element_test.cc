@@ -45,7 +45,7 @@ TEST_F(MeterShadowElementTest, LayoutObjectIsNotNeeded) {
   GetDocument().GetStyleEngine().RecalcStyle();
   EXPECT_FALSE(shadow_element->GetComputedStyle());
 
-  scoped_refptr<const ComputedStyle> style =
+  const ComputedStyle* style =
       shadow_element->StyleForLayoutObject(StyleRecalcContext());
   EXPECT_FALSE(shadow_element->LayoutObjectIsNeeded(*style));
 }

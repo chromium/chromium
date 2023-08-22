@@ -21,7 +21,7 @@ class CORE_EXPORT ViewTransitionPseudoElementBase : public PseudoElement {
   ~ViewTransitionPseudoElementBase() override = default;
 
   bool CanGeneratePseudoElement(PseudoId) const override;
-  scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
+  const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) override;
   void Trace(Visitor* visitor) const override;
 

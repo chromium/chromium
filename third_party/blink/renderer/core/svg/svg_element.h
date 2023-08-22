@@ -170,7 +170,7 @@ class CORE_EXPORT SVGElement : public Element {
   void CollectExtraStyleForPresentationAttribute(
       MutableCSSPropertyValueSet*) override;
 
-  scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
+  const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 

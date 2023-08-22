@@ -47,7 +47,7 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
   }
 
  private:
-  scoped_refptr<const ComputedStyle> CustomStyleForLayoutObject(
+  const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext& style_recalc_context) override {
     HTMLSelectListElement* selectlist =
         DynamicTo<HTMLSelectListElement>(OwnerShadowHost());
@@ -57,7 +57,7 @@ class PreviewPopoverInnerElement : public HTMLDivElement {
 
     const ComputedStyle& button_style =
         selectlist->ButtonPart()->ComputedStyleRef();
-    scoped_refptr<const ComputedStyle> original_style =
+    const ComputedStyle* original_style =
         OriginalStyleForLayoutObject(style_recalc_context);
     ComputedStyleBuilder style_builder(*original_style);
     if (button_style.HasAuthorBorderRadius()) {

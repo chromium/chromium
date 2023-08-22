@@ -92,12 +92,12 @@ class TestCascade {
         cascade_(InitState(state_, nullptr)) {}
 
   TestCascade(Document& document,
-              scoped_refptr<const ComputedStyle> parent_style,
+              const ComputedStyle* parent_style,
               Element* target = nullptr)
       : state_(document, target ? *target : *document.body()),
         cascade_(InitState(state_, parent_style)) {}
 
-  scoped_refptr<const ComputedStyle> TakeStyle() { return state_.TakeStyle(); }
+  const ComputedStyle* TakeStyle() { return state_.TakeStyle(); }
 
   StyleResolverState& State() { return state_; }
   StyleCascade& InnerCascade() { return cascade_; }
@@ -163,8 +163,7 @@ class TestCascade {
     DCHECK(ref.IsValid());
     const LayoutObject* layout_object = nullptr;
     bool allow_visited_style = false;
-    scoped_refptr<const ComputedStyle> style =
-        state_.StyleBuilder().CloneStyle();
+    const ComputedStyle* style = state_.StyleBuilder().CloneStyle();
     const CSSValue* value = ref.GetProperty().CSSValueFromComputedStyle(
         *style, layout_object, allow_visited_style);
     return value ? value->CssText() : g_null_atom;
@@ -225,9 +224,8 @@ class TestCascade {
   Document& GetDocument() const { return state_.GetDocument(); }
   Element* Body() const { return GetDocument().body(); }
 
-  static StyleResolverState& InitState(
-      StyleResolverState& state,
-      scoped_refptr<const ComputedStyle> parent_style) {
+  static StyleResolverState& InitState(StyleResolverState& state,
+                                       const ComputedStyle* parent_style) {
     state.GetDocument().GetStyleEngine().UpdateViewportSize();
     if (parent_style) {
       state.CreateNewStyle(*InitialStyle(state.GetDocument()), *parent_style);
@@ -240,7 +238,7 @@ class TestCascade {
     return state;
   }
 
-  static scoped_refptr<const ComputedStyle> InitialStyle(Document& document) {
+  static const ComputedStyle* InitialStyle(Document& document) {
     return document.GetStyleResolver().InitialStyleForElement();
   }
 
@@ -2550,7 +2548,7 @@ TEST_F(StyleCascadeTest, AnimatedVisitedImportantOverride) {
   cascade.Apply();
   EXPECT_EQ("rgb(150, 150, 150)", cascade.ComputedValue("background-color"));
 
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
 
   ComputedStyleBuilder builder(*style);
   builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
@@ -2582,7 +2580,7 @@ TEST_F(StyleCascadeTest, AnimatedVisitedHighPrio) {
   cascade.Apply();
   EXPECT_EQ("rgb(150, 150, 150)", cascade.ComputedValue("color"));
 
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
 
   ComputedStyleBuilder builder(*style);
   builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
@@ -3060,7 +3058,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghand) {
   cascade.Add("--x", "1px");
   cascade.Add("width", "var(--x)");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3069,7 +3067,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthand) {
   cascade.Add("--x", "1px");
   cascade.Add("margin", "var(--x)");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3077,7 +3075,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceLonghandMissingVar) {
   TestCascade cascade(GetDocument());
   cascade.Add("width", "var(--x)");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3085,7 +3083,7 @@ TEST_F(StyleCascadeTest, MarkHasVariableReferenceShorthandMissingVar) {
   TestCascade cascade(GetDocument());
   cascade.Add("margin", "var(--x)");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_TRUE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3093,7 +3091,7 @@ TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceInherited) {
   TestCascade cascade(GetDocument());
   cascade.Add("color", "var(--x)");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3101,7 +3099,7 @@ TEST_F(StyleCascadeTest, NoMarkHasVariableReferenceWithoutVar) {
   TestCascade cascade(GetDocument());
   cascade.Add("width", "1px");
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasVariableReferenceFromNonInheritedProperty());
 }
 
@@ -3231,7 +3229,7 @@ TEST_F(StyleCascadeTest, HasAuthorBorderLogical) {
   cascade.Add("border-block-start-color", "red", Origin::kUserAgent);
   cascade.Add("border-block-start-color", "green", Origin::kAuthor);
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_TRUE(style->HasAuthorBorder());
 }
 
@@ -3243,7 +3241,7 @@ TEST_F(StyleCascadeTest, NoAuthorBackgroundOrBorder) {
   cascade.Add("background-clip", "padding-box", Origin::kUser);
   cascade.Add("border-right-color", "green", Origin::kUser);
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasAuthorBackground());
   EXPECT_FALSE(style->HasAuthorBorder());
 }
@@ -3254,7 +3252,7 @@ TEST_F(StyleCascadeTest, AuthorBackgroundRevert) {
   cascade.Add("background-color", "red", Origin::kUserAgent);
   cascade.Add("background-color", "revert", Origin::kAuthor);
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasAuthorBackground());
 }
 
@@ -3264,7 +3262,7 @@ TEST_F(StyleCascadeTest, AuthorBorderRevert) {
   cascade.Add("border-top-color", "red", Origin::kUserAgent);
   cascade.Add("border-top-color", "revert", Origin::kAuthor);
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasAuthorBorder());
 }
 
@@ -3274,7 +3272,7 @@ TEST_F(StyleCascadeTest, AuthorBorderRevertLogical) {
   cascade.Add("border-block-start-color", "red", Origin::kUserAgent);
   cascade.Add("border-block-start-color", "revert", Origin::kAuthor);
   cascade.Apply();
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
   EXPECT_FALSE(style->HasAuthorBorder());
 }
 
@@ -3459,7 +3457,7 @@ TEST_F(StyleCascadeTest, RootColorNotModifiedByEmptyCascade) {
   cascade.Add("display:block");
   cascade.Apply();  // Should not affect 'color'.
 
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
 
   ComputedStyleBuilder builder(*style);
   builder.SetInsideLink(EInsideLink::kInsideVisitedLink);
@@ -3491,7 +3489,7 @@ TEST_F(StyleCascadeTest, InitialColor) {
 
   cascade.Apply();
 
-  auto style = cascade.TakeStyle();
+  const auto* style = cascade.TakeStyle();
 
   ComputedStyleBuilder builder(*style);
   builder.SetInsideLink(EInsideLink::kInsideVisitedLink);

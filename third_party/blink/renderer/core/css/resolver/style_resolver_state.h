@@ -112,7 +112,7 @@ class CORE_EXPORT StyleResolverState {
   }
   ComputedStyleBuilder& StyleBuilder() { return *style_builder_; }
   const ComputedStyleBuilder& StyleBuilder() const { return *style_builder_; }
-  scoped_refptr<const ComputedStyle> TakeStyle();
+  const ComputedStyle* TakeStyle();
 
   const CSSToLengthConversionData& CssToLengthConversionData() const {
     return css_to_length_conversion_data_;
@@ -145,18 +145,16 @@ class CORE_EXPORT StyleResolverState {
   // element, null otherwise.
   PseudoElement* GetPseudoElement() const;
 
-  void SetParentStyle(scoped_refptr<const ComputedStyle>);
-  const ComputedStyle* ParentStyle() const { return parent_style_.get(); }
+  void SetParentStyle(const ComputedStyle*);
+  const ComputedStyle* ParentStyle() const { return parent_style_; }
 
-  void SetLayoutParentStyle(scoped_refptr<const ComputedStyle>);
+  void SetLayoutParentStyle(const ComputedStyle*);
   const ComputedStyle* LayoutParentStyle() const {
-    return layout_parent_style_.get();
+    return layout_parent_style_;
   }
 
-  void SetOldStyle(scoped_refptr<const ComputedStyle> old_style) {
-    old_style_ = std::move(old_style);
-  }
-  const ComputedStyle* OldStyle() const { return old_style_.get(); }
+  void SetOldStyle(const ComputedStyle* old_style) { old_style_ = old_style; }
+  const ComputedStyle* OldStyle() const { return old_style_; }
 
   ElementStyleResources& GetElementStyleResources() {
     return element_style_resources_;
@@ -193,7 +191,7 @@ class CORE_EXPORT StyleResolverState {
   const CSSValue& ResolveLightDarkPair(const CSSValue&);
 
   const ComputedStyle* OriginatingElementStyle() const {
-    return originating_element_style_.get();
+    return originating_element_style_;
   }
   bool IsForHighlight() const { return is_for_highlight_; }
   bool UsesHighlightPseudoInheritance() const {
@@ -269,14 +267,14 @@ class CORE_EXPORT StyleResolverState {
 
   // parent_style_ is not always just ElementResolveContext::ParentStyle(),
   // so we keep it separate.
-  scoped_refptr<const ComputedStyle> parent_style_;
+  const ComputedStyle* parent_style_;
   // This will almost-always be the same that parent_style_, except in the
   // presence of display: contents. This is the style against which we have to
   // do adjustment.
-  scoped_refptr<const ComputedStyle> layout_parent_style_;
+  const ComputedStyle* layout_parent_style_;
   // The ComputedStyle stored on the element before the current lifecycle update
   // started.
-  scoped_refptr<const ComputedStyle> old_style_;
+  const ComputedStyle* old_style_;
 
   CSSAnimationUpdate animation_update_;
   StyleRequest::RequestType pseudo_request_type_;
@@ -303,7 +301,7 @@ class CORE_EXPORT StyleResolverState {
   // This is computed only once, lazily (thus the absl::optional).
   mutable absl::optional<EInsideLink> inside_link_;
 
-  scoped_refptr<const ComputedStyle> originating_element_style_;
+  const ComputedStyle* originating_element_style_;
   // True if we are resolving styles for a highlight pseudo-element.
   const bool is_for_highlight_;
   // True if this is a highlight style request, and highlight inheritance

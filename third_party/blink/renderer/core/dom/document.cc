@@ -2724,16 +2724,15 @@ void Document::ClearFocusedElementTimerFired(TimerBase*) {
     focused_element_->blur();
 }
 
-scoped_refptr<const ComputedStyle> Document::StyleForPage(uint32_t page_index) {
+const ComputedStyle* Document::StyleForPage(uint32_t page_index) {
   AtomicString page_name;
   if (const LayoutView* layout_view = GetLayoutView())
     page_name = layout_view->NamedPageAtIndex(page_index);
   return StyleForPage(page_index, page_name);
 }
 
-scoped_refptr<const ComputedStyle> Document::StyleForPage(
-    uint32_t page_index,
-    const AtomicString& page_name) {
+const ComputedStyle* Document::StyleForPage(uint32_t page_index,
+                                            const AtomicString& page_name) {
   GetStyleEngine().UpdateViewportSize();
   GetStyleEngine().UpdateActiveStyle();
   return GetStyleEngine().GetStyleResolver().StyleForPage(page_index,
@@ -2874,8 +2873,7 @@ void Document::Initialize() {
   DCHECK(!ax_object_cache_ || this != &AXObjectCacheOwner());
 
   UpdateForcedColors();
-  scoped_refptr<const ComputedStyle> style =
-      GetStyleResolver().StyleForViewport();
+  const ComputedStyle* style = GetStyleResolver().StyleForViewport();
   layout_view_ = MakeGarbageCollected<LayoutNGView>(this);
   SetLayoutObject(layout_view_);
 

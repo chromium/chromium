@@ -51,7 +51,7 @@ void TransitionKeyframe::AddKeyframePropertiesToV8Object(
   value_->GetType().Apply(value_->GetInterpolableValue(),
                           value_->GetNonInterpolableValue(), environment);
 
-  scoped_refptr<const ComputedStyle> style = state.TakeStyle();
+  const ComputedStyle* style = state.TakeStyle();
   String property_value =
       AnimationUtils::KeyframeValueFromComputedStyle(
           property_, *style, document, element->GetLayoutObject())

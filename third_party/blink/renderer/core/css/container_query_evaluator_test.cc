@@ -298,7 +298,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
   ComputedStyleBuilder builder(
       *GetDocument().GetStyleResolver().InitialStyleForElement());
   builder.SetContainerType(type_inline_size);
-  scoped_refptr<const ComputedStyle> style = builder.TakeStyle();
+  const ComputedStyle* style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
 
   ContainerQueryEvaluator* evaluator = CreateEvaluatorForType(type_inline_size);
