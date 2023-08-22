@@ -38,11 +38,12 @@ TriggeredProfileResetterFactory::TriggeredProfileResetterFactory()
 
 TriggeredProfileResetterFactory::~TriggeredProfileResetterFactory() = default;
 
-KeyedService* TriggeredProfileResetterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TriggeredProfileResetterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  TriggeredProfileResetter* service = new TriggeredProfileResetter(profile);
+  auto service = std::make_unique<TriggeredProfileResetter>(profile);
   service->Activate();
   return service;
 }
