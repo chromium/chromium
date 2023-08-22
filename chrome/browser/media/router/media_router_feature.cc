@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -21,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "crypto/random.h"
 #include "media/base/media_switches.h"
@@ -64,6 +66,11 @@ BASE_FEATURE(kFallbackToAudioTabMirroring,
 BASE_FEATURE(kCastDialogStopButton,
              "CastDialogStopButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kCastMirroringPlayoutDelay,
+             "CastMirroringPlayoutDelay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kCastMirroringPlayoutDelayMs{
+    &kCastMirroringPlayoutDelay, "cast_mirroring_playout_delay_ms", -1};
 #if BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kGlobalMediaControlsCastStartStop,
              "GlobalMediaControlsCastStartStop",
@@ -88,6 +95,13 @@ base::flat_map<content::BrowserContext*, bool>& GetStoredPrefValues() {
 
   return *stored_pref_values;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(mfoltz): Add full implementation for validating playout delay value.
+bool IsValidMirroringPlayoutDelayMs(int delay_ms) {
+  return delay_ms <= 1000 && delay_ms >= 1;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 void ClearMediaRouterStoredPrefsForTesting() {
@@ -184,6 +198,32 @@ bool DialMediaRouteProviderEnabled() {
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context) {
   return base::FeatureList::IsEnabled(kGlobalMediaControlsCastStartStop) &&
          MediaRouterEnabled(context);
+}
+
+absl::optional<base::TimeDelta> GetCastMirroringPlayoutDelay() {
+  absl::optional<base::TimeDelta> target_playout_delay;
+
+  // First see if there is a command line switch for mirroring playout delay.
+  // Otherwise, check the relevant feature.
+  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+  if (cl->HasSwitch(switches::kCastMirroringTargetPlayoutDelay)) {
+    int switch_playout_delay = 0;
+    if (base::StringToInt(
+            cl->GetSwitchValueASCII(switches::kCastMirroringTargetPlayoutDelay),
+            &switch_playout_delay) &&
+        IsValidMirroringPlayoutDelayMs(switch_playout_delay)) {
+      target_playout_delay = base::Milliseconds(switch_playout_delay);
+    }
+  }
+
+  if (!target_playout_delay.has_value() &&
+      base::FeatureList::IsEnabled(kCastMirroringPlayoutDelay) &&
+      IsValidMirroringPlayoutDelayMs(kCastMirroringPlayoutDelayMs.Get())) {
+    target_playout_delay =
+        base::Milliseconds(kCastMirroringPlayoutDelayMs.Get());
+  }
+
+  return target_playout_delay;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

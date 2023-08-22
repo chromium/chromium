@@ -699,38 +699,6 @@ TEST_F(MirroringActivityTest, OnRemotingStateChanged) {
   testing::Mock::VerifyAndClearExpectations(&media_status_observer);
 }
 
-TEST_F(MirroringActivityTest, GetTargetPlayoutDelay) {
-  MakeActivity();
-
-  // Expect no command line switch will return the same value.
-  const base::TimeDelta default_playout_delay = base::Milliseconds(400);
-  EXPECT_EQ(activity_->GetTargetPlayoutDelay(default_playout_delay).value(),
-            default_playout_delay);
-
-  // Expect no command line switch and a nullopt will return a nullopt.
-  EXPECT_EQ(activity_->GetTargetPlayoutDelay(absl::nullopt), absl::nullopt);
-
-  // Test that an invalid switch (alpha-numeric string) will return the
-  // parameter value.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kCastMirroringTargetPlayoutDelay,
-                                  "foo");
-  EXPECT_EQ(activity_->GetTargetPlayoutDelay(default_playout_delay).value(),
-            default_playout_delay);
-
-  // Test that a valid switch will override the target playout delay.
-  const base::TimeDelta switch_playout_delay = base::Milliseconds(200);
-  command_line->AppendSwitchASCII(
-      switches::kCastMirroringTargetPlayoutDelay,
-      base::NumberToString(switch_playout_delay.InMilliseconds()));
-  EXPECT_EQ(activity_->GetTargetPlayoutDelay(switch_playout_delay).value(),
-            switch_playout_delay);
-
-  // Test that returned value is the switch even with nullopt.
-  EXPECT_EQ(activity_->GetTargetPlayoutDelay(absl::nullopt).value(),
-            switch_playout_delay);
-}
-
 TEST_F(MirroringActivityTest, MultipleMediaControllersNotified) {
   MakeActivity();
 

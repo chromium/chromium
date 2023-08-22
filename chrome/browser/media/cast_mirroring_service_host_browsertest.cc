@@ -6,12 +6,15 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -20,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
@@ -148,6 +152,19 @@ class MockVideoCaptureObserver final
   const base::UnguessableToken session_id_ = base::UnguessableToken::Create();
 };
 
+class MockCastMessageChannel : public mojom::CastMessageChannel {
+ public:
+  // mojom::CastMessageChannel mock implementation (outbound messages).
+  MOCK_METHOD(void, OnMessage, (mojom::CastMessagePtr));
+
+  mojo::Receiver<mojom::CastMessageChannel>* GetChannelReceiver() {
+    return &channel_receiver_;
+  }
+
+ private:
+  mojo::Receiver<mojom::CastMessageChannel> channel_receiver_{this};
+};
+
 }  // namespace
 
 class CastMirroringServiceHostBrowserTest
@@ -176,13 +193,74 @@ class CastMirroringServiceHostBrowserTest
     mojo::PendingRemote<mojom::SessionObserver> observer;
     observer_receiver_.Bind(observer.InitWithNewPipeAndPassReceiver());
     mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel;
-    outbound_channel_receiver_.Bind(
+    outbound_channel_receiver_ = std::make_unique<MockCastMessageChannel>();
+    outbound_channel_receiver_->GetChannelReceiver()->Bind(
         outbound_channel.InitWithNewPipeAndPassReceiver());
     auto session_params = mojom::SessionParameters::New();
     session_params->source_id = "SourceID";
     host_->Start(std::move(session_params), std::move(observer),
                  std::move(outbound_channel),
                  inbound_channel_.BindNewPipeAndPassReceiver(), "Sink Name");
+  }
+
+  // Starts a tab mirroring session, and sets a target playout delay.
+  // `media_source_delay` simulates the mirroring delay that is set from a media
+  // source when starting a mirroring session, i.e. set by a site-initiated
+  // mirroring source. `feature_delay` is the value that media_router_feature's
+  // `GetCastMirroringPlayoutDelay` is expected to return.
+  void StartTabMirroringWithTargetPlayoutDelay(
+      base::TimeDelta media_source_delay,
+      base::TimeDelta feature_delay) {
+    int expected_delay_ms = !media_source_delay.is_zero()
+                                ? media_source_delay.InMilliseconds()
+                                : feature_delay.InMilliseconds();
+
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    host_ = std::make_unique<CastMirroringServiceHost>(
+        BuildMediaIdForTabMirroring(web_contents));
+    mojo::PendingRemote<mojom::SessionObserver> observer;
+    observer_receiver_.Bind(observer.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel;
+    outbound_channel_receiver_ = std::make_unique<MockCastMessageChannel>();
+    outbound_channel_receiver_->GetChannelReceiver()->Bind(
+        outbound_channel.InitWithNewPipeAndPassReceiver());
+    auto session_params = mojom::SessionParameters::New();
+    session_params->source_id = "SourceID";
+    if (!media_source_delay.is_zero()) {
+      session_params->target_playout_delay = media_source_delay;
+    }
+
+    base::RunLoop run_loop;
+    EXPECT_CALL(*outbound_channel_receiver_, OnMessage(_))
+        .WillOnce(
+            testing::Invoke([expected_delay_ms, &run_loop](
+                                mirroring::mojom::CastMessagePtr message) {
+              const absl::optional<base::Value> root_or_error =
+                  base::JSONReader::Read(message->json_format_data);
+              ASSERT_TRUE(root_or_error);
+              const base::Value::Dict& root = root_or_error->GetDict();
+              const std::string* type = root.FindString("type");
+              ASSERT_TRUE(type);
+              if (*type == "OFFER") {
+                const base::Value::Dict* offer = root.FindDict("offer");
+                EXPECT_TRUE(offer);
+                const base::Value::List* streams =
+                    offer->FindList("supportedStreams");
+                for (auto& stream : *streams) {
+                  const base::Value::Dict& stream_dict = stream.GetDict();
+                  const int stream_target_delay =
+                      stream_dict.FindInt("targetDelay").value();
+                  EXPECT_EQ(stream_target_delay, expected_delay_ms);
+                }
+              }
+              run_loop.Quit();
+            }));
+    host_->Start(std::move(session_params), std::move(observer),
+                 std::move(outbound_channel),
+                 inbound_channel_.BindNewPipeAndPassReceiver(), "Sink Name");
+    run_loop.Run();
   }
 
   void EnableAccessCodeCast() {
@@ -305,12 +383,12 @@ class CastMirroringServiceHostBrowserTest
   }
 
   mojo::Receiver<mojom::SessionObserver> observer_receiver_{this};
-  mojo::Receiver<mojom::CastMessageChannel> outbound_channel_receiver_{this};
   mojo::Receiver<mojom::AudioStreamCreatorClient> audio_client_receiver_{this};
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
 
   std::unique_ptr<CastMirroringServiceHost> host_;
   std::unique_ptr<MockVideoCaptureObserver> video_frame_receiver_;
+  std::unique_ptr<MockCastMessageChannel> outbound_channel_receiver_;
 };
 
 IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, CaptureTabVideo) {
@@ -388,6 +466,16 @@ IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest, PauseSession) {
   StopMirroring();
 }
 
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTest,
+                       TabMirrorWithPresetPlayoutDelay) {
+  StartTabMirroringWithTargetPlayoutDelay(base::Milliseconds(200),
+                                          base::Milliseconds(0));
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  RequestRefreshFrame();
+  StopMirroring();
+}
+
 class CastMirroringServiceHostBrowserTestTabSwitcher
     : public CastMirroringServiceHostBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -444,6 +532,72 @@ IN_PROC_BROWSER_TEST_P(CastMirroringServiceHostBrowserTestTabSwitcher,
   SwitchTabSource();
   GetVideoCaptureHost();
   StartVideoCapturing();
+  StopMirroring();
+}
+
+// Tests for which a target delay is set in the feature
+// kCastMirroringPlayoutDelayMs.
+class CastMirroringServiceHostBrowserTestTargetDelay
+    : public CastMirroringServiceHostBrowserTest {
+ public:
+  // A value to set for playout delay which is different than the default value
+  // used by casting code.
+  const int kFeaturePlayoutDelay500ms = 500;
+
+  CastMirroringServiceHostBrowserTestTargetDelay() {
+    feature_list_.Reset();
+    base::FieldTrialParams feature_params;
+    feature_params[media_router::kCastMirroringPlayoutDelayMs.name] =
+        base::NumberToString(kFeaturePlayoutDelay500ms);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        media_router::kCastMirroringPlayoutDelay, feature_params);
+  }
+
+  CastMirroringServiceHostBrowserTestTargetDelay(
+      const CastMirroringServiceHostBrowserTestTargetDelay&) = delete;
+  CastMirroringServiceHostBrowserTestTargetDelay& operator=(
+      const CastMirroringServiceHostBrowserTestTargetDelay&) = delete;
+
+  ~CastMirroringServiceHostBrowserTestTargetDelay() override = default;
+
+  void VerifyEnabledFeatureParam() {
+    ASSERT_TRUE(
+        base::FeatureList::IsEnabled(media_router::kCastMirroringPlayoutDelay));
+
+    ASSERT_EQ(media_router::kCastMirroringPlayoutDelayMs.Get(),
+              kFeaturePlayoutDelay500ms);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the target playout delay set in the kCastMirroringPlayoutDelay
+// feature param is used when starting the session, if there is no preset delay
+// from a media source.
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestTargetDelay,
+                       TabMirrorWithPlayoutDelay) {
+  VerifyEnabledFeatureParam();
+  StartTabMirroringWithTargetPlayoutDelay(
+      /* media_source_delay = */ base::Milliseconds(0),
+      /*feature_delay = */ base::Milliseconds(kFeaturePlayoutDelay500ms));
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  RequestRefreshFrame();
+  StopMirroring();
+}
+
+// Test that a playout delay set by a media source overrides a delay set in the
+// kCastMirroringPlayoutDelay feature param.
+IN_PROC_BROWSER_TEST_F(CastMirroringServiceHostBrowserTestTargetDelay,
+                       TabMirrorWithPresetPlayoutDelay) {
+  VerifyEnabledFeatureParam();
+  StartTabMirroringWithTargetPlayoutDelay(
+      /* media_source_delay = */ base::Milliseconds(200),
+      /* feature_delay = */ base::Milliseconds(kFeaturePlayoutDelay500ms));
+  GetVideoCaptureHost();
+  StartVideoCapturing();
+  RequestRefreshFrame();
   StopMirroring();
 }
 

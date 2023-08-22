@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_MEDIA_ROUTER_FEATURE_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 class PrefRegistrySimple;
@@ -69,6 +71,11 @@ BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 // dialog instead of the entire sink button being a stop button.
 BASE_DECLARE_FEATURE(kCastDialogStopButton);
 
+// If enabled, mirroring sessions use the playout delay specified by
+// `kCastMirroringPlayoutDelayMs`.
+BASE_DECLARE_FEATURE(kCastMirroringPlayoutDelay);
+extern const base::FeatureParam<int> kCastMirroringPlayoutDelayMs;
+
 // Registers |kMediaRouterCastAllowAllIPs| with local state pref |registry|.
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
@@ -91,6 +98,10 @@ bool DialMediaRouteProviderEnabled();
 // Returns true if global media controls are used to start and stop casting and
 // Media Router is enabled for |context|.
 bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
+
+// Returns the optional value to use for mirroring playout delay from the
+// relevant command line flag or feature, if any are set.
+absl::optional<base::TimeDelta> GetCastMirroringPlayoutDelay();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router
