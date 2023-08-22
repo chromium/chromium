@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_manager_utils.h"
 
+#include <memory>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -11,8 +12,13 @@
 #include "base/test/scoped_mock_clock_override.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
+#include "chrome/browser/printing/printer_query.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/test/browser_task_environment.h"
 #include "printing/backend/cups_jobs.h"
+#include "printing/print_settings.h"
+#include "printing/printed_document.h"
 #include "printing/printer_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -288,6 +294,63 @@ TEST(CupsPrintJobManagerUtilsTest, UpdatePrintJobTimeout) {
 
   EXPECT_EQ(print_job.error_code(), PrinterErrorCode::PRINTER_UNREACHABLE);
   EXPECT_EQ(print_job.state(), CupsPrintJob::State::STATE_FAILED);
+}
+
+// Parameters required for CalculatePrintJobPageTotalTest.
+struct PrintJobPageTotalParams {
+  // Pages in document.
+  int pages = 0;
+  // Copies requested in settings.
+  int copies = 0;
+  // Expected total pages to be returned.
+  int expected_total = 0;
+};
+
+// Test configuration required for setting up fake PrintedDocument.
+class CalculatePrintJobPageTotalTest
+    : public testing::TestWithParam<PrintJobPageTotalParams> {
+ public:
+  CalculatePrintJobPageTotalTest()
+      : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {
+  }
+  ~CalculatePrintJobPageTotalTest() override = default;
+
+ private:
+  // We need to create a MessageLoop, otherwise a bunch of things fails.
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
+};
+
+INSTANTIATE_TEST_SUITE_P(NoCopies,
+                         CalculatePrintJobPageTotalTest,
+                         testing::Values(PrintJobPageTotalParams{
+                             .pages = 1,
+                             .copies = 0,
+                             .expected_total = 1}));
+
+INSTANTIATE_TEST_SUITE_P(WithCopies,
+                         CalculatePrintJobPageTotalTest,
+                         testing::Values(PrintJobPageTotalParams{
+                             .pages = 2,
+                             .copies = 5,
+                             .expected_total = 10}));
+
+// Verify correct total number of pages generated based on incoming
+// `::printing::PrintedDocument`.
+TEST_P(CalculatePrintJobPageTotalTest, CalculatesPrintJobPageTotal) {
+  const PrintJobPageTotalParams& param = GetParam();
+  auto query =
+      ::printing::PrinterQuery::Create(content::GlobalRenderFrameHostId());
+  auto settings = std::make_unique<::printing::PrintSettings>();
+  settings->set_copies(param.copies);
+  auto new_doc = base::MakeRefCounted<::printing::PrintedDocument>(
+      std::move(settings), u"fake.pdf", query->cookie());
+  new_doc->set_page_count(param.pages);
+
+  // Get total pages for document.
+  int total_pages = CalculatePrintJobTotalPages(new_doc.get());
+
+  // Verify totals match.
+  ASSERT_EQ(param.expected_total, total_pages);
 }
 
 }  // namespace

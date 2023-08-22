@@ -158,8 +158,12 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager {
       title = ::printing::SimplifyDocumentTitle(
           l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));
     }
+
+    // Calculate page total for given document to ensure UI displays the correct
+    // count when document has copies.
+    const int total_page_number = CalculatePrintJobTotalPages(document);
     CreatePrintJob(printer_id, base::UTF16ToUTF8(title), job_id,
-                   document->page_count(), job->source(), job->source_id(),
+                   total_page_number, job->source(), job->source_id(),
                    PrintSettingsToProto(document->settings()));
   }
 

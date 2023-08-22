@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_MANAGER_UTILS_H_
 
 namespace printing {
+class PrintedDocument;
 struct PrinterStatus;
 struct CupsJob;
 }  // namespace printing
@@ -18,6 +19,10 @@ class CupsPrintJob;
 bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                     const ::printing::CupsJob& job,
                     CupsPrintJob* print_job);
+
+// Determines the correct total_page_count for a print job given the number of
+// pages in the document and copies being made.
+int CalculatePrintJobTotalPages(const ::printing::PrintedDocument* document);
 
 }  // namespace ash
 
