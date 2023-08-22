@@ -42,12 +42,13 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
     : controller_(std::make_unique<UnifiedSystemTrayController>(tray->model(),
                                                                 this,
                                                                 tray)),
-      tray_(tray) {
+      unified_system_tray_(tray),
+      is_qs_revamp_enabled_(features::IsQsRevampEnabled()) {
   time_opened_ = base::TimeTicks::Now();
 
   TrayBubbleView::InitParams init_params =
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     init_params.preferred_width = kRevampedTrayMenuWidth;
   }
   init_params.close_on_deactivate = false;
@@ -55,10 +56,10 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
   bubble_view_ = new TrayBubbleView(init_params);
 
   // Max height calculated from the maximum available height of the screen.
-  int max_height =
-      CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
+  int max_height = CalculateMaxTrayBubbleHeight(
+      unified_system_tray_->GetBubbleWindowContainer());
 
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     auto quick_settings_view = controller_->CreateQuickSettingsView(max_height);
     bubble_view_->SetMaxHeight(max_height);
     quick_settings_view_ =
@@ -66,7 +67,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
     time_to_click_recorder_ = std::make_unique<TimeToClickRecorder>(
         /*delegate=*/this, /*target_view=*/quick_settings_view_);
   } else {
-    DCHECK(!features::IsQsRevampEnabled());
+    DCHECK(!is_qs_revamp_enabled_);
     auto unified_view = controller_->CreateUnifiedQuickSettingsView();
     unified_view->SetMaxHeight(max_height);
     bubble_view_->SetMaxHeight(max_height);
@@ -93,7 +94,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 
 UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   // Record the number of quick settings pages.
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     auto page_count = unified_system_tray_controller()
                           ->model()
                           ->pagination_model()
@@ -103,35 +104,39 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
   }
 
   if (controller_->showing_calendar_view()) {
-    tray_->NotifyLeavingCalendarView();
+    unified_system_tray_->NotifyLeavingCalendarView();
   }
 
   Shell::Get()->activation_client()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
-  tray_->tray_event_filter()->RemoveBubble(this);
-  tray_->shelf()->RemoveObserver(this);
+  unified_system_tray_->tray_event_filter()->RemoveBubble(this);
+  unified_system_tray_->shelf()->RemoveObserver(this);
 
   // Unified view children depend on `controller_` which is about to go away.
   // Remove child views synchronously to ensure they don't try to access
   // `controller_` after `this` goes out of scope.
-  bubble_view_->RemoveAllChildViews();
-  quick_settings_view_ = nullptr;
-  unified_view_ = nullptr;
-  bubble_view_->ResetDelegate();
+  if (bubble_view_) {
+    bubble_view_->RemoveAllChildViews();
+    quick_settings_view_ = nullptr;
+    unified_view_ = nullptr;
+    bubble_view_->ResetDelegate();
+    bubble_view_ = nullptr;
+  }
 
   if (bubble_widget_) {
     bubble_widget_->RemoveObserver(this);
     bubble_widget_->Close();
+    bubble_widget_ = nullptr;
   }
 
   CHECK(!TrayBubbleBase::IsInObserverList());
 }
 
 void UnifiedSystemTrayBubble::InitializeObservers() {
-  tray_->tray_event_filter()->AddBubble(this);
-  tray_->shelf()->AddObserver(this);
+  unified_system_tray_->tray_event_filter()->AddBubble(this);
+  unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   Shell::Get()->activation_client()->AddObserver(this);
 }
@@ -146,7 +151,7 @@ bool UnifiedSystemTrayBubble::IsBubbleActive() const {
 }
 
 void UnifiedSystemTrayBubble::EnsureCollapsed() {
-  if (!bubble_widget_ || quick_settings_view_) {
+  if (!bubble_widget_ || is_qs_revamp_enabled_) {
     return;
   }
 
@@ -166,7 +171,7 @@ void UnifiedSystemTrayBubble::EnsureExpanded() {
 }
 
 void UnifiedSystemTrayBubble::CollapseWithoutAnimating() {
-  if (!bubble_widget_ || quick_settings_view_) {
+  if (!bubble_widget_ || is_qs_revamp_enabled_) {
     return;
   }
 
@@ -177,17 +182,17 @@ void UnifiedSystemTrayBubble::CollapseWithoutAnimating() {
 }
 
 void UnifiedSystemTrayBubble::CollapseMessageCenter() {
-  if (quick_settings_view_) {
+  if (is_qs_revamp_enabled_) {
     return;
   }
-  tray_->CollapseMessageCenter();
+  unified_system_tray_->CollapseMessageCenter();
 }
 
 void UnifiedSystemTrayBubble::ExpandMessageCenter() {
-  if (quick_settings_view_) {
+  if (is_qs_revamp_enabled_) {
     return;
   }
-  tray_->ExpandMessageCenter();
+  unified_system_tray_->ExpandMessageCenter();
 }
 
 void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
@@ -253,7 +258,7 @@ void UnifiedSystemTrayBubble::UpdateBubble() {
 }
 
 TrayBackgroundView* UnifiedSystemTrayBubble::GetTray() const {
-  return tray_;
+  return unified_system_tray_;
 }
 
 TrayBubbleView* UnifiedSystemTrayBubble::GetBubbleView() const {
@@ -265,7 +270,8 @@ views::Widget* UnifiedSystemTrayBubble::GetBubbleWidget() const {
 }
 
 int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
+    CHECK(quick_settings_view_);
     return quick_settings_view_->GetCurrentHeight();
   }
 
@@ -273,14 +279,14 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
 }
 
 bool UnifiedSystemTrayBubble::FocusOut(bool reverse) {
-  if (quick_settings_view_) {
+  if (is_qs_revamp_enabled_) {
     return false;
   }
-  return tray_->FocusMessageCenter(reverse);
+  return unified_system_tray_->FocusMessageCenter(reverse);
 }
 
 void UnifiedSystemTrayBubble::FocusEntered(bool reverse) {
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     return;
   }
 
@@ -288,7 +294,7 @@ void UnifiedSystemTrayBubble::FocusEntered(bool reverse) {
 }
 
 void UnifiedSystemTrayBubble::OnMessageCenterActivated() {
-  if (quick_settings_view_) {
+  if (is_qs_revamp_enabled_) {
     return;
   }
   // When the message center is activated, we no longer need to reroute key
@@ -306,8 +312,14 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
 
-  // `tray_->CloseBubble()` will delete `this`.
-  tray_->CloseBubble();
+  bubble_view_->RemoveAllChildViews();
+  quick_settings_view_ = nullptr;
+  unified_view_ = nullptr;
+  bubble_view_->ResetDelegate();
+  bubble_view_ = nullptr;
+
+  // `unified_system_tray_->CloseBubble()` will delete `this`.
+  unified_system_tray_->CloseBubble();
 }
 
 void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
@@ -317,7 +329,7 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
     return;
   }
 
-  // Check for the CloseBubble() lock.
+  // Check for the `CloseBubble()` lock.
   if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated()) {
     return;
   }
@@ -336,9 +348,9 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
   }
 
   // Don't close the bubble if the message center is gaining activation.
-  if (tray_->IsMessageCenterBubbleShown()) {
+  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
     views::Widget* message_center_widget =
-        tray_->message_center_bubble()->GetBubbleWidget();
+        unified_system_tray_->message_center_bubble()->GetBubbleWidget();
     if (message_center_widget == gained_active_widget) {
       return;
     }
@@ -354,12 +366,13 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
   // If the activated window is a popup notification, interacting with it should
   // not close the bubble.
   if (features::IsNotifierCollisionEnabled() &&
-      tray_->GetMessagePopupCollection()->IsWidgetAPopupNotification(
-          gained_active_widget)) {
+      unified_system_tray_->GetMessagePopupCollection()
+          ->IsWidgetAPopupNotification(gained_active_widget)) {
     return;
   }
 
-  tray_->CloseBubble();
+  // Deletes this.
+  unified_system_tray_->CloseBubble();
 }
 
 void UnifiedSystemTrayBubble::RecordTimeToClick() {
@@ -367,7 +380,7 @@ void UnifiedSystemTrayBubble::RecordTimeToClick() {
     return;
   }
 
-  tray_->MaybeRecordFirstInteraction(
+  unified_system_tray_->MaybeRecordFirstInteraction(
       UnifiedSystemTray::FirstInteractionType::kQuickSettings);
 
   UMA_HISTOGRAM_TIMES("ChromeOS.SystemTray.TimeToClick2",
@@ -377,7 +390,8 @@ void UnifiedSystemTrayBubble::RecordTimeToClick() {
 }
 
 void UnifiedSystemTrayBubble::OnTabletPhysicalStateChanged() {
-  tray_->CloseBubble();
+  // Deletes this.
+  unified_system_tray_->CloseBubble();
 }
 
 void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
@@ -386,7 +400,10 @@ void UnifiedSystemTrayBubble::OnAutoHideStateChanged(
 }
 
 void UnifiedSystemTrayBubble::UpdateBubbleHeight(bool is_showing_detiled_view) {
-  DCHECK(features::IsQsRevampEnabled());
+  DCHECK(is_qs_revamp_enabled_);
+  if (!bubble_view_) {
+    return;
+  }
   bubble_view_->SetShouldUseFixedHeight(is_showing_detiled_view);
   UpdateBubbleBounds();
 }
@@ -396,39 +413,55 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
   // using the short version since the log method has a character count limit
   // of 40.
   SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_view_", !!bubble_view_);
-  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "tray_", !!tray_);
-  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "tray_->shelf()",
-                        !!tray_ && !!tray_->shelf());
+  SCOPED_CRASH_KEY_BOOL("USTB_UBB", "unified_system_tray_",
+                        !!unified_system_tray_);
+  SCOPED_CRASH_KEY_BOOL(
+      "USTB_UBB", "unified_system_tray_->shelf()",
+      !!unified_system_tray_ && !!unified_system_tray_->shelf());
   SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_widget_", !!bubble_widget_);
   SCOPED_CRASH_KEY_BOOL("USTB_UBB", "bubble_widget_->IsClosed()",
                         !!bubble_widget_ && !!bubble_widget_->IsClosed());
 
-  int max_height =
-      CalculateMaxTrayBubbleHeight(tray_->GetBubbleWindowContainer());
+  // `bubble_view_` or `Shelf` may be null, see https://b/293264371,
+  if (!bubble_view_ || (is_qs_revamp_enabled_ && !quick_settings_view_) ||
+      (!is_qs_revamp_enabled_ && !unified_view_)) {
+    return;
+  }
+  if (!unified_system_tray_->shelf()) {
+    return;
+  }
+
+  int max_height = CalculateMaxTrayBubbleHeight(
+      unified_system_tray_->GetBubbleWindowContainer());
   if (bubble_view_->ShouldUseFixedHeight()) {
-    DCHECK(features::IsQsRevampEnabled());
+    DCHECK(is_qs_revamp_enabled_);
     const int qs_current_height = quick_settings_view_->height();
     max_height =
         std::min(max_height, std::max(qs_current_height, kDetailedViewHeight));
   }
-  if (features::IsQsRevampEnabled()) {
+  if (is_qs_revamp_enabled_) {
     quick_settings_view_->SetMaxHeight(max_height);
   } else {
     unified_view_->SetMaxHeight(max_height);
   }
   bubble_view_->SetMaxHeight(max_height);
-  bubble_view_->ChangeAnchorAlignment(tray_->shelf()->alignment());
-  bubble_view_->ChangeAnchorRect(tray_->shelf()->GetSystemTrayAnchorRect());
-  if (quick_settings_view_) {
+  bubble_view_->ChangeAnchorAlignment(
+      unified_system_tray_->shelf()->alignment());
+  bubble_view_->ChangeAnchorRect(
+      unified_system_tray_->shelf()->GetSystemTrayAnchorRect());
+  if (is_qs_revamp_enabled_) {
     return;
   }
-  if (tray_->IsMessageCenterBubbleShown()) {
-    tray_->message_center_bubble()->UpdatePosition();
+  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
+    unified_system_tray_->message_center_bubble()->UpdatePosition();
   }
 }
 
 void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,
                                                        bool send_native_event) {
+  if (!bubble_view_) {
+    return;
+  }
   bubble_view_->NotifyAccessibilityEvent(event, send_native_event);
 }
 

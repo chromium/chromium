@@ -125,7 +125,9 @@ void UnifiedMessageCenterBubble::ShowBubble() {
 UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
   if (bubble_widget_) {
     tray_->tray_event_filter()->RemoveBubble(this);
-    tray_->bubble()->unified_view()->RemoveObserver(this);
+    if (tray_->bubble()->unified_view()) {
+      tray_->bubble()->unified_view()->RemoveObserver(this);
+    }
     CHECK(notification_center_view_);
     notification_center_view_->RemoveObserver(this);
 
@@ -270,6 +272,22 @@ void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
     return;
 
   bubble_view_->UpdateBubble();
+}
+
+void UnifiedMessageCenterBubble::OnViewIsDeleting(views::View* observed_view) {
+  CHECK(!features::IsQsRevampEnabled());
+  auto* system_tray_bubble = tray_->bubble();
+  // The `UnifiedSystemTray` drops its `UnifiedSystemTrayBubble` pointer during
+  // shutdown.
+  if (!system_tray_bubble) {
+    return;
+  }
+  auto* unified_view = system_tray_bubble->unified_view();
+  if (observed_view != unified_view) {
+    return;
+  }
+
+  unified_view->RemoveObserver(this);
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {

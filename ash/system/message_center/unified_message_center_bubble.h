@@ -91,6 +91,7 @@ class ASH_EXPORT UnifiedMessageCenterBubble
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
   void OnViewVisibilityChanged(views::View* observed_view,
                                views::View* starting_view) override;
+  void OnViewIsDeleting(views::View* observed_view) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;

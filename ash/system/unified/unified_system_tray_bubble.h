@@ -167,13 +167,13 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   std::unique_ptr<UnifiedSystemTrayController> controller_;
 
   // Owner of this class.
-  raw_ptr<UnifiedSystemTray, ExperimentalAsh> tray_;
+  raw_ptr<UnifiedSystemTray, ExperimentalAsh> unified_system_tray_;
 
-  // Widget that contains UnifiedSystemTrayView. Unowned.
-  // When the widget is closed by deactivation, |bubble_widget_| pointer is
-  // invalidated and we have to delete UnifiedSystemTrayBubble by calling
-  // UnifiedSystemTray::CloseBubble().
-  // In order to do this, we observe OnWidgetDestroying().
+  // Widget that contains `UnifiedSystemTrayView`. Unowned.
+  // When the widget is closed by deactivation, `bubble_widget_` pointer is
+  // invalidated and we have to delete `UnifiedSystemTrayBubble` by calling
+  // `UnifiedSystemTray::CloseBubble()`.
+  // In order to do this, we observe `OnWidgetDestroying()`.
   raw_ptr<views::Widget, ExperimentalAsh> bubble_widget_ = nullptr;
 
   // PreTargetHandler of |unified_view_| to record TimeToClick metrics. Owned.
@@ -183,10 +183,12 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   absl::optional<base::TimeTicks> time_opened_;
 
   raw_ptr<TrayBubbleView, ExperimentalAsh> bubble_view_ = nullptr;
-  raw_ptr<UnifiedSystemTrayView, DanglingUntriaged | ExperimentalAsh>
-      unified_view_ = nullptr;
-  raw_ptr<QuickSettingsView, DanglingUntriaged | ExperimentalAsh>
-      quick_settings_view_ = nullptr;
+  raw_ptr<UnifiedSystemTrayView, DanglingUntriaged> unified_view_ = nullptr;
+  // Only non-null when QsRevamp is enabled.
+  raw_ptr<QuickSettingsView, DanglingUntriaged> quick_settings_view_ = nullptr;
+
+  // Whether the QsRevamp feature is enabled.
+  const bool is_qs_revamp_enabled_;
 
   base::WeakPtrFactory<UnifiedSystemTrayBubble> weak_factory_{this};
 };
