@@ -55,8 +55,8 @@ std::map<SegmentId, proto::SegmentInfo> GetPreferredSegmentInfo(
   for (auto& segment_id_and_info : *segment_list) {
     SegmentId segment_id = segment_id_and_info.first;
     auto it = result.find(segment_id);
-    if (it == result.end() || segment_id_and_info.second.model_source() ==
-                                  proto::ModelSource::SERVER_MODEL_SOURCE) {
+    if (it == result.end() || segment_id_and_info.second.model_source() !=
+                                  proto::ModelSource::DEFAULT_MODEL_SOURCE) {
       result[segment_id] = std::move(segment_id_and_info.second);
     }
   }

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -34,7 +33,6 @@ class ServiceProxyImpl : public ServiceProxy,
  public:
   ServiceProxyImpl(
       SegmentInfoDatabase* segment_db,
-      DefaultModelManager* default_manager,
       SignalStorageConfig* signal_storage_config,
       const std::vector<std::unique_ptr<Config>>* configs,
       const PlatformOptions& options,
@@ -71,7 +69,7 @@ class ServiceProxyImpl : public ServiceProxy,
 
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
-      DefaultModelManager::SegmentInfoList segment_info_list);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info_list);
 
   // ModelExecutionScheduler::Observer overrides.
   void OnModelExecutionCompleted(SegmentId segment_id) override;
@@ -80,7 +78,6 @@ class ServiceProxyImpl : public ServiceProxy,
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;
   const raw_ptr<SegmentInfoDatabase, DanglingUntriaged> segment_db_;
-  const raw_ptr<DefaultModelManager> default_manager_;
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
   const raw_ptr<const std::vector<std::unique_ptr<Config>>> configs_;
   base::ObserverList<ServiceProxy::Observer> observers_;
