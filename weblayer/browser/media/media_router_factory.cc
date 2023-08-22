@@ -56,10 +56,11 @@ content::BrowserContext* MediaRouterFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* MediaRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MediaRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  media_router::MediaRouterBase* media_router =
-      new media_router::MediaRouterAndroid();
+  std::unique_ptr<media_router::MediaRouterBase> media_router =
+      std::make_unique<media_router::MediaRouterAndroid>();
   media_router->Initialize();
   return media_router;
 }
