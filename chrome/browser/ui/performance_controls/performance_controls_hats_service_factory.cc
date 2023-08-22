@@ -36,7 +36,8 @@ PerformanceControlsHatsServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
-KeyedService* PerformanceControlsHatsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord() ||
       (!base::FeatureList::IsEnabled(
@@ -68,5 +69,5 @@ KeyedService* PerformanceControlsHatsServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new PerformanceControlsHatsService(profile);
+  return std::make_unique<PerformanceControlsHatsService>(profile);
 }
