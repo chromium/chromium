@@ -26,7 +26,7 @@ class PasswordChangeSuccessTrackerFactory
       content::BrowserContext* browser_context);
 
  private:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* browser_context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
