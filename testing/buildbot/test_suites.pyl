@@ -7563,7 +7563,6 @@
         'variants': [
           'SIM_IPHONE_14_17_0',
           'SIM_IPAD_AIR_5TH_GEN_17_0',
-          'SIM_IPHONE_14_PRO_MAX_17_0',
         ]
       },
       'ios_eg2_cq_tests': {
