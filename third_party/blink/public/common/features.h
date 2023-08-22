@@ -552,6 +552,17 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kLCPCriticalPathPredictorMaxElementLocatorLength;
 
+// TODO(crbug.com/1419756): We should merge this to ResourceLoadPriority.
+enum class LcppImageLoadPriority {
+  kMedium,
+  kHigh,
+  kVeryHigh,
+};
+
+// The ResourceLoadPriority for images that are expected to be LCP.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<LcppImageLoadPriority>
+    kLCPCriticalPathPredictorImageLoadPriority;
+
 // If enabled, script execution is observed to determine script dependencies of
 // the LCP element.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPScriptObserver);
