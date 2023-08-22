@@ -67,6 +67,19 @@ class AppServiceShortcutItemBrowserTest
         ->ShortcutRegistryCache();
   }
 
+  apps::ShortcutId CreateWebAppBasedShortcut(
+      const GURL& app_url,
+      const std::u16string& shortcut_name) {
+    // Create web app based shortcut.
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->title = shortcut_name;
+    auto local_shortcut_id =
+        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+    return apps::GenerateShortcutId(app_constants::kChromeAppId,
+                                    local_shortcut_id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -114,20 +127,14 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuOpen) {
-  // Create web app based shortcut.
   GURL app_url = GURL("https://example.org/");
-  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
-  web_app_info->start_url = app_url;
-  web_app_info->title = u"Example";
-  auto local_shortcut_id =
-      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
-  apps::ShortcutId expected_shortcut_id =
-      apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
 
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
-  ChromeAppListItem* item =
-      model_updater->FindItem(expected_shortcut_id.value());
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
   ASSERT_TRUE(item);
 
   base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
@@ -149,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuOpen) {
                    host_app_name = base::UTF8ToUTF16(update.ShortName());
                  });
 
-  EXPECT_EQ(u"Open Example - " + host_app_name,
+  EXPECT_EQ(u"Open " + shortcut_name + u" - " + host_app_name,
             menu_model->GetLabelAt(launch_new_command_index.value()));
   EXPECT_EQ(&vector_icons::kLaunchIcon,
             menu_model->GetIconAt(launch_new_command_index.value())
@@ -159,6 +166,23 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuOpen) {
   ui_test_utils::UrlLoadObserver url_observer(
       app_url, content::NotificationService::AllSources());
   menu_model->ActivatedAt(launch_new_command_index.value());
+  url_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, Activate) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      app_url, content::NotificationService::AllSources());
+  item->PerformActivate(ui::EF_NONE);
   url_observer.Wait();
 }
 
