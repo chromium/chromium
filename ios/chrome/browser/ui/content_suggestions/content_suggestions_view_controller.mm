@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/types.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view_data.h"
@@ -672,8 +673,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   int checkIssuesCount = CheckIssuesCount(state);
 
   ContentSuggestionsModuleType type =
-      checkIssuesCount > 1 ? ContentSuggestionsModuleType::kSafetyCheckMultiRow
-                           : ContentSuggestionsModuleType::kSafetyCheck;
+      ContentSuggestionsModuleType::kSafetyCheck;
+
+  if (checkIssuesCount > 2) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
+  } else if (checkIssuesCount > 1) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
+  }
 
   [_magicStack insertArrangedSubview:self.safetyCheckModuleContainer
                              atIndex:[self indexForMagicStackModule:type]];
@@ -830,7 +836,15 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 }
 
 - (void)seeMoreWasTappedForModuleType:(ContentSuggestionsModuleType)type {
-  [self.audience showSetUpListShowMoreMenu];
+  if (type == ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow) {
+    [self.audience didSelectSafetyCheckItem:SafetyCheckItemType::kDefault];
+    return;
+  }
+
+  if (type == ContentSuggestionsModuleType::kCompactedSetUpList) {
+    [self.audience showSetUpListShowMoreMenu];
+    return;
+  }
 }
 
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
@@ -927,8 +941,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   int checkIssuesCount = CheckIssuesCount(state);
 
   ContentSuggestionsModuleType type =
-      checkIssuesCount > 1 ? ContentSuggestionsModuleType::kSafetyCheckMultiRow
-                           : ContentSuggestionsModuleType::kSafetyCheck;
+      ContentSuggestionsModuleType::kSafetyCheck;
+
+  if (checkIssuesCount > 2) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow;
+  } else if (checkIssuesCount > 1) {
+    type = ContentSuggestionsModuleType::kSafetyCheckMultiRow;
+  }
 
   self.safetyCheckModuleContainer = [[MagicStackModuleContainer alloc]
       initWithContentView:self.safetyCheckView
@@ -1076,7 +1095,8 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
         break;
       }
       case ContentSuggestionsModuleType::kSafetyCheck:
-      case ContentSuggestionsModuleType::kSafetyCheckMultiRow: {
+      case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+      case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow: {
         if (IsSafetyCheckMagicStackEnabled()) {
           [_magicStack addArrangedSubview:self.safetyCheckModuleContainer];
         }

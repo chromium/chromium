@@ -225,6 +225,7 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(IDS_IOS_SET_UP_LIST_TITLE);
     case ContentSuggestionsModuleType::kSafetyCheck:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return l10n_util::GetNSString(IDS_IOS_SAFETY_CHECK_TITLE);
     default:
       NOTREACHED();
@@ -247,6 +248,7 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kMostVisited:
     case ContentSuggestionsModuleType::kShortcuts:
     case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       contentMargins.bottom = kReducedContentBottomInset;
       break;
     default:
@@ -342,6 +344,7 @@ const CGFloat kSeparatorHeight = 0.5;
 - (BOOL)shouldShowSeeMore {
   switch (_type) {
     case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
       return YES;
     default:
       return NO;

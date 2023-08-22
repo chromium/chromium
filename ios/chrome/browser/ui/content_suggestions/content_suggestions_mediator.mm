@@ -975,16 +975,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // different places in the Magic Stack depending on the Safety Check state(s).
   // However, for now, the module will simply be inserted at the front of the
   // Magic Stack.
+  int moduleIndex = 0;
 
-  int check_issues_count = CheckIssuesCount(_safetyCheckState);
+  int checkIssuesCount = CheckIssuesCount(_safetyCheckState);
 
-  if (check_issues_count > 1) {
+  if (checkIssuesCount > 2) {
+    [order insertObject:@(int(ContentSuggestionsModuleType::
+                                  kSafetyCheckMultiRowOverflow))
+                atIndex:moduleIndex];
+  } else if (checkIssuesCount > 1) {
     [order
         insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheckMultiRow))
-             atIndex:0];
+             atIndex:moduleIndex];
   } else {
     [order insertObject:@(int(ContentSuggestionsModuleType::kSafetyCheck))
-                atIndex:0];
+                atIndex:moduleIndex];
   }
 }
 
