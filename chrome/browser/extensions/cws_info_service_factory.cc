@@ -41,12 +41,13 @@ CWSInfoServiceFactory::CWSInfoServiceFactory()
   DependsOn(extensions::ExtensionRegistryFactory::GetInstance());
 }
 
-KeyedService* CWSInfoServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CWSInfoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (base::FeatureList::IsEnabled(kCWSInfoService) == false) {
     return nullptr;
   }
-  return new CWSInfoService(Profile::FromBrowserContext(context));
+  return std::make_unique<CWSInfoService>(Profile::FromBrowserContext(context));
 }
 
 bool CWSInfoServiceFactory::ServiceIsCreatedWithBrowserContext() const {
