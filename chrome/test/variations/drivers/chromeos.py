@@ -59,7 +59,7 @@ def _launch_browser(browser_args: List[str]) -> 'Browser':
   finder_options.CreateParser().parse_args(args=[])
 
   b_options = finder_options.browser_options
-  b_options.browser_startup_timeout = 5
+  b_options.browser_startup_timeout = 15
   b_options.AppendExtraBrowserArgs(browser_args)
 
   device = cros_device.CrOSDevice(
