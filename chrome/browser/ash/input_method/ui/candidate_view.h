@@ -74,8 +74,8 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   bool highlighted_ = false;
 
   // 0-based index of this candidate e.g. [0, total_candidates_ -1].
-  int candidate_index_;
-  int total_candidates_;
+  int candidate_index_ = 0;
+  int total_candidates_ = 0;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT, CandidateView, views::Button)
