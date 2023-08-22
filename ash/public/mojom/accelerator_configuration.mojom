@@ -35,4 +35,8 @@ enum AcceleratorConfigResult {
   // Success - Restoring an action was successful but the default accelerators
   // have existing conflicts.
   kRestoreSuccessWithConflicts = 10,
+  // Warning - The user added accelerator does not have the Search/Meta modifier
+  // but it's not necessarily an error. This state warns users of the downsides
+  // of using a non-search accelerator.
+  kNonSearchAcceleratorWarning = 11,
 };
