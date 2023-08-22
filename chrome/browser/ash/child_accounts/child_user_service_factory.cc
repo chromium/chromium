@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
@@ -37,9 +39,10 @@ ChildUserServiceFactory::ChildUserServiceFactory()
 
 ChildUserServiceFactory::~ChildUserServiceFactory() = default;
 
-KeyedService* ChildUserServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChildUserServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ChildUserService(context);
+  return std::make_unique<ChildUserService>(context);
 }
 
 }  // namespace ash

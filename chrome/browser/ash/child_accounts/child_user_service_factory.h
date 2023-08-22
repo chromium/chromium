@@ -34,7 +34,7 @@ class ChildUserServiceFactory : public ProfileKeyedServiceFactory {
   ~ChildUserServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
