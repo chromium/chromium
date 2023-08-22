@@ -1,6 +1,5 @@
 <style include="cr-icons cr-shared-style">
   :host {
-    --menu-item-margin: 12px;
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: flex;
@@ -15,10 +14,6 @@
   :host([suggestion-chip-header-enabled_]) ntp-module-header-v2 {
     background: transparent;
     border: none;
-  }
-
-  cr-action-menu {
-    --cr-menu-shadow: var(--ntp-menu-shadow);
   }
 
   #label-container {
@@ -73,26 +68,12 @@
     margin-inline-start: 12px;
     line-height: 20px;
   }
-
-  .icon {
-    --cr-icon-ripple-size: 20px;
-    -webkit-mask-size: 16px;
-    background-color: transparent;
-    fill: var(--color-new-tab-page-secondary-foreground);
-    margin-inline-start: calc(-1 * var(--menu-item-margin));
-    margin-inline-end: var(--menu-item-margin);
-  }
-
-  hr {
-    background-color: var(--color-new-tab-page-module-context-menu-divider);
-    border: none;
-    height: 1px;
-    margin: 0;
-  }
 </style>
 <ntp-module-header-v2
+    id="moduleHeaderElementV2"
     header-text="[[i18n('modulesJourneysResumeJourney', '')]]"
     on-menu-button-click="onMenuButtonClick_"
+    menu-item-groups="[[getMenuItemGroups_()]]"
     more-actions-text="[[i18n('modulesMoreActions', clusterLabel)]]">
 </ntp-module-header-v2>
 <div id="label-container">
@@ -104,17 +85,3 @@
     <span id="suggestion-chip-label">[[clusterLabel]]</span>
   </div>
 </div>
-
-<cr-action-menu id="actionMenu">
-  <template is="dom-repeat"
-      items="[[getMenuItemGroups_()]]" as="group">
-    <template is="dom-repeat" items="[[group]]">
-      <button id="[[item.action]]" class="dropdown-item"
-          on-click="onButtonClick_" data-action$="[[item.action]]">
-        <iron-icon class="icon cr-icon" icon="[[item.icon]]"></iron-icon>
-        [[item.text]]
-      </button>
-    </template>
-    <hr hidden$="[[!showDivider_(index)]]">
-  </template>
-</cr-action-menu>

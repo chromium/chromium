@@ -313,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       "ntp-module-wrapper",
       "ntp-history-clusters-redesigned",
       "history-clusters-header-v2",
+      "ntp-module-header-v2",
       "cr-action-menu",
       "dialog"};
   const DeepQuery kHistoryClustersHideButton = {
@@ -321,6 +322,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       "ntp-module-wrapper",
       "ntp-history-clusters-redesigned",
       "history-clusters-header-v2",
+      "ntp-module-header-v2",
       "#dismiss"};
 
   RunTestSequence(
@@ -373,6 +375,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       "ntp-module-wrapper",
       "ntp-history-clusters-redesigned",
       "history-clusters-header-v2",
+      "ntp-module-header-v2",
       "cr-action-menu",
       "dialog"};
   const DeepQuery kHistoryClustersDoneButton = {
@@ -381,6 +384,7 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
       "ntp-module-wrapper",
       "ntp-history-clusters-redesigned",
       "history-clusters-header-v2",
+      "ntp-module-header-v2",
       "#done"};
 
   RunTestSequence(

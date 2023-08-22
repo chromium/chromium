@@ -114,8 +114,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
       assertTrue(!!headerElement);
       const label = $$(headerElement, '#label');
       assertTrue(!!label);
-
       assertModuleHeaderTitle(label as HTMLElement, `${sampleClusterLabel}`);
+      assertTrue(!!$$(headerElement, 'ntp-module-header-v2'));
     });
 
     test('Header info button click opens info dialog', async () => {
@@ -170,7 +170,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           const dismissButton =
               moduleElement.shadowRoot!
                   .querySelector('history-clusters-header-v2')!.shadowRoot!
-                  .querySelector<HTMLElement>('#dismiss')!;
+                  .querySelector('ntp-module-header-v2')!.shadowRoot!
+                  .querySelector('#dismiss')! as HTMLButtonElement;
           dismissButton.click();
 
           // Assert.
@@ -207,7 +208,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
           const doneButton =
               moduleElement.shadowRoot!
                   .querySelector('history-clusters-header-v2')!.shadowRoot!
-                  .querySelector<HTMLElement>('#done')!;
+                  .querySelector('ntp-module-header-v2')!.shadowRoot!
+                  .querySelector('#done')! as HTMLButtonElement;
           doneButton.click();
 
           // Assert.
