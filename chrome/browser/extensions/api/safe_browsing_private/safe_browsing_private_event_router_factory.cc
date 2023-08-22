@@ -48,9 +48,10 @@ SafeBrowsingPrivateEventRouterFactory::SafeBrowsingPrivateEventRouterFactory()
 SafeBrowsingPrivateEventRouterFactory::
     ~SafeBrowsingPrivateEventRouterFactory() = default;
 
-KeyedService* SafeBrowsingPrivateEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SafeBrowsingPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SafeBrowsingPrivateEventRouter(context);
+  return std::make_unique<SafeBrowsingPrivateEventRouter>(context);
 }
 
 bool SafeBrowsingPrivateEventRouterFactory::ServiceIsCreatedWithBrowserContext()
