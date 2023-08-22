@@ -383,7 +383,10 @@ void AuthenticatorRequestDialogModel::
     }
   } else if (priority_mechanism_index_) {
     Mechanism& mechanism = mechanisms_[*priority_mechanism_index_];
-    if (absl::holds_alternative<Mechanism::Credential>(mechanism.type)) {
+    const Mechanism::Credential* cred =
+        absl::get_if<Mechanism::Credential>(&mechanism.type);
+    if (cred != nullptr &&
+        cred->value().source != device::AuthenticatorType::kICloudKeychain) {
       SetCurrentStep(Step::kSelectPriorityMechanism);
     } else {
       mechanism.callback.Run();

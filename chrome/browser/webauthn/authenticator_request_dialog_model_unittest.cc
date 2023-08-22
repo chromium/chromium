@@ -2034,6 +2034,32 @@ class RequestCallbackReceiver {
   base::WeakPtrFactory<RequestCallbackReceiver> weak_factory_{this};
 };
 
+template <class Value>
+class RepeatingValueCallbackReceiver {
+ public:
+  base::RepeatingCallback<void(Value)> Callback() {
+    return base::BindRepeating(&RepeatingValueCallbackReceiver::OnCallback,
+                               base::Unretained(this));
+  }
+
+  Value WaitForResult() {
+    if (!value_) {
+      run_loop_->Run();
+    }
+    Value ret = std::move(*value_);
+    run_loop_ = std::make_unique<base::RunLoop>();
+    return ret;
+  }
+
+ private:
+  void OnCallback(Value value) {
+    value_ = std::move(value);
+    run_loop_->Quit();
+  }
+  absl::optional<Value> value_;
+  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
+};
+
 TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
   using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
   const struct {
@@ -2056,6 +2082,10 @@ TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
 
     AuthenticatorRequestDialogModel model(main_rfh());
     model.set_allow_icloud_keychain(true);
+    RepeatingValueCallbackReceiver<device::PublicKeyCredentialDescriptor>
+        account_preselected_callback;
+    model.SetAccountPreselectedCallback(
+        account_preselected_callback.Callback());
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
     ASSERT_EQ(model.priority_mechanism_index_.has_value(),
@@ -2165,38 +2195,61 @@ TEST_F(MultiplePlatformAuthenticatorsTest, Dispatch) {
   }
 }
 
+TEST_F(MultiplePlatformAuthenticatorsTest,
+       OnlyShowConfirmationSheetForProfileAuthenticator) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnICloudKeychain};
+
+  for (const auto credential_source :
+       {device::AuthenticatorType::kTouchID,
+        device::AuthenticatorType::kICloudKeychain}) {
+    SCOPED_TRACE(static_cast<int>(credential_source));
+
+    TransportAvailabilityInfo transports_info;
+    transports_info.has_icloud_keychain = true;
+    transports_info.available_transports = {AuthenticatorTransport::kInternal};
+    transports_info.request_type = device::FidoRequestType::kGetAssertion;
+    transports_info.has_empty_allow_list = false;
+
+    if (credential_source == device::AuthenticatorType::kTouchID) {
+      transports_info.recognized_credentials = {kCred2};
+      transports_info.has_platform_authenticator_credential =
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential;
+    } else {
+      transports_info.recognized_credentials = {kCred1FromICloudKeychain};
+      transports_info.has_icloud_keychain_credential =
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential;
+    }
+
+    AuthenticatorRequestDialogModel model(main_rfh());
+    model.set_allow_icloud_keychain(true);
+    RepeatingValueCallbackReceiver<device::PublicKeyCredentialDescriptor>
+        account_preselected_callback;
+    model.SetAccountPreselectedCallback(
+        account_preselected_callback.Callback());
+
+    model.StartFlow(std::move(transports_info),
+                    /*is_conditional_mediation=*/false);
+
+    if (credential_source == device::AuthenticatorType::kTouchID) {
+      EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
+    } else {
+      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+      device::PublicKeyCredentialDescriptor descriptor =
+          account_preselected_callback.WaitForResult();
+      EXPECT_EQ(descriptor.id, kCred1FromICloudKeychain.cred_id);
+    }
+  }
+}
+
 #endif
 
 class ListPasskeysFromSyncTest : public AuthenticatorRequestDialogModelTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       device::kWebAuthnNewPasskeyUI};
-};
-
-template <class Value>
-class RepeatingValueCallbackReceiver {
- public:
-  base::RepeatingCallback<void(Value)> Callback() {
-    return base::BindRepeating(&RepeatingValueCallbackReceiver::OnCallback,
-                               base::Unretained(this));
-  }
-
-  Value WaitForResult() {
-    if (!value_) {
-      run_loop_->Run();
-    }
-    Value ret = std::move(*value_);
-    run_loop_ = std::make_unique<base::RunLoop>();
-    return ret;
-  }
-
- private:
-  void OnCallback(Value value) {
-    value_ = std::move(value);
-    run_loop_->Quit();
-  }
-  absl::optional<Value> value_;
-  std::unique_ptr<base::RunLoop> run_loop_ = std::make_unique<base::RunLoop>();
 };
 
 TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
