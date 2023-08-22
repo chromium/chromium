@@ -9,6 +9,10 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace extensions {
 class Extension;
 }  // namespace extensions
@@ -25,6 +29,10 @@ bool IsExtensionApp(const extensions::Extension* extension);
 // nonexistent.
 const extensions::Extension* MaybeGetExtension(Profile* profile,
                                                const std::string& extension_id);
+
+// Returns the extension pointer for |web_contents|, or null if nonexistent.
+const extensions::Extension* MaybeGetExtension(
+    content::WebContents* web_contents);
 
 // Gets the profile and extension from |extension_id|. On success, returns true
 // and populates variables |output_profile| and |output_extension|. We pass a

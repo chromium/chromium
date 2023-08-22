@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
@@ -33,6 +34,19 @@ const extensions::Extension* MaybeGetExtension(
       extensions::ExtensionRegistry::Get(profile);
   DCHECK(registry);
   return registry->GetInstalledExtension(extension_id);
+}
+
+const extensions::Extension* MaybeGetExtension(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+
+  extensions::ExtensionRegistry* registry = extensions::ExtensionRegistry::Get(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  DCHECK(registry);
+  const extensions::ExtensionSet& extensions = registry->enabled_extensions();
+  return extensions.GetAppByURL(web_contents->GetVisibleURL());
 }
 
 bool GetProfileAndExtension(const std::string& extension_id,

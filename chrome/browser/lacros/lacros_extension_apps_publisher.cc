@@ -17,13 +17,18 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chromeos/crosapi/mojom/app_window_tracker.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_prefs.h"
@@ -403,6 +408,13 @@ void LacrosExtensionAppsPublisher::Initialize() {
     profile_trackers_[profile] =
         std::make_unique<ProfileTracker>(profile, this, which_type_);
   }
+
+  // Only track the media usage for the chrome apps.
+  if (which_type_.IsChromeApps()) {
+    media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance()
+                                  ->GetMediaStreamCaptureIndicator()
+                                  .get());
+  }
 }
 
 bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
@@ -440,6 +452,11 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
 
 void LacrosExtensionAppsPublisher::Publish(std::vector<apps::AppPtr> apps) {
   publisher_->OnApps(std::move(apps));
+}
+
+void LacrosExtensionAppsPublisher::PublishCapabilityAccesses(
+    std::vector<apps::CapabilityAccessPtr> accesses) {
+  publisher_->OnCapabilityAccesses(std::move(accesses));
 }
 
 void LacrosExtensionAppsPublisher::OnAppWindowAdded(
@@ -500,4 +517,64 @@ void LacrosExtensionAppsPublisher::UpdateAppWindowMode(
   auto matched = profile_trackers_.find(profile);
   DCHECK(matched != profile_trackers_.end());
   matched->second->Publish(extension, apps::Readiness::kReady);
+}
+
+void LacrosExtensionAppsPublisher::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  auto app_id = MaybeGetAppId(web_contents);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  auto result = media_requests_.UpdateCameraState(app_id.value(), web_contents,
+                                                  is_capturing_video);
+  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
+}
+
+void LacrosExtensionAppsPublisher::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_audio) {
+  auto app_id = MaybeGetAppId(web_contents);
+  if (!app_id.has_value()) {
+    return;
+  }
+
+  auto result = media_requests_.UpdateMicrophoneState(
+      app_id.value(), web_contents, is_capturing_audio);
+  ModifyCapabilityAccess(app_id.value(), result.camera, result.microphone);
+}
+
+absl::optional<std::string> LacrosExtensionAppsPublisher::MaybeGetAppId(
+    content::WebContents* web_contents) {
+  // The web app publisher is responsible to handle `web_contents` for web
+  // apps.
+  const web_app::AppId* web_app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (web_app_id) {
+    return absl::nullopt;
+  }
+
+  const auto* extension =
+      lacros_extensions_util::MaybeGetExtension(web_contents);
+  return (extension && which_type_.Matches(extension))
+             ? absl::make_optional<std::string>(extension->id())
+             : absl::nullopt;
+}
+
+void LacrosExtensionAppsPublisher::ModifyCapabilityAccess(
+    const std::string& app_id,
+    absl::optional<bool> accessing_camera,
+    absl::optional<bool> accessing_microphone) {
+  if (!accessing_camera.has_value() && !accessing_microphone.has_value()) {
+    return;
+  }
+
+  std::vector<apps::CapabilityAccessPtr> capability_accesses;
+  auto capability_access = std::make_unique<apps::CapabilityAccess>(app_id);
+  capability_access->camera = accessing_camera;
+  capability_access->microphone = accessing_microphone;
+  capability_accesses.push_back(std::move(capability_access));
+
+  PublishCapabilityAccesses(std::move(capability_accesses));
 }

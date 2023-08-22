@@ -11,9 +11,14 @@
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
 #include "chrome/browser/lacros/lacros_extensions_util.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -21,11 +26,15 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/aura/window.h"
 
 namespace {
 
 using Apps = std::vector<apps::AppPtr>;
+using Accesses = std::vector<apps::CapabilityAccessPtr>;
 
 // This fake intercepts and tracks all calls to Publish().
 class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
@@ -45,13 +54,44 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
   LacrosExtensionAppsPublisherFake& operator=(
       const LacrosExtensionAppsPublisherFake&) = delete;
 
+  void VerifyAppCapabilityAccess(const std::string& app_id,
+                                 size_t count,
+                                 absl::optional<bool> accessing_camera,
+                                 absl::optional<bool> accessing_microphone) {
+    ASSERT_EQ(count, accesses_history().size());
+    Accesses& accesses = accesses_history().back();
+    ASSERT_EQ(1u, accesses.size());
+    EXPECT_EQ(app_id, accesses[0]->app_id);
+
+    if (accessing_camera.has_value()) {
+      ASSERT_TRUE(accesses[0]->camera.has_value());
+      EXPECT_EQ(accessing_camera.value(), accesses[0]->camera.value());
+    } else {
+      ASSERT_FALSE(accesses[0]->camera.has_value());
+    }
+
+    if (accessing_microphone.has_value()) {
+      ASSERT_TRUE(accesses[0]->microphone.has_value());
+      EXPECT_EQ(accessing_microphone.value(), accesses[0]->microphone.value());
+    } else {
+      ASSERT_FALSE(accesses[0]->microphone.has_value());
+    }
+  }
+
   std::vector<Apps>& apps_history() { return apps_history_; }
+
+  std::vector<Accesses>& accesses_history() { return accesses_history_; }
 
   std::map<std::string, std::string>& app_windows() { return app_windows_; }
 
  private:
   // Override to intercept calls to Publish().
   void Publish(Apps apps) override { apps_history_.push_back(std::move(apps)); }
+
+  // Override to intercept calls to PublishCapabilityAccesses().
+  void PublishCapabilityAccesses(Accesses accesses) override {
+    accesses_history_.push_back(std::move(accesses));
+  }
 
   // Override to intercept calls to OnAppWindowAdded().
   void OnAppWindowAdded(const std::string& app_id,
@@ -72,6 +112,10 @@ class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
 
   // Holds the contents of all calls to Publish() in chronological order.
   std::vector<Apps> apps_history_;
+
+  // Holds the contents of all calls to PublishCapabilityAccesses() in
+  // chronological order.
+  std::vector<Accesses> accesses_history_;
 
   // Holds the list of currently showing app windows, as seen by
   // OnAppWindowAdded() and OnAppWindowRemoved(). The key is the window_id and
@@ -101,6 +145,34 @@ void VerifyOnlyDefaultAppsPublished(
   ASSERT_EQ(extensions::kWebStoreAppId, extension->id());
   ASSERT_TRUE(default_app->is_platform_app.has_value());
   ASSERT_FALSE(default_app->is_platform_app.value());
+}
+
+// Adds a fake media device with the specified `stream_type` and starts
+// capturing. Returns a closure to stop the capturing.
+base::OnceClosure StartMediaCapture(content::WebContents* web_contents,
+                                    blink::mojom::MediaStreamType stream_type) {
+  blink::mojom::StreamDevices fake_devices;
+  blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
+
+  if (blink::IsAudioInputMediaType(stream_type)) {
+    fake_devices.audio_device = device;
+  } else {
+    fake_devices.video_device = device;
+  }
+
+  std::unique_ptr<content::MediaStreamUI> ui =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->RegisterMediaStream(web_contents, fake_devices);
+
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+
+  return base::BindOnce(
+      [](std::unique_ptr<content::MediaStreamUI> ui) { ui.reset(); },
+      std::move(ui));
 }
 
 using LacrosExtensionAppsPublisherTest = extensions::ExtensionBrowserTest;
@@ -300,6 +372,46 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(0u, app_windows.size());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
+                       RequestAccessingForPlatformApp) {
+  const extensions::Extension* extension =
+      LoadAndLaunchApp(test_data_dir_.AppendASCII("platform_apps/minimal"));
+  ASSERT_TRUE(extension);
+
+  std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
+      std::make_unique<LacrosExtensionAppsPublisherFake>();
+  publisher->Initialize();
+
+  auto* registry = extensions::AppWindowRegistry::Get(profile());
+  extensions::AppWindow* app_window =
+      registry->GetCurrentAppWindowForApp(extension->id());
+  ASSERT_TRUE(app_window);
+  content::WebContents* web_contents = app_window->web_contents();
+  ASSERT_TRUE(web_contents);
+
+  // Request accessing the camera for `web_contents`.
+  base::OnceClosure video_closure = StartMediaCapture(
+      web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  publisher->VerifyAppCapabilityAccess(extension->id(), 1u, true,
+                                       absl::nullopt);
+
+  // Request accessing the microphone for `web_contents`.
+  base::OnceClosure audio_closure = StartMediaCapture(
+      web_contents, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+  publisher->VerifyAppCapabilityAccess(extension->id(), 2u, absl::nullopt,
+                                       true);
+
+  // Stop accessing the microphone for `web_contents`.
+  std::move(audio_closure).Run();
+  publisher->VerifyAppCapabilityAccess(extension->id(), 3u, absl::nullopt,
+                                       false);
+
+  // Stop accessing the camera for `web_contents`.
+  std::move(video_closure).Run();
+  publisher->VerifyAppCapabilityAccess(extension->id(), 4u, false,
+                                       absl::nullopt);
 }
 
 }  // namespace

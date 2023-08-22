@@ -10,13 +10,21 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/lacros/for_which_extension_type.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 // This class tracks Chrome apps [i.e. extension-based apps, AKA v2 packaged
 // apps] or extensions running in Lacros, and forwards metadata about these
@@ -39,7 +47,9 @@
 //
 // See LacrosExtensionAppsController for the class responsible for receiving
 // events from Ash.
-class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
+class LacrosExtensionAppsPublisher
+    : public ProfileManagerObserver,
+      public MediaStreamCaptureIndicator::Observer {
  public:
   static std::unique_ptr<LacrosExtensionAppsPublisher> MakeForChromeApps();
   static std::unique_ptr<LacrosExtensionAppsPublisher> MakeForExtensions();
@@ -71,6 +81,11 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // Virtual for testing.
   virtual void Publish(std::vector<apps::AppPtr> apps);
 
+  // Publishes differential CapabilityAccess updates to the App_Service in Ash
+  // via crosapi. Virtual for testing.
+  virtual void PublishCapabilityAccesses(
+      std::vector<apps::CapabilityAccessPtr> accesses);
+
   // Notifies Ash's app window tracker of an app window construction. For Chrome
   // apps only. Virtual for testing.
   virtual void OnAppWindowAdded(const std::string& app_id,
@@ -95,6 +110,18 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
+  // MediaStreamCaptureIndicator::Observer
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override;
+
+  absl::optional<std::string> MaybeGetAppId(content::WebContents* web_contents);
+
+  void ModifyCapabilityAccess(const std::string& app_id,
+                              absl::optional<bool> accessing_camera,
+                              absl::optional<bool> accessing_microphone);
+
   // State to decide which extension type (e.g., Chrome Apps vs. Extensions)
   // to support.
   const ForWhichExtensionType which_type_;
@@ -108,6 +135,15 @@ class LacrosExtensionAppsPublisher : public ProfileManagerObserver {
   // Scoped observer for the ProfileManager.
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
+
+  // Scoped observer for the MediaStreamCaptureIndicator.
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      media_dispatcher_{this};
+
+  // Tracks the media usage for each app (e.g. accessing camera, microphone) on
+  // a per-WebContents basis.
+  apps::MediaRequests media_requests_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_LACROS_EXTENSION_APPS_PUBLISHER_H_
