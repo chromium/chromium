@@ -89,7 +89,8 @@ RequestCoordinator* RequestCoordinatorFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
-KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+RequestCoordinatorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   std::unique_ptr<OfflinerPolicy> policy(new OfflinerPolicy());
   std::unique_ptr<Offliner> offliner;
@@ -115,12 +116,10 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
       scheduler(new android::BackgroundSchedulerBridge());
   network::NetworkQualityTracker* network_quality_tracker =
       g_browser_process->network_quality_tracker();
-  RequestCoordinator* request_coordinator = new RequestCoordinator(
+  return std::make_unique<RequestCoordinator>(
       std::move(policy), std::move(offliner), std::move(queue),
       std::move(scheduler), network_quality_tracker,
       std::make_unique<ActiveTabInfo>(profile));
-
-  return request_coordinator;
 }
 
 }  // namespace offline_pages
