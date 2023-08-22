@@ -564,6 +564,11 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-chrome-pie-x86-wpt-android-specific",
+    mirrors = ["ci/android-chrome-pie-x86-wpt-android-specific"],
+)
+
+try_.builder(
     name = "android-webview-12-x64-dbg",
     mirrors = [
         "ci/Android x64 Builder (dbg)",

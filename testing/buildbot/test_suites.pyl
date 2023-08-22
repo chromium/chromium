@@ -5887,6 +5887,24 @@
       },
     },
 
+    'wpt_web_tests_android': {
+      'wpt_tests_suite': {
+        'merge': {
+          'args': [
+            '--verbose',
+            '--test-list',
+            '//third_party/blink/web_tests/TestLists/Default.txt'
+          ],
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+        },
+        'isolate_name': 'chrome_public_wpt',
+        'results_handler': 'layout tests',
+        'swarming': {
+          'shards': 15,
+        },
+      },
+    },
+
     'wpt_web_tests_content_shell': {
       'wpt_tests_suite': {
         'merge': {
