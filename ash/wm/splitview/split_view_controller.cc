@@ -1413,10 +1413,7 @@ void SplitViewController::StartResizeWithDivider(
   split_view_divider_->UpdateDividerBounds();
   previous_event_location_ = location_in_screen;
 
-  accumulated_drag_time_ticks_ = base::TimeTicks::Now();
-  accumulated_drag_distance_ = 0;
-
-  tablet_resize_mode_ = TabletResizeMode::kNormal;
+  StartTabletResize();
 
   for (aura::Window* window : {primary_window_, secondary_window_}) {
     if (window == nullptr) {
@@ -1477,15 +1474,6 @@ void SplitViewController::ResizeWithDivider(
   // This updates `tablet_resize_mode_` based on drag speed.
   UpdateTabletResizeMode(base::TimeTicks::Now(), modified_location_in_screen);
 
-  // If we are in the fast mode, start a timer that automatically invokes
-  // `ResizeWithDivider()` after a timeout. This ensure that we can switch back
-  // to the normal mode if the user stops dragging. Note: if the timer is
-  // already active, this will simply move the deadline forward.
-  if (tablet_resize_mode_ == TabletResizeMode::kFast) {
-    resize_timer_.Start(FROM_HERE, kSplitViewChunkTime, this,
-                        &SplitViewController::OnResizeTimer);
-  }
-
   // Update `divider_position_`.
   UpdateDividerPosition(modified_location_in_screen);
   NotifyDividerPositionChanged();
@@ -1515,8 +1503,7 @@ void SplitViewController::EndResizeWithDivider(
   // TODO(xdai): Use fade out animation instead of just removing it.
   black_scrim_layer_.reset();
 
-  resize_timer_.Stop();
-  tablet_resize_mode_ = TabletResizeMode::kNormal;
+  EndTabletResize();
   is_resizing_with_divider_ = false;
 
   const gfx::Rect work_area_bounds =
@@ -3105,10 +3092,19 @@ void SplitViewController::FinishWindowResizing(aura::Window* window) {
   }
 }
 
-void SplitViewController::EndResizeWithDividerImpl() {
-  DCHECK(InSplitViewMode());
-  DCHECK(!is_resizing_with_divider_);
+void SplitViewController::StartTabletResize() {
+  accumulated_drag_time_ticks_ = base::TimeTicks::Now();
+  accumulated_drag_distance_ = 0;
 
+  tablet_resize_mode_ = TabletResizeMode::kNormal;
+}
+
+void SplitViewController::EndTabletResize() {
+  resize_timer_.Stop();
+  tablet_resize_mode_ = TabletResizeMode::kNormal;
+}
+
+void SplitViewController::EndTabletResizeImpl() {
   // The backdrop layers are removed here (rather than in
   // `EndResizeWithDivider()`) since they may be used while the divider is
   // animating to a snapped position.
@@ -3118,6 +3114,13 @@ void SplitViewController::EndResizeWithDividerImpl() {
   // Resize may not end with `EndResizeWithDivider()`, so make sure to clear
   // here too.
   resize_timer_.Stop();
+}
+
+void SplitViewController::EndResizeWithDividerImpl() {
+  DCHECK(InSplitViewMode());
+  DCHECK(!is_resizing_with_divider_);
+
+  EndTabletResizeImpl();
   presentation_time_recorder_.reset();
   RestoreWindowsTransformAfterResizing();
   FinishWindowResizing(primary_window_);
@@ -3156,6 +3159,15 @@ void SplitViewController::UpdateTabletResizeMode(
 
     accumulated_drag_time_ticks_ = event_time_ticks;
     accumulated_drag_distance_ = 0;
+  }
+
+  // If we are in the fast mode, start a timer that automatically invokes
+  // `ResizeWithDivider()` after a timeout. This ensure that we can switch back
+  // to the normal mode if the user stops dragging. Note: if the timer is
+  // already active, this will simply move the deadline forward.
+  if (tablet_resize_mode_ == TabletResizeMode::kFast) {
+    resize_timer_.Start(FROM_HERE, kSplitViewChunkTime, this,
+                        &SplitViewController::OnResizeTimer);
   }
 }
 
