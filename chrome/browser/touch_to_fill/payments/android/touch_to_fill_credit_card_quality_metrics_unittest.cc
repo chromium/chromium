@@ -15,12 +15,13 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill::autofill_metrics {
+
 using ::base::Bucket;
 using ::base::BucketsAre;
+using test::CreateTestFormField;
 using ::testing::NiceMock;
 using ::testing::TestWithParam;
-
-namespace autofill::autofill_metrics {
 
 struct TouchToFillForCreditCardsTestCase {
   std::vector<ServerFieldType> field_types;
@@ -59,18 +60,19 @@ class TouchToFillForCreditCardsTest
       switch (type) {
         case CREDIT_CARD_NAME_FULL:
           fields_to_return.emplace_back(
-              CreateField("Name on card", "cardName", "", "text"));
+              CreateTestFormField("Name on card", "cardName", "", "text"));
           break;
         case CREDIT_CARD_NUMBER:
-          fields_to_return.emplace_back(
-              CreateField("Credit card number", "cardNumber", "", "text"));
+          fields_to_return.emplace_back(CreateTestFormField(
+              "Credit card number", "cardNumber", "", "text"));
           break;
         case CREDIT_CARD_EXP_MONTH:
           fields_to_return.push_back(
-              CreateField("Expiration date", "cc_exp", "", "text"));
+              CreateTestFormField("Expiration date", "cc_exp", "", "text"));
           break;
         case CREDIT_CARD_VERIFICATION_CODE:
-          fields_to_return.emplace_back(CreateField("CVC", "CVC", "", "text"));
+          fields_to_return.emplace_back(
+              CreateTestFormField("CVC", "CVC", "", "text"));
           break;
         default:
           NOTREACHED();
