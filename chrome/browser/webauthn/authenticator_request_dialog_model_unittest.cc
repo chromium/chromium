@@ -2278,7 +2278,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   const std::string kLocalAuthenticatorId = "local-authenticator";
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kWinNative));
+      device::AuthenticatorType::kOther));
 
   model.StartFlow(std::move(transports_info),
                   /*is_conditional_mediation=*/false);
@@ -2304,7 +2304,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   model.StartOver();
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kWinNative));
+      device::AuthenticatorType::kOther));
 
   // The second entry will be `kCred2`.
   const AuthenticatorRequestDialogModel::Mechanism& mech2 =
@@ -2324,7 +2324,7 @@ TEST_F(ListPasskeysFromSyncTest, MechanismsFromUserAccounts) {
   model.StartOver();
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       kLocalAuthenticatorId, AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kWinNative));
+      device::AuthenticatorType::kOther));
 
   // The third entry should correspond to `kPhoneCred1`.
   const AuthenticatorRequestDialogModel::Mechanism& mech3 =
