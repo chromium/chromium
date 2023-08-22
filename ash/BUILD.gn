@@ -4013,6 +4013,8 @@ test("ash_pixeltests") {
     "//ash/public/cpp",
     "//ash/public/cpp:test_support",
     "//base/test:test_support",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus/audio",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ash/services/bluetooth_config:test_support",
     "//chromeos/dbus/power:power",
