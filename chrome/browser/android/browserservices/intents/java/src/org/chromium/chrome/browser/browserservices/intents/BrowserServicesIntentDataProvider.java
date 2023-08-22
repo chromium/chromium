@@ -251,8 +251,21 @@ public abstract class BrowserServicesIntentDataProvider {
         return true;
     }
 
+    /**
+     * @return ColorProvider to be used.
+     */
     public abstract @NonNull ColorProvider getColorProvider();
 
+    /**
+     * @return ColorProvider when the system is in light mode.
+     */
+    public @NonNull ColorProvider getLightColorProvider() {
+        return getColorProvider();
+    }
+
+    /**
+     * @return ColorProvider when the system is in dark mode.
+     */
     public @NonNull ColorProvider getDarkColorProvider() {
         return getColorProvider();
     }

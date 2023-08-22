@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.device.mojom.ScreenOrientationLockType;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Stores info about a web app.
@@ -104,6 +105,15 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
 
     @Override
     public @NonNull ColorProvider getColorProvider() {
+        boolean inDarkMode = ColorUtils.inNightMode(ContextUtils.getApplicationContext());
+        boolean hasValidDarkToolbar = mDarkColorProvider.hasCustomToolbarColor();
+        boolean hasValidLightToolbar = mColorProvider.hasCustomToolbarColor();
+        return inDarkMode && (hasValidDarkToolbar || !hasValidLightToolbar) ? mDarkColorProvider
+                                                                            : mColorProvider;
+    }
+
+    @Override
+    public @NonNull ColorProvider getLightColorProvider() {
         return mColorProvider;
     }
 

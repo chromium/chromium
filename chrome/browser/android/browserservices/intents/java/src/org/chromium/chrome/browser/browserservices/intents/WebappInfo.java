@@ -98,7 +98,7 @@ public class WebappInfo {
      * ColorUtils.INVALID_COLOR otherwise.
      */
     public long toolbarColor() {
-        return hasValidToolbarColor() ? mProvider.getColorProvider().getToolbarColor()
+        return hasValidToolbarColor() ? mProvider.getLightColorProvider().getToolbarColor()
                                       : ColorUtils.INVALID_COLOR;
     }
 
@@ -106,7 +106,7 @@ public class WebappInfo {
      * Returns whether the toolbar color specified in the Intent is valid.
      */
     public boolean hasValidToolbarColor() {
-        return mProvider.getColorProvider().hasCustomToolbarColor();
+        return mProvider.getLightColorProvider().hasCustomToolbarColor();
     }
 
     /**
