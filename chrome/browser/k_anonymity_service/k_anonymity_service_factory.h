@@ -33,7 +33,7 @@ class KAnonymityServiceFactory : public ProfileKeyedServiceFactory {
   ~KAnonymityServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
