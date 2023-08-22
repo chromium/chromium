@@ -43,9 +43,11 @@ InstallVerifierFactory::InstallVerifierFactory()
 
 InstallVerifierFactory::~InstallVerifierFactory() = default;
 
-KeyedService* InstallVerifierFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+InstallVerifierFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new InstallVerifier(ExtensionPrefs::Get(context), context);
+  return std::make_unique<InstallVerifier>(ExtensionPrefs::Get(context),
+                                           context);
 }
 
 }  // namespace extensions
