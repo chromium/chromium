@@ -9,7 +9,8 @@
 namespace sync_preferences {
 
 PrefServiceMockFactory::PrefServiceMockFactory() {
-  user_prefs_ = new TestingPrefStore;
+  user_prefs_ = base::MakeRefCounted<TestingPrefStore>();
+  SetAccountPrefStore(base::MakeRefCounted<TestingPrefStore>());
 }
 
 PrefServiceMockFactory::~PrefServiceMockFactory() = default;

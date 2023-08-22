@@ -216,6 +216,29 @@ class SingleClientPreferencesWithAccountStorageSyncTest
   SingleClientPreferencesWithAccountStorageSyncTest()
       : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
 
+  bool DoesAccountPreferencesFileExist() const {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath file_path =
+        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+    return base::PathExists(file_path);
+  }
+
+  absl::optional<base::Value> GetAccountPreferencesFileContent() const {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    base::FilePath file_path =
+        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
+    std::string json_content;
+    EXPECT_TRUE(base::ReadFileToString(file_path, &json_content));
+    return base::JSONReader::Read(json_content);
+  }
+
+  void CommitToDiskAndWait() const {
+    base::RunLoop loop;
+    GetPrefs(0)->CommitPendingWrite(loop.QuitClosure());
+    loop.Run();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -580,46 +603,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
   EXPECT_TRUE(SetupSync());
 }
 
-// TODO(crbug.com/1416480): Consider making other fixtures parameterized with
-// `kSyncEnablePersistentStorageForAccountPreferences` flag enabled and disabled
-// both.
-class SingleClientPreferencesWithPersistentAccountStorageSyncTest
-    : public SingleClientPreferencesWithAccountStorageSyncTest {
- public:
-  SingleClientPreferencesWithPersistentAccountStorageSyncTest()
-      : feature_list_(
-            syncer::kSyncEnablePersistentStorageForAccountPreferences) {}
-
-  bool DoesAccountPreferencesFileExist() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    return base::PathExists(file_path);
-  }
-
-  absl::optional<base::Value> GetAccountPreferencesFileContent() const {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    base::FilePath file_path =
-        GetProfile(0)->GetPath().Append(chrome::kAccountPreferencesFilename);
-    std::string json_content;
-    EXPECT_TRUE(base::ReadFileToString(file_path, &json_content));
-    return base::JSONReader::Read(json_content);
-  }
-
-  void CommitToDiskAndWait() const {
-    base::RunLoop loop;
-    GetPrefs(0)->CommitPendingWrite(loop.QuitClosure());
-    loop.Run();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
-    ShouldCleanupAccountPreferencesFileOnDisable) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldCleanupAccountPreferencesFileOnDisable) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -673,9 +658,8 @@ IN_PROC_BROWSER_TEST_F(
 
 #if !BUILDFLAG(IS_CHROMEOS)
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
-    ShouldCleanupAccountPreferencesFileOnSignout) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldCleanupAccountPreferencesFileOnSignout) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -729,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Adds pref values to persistent storage.
 IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
+    SingleClientPreferencesWithAccountStorageSyncTest,
     PRE_ShouldReadAccountPreferencesFromFileBeforeSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
@@ -754,9 +738,8 @@ IN_PROC_BROWSER_TEST_F(
             "account value");
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
-    ShouldReadAccountPreferencesFromFileBeforeSyncStart) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldReadAccountPreferencesFromFileBeforeSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -772,9 +755,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Adds pref values to persistent storage.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
-    PRE_ShouldNotNotifyUponSyncStart) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       PRE_ShouldNotNotifyUponSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -794,9 +776,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Regression test for crbug.com/1470161.
-IN_PROC_BROWSER_TEST_F(
-    SingleClientPreferencesWithPersistentAccountStorageSyncTest,
-    ShouldNotNotifyUponSyncStart) {
+IN_PROC_BROWSER_TEST_F(SingleClientPreferencesWithAccountStorageSyncTest,
+                       ShouldNotNotifyUponSyncStart) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))

@@ -121,10 +121,6 @@ BASE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay,
              "SyncIgnoreGetUpdatesRetryDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences,
-             "SyncEnablePersistentStorageForAccountPreferences",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTabGroupsSaveNudgeDelay,
              "TabGroupsSaveNudgeDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -96,9 +96,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
   PrepareFactory(&factory, browser_state_path.Append(kPreferencesFilename),
                  pref_io_task_runner, policy_service, policy_connector,
                  supervised_user_prefs);
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnablePersistentStorageForAccountPreferences)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
     factory.SetAccountPrefStore(base::MakeRefCounted<JsonPrefStore>(
         browser_state_path.Append(kAccountPreferencesFilename), nullptr,
         pref_io_task_runner));

@@ -422,9 +422,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
                  std::move(extension_prefs),
                  std::move(standalone_browser_prefs), async, connector);
 
-  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage) &&
-      base::FeatureList::IsEnabled(
-          syncer::kSyncEnablePersistentStorageForAccountPreferences)) {
+  if (base::FeatureList::IsEnabled(syncer::kEnablePreferencesAccountStorage)) {
     // Note: Only mobile platforms are targeted as part of the experiment,
     // which do not require preference protection. Hence pref filters and
     // ProfilePrefStoreManager::CreateProfilePrefStore() can be avoided.

@@ -139,9 +139,6 @@ BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 
-// If enabled, uses a JsonPrefStore for account preferences.
-BASE_DECLARE_FEATURE(kSyncEnablePersistentStorageForAccountPreferences);
-
 // Wrapper flag to control the nudge delay of the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);
 
