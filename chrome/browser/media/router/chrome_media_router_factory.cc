@@ -67,14 +67,15 @@ content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
              : chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
-KeyedService* ChromeMediaRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChromeMediaRouterFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
   CHECK(MediaRouterEnabled(context));
-  MediaRouterBase* media_router = nullptr;
+  std::unique_ptr<MediaRouterBase> media_router = nullptr;
 #if BUILDFLAG(IS_ANDROID)
-  media_router = new MediaRouterAndroid();
+  media_router = std::make_unique<MediaRouterAndroid>();
 #else
-  media_router = new MediaRouterDesktop(context);
+  media_router = std::make_unique<MediaRouterDesktop>(context);
 #endif  // BUILDFLAG(IS_ANDROID)
   media_router->Initialize();
   return media_router;
