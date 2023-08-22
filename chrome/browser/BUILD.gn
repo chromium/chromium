@@ -4873,8 +4873,6 @@ static_library("browser") {
       "metrics/structured/ash_structured_metrics_recorder.h",
       "metrics/structured/cros_events_processor.cc",
       "metrics/structured/cros_events_processor.h",
-      "metrics/structured/key_data_provider_ash.cc",
-      "metrics/structured/key_data_provider_ash.h",
       "metrics/structured/metadata_processor_ash.cc",
       "metrics/structured/metadata_processor_ash.h",
       "metrics/structured/structured_metrics_key_events_observer.cc",

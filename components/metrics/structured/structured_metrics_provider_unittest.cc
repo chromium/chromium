@@ -22,7 +22,6 @@
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_recorder.h"
-#include "components/metrics/structured/test/test_key_data_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -102,11 +101,9 @@ class StructuredMetricsProviderTest : public testing::Test {
     system_profile_provider_ = std::make_unique<TestSystemProfileProvider>();
     // Create a system profile, normally done by ChromeMetricsServiceClient.
     structured_metrics_recorder_ = std::unique_ptr<StructuredMetricsRecorder>(
-        new StructuredMetricsRecorder(/*write_delay=*/base::Seconds(0),
+        new StructuredMetricsRecorder(DeviceKeyFilePath(),
+                                      /*write_delay=*/base::Seconds(0),
                                       system_profile_provider_.get()));
-    structured_metrics_recorder_->InitializeKeyDataProvider(
-        std::make_unique<TestKeyDataProvider>(DeviceKeyFilePath(),
-                                              ProfileKeyFilePath()));
     // Create the provider, normally done by the ChromeMetricsServiceClient.
     provider_ = std::unique_ptr<StructuredMetricsProvider>(
         new StructuredMetricsProvider(
