@@ -599,7 +599,7 @@ void GetChromeAppCompressedIconData(Profile* profile,
       base::MakeRefCounted<AppIconLoader>(
           profile, /*app_id=*/absl::nullopt, IconType::kCompressed, size_in_dip,
           /*is_placeholder_icon=*/false, IconEffects::kNone,
-          kInvalidIconResource, std::move(callback));
+          IDR_APP_DEFAULT_ICON, std::move(callback));
   icon_loader->GetChromeAppCompressedIconData(
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           extension_id),
