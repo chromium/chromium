@@ -36,9 +36,10 @@ ShellExtensionSystemFactory::ShellExtensionSystemFactory()
 ShellExtensionSystemFactory::~ShellExtensionSystemFactory() {
 }
 
-KeyedService* ShellExtensionSystemFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ShellExtensionSystemFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new ShellExtensionSystem(context);
+  return std::make_unique<ShellExtensionSystem>(context);
 }
 
 BrowserContext* ShellExtensionSystemFactory::GetBrowserContextToUse(
