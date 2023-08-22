@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
+#include "chrome/browser/ash/app_list/app_service/app_service_shortcut_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 
@@ -46,7 +47,8 @@ AppServiceShortcutItem::AppServiceShortcutItem(
     AppListModelUpdater* model_updater,
     const apps::ShortcutId& shortcut_id,
     const std::string& shortcut_name)
-    : ChromeAppListItem(profile, shortcut_id.value()) {
+    : ChromeAppListItem(profile, shortcut_id.value()),
+      shortcut_id_(shortcut_id) {
   SetName(shortcut_name);
   // TODO(crbug.com/1412708): Consider renaming this interface.
   SetAppStatus(ash::AppStatus::kReady);
@@ -65,4 +67,20 @@ void AppServiceShortcutItem::Activate(int event_flags) {
   int64_t display_id = GetController()->GetAppListDisplayId();
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchShortcut(
       apps::ShortcutId(id()), display_id);
+}
+
+void AppServiceShortcutItem::GetContextMenuModel(
+    ash::AppListItemContext item_context,
+    GetMenuModelCallback callback) {
+  context_menu_ = std::make_unique<AppServiceShortcutContextMenu>(
+      this, profile(), shortcut_id_, GetController());
+  context_menu_->GetMenuModel(std::move(callback));
+}
+
+app_list::AppContextMenu* AppServiceShortcutItem::GetAppContextMenu() {
+  return context_menu_.get();
+}
+
+void AppServiceShortcutItem::ExecuteLaunchCommand(int event_flags) {
+  Activate(event_flags);
 }

@@ -13526,6 +13526,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_APP_LIST_BRUSCHETTA_DEFAULT_FOLDER_NAME" desc="The default name for the Bruschetta apps folder in the App Launcher">
           <ph name="VM_NAME">$1<ex>ManagedVM</ex></ph> apps
         </message>
+        <message name="IDS_APP_CONTEXT_MENU_LAUNCH_APP_SHORTCUT"
+                   desc="Text for an option shown in a context menu to launch a shortcut in its host app. Example: 'Open Fortnite - GeForce Now'">
+            Open <ph name="SHORTCUT_NAME">$1<ex>Fortnite</ex></ph> - <ph name="APP_NAME">$2<ex>GeForce Now</ex></ph>
+        </message>
       </if>
 
       <!-- Translated apps strings -->

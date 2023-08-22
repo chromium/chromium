@@ -7,22 +7,31 @@
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
+#include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_sync_change_processor.h"
 #include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -102,6 +111,55 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
            shortcut_id.value();
   };
   EXPECT_TRUE(base::ranges::any_of(sync_processor->changes(), is_shortcut));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, ContextMenuOpen) {
+  // Create web app based shortcut.
+  GURL app_url = GURL("https://example.org/");
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->start_url = app_url;
+  web_app_info->title = u"Example";
+  auto local_shortcut_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  apps::ShortcutId expected_shortcut_id =
+      apps::GenerateShortcutId(app_constants::kChromeAppId, local_shortcut_id);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item =
+      model_updater->FindItem(expected_shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto launch_new_command_index =
+      menu_model->GetIndexOfCommandId(ash::LAUNCH_NEW);
+  ASSERT_TRUE(launch_new_command_index);
+  EXPECT_EQ(launch_new_command_index.value(), 0u);
+
+  std::u16string host_app_name;
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_constants::kChromeAppId,
+                 [&host_app_name](const apps::AppUpdate& update) {
+                   host_app_name = base::UTF8ToUTF16(update.ShortName());
+                 });
+
+  EXPECT_EQ(u"Open Example - " + host_app_name,
+            menu_model->GetLabelAt(launch_new_command_index.value()));
+  EXPECT_EQ(&vector_icons::kLaunchIcon,
+            menu_model->GetIconAt(launch_new_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  ui_test_utils::UrlLoadObserver url_observer(
+      app_url, content::NotificationService::AllSources());
+  menu_model->ActivatedAt(launch_new_command_index.value());
+  url_observer.Wait();
 }
 
 }  // namespace apps

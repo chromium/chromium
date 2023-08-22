@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_SHORTCUT_ITEM_H_
 #define CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_SHORTCUT_ITEM_H_
 
+#include <memory>
+
+#include "chrome/browser/ash/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 
@@ -13,7 +16,8 @@ class ShortcutUpdate;
 }  // namespace apps
 
 // An app shortcut list item provided by the App Service.
-class AppServiceShortcutItem : public ChromeAppListItem {
+class AppServiceShortcutItem : public ChromeAppListItem,
+                               public app_list::AppContextMenuDelegate {
  public:
   static const char kItemType[];
 
@@ -40,5 +44,15 @@ class AppServiceShortcutItem : public ChromeAppListItem {
   // ChromeAppListItem overrides:
   const char* GetItemType() const override;
   void Activate(int event_flags) override;
+  void GetContextMenuModel(ash::AppListItemContext item_context,
+                           GetMenuModelCallback callback) override;
+  app_list::AppContextMenu* GetAppContextMenu() override;
+
+  // app_list::AppContextMenuDelegate overrides:
+  void ExecuteLaunchCommand(int event_flags) override;
+
+  std::unique_ptr<app_list::AppContextMenu> context_menu_;
+
+  apps::ShortcutId shortcut_id_;
 };
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SERVICE_APP_SERVICE_SHORTCUT_ITEM_H_
