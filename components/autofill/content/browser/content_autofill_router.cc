@@ -295,13 +295,7 @@ void ContentAutofillRouter::AskForValuesToFill(
 void ContentAutofillRouter::HidePopup(
     ContentAutofillDriver* source,
     void (*callback)(ContentAutofillDriver* target)) {
-  // For Password Manager forms, |last_queried_target_| is not set. Since these
-  // forms are not form-transcending, the we can unicast to the |source|.
-  if (!last_queried_target_) {
-    callback(source);
-  } else {
-    callback(last_queried_target_);
-  }
+  ForEachFrame(form_forest_, callback);
 }
 
 void ContentAutofillRouter::FocusNoLongerOnForm(
