@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_service.h"
@@ -203,7 +204,13 @@ class CookieControlsBubbleViewPixelTest
   raw_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;
 };
 
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest, InvokeUi) {
+// Disabled on Windows due to flakes; see https://crbug.com/1472744.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_InvokeUi DISABLED_InvokeUi
+#else
+#define MAYBE_InvokeUi InvokeUi
+#endif
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest, MAYBE_InvokeUi) {
   ShowAndVerifyUi();
 }
 
