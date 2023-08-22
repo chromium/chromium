@@ -68,44 +68,12 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
 
 void ContentAutofillRouter::SetLastQueriedSource(
     ContentAutofillDriver* source) {
-  if (last_queried_source_ && last_queried_source_ != source) {
-    last_queried_source_->UnsetKeyPressHandlerCallback();
-  }
   last_queried_source_ = source;
 }
 
 void ContentAutofillRouter::SetLastQueriedTarget(
     ContentAutofillDriver* target) {
   last_queried_target_ = target;
-}
-
-void ContentAutofillRouter::SetKeyPressHandler(
-    ContentAutofillDriver* source,
-    const content::RenderWidgetHost::KeyPressEventCallback& handler,
-    void (*callback)(
-        ContentAutofillDriver* target,
-        const content::RenderWidgetHost::KeyPressEventCallback& handler)) {
-  // The asynchronous AutocompleteHistoryManager::OnAutofillValuesReturned()
-  // calls SetKeyPressHandler() through AutofillPopupControllerImpl::Show().
-  // Before this call, UnregisterDriver() may have reset |last_queried_source_|
-  // already to nullptr due to a race condition with AutocompleteHistoryManager
-  // (https://crbug.com/1254173).
-  if (!last_queried_source_)
-    return;
-
-  callback(last_queried_source_, handler);
-}
-
-void ContentAutofillRouter::UnsetKeyPressHandler(
-    ContentAutofillDriver* source,
-    void (*callback)(ContentAutofillDriver* target)) {
-  // When AutofillPopupControllerImpl::Hide() calls this function,
-  // UnregisterDriver() may have reset |last_queried_source_| already to
-  // nullptr due to Mojo race conditions (https://crbug.com/1240246).
-  if (!last_queried_source_)
-    return;
-
-  callback(last_queried_source_);
 }
 
 // Routing of events called by the renderer:

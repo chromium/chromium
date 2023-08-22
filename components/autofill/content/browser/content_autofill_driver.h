@@ -184,21 +184,6 @@ class ContentAutofillDriver : public AutofillDriver,
   // Called on certain types of navigations by ContentAutofillDriverFactory.
   void Reset();
 
-  // Key-press handlers capture the user input into fields from the renderer.
-  // The AutofillPopupControllerImpl listens for input while showing a popup.
-  // That way, the user can select suggestions from the popup, for example.
-  //
-  // In a frame-transcending form, the <input> the user queried Autofill from
-  // may be in a different frame than |render_frame_host_|. Therefore,
-  // SetKeyPressHandler() and UnsetKeyPressHandler() are forwarded to the
-  // last-queried source remembered by ContentAutofillRouter.
-  void SetKeyPressHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void UnsetKeyPressHandler();
-
-  // Callbacks that are called also in other functions by ContentAutofillRouter.
-  void UnsetKeyPressHandlerCallback();
-
  private:
   friend class ContentAutofillDriverTestApi;
 
@@ -335,8 +320,6 @@ class ContentAutofillDriver : public AutofillDriver,
   std::set<FormGlobalId> submitted_forms_;
 
   std::unique_ptr<AutofillManager> autofill_manager_ = nullptr;
-
-  content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

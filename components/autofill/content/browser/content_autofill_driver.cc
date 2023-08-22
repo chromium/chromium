@@ -27,7 +27,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -657,34 +656,6 @@ ContentAutofillDriver::GetAutofillAgent() {
         &autofill_agent_);
   }
   return autofill_agent_;
-}
-
-void ContentAutofillDriver::UnsetKeyPressHandlerCallback() {
-  if (key_press_handler_.is_null())
-    return;
-  render_frame_host_->GetRenderWidgetHost()->RemoveKeyPressEventCallback(
-      key_press_handler_);
-  key_press_handler_.Reset();
-}
-
-void ContentAutofillDriver::SetKeyPressHandler(
-    const content::RenderWidgetHost::KeyPressEventCallback& handler) {
-  autofill_router().SetKeyPressHandler(
-      this, handler,
-      [](ContentAutofillDriver* target,
-         const content::RenderWidgetHost::KeyPressEventCallback& handler) {
-        target->UnsetKeyPressHandlerCallback();
-        target->render_frame_host_->GetRenderWidgetHost()
-            ->AddKeyPressEventCallback(handler);
-        target->key_press_handler_ = handler;
-      });
-}
-
-void ContentAutofillDriver::UnsetKeyPressHandler() {
-  autofill_router().UnsetKeyPressHandler(
-      this, [](ContentAutofillDriver* target) {
-        target->UnsetKeyPressHandlerCallback();
-      });
 }
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(

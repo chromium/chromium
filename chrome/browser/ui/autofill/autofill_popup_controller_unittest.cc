@@ -216,6 +216,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     // Make sure RenderFrame is created.
     NavigateAndCommit(GURL("about:blank"));
+    FocusWebContentsOnMainFrame();
+    ASSERT_TRUE(web_contents()->GetFocusedFrame());
     external_delegate_ = CreateExternalDelegate();
     autofill_popup_view_ = std::make_unique<NiceMock<MockAutofillPopupView>>();
 

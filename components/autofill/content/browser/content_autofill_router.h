@@ -17,7 +17,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -159,17 +158,6 @@ class ContentAutofillRouter {
   ContentAutofillDriver* last_queried_source() const {
     return last_queried_source_;
   }
-
-  // Registers the key-press handler with the driver that last called
-  // AskForValuesToFill(), that is, |last_queried_source_|.
-  void SetKeyPressHandler(
-      ContentAutofillDriver* source,
-      const content::RenderWidgetHost::KeyPressEventCallback& handler,
-      void (*callback)(
-          ContentAutofillDriver* target,
-          const content::RenderWidgetHost::KeyPressEventCallback& handler));
-  void UnsetKeyPressHandler(ContentAutofillDriver* source,
-                            void (*callback)(ContentAutofillDriver* target));
 
   // Routing of events called by the renderer:
   void SetFormToBeProbablySubmitted(

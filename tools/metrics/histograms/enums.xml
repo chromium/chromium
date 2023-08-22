@@ -7708,6 +7708,9 @@ Called by update_autofill_enums.py.-->
   <int value="22"
       label="The context menu was open after the autofill popup, which could
              overlap with the autofill popup."/>
+  <int value="23"
+      label="No frame currently has focus. This case is caught for safety
+             because it might be reachable due to race conditions."/>
 </enum>
 
 <enum name="AutofillPredictionsComparisonResult">

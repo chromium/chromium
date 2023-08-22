@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/ui/popup_types.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -238,6 +239,12 @@ class AutofillPopupControllerImpl
   raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged> web_contents_;
   AutofillPopupViewPtr view_;
   base::WeakPtr<AutofillPopupDelegate> delegate_;
+
+  struct {
+    content::RenderWidgetHost::KeyPressEventCallback handler;
+    int rwh_process_id = -1;
+    int rwh_routing_id = -1;
+  } key_press_observer_;
 
   // The time the view was shown the last time. It is used to safeguard against
   // accepting suggestions too quickly after a the popup view was shown (see the

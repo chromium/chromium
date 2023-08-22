@@ -103,13 +103,6 @@ class ContentPasswordManagerDriver
     return render_frame_host_;
   }
 
-  // Key-press handlers capture the user input into fields while an Autofill
-  // popup is shown. Through these key presses, the user may select suggestions
-  // from the Autofill popup, for example.
-  void SetKeyPressHandler(
-      const content::RenderWidgetHost::KeyPressEventCallback& handler);
-  void UnsetKeyPressHandler();
-
 #if defined(UNIT_TEST)
   // Exposed to allow browser tests to hook the driver.
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>&
@@ -186,8 +179,6 @@ class ContentPasswordManagerDriver
 
   mojo::AssociatedReceiver<autofill::mojom::PasswordManagerDriver>
       password_manager_receiver_;
-
-  content::RenderWidgetHost::KeyPressEventCallback key_press_handler_;
 
   base::WeakPtrFactory<ContentPasswordManagerDriver> weak_factory_{this};
 };

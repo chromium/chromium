@@ -77,7 +77,10 @@ enum class PopupHidingReason {
   // The context menu was opened. We hide the autofill popup to make sure it
   // does not overlap with it.
   kContextMenuOpened = 22,
-  kMaxValue = kContextMenuOpened
+  // No frame currently has focus. This case is caught for safety because it
+  // might be reachable due to race conditions.
+  kNoFrameHasFocus = 23,
+  kMaxValue = kNoFrameHasFocus
 };
 
 }  // namespace autofill

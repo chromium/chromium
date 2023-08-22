@@ -32,6 +32,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
@@ -143,6 +144,12 @@ void AutofillPopupControllerImpl::Show(
     return;
   }
 
+  content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame();
+  if (!rfh) {
+    Hide(PopupHidingReason::kNoFrameHasFocus);
+    return;
+  }
+
   SetSuggestions(std::move(suggestions));
 
   trigger_source_ = trigger_source;
@@ -183,18 +190,18 @@ void AutofillPopupControllerImpl::Show(
   }
   time_view_shown_ = base::TimeTicks::Now();
 
-  absl::visit(
-      [&](auto* driver) {
-        driver->SetKeyPressHandler(base::BindRepeating(
-            // Cannot bind HandleKeyPressEvent() directly because of its
-            // return value.
-            [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
-               const content::NativeWebKeyboardEvent& event) {
-              return weak_this && weak_this->HandleKeyPressEvent(event);
-            },
-            GetWeakPtr()));
+  content::RenderWidgetHost* rwh = rfh->GetRenderWidgetHost();
+  key_press_observer_.handler = base::BindRepeating(
+      // Cannot bind HandleKeyPressEvent() directly because of its
+      // return value.
+      [](base::WeakPtr<AutofillPopupControllerImpl> weak_this,
+         const content::NativeWebKeyboardEvent& event) {
+        return weak_this && weak_this->HandleKeyPressEvent(event);
       },
-      GetDriver());
+      GetWeakPtr());
+  key_press_observer_.rwh_process_id = rwh->GetProcess()->GetID();
+  key_press_observer_.rwh_routing_id = rwh->GetRoutingID();
+  rwh->AddKeyPressEventCallback(key_press_observer_.handler);
 
   delegate_->OnPopupShown();
 }
@@ -276,8 +283,14 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
-    absl::visit([](auto* driver) { driver->UnsetKeyPressHandler(); },
-                GetDriver());
+  }
+  if (key_press_observer_.handler) {
+    content::RenderWidgetHost* rwh = content::RenderWidgetHost::FromID(
+        key_press_observer_.rwh_process_id, key_press_observer_.rwh_routing_id);
+    if (rwh) {
+      rwh->RemoveKeyPressEventCallback(key_press_observer_.handler);
+    }
+    key_press_observer_ = {};
   }
   AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
