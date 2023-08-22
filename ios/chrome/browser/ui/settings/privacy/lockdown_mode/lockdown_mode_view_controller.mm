@@ -12,11 +12,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_switch_item.h"
-
 #import "ios/chrome/browser/ui/settings/elements/info_popover_view_controller.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -134,7 +134,13 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   };
 
   NSString* message;
-  message = l10n_util::GetNSString(IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY);
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    message = l10n_util::GetNSString(
+        IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD);
+  } else {
+    message = l10n_util::GetNSString(
+        IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPHONE);
+  }
   NSAttributedString* attributedString =
       [[NSAttributedString alloc] initWithString:message
                                       attributes:textAttributes];

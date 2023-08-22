@@ -2193,8 +2193,12 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_TITLE" desc="Title for Lockdown Mode.">
         This setting is enabled on your device
       </message>
-      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY" desc="Title for Lockdown Mode.">
-        To disable Lockdown Mode in Chrome turn it off on your device.
+
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD" desc="iPad summary for lockdown mode info button">
+        To disable Lockdown Mode in Chrome turn it off on your iPad.
+      </message>
+      <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPHONE" desc="iPhone summary for lockdown mode info button">
+        To disable Lockdown Mode in Chrome turn it off on your iPhone.
       </message>
       <message name="IDS_IOS_LOCKDOWN_MODE_FOOTER" desc="Title for Lockdown Mode.">
         When turned on, certain web technologies are blocked, which might cause some websites to load more slowly or not operate correctly.

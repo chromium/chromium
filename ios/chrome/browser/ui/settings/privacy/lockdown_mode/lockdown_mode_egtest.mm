@@ -14,6 +14,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
@@ -117,10 +118,18 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
   GREYAssert(WaitForPopupDisplay(l10n_util::GetNSString(
                  IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_TITLE)),
              @"Lockdown mode 'i' button wasn't tapped");
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                   IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY))]
-      assertWithMatcher:grey_notNil()];
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD))]
+        assertWithMatcher:grey_notNil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPHONE))]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 #pragma mark - Helpers
