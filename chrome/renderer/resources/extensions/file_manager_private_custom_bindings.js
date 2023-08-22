@@ -7,6 +7,7 @@
 // Natives
 var blobNatives = requireNative('blob_natives');
 var fileManagerPrivateNatives = requireNative('file_manager_private');
+var logging = requireNative('logging');
 
 // Internals
 var fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
@@ -14,6 +15,39 @@ var fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
 // Shorthands
 var GetFileSystem = fileManagerPrivateNatives.GetFileSystem;
 var GetExternalFileEntry = fileManagerPrivateNatives.GetExternalFileEntry;
+
+// Adaptor to help propagating errors emitted by calls to internal API
+// implementations.
+function callbackAdaptor(successCallback, failureCallback, resultHandler) {
+  return function(...results) {
+    // No callback should take more than one result.
+    logging.CHECK(results.length <= 1);
+    let lastErrorMessage = bindingUtil.getLastErrorMessage();
+    if (lastErrorMessage) {
+      // We re-emit |lastError| through the |failureCallback| here to ensure it
+      // gets correctly propagated to the top level caller either as a rejected
+      // promise or |lastError| for a callback. We also clear it to ensure this
+      // instance of the |lastError| isn't reported as unchecked.
+      bindingUtil.clearLastError();
+      failureCallback(lastErrorMessage);
+      return;
+    }
+    // Invoke the success callback, optionally handling the result first.
+    // Note that we ensure we call |successCallback| with the expected number of
+    // arguments (as opposed to just calling with undefined if result are empty)
+    // so that any callers using `arguments` are unaffected.
+    if (resultHandler) {
+      // If a function has a result handler, it must have a result.
+      logging.CHECK(results.length == 1);
+      let finalResult = resultHandler(results[0]);
+      successCallback(finalResult);
+    } else if (results.length == 1) {
+      successCallback(results[0]);
+    } else {
+      successCallback();
+    }
+  }
+}
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
   // For FilesAppEntry types that wraps a native entry, returns the native entry
@@ -61,84 +95,109 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       callback(response);
   });
 
-  apiFunctions.setHandleRequest('resolveIsolatedEntries',
-                                function(entries, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.resolveIsolatedEntries(urls, function(
-        entryDescriptions) {
-      callback(entryDescriptions.map(function(description) {
-        return GetExternalFileEntry(description);
-      }));
-    });
-  });
+  apiFunctions.setHandleRequest(
+      'resolveIsolatedEntries',
+      function(entries, successCallback, failureCallback) {
+        var urls = entries.map(function(entry) {
+          return getEntryURL(entry);
+        });
+        let resultHandler = function(entryDescriptions) {
+          return entryDescriptions.map((description) => {
+            return GetExternalFileEntry(description);
+          });
+        };
+        fileManagerPrivateInternal.resolveIsolatedEntries(
+            urls,
+            callbackAdaptor(successCallback, failureCallback, resultHandler));
+      });
 
-  apiFunctions.setHandleRequest('getVolumeRoot', function(options, callback) {
-    fileManagerPrivateInternal.getVolumeRoot(options, function(entry) {
-      callback(entry ? GetExternalFileEntry(entry) : undefined);
-    });
-  });
+  apiFunctions.setHandleRequest(
+      'getVolumeRoot', function(options, successCallback, failureCallback) {
+        let resultHandler = function(entry) {
+          return entry ? GetExternalFileEntry(entry) : undefined;
+        };
+        fileManagerPrivateInternal.getVolumeRoot(
+            options,
+            callbackAdaptor(successCallback, failureCallback, resultHandler));
+      });
 
-  apiFunctions.setHandleRequest('getEntryProperties',
-                                function(entries, names, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.getEntryProperties(urls, names, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getEntryProperties',
+      function(entries, names, successCallback, failureCallback) {
+        var urls = entries.map(function(entry) {
+          return getEntryURL(entry);
+        });
+        fileManagerPrivateInternal.getEntryProperties(
+            urls, names, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('addFileWatch', function(entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.addFileWatch(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'addFileWatch', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.addFileWatch(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('removeFileWatch', function(entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.removeFileWatch(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'removeFileWatch', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.removeFileWatch(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('getCustomActions', function(
-        entries, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.getCustomActions(urls, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getCustomActions', function(entries, successCallback, failureCallback) {
+        var urls = entries.map(function(entry) {
+          return getEntryURL(entry);
+        });
+        fileManagerPrivateInternal.getCustomActions(
+            urls, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('executeCustomAction', function(
-        entries, actionId, callback) {
-    var urls = entries.map(function(entry) {
-      return getEntryURL(entry);
-    });
-    fileManagerPrivateInternal.executeCustomAction(urls, actionId, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'executeCustomAction',
+      function(entries, actionId, successCallback, failureCallback) {
+        var urls = entries.map(function(entry) {
+          return getEntryURL(entry);
+        });
+        fileManagerPrivateInternal.executeCustomAction(
+            urls, actionId, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('computeChecksum', function(entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.computeChecksum(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'computeChecksum', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.computeChecksum(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('getMimeType', function(entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getMimeType(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getMimeType', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.getMimeType(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('searchFiles', function(params, callback) {
-    const newParams = {
-      query: params.query,
-      types: params.types,
-      maxResults: params.maxResults,
-      modifiedTimestamp: params.modifiedTimestamp || 0,
-      category: params.category || chrome.fileManagerPrivate.FileCategory.ALL
-    };
-    if (params.rootDir) {
-      newParams.rootUrl = getEntryURL(params.rootDir);
-    }
-    fileManagerPrivateInternal.searchFiles(newParams, function(entryList) {
-      callback((entryList || []).map(e => GetExternalFileEntry(e)));
-    });
-  });
+  apiFunctions.setHandleRequest(
+      'searchFiles', function(params, successCallback, failureCallback) {
+        const newParams = {
+          query: params.query,
+          types: params.types,
+          maxResults: params.maxResults,
+          modifiedTimestamp: params.modifiedTimestamp || 0,
+          category:
+              params.category || chrome.fileManagerPrivate.FileCategory.ALL
+        };
+        if (params.rootDir) {
+          newParams.rootUrl = getEntryURL(params.rootDir);
+        }
+        let resultHandler = function(entryList) {
+          return (entryList || []).map(entry => GetExternalFileEntry(entry));
+        };
+        fileManagerPrivateInternal.searchFiles(
+            newParams,
+            callbackAdaptor(successCallback, failureCallback, resultHandler));
+      });
 
   apiFunctions.setHandleRequest('getContentMimeType',
       function(fileEntry, successCallback, failureCallback) {
@@ -150,15 +209,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         return;
       }
 
-      var onGetContentMimeType = function(blob, mimeType) {
-        // TODO(tjudkins): This should be triggering the failureCallback if
-        // there is an error while calling the Internal API in order to properly
-        // support promise rejection on the API.
-        successCallback(mimeType ? mimeType : undefined);
+      var resultHandler = function(blob, mimeType) {
+        return mimeType;
       }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
 
       fileManagerPrivateInternal.getContentMimeType(
-          blobUUID, onGetContentMimeType);
+          blobUUID,
+          callbackAdaptor(successCallback, failureCallback, resultHandler));
     }, (error) => {
       failureCallback(`fileEntry.file() blob error: ${error.message}`);
     });
@@ -174,145 +231,181 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         return;
       }
 
-      var onGetContentMetadata = function(blob, metadata) {
-        // TODO(tjudkins): This should be triggering the failureCallback if
-        // there is an error while calling the Internal API in order to properly
-        // support promise rejection on the API.
-        successCallback(metadata ? metadata : undefined);
+      var resultHandler = function(blob, metadata) {
+        return metadata;
       }.bind(this, blob);  // Bind a blob reference: crbug.com/415792#c12
 
       fileManagerPrivateInternal.getContentMetadata(
-          blobUUID, mimeType, !!includeImages, onGetContentMetadata);
+          blobUUID, mimeType, !!includeImages,
+          callbackAdaptor(successCallback, failureCallback, resultHandler));
     }, (error) => {
       failureCallback(`fileEntry.file() blob error: ${error.message}`);
     });
   });
 
-  apiFunctions.setHandleRequest('pinDriveFile', function(entry, pin, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.pinDriveFile(url, pin, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'pinDriveFile', function(entry, pin, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.pinDriveFile(
+            url, pin, callbackAdaptor(successCallback, failureCallback));
+      });
 
-  apiFunctions.setHandleRequest('executeTask',
-      function(descriptor, entries, callback) {
+  apiFunctions.setHandleRequest(
+      'executeTask',
+      function(descriptor, entries, successCallback, failureCallback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
-        fileManagerPrivateInternal.executeTask(descriptor, urls, callback);
+        fileManagerPrivateInternal.executeTask(
+            descriptor, urls,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
-  apiFunctions.setHandleRequest('setDefaultTask',
-      function(descriptor, entries, mimeTypes, callback) {
+  apiFunctions.setHandleRequest(
+      'setDefaultTask',
+      function(
+          descriptor, entries, mimeTypes, successCallback, failureCallback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
         fileManagerPrivateInternal.setDefaultTask(
-            descriptor, urls, mimeTypes, callback);
+            descriptor, urls, mimeTypes,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'getFileTasks', function(entries, dlpSourceUrls, callback) {
+      'getFileTasks',
+      function(entries, dlpSourceUrls, successCallback, failureCallback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
-        fileManagerPrivateInternal.getFileTasks(urls, dlpSourceUrls, callback);
+        fileManagerPrivateInternal.getFileTasks(
+            urls, dlpSourceUrls,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
-  apiFunctions.setHandleRequest('getDownloadUrl', function(entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getDownloadUrl(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getDownloadUrl', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.getDownloadUrl(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
   apiFunctions.setHandleRequest(
       'getDisallowedTransfers',
-      function(entries, destinationEntry, isMove, callback) {
+      function(
+          entries, destinationEntry, isMove, successCallback, failureCallback) {
         var sourceUrls = entries.map(getEntryURL);
         var destinationUrl = getEntryURL(destinationEntry);
         fileManagerPrivateInternal.getDisallowedTransfers(
-            sourceUrls, destinationUrl, isMove, callback);
+            sourceUrls, destinationUrl, isMove,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'getDlpMetadata', function(entries, callback) {
+      'getDlpMetadata', function(entries, successCallback, failureCallback) {
         var sourceUrls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getDlpMetadata(
-            sourceUrls, callback);
+            sourceUrls, callbackAdaptor(successCallback, failureCallback));
       });
 
-  apiFunctions.setHandleRequest('getDriveQuotaMetadata', function(
-        entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getDriveQuotaMetadata(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'getDriveQuotaMetadata',
+      function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.getDriveQuotaMetadata(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
 
   apiFunctions.setHandleRequest(
       'zipSelection',
-      (entries, parentEntry, destName, callback) =>
-          fileManagerPrivateInternal.zipSelection(
-              getEntryURL(parentEntry), entries.map(getEntryURL), destName,
-              callback));
-
-  apiFunctions.setHandleRequest('validatePathNameLength', function(
-        entry, name, callback) {
-
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.validatePathNameLength(url, name, callback);
-  });
-
-  apiFunctions.setHandleRequest('getDirectorySize', function(
-        entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.getDirectorySize(url, callback);
-  });
-
-  apiFunctions.setHandleRequest('getRecentFiles', function(
-        restriction, file_type, invalidate_cache, callback) {
-    fileManagerPrivateInternal.getRecentFiles(restriction, file_type,
-          invalidate_cache, function(entryDescriptions) {
-      callback(entryDescriptions.map(function(description) {
-        return GetExternalFileEntry(description);
-      }));
-    });
-  });
+      function(
+          entries, parentEntry, destName, successCallback, failureCallback) {
+        fileManagerPrivateInternal.zipSelection(
+            getEntryURL(parentEntry), entries.map(getEntryURL), destName,
+            callbackAdaptor(successCallback, failureCallback));
+      });
 
   apiFunctions.setHandleRequest(
-      'sharePathsWithCrostini', function(vmName, entries, persist, callback) {
+      'validatePathNameLength',
+      function(entry, name, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.validatePathNameLength(
+            url, name, callbackAdaptor(successCallback, failureCallback));
+      });
+
+  apiFunctions.setHandleRequest(
+      'getDirectorySize', function(entry, successCallback, failureCallback) {
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.getDirectorySize(
+            url, callbackAdaptor(successCallback, failureCallback));
+      });
+
+  apiFunctions.setHandleRequest(
+      'getRecentFiles',
+      function(
+          restriction, file_type, invalidate_cache, successCallback,
+          failureCallback) {
+        let resultHandler = function(entryDescriptions) {
+          return entryDescriptions.map(description => {
+            return GetExternalFileEntry(description);
+          });
+        };
+        fileManagerPrivateInternal.getRecentFiles(
+            restriction, file_type, invalidate_cache,
+            callbackAdaptor(successCallback, failureCallback, resultHandler));
+      });
+
+  apiFunctions.setHandleRequest(
+      'sharePathsWithCrostini',
+      function(vmName, entries, persist, successCallback, failureCallback) {
         const urls = entries.map((entry) => {
           return getEntryURL(entry);
         });
         fileManagerPrivateInternal.sharePathsWithCrostini(
-            vmName, urls, persist, callback);
+            vmName, urls, persist,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'unsharePathWithCrostini', function(vmName, entry, callback) {
+      'unsharePathWithCrostini',
+      function(vmName, entry, successCallback, failureCallback) {
         fileManagerPrivateInternal.unsharePathWithCrostini(
-            vmName, getEntryURL(entry), callback);
+            vmName, getEntryURL(entry),
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'getCrostiniSharedPaths',
-      function(observeFirstForSession, vmName, callback) {
+      function(
+          observeFirstForSession, vmName, successCallback, failureCallback) {
+        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
+        // having a multiparameter callback.
         fileManagerPrivateInternal.getCrostiniSharedPaths(
             observeFirstForSession, vmName,
             function(entryDescriptions, firstForSession) {
-              callback(entryDescriptions.map(function(description) {
-                return GetExternalFileEntry(description);
-              }), firstForSession);
+              successCallback(
+                  entryDescriptions.map(function(description) {
+                    return GetExternalFileEntry(description);
+                  }),
+                  firstForSession);
             });
       });
 
   apiFunctions.setHandleRequest(
-      'getLinuxPackageInfo', function(entry, callback) {
+      'getLinuxPackageInfo', function(entry, successCallback, failureCallback) {
         var url = getEntryURL(entry);
-        fileManagerPrivateInternal.getLinuxPackageInfo(url, callback);
+        fileManagerPrivateInternal.getLinuxPackageInfo(
+            url, callbackAdaptor(successCallback, failureCallback));
       });
 
-  apiFunctions.setHandleRequest('installLinuxPackage', function(
-        entry, callback) {
-    var url = getEntryURL(entry);
-    fileManagerPrivateInternal.installLinuxPackage(url, callback);
-  });
+  apiFunctions.setHandleRequest(
+      'installLinuxPackage', function(entry, successCallback, failureCallback) {
+        // TODO(tjudkins): This call can't use the callbackAdaptor due to it
+        // having a multiparameter callback.
+        var url = getEntryURL(entry);
+        fileManagerPrivateInternal.installLinuxPackage(url, successCallback);
+      });
 
   apiFunctions.setCustomCallback('searchFiles',
       function(callback, response) {
@@ -338,32 +431,39 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   });
 
   apiFunctions.setHandleRequest(
-      'sharesheetHasTargets', function(entries, callback) {
+      'sharesheetHasTargets',
+      function(entries, successCallback, failureCallback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
-        fileManagerPrivateInternal.sharesheetHasTargets(urls, callback);
+        fileManagerPrivateInternal.sharesheetHasTargets(
+            urls, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'invokeSharesheet',
-      function(entries, launchSource, dlpSourceUrls, callback) {
+      function(
+          entries, launchSource, dlpSourceUrls, successCallback,
+          failureCallback) {
         var urls = entries.map(function(entry) {
           return getEntryURL(entry);
         });
         fileManagerPrivateInternal.invokeSharesheet(
-            urls, launchSource, dlpSourceUrls, callback);
+            urls, launchSource, dlpSourceUrls,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'toggleAddedToHoldingSpace', function(entries, added, callback) {
+      'toggleAddedToHoldingSpace',
+      function(entries, added, successCallback, failureCallback) {
         const urls = entries.map(entry => getEntryURL(entry));
         fileManagerPrivateInternal.toggleAddedToHoldingSpace(
-            urls, added, callback);
+            urls, added, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'startIOTask', function(type, entries, params, callback) {
+      'startIOTask',
+      function(type, entries, params, successCallback, failureCallback) {
         const urls = entries.map(entry => getEntryURL(entry));
         let newParams = {};
         if (params.destinationFolder) {
@@ -376,21 +476,25 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         if (params.showNotification !== undefined) {
           newParams.showNotification = params.showNotification;
         }
-        fileManagerPrivateInternal.startIOTask(type, urls, newParams, callback);
+        fileManagerPrivateInternal.startIOTask(
+            type, urls, newParams,
+            callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
-      'parseTrashInfoFiles', function(entries, callback) {
+      'parseTrashInfoFiles',
+      function(entries, successCallback, failureCallback) {
         const urls = entries.map(entry => getEntryURL(entry));
+        let resultHandler = function(entryDescriptions) {
+          return entryDescriptions.map(description => {
+            description.restoreEntry =
+                GetExternalFileEntry(description.restoreEntry);
+            return description;
+          });
+        };
         fileManagerPrivateInternal.parseTrashInfoFiles(
-            urls, function(entryDescriptions) {
-              // Convert the restoreEntry to a DirectoryEntry.
-              callback(entryDescriptions.map(description => {
-                description.restoreEntry =
-                    GetExternalFileEntry(description.restoreEntry);
-                return description;
-              }));
-            });
+            urls,
+            callbackAdaptor(successCallback, failureCallback, resultHandler));
       });
 });
 

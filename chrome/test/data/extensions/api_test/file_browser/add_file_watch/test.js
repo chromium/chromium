@@ -54,22 +54,40 @@ function getTestVolumeRoots() {
 
 /** Async wrapper for chrome.fileManager.addFileWatch() */
 async function addFileWatch(...args) {
-  return new Promise(resolve => {
-    chrome.fileManagerPrivate.addFileWatch(...args, resolve);
+  return new Promise(function (resolve, reject) {
+    chrome.fileManagerPrivate.addFileWatch(...args, function(result) {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(result);
+      }
+    });
   });
 }
 
 /** Async wrapper for chrome.fileManager.removeFileWatch() */
 async function removeFileWatch(...args) {
-  return new Promise(resolve => {
-    chrome.fileManagerPrivate.removeFileWatch(...args, resolve);
+  return new Promise(function (resolve, reject) {
+    chrome.fileManagerPrivate.removeFileWatch(...args, function(result) {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(result);
+      }
+    });
   });
 }
 
 /** Async wrapper for chrome.fileManager.removeMount() */
 async function removeMount(...args) {
-  return new Promise(resolve => {
-    chrome.fileManagerPrivate.removeMount(...args, resolve);
+  return new Promise(function (resolve, reject) {
+    chrome.fileManagerPrivate.removeMount(...args, function(result) {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(result);
+      }
+    });
   });
 }
 
@@ -87,34 +105,28 @@ getTestVolumeRoots().then(function(testVolumeRoots) {
     async function testAddFileWatchToWatchableVolume() {
       const downloads = volumesByVolumeKey['downloads'];
       await addFileWatch(downloads.root);
-      chrome.test.assertNoLastError();
       await removeFileWatch(downloads.root);
-      chrome.test.assertNoLastError();
       chrome.test.succeed();
     },
 
     // Test that addFileWatch fails on a non-watchable volume ("testing").
     async function testAddFileWatchToNonWatchableVolume() {
       const testing = volumesByVolumeKey['testing'];
-      await addFileWatch(testing.root);
-      chrome.test.assertLastError('Volume is not watchable');
+      chrome.test.assertPromiseRejects(addFileWatch(testing.root),
+          'Volume is not watchable');
       await removeFileWatch(testing.root);
-      // chrome.test.assertNoLastError();
       chrome.test.succeed();
     },
 
     // Test that removeFileWatcher doesn't fail after unmounting the volume.
     async function testRemoveFileWatcherAfterUnmounting() {
       const volume = volumesByVolumeKey['testing'];
-      await addFileWatch(volume.root);
-      chrome.test.assertLastError('Volume is not watchable');
+      chrome.test.assertPromiseRejects(addFileWatch(volume.root),
+          'Volume is not watchable');
 
       // Unmount the testing volume.
       await removeMount(volume.volumeId);
-      chrome.test.assertNoLastError();
-
       await removeFileWatch(volume.root);
-      chrome.test.assertNoLastError();
       chrome.test.succeed();
     },
   ]);
