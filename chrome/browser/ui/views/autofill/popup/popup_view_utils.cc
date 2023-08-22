@@ -551,7 +551,6 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kPasswordAccountStorageReSignin:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kShowAccountCards:
-    case PopupItemId::kUseVirtualCard:
     case PopupItemId::kAllSavedPasswordsEntry:
     case PopupItemId::kFillEverythingFromAddressProfile:
     case PopupItemId::kClearForm:

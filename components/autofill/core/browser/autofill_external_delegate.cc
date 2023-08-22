@@ -356,13 +356,6 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     case PopupItemId::kShowAccountCards:
       manager_->OnUserAcceptedCardsFromAccountOption();
       break;
-    case PopupItemId::kUseVirtualCard:
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-      manager_->FetchVirtualCardCandidates();
-#else
-      NOTREACHED();
-#endif
-      break;
     case PopupItemId::kVirtualCreditCardEntry:
       // There can be multiple virtual credit cards that all rely on
       // PopupItemId::kVirtualCreditCardEntry as a `popup_item_id`. In this

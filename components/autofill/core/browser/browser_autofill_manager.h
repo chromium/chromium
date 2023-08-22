@@ -135,20 +135,6 @@ class BrowserAutofillManager : public AutofillManager,
   virtual void RefetchCardsAndUpdatePopup(const FormData& form,
                                           const FormFieldData& field_data);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Returns the list of credit cards that have associated cloud token data.
-  virtual void FetchVirtualCardCandidates();
-
-  // Callback invoked when an actual card is selected. |selected_card_id| will
-  // be used to identify the card. The selected card's cloud token data will be
-  // fetched from the server.
-  // TODO(crbug.com/1020740): Passes card server id for now. In the future when
-  // one actual credit card can have multiple virtual cards, passes instrument
-  // token instead. Design TBD.
-  virtual void OnVirtualCardCandidateSelected(
-      const std::string& selected_card_id);
-#endif
-
   // Called from our external delegate so they cannot be private.
   // TODO(crbug.com/1330108): Clean up the API.
   virtual void FillOrPreviewForm(
@@ -702,11 +688,6 @@ class BrowserAutofillManager : public AutofillManager,
   void PreProcessStateMatchingTypes(
       const std::vector<AutofillProfile>& profiles,
       FormStructure* form_structure);
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Whether to show the option to use virtual card in the autofill popup.
-  bool ShouldShowVirtualCardOption(FormStructure* form_structure);
-#endif
 
   // Returns an appropriate EventFormLogger, depending on the given `field`'s
   // type. May return nullptr.

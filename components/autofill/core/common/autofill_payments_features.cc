@@ -167,12 +167,6 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
 #endif
 );
 
-// When enabled, the option of using cloud token virtual card will be offered
-// when all requirements are met.
-BASE_FEATURE(kAutofillEnableVirtualCard,
-             "AutofillEnableVirtualCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, after a successful authentication to autofill a virtual card,
 // the user will be prompted to opt-in to FIDO if the user is not currently
 // opted-in, and if the user is opted-in already and the virtual card is FIDO

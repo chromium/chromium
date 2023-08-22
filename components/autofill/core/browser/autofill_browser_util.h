@@ -31,11 +31,6 @@ bool IsFormMixedContent(const AutofillClient& client, const FormData& form);
 bool ShouldAllowCreditCardFallbacks(const AutofillClient& client,
                                     const FormData& form);
 
-// Returns whether the form is a complete credit card form with card number
-// field, card expiration date field and card CVC field detected.
-bool IsCompleteCreditCardFormIncludingCvcField(
-    const FormStructure& form_structure);
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_BROWSER_UTIL_H_

@@ -267,7 +267,6 @@ FillDataType GetEventTypeFromSingleFieldSuggestionPopupItemId(
     case PopupItemId::kGeneratePasswordEntry:
     case PopupItemId::kShowAccountCards:
     case PopupItemId::kPasswordAccountStorageOptIn:
-    case PopupItemId::kUseVirtualCard:
     case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
     case PopupItemId::kAccountStoragePasswordEntry:
     case PopupItemId::kAccountStorageUsernameEntry:
@@ -458,39 +457,6 @@ bool ContainsAutofillableValue(const FormStructure& form) {
            IsUPIVirtualPaymentAddress(field->value);
   });
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// Retrieves all valid credit card candidates for virtual card selection. A
-// valid candidate must have exactly one cloud token.
-std::vector<CreditCard*> GetVirtualCardCandidates(
-    PersonalDataManager* personal_data_manager) {
-  DCHECK(personal_data_manager);
-  std::vector<CreditCard*> candidates =
-      personal_data_manager->GetServerCreditCards();
-  const std::vector<CreditCardCloudTokenData*> cloud_token_data =
-      personal_data_manager->GetCreditCardCloudTokenData();
-
-  // Constructs map.
-  std::unordered_map<std::string, int> id_count;
-  for (CreditCardCloudTokenData* data : cloud_token_data) {
-    const auto& iterator = id_count.find(data->masked_card_id);
-    if (iterator == id_count.end())
-      id_count.emplace(data->masked_card_id, 1);
-    else
-      iterator->second += 1;
-  }
-
-  // Remove the card from the vector that either has multiple cloud token data
-  // or has no cloud token data.
-  base::EraseIf(candidates, [&](const auto& card) {
-    const auto& iterator = id_count.find(card->server_id());
-    return iterator == id_count.end() || iterator->second > 1;
-  });
-
-  // Returns the remaining valid cards.
-  return candidates;
-}
-#endif
 
 const char* SubmissionSourceToString(SubmissionSource source) {
   switch (source) {
@@ -759,29 +725,6 @@ void BrowserAutofillManager::RefetchCardsAndUpdatePopup(
       AutofillSuggestionTriggerSource::kShowCardsFromAccount,
       should_display_gpay_logo);
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void BrowserAutofillManager::FetchVirtualCardCandidates() {
-  const std::vector<CreditCard*>& candidates =
-      GetVirtualCardCandidates(client().GetPersonalDataManager());
-  // Make sure the |candidates| is not empty, otherwise the check in
-  // ShouldShowVirtualCardOption() should fail.
-  DCHECK(!candidates.empty());
-
-  client().OfferVirtualCardOptions(
-      candidates,
-      base::BindOnce(&BrowserAutofillManager::OnVirtualCardCandidateSelected,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void BrowserAutofillManager::OnVirtualCardCandidateSelected(
-    const std::string& selected_card_id) {
-  // TODO(crbug.com/1020740): Implement this and the following flow in a
-  // separate CL. The following flow will be sending a request to Payments
-  // to fetched the up-to-date cloud token data for the selected card and fill
-  // the information in the form.
-}
-#endif
 
 bool BrowserAutofillManager::ShouldParseForms() {
   bool autofill_enabled = IsAutofillEnabled();
@@ -3634,16 +3577,6 @@ void BrowserAutofillManager::GetAvailableSuggestions(
   if (suggestions->empty() || !context->is_filling_credit_card)
     return;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // This section adds the "Use a virtual card number" option in the autofill
-  // dropdown menu, if applicable.
-  if (ShouldShowVirtualCardOption(context->form_structure)) {
-    suggestions->emplace_back(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL));
-    suggestions->back().popup_item_id = PopupItemId::kUseVirtualCard;
-  }
-#endif
-
   // Don't provide credit card suggestions for non-secure pages, but do
   // provide them for secure pages with passive mixed content (see
   // implementation of IsContextSecure).
@@ -3658,40 +3591,6 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     suggestions->assign(1, warning_suggestion);
   }
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1020740): Add metrics logging.
-bool BrowserAutofillManager::ShouldShowVirtualCardOption(
-    FormStructure* form_structure) {
-  // If experiment is disabled, return false.
-  if (!base::FeatureList::IsEnabled(features::kAutofillEnableVirtualCard))
-    return false;
-
-  // If credit card upload is disabled, return false.
-  if (!IsAutofillCreditCardEnabled())
-    return false;
-
-  // If merchant is not allowed, return false.
-  std::vector<std::string> allowed_merchants =
-      client().GetAllowedMerchantsForVirtualCards();
-  if (!base::Contains(allowed_merchants, form_structure->source_url().spec())) {
-    return false;
-  }
-
-  // If no credit card candidate has related cloud token data available,
-  // return false.
-  if (GetVirtualCardCandidates(client().GetPersonalDataManager()).empty()) {
-    return false;
-  }
-
-  // If not all of card number field, expiration date field and CVC field are
-  // detected, return false.
-  if (!IsCompleteCreditCardFormIncludingCvcField(*form_structure))
-    return false;
-
-  return true;
-}
-#endif
 
 autofill_metrics::FormEventLoggerBase*
 BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) const {

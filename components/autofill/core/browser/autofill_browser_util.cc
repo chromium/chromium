@@ -51,20 +51,4 @@ bool ShouldAllowCreditCardFallbacks(const AutofillClient& client,
   return !IsFormOrClientNonSecure(client, form);
 }
 
-bool IsCompleteCreditCardFormIncludingCvcField(
-    const FormStructure& form_structure) {
-  // If card number field or expiration date field is not detected, return
-  // false.
-  if (!form_structure.IsCompleteCreditCardForm())
-    return false;
-
-  // If CVC field is detected, then all requirements are met, otherwise return
-  // false.
-  for (auto& field : form_structure) {
-    if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)
-      return true;
-  }
-  return false;
-}
-
 }  // namespace autofill

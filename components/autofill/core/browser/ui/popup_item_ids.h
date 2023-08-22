@@ -43,7 +43,6 @@ enum class PopupItemId : int {
   kGeneratePasswordEntry,
   kShowAccountCards,
   kPasswordAccountStorageOptIn,
-  kUseVirtualCard,
   kPasswordAccountStorageOptInAndGenerate,
   kAccountStoragePasswordEntry,
   kAccountStorageUsernameEntry,

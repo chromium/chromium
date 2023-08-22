@@ -548,12 +548,6 @@ const char kAutofillEnableVirtualCardFidoEnrollmentDescription[] =
     "card is FIDO eligible the user will be prompted to register the virtual "
     "card into FIDO.";
 
-const char kAutofillEnableVirtualCardName[] =
-    "Offer to use cloud token virtual card in Autofill";
-const char kAutofillEnableVirtualCardDescription[] =
-    "When enabled, if all requirements are met, Autofill will offer to use "
-    "virtual credit cards in form filling.";
-
 const char kAutofillEnableNewSaveCardBubbleUiName[] =
     "Update UI messaging and banner image for credit card upload save";
 const char kAutofillEnableNewSaveCardBubbleUiDescription[] =

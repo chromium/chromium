@@ -624,9 +624,6 @@
 
   <!-- virtual cards related strings - start -->
   <if expr="not is_ios and not is_android">
-    <message name="IDS_AUTOFILL_CLOUD_TOKEN_DROPDOWN_OPTION_LABEL" desc="Text shown in the button in the Autofill dropdown menu when a credit card form field is queried, to offer the option to use a virtual card.">
-      Use a virtual card number...
-    </message>
     <message name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_FALLBACK_ICON_TOOLTIP" desc="The tooltip message for the omnibox icon for the virtual card enroll bubble on Desktop. This bubble prompts users if they would like to enroll in a virtual card.">
       Add virtual card
     </message>
