@@ -54,7 +54,7 @@ constexpr char kRequestBody[] = R"({
       "name": "%s"
     }
   },
-  "max_suggestions": 3,
+  "max_suggestions": %d,
   "type_detail_fields": "drive_item.title,drive_item.mimeType"
 })";
 // Maximum accepted size of an ItemSuggest response. 1MB.
@@ -97,7 +97,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
           }
         }
       })");
-constexpr char kFakeData[] = R"({
+constexpr char kFakeDataWithThreeFiles[] = R"({
   "item": [
     {
       "itemId": "foo",
@@ -141,6 +141,88 @@ constexpr char kFakeData[] = R"({
   ]
 }
 )";
+constexpr char kFakeDataWithSixFiles[] = R"({
+  "item": [
+    {
+      "itemId": "foo",
+      "url": "https://docs.google.com",
+      "driveItem": {
+        "title": "Drive Module Design Doc",
+        "mimeType": "application/vnd.google-apps.document"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened yesterday"}]
+        }
+      }
+    },
+    {
+      "itemId": "bar",
+      "url": "https://sheets.google.com",
+      "driveItem": {
+        "title": "Monthly Presentation Schedule",
+        "mimeType": "application/vnd.google-apps.spreadsheet"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened today"}]
+        }
+      }
+    },
+    {
+      "itemId": "baz",
+      "url": "https://slides.google.com",
+      "driveItem": {
+        "title": "File With A Really Really Really Really Really Long Name",
+        "mimeType": "application/vnd.google-apps.presentation"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened on Monday"}]
+        }
+      }
+    },
+    {
+      "itemId": "qux",
+      "url": "https://slides.google.com",
+      "driveItem": {
+        "title": "Cutest Kittens on the Web",
+        "mimeType": "application/vnd.google-apps.presentation"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened on Monday"}]
+        }
+      }
+    },
+    {
+      "itemId": "foobar",
+      "url": "https://docs.google.com",
+      "driveItem": {
+        "title": "Budgeting Notes",
+        "mimeType": "application/vnd.google-apps.document"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened yesterday"}]
+        }
+      }
+    },
+    {
+      "itemId": "bazqux",
+      "url": "https://sheets.google.com",
+      "driveItem": {
+        "title": "1",
+        "mimeType": "application/vnd.google-apps.spreadsheet"
+      },
+      "justification": {
+        "unstructuredJustificationDescription": {
+          "textSegment": [{"text": "You opened today"}]
+        }
+      }
+    }
+  ]
+})";
 }  // namespace
 
 // static
@@ -212,9 +294,14 @@ void DriveService::GetDriveFilesInternal() {
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpDriveModule,
           ntp_features::kNtpDriveModuleDataParam) == "fake") {
-    data_decoder::DataDecoder::ParseJsonIsolated(
-        kFakeData, base::BindOnce(&DriveService::OnJsonParsed,
-                                  weak_factory_.GetWeakPtr()));
+    base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleShowSixFiles)
+        ? data_decoder::DataDecoder::ParseJsonIsolated(
+              kFakeDataWithSixFiles, base::BindOnce(&DriveService::OnJsonParsed,
+                                                    weak_factory_.GetWeakPtr()))
+        : data_decoder::DataDecoder::ParseJsonIsolated(
+              kFakeDataWithThreeFiles,
+              base::BindOnce(&DriveService::OnJsonParsed,
+                             weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -282,12 +369,17 @@ void DriveService::OnTokenReceived(GoogleServiceAuthError error,
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  kTrafficAnnotation);
   url_loader_->SetRetryOptions(0, network::SimpleURLLoader::RETRY_NEVER);
+  const int kNumFilesRequested =
+      base::FeatureList::IsEnabled(ntp_features::kNtpDriveModuleShowSixFiles)
+          ? 6
+          : 3;
   url_loader_->AttachStringForUpload(
       base::StringPrintf(kRequestBody, kPlatform, application_locale_.c_str(),
                          base::GetFieldTrialParamValueByFeature(
                              ntp_features::kNtpDriveModule,
                              ntp_features::kNtpDriveModuleExperimentGroupParam)
-                             .c_str()),
+                             .c_str(),
+                         kNumFilesRequested),
       "application/json");
   url_loader_->DownloadToString(
       url_loader_factory_.get(),

@@ -5691,6 +5691,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ntp-drive-module-show-six-files",
+    "owners": [ "pauladedeji", "tiborg" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "ntp-dummy-modules",
     "owners": [ "pauladedeji", "tiborg" ],
     "expiry_milestone": 108
