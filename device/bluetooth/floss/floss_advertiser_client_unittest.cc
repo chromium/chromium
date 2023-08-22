@@ -26,8 +26,8 @@ using testing::DoAll;
 constexpr char kTestSender[] = ":0.1";
 const int kTestSerial = 1;
 const int32_t kRegId1 = 1;
-const int32_t kAdvId1 = 1;
-const uint32_t kCallbackId1 = 1;
+const int32_t kAdvId1 = 2;
+const uint32_t kCallbackId1 = 3;
 
 void FakeExportMethod(
     const std::string& interface_name,
@@ -244,7 +244,7 @@ TEST_F(FlossAdvertiserClientTest, StartAndStopAdvertisingSet) {
         FAIL();
       }));
   DoOnAdvertisingSetStarted(method_handler_on_advertising_set_started, kRegId1,
-                            kRegId1, /*tx_power=*/0,
+                            kAdvId1, /*tx_power=*/0,
                             AdvertisingStatus::kSuccess);
   run_loop0.Run();
 
