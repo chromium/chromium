@@ -1343,6 +1343,10 @@ bool MetricsService::PrepareInitialStabilityLog(
   auto log_histogram_writer = std::make_unique<MetricsLogHistogramWriter>(
       initial_stability_log.get(), base::Histogram::kUmaStabilityHistogramFlag);
 
+  // Add a beacon to this record to indicate that it's part of the initial
+  // stability log.
+  UMA_STABILITY_HISTOGRAM_BOOLEAN("UMA.InitialStabilityRecordBeacon", true);
+
   // Let metrics providers provide histogram snapshots independently if they
   // have any. This is done synchronously.
   delegating_provider_.RecordInitialHistogramSnapshots(

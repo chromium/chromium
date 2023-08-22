@@ -574,6 +574,8 @@ TEST_P(MetricsServiceTestWithFeatures, InitialStabilityLogAtProviderRequest) {
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   CheckForNonStabilityHistograms(uma_log);
+  EXPECT_EQ(
+      1, GetHistogramSampleCount(uma_log, "UMA.InitialStabilityRecordBeacon"));
 
   // As there wasn't an unclean shutdown, no browser crash samples should have
   // been emitted.
@@ -864,6 +866,8 @@ TEST_P(MetricsServiceTestWithStartupVisibility, InitialStabilityLogAfterCrash) {
   EXPECT_EQ(0, uma_log.user_action_event_size());
   EXPECT_EQ(0, uma_log.omnibox_event_size());
   CheckForNonStabilityHistograms(uma_log);
+  EXPECT_EQ(
+      1, GetHistogramSampleCount(uma_log, "UMA.InitialStabilityRecordBeacon"));
 
   // Verify that the histograms emitted by the test provider made it into the
   // log.

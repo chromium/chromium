@@ -338,6 +338,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="UMA.InitialStabilityRecordBeacon" enum="Boolean"
+    expires_after="2024-08-22">
+  <owner>mpearson@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Emitted (with value &quot;true&quot;) in each UMA record that's an initial
+    stability log. Missing from other types of logs such as logs from ongoing
+    Chrome use and &quot;independent&quot; logs that contain data from the
+    previous session via the persistent histograms code.
+  </summary>
+</histogram>
+
 <histogram name="UMA.InitSequence" enum="UmaInitSequence"
     expires_after="2023-12-17">
   <owner>asvitkine@chromium.org</owner>
