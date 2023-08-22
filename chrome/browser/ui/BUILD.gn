@@ -5313,6 +5313,8 @@ static_library("ui") {
       "views/permissions/chip_controller.cc",
       "views/permissions/chip_controller.h",
       "views/permissions/chooser_bubble_ui.cc",
+      "views/permissions/embedded_permission_prompt.cc",
+      "views/permissions/embedded_permission_prompt.h",
       "views/permissions/permission_prompt_bubble.cc",
       "views/permissions/permission_prompt_bubble.h",
       "views/permissions/permission_prompt_bubble_base_view.cc",
