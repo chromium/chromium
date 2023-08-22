@@ -142,9 +142,7 @@ bool IsLoadedDocWithUrl(const BrowserAccessibility* node,
                         const std::string& url) {
   return node->GetRole() == ax::mojom::Role::kRootWebArea &&
          node->GetStringAttribute(ax::mojom::StringAttribute::kUrl) == url &&
-         node->manager()->GetTreeData().loaded &&
-         node->GetData().relative_bounds.bounds.width() > 0 &&
-         node->GetData().relative_bounds.bounds.height() > 0;
+         node->manager()->GetTreeData().loaded;
 }
 
 // Recursively searches accessibility nodes in the subtree of |node| that
