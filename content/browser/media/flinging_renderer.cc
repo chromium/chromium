@@ -100,10 +100,10 @@ void FlingingRenderer::StartPlayingFrom(base::TimeDelta time) {
 void FlingingRenderer::SetPlaybackRate(double playback_rate) {
   DVLOG(2) << __func__;
   if (playback_rate == 0) {
-    SetExpectedPlayState(PlayState::PAUSED);
+    SetExpectedPlayState(PlayState::kPaused);
     controller_->GetMediaController()->Pause();
   } else {
-    SetExpectedPlayState(PlayState::PLAYING);
+    SetExpectedPlayState(PlayState::kPlaying);
     controller_->GetMediaController()->Play();
   }
 }
@@ -123,7 +123,7 @@ media::RendererType FlingingRenderer::GetRendererType() {
 
 void FlingingRenderer::SetExpectedPlayState(PlayState state) {
   DVLOG(3) << __func__ << " : state " << static_cast<int>(state);
-  DCHECK(state == PlayState::PLAYING || state == PlayState::PAUSED);
+  DCHECK(state == PlayState::kPlaying || state == PlayState::kPaused);
 
   expected_play_state_ = state;
   play_state_is_stable_ = (expected_play_state_ == last_play_state_received_);
@@ -153,8 +153,8 @@ void FlingingRenderer::OnMediaStatusUpdated(const media::MediaStatus& status) {
   // UNKNOWN and BUFFERING states are uninteresting and can be safely ignored.
   // STOPPED normally causes the session to teardown, and |this| is destroyed
   // shortly after.
-  if (current_state != PlayState::PLAYING &&
-      current_state != PlayState::PAUSED) {
+  if (current_state != PlayState::kPlaying &&
+      current_state != PlayState::kPaused) {
     DVLOG(3) << __func__ << " : external state ignored: "
              << static_cast<int>(current_state);
     return;

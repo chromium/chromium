@@ -11,19 +11,15 @@
 
 namespace media {
 
-// Describes the current state of media being controlled via the MediaController
-// interface. This is a copy of the media_router.mojom.MediaStatus interface,
-// without the cast specific portions.
-// TODO(https://crbug.com/820277): Deduplicate media_router::MediaStatus.
 struct MEDIA_EXPORT MediaStatus {
  public:
   enum class State {
-    UNKNOWN,
-    PLAYING,
-    PAUSED,
-    BUFFERING,
-    STOPPED,
-    STATE_MAX = STOPPED,
+    kUnknown,
+    kPlaying,
+    kPaused,
+    kBuffering,
+    kStopped,
+    kStateMax = kStopped,
   };
 
   MediaStatus();
@@ -49,7 +45,7 @@ struct MEDIA_EXPORT MediaStatus {
   // If this is true, the media's current playback position can be changed.
   bool can_seek = false;
 
-  State state = State::UNKNOWN;
+  State state = State::kUnknown;
 
   bool is_muted = false;
 

@@ -2614,10 +2614,10 @@ void WebMediaPlayerImpl::OnRemotePlayStateChange(
   DCHECK(is_flinging_);
   DCHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (state == media::MediaStatus::State::PLAYING && Paused()) {
+  if (state == media::MediaStatus::State::kPlaying && Paused()) {
     DVLOG(1) << __func__ << " requesting PLAY.";
     client_->ResumePlayback();
-  } else if (state == media::MediaStatus::State::PAUSED && !Paused()) {
+  } else if (state == media::MediaStatus::State::kPaused && !Paused()) {
     DVLOG(1) << __func__ << " requesting PAUSE.";
     client_->PausePlayback(
         WebMediaPlayerClient::PauseReason::kRemotePlayStateChange);

@@ -74,7 +74,7 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
 
   // The play state that we expect the remote device to reach.
   // Updated whenever WMPI sends play/pause commands.
-  PlayState expected_play_state_ = PlayState::UNKNOWN;
+  PlayState expected_play_state_ = PlayState::kUnknown;
 
   // True when the remote device has reached the expected play state.
   // False when it is transitioning.
@@ -82,7 +82,7 @@ class CONTENT_EXPORT FlingingRenderer : public media::Renderer,
 
   // The last "stable" play state received from the cast device.
   // Only updated when |play_state_is_stable_| is true.
-  PlayState last_play_state_received_ = PlayState::UNKNOWN;
+  PlayState last_play_state_received_ = PlayState::kUnknown;
 
   raw_ptr<media::RendererClient> client_;
 
