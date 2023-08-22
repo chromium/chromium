@@ -57,20 +57,22 @@ void NetworkingPrivateDelegateFactory::SetUIDelegateFactory(
   ui_factory_ = std::move(factory);
 }
 
-KeyedService* NetworkingPrivateDelegateFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NetworkingPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* browser_context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  NetworkingPrivateDelegate* delegate;
+  std::unique_ptr<NetworkingPrivateDelegate> delegate;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  delegate = new NetworkingPrivateChromeOS(browser_context);
+  delegate = std::make_unique<NetworkingPrivateChromeOS>(browser_context);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  delegate = new NetworkingPrivateLacros(browser_context);
+  delegate = std::make_unique<NetworkingPrivateLacros>(browser_context);
 #elif BUILDFLAG(IS_LINUX)
-  delegate = new NetworkingPrivateLinux();
+  delegate = std::make_unique<NetworkingPrivateLinux>();
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<wifi::WiFiService> wifi_service(wifi::WiFiService::Create());
-  delegate = new NetworkingPrivateServiceClient(std::move(wifi_service));
+  delegate =
+      std::make_unique<NetworkingPrivateServiceClient>(std::move(wifi_service));
 #else
   NOTREACHED();
   delegate = nullptr;

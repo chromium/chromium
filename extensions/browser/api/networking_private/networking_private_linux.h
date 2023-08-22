@@ -34,6 +34,7 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   typedef std::vector<std::string> GuidList;
 
   NetworkingPrivateLinux();
+  ~NetworkingPrivateLinux() override;
 
   NetworkingPrivateLinux(const NetworkingPrivateLinux&) = delete;
   NetworkingPrivateLinux& operator=(const NetworkingPrivateLinux&) = delete;
@@ -102,7 +103,6 @@ class NetworkingPrivateLinux : public NetworkingPrivateDelegate {
   void RemoveObserver(NetworkingPrivateDelegateObserver* observer) override;
 
  private:
-  ~NetworkingPrivateLinux() override;
 
   // https://developer.gnome.org/NetworkManager/unstable/spec.html#type-NM_DEVICE_TYPE
   enum DeviceType {
