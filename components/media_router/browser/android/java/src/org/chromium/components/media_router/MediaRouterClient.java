@@ -74,9 +74,6 @@ public abstract class MediaRouterClient {
     /** Runs deferredTask on the main thread when the main thread is idle. */
     public abstract void addDeferredTask(Runnable deferredTask);
 
-    /** @return true if the kCafMRPDeferredDiscovery feature flag is enabled. */
-    public abstract boolean isCafMrpDeferredDiscoveryEnabled();
-
     /**
      * @return true if the kCastAnotherContentWhileCasting feature flag is enabled.
      */

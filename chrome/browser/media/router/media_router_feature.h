@@ -29,10 +29,6 @@ void ClearMediaRouterStoredPrefsForTesting();
 BASE_DECLARE_FEATURE(kMediaRouterOTRInstance);
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, the sink discovery on Caf MRP is run asynchronously when the main
-// thread is idle.
-BASE_DECLARE_FEATURE(kCafMRPDeferredDiscovery);
-
 // If enabled, and the HTMLMediaElement source changes (e.g. started observing
 // new source, and stopped observing the first one), the new source is cast
 // instead.

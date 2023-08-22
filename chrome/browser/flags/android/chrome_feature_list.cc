@@ -344,7 +344,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &paint_preview::kPaintPreviewDemo,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
-    &media_router::kCafMRPDeferredDiscovery,
     &media_router::kCastAnotherContentWhileCasting,
     &messages::kMessagesForAndroidInfrastructure,
     &messages::kMessagesForAndroidSaveCard,

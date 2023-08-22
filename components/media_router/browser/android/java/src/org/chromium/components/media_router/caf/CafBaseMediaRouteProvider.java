@@ -117,33 +117,25 @@ public abstract class CafBaseMediaRouteProvider
             return;
         }
 
-        if (MediaRouterClient.getInstance().isCafMrpDeferredDiscoveryEnabled()) {
-            // Construct a DiscoveryCallback and add it to mDiscoveryCallbacks so that we don't
-            // create duplicate DiscoveryCallback for the same application id.
-            callback = new DiscoveryCallback(sourceId, this, routeSelector);
-            mDiscoveryCallbacks.put(applicationId, callback);
+        // Construct a DiscoveryCallback and add it to mDiscoveryCallbacks so that we don't
+        // create duplicate DiscoveryCallback for the same application id.
+        callback = new DiscoveryCallback(sourceId, this, routeSelector);
+        mDiscoveryCallbacks.put(applicationId, callback);
 
-            // Use deferred task here because it's likely that we need to initialize the
-            // GlobalMediaRouter, which is slow and might block the main thread.
-            // More details in crbug.com/1368805.
-            MediaRouterClient.getInstance().addDeferredTask(() -> {
-                DiscoveryCallback discovery_callback = mDiscoveryCallbacks.get(applicationId);
-                if (discovery_callback == null) return;
+        // Use deferred task here because it's likely that we need to initialize the
+        // GlobalMediaRouter, which is slow and might block the main thread.
+        // More details in crbug.com/1368805.
+        MediaRouterClient.getInstance().addDeferredTask(() -> {
+            DiscoveryCallback discovery_callback = mDiscoveryCallbacks.get(applicationId);
+            if (discovery_callback == null) return;
 
-                // Query Android media router for sinks that have been discovered and send sink
-                // updates to the browser.
-                List<MediaSink> knownSinks = getKnownSinksFromAndroidMediaRouter(routeSelector);
-                discovery_callback.setAndUpdateSinks(knownSinks);
-                mAndroidMediaRouter.addCallback(routeSelector, discovery_callback,
-                        MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
-            });
-        } else {
+            // Query Android media router for sinks that have been discovered and send sink
+            // updates to the browser.
             List<MediaSink> knownSinks = getKnownSinksFromAndroidMediaRouter(routeSelector);
-            callback = new DiscoveryCallback(sourceId, knownSinks, this, routeSelector);
+            discovery_callback.setAndUpdateSinks(knownSinks);
             mAndroidMediaRouter.addCallback(
-                    routeSelector, callback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
-            mDiscoveryCallbacks.put(applicationId, callback);
-        }
+                    routeSelector, discovery_callback, MediaRouter.CALLBACK_FLAG_REQUEST_DISCOVERY);
+        });
     }
 
     @Override
