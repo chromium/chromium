@@ -299,7 +299,7 @@ void HistoryClustersTabHelper::DidStartNavigation(
   // The remaining logic only pertains to if the previously committed navigation
   // was the HistoryClusters UI.
   if (!IsHistoryPage(navigation_handle->GetWebContents()->GetLastCommittedURL(),
-                     GURL(history_clusters::kChromeUIHistoryClustersURL))) {
+                     GURL(history_clusters::GetChromeUIHistoryClustersURL()))) {
     return;
   }
 
@@ -332,7 +332,7 @@ void HistoryClustersTabHelper::DidFinishNavigation(
   }
 
   if (!IsHistoryPage(navigation_handle->GetURL(),
-                     GURL(history_clusters::kChromeUIHistoryClustersURL))) {
+                     GURL(history_clusters::GetChromeUIHistoryClustersURL()))) {
     return;
   }
 

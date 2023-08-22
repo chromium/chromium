@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/json/values_util.h"
@@ -25,6 +26,7 @@
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/file_clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_debug_jsons.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -169,8 +171,14 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
 void HistoryClustersService::Shutdown() {}
 
 bool HistoryClustersService::IsJourneysEnabledAndVisible() const {
+  const bool rename_journeys = base::FeatureList::IsEnabled(kRenameJourneys);
+  const bool journeys_is_managed =
+      pref_service_->IsManagedPreference(prefs::kVisible);
+  // When history_clusters::kRenameJourneys is enabled, history clusters are
+  // always visible unless the visibility prefs is set to false by policy.
   return is_journeys_feature_flag_enabled_ &&
-         pref_service_->GetBoolean(prefs::kVisible);
+         (pref_service_->GetBoolean(prefs::kVisible) ||
+          (rename_journeys && !journeys_is_managed));
 }
 
 // static

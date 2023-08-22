@@ -116,6 +116,9 @@
 
 
   <!-- History Clusters Actions. -->
+  <message name="IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox suggestion in sentence case. Clicking this button takes users to a view of their browsing history related to the suggestion.">
+    Resume browsing
+  </message>
   <message name="IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox action. Clicking this button takes users to a view of their browsing history related to the attached suggestion.">
     Resume your journey
   </message>

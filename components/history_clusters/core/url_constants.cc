@@ -3,9 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/history_clusters/core/url_constants.h"
+#include "base/feature_list.h"
+#include "components/history_clusters/core/features.h"
 
 namespace history_clusters {
 
-const char kChromeUIHistoryClustersURL[] = "chrome://history/journeys";
+const char* GetChromeUIHistoryClustersURL() {
+  return base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
+             ? "chrome://history/2"
+             : "chrome://history/journeys";
+}
 
 }  // namespace history_clusters
