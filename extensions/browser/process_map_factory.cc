@@ -32,9 +32,10 @@ ProcessMapFactory::ProcessMapFactory()
 
 ProcessMapFactory::~ProcessMapFactory() = default;
 
-KeyedService* ProcessMapFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProcessMapFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  ProcessMap* process_map = new ProcessMap();
+  std::unique_ptr<ProcessMap> process_map = std::make_unique<ProcessMap>();
   process_map->set_is_lock_screen_context(
       ExtensionsBrowserClient::Get()->IsLockScreenContext(context));
   return process_map;
