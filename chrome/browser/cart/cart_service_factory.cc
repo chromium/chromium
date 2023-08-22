@@ -55,7 +55,8 @@ CartServiceFactory::CartServiceFactory()
 
 CartServiceFactory::~CartServiceFactory() = default;
 
-KeyedService* CartServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CartServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildCartService(context).release();
+  return BuildCartService(context);
 }
