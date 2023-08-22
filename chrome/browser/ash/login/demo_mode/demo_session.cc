@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -552,6 +553,7 @@ void DemoSession::RegisterDemoModeAAExperiment() {
 }
 
 void DemoSession::OnSessionStateChanged() {
+  TRACE_EVENT0("login", "DemoSession::OnSessionStateChanged");
   switch (session_manager::SessionManager::Get()->session_state()) {
     case session_manager::SessionState::LOGIN_PRIMARY:
       EnsureResourcesLoaded(

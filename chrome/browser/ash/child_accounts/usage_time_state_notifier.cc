@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -72,6 +73,7 @@ void UsageTimeStateNotifier::ChangeUsageTimeState(
 }
 
 void UsageTimeStateNotifier::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "UsageTimeStateNotifier::OnSessionStateChanged");
   ChangeUsageTimeState(GetCurrentState());
 }
 

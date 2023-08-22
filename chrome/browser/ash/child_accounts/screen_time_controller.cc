@@ -16,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limit_override.h"
@@ -478,6 +479,7 @@ ScreenTimeController::ConvertPolicyType(
 }
 
 void ScreenTimeController::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "ScreenTimeController::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
   absl::optional<usage_time_limit::State> last_state = GetLastStateFromPref();

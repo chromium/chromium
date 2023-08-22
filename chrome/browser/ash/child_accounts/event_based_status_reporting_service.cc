@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
@@ -73,6 +74,7 @@ void EventBasedStatusReportingService::OnPackageModified(
 }
 
 void EventBasedStatusReportingService::OnSessionStateChanged() {
+  TRACE_EVENT0("ui", "EventBasedStatusReportingService::OnSessionStateChanged");
   session_manager::SessionState session_state =
       session_manager::SessionManager::Get()->session_state();
 
