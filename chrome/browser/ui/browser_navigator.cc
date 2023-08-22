@@ -658,10 +658,19 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  // If no source WebContents was specified, we use the selected one from
-  // the target browser. This must happen first, before
-  // GetBrowserAndTabForDisposition() has a chance to replace |params->browser|
-  // with another one.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  const GURL& source_url =
+      params->source_contents ? params->source_contents->GetURL() : GURL();
+  if (lacros_url_handling::IsNavigationInterceptable(*params, source_url) &&
+      lacros_url_handling::MaybeInterceptNavigation(params->url)) {
+    return nullptr;
+  }
+#endif
+
+  // If no source WebContents was specified, we use the selected one from the
+  // target browser. This must happen before GetBrowserAndTabForDisposition()
+  // has a chance to replace |params->browser| with another one, but after the
+  // above check that relies on the original source_contents value.
   if (!params->source_contents && params->browser) {
     params->source_contents =
         params->browser->tab_strip_model()->GetActiveWebContents();
@@ -740,14 +749,8 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
   }
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const GURL& source_url =
-      params->source_contents ? params->source_contents->GetURL() : GURL();
-  if (lacros_url_handling::IsNavigationInterceptable(*params, source_url) &&
-      lacros_url_handling::MaybeInterceptNavigation(params->url)) {
-    return nullptr;
-  }
-  // If Lacros comes here with an internal os:// redirect scheme to Ash, and Ash
-  // does not accept the URL, we convert it into a blocked url instead.
+  // If Lacros gets here with an internal os:// redirect scheme to Ash, Ash
+  // did not accept the URL. Convert it into a blocked URL instead.
   if (crosapi::gurl_os_handler_utils::IsAshOsUrl(params->url)) {
     params->url = GURL(content::kBlockedURL);
   }
