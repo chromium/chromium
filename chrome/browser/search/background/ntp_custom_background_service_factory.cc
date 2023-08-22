@@ -37,7 +37,9 @@ NtpCustomBackgroundServiceFactory::NtpCustomBackgroundServiceFactory()
 NtpCustomBackgroundServiceFactory::~NtpCustomBackgroundServiceFactory() =
     default;
 
-KeyedService* NtpCustomBackgroundServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NtpCustomBackgroundServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new NtpCustomBackgroundService(Profile::FromBrowserContext(context));
+  return std::make_unique<NtpCustomBackgroundService>(
+      Profile::FromBrowserContext(context));
 }
