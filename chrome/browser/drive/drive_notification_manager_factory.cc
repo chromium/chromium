@@ -72,9 +72,10 @@ DriveNotificationManagerFactory::DriveNotificationManagerFactory()
 
 DriveNotificationManagerFactory::~DriveNotificationManagerFactory() = default;
 
-KeyedService* DriveNotificationManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DriveNotificationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new DriveNotificationManager(
+  return std::make_unique<DriveNotificationManager>(
       GetInvalidationService(Profile::FromBrowserContext(context)));
 }
 
