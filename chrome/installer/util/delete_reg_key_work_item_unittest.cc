@@ -4,15 +4,14 @@
 
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 
-#include <windows.h>
-
-#include <atlsecurity.h>  // NOLINT
 #include <stddef.h>
+#include <windows.h>
 
 #include <memory>
 
 #include "base/logging.h"
 #include "base/win/registry.h"
+#include "base/win/security_descriptor.h"
 #include "chrome/installer/util/registry_test_data.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,17 +102,21 @@ TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   EXPECT_EQ(ERROR_SUCCESS,
             subkey2.Create(subkey.Handle(), L"Subkey2", KEY_WRITE | WRITE_DAC));
   EXPECT_EQ(ERROR_SUCCESS, subkey2.WriteValue(L"", 2U));
-  CSecurityDesc sec_desc;
-  sec_desc.FromString(L"D:PAI(A;OICI;KR;;;BU)");  // builtin users read
-  EXPECT_EQ(ERROR_SUCCESS,
-            RegSetKeySecurity(subkey.Handle(), DACL_SECURITY_INFORMATION,
-                              const_cast<SECURITY_DESCRIPTOR*>(
-                                  sec_desc.GetPSECURITY_DESCRIPTOR())));
-  sec_desc.FromString(L"D:PAI(A;OICI;KA;;;BU)");  // builtin users all access
+  // builtin users read.
+  auto sd = base::win::SecurityDescriptor::FromSddl(L"D:PAI(A;OICI;KR;;;BU)");
+  ASSERT_TRUE(sd.has_value());
+  SECURITY_DESCRIPTOR sec_desc;
+  sd->ToAbsolute(sec_desc);
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      RegSetKeySecurity(subkey.Handle(), DACL_SECURITY_INFORMATION, &sec_desc));
+  // builtin users all access.
+  sd = base::win::SecurityDescriptor::FromSddl(L"D:PAI(A;OICI;KA;;;BU)");
+  ASSERT_TRUE(sd.has_value());
+  sd->ToAbsolute(sec_desc);
   EXPECT_EQ(ERROR_SUCCESS,
             RegSetKeySecurity(subkey2.Handle(), DACL_SECURITY_INFORMATION,
-                              const_cast<SECURITY_DESCRIPTOR*>(
-                                  sec_desc.GetPSECURITY_DESCRIPTOR())));
+                              &sec_desc));
   subkey2.Close();
   subkey.Close();
   key.Close();
@@ -135,10 +138,9 @@ TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValueDW(L"SomeValue", &dw_value));
   EXPECT_EQ(1U, dw_value);
   // Give users all access to the subkey so it can be deleted.
-  EXPECT_EQ(ERROR_SUCCESS,
-            RegSetKeySecurity(key.Handle(), DACL_SECURITY_INFORMATION,
-                              const_cast<SECURITY_DESCRIPTOR*>(
-                                  sec_desc.GetPSECURITY_DESCRIPTOR())));
+  EXPECT_EQ(
+      ERROR_SUCCESS,
+      RegSetKeySecurity(key.Handle(), DACL_SECURITY_INFORMATION, &sec_desc));
   EXPECT_EQ(ERROR_SUCCESS, key.OpenKey(L"Subkey2", KEY_QUERY_VALUE));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValueDW(L"", &dw_value));
   EXPECT_EQ(2U, dw_value);
