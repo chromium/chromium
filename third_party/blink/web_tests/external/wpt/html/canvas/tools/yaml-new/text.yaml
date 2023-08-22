@@ -1606,4 +1606,74 @@
     ctx.fontStretch = "abcd";
     @assert ctx.fontStretch === "ultra-expanded";
 
+- name: 2d.text.fontVariantCaps1
+  desc: Testing small caps setting in fontVariant
+  code: |
+    ctx.font = "32px serif";
+    ctx.fontVariantCaps = "small-caps";
+    // This should render the same as font = "small-caps 32px serif".
+    ctx.fillText("Hello World", 20, 100);
+  reference: |
+    ctx.font = "small-caps 32px serif";
+    ctx.fillText("Hello World", 20, 100);
+
+- name: 2d.text.fontVariantCaps2
+  desc: Testing small caps setting in fontVariant
+  code: |
+    ctx.font = "small-caps 32px serif";
+    // "mismatch" test, to verify that small-caps does change the rendering.
+    smallCaps_len = ctx.measureText("Hello World").width;
+
+    ctx.font = "32px serif";
+    normalCaps_len = ctx.measureText("Hello World").width;
+    @assert smallCaps_len != normalCaps_len;
+
+- name: 2d.text.fontVariantCaps3
+  desc: Testing small caps setting in fontVariant
+  code: |
+    ctx.font = "32px serif";
+    ctx.fontVariantCaps = "all-small-caps";
+    // This should render the same as using font = "small-caps 32px serif"
+    // with all the underlying text in lowercase.
+    ctx.fillText("Hello World", 20, 100);
+  reference: |
+    ctx.font = "small-caps 32px serif";
+    ctx.fillText("hello world", 20, 100);
+
+- name: 2d.text.fontVariantCaps4
+  desc: Testing small caps setting in fontVariant
+  code: |
+    ctx.font = "small-caps 32px serif";
+    // fontVariantCaps overrides the small-caps setting from the font attribute
+    // (spec unclear, cf. https://github.com/whatwg/html/issues/8103)
+    ctx.fontVariantCaps = "all-small-caps";
+    ctx.fillText("Hello World", 20, 100);
+  reference: |
+    ctx.font = "small-caps 32px serif";
+    ctx.fillText("hello world", 20, 100);
+
+- name: 2d.text.fontVariantCaps5
+  desc: Testing small caps setting in fontVariant
+  code: |
+    ctx.font = "small-caps 32px serif";
+    // fontVariantCaps 'normal' does not override the setting from the font attribute.
+    // (spec unclear, cf. https://github.com/whatwg/html/issues/8103)
+    ctx.fontVariantCaps = "normal";
+    ctx.fillText("Hello World", 20, 100);
+  reference: |
+    ctx.font = "small-caps 32px serif";
+    ctx.fillText("Hello World", 20, 100);
+
+- name: 2d.text.fontVariantCaps6
+  desc: Testing small caps setting in fontVariant
+  code: |
+    // fontVariantCaps is reset when the font attribute is set.
+    // (spec unclear, cf. https://github.com/whatwg/html/issues/8103)
+    ctx.fontVariantCaps = "all-small-caps";
+    ctx.font = "32px serif";
+    ctx.fillText("Hello World", 20, 100);
+  reference: |
+    ctx.font = "32px serif";
+    ctx.fillText("Hello World", 20, 100);
+
 # TODO: shadows, alpha, composite, clip
