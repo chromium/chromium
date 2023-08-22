@@ -24,8 +24,11 @@ source_set("password_checkup") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/settings/password:features",
     "//ios/chrome/browser/ui/settings/password/password_issues",
+    "//ios/chrome/browser/ui/settings/password/reauthentication",
     "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]
   public_deps = [ "//components/password_manager/core/browser" ]
@@ -73,6 +76,7 @@ source_set("password_checkup_constants") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "password_checkup_coordinator_unittest.mm",
     "password_checkup_mediator_unittest.mm",
     "password_checkup_view_controller_unittest.mm",
   ]
@@ -92,14 +96,21 @@ source_set("unit_tests") {
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/passwords:store_factory",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/password/reauthentication:reauthentication_ui",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

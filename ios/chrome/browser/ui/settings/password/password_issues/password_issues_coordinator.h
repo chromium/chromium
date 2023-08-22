@@ -10,7 +10,7 @@
 @protocol ApplicationCommands;
 class Browser;
 @class PasswordIssuesCoordinator;
-@class ReauthenticationModule;
+@protocol ReauthenticationProtocol;
 
 namespace password_manager {
 enum class WarningType;
@@ -36,7 +36,7 @@ enum class WarningType;
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Reauthentication module used by password details coordinator.
-@property(nonatomic, strong) ReauthenticationModule* reauthModule;
+@property(nonatomic, strong) id<ReauthenticationProtocol> reauthModule;
 
 @property(nonatomic, weak) id<PasswordIssuesCoordinatorDelegate> delegate;
 

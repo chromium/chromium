@@ -26,7 +26,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/password_utils.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using password_manager::WarningType;

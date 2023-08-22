@@ -20,6 +20,7 @@ source_set("reauthentication") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/settings/password:features",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
     "//ui/base",
   ]

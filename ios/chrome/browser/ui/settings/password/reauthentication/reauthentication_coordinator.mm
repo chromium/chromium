@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_view_controller.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -64,8 +65,12 @@
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
-    DCHECK(reauthenticationModule);
-    _reauthModule = reauthenticationModule;
+    // Build reauth module if none is supplied.
+    // Callers can supply one for testing or for reusing the authentication
+    // result. See ReauthenticationProtocol.
+    _reauthModule = reauthenticationModule
+                        ? reauthenticationModule
+                        : password_manager::BuildReauthenticationModule();
     _baseNavigationController = navigationController;
     _dispatcher =
         static_cast<id<ApplicationCommands>>(browser->GetCommandDispatcher());

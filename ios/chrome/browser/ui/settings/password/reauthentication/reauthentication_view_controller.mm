@@ -44,6 +44,10 @@
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
+  // Restore navigation bar background color to its default value.
+  // The view controller under self in the stack could have changed it.
+  self.navigationController.navigationBar.backgroundColor = nil;
+
   if (_reauthUponPresentation) {
     [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
     [self triggerLocalAuthentication];
