@@ -29,9 +29,10 @@ ExtensionPrefValueMapFactory* ExtensionPrefValueMapFactory::GetInstance() {
   return base::Singleton<ExtensionPrefValueMapFactory>::get();
 }
 
-KeyedService* ExtensionPrefValueMapFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionPrefValueMapFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionPrefValueMap();
+  return std::make_unique<ExtensionPrefValueMap>();
 }
 
 content::BrowserContext* ExtensionPrefValueMapFactory::GetBrowserContextToUse(
