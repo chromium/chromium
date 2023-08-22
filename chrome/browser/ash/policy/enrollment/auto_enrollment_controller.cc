@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -126,6 +127,16 @@ std::string AutoEnrollmentStateToString(AutoEnrollmentState state) {
   }
 }
 
+// Schedules immediate initialization of the `DeviceManagementService` and
+// returns it.
+DeviceManagementService* InitializeAndGetDeviceManagementService() {
+  BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  DeviceManagementService* service = connector->device_management_service();
+  service->ScheduleInitialization(0);
+  return service;
+}
+
 bool IsSystemClockSynchronized(
     AutoEnrollmentController::SystemClockSyncState state) {
   switch (state) {
@@ -233,42 +244,12 @@ void EnrollmentFwmpHelper::OnGetFirmwareManagementParametersReceived(
 
 AutoEnrollmentController::AutoEnrollmentController(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : AutoEnrollmentController(
-          ash::DeviceSettingsService::Get(),
-          g_browser_process->platform_part()
-              ->browser_policy_connector_ash()
-              ->device_management_service(),
-          g_browser_process->platform_part()
-              ->browser_policy_connector_ash()
-              ->GetStateKeysBroker(),
-          ash::NetworkHandler::Get()->network_state_handler(),
-          std::make_unique<AutoEnrollmentClientImpl::FactoryImpl>(),
-          base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create),
-          base::BindRepeating(EnrollmentStateFetcher::Create),
-          shared_url_loader_factory) {}
-
-AutoEnrollmentController::AutoEnrollmentController(
-    ash::DeviceSettingsService* device_settings_service,
-    DeviceManagementService* device_management_service,
-    ServerBackedStateKeysBroker* state_keys_broker,
-    ash::NetworkStateHandler* network_state_handler,
-    std::unique_ptr<AutoEnrollmentClient::Factory>
-        auto_enrollment_client_factory,
-    RlweClientFactory psm_rlwe_client_factory,
-    EnrollmentStateFetcher::Factory enrollment_state_fetcher_factory,
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
-    : device_settings_service_(device_settings_service),
-      device_management_service_(device_management_service),
-      state_keys_broker_(state_keys_broker),
-      enrollment_fwmp_helper_(std::make_unique<EnrollmentFwmpHelper>(
-          ash::InstallAttributesClient::Get())),
-      auto_enrollment_client_factory_(
-          std::move(auto_enrollment_client_factory)),
-      psm_rlwe_client_factory_(std::move(psm_rlwe_client_factory)),
+    : enrollment_fwmp_helper_(ash::InstallAttributesClient::Get()),
+      psm_rlwe_client_factory_(
+          base::BindRepeating(&policy::psm::RlweDmserverClientImpl::Create)),
       enrollment_state_fetcher_factory_(
-          std::move(enrollment_state_fetcher_factory)),
-      shared_url_loader_factory_(shared_url_loader_factory),
-      network_state_handler_(network_state_handler) {}
+          base::BindRepeating(EnrollmentStateFetcher::Create)),
+      shared_url_loader_factory_(shared_url_loader_factory) {}
 
 AutoEnrollmentController::~AutoEnrollmentController() = default;
 
@@ -292,9 +273,12 @@ void AutoEnrollmentController::Start() {
   }
 
   if (!network_state_observation_.IsObserving()) {
+    DCHECK(ash::NetworkHandler::IsInitialized())
+        << "NetworkHandler must be initialized before being observed.";
     // The controller could have already subscribed on the start and now we're
     // restarting after an error.
-    network_state_observation_.Observe(network_state_handler_);
+    network_state_observation_.Observe(
+        ash::NetworkHandler::Get()->network_state_handler());
   }
 
   if (!AutoEnrollmentTypeChecker::Initialized()) {
@@ -335,14 +319,16 @@ void AutoEnrollmentController::Start() {
     // state callback until final state is available.
     UpdateState(AutoEnrollmentState::kPending);
 
-    device_management_service_->ScheduleInitialization(0);
     enrollment_state_fetcher_ = enrollment_state_fetcher_factory_.Run(
         base::BindRepeating(&AutoEnrollmentController::UpdateState,
                             weak_ptr_factory_.GetWeakPtr()),
         g_browser_process->local_state(), psm_rlwe_client_factory_,
-        device_management_service_, shared_url_loader_factory_,
-        ash::SystemClockClient::Get(), state_keys_broker_,
-        device_settings_service_);
+        InitializeAndGetDeviceManagementService(), shared_url_loader_factory_,
+        ash::SystemClockClient::Get(),
+        g_browser_process->platform_part()
+            ->browser_policy_connector_ash()
+            ->GetStateKeysBroker(),
+        ash::DeviceSettingsService::Get());
 
     enrollment_state_fetcher_->Start();
     return;
@@ -354,7 +340,7 @@ void AutoEnrollmentController::Start() {
   // `AutoEnrollmentController` could wait for it if requested.
   system_clock_sync_state_ = SystemClockSyncState::kCanWaitForSync;
 
-  enrollment_fwmp_helper_->DetermineDevDisableBoot(
+  enrollment_fwmp_helper_.DetermineDevDisableBoot(
       base::BindOnce(&AutoEnrollmentController::OnDevDisableBootDetermined,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -405,7 +391,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
 
   // Start by checking if the device has already been owned.
   UpdateState(AutoEnrollmentState::kPending);
-  device_settings_service_->GetOwnershipStatusAsync(
+  ash::DeviceSettingsService::Get()->GetOwnershipStatusAsync(
       base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
                      client_start_weak_factory_.GetWeakPtr()));
 }
@@ -446,10 +432,9 @@ void AutoEnrollmentController::SetRlweClientFactoryForTesting(
 }
 
 void AutoEnrollmentController::SetAutoEnrollmentClientFactoryForTesting(
-    std::unique_ptr<AutoEnrollmentClient::Factory>
-        auto_enrollment_client_factory) {
+    AutoEnrollmentClient::Factory* auto_enrollment_client_factory) {
   CHECK_IS_TEST();
-  auto_enrollment_client_factory_ = std::move(auto_enrollment_client_factory);
+  testing_auto_enrollment_client_factory_ = auto_enrollment_client_factory;
 }
 
 void AutoEnrollmentController::OnOwnershipStatusCheckDone(
@@ -463,9 +448,12 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
             kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
-          state_keys_broker_->RequestStateKeys(
-              base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
-                             client_start_weak_factory_.GetWeakPtr()));
+          g_browser_process->platform_part()
+              ->browser_policy_connector_ash()
+              ->GetStateKeysBroker()
+              ->RequestStateKeys(
+                  base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
+                                 client_start_weak_factory_.GetWeakPtr()));
           break;
         case AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination:
           StartClientForInitialEnrollment();
@@ -508,14 +496,19 @@ void AutoEnrollmentController::StartClientForFRE(
       ++request_state_keys_tries_;
       // Retry to fetch the state keys. For devices where FRE is required to be
       // checked, we can't proceed with empty state keys.
-      state_keys_broker_->RequestStateKeys(
-          base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
-                         client_start_weak_factory_.GetWeakPtr()));
+      g_browser_process->platform_part()
+          ->browser_policy_connector_ash()
+          ->GetStateKeysBroker()
+          ->RequestStateKeys(
+              base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
+                             client_start_weak_factory_.GetWeakPtr()));
     } else {
       UpdateState(AutoEnrollmentState::kNoEnrollment);
     }
     return;
   }
+
+  DeviceManagementService* service = InitializeAndGetDeviceManagementService();
 
   int power_initial =
       GetSanitizedArg(ash::switches::kEnterpriseEnrollmentInitialModulus);
@@ -527,14 +520,11 @@ void AutoEnrollmentController::StartClientForFRE(
     power_initial = power_limit;
   }
 
-  device_management_service_->ScheduleInitialization(0);
-
-  client_ = auto_enrollment_client_factory_->CreateForFRE(
+  client_ = GetAutoEnrollmentClientFactory()->CreateForFRE(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
-      device_management_service_, g_browser_process->local_state(),
-      shared_url_loader_factory_, state_keys.front(), power_initial,
-      power_limit);
+      service, g_browser_process->local_state(), shared_url_loader_factory_,
+      state_keys.front(), power_initial, power_limit);
 
   LOG(WARNING) << "Starting auto-enrollment client for FRE.";
   client_->Start();
@@ -562,7 +552,7 @@ void AutoEnrollmentController::OnSystemClockSyncResult(
 }
 
 void AutoEnrollmentController::StartClientForInitialEnrollment() {
-  device_management_service_->ScheduleInitialization(0);
+  DeviceManagementService* service = InitializeAndGetDeviceManagementService();
 
   ash::system::StatisticsProvider* provider =
       ash::system::StatisticsProvider::GetInstance();
@@ -579,14 +569,13 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
   CHECK(!rlz_brand_code->empty());
 
   const auto plaintext_id = psm::ConstructRlweId();
-  client_ = auto_enrollment_client_factory_->CreateForInitialEnrollment(
+  client_ = GetAutoEnrollmentClientFactory()->CreateForInitialEnrollment(
       base::BindRepeating(&AutoEnrollmentController::UpdateState,
                           weak_ptr_factory_.GetWeakPtr()),
-      device_management_service_, g_browser_process->local_state(),
-      shared_url_loader_factory_, std::string(serial_number.value()),
-      std::string(rlz_brand_code.value()),
+      service, g_browser_process->local_state(), shared_url_loader_factory_,
+      std::string(serial_number.value()), std::string(rlz_brand_code.value()),
       std::make_unique<psm::RlweDmserverClientImpl>(
-          device_management_service_, shared_url_loader_factory_, plaintext_id,
+          service, shared_url_loader_factory_, plaintext_id,
           psm_rlwe_client_factory_));
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
@@ -617,7 +606,7 @@ void AutoEnrollmentController::UpdateState(AutoEnrollmentState new_state) {
     DeviceMode device_mode = ash::InstallAttributes::Get()->GetMode();
     if (device_mode == DeviceMode::DEVICE_MODE_PENDING ||
         device_mode == DeviceMode::DEVICE_MODE_NOT_SET) {
-      device_settings_service_->SetDeviceMode(
+      ash::DeviceSettingsService::Get()->SetDeviceMode(
           DeviceMode::DEVICE_MODE_ENTERPRISE);
     }
   }
@@ -734,6 +723,17 @@ void AutoEnrollmentController::Timeout() {
 
   // Make sure to nuke pending `client_` start sequences.
   client_start_weak_factory_.InvalidateWeakPtrs();
+}
+
+AutoEnrollmentClient::Factory*
+AutoEnrollmentController::GetAutoEnrollmentClientFactory() {
+  static base::NoDestructor<AutoEnrollmentClientImpl::FactoryImpl>
+      default_factory;
+  if (testing_auto_enrollment_client_factory_) {
+    return testing_auto_enrollment_client_factory_;
+  }
+
+  return default_factory.get();
 }
 
 void AutoEnrollmentController::SetEnrollmentStateFetcherFactoryForTesting(

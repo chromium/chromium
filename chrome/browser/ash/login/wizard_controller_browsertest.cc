@@ -202,14 +202,13 @@ class ScopedFakeAutoEnrollmentClientFactory {
  public:
   explicit ScopedFakeAutoEnrollmentClientFactory(
       policy::AutoEnrollmentController* controller)
-      : controller_(controller) {
-    auto fake_auto_enrollment_client_factory =
-        std::make_unique<policy::FakeAutoEnrollmentClient::FactoryImpl>(
+      : controller_(controller),
+        fake_auto_enrollment_client_factory_(
             base::BindRepeating(&ScopedFakeAutoEnrollmentClientFactory::
                                     OnFakeAutoEnrollmentClientCreated,
-                                base::Unretained(this)));
+                                base::Unretained(this))) {
     controller_->SetAutoEnrollmentClientFactoryForTesting(
-        std::move(fake_auto_enrollment_client_factory));
+        &fake_auto_enrollment_client_factory_);
   }
 
   ScopedFakeAutoEnrollmentClientFactory(
@@ -261,6 +260,8 @@ class ScopedFakeAutoEnrollmentClientFactory {
   // The `policy::AutoEnrollmentController` which is using
   // `fake_auto_enrollment_client_factory_`.
   raw_ptr<policy::AutoEnrollmentController, ExperimentalAsh> controller_;
+  policy::FakeAutoEnrollmentClient::FactoryImpl
+      fake_auto_enrollment_client_factory_;
 
   raw_ptr<policy::FakeAutoEnrollmentClient, ExperimentalAsh>
       created_auto_enrollment_client_ = nullptr;
