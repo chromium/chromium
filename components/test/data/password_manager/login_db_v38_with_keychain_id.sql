@@ -117,7 +117,7 @@ INSERT INTO "password_notes"
   (parent_id, key, value, date_created, confidential) VALUES(
 1, /* parent_id */
 '', /* key */
-X'', /* value */
+X'33646263653933652d333761392d346339662d616136612d343538313263343834626333', /* value */
 13047423600000000, /* date_created */
 0 /* confidential */
 );

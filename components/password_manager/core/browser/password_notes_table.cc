@@ -31,10 +31,22 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
     std::string encrypted_value;
     s->ColumnBlobAsString(2, &encrypted_value);
     std::u16string decrypted_value;
+#if BUILDFLAG(IS_IOS)
+    // On iOS LoginDatabase::DecryptedString used to read value from the
+    // keychain (crbug.com/1472526), and  `encrypted_value` was some GUID
+    // pointing to the keychain item. Later the logic was changed to rely on
+    // OSCrypt. To avoid migration we have to keep using keychain for password
+    // notes.
+    // TODO(crbug.com/1474909): Migrate to OSCrypt.
+    if (!GetTextFromKeychainIdentifier(encrypted_value, &decrypted_value)) {
+      continue;
+    }
+#else
     if (LoginDatabase::DecryptedString(encrypted_value, &decrypted_value) !=
         LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
       continue;
     }
+#endif
     base::Time date_created = base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(s->ColumnInt64(3)));
     bool hide_by_default = s->ColumnBool(4);
@@ -59,10 +71,21 @@ bool PasswordNotesTable::InsertOrReplace(FormPrimaryKey parent_id,
                                          const PasswordNote& note) {
   DCHECK(db_);
   std::string encrypted_value;
+#if BUILDFLAG(IS_IOS)
+  // On iOS LoginDatabase::EncryptedString used to store value in a keychain
+  // (crbug.com/1472526), and  `encrypted_value` was some GUID pointing to the
+  // keychain item. Later the logic was changed to rely on OSCrypt. To avoid
+  // migration we have to keep using keychain for password notes.
+  // TODO(crbug.com/1474909): Migrate to OSCrypt.
+  if (!CreateKeychainIdentifier(note.value, &encrypted_value)) {
+    return false;
+  }
+#else
   if (LoginDatabase::EncryptedString(note.value, &encrypted_value) !=
       LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
     return false;
   }
+#endif
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,
