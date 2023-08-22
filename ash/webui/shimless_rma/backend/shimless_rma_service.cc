@@ -790,6 +790,10 @@ void ShimlessRmaService::SetDeviceInformation(
       is_chassis_branded);
   state_proto_.mutable_update_device_info()->set_hw_compliance_version(
       hw_compliance_version);
+  // Set the value of custom_label_index to a sentinel invalid value to help
+  // with the transition to using custom_label instead of white_label.
+  // See b/230689891 for context.
+  state_proto_.mutable_update_device_info()->set_custom_label_index(-1);
   TransitionNextStateGeneric(std::move(callback));
 }
 
