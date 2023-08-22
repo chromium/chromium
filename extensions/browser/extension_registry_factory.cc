@@ -34,9 +34,10 @@ ExtensionRegistryFactory::ExtensionRegistryFactory()
 
 ExtensionRegistryFactory::~ExtensionRegistryFactory() = default;
 
-KeyedService* ExtensionRegistryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionRegistry(context);
+  return std::make_unique<ExtensionRegistry>(context);
 }
 
 BrowserContext* ExtensionRegistryFactory::GetBrowserContextToUse(
