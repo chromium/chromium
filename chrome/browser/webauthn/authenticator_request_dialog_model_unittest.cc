@@ -651,14 +651,14 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {empty_al, has_plat, one_cred},
        {},
        {c(cred1), add},
-       mss},
+       hero},
       // Ignore the platform credential for conditional ui requests
       {L,
        ga,
        {usb, internal, cable},
        {c_ui, empty_al, has_plat, one_cred},
        {},
-       {c(cred1), add},
+       {add},
        qr},
       // If there is an allow-list containing USB, go to QR code as well.
       {L, ga, {usb, internal, cable}, {}, {}, {add}, qr},
