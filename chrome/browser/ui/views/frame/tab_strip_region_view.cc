@@ -161,6 +161,15 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
         l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
     new_tab_button_->SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_NEWTAB));
+
+    // TODO(crbug.com/1052397): Revisit the macro expression once build flag
+    // switch of lacros-chrome is complete.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    // The New Tab Button can be middle-clicked on Linux.
+    new_tab_button_->SetTriggerableEventFlags(
+        new_tab_button_->GetTriggerableEventFlags() |
+        ui::EF_MIDDLE_MOUSE_BUTTON);
+#endif
   }
 
   reserved_grab_handle_space_ =
