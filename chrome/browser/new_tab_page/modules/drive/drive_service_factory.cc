@@ -40,12 +40,13 @@ DriveServiceFactory::DriveServiceFactory()
 
 DriveServiceFactory::~DriveServiceFactory() = default;
 
-KeyedService* DriveServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DriveServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
   auto* profile = Profile::FromBrowserContext(context);
-  return new DriveService(
+  return std::make_unique<DriveService>(
       url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           profile),
