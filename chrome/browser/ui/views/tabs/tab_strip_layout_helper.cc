@@ -255,7 +255,7 @@ std::vector<gfx::Rect> TabStripLayoutHelper::CalculateIdealBounds(
                                  pinned_tab_count - 1))
                            : absl::nullopt;
 
-  TabLayoutConstants layout_constants = {GetLayoutConstant(TAB_HEIGHT),
+  TabLayoutConstants layout_constants = {GetLayoutConstant(TAB_STRIP_HEIGHT),
                                          TabStyle::Get()->GetTabOverlap()};
   std::vector<TabWidthConstraints> tab_widths;
   for (int i = 0; i < static_cast<int>(slots_.size()); i++) {

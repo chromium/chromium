@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_layout_state.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
@@ -102,7 +101,7 @@ TEST(TabStripLayoutTest, Basics) {
   EXPECT_EQ("100 100 100", TabWidthsAsString(bounds));
   EXPECT_EQ("0 96 192", TabXPositionsAsString(bounds));
   for (const auto& b : bounds) {
-    EXPECT_EQ(GetLayoutConstant(TAB_STRIP_PADDING), b.y());
+    EXPECT_EQ(0, b.y());
     EXPECT_EQ(kTabHeight, b.height());
   }
 }
