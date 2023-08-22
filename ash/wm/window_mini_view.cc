@@ -207,6 +207,10 @@ aura::Window* WindowMiniView::GetWindowAtPoint(
   return GetBoundsInScreen().Contains(screen_point) ? source_window_ : nullptr;
 }
 
+int WindowMiniView::TryRemovingChildItem(aura::Window* destroying_window) {
+  return 0;
+}
+
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
   gfx::Rect header_bounds = GetContentsBounds();
   header_bounds.set_height(kHeaderHeightDp);

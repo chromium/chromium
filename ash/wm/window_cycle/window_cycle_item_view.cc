@@ -144,7 +144,7 @@ void WindowCycleItemView::RefreshItemVisuals() {
 BEGIN_METADATA(WindowCycleItemView, WindowMiniView)
 END_METADATA
 
-GroupContainerView::GroupContainerView(SnapGroup* snap_group) {
+GroupContainerCycleView::GroupContainerCycleView(SnapGroup* snap_group) {
   mini_view1_ = AddChildView(
       std::make_unique<WindowCycleItemView>(snap_group->window1()));
   mini_view2_ = AddChildView(
@@ -153,7 +153,6 @@ GroupContainerView::GroupContainerView(SnapGroup* snap_group) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
-  SetAccessibleName(u"Group container view");
 
   // TODO(michelefan@): Orientation should correspond to the window layout.
   views::BoxLayout* layout =
@@ -164,15 +163,19 @@ GroupContainerView::GroupContainerView(SnapGroup* snap_group) {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
-GroupContainerView::~GroupContainerView() = default;
+GroupContainerCycleView::~GroupContainerCycleView() = default;
 
-bool GroupContainerView::Contains(aura::Window* window) const {
-  return mini_view1_->Contains(window) || mini_view2_->Contains(window);
+bool GroupContainerCycleView::Contains(aura::Window* window) const {
+  return (mini_view1_ && mini_view1_->Contains(window)) ||
+         (mini_view2_ && mini_view2_->Contains(window));
 }
 
-aura::Window* GroupContainerView::GetWindowAtPoint(
+aura::Window* GroupContainerCycleView::GetWindowAtPoint(
     const gfx::Point& screen_point) const {
   for (auto mini_view : {mini_view1_, mini_view2_}) {
+    if (!mini_view) {
+      continue;
+    }
     if (auto* window = mini_view->GetWindowAtPoint(screen_point)) {
       return window;
     }
@@ -180,7 +183,42 @@ aura::Window* GroupContainerView::GetWindowAtPoint(
   return nullptr;
 }
 
-BEGIN_METADATA(GroupContainerView, WindowMiniViewBase)
+void GroupContainerCycleView::RefreshItemVisuals() {
+  for (auto mini_view : {mini_view1_, mini_view2_}) {
+    if (mini_view) {
+      mini_view->RefreshItemVisuals();
+    }
+  }
+}
+
+int GroupContainerCycleView::TryRemovingChildItem(
+    aura::Window* destroying_window) {
+  std::vector<raw_ptr<WindowCycleItemView>*> mini_views_ptrs = {&mini_view1_,
+                                                                &mini_view2_};
+  for (auto* mini_view_ptr : mini_views_ptrs) {
+    if (auto& mini_view = *mini_view_ptr;
+        mini_view && mini_view->Contains(destroying_window)) {
+      auto* temp = mini_view.get();
+      // Explicitly reset the `mini_view` to avoid dangling pointer detection.
+      mini_view = nullptr;
+      RemoveChildViewT(temp);
+    }
+  }
+
+  return base::ranges::count_if(
+      mini_views_ptrs,
+      [](raw_ptr<WindowCycleItemView>* ptr) { return *ptr != nullptr; });
+}
+
+void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  views::View::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kGroup;
+  // TODO(b/297062026): Update the string after been finalized by consulting
+  // with a11y team.
+  node_data->SetName(u"Group container view");
+}
+
+BEGIN_METADATA(GroupContainerCycleView, WindowMiniViewBase)
 END_METADATA
 
 }  // namespace ash

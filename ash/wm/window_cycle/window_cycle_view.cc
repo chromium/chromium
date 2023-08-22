@@ -16,6 +16,8 @@
 #include "ash/style/system_shadow.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_item_view.h"
 #include "ash/wm/window_mini_view.h"
@@ -104,6 +106,34 @@ constexpr base::TimeDelta kContainerSlideDuration = base::Milliseconds(120);
 // Duration of the window cycle scale animation when a user toggles alt-tab
 // modes.
 constexpr base::TimeDelta kToggleModeScaleDuration = base::Milliseconds(150);
+
+// Builds the item view for window cycling for the given `window` with the
+// correct parent. If the given `window` is a free-form window, the direct
+// parent will be `mirror_container`. For `window` that belongs to a snap group,
+// however, a `GroupContainerCycleView` will be added.
+WindowMiniViewBase* BuildAndConfigureCycleView(
+    aura::Window* window,
+    views::View* mirror_container,
+    std::vector<WindowMiniViewBase*>& cycle_views) {
+  if (auto* snap_group_controller = SnapGroupController::Get()) {
+    if (auto* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(window)) {
+      // Create `GroupContainerCycleView` if `window` is primary snapped,
+      // which adds two child views subsequently. Skip adding
+      // `GroupContainerCycleView` if `window` is secondary snapped since the
+      // corresponding container view has been built.
+      return window == snap_group->window1()
+                 ? mirror_container->AddChildView(
+                       std::make_unique<GroupContainerCycleView>(snap_group))
+                 : nullptr;
+    }
+  }
+
+  // `mirror_container_` owns `view`. The `preview_view_` in `view` will use
+  // trilinear filtering in InitLayerOwner().
+  return mirror_container->AddChildView(
+      std::make_unique<WindowCycleItemView>(window));
+}
 
 }  // namespace
 
@@ -228,12 +258,11 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   }
 
   for (auto* window : windows) {
-    // |mirror_container_| owns |view|. The |preview_view_| in |view| will
-    // use trilinear filtering in InitLayerOwner().
-    auto* view = mirror_container_->AddChildView(
-        std::make_unique<WindowCycleItemView>(window));
-    cycle_views_.push_back(view);
-    no_previews_list_.push_back(view);
+    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_,
+                                                cycle_views_)) {
+      cycle_views_.push_back(view);
+      no_previews_list_.push_back(view);
+    }
   }
 
   // The insets in the WindowCycleItemView are coming from its border, which
@@ -328,10 +357,11 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
     return;
 
   for (auto* window : windows) {
-    auto* view = mirror_container_->AddChildView(
-        std::make_unique<WindowCycleItemView>(window));
-    cycle_views_.push_back(view);
-    no_previews_list_.push_back(view);
+    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_,
+                                                cycle_views_)) {
+      cycle_views_.push_back(view);
+      no_previews_list_.push_back(view);
+    }
   }
 
   // If there was an ongoing drag session, it's now been completed so reset
@@ -376,7 +406,7 @@ void WindowCycleView::ScrollToWindow(aura::Window* target) {
     Layout();
 }
 
-void WindowCycleView::SetTargetWindow(aura::Window* target) {
+void WindowCycleView::SetTargetWindow(aura::Window* new_target) {
   // Hide the focus border of the previous target window and show the focus
   // border of the new one.
   if (target_window_) {
@@ -385,7 +415,7 @@ void WindowCycleView::SetTargetWindow(aura::Window* target) {
     }
   }
 
-  target_window_ = target;
+  target_window_ = new_target;
   if (auto* view = GetCycleViewForWindow(target_window_)) {
     view->UpdateFocusState(/*focus=*/true);
   }
@@ -428,11 +458,16 @@ void WindowCycleView::HandleWindowDestruction(aura::Window* destroying_window,
   CHECK(preview);
   views::View* parent = preview->parent();
   CHECK_EQ(mirror_container_, parent);
-  base::Erase(cycle_views_, preview);
-  base::Erase(no_previews_list_, preview);
-  delete preview;
 
-  // With one of its children now gone, we must re-layout |mirror_container_|.
+  if (preview->TryRemovingChildItem(destroying_window) == 0) {
+    // With no remaining child mini views contained in `preview`, we need to
+    // remove `preview` and clean up the `preview` in `cycle_views_` and
+    // `no_previews_list_`.
+    base::Erase(cycle_views_, preview);
+    base::Erase(no_previews_list_, preview);
+    parent->RemoveChildViewT(preview);
+  }
+  // With one of its children now gone, we must re-layout `mirror_container_`.
   // This must happen before ScrollToWindow() to make sure our own Layout()
   // works correctly when it's calculating highlight bounds.
   parent->Layout();

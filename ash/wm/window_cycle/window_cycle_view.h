@@ -26,6 +26,7 @@ class Rect;
 
 namespace views {
 class Label;
+class View;
 }  // namespace views
 
 namespace ash {
@@ -66,7 +67,7 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // the root window's bounds.
   gfx::Rect GetTargetBounds() const;
 
-  // Recreates the `WindowCycleView` with the provided `windows`.
+  // Recreates the `WindowCycleView` with the given `windows`.
   void UpdateWindows(const WindowList& windows);
 
   // Fades the `WindowCycleView` in.
@@ -75,9 +76,12 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
   // Scrolls the `WindowCycleView` to `target`.
   void ScrollToWindow(aura::Window* target);
 
-  // Makes `target` the new `target_window_`, moving the focus ring to its
-  // respective `WindowCycleItemView`.
-  void SetTargetWindow(aura::Window* target);
+  // Refreshes the `target_window_` with the `new_target`. Updates the focus
+  // state of the focus ring by hiding the focus ring on the previously
+  // focused item and painting the focus ring on the currently focused item.
+  // The focus target will be a single `WindowCycleItemView` for free-form
+  // window and a `GroupContainerCycleView` for snap group.
+  void SetTargetWindow(aura::Window* new_target);
 
   // Removes the `destroying_window`'s respective `WindowCycleItemView` and sets
   // `new_target` as the new `target_window_`.
@@ -128,6 +132,10 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
 
   // Returns the maximum width of the cycle view.
   int CalculateMaxWidth() const;
+
+  const views::View* mirror_container_for_testing() const {
+    return mirror_container_;
+  }
 
  private:
   friend class WindowCycleListTestApi;

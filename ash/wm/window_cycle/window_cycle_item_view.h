@@ -10,11 +10,14 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace gfx {
+class Size;
+}  // namespace gfx
 
 namespace ash {
 
@@ -49,22 +52,29 @@ class ASH_EXPORT WindowCycleItemView : public WindowMiniView {
 
 // Container view used to host multiple `WindowCycleItemView`s and be the focus
 // target for window groups while tabbing in window cycle view.
-class GroupContainerView : public WindowMiniViewBase {
+class GroupContainerCycleView : public WindowMiniViewBase {
  public:
-  METADATA_HEADER(GroupContainerView);
+  METADATA_HEADER(GroupContainerCycleView);
 
-  explicit GroupContainerView(SnapGroup* snap_group);
-  GroupContainerView(const GroupContainerView&) = delete;
-  GroupContainerView& operator=(const GroupContainerView&) = delete;
-  ~GroupContainerView() override;
+  explicit GroupContainerCycleView(SnapGroup* snap_group);
+  GroupContainerCycleView(const GroupContainerCycleView&) = delete;
+  GroupContainerCycleView& operator=(const GroupContainerCycleView&) = delete;
+  ~GroupContainerCycleView() override;
 
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+  void RefreshItemVisuals() override;
+  int TryRemovingChildItem(aura::Window* destroying_window) override;
+
+  // views::View:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
-  raw_ptr<WindowCycleItemView, ExperimentalAsh> mini_view1_;
-  raw_ptr<WindowCycleItemView, ExperimentalAsh> mini_view2_;
+  // TODO(b/297070130): Use vector store the child `WindowCycleItemView` hosted
+  // by this.
+  raw_ptr<WindowCycleItemView> mini_view1_;
+  raw_ptr<WindowCycleItemView> mini_view2_;
 };
 
 }  // namespace ash

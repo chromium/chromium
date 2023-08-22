@@ -10,14 +10,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
-#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
-#include "ui/display/screen.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/view.h"
+#include "ui/events/event.h"
 
 namespace aura {
 class ScopedWindowTargeter;
@@ -29,6 +26,8 @@ class Widget;
 }
 
 namespace ash {
+
+class WindowCycleView;
 
 // Tracks a set of Windows that can be stepped through. This class is used by
 // the WindowCycleController.

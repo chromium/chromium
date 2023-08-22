@@ -27,7 +27,7 @@ class WindowPreviewView;
 
 // Defines the interface that extracts the window, visual updates, focus
 // installation and update logic to be used or implemented by `WindowMiniView`
-// and `GroupContainerView`.
+// and `GroupContainerCycleView`.
 class WindowMiniViewBase : public views::View {
  public:
   METADATA_HEADER(WindowMiniViewBase);
@@ -48,6 +48,12 @@ class WindowMiniViewBase : public views::View {
   // on construction. This should be called at most one time during the lifetime
   // of `this`.
   virtual void RefreshItemVisuals() = 0;
+
+  // Try removing the mini view representation of the `destroying_window`.
+  // Returns the number of remaining child items that represent windows within
+  // `this`. Returns 0, if `destroying_window` is represented by `this` itself
+  // rather than a child item.
+  virtual int TryRemovingChildItem(aura::Window* destroying_window) = 0;
 
   // Shows or hides a focus ring around this.
   void UpdateFocusState(bool focus);
@@ -106,6 +112,7 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
+  int TryRemovingChildItem(aura::Window* destroying_window) override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);

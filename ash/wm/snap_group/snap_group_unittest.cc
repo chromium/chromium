@@ -32,6 +32,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_cycle/window_cycle_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -494,6 +495,7 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     WindowCycleController* window_cycle_controller =
         Shell::Get()->window_cycle_controller();
     window_cycle_controller->CompleteCycling();
+    EXPECT_FALSE(window_cycle_controller->IsCycling());
   }
 
   void CycleWindow(WindowCyclingDirection direction, int steps) {
@@ -1098,8 +1100,6 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
   // Test that the two windows in a snap group are reordered to be adjacent
   // with each other to reflect the window layout with the revised order as :
   // window2 --> window0--> window1.
-  // TODO(b/293365678): `cycle_list` should contain two items, update the test
-  // when the container view is implemented.
   ASSERT_EQ(windows.size(), 3u);
   EXPECT_EQ(windows.at(0), window2.get());
   EXPECT_EQ(windows.at(1), window0.get());
@@ -1114,6 +1114,65 @@ TEST_F(SnapGroupEntryPointArm1Test, WindowReorderInAltTab) {
   CycleWindow(WindowCyclingDirection::kForward, /*steps=*/2);
   CompleteWindowCycling();
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests that the number of views to be cycled through inside the mirror
+// container view of window cycle view will be the number of free-form windows
+// plus snap groups.
+TEST_F(SnapGroupEntryPointArm1Test, WindowCycleViewTest) {
+  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  const auto& windows = window_cycle_list->windows_for_testing();
+  EXPECT_EQ(windows.size(), 3u);
+
+  const WindowCycleView* cycle_view = window_cycle_list->cycle_view();
+  ASSERT_TRUE(cycle_view);
+  EXPECT_EQ(cycle_view->mirror_container_for_testing()->children().size(), 2u);
+  CompleteWindowCycling();
+}
+
+// Tests that on window that belongs to a snap group destroying while cycling
+// the window list with Alt + Tab, there will be no crash. The corresponding
+// child mini view hosted by the group container view will be destroyed, the
+// group container view will host the other child mini view.
+TEST_F(SnapGroupEntryPointArm1Test, WindowInSnapGroupDestructionInAltTab) {
+  std::unique_ptr<aura::Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  const auto& windows = window_cycle_list->windows_for_testing();
+  EXPECT_EQ(windows.size(), 3u);
+
+  const WindowCycleView* cycle_view = window_cycle_list->cycle_view();
+  ASSERT_TRUE(cycle_view);
+  // Verify that the number of child views hosted by mirror container is two at
+  // the beginning.
+  EXPECT_EQ(cycle_view->mirror_container_for_testing()->children().size(), 2u);
+
+  // Destroy `window0` which belongs to a snap group.
+  window0.reset();
+  const auto* updated_window_cycle_list =
+      window_cycle_controller->window_cycle_list();
+  const auto& updated_windows =
+      updated_window_cycle_list->windows_for_testing();
+  // Verify that the updated windows list size decreased.
+  EXPECT_EQ(updated_windows.size(), 2u);
+
+  // Verify that the number of child views hosted by mirror container will still
+  // be two.
+  EXPECT_EQ(cycle_view->mirror_container_for_testing()->children().size(), 2u);
 }
 
 // Tests that after creating a snap group in clamshell, transition to tablet
