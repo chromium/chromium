@@ -18,16 +18,12 @@ namespace {
 using l10n_util::GetStringUTF8;
 const char kMtpVolumeIdPrefix[] = "mtp:";
 
-// Registers |path| as the "Downloads" folder to the FileSystem API backend.
-// If another folder is already mounted. It revokes and overrides the old one.
-// Registers a mount point for Android files to ExternalMountPoints.
 VolumeType MountTypeToVolumeType(ash::MountType type) {
   switch (type) {
     case ash::MountType::kInvalid:
-      // We don't expect this value, but list here, so that when any value
-      // is added to the enum definition but this is not edited, the compiler
-      // warns it.
-      break;
+      // A zip mount with an invalid path will return type kInvalid. We can use
+      // a default VolumeType in this case.
+      return VOLUME_TYPE_DOWNLOADS_DIRECTORY;
     case ash::MountType::kDevice:
       return VOLUME_TYPE_REMOVABLE_DISK_PARTITION;
     case ash::MountType::kArchive:
