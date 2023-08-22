@@ -692,6 +692,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if the SyncEnableHistoryDataType feature is enabled.
 - (BOOL)isSyncHistoryDataTypeEnabled [[nodiscard]];
 
+// Returns YES if the ReplaceSyncPromosWithSignInPromos feature is enabled.
+- (BOOL)isReplaceSyncWithSigninEnabled [[nodiscard]];
+
 // Returns YES if the `launchSwitch` is found in host app launch switches.
 - (BOOL)appHasLaunchSwitch:(const std::string&)launchSwitch;
 

@@ -86,7 +86,11 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
                                           fakeIdentity.userEmail)]
       performAction:grey_tap()];
-  [self tapSigninConfirmationDialog];
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    [self tapSigninBottomSheetAndHistoryConfirmationDialog];
+  } else {
+    [self tapSigninConfirmationDialog];
+  }
   CloseSigninManagedAccountDialogIfAny(fakeIdentity);
 
   [[[EarlGrey
@@ -150,6 +154,20 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   id<GREYMatcher> buttonMatcher = [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON];
   [[EarlGrey selectElementWithMatcher:buttonMatcher] performAction:grey_tap()];
+}
+
++ (void)tapSigninBottomSheetAndHistoryConfirmationDialog {
+  // First tap the "Continue as ..." button in the signin bottom sheet.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          WebSigninPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Now the history opt-in dialog should show up. Tap the "Yes, I'm In" button.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          HistoryOptInPrimaryButtonMatcher()]
+      performAction:grey_tap()];
 }
 
 + (void)tapAddAccountButton {

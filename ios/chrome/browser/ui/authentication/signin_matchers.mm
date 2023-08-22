@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
 namespace chrome_test_util {
@@ -53,6 +54,10 @@ id<GREYMatcher> UpgradeSigninPromoMatcher() {
 id<GREYMatcher> SettingsSignInRowMatcher() {
   return grey_allOf(grey_accessibilityID(kSettingsSignInCellId),
                     grey_sufficientlyVisible(), nil);
+}
+
+id<GREYMatcher> HistoryOptInPrimaryButtonMatcher() {
+  return grey_accessibilityID(kPromoStylePrimaryActionAccessibilityIdentifier);
 }
 
 }  // namespace chrome_test_util

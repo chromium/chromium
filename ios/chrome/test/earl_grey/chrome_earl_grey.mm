@@ -1345,6 +1345,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   return [ChromeEarlGreyAppInterface isSyncHistoryDataTypeEnabled];
 }
 
+- (BOOL)isReplaceSyncWithSigninEnabled {
+  return [ChromeEarlGreyAppInterface isReplaceSyncWithSigninEnabled];
+}
+
 - (BOOL)appHasLaunchSwitch:(const std::string&)launchSwitch {
   return [ChromeEarlGreyAppInterface
       appHasLaunchSwitch:base::SysUTF8ToNSString(launchSwitch)];

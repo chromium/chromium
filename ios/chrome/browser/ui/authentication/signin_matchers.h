@@ -40,6 +40,9 @@ id<GREYMatcher> UpgradeSigninPromoMatcher();
 // enable sync. The row is only shown to signed-out users.
 id<GREYMatcher> SettingsSignInRowMatcher();
 
+// Matcher for the primary button ("Yes, I'm In") in the history opt-in screen.
+id<GREYMatcher> HistoryOptInPrimaryButtonMatcher();
+
 }  // namespace chrome_test_util
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_MATCHERS_H_

@@ -1130,6 +1130,11 @@ NSString* SerializedValue(const base::Value* value) {
   return base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType);
 }
 
++ (BOOL)isReplaceSyncWithSigninEnabled {
+  return base::FeatureList::IsEnabled(
+      syncer::kReplaceSyncPromosWithSignInPromos);
+}
+
 + (BOOL)appHasLaunchSwitch:(NSString*)launchSwitch {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       base::SysNSStringToUTF8(launchSwitch));
