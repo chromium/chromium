@@ -102,7 +102,8 @@ NearbySharingServiceFactory::NearbySharingServiceFactory()
 
 NearbySharingServiceFactory::~NearbySharingServiceFactory() = default;
 
-KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!IsNearbyShareSupportedForBrowserContext(context)) {
     return nullptr;
@@ -124,7 +125,7 @@ KeyedService* NearbySharingServiceFactory::BuildServiceInstanceFor(
   NS_LOG(VERBOSE) << __func__
                   << ": creating NearbySharingService for primary profile";
 
-  return new NearbySharingServiceImpl(
+  return std::make_unique<NearbySharingServiceImpl>(
       pref_service, notification_display_service, profile,
       std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
