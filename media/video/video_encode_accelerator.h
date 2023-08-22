@@ -389,8 +389,7 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   //  |buffer| is the bitstream buffer to use for output.
   virtual void UseOutputBitstreamBuffer(BitstreamBuffer buffer) = 0;
 
-  // Request a change to the encoding parameters. This is only a request,
-  // fulfilled on a best-effort basis.
+  // Request a change to the encoding parameters.
   // Parameters:
   //  |bitrate| is the requested new bitrate. The bitrate mode cannot be changed
   //  using this method and attempting to do so will result in an error.
@@ -399,9 +398,9 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   virtual void RequestEncodingParametersChange(const Bitrate& bitrate,
                                                uint32_t framerate) = 0;
 
-  // Request a change to the encoding parameters. This is only a request,
-  // fulfilled on a best-effort basis. If not implemented, default behavior is
-  // to get the sum over layers and pass to version with bitrate as uint32_t.
+  // Request a change to the encoding parameters. If not implemented, default
+  // behavior is to get the sum over layers and pass to version with bitrate
+  // as uint32_t.
   // Parameters:
   //  |bitrate| is the requested new bitrate, per spatial and temporal layer.
   //  |framerate| is the requested new framerate, in frames per second.
