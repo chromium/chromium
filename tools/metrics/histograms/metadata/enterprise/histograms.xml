@@ -2515,19 +2515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.PublicSession.ExtensionPermissions"
-    enum="ExtensionPermission3" expires_after="2023-03-01">
-  <owner>bfranz@chromium.org</owner>
-  <owner>chromeos-kiosk-eng@google.com</owner>
-  <summary>
-    Extensions (and apps) are quite restricted in public sessions for security
-    and privacy concerns - some permissions are blocked which means the
-    extension itself is blocked (prevented from loading). This histogram counts
-    requested permissions on extension installation in public sessions (both
-    installed and blocked extensions).
-  </summary>
-</histogram>
-
 <histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
     expires_after="2023-09-03">
   <owner>bfranz@chromium.org</owner>
