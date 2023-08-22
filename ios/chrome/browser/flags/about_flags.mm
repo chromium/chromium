@@ -1692,6 +1692,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"discover-feed-sport-card", flag_descriptions::kDiscoverFeedSportCardName,
      flag_descriptions::kDiscoverFeedSportCardDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDiscoverFeedSportCard)},
+    {"enable-inactive-tabs-limit",
+     flag_descriptions::kInactiveTabsMoveLimitName,
+     flag_descriptions::kInactiveTabsMoveLimitDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kInactiveTabsMoveLimit)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

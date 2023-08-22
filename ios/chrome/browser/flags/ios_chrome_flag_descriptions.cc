@@ -562,6 +562,10 @@ const char kHideContentSuggestionTilesDescription[] =
 const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
 const char kHttpsOnlyModeDescription[] = "Enables the HTTPS-Only Mode setting";
 
+const char kInactiveTabsMoveLimitName[] = "Inactive tabs move limit";
+const char kInactiveTabsMoveLimitDescription[] =
+    "When enabled, limits the number of inactive tabs move.";
+
 const char kIncognitoNtpRevampName[] = "Revamped Incognito New Tab Page";
 const char kIncognitoNtpRevampDescription[] =
     "When enabled, Incognito new tab page will have an updated UI.";

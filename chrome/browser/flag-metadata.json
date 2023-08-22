@@ -2934,6 +2934,11 @@
     "expiry_milestone": 119
   },
   {
+    "name": "enable-inactive-tabs-limit",
+    "owners": ["alionadangla", "lpromero", "bling-flags@google.com"],
+    "expiry_milestone": 121
+  },
+  {
     "name": "enable-input-device-settings-split",
     "owners": ["dpad", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 120

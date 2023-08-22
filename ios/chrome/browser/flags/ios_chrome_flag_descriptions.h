@@ -476,6 +476,11 @@ extern const char kHideContentSuggestionTilesDescription[];
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
 
+// Title and description for the flag to enable the number of inactive tabs
+// move.
+extern const char kInactiveTabsMoveLimitName[];
+extern const char kInactiveTabsMoveLimitDescription[];
+
 // Title and description for the flag to enable revamped Incognito NTP page.
 extern const char kIncognitoNtpRevampName[];
 extern const char kIncognitoNtpRevampDescription[];
