@@ -43,13 +43,15 @@ PolicyBlocklistFactory::PolicyBlocklistFactory()
 
 PolicyBlocklistFactory::~PolicyBlocklistFactory() = default;
 
-KeyedService* PolicyBlocklistFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PolicyBlocklistFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   PrefService* pref_service = user_prefs::UserPrefs::Get(context);
   auto url_blocklist_manager = std::make_unique<policy::URLBlocklistManager>(
       pref_service, policy::policy_prefs::kUrlBlocklist,
       policy::policy_prefs::kUrlAllowlist);
-  return new PolicyBlocklistService(std::move(url_blocklist_manager));
+  return std::make_unique<PolicyBlocklistService>(
+      std::move(url_blocklist_manager));
 }
 
 content::BrowserContext* PolicyBlocklistFactory::GetBrowserContextToUse(
