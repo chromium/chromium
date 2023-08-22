@@ -189,6 +189,11 @@ std::string ChromeEnterpriseRealTimeUrlLookupService::GetMetricSuffix() const {
   return ".Enterprise";
 }
 
+void ChromeEnterpriseRealTimeUrlLookupService::Shutdown() {
+  token_fetcher_.reset();
+  RealTimeUrlLookupServiceBase::Shutdown();
+}
+
 bool ChromeEnterpriseRealTimeUrlLookupService::ShouldIncludeCredentials()
     const {
   return false;
