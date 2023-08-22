@@ -221,6 +221,7 @@ class NearbyPresenceCredentialManagerImpl
       base::RepeatingCallback<void(bool)> upload_credentials_callback);
   void OnUploadCredentialsSuccess(
       base::RepeatingCallback<void(bool)> upload_credentials_callback,
+      base::TimeTicks upload_request_start_time,
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void OnUploadCredentialsFailure(
       base::RepeatingCallback<void(bool)> upload_credentials_callback,

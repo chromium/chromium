@@ -440,6 +440,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.Upload.ServerRequestDuration"
+    units="ms" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records time spent in milliseconds to receive a response from the Nearby
+    Presence Web Server after an upload request for the local device's
+    credentials. Emitted after a successful response from the server. Note that
+    there is a timeout at 5 seconds.
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.BackgroundScanning.DeviceNearbySharing.Notification.Flow"
     enum="NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent"

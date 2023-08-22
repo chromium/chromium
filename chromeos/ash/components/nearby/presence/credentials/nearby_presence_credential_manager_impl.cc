@@ -680,7 +680,8 @@ void NearbyPresenceCredentialManagerImpl::UploadCredentials(
       request,
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnUploadCredentialsSuccess,
-          weak_ptr_factory_.GetWeakPtr(), upload_credentials_result_callback),
+          weak_ptr_factory_.GetWeakPtr(), upload_credentials_result_callback,
+          /*upload_request_start_time=*/base::TimeTicks::Now()),
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnUploadCredentialsFailure,
           weak_ptr_factory_.GetWeakPtr(), upload_credentials_result_callback));
@@ -734,11 +735,15 @@ void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsTimeout(
 
 void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsSuccess(
     base::RepeatingCallback<void(bool)> upload_credentials_callback,
+    base::TimeTicks upload_request_start_time,
     const ash::nearby::proto::UpdateDeviceResponse& response) {
   // TODO(b/276307539): Log response and check for changes in user name and
   // image url returned from the server.
 
   server_response_timer_.Stop();
+  base::TimeDelta upload_request_duration =
+      base::TimeTicks::Now() - upload_request_start_time;
+  metrics::RecordSharedCredentialUploadDuration(upload_request_duration);
   HandleUploadCredentialsResult(
       upload_credentials_callback,
       /*result=*/ash::nearby::NearbyHttpResult::kSuccess);

@@ -25,6 +25,12 @@ void RecordSharedCredentialUploadResult(bool success) {
                             success);
 }
 
+void RecordSharedCredentialUploadDuration(base::TimeDelta upload_duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Presence.Credentials.Upload.ServerRequestDuration",
+      upload_duration);
+}
+
 void RecordSharedCredentialDownloadFailureReason(
     ash::nearby::NearbyHttpResult failure_reason) {
   base::UmaHistogramEnumeration(
