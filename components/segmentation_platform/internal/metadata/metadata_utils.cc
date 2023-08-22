@@ -105,6 +105,14 @@ ValidationResult ValidateMetadata(
     return ValidationResult::kFeatureListInvalid;
   }
 
+  if (model_metadata.has_output_config()) {
+    auto output_config_result =
+        ValidateOutputConfig(model_metadata.output_config());
+    if (output_config_result != ValidationResult::kValidationSuccess) {
+      return output_config_result;
+    }
+  }
+
   return ValidationResult::kValidationSuccess;
 }
 
@@ -183,6 +191,14 @@ ValidationResult ValidateMetadataAndFeatures(
   if (metadata_result != ValidationResult::kValidationSuccess)
     return metadata_result;
 
+  if (model_metadata.has_output_config()) {
+    auto output_config_result =
+        ValidateOutputConfig(model_metadata.output_config());
+    if (output_config_result != ValidationResult::kValidationSuccess) {
+      return output_config_result;
+    }
+  }
+
   for (int i = 0; i < model_metadata.features_size(); ++i) {
     auto feature = model_metadata.features(i);
     auto feature_result = ValidateMetadataUmaFeature(feature);
@@ -231,6 +247,38 @@ ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     return segment_info_result;
 
   return ValidateMetadataAndFeatures(segment_info.model_metadata());
+}
+
+ValidationResult ValidateOutputConfig(
+    const proto::OutputConfig& output_config) {
+  if (output_config.has_predictor() &&
+      output_config.predictor().has_multi_class_classifier()) {
+    return ValidateMultiClassClassifier(
+        output_config.predictor().multi_class_classifier());
+  }
+
+  return ValidationResult::kValidationSuccess;
+}
+
+ValidationResult ValidateMultiClassClassifier(
+    const proto::Predictor_MultiClassClassifier& multi_class_classifier) {
+  if (multi_class_classifier.class_labels_size() == 0) {
+    return ValidationResult::kMultiClassClassifierHasNoLabels;
+  }
+
+  if (multi_class_classifier.has_threshold() &&
+      multi_class_classifier.class_thresholds_size() > 0) {
+    return ValidationResult::kMultiClassClassifierUsesBothThresholdTypes;
+  }
+
+  if (multi_class_classifier.class_thresholds_size() > 0 &&
+      multi_class_classifier.class_thresholds_size() !=
+          multi_class_classifier.class_labels_size()) {
+    return ValidationResult::
+        kMultiClassClassifierClassAndThresholdCountMismatch;
+  }
+
+  return ValidationResult::kValidationSuccess;
 }
 
 void SetFeatureNameHashesFromName(

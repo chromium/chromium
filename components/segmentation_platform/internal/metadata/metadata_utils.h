@@ -12,6 +12,7 @@
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/output_config.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,7 +41,10 @@ enum class ValidationResult {
   kFeatureSqlQueryEmpty = 13,
   kFeatureBindValuesInvalid = 14,
   kIndexedTensorsInvalid = 15,
-  kMaxValue = kIndexedTensorsInvalid,
+  kMultiClassClassifierHasNoLabels = 16,
+  kMultiClassClassifierUsesBothThresholdTypes = 17,
+  kMultiClassClassifierClassAndThresholdCountMismatch = 18,
+  kMaxValue = kMultiClassClassifierClassAndThresholdCountMismatch,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -80,6 +84,13 @@ ValidationResult ValidateIndexedTensors(
 // used for the current segmentation platform.
 ValidationResult ValidateSegmentInfoMetadataAndFeatures(
     const proto::SegmentInfo& segment_info);
+
+// Whether the given output config is valid.
+ValidationResult ValidateOutputConfig(const proto::OutputConfig& output_config);
+
+// Checks whether the given multi-class classifier is valid.
+ValidationResult ValidateMultiClassClassifier(
+    const proto::Predictor_MultiClassClassifier& multi_class_classifier);
 
 // For all features in the given metadata, updates the feature name hash based
 // on the feature name. Note: This mutates the metadata that is passed in.

@@ -23,6 +23,18 @@ bool IsValidResult(proto::PredictionResult prediction_result) {
   return (prediction_result.result_size() > 0 &&
           prediction_result.has_output_config());
 }
+
+bool IsScoreBelowMultiClassThreshold(
+    const proto::Predictor::MultiClassClassifier& multi_class_classifier,
+    const float class_score,
+    const int class_index) {
+  if (multi_class_classifier.class_thresholds_size() > 0) {
+    return class_score < multi_class_classifier.class_thresholds(class_index);
+  } else {
+    return class_score < multi_class_classifier.threshold();
+  }
+}
+
 }  // namespace
 
 std::vector<std::string> PostProcessor::GetClassifierResults(
@@ -65,11 +77,22 @@ std::vector<std::string> PostProcessor::GetMultiClassClassifierResults(
     const {
   DCHECK_EQ(static_cast<int>(model_scores.size()),
             multi_class_classifier.class_labels_size());
+  CHECK(!(multi_class_classifier.has_threshold() &&
+          multi_class_classifier.class_thresholds_size() > 0))
+      << "threshold and class_thresholds can't be both set at the same time";
+
+  if (multi_class_classifier.class_thresholds_size() > 0) {
+    CHECK_EQ(static_cast<int>(model_scores.size()),
+             multi_class_classifier.class_thresholds_size());
+  }
 
   std::vector<std::pair<std::string, float>> labeled_results;
   for (int index = 0; index < static_cast<int>(model_scores.size()); index++) {
-    labeled_results.emplace_back(multi_class_classifier.class_labels(index),
-                                 model_scores[index]);
+    if (!IsScoreBelowMultiClassThreshold(multi_class_classifier,
+                                         model_scores[index], index)) {
+      labeled_results.emplace_back(multi_class_classifier.class_labels(index),
+                                   model_scores[index]);
+    }
   }
   // Sort the labels in descending order of score.
   std::stable_sort(labeled_results.begin(), labeled_results.end(),
@@ -77,14 +100,12 @@ std::vector<std::string> PostProcessor::GetMultiClassClassifierResults(
                       const std::pair<std::string, float>& b) {
                      return a.second > b.second;
                   });
-  float threshold = multi_class_classifier.threshold();
-  int top_k_outputs = multi_class_classifier.top_k_outputs();
+  int elements_to_return =
+      std::min(multi_class_classifier.top_k_outputs(),
+               static_cast<int64_t>(labeled_results.size()));
 
   std::vector<std::string> top_k_output_labels;
-  for (int index = 0; index < top_k_outputs; index++) {
-    if (labeled_results[index].second < threshold) {
-      break;
-    }
+  for (int index = 0; index < elements_to_return; index++) {
     top_k_output_labels.emplace_back(labeled_results[index].first);
   }
   return top_k_output_labels;

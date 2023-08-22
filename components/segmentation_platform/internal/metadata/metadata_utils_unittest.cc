@@ -474,6 +474,90 @@ TEST_F(MetadataUtilsTest, ValidateSegementInfoMetadataAndFeatures) {
       metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
 }
 
+TEST_F(MetadataUtilsTest, ValidateMultiClassClassifierWithNoClasses) {
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::DAY);
+  metadata->mutable_output_config()
+      ->mutable_predictor()
+      ->mutable_multi_class_classifier();
+
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::kMultiClassClassifierHasNoLabels,
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
+}
+
+TEST_F(MetadataUtilsTest, ValidateMultiClassClassifierWithBothThresholdTypes) {
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::DAY);
+  auto* multi_class_classifier = metadata->mutable_output_config()
+                                     ->mutable_predictor()
+                                     ->mutable_multi_class_classifier();
+  multi_class_classifier->add_class_labels("Foo");
+  multi_class_classifier->add_class_labels("Bar");
+
+  // Either 'threshold' or 'class_thresholds' should be set, but not both.
+  multi_class_classifier->set_threshold(0.5f);
+
+  multi_class_classifier->add_class_thresholds(0.1f);
+  multi_class_classifier->add_class_thresholds(0.2f);
+
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::
+          kMultiClassClassifierUsesBothThresholdTypes,
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
+}
+
+TEST_F(MetadataUtilsTest,
+       ValidateMultiClassClassifierWithClassThresholdCountMismatch) {
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::DAY);
+  auto* multi_class_classifier = metadata->mutable_output_config()
+                                     ->mutable_predictor()
+                                     ->mutable_multi_class_classifier();
+  multi_class_classifier->add_class_labels("Foo");
+  multi_class_classifier->add_class_labels("Bar");
+  multi_class_classifier->add_class_labels("Baz");
+
+  // There are 3 'class_labels' but only 2 'class_thresholds', both should have
+  // the same count.
+  multi_class_classifier->add_class_thresholds(0.1f);
+  multi_class_classifier->add_class_thresholds(0.2f);
+
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::
+          kMultiClassClassifierClassAndThresholdCountMismatch,
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
+}
+
+TEST_F(MetadataUtilsTest, ValidateMultiClassClassifierSuccessfully) {
+  proto::SegmentInfo segment_info;
+  segment_info.set_segment_id(
+      proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
+  auto* metadata = segment_info.mutable_model_metadata();
+  metadata->set_time_unit(proto::DAY);
+  auto* multi_class_classifier = metadata->mutable_output_config()
+                                     ->mutable_predictor()
+                                     ->mutable_multi_class_classifier();
+  multi_class_classifier->add_class_labels("Foo");
+  multi_class_classifier->add_class_labels("Bar");
+
+  multi_class_classifier->add_class_thresholds(0.1f);
+  multi_class_classifier->add_class_thresholds(0.2f);
+
+  EXPECT_EQ(
+      metadata_utils::ValidationResult::kValidationSuccess,
+      metadata_utils::ValidateSegmentInfoMetadataAndFeatures(segment_info));
+}
+
 TEST_F(MetadataUtilsTest, SetFeatureNameHashesFromName) {
   // No crashes should happen if there are no features.
   proto::SegmentationModelMetadata empty;

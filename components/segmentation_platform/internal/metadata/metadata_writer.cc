@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
+#include <cstddef>
+#include <vector>
 
+#include "base/check.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/strcat.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -27,6 +31,17 @@ void FillCustomInput(const MetadataWriter::CustomInput feature,
   for (size_t i = 0; i < feature.arg_size; ++i) {
     (*input.mutable_additional_args())[feature.arg[i].first] =
         std::string(feature.arg[i].second);
+  }
+}
+
+void PopulateMultiClassClassifier(
+    proto::Predictor::MultiClassClassifier* multi_class_classifier,
+    const char* const* class_labels,
+    size_t class_labels_length,
+    int top_k_outputs) {
+  multi_class_classifier->set_top_k_outputs(top_k_outputs);
+  for (size_t i = 0; i < class_labels_length; ++i) {
+    multi_class_classifier->mutable_class_labels()->Add(class_labels[i]);
   }
 }
 
@@ -198,12 +213,30 @@ void MetadataWriter::AddOutputConfigForMultiClassClassifier(
           ->mutable_predictor()
           ->mutable_multi_class_classifier();
 
-  multi_class_classifier->set_top_k_outputs(top_k_outputs);
-  for (size_t i = 0; i < class_labels_length; ++i) {
-    multi_class_classifier->mutable_class_labels()->Add(class_labels[i]);
-  }
+  PopulateMultiClassClassifier(multi_class_classifier, class_labels,
+                               class_labels_length, top_k_outputs);
   if (threshold.has_value()) {
     multi_class_classifier->set_threshold(threshold.value());
+  }
+}
+
+void MetadataWriter::AddOutputConfigForMultiClassClassifier(
+    const char* const* class_labels,
+    size_t class_labels_length,
+    int top_k_outputs,
+    const float* per_class_thresholds,
+    size_t per_class_thresholds_length) {
+  CHECK_EQ(class_labels_length, per_class_thresholds_length);
+  proto::Predictor::MultiClassClassifier* multi_class_classifier =
+      metadata_->mutable_output_config()
+          ->mutable_predictor()
+          ->mutable_multi_class_classifier();
+
+  PopulateMultiClassClassifier(multi_class_classifier, class_labels,
+                               class_labels_length, top_k_outputs);
+
+  for (size_t i = 0; i < per_class_thresholds_length; ++i) {
+    multi_class_classifier->add_class_thresholds(per_class_thresholds[i]);
   }
 }
 

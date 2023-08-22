@@ -171,6 +171,14 @@ class MetadataWriter {
                                               int top_k_outputs,
                                               absl::optional<float> threshold);
 
+  // Adds a MultiClassClassifier with one threshold per label.
+  void AddOutputConfigForMultiClassClassifier(
+      const char* const* class_labels,
+      size_t class_labels_length,
+      int top_k_outputs,
+      const float* per_label_thresholds,
+      size_t per_label_thresholds_length);
+
   // Adds a BinnedClassifier.
   void AddOutputConfigForBinnedClassifier(
       const std::vector<std::pair<float, std::string>>& bins,

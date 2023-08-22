@@ -96295,6 +96295,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="FeatureSqlQueryEmpty"/>
   <int value="14" label="FeatureBindValuesInvalid"/>
   <int value="15" label="IndexedTensorsInvalid"/>
+  <int value="16" label="MultiClassClassifierUsesBothThresholdTypes"/>
+  <int value="17" label="MultiClassClassifierClassAndThresholdCountMismatch"/>
 </enum>
 
 <enum name="SegmentationSelectionFailureReason">

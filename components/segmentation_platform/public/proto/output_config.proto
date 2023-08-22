@@ -51,8 +51,15 @@ message Predictor {
     repeated string class_labels = 2;
 
     // Threshold to get `class_labels` with score above it. Only labels with
-    // score above or equal to threshold are returned.
+    // score above or equal to threshold are returned. Must not be used along
+    // with `class_thresholds`.
     optional float threshold = 3;
+
+    // Per-class thresholds. Used to assign a different threshold to each class
+    // so that class_labels[n] is returned when outputs[n] >=
+    // class_thresholds[n]. Length of this list must be the same as the length
+    // of `class_labels`. Must not be used along with `threshold`.
+    repeated float class_thresholds = 4;
   }
 
   // A post-processor that converts a continuous model score into discrete

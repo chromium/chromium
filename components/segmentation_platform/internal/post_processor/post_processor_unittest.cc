@@ -76,6 +76,29 @@ proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
   return model_metadata.output_config();
 }
 
+proto::OutputConfig GetTestOutputConfigForMultiClassClassifier(
+    int top_k_outputs,
+    const float* per_class_thresholds,
+    size_t per_class_thresholds_length) {
+  proto::SegmentationModelMetadata model_metadata;
+  MetadataWriter writer(&model_metadata);
+
+  std::array<const char*, 4> labels{kShareUser, kNewTabUser, kVoiceUser,
+                                    kShoppingUser};
+  std::vector<std::pair<std::string, int64_t>> ttl_for_labels{
+      {kShareUser, kShareUserTTL},
+      {kNewTabUser, kNewTabUserTTL},
+      {kVoiceUser, kVoiceUserTTL},
+      {kShoppingUser, kShoppingUserTTL},
+  };
+  writer.AddOutputConfigForMultiClassClassifier(
+      labels.begin(), labels.size(), top_k_outputs, per_class_thresholds,
+      per_class_thresholds_length);
+  writer.AddPredictedResultTTLInOutputConfig(ttl_for_labels, kDefaultTTL,
+                                             proto::TimeUnit::DAY);
+  return model_metadata.output_config();
+}
+
 proto::OutputConfig GetTestOutputConfigForBinnedClassifier() {
   proto::SegmentationModelMetadata model_metadata;
   MetadataWriter writer(&model_metadata);
@@ -194,6 +217,31 @@ TEST(PostProcessorTest,
                                                      /*threshold=*/0.1),
           /*timestamp=*/base::Time::Now(), /*model_version=*/1));
   EXPECT_THAT(top_k_labels, testing::ElementsAre(kShoppingUser, kShareUser));
+}
+
+TEST(PostProcessorTest, MultiClassClassifierWithPerClassThresholds) {
+  PostProcessor post_processor;
+  // Set a different threshold for each class:
+  // kShareUser = 0.1
+  // kNewTabUser = 0.2
+  // kVoiceUser = 0.7
+  // kShoppingUser = 0.9
+  std::array<float, 4> per_class_thresholds = {0.1f, 0.2f, 0.7f, 0.9f};
+  // Get results for the following scores:
+  // kShareUser = 0.5 (Greater than 0.1, included)
+  // kNewTabUser = 0.2 (Same as 0.2, included)
+  // kVoiceUser = 0.4 (Lower than 0.7, excluded)
+  // kShoppingUser = 0.7 (Lower than 0.9, excluded)
+  std::vector<std::string> top_k_labels = post_processor.GetClassifierResults(
+      metadata_utils::CreatePredictionResult(
+          /*model_scores=*/{0.5, 0.2, 0.4, 0.7},
+          GetTestOutputConfigForMultiClassClassifier(
+              /*top_k-outputs=*/4,
+              /*per_class_thresholds = */ per_class_thresholds.begin(),
+              per_class_thresholds.size()),
+          /*timestamp=*/base::Time::Now(), /*model_version=*/1));
+  // Return labels greater or equal than its threshold sorted by score.
+  EXPECT_THAT(top_k_labels, testing::ElementsAre(kShareUser, kNewTabUser));
 }
 
 TEST(PostProcessorTest, BinnedClassifierScoreGreaterThanHighUserThreshold) {
