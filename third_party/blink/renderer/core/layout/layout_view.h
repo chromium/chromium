@@ -269,7 +269,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     needs_marker_counter_update_ = true;
   }
 
-  // Return true if laying out with a new initial containing block size. lala.
+  // Return true if re-laying out the specified node (as a cached layout result)
+  // with a new initial containing block size. Subsequent calls for the same
+  // node within the same lifecycle update will return false.
   bool AffectedByResizedInitialContainingBlock(const NGLayoutResult&);
 
   // Update generated markers and counters after style and layout tree update.
