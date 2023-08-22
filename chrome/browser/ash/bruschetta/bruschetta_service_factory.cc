@@ -40,10 +40,11 @@ BruschettaServiceFactory::BruschettaServiceFactory()
 
 BruschettaServiceFactory::~BruschettaServiceFactory() = default;
 
-KeyedService* BruschettaServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BruschettaServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
-  return new BruschettaService(profile);
+  return std::make_unique<BruschettaService>(profile);
 }
 
 // Force BruschettaService to be set up when a BrowserContext is
