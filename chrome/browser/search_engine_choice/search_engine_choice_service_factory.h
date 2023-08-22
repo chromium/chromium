@@ -39,7 +39,7 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   ~SearchEngineChoiceServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   // Returns whether the profile is eligible for the Search Engine Choice dialog

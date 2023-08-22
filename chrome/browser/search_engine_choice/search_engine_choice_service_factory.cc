@@ -82,7 +82,8 @@ bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
                               .pref_service = profile.GetPrefs()});
 }
 
-KeyedService* SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!g_is_chrome_build) {
     return nullptr;
@@ -93,5 +94,5 @@ KeyedService* SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
           CHECK_DEREF(g_browser_process->policy_service()), profile)) {
     return nullptr;
   }
-  return new SearchEngineChoiceService();
+  return std::make_unique<SearchEngineChoiceService>();
 }
