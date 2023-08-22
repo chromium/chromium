@@ -73,9 +73,6 @@ class CommitContributionImpl : public CommitContribution {
   // Generates id for new entities and encrypts entity if needed.
   void AdjustCommitProto(sync_pb::SyncEntity* commit_proto);
 
-  // Encrypt the specifics and hide the title if necessary.
-  void EncryptPasswordSpecificsData(sync_pb::SyncEntity* commit_proto);
-
   const ModelType type_;
 
   // A callback to inform the object that created this contribution about commit

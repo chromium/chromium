@@ -228,6 +228,11 @@ class ModelTypeWorkerTest : public ::testing::Test {
     worker_->ConnectSync(std::move(processor));
   }
 
+  void NormalInitializeWithCustomPassphrase() {
+    NormalInitialize();
+    worker_->UpdatePassphraseType(PassphraseType::kCustomPassphrase);
+  }
+
   // Mimic a Nigori update with a keybag that cannot be decrypted, which means
   // the cryptographer becomes unusable (no default key until the issue gets
   // resolved, via DecryptPendingKey()).
@@ -471,6 +476,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
     worker_.reset();
   }
 
+  FakeCryptographer* cryptographer() { return &cryptographer_; }
   MockModelTypeProcessor* processor() { return mock_type_processor_; }
   ModelTypeWorker* worker() { return worker_.get(); }
   SingleTypeMockServer* server() { return mock_server_.get(); }
@@ -2053,6 +2059,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommit) {
   sync_pb::PasswordSpecificsData* password_data =
       specifics.mutable_password()->mutable_client_only_encrypted_data();
   password_data->set_signon_realm("signon_realm");
+  specifics.mutable_password()->mutable_unencrypted_metadata()->set_url("url");
 
   // Normal commit request stuff.
   processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
@@ -2060,14 +2067,66 @@ TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommit) {
   ASSERT_EQ(1U, server()->GetNumCommitMessages());
   EXPECT_EQ(1, server()->GetNthCommitMessage(0).commit().entries_size());
   ASSERT_TRUE(server()->HasCommitEntity(kHash1));
-  const SyncEntity& tag1_entity = server()->GetLastCommittedEntity(kHash1);
+  const SyncEntity& entity = server()->GetLastCommittedEntity(kHash1);
 
-  EXPECT_FALSE(tag1_entity.specifics().has_encrypted());
-  EXPECT_TRUE(tag1_entity.specifics().has_password());
-  EXPECT_TRUE(tag1_entity.specifics().password().has_encrypted());
+  EXPECT_FALSE(entity.specifics().has_encrypted());
+  EXPECT_TRUE(entity.specifics().has_password());
+  EXPECT_TRUE(entity.specifics().password().has_encrypted());
+  EXPECT_FALSE(entity.specifics().password().encrypted().blob().empty());
 
   // The title should be overwritten.
-  EXPECT_EQ(tag1_entity.name(), "encrypted");
+  EXPECT_EQ(entity.name(), "encrypted");
+
+  // Exhaustively verify the populated SyncEntity.
+  EXPECT_EQ(entity.client_tag_hash(), kHash1.value());
+  EXPECT_FALSE(entity.deleted());
+  EXPECT_EQ(entity.specifics().password().unencrypted_metadata().url(), "url");
+  EXPECT_TRUE(entity.parent_id_string().empty());
+  EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
+}
+
+// Same as above but uses custom passphrase. In this case, field
+// |unencrypted_metadata| should be cleared.
+TEST_F(ModelTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
+  NormalInitializeWithCustomPassphrase();
+
+  EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
+
+  // Init the Cryptographer, it'll cause the EKN to be pushed.
+  AddPendingKey();
+  DecryptPendingKey();
+  ASSERT_EQ(1U, processor()->GetNumUpdateResponses());
+  EXPECT_EQ(default_encryption_key_name(),
+            processor()->GetNthUpdateState(0).encryption_key_name());
+
+  EntitySpecifics specifics;
+  sync_pb::PasswordSpecificsData* password_data =
+      specifics.mutable_password()->mutable_client_only_encrypted_data();
+  password_data->set_signon_realm("signon_realm");
+  specifics.mutable_password()->mutable_unencrypted_metadata()->set_url("url");
+
+  // Normal commit request stuff.
+  processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
+  DoSuccessfulCommit();
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  EXPECT_EQ(1, server()->GetNthCommitMessage(0).commit().entries_size());
+  ASSERT_TRUE(server()->HasCommitEntity(kHash1));
+  const SyncEntity& entity = server()->GetLastCommittedEntity(kHash1);
+
+  EXPECT_FALSE(entity.specifics().has_encrypted());
+  EXPECT_TRUE(entity.specifics().has_password());
+  EXPECT_TRUE(entity.specifics().password().has_encrypted());
+  EXPECT_FALSE(entity.specifics().password().encrypted().blob().empty());
+
+  // The title should be overwritten.
+  EXPECT_EQ(entity.name(), "encrypted");
+
+  // Exhaustively verify the populated SyncEntity.
+  EXPECT_EQ(entity.client_tag_hash(), kHash1.value());
+  EXPECT_FALSE(entity.deleted());
+  EXPECT_FALSE(entity.specifics().password().has_unencrypted_metadata());
+  EXPECT_TRUE(entity.parent_id_string().empty());
+  EXPECT_FALSE(entity.unique_position().has_custom_compressed_v1());
 }
 
 // Similar to ReceiveDecryptableEntities but for PASSWORDS, which have a custom
@@ -2703,6 +2762,67 @@ TEST_F(ModelTypeWorkerPasswordsTestWithNotes, ShouldEmitNotesBackupCorrupted) {
   histogram_tester.ExpectUniqueSample(
       "Sync.PasswordNotesStateInUpdate",
       syncer::PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted, 1);
+}
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+       ShouldPopulatePasswordNotesBackup) {
+  const std::string kPasswordInSpecificsNote = "Note Value";
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Set a value for the note in the PasswordSpecificsData.
+  EntitySpecifics specifics;
+  sync_pb::PasswordSpecificsData* unencrypted_password =
+      specifics.mutable_password()->mutable_client_only_encrypted_data();
+  unencrypted_password->set_password_value(kPassword);
+  unencrypted_password->mutable_notes()->add_note()->set_value(
+      kPasswordInSpecificsNote);
+
+  // Normal commit request stuff.
+  processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
+  DoSuccessfulCommit();
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  EXPECT_EQ(1, server()->GetNthCommitMessage(0).commit().entries_size());
+  ASSERT_TRUE(server()->HasCommitEntity(kHash1));
+  const SyncEntity& entity = server()->GetLastCommittedEntity(kHash1);
+
+  ASSERT_TRUE(entity.specifics().has_password());
+  // Verify the contents of the encrypted notes backup blob.
+  sync_pb::PasswordSpecificsData_Notes decrypted_notes;
+  cryptographer()->Decrypt(
+      entity.specifics().password().encrypted_notes_backup(), &decrypted_notes);
+  ASSERT_EQ(1, decrypted_notes.note_size());
+  EXPECT_EQ(kPasswordInSpecificsNote, decrypted_notes.note(0).value());
+}
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+       ShouldPopulatePasswordNotesBackupWhenNoLocalNotes) {
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Set a value for the note in the PasswordSpecificsData.
+  EntitySpecifics specifics;
+  sync_pb::PasswordSpecificsData* unencrypted_password =
+      specifics.mutable_password()->mutable_client_only_encrypted_data();
+  unencrypted_password->set_password_value(kPassword);
+
+  // Normal commit request stuff.
+  processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
+  DoSuccessfulCommit();
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  EXPECT_EQ(1, server()->GetNthCommitMessage(0).commit().entries_size());
+  ASSERT_TRUE(server()->HasCommitEntity(kHash1));
+  const SyncEntity& entity = server()->GetLastCommittedEntity(kHash1);
+
+  ASSERT_TRUE(entity.specifics().has_password());
+  EXPECT_FALSE(
+      entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
 // Verifies persisting invalidations load from the ModelTypeProcessor.

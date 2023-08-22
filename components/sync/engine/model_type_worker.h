@@ -303,6 +303,9 @@ class ModelTypeWorker : public UpdateHandler,
   // Copies |pending_invalidations_| vector to |model_type_state_|.
   void UpdateModelTypeStateInvalidations();
 
+  // Encrypt the specifics and hide the title if necessary.
+  void EncryptPasswordSpecificsData(CommitRequestDataList* request_data_list);
+
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.
   std::vector<PendingInvalidation> pending_invalidations_;

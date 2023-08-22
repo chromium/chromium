@@ -780,6 +780,10 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
   DCHECK(!encryption_enabled_ ||
          (model_type_state_.encryption_key_name() ==
           cryptographer_->GetDefaultEncryptionKeyName()));
+
+  if (type_ == PASSWORDS) {
+    EncryptPasswordSpecificsData(&response);
+  }
   return std::make_unique<CommitContributionImpl>(
       type_, model_type_state_.type_context(), std::move(response),
       base::BindOnce(&ModelTypeWorker::OnCommitResponse,
@@ -1251,6 +1255,53 @@ void ModelTypeWorker::UpdateModelTypeStateInvalidations() {
     if (!invalidation->IsUnknownVersion()) {
       invalidation_to_store->set_version(invalidation->GetVersion());
     }
+  }
+}
+
+void ModelTypeWorker::EncryptPasswordSpecificsData(
+    CommitRequestDataList* request_data_list) {
+  CHECK(cryptographer_);
+  CHECK(encryption_enabled_);
+
+  for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
+    EntityData* entity_data = request_data->entity.get();
+    if (entity_data->is_deleted()) {
+      continue;
+    }
+
+    const sync_pb::PasswordSpecifics& password_specifics =
+        entity_data->specifics.password();
+    const sync_pb::PasswordSpecificsData& password_data =
+        password_specifics.client_only_encrypted_data();
+    sync_pb::EntitySpecifics encrypted_password;
+
+    // Keep the unencrypted metadata for non-custom passphrase users.
+    if (!IsExplicitPassphrase(passphrase_type_)) {
+      *encrypted_password.mutable_password()->mutable_unencrypted_metadata() =
+          password_specifics.unencrypted_metadata();
+    }
+
+    bool result = cryptographer_->Encrypt(
+        password_data,
+        encrypted_password.mutable_password()->mutable_encrypted());
+    DCHECK(result);
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+      // `encrypted_notes_backup` field needs to be populated regardless of
+      // whether or not there are any notes.
+      result = cryptographer_->Encrypt(password_data.notes(),
+                                       encrypted_password.mutable_password()
+                                           ->mutable_encrypted_notes_backup());
+      DCHECK(result);
+      // When encrypting both blobs succeeds, both encrypted blobs must use the
+      // key name.
+      DCHECK_EQ(
+          encrypted_password.password().encrypted().key_name(),
+          encrypted_password.password().encrypted_notes_backup().key_name());
+    }
+    // Replace the entire specifics, among other things to ensure that any
+    // client-only fields are cleared.
+    entity_data->specifics = std::move(encrypted_password);
+    entity_data->name = "encrypted";
   }
 }
 
