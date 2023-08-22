@@ -5,6 +5,7 @@
 #include "chrome/browser/android/auxiliary_search/auxiliary_search_provider.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +27,7 @@ class AuxiliarySearchProviderBrowserTest : public AndroidBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
     auxiliary_search_provider_ =
         std::make_unique<AuxiliarySearchProvider>(profile());
+    PersistedTabDataAndroid::OnDeferredStartup();
   }
 
   content::WebContents* web_contents() {

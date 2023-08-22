@@ -453,6 +453,7 @@ public abstract class PersistedTabData implements UserData {
      */
     public static void onDeferredStartup() {
         PersistedTabDataConfiguration.getFilePersistedTabDataStorage().onDeferredStartup();
+        PersistedTabDataJni.get().onDeferredStartup();
     }
 
     /**
@@ -468,5 +469,6 @@ public abstract class PersistedTabData implements UserData {
     @NativeMethods
     public interface Natives {
         void onTabClose(Tab tab);
+        void onDeferredStartup();
     }
 }
