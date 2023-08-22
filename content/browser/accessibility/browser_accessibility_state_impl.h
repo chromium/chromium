@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_BROWSER_ACCESSIBILITY_STATE_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/time/time.h"
@@ -40,15 +41,18 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
       public ui::AXModeObserver {
  public:
-  BrowserAccessibilityStateImpl();
-
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
   BrowserAccessibilityStateImpl& operator=(
       const BrowserAccessibilityStateImpl&) = delete;
 
   ~BrowserAccessibilityStateImpl() override;
 
+  // Returns the single process-wide instance.
   static BrowserAccessibilityStateImpl* GetInstance();
+
+  // Returns a new instance. Only one instance may be live in the process at any
+  // time.
+  static std::unique_ptr<BrowserAccessibilityStateImpl> Create();
 
   // This needs to be called explicitly by content::BrowserMainLoop during
   // initialization, in order to schedule tasks that need to be done, but
@@ -121,6 +125,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void DisallowAXModeChanges();
 
  protected:
+  BrowserAccessibilityStateImpl();
+
   // Called a short while after startup to allow time for the accessibility
   // state to be determined. Updates histograms with the current state.
   // Two variants - one for things that must be run on the UI thread, and

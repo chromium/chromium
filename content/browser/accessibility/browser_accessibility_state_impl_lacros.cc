@@ -4,7 +4,7 @@
 
 #include "content/browser/accessibility/browser_accessibility_state_impl_lacros.h"
 
-#include "base/no_destructor.h"
+#include <memory>
 
 namespace content {
 
@@ -27,9 +27,9 @@ void BrowserAccessibilityStateImplLacros::OnSpokenFeedbackPrefChanged(
 }
 
 // static
-BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
-  static base::NoDestructor<BrowserAccessibilityStateImplLacros> instance;
-  return &*instance;
+std::unique_ptr<BrowserAccessibilityStateImpl>
+BrowserAccessibilityStateImpl::Create() {
+  return std::make_unique<BrowserAccessibilityStateImplLacros>();
 }
 
 }  // namespace content

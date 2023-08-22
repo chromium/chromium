@@ -4,10 +4,11 @@
 
 #include "content/browser/accessibility/browser_accessibility_state_impl_android.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/accessibility/android/accessibility_state.h"
@@ -455,15 +456,10 @@ void BrowserAccessibilityStateImplAndroid::SetImageLabelsModeForProfile(
   }
 }
 
-//
-// BrowserAccessibilityStateImpl::GetInstance implementation that constructs
-// this class instead of the base class.
-//
-
 // static
-BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
-  static base::NoDestructor<BrowserAccessibilityStateImplAndroid> instance;
-  return &*instance;
+std::unique_ptr<BrowserAccessibilityStateImpl>
+BrowserAccessibilityStateImpl::Create() {
+  return std::make_unique<BrowserAccessibilityStateImplAndroid>();
 }
 
 }  // namespace content

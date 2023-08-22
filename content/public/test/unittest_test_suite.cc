@@ -16,6 +16,7 @@
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "content/app/mojo/mojo_init.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notification_service_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -150,6 +151,7 @@ UnitTestTestSuite::UnitTestTestSuite(
 
   DCHECK(test_suite);
   test_host_resolver_ = std::make_unique<TestHostResolver>();
+  browser_accessibility_state_ = BrowserAccessibilityStateImpl::Create();
 }
 
 UnitTestTestSuite::~UnitTestTestSuite() = default;
