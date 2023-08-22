@@ -279,11 +279,11 @@ public class ShoppingService {
             boolean hasProductClusterId, long productClusterId, boolean hasOfferId, long offerId,
             String currencyCode, long amountMicros, String countryCode, boolean hasPreviousPrice,
             long previousAmountMicros) {
-        Optional<Long> offer = hasOfferId ? Optional.empty() : Optional.of(offerId);
+        Optional<Long> offer = !hasOfferId ? Optional.empty() : Optional.of(offerId);
         Optional<Long> cluster =
-                hasProductClusterId ? Optional.empty() : Optional.of(productClusterId);
+                !hasProductClusterId ? Optional.empty() : Optional.of(productClusterId);
         Optional<Long> previousPrice =
-                hasPreviousPrice ? Optional.empty() : Optional.of(previousAmountMicros);
+                !hasPreviousPrice ? Optional.empty() : Optional.of(previousAmountMicros);
         return new ProductInfo(title, imageUrl, cluster, offer, currencyCode, amountMicros,
                 countryCode, previousPrice);
     }
