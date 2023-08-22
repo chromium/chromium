@@ -49,7 +49,8 @@ OneGoogleBarServiceFactory::OneGoogleBarServiceFactory()
 
 OneGoogleBarServiceFactory::~OneGoogleBarServiceFactory() = default;
 
-KeyedService* OneGoogleBarServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OneGoogleBarServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =
@@ -58,7 +59,7 @@ KeyedService* OneGoogleBarServiceFactory::BuildServiceInstanceFor(
       CookieSettingsFactory::GetForProfile(profile);
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
-  return new OneGoogleBarService(
+  return std::make_unique<OneGoogleBarService>(
       identity_manager,
       std::make_unique<OneGoogleBarLoaderImpl>(
           url_loader_factory, g_browser_process->GetApplicationLocale(),
