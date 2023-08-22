@@ -2395,6 +2395,7 @@ test("content_unittests") {
     "../browser/indexed_db/mock_mojo_indexed_db_factory_client.h",
     "../browser/interest_group/ad_auction_service_impl_unittest.cc",
     "../browser/interest_group/ad_auction_url_loader_interceptor_unittest.cc",
+    "../browser/interest_group/additional_bids_util_unittest.cc",
     "../browser/interest_group/auction_metrics_recorder_unittest.cc",
     "../browser/interest_group/auction_nonce_manager_unittest.cc",
     "../browser/interest_group/auction_process_manager_unittest.cc",

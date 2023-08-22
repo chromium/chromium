@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "ad_auction_page_data.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/command_line.h"

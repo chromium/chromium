@@ -415,7 +415,8 @@ IdlConvert::Status SetBidBindings::SetBidImpl(
   bid_ = mojom::BidderWorkletBid::New(
       std::move(ad_json), *idl.bid, std::move(bid_currency),
       std::move(idl.ad_cost), blink::AdDescriptor(render_url, render_size),
-      std::move(ad_component_descriptors), std::move(modeling_signals),
+      std::move(ad_component_descriptors),
+      static_cast<absl::optional<uint16_t>>(modeling_signals),
       /*bid_duration=*/base::TimeDelta());
   return IdlConvert::Status::MakeSuccess();
 }

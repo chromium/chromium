@@ -164,7 +164,7 @@ class CONTENT_EXPORT InterestGroupAuction
     kNumPhases
   };
 
-  struct BidState {
+  struct CONTENT_EXPORT BidState {
     BidState();
     ~BidState();
 
@@ -321,7 +321,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // and is persisted to the end of the auction if the bidder wins. Largely
   // duplicates auction_worklet::mojom::BidderWorkletBid, with additional
   // information about the bidder.
-  struct Bid {
+  struct CONTENT_EXPORT Bid {
     // Which auctions the bid is appropriate for, based on whether the auction
     // enforces k-anonymity or not.
     enum class BidRole { kUnenforcedKAnon, kEnforcedKAnon, kBothKAnonModes };
