@@ -2288,21 +2288,14 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   // request is completed with a value, the promise will be resolved with that
   // value.
   {
-    constexpr char kFunctionCall[] =
-        R"((function(api) {
-             this.apiResult = api.supportsPromises(3);
-             this.apiResult.then((strResult) => {
-               this.promiseResult = strResult;
-             });
-           }))";
-    v8::Local<v8::Function> promise_api_call =
-        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3); })");
     v8::Local<v8::Value> args[] = {binding_object};
-    RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
+    v8::Local<v8::Value> result =
+        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
 
     v8::Local<v8::Promise> promise;
-    ASSERT_TRUE(GetPropertyFromObjectAs(context->Global(), context, "apiResult",
-                                        &promise));
+    ASSERT_TRUE(GetValueAs(result, &promise));
     EXPECT_EQ(v8::Promise::kPending, promise->State());
 
     ASSERT_TRUE(last_request());
@@ -2312,8 +2305,6 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
 
     EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
     EXPECT_EQ(R"("foo")", V8ToString(promise->Result(), context));
-    EXPECT_EQ(R"("foo")", GetStringPropertyFromObject(
-                              context->Global(), context, "promiseResult"));
   }
   // Also test that promise-based APIs still support passing a callback.
   {
@@ -2389,12 +2380,8 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   // required callback isn't supplied.
   context_allows_promises = false;
   {
-    constexpr char kPromiseFunctionCall[] =
-        R"((function(api) {
-             this.apiResult = api.supportsPromises(3);
-           }))";
-    v8::Local<v8::Function> promise_api_call =
-        FunctionFromString(context, kPromiseFunctionCall);
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3) });");
     v8::Local<v8::Value> args[] = {binding_object};
     auto expected_error =
         "Uncaught TypeError: " +
@@ -2429,19 +2416,13 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   // If a returns_async field is marked as optional, then a context which
   // doesn't support promises should be able to leave it off of the call.
   {
-    constexpr char kCallbackOptionalFunctionCall[] =
-        R"((function(api) {
-             this.callbackOptionalResult = api.callbackOptional(3);
-           }))";
-    v8::Local<v8::Function> promise_api_call =
-        FunctionFromString(context, kCallbackOptionalFunctionCall);
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.callbackOptional(3) });");
     v8::Local<v8::Value> args[] = {binding_object};
-    RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
 
     ASSERT_TRUE(last_request());
-
-    v8::Local<v8::Value> api_result = GetPropertyFromObject(
-        context->Global(), context, "callbackOptionalResult");
     ASSERT_TRUE(api_result->IsNullOrUndefined());
   }
 }
