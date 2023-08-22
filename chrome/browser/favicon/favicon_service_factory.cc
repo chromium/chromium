@@ -81,9 +81,10 @@ FaviconServiceFactory::FaviconServiceFactory()
 
 FaviconServiceFactory::~FaviconServiceFactory() = default;
 
-KeyedService* FaviconServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FaviconServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildFaviconService(context).release();
+  return BuildFaviconService(context);
 }
 
 bool FaviconServiceFactory::ServiceIsNULLWhileTesting() const {
