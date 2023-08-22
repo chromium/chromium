@@ -3869,7 +3869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.VisibilityAwareResourceScheduler.Deprioritized"
-    units="Boolean" expires_after="2023-09-30">
+    units="Boolean" expires_after="2024-01-22">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
