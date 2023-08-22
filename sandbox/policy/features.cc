@@ -8,6 +8,10 @@
 #include "build/chromeos_buildflags.h"
 #include "sandbox/features.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace sandbox::policy::features {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
@@ -112,8 +116,21 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
 
 #if BUILDFLAG(IS_WIN)
 bool IsNetworkSandboxSupported() {
-  // Delegate to the sandbox for support, for now.
-  return sandbox::features::IsAppContainerSandboxSupported();
+  // Network service sandbox uses GetNetworkConnectivityHint which is only
+  // supported on Windows 10 Build 19041 (20H1) so versions before that wouldn't
+  // have a working network change notifier when running in the sandbox.
+  // TODO(crbug.com/1450754): Move this to an API that works earlier than 20H1
+  // and also works in the LPAC sandbox.
+  static const bool supported =
+      base::win::GetVersion() >= base::win::Version::WIN10_20H1;
+  if (!supported) {
+    return false;
+  }
+
+  // App container must be already supported on 20H1, but double check it here.
+  CHECK(sandbox::features::IsAppContainerSandboxSupported());
+
+  return true;
 }
 #endif  // BUILDFLAG(IS_WIN)
 

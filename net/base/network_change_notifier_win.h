@@ -72,8 +72,13 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   // Must only be called on the sequence |this| was created on.
   void OnObjectSignaled(HANDLE object) override;
 
-  // Does the actual work to determine the current connection type.
-  // It is not thread safe, see crbug.com/324913.
+  // Recompute the current connection type on newer versions of Windows (Win10
+  // Build 19041 and above).
+  static ConnectionType RecomputeCurrentConnectionTypeModern();
+
+  // Does the actual work to determine the current connection type. This will
+  // call into RecomputeCurrentConnectionTypeModern on modern OS. It is not
+  // thread safe, see crbug.com/324913.
   static ConnectionType RecomputeCurrentConnectionType();
 
   // Calls RecomputeCurrentConnectionTypeImpl on the DNS sequence and runs

@@ -19,6 +19,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "net/base/winsock_init.h"
 #include "net/base/winsock_util.h"
 
@@ -152,6 +153,43 @@ NetworkChangeNotifierWin::NetworkChangeCalculatorParamsWin() {
   return params;
 }
 
+// static
+NetworkChangeNotifier::ConnectionType
+NetworkChangeNotifierWin::RecomputeCurrentConnectionTypeModern() {
+  using GetNetworkConnectivityHintType =
+      decltype(&::GetNetworkConnectivityHint);
+
+  // This API is only available on Windows 10 Build 19041. However, it works
+  // inside the Network Service Sandbox, so is preferred. See
+  GetNetworkConnectivityHintType get_network_connectivity_hint =
+      reinterpret_cast<GetNetworkConnectivityHintType>(::GetProcAddress(
+          ::GetModuleHandleA("iphlpapi.dll"), "GetNetworkConnectivityHint"));
+  if (!get_network_connectivity_hint) {
+    return NetworkChangeNotifier::CONNECTION_UNKNOWN;
+  }
+  NL_NETWORK_CONNECTIVITY_HINT hint;
+  // https://learn.microsoft.com/en-us/windows/win32/api/netioapi/nf-netioapi-getnetworkconnectivityhint.
+  auto ret = get_network_connectivity_hint(&hint);
+  if (ret != NO_ERROR) {
+    return NetworkChangeNotifier::CONNECTION_UNKNOWN;
+  }
+
+  switch (hint.ConnectivityLevel) {
+    case NetworkConnectivityLevelHintUnknown:
+      return NetworkChangeNotifier::CONNECTION_UNKNOWN;
+    case NetworkConnectivityLevelHintNone:
+    case NetworkConnectivityLevelHintHidden:
+      return NetworkChangeNotifier::CONNECTION_NONE;
+    case NetworkConnectivityLevelHintLocalAccess:
+    case NetworkConnectivityLevelHintInternetAccess:
+    case NetworkConnectivityLevelHintConstrainedInternetAccess:
+      // TODO(droger): Return something more detailed than CONNECTION_UNKNOWN.
+      return ConnectionTypeFromInterfaces();
+  }
+
+  NOTREACHED_NORETURN();
+}
+
 // This implementation does not return the actual connection type but merely
 // determines if the user is "online" (in which case it returns
 // CONNECTION_UNKNOWN) or "offline" (and then it returns CONNECTION_NONE).
@@ -203,6 +241,10 @@ NetworkChangeNotifierWin::NetworkChangeCalculatorParamsWin() {
 // static
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifierWin::RecomputeCurrentConnectionType() {
+  if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
+    return RecomputeCurrentConnectionTypeModern();
+  }
+
   EnsureWinsockInit();
 
   // The following code was adapted from:
