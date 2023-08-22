@@ -49,9 +49,10 @@ bool LiveTranslateControllerFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* LiveTranslateControllerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new LiveTranslateController(
+  return std::make_unique<LiveTranslateController>(
       Profile::FromBrowserContext(browser_context)->GetPrefs(),
       browser_context);
 }
