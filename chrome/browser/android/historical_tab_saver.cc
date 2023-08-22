@@ -184,7 +184,7 @@ std::unique_ptr<ScopedWebContents> ScopedWebContents::CreateForTab(
     auto native_contents = WebContentsState::RestoreContentsFromByteBuffer(
         web_contents_state->byte_buffer_data,
         web_contents_state->byte_buffer_size, web_contents_state->state_version,
-        true, false);
+        /*initially_hidden=*/true, /*no_renderer=*/true);
     if (native_contents) {
       return std::make_unique<ScopedWebContents>(std::move(native_contents));
     }
