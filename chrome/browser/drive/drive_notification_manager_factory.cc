@@ -8,7 +8,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/drive/drive_notification_manager.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
-#include "components/sync/base/command_line_switches.h"
 
 namespace drive {
 namespace {
@@ -39,8 +38,6 @@ DriveNotificationManagerFactory::FindForBrowserContext(
 DriveNotificationManager*
 DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  if (!syncer::IsSyncAllowedByFlag())
-    return nullptr;
   if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not
     // support invalidation.
