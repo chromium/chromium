@@ -220,6 +220,11 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
       };
 
   auto* ukm_recorder = ukm::UkmRecorder::Get();
+  auto get_exponential_bucket_for_signed_values = [](int64_t sample,
+                                                     double bucket_spacing) {
+    return ukm::GetExponentialBucketMin(std::abs(sample), bucket_spacing) *
+           (sample >= 0 ? 1 : -1);
+  };
 
   for (const auto& [anchor_index, user_interaction] : user_interactions_) {
     ukm::builders::NavigationPredictorUserInteractions builder(ukm_source_id);
@@ -239,9 +244,9 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
         get_max_time_ms(user_interaction.max_hover_dwell_time,
                         user_interaction.last_navigation_start_to_pointer_over),
         1.3));
-    builder.SetMouseVelocity(ukm::GetExponentialBucketMin(
+    builder.SetMouseVelocity(get_exponential_bucket_for_signed_values(
         user_interaction.mouse_velocity.value_or(0.0), 1.3));
-    builder.SetMouseAcceleration(ukm::GetExponentialBucketMin(
+    builder.SetMouseAcceleration(get_exponential_bucket_for_signed_values(
         user_interaction.mouse_acceleration.value_or(0.0), 1.3));
     builder.Record(ukm_recorder);
   }

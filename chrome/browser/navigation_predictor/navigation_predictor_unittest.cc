@@ -815,7 +815,7 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
   const int navigation_start_to_pointer_over_0 = 140;
   const int hover_dwell_time_0 = 60;
   const double mouse_velocity = 50.0;
-  const double mouse_acceleration = 10.0;
+  const double mouse_acceleration = -10.0;
   ReportAnchorElementPointerOver(
       predictor_service.get(), anchor_id_0,
       base::Milliseconds(navigation_start_to_pointer_over_0));
@@ -874,9 +874,9 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordUserInteractionMetrics) {
                   get_metric(i, UkmEntry::kMaxHoverDwellTimeMsName));
         EXPECT_EQ(ukm::GetExponentialBucketMin(1, 1.3),
                   get_metric(i, UkmEntry::kPointerHoveringOverCountName));
-        EXPECT_EQ(ukm::GetExponentialBucketMin(mouse_velocity, 1.3),
+        EXPECT_EQ(/*get_exponential_bucket_for_signed_values(50)=*/40,
                   get_metric(i, UkmEntry::kMouseVelocityName));
-        EXPECT_EQ(ukm::GetExponentialBucketMin(mouse_acceleration, 1.3),
+        EXPECT_EQ(/*get_exponential_bucket_for_signed_values(-10)=*/-9,
                   get_metric(i, UkmEntry::kMouseAccelerationName));
         break;
 
