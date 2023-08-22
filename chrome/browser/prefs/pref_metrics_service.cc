@@ -123,10 +123,11 @@ PrefMetricsService::Factory::Factory()
 PrefMetricsService::Factory::~Factory() {
 }
 
-KeyedService* PrefMetricsService::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrefMetricsService::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PrefMetricsService(profile);
+  return std::make_unique<PrefMetricsService>(profile);
 }
 
 bool PrefMetricsService::Factory::ServiceIsCreatedWithBrowserContext() const {
