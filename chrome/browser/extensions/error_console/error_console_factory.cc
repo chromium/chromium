@@ -40,9 +40,10 @@ ErrorConsoleFactory::ErrorConsoleFactory()
 
 ErrorConsoleFactory::~ErrorConsoleFactory() = default;
 
-KeyedService* ErrorConsoleFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ErrorConsoleFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new ErrorConsole(Profile::FromBrowserContext(context));
+  return std::make_unique<ErrorConsole>(Profile::FromBrowserContext(context));
 }
 
 }  // namespace extensions
