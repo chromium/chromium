@@ -40,9 +40,11 @@ BlocklistFactory::BlocklistFactory()
 
 BlocklistFactory::~BlocklistFactory() = default;
 
-KeyedService* BlocklistFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BlocklistFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new Blocklist(Profile::FromBrowserContext(context)->GetPrefs());
+  return std::make_unique<Blocklist>(
+      Profile::FromBrowserContext(context)->GetPrefs());
 }
 
 }  // namespace extensions
