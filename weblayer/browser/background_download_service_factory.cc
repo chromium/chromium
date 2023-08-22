@@ -133,7 +133,8 @@ BackgroundDownloadServiceFactory::BackgroundDownloadServiceFactory()
   DependsOn(download::NavigationMonitorFactory::GetInstance());
 }
 
-KeyedService* BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BackgroundDownloadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   SimpleFactoryKey* key = ProfileImpl::FromBrowserContext(context)
                               ->GetBrowserContext()
@@ -152,11 +153,10 @@ KeyedService* BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
         SystemNetworkContextManager::GetInstance()->GetSharedURLLoaderFactory();
 
     return download::BuildInMemoryDownloadService(
-               key, std::move(clients), content::GetNetworkConnectionTracker(),
-               base::FilePath(),
-               std::make_unique<DownloadBlobContextGetterFactory>(context),
-               io_task_runner, url_loader_factory)
-        .release();
+        key, std::move(clients), content::GetNetworkConnectionTracker(),
+        base::FilePath(),
+        std::make_unique<DownloadBlobContextGetterFactory>(context),
+        io_task_runner, url_loader_factory);
   }
 
   // Build download service for a regular browsing context.
