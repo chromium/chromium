@@ -57,8 +57,10 @@ Vector<v8::Local<v8::Value>> MediaMetadata::artwork(
   Vector<v8::Local<v8::Value>> result(artwork_.size());
 
   for (wtf_size_t i = 0; i < artwork_.size(); ++i) {
-    result[i] = FreezeV8Object(ToV8(artwork_[i], script_state),
-                               script_state->GetIsolate());
+    result[i] =
+        FreezeV8Object(ToV8Traits<MediaImage>::ToV8(script_state, artwork_[i])
+                           .ToLocalChecked(),
+                       script_state->GetIsolate());
   }
 
   return result;
