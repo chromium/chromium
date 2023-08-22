@@ -58,9 +58,19 @@ source_set("form_handler_feature") {
   ]
 }
 
+compile_ts("fill_js_dependencies") {
+  allow_js = true
+  sources = [
+    "resources/create_fill_namespace.js",
+    "resources/fill_constants.js",
+  ]
+}
+
 optimize_js("fill_js") {
   primary_script = "resources/fill.js"
   sources = [ "resources/fill.js" ]
+
+  deps = [ ":fill_js_dependencies" ]
 }
 
 optimize_ts("form_js") {
