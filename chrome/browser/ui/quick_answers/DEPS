@@ -3,4 +3,6 @@ include_rules = [
   # both ash and Lacros browser.
   "+ash",
   "+content/browser/speech",
+  "+chrome/browser/ui/views/editor_menu/utils/focus_search.h",
+  "+chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h",
 ]

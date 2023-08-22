@@ -2,39 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
-#define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_
+#define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "ui/events/event_handler.h"
-#include "ui/views/view.h"
 
 namespace ui {
+class KeyEvent;
 class LocatedEvent;
 }  // namespace ui
 
 namespace views {
 class ExternalFocusTracker;
+class View;
 }  // namespace views
 
-namespace quick_answers {
+namespace chromeos::editor_menu {
+
 class QuickAnswersView;
 class UserConsentView;
 
 // This class handles mouse events, and update background color or
-// dismiss quick answers view.
+// dismiss Quick Answers or Editor Menu views.
 // TODO (siabhijeet): Migrate to using two-phased event dispatching.
-class QuickAnswersPreTargetHandler : public ui::EventHandler {
+class PreTargetHandler : public ui::EventHandler {
  public:
-  explicit QuickAnswersPreTargetHandler(QuickAnswersView* view);
-  explicit QuickAnswersPreTargetHandler(quick_answers::UserConsentView* view);
+  PreTargetHandler(views::View* view);
 
   // Disallow copy and assign.
-  QuickAnswersPreTargetHandler(const QuickAnswersPreTargetHandler&) = delete;
-  QuickAnswersPreTargetHandler& operator=(const QuickAnswersPreTargetHandler&) =
-      delete;
+  PreTargetHandler(const PreTargetHandler&) = delete;
+  PreTargetHandler& operator=(const PreTargetHandler&) = delete;
 
-  ~QuickAnswersPreTargetHandler() override;
+  ~PreTargetHandler() override;
 
   // ui::EventHandler:
   void OnEvent(ui::Event* event) override;
@@ -51,7 +51,7 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
   bool DoDispatchEvent(views::View* view, ui::LocatedEvent* event);
 
   // Associated view handled by this class.
-  const raw_ptr<views::View> view_;
+  const raw_ptr<views::View> view_ = nullptr;
 
   // Whether any active menus, |view_| is a companion Quick-Answers related view
   // of which, should be dismissed when it is deleted.
@@ -60,6 +60,6 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
 };
 
-}  // namespace quick_answers
+}  // namespace chromeos::editor_menu
 
-#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_

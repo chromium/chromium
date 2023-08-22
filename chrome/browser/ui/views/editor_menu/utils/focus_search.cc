@@ -2,20 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
+#include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
 
-namespace quick_answers {
+#include "ui/views/focus/focus_search.h"
 
-QuickAnswersFocusSearch::QuickAnswersFocusSearch(
-    views::View* view,
-    const GetFocusableViewsCallback& callback)
-    : FocusSearch(/*root=*/view, /*cycle=*/true, /*accessibility_mode=*/true),
+namespace chromeos::editor_menu {
+
+FocusSearch::FocusSearch(views::View* view,
+                         const GetFocusableViewsCallback& callback)
+    : views::FocusSearch(/*root=*/view,
+                         /*cycle=*/true,
+                         /*accessibility_mode=*/true),
       view_(view),
       get_focusable_views_callback_(callback) {}
 
-QuickAnswersFocusSearch::~QuickAnswersFocusSearch() = default;
+FocusSearch::~FocusSearch() = default;
 
-views::View* QuickAnswersFocusSearch::FindNextFocusableView(
+views::View* FocusSearch::FindNextFocusableView(
     views::View* starting_view,
     SearchDirection search_direction,
     TraversalDirection traversal_direction,
@@ -27,8 +30,9 @@ views::View* QuickAnswersFocusSearch::FindNextFocusableView(
 
   // The callback provided by |view_| polls the currently focusable views.
   auto focusable_views = get_focusable_views_callback_.Run();
-  if (focusable_views.empty())
+  if (focusable_views.empty()) {
     return nullptr;
+  }
 
   int delta =
       search_direction == FocusSearch::SearchDirection::kForwards ? 1 : -1;
@@ -49,16 +53,16 @@ views::View* QuickAnswersFocusSearch::FindNextFocusableView(
              : focusable_views.back();
 }
 
-views::FocusSearch* QuickAnswersFocusSearch::GetFocusSearch() {
+views::FocusSearch* FocusSearch::GetFocusSearch() {
   return this;
 }
 
-views::FocusTraversable* QuickAnswersFocusSearch::GetFocusTraversableParent() {
+views::FocusTraversable* FocusSearch::GetFocusTraversableParent() {
   return nullptr;
 }
 
-views::View* QuickAnswersFocusSearch::GetFocusTraversableParentView() {
+views::View* FocusSearch::GetFocusTraversableParentView() {
   return nullptr;
 }
 
-}  // namespace quick_answers
+}  // namespace chromeos::editor_menu

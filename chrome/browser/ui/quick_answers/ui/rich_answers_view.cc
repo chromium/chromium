@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
+#include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -87,7 +88,7 @@ RichAnswersView::RichAnswersView(
       result_(result),
       rich_answers_view_handler_(
           std::make_unique<quick_answers::RichAnswersPreTargetHandler>(this)),
-      focus_search_(std::make_unique<QuickAnswersFocusSearch>(
+      focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
           this,
           base::BindRepeating(&RichAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {

@@ -4,6 +4,23 @@
 
 assert(is_chromeos)
 
+source_set("utils") {
+  sources = [
+    "utils/focus_search.cc",
+    "utils/focus_search.h",
+    "utils/pre_target_handler.cc",
+    "utils/pre_target_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/aura",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
 source_set("editor_menu") {
   sources = [
     "editor_menu_controller_impl.cc",

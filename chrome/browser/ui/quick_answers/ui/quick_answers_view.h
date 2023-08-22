@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
@@ -23,6 +22,11 @@ class Label;
 class LabelButton;
 class WebView;
 }  // namespace views
+
+namespace chromeos::editor_menu {
+class FocusSearch;
+class PreTargetHandler;
+}  // namespace chromeos::editor_menu
 
 class QuickAnswersUiController;
 
@@ -94,8 +98,7 @@ class QuickAnswersView : public views::View {
   void UpdateBounds();
   void UpdateQuickAnswerResult(const quick_answers::QuickAnswer& quick_answer);
 
-  // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently
-  // focusable views.
+  // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
 
   // Invoked when user clicks the phonetics audio button.
@@ -125,8 +128,9 @@ class QuickAnswersView : public views::View {
   // Invisible web view to play phonetics audio for definition results.
   raw_ptr<views::WebView> phonetics_audio_web_view_ = nullptr;
 
-  std::unique_ptr<QuickAnswersPreTargetHandler> quick_answers_view_handler_;
-  std::unique_ptr<QuickAnswersFocusSearch> focus_search_;
+  std::unique_ptr<chromeos::editor_menu::PreTargetHandler>
+      quick_answers_view_handler_;
+  std::unique_ptr<chromeos::editor_menu::FocusSearch> focus_search_;
   base::WeakPtrFactory<QuickAnswersView> weak_factory_{this};
 };
 

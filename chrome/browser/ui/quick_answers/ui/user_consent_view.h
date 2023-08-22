@@ -9,8 +9,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -65,8 +65,7 @@ class UserConsentView : public views::View {
   void InitButtonBar();
   void UpdateWidgetBounds();
 
-  // QuickAnswersFocusSearch::GetFocusableViewsCallback to poll currently
-  // focusable views.
+  // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();
 
   // Cached bounds of the anchor this view is tied to.
@@ -74,9 +73,9 @@ class UserConsentView : public views::View {
   // Cached title text.
   std::u16string title_text_;
 
-  QuickAnswersPreTargetHandler event_handler_;
+  chromeos::editor_menu::PreTargetHandler event_handler_;
   base::WeakPtr<QuickAnswersUiController> controller_;
-  QuickAnswersFocusSearch focus_search_;
+  chromeos::editor_menu::FocusSearch focus_search_;
 
   // Owned by view hierarchy.
   raw_ptr<views::View> main_view_ = nullptr;

@@ -2,46 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 
 #include "base/containers/adapters.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
-#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "ui/aura/env.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/focus/external_focus_tracker.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
-namespace quick_answers {
+namespace chromeos::editor_menu {
 
-QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
-    QuickAnswersView* view)
-    : view_(view) {
+PreTargetHandler::PreTargetHandler(views::View* view) : view_(view) {
   Init();
 }
 
-QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
-    quick_answers::UserConsentView* view)
-    : view_(view) {
-  Init();
-}
-
-QuickAnswersPreTargetHandler::~QuickAnswersPreTargetHandler() {
+PreTargetHandler::~PreTargetHandler() {
   aura::Env::GetInstance()->RemovePreTargetHandler(this);
 
   // Cancel any active context-menus, |view_| was a companion-view of which,
   // unless it had requested otherwise for some cases.
   if (dismiss_anchor_menu_on_view_closed_) {
     auto* active_menu_instance = views::MenuController::GetActiveInstance();
-    if (active_menu_instance)
+    if (active_menu_instance) {
       active_menu_instance->Cancel(views::MenuController::ExitType::kAll);
+    }
   }
 }
 
-void QuickAnswersPreTargetHandler::Init() {
+void PreTargetHandler::Init() {
   // QuickAnswersView is a companion view of a menu. Menu host widget sets
   // mouse capture as well as a pre-target handler, so we need to register one
   // here as well to intercept events for QuickAnswersView.
@@ -51,18 +43,20 @@ void QuickAnswersPreTargetHandler::Init() {
       std::make_unique<views::ExternalFocusTracker>(view_, nullptr);
 }
 
-void QuickAnswersPreTargetHandler::OnEvent(ui::Event* event) {
+void PreTargetHandler::OnEvent(ui::Event* event) {
   if (event->IsKeyEvent()) {
     ProcessKeyEvent(static_cast<ui::KeyEvent*>(event));
     return;
   }
 
-  if (!event->IsLocatedEvent())
+  if (!event->IsLocatedEvent()) {
     return;
+  }
 
   // Filter scroll event due to potential timing issue (b/258750397).
-  if (event->IsScrollEvent() || event->type() == ui::ET_MOUSEWHEEL)
+  if (event->IsScrollEvent() || event->type() == ui::ET_MOUSEWHEEL) {
     return;
+  }
 
   // Clone event to forward down the view-hierarchy.
   auto clone = event->Clone();
@@ -95,19 +89,21 @@ void QuickAnswersPreTargetHandler::OnEvent(ui::Event* event) {
     // Clicks inside Quick-Answers views can dismiss the menu since they are
     // outside menu-bounds and are thus not propagated to it to prevent so.
     // Active menu instance will instead be cancelled when |view_| is deleted.
-    if (event->type() != ui::ET_MOUSE_MOVED)
+    if (event->type() != ui::ET_MOUSE_MOVED) {
       event->StopPropagation();
+    }
   }
 
   // Show tooltips.
   auto* tooltip_manager = view_->GetWidget()->GetTooltipManager();
-  if (tooltip_manager)
+  if (tooltip_manager) {
     tooltip_manager->UpdateTooltip();
+  }
 }
 
 // TODO(siabhijeet): Investigate using SendEventsToSink() for dispatching.
-bool QuickAnswersPreTargetHandler::DoDispatchEvent(views::View* view,
-                                                   ui::LocatedEvent* event) {
+bool PreTargetHandler::DoDispatchEvent(views::View* view,
+                                       ui::LocatedEvent* event) {
   DCHECK(view && event);
 
   // Out-of-bounds `ET_MOUSE_MOVED` events are allowed to sift through to
@@ -133,17 +129,19 @@ bool QuickAnswersPreTargetHandler::DoDispatchEvent(views::View* view,
       return false;
     }
     ui::Event::DispatcherApi(to_dispatch.get()).set_target(child);
-    if (DoDispatchEvent(child, to_dispatch.get()->AsLocatedEvent()))
+    if (DoDispatchEvent(child, to_dispatch.get()->AsLocatedEvent())) {
       return true;
+    }
   }
 
   view->OnEvent(event);
   return event->handled();
 }
 
-void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
-  if (key_event->type() != ui::ET_KEY_PRESSED)
+void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
+  if (key_event->type() != ui::ET_KEY_PRESSED) {
     return;
+  }
 
   auto* focus_manager = view_->GetFocusManager();
   auto* currently_focused_view = focus_manager->GetFocusedView();
@@ -164,8 +162,9 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         external_focus_tracker_->SetFocusManager(nullptr);
 
         // Explicitly lose focus if restoring to last focused did not work.
-        if (view_->Contains(focus_manager->GetFocusedView()))
+        if (view_->Contains(focus_manager->GetFocusedView())) {
           focus_manager->SetFocusedView(nullptr);
+        }
 
         return;
       }
@@ -173,16 +172,18 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
       // Get the selected item, if any, in the currently active menu.
       auto* const active_menu = views::MenuController::GetActiveInstance();
       auto* const selected_item = active_menu->GetSelectedMenuItem();
-      if (!selected_item)
+      if (!selected_item) {
         return;
+      }
 
       auto* const parent = selected_item->GetParentMenuItem();
       bool view_should_gain_focus = false;
       if (parent) {
         // Check if the item is within the outer-most menu, since we do not want
         // the selection to loop back to |view_| for submenus.
-        if (parent->GetParentMenuItem())
+        if (parent->GetParentMenuItem()) {
           return;
+        }
 
         // |view_| should gain focus only when the selected item is first or
         // last within the menu.
@@ -211,8 +212,9 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
 
         // Reopen the sub-menu owned by |parent| to clear the currently selected
         // boundary menu-item.
-        if (parent)
+        if (parent) {
           active_menu->SelectItemAndOpenSubmenu(parent);
+        }
       }
 
       return;
@@ -220,8 +222,9 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
     case ui::VKEY_RETURN: {
       if (view_has_pane_focus) {
         auto* button_in_focus = views::Button::AsButton(currently_focused_view);
-        if (button_in_focus)
+        if (button_in_focus) {
           button_in_focus->OnKeyPressed(*key_event);
+        }
         key_event->StopPropagation();
       }
       return;
@@ -240,4 +243,4 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
   }
 }
 
-}  // namespace quick_answers
+}  // namespace chromeos::editor_menu

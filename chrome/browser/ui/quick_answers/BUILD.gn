@@ -12,10 +12,6 @@ source_set("quick_answers") {
     "quick_answers_controller_impl.h",
     "quick_answers_ui_controller.cc",
     "quick_answers_ui_controller.h",
-    "ui/quick_answers_focus_search.cc",
-    "ui/quick_answers_focus_search.h",
-    "ui/quick_answers_pre_target_handler.cc",
-    "ui/quick_answers_pre_target_handler.h",
     "ui/quick_answers_text_label.cc",
     "ui/quick_answers_text_label.h",
     "ui/quick_answers_util.cc",
@@ -41,6 +37,7 @@ source_set("quick_answers") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",

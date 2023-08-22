@@ -9,9 +9,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
-#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_text_label.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
+#include "chrome/browser/ui/views/editor_menu/utils/focus_search.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -324,8 +325,8 @@ QuickAnswersView::QuickAnswersView(
       title_(title),
       is_internal_(is_internal),
       quick_answers_view_handler_(
-          std::make_unique<QuickAnswersPreTargetHandler>(this)),
-      focus_search_(std::make_unique<QuickAnswersFocusSearch>(
+          std::make_unique<chromeos::editor_menu::PreTargetHandler>(this)),
+      focus_search_(std::make_unique<chromeos::editor_menu::FocusSearch>(
           this,
           base::BindRepeating(&QuickAnswersView::GetFocusableViews,
                               base::Unretained(this)))) {
