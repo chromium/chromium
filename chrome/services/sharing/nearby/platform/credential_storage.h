@@ -46,9 +46,15 @@ class CredentialStorage : public nearby::api::CredentialStorage {
       GetPublicCredentialsResultCallback callback) override;
 
  private:
+  void OnCredentialsSaved(
+      nearby::presence::SaveCredentialsResultCallback
+          on_credentials_saved_callback,
+      ash::nearby::presence::mojom::StatusCode credential_save_result);
+
   const mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
       nearby_presence_credential_storage_;
+  base::WeakPtrFactory<CredentialStorage> weak_ptr_factory_{this};
 };
 
 }  // namespace nearby::chrome

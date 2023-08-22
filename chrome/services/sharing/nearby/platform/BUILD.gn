@@ -69,6 +69,7 @@ source_set("platform") {
   ]
 
   public_deps = [
+    "//third_party/nearby:connections_local_credential_proto",
     "//third_party/nearby:platform_api_platform",
     "//third_party/nearby:platform_impl_shared_file",
   ]
@@ -77,6 +78,7 @@ source_set("platform") {
     "//ash/constants",
     "//base",
     "//chrome/services/sharing/webrtc",
+    "//chromeos/ash/components/nearby/presence/conversions:conversions",
     "//chromeos/ash/services/nearby/public/cpp:tcp_server_socket_port",
     "//chromeos/ash/services/nearby/public/mojom",
     "//chromeos/services/network_config/public/mojom",

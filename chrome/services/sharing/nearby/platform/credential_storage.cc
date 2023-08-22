@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/services/sharing/nearby/platform/credential_storage.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 
 namespace nearby::chrome {
 
@@ -21,7 +23,19 @@ void CredentialStorage::SaveCredentials(
     const std::vector<LocalCredential>& private_credentials,
     const std::vector<SharedCredential>& public_credentials,
     PublicCredentialType public_credential_type,
-    SaveCredentialsResultCallback callback) {}
+    SaveCredentialsResultCallback callback) {
+  std::vector<ash::nearby::presence::mojom::LocalCredentialPtr>
+      local_credentials_mojom;
+  for (const auto& local_credential : private_credentials) {
+    local_credentials_mojom.push_back(
+        ash::nearby::presence::proto::LocalCredentialToMojom(local_credential));
+  }
+
+  nearby_presence_credential_storage_->SaveCredentials(
+      std::move(local_credentials_mojom),
+      base::BindOnce(&CredentialStorage::OnCredentialsSaved,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
 // TODO(b/287334012): Implement.
 void CredentialStorage::UpdateLocalCredential(
@@ -40,5 +54,21 @@ void CredentialStorage::GetPublicCredentials(
     const CredentialSelector& credential_selector,
     PublicCredentialType public_credential_type,
     GetPublicCredentialsResultCallback callback) {}
+
+void CredentialStorage::OnCredentialsSaved(
+    nearby::presence::SaveCredentialsResultCallback
+        on_credentials_saved_callback,
+    ash::nearby::presence::mojom::StatusCode credential_save_result) {
+  // TODO(b/297097956): Use AbslStatusCode in callback rather than StatusCode
+  // once NP migration to this type lands.
+  if (credential_save_result == ash::nearby::presence::mojom::StatusCode::kOk) {
+    std::move(on_credentials_saved_callback)
+        .credentials_saved_cb(absl::OkStatus());
+  } else {
+    std::move(on_credentials_saved_callback)
+        .credentials_saved_cb(absl::Status(absl::StatusCode::kUnknown,
+                                           "Failed to save to database."));
+  }
+}
 
 }  // namespace nearby::chrome
