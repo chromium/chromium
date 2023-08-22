@@ -50,6 +50,7 @@ BrowsingContextState::BrowsingContextState(
 
 BrowsingContextState::~BrowsingContextState() {
   TRACE_EVENT_END("navigation", perfetto::Track::FromPointer(this));
+  CHECK(proxy_hosts_.empty());
 }
 
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
