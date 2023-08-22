@@ -5,11 +5,13 @@
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_registry.h"
@@ -44,10 +46,14 @@ class TestManagementService : public policy::ManagementService {
 
 }  // namespace
 
-class UserPermissionServiceImplTest : public testing::Test {
+class UserPermissionServiceImplTest : public testing::Test,
+                                      public testing::WithParamInterface<bool> {
  protected:
   UserPermissionServiceImplTest() {
     RegisterProfilePrefs(test_prefs_.registry());
+    scoped_feature_list_.InitWithFeatureState(
+        enterprise_signals::features::kNewEvSignalsUnaffiliatedEnabled,
+        is_new_ev_signals_unaffiliated_enabled());
 
     auto mock_user_delegate =
         std::make_unique<testing::StrictMock<MockUserDelegate>>();
@@ -84,13 +90,18 @@ class UserPermissionServiceImplTest : public testing::Test {
         .WillOnce(Return(std::move(scopes)));
   }
 
-  void EnableConsentFlowPolicy() {
+  void EnableConsentFlowPolicy() { SetConsentFlowPolicy(true); }
+
+  void SetConsentFlowPolicy(bool value) {
     test_prefs_.SetBoolean(prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
-                           true);
+                           value);
   }
+
+  bool is_new_ev_signals_unaffiliated_enabled() { return GetParam(); }
 
   base::test::TaskEnvironment task_environment_;
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestManagementService management_service_;
   absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>, DanglingUntriaged>
@@ -101,22 +112,65 @@ class UserPermissionServiceImplTest : public testing::Test {
 };
 
 // Tests that consent does not need to be collected if it was already given.
-TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent_ConsentGiven) {
+TEST_P(UserPermissionServiceImplTest, ShouldCollectConsent_ConsentGiven) {
   SetUserConsentGiven();
   EXPECT_FALSE(permission_service_->ShouldCollectConsent());
 }
 
+struct DeviceManagedSpecificPolicyTestCase {
+  bool policy_enabled = false;
+  bool managed_user = false;
+  bool is_affiliated = false;
+  bool should_collect_consent = false;
+};
+
 // Tests that consent does not need to be collected if the device is cloud
 // managed.
-TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent_DeviceCloudManaged) {
+TEST_P(UserPermissionServiceImplTest, ShouldCollectConsent_DeviceCloudManaged) {
   SetDeviceAsCloudManaged();
-  SetPolicyScopesNeedingSignals(/*machine_scope=*/false, /*user_scope*/ false);
-  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+
+  std::array<DeviceManagedSpecificPolicyTestCase, 6> test_cases = {
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/true, /*should_collect_consent=*/false},
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/false,
+          /*should_collect_consent=*/is_new_ev_signals_unaffiliated_enabled()},
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/true, /*managed_user=*/false,
+          /*is_affiliated=*/false, /*should_collect_consent=*/false},
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/true, /*should_collect_consent=*/false},
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/false, /*should_collect_consent=*/false},
+      DeviceManagedSpecificPolicyTestCase{
+          /*policy_enabled=*/false, /*managed_user=*/false,
+          /*is_affiliated=*/false, /*should_collect_consent=*/false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SetPolicyScopesNeedingSignals(/*machine_scope=*/false,
+                                  /*user_scope*/ false);
+    SetConsentFlowPolicy(test_case.policy_enabled);
+
+    EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+        .Times(AnyNumber())
+        .WillOnce(Return(test_case.managed_user));
+    EXPECT_CALL(*mock_user_delegate_, IsAffiliated())
+        .Times(AnyNumber())
+        .WillOnce(Return(test_case.is_affiliated));
+
+    EXPECT_EQ(permission_service_->ShouldCollectConsent(),
+              test_case.should_collect_consent);
+  }
 }
 
 // Tests that consent does not need to be collected if the device is not cloud
 // managed but the "enable consent flow" policy is not enabled.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        ShouldCollectConsent_NoEnableConsentFlowPolicy) {
   SetUserAsCloudManaged();
   SetPolicyScopesNeedingSignals(/*machine_scope=*/false, /*user_scope*/ false);
@@ -125,7 +179,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests that consent needs to be collected if the device is not cloud managed
 // and the "enable consent flow" policy is enabled.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        ShouldCollectConsent_SpecificPolicy_ManagedUser) {
   SetUserAsCloudManaged();
   EnableConsentFlowPolicy();
@@ -136,40 +190,58 @@ TEST_F(UserPermissionServiceImplTest,
 struct DeviceManagedDependentPolicyTestCase {
   bool machine_scope = false;
   bool user_scope = false;
+  bool managed_user = false;
   bool is_affiliated = false;
   bool should_collect_consent = false;
 };
 
 // Tests the behavior of ShouldCollectConsent against all permutations of
 // dependent policy scope and affiliation.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        ShouldCollectConsent_ManagedDevice_DependentPolicy) {
   SetDeviceAsCloudManaged();
 
-  std::array<DeviceManagedDependentPolicyTestCase, 8> test_cases = {
+  // Testing mostly all permutations of possible scenarios. The only special
+  // property here is `managed_user`, which only make sense to be tested as
+  // false when both `user_scope` and `is_affiliated` are also false.
+  std::array<DeviceManagedDependentPolicyTestCase, 10> test_cases = {
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/true, /*user_scope=*/true, /*is_affiliated=*/true,
+          /*machine_scope=*/true, /*user_scope=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/true,
           /*should_collect_consent=*/false},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/true, /*user_scope=*/true, /*is_affiliated=*/false,
+          /*machine_scope=*/true, /*user_scope=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/false,
           /*should_collect_consent=*/true},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/true, /*user_scope=*/false, /*is_affiliated=*/true,
+          /*machine_scope=*/true, /*user_scope=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/true,
           /*should_collect_consent=*/false},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/true, /*user_scope=*/false, /*is_affiliated=*/false,
+          /*machine_scope=*/true, /*user_scope=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/false,
           /*should_collect_consent=*/false},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/false, /*user_scope=*/true, /*is_affiliated=*/true,
+          /*machine_scope=*/true, /*user_scope=*/false, /*managed_user=*/false,
+          /*is_affiliated=*/false,
           /*should_collect_consent=*/false},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/false, /*user_scope=*/true, /*is_affiliated=*/false,
+          /*machine_scope=*/false, /*user_scope=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/true,
+          /*should_collect_consent=*/false},
+      DeviceManagedDependentPolicyTestCase{
+          /*machine_scope=*/false, /*user_scope=*/true, /*managed_user=*/true,
+          /*is_affiliated=*/false,
           /*should_collect_consent=*/true},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/false, /*user_scope=*/false, /*is_affiliated=*/true,
+          /*machine_scope=*/false, /*user_scope=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/true,
           /*should_collect_consent=*/false},
       DeviceManagedDependentPolicyTestCase{
-          /*machine_scope=*/false, /*user_scope=*/false,
+          /*machine_scope=*/false, /*user_scope=*/false, /*managed_user=*/true,
+          /*is_affiliated=*/false, /*should_collect_consent=*/false},
+      DeviceManagedDependentPolicyTestCase{
+          /*machine_scope=*/false, /*user_scope=*/false, /*managed_user=*/false,
           /*is_affiliated=*/false, /*should_collect_consent=*/false},
   };
 
@@ -177,6 +249,9 @@ TEST_F(UserPermissionServiceImplTest,
     SetPolicyScopesNeedingSignals(test_case.machine_scope,
                                   test_case.user_scope);
 
+    EXPECT_CALL(*mock_user_delegate_, IsManagedUser())
+        .Times(AnyNumber())
+        .WillOnce(Return(test_case.managed_user));
     EXPECT_CALL(*mock_user_delegate_, IsAffiliated())
         .Times(AnyNumber())
         .WillOnce(Return(test_case.is_affiliated));
@@ -188,7 +263,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests that consent should be collected when a dependent policy is enabled on
 // an unmanaged device.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        ShouldCollectConsent_UnmanagedDevice_DependentPolicy) {
   SetUserAsCloudManaged();
   SetPolicyScopesNeedingSignals(/*machine_scope=*/false, /*user_scope*/ true);
@@ -201,7 +276,7 @@ constexpr char kUserGaiaId[] = "some-gaia-id";
 }  // namespace
 
 // Tests CanUserCollectSignals with a missing user ID.
-TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
+TEST_P(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
@@ -211,7 +286,7 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
 
 // Tests CanUserCollectSignals with a user ID that does not represent the
 // current browser user.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanUserCollectSignals_UserId_NotSameUser) {
   SetDeviceAsCloudManaged();
 
@@ -228,7 +303,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests CanUserCollectSignals with a user ID that represents the browser user,
 // but that user is not managed.
-TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
+TEST_P(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
   SetDeviceAsCloudManaged();
 
   UserContext user_context;
@@ -244,7 +319,7 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
 
 // Tests CanUserCollectSignals with a managed user ID but the browser is not
 // managed and the user has not given consent.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserNotManaged_NoConsent) {
   SetUserAsCloudManaged();
 
@@ -261,7 +336,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests CanUserCollectSignals with a managed user ID but the browser is not
 // managed and the user has given consent.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserNotManaged_WithConsent) {
   SetUserAsCloudManaged();
   SetUserConsentGiven();
@@ -280,7 +355,7 @@ TEST_F(UserPermissionServiceImplTest,
 // Tests CanUserCollectSignals with a managed user ID and the browser is
 // managed, where the user is the same as the profile user but it is not
 // affiliated with the browser's org.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserManaged_ProfileUser_Unaffiliated) {
   SetDeviceAsCloudManaged();
 
@@ -293,13 +368,13 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(false));
 
   EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
-            UserPermission::kUnaffiliated);
+            UserPermission::kMissingConsent);
 }
 
 // Tests CanUserCollectSignals with a managed user ID and the browser is
 // managed, where the user is the same as the profile user and it is affiliated
 // with the browser's org.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserManaged_ProfileUser_Affiliated) {
   SetDeviceAsCloudManaged();
 
@@ -318,14 +393,14 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests that signals can be collected if the user has already given their
 // consent.
-TEST_F(UserPermissionServiceImplTest, CanCollectSignals_AlreadyConsented) {
+TEST_P(UserPermissionServiceImplTest, CanCollectSignals_AlreadyConsented) {
   SetUserConsentGiven();
   EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
 }
 
 // Tests that consent is required before allowing to collect signals from an
 // unmanaged browser.
-TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
+TEST_P(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
   SetUserAsCloudManaged();
   EXPECT_EQ(permission_service_->CanCollectSignals(),
             UserPermission::kMissingConsent);
@@ -333,7 +408,7 @@ TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
 
 // Tests that signals can be collected when on a managed browser in an unmanaged
 // profile.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanCollectSignals_BrowserManaged_UnmanagedUser) {
   SetDeviceAsCloudManaged();
 
@@ -344,7 +419,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests that signals can be collected when on a managed browser in an
 // affiliated profile.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanCollectSignals_BrowserManaged_AffiliatedUser) {
   SetDeviceAsCloudManaged();
 
@@ -362,7 +437,7 @@ struct UnaffiliatedUserTestCase {
 
 // Tests whether signals can be collected in various unaffiliated context
 // use-cases.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        CanCollectSignals_BrowserManaged_UnaffiliatedUser) {
   SetDeviceAsCloudManaged();
 
@@ -392,7 +467,7 @@ TEST_F(UserPermissionServiceImplTest,
 
 // Tests that the consent flow policy is being observed and can cause the
 // consent received pref to reset.
-TEST_F(UserPermissionServiceImplTest, ResetConsentIfNeeded_PolicyPrefObserver) {
+TEST_P(UserPermissionServiceImplTest, ResetConsentIfNeeded_PolicyPrefObserver) {
   SetUserConsentGiven();
 
   // Enabling the policy should not clear consent.
@@ -417,7 +492,7 @@ struct ResetDependentPolicyTestCase {
 
 // Tests that the consent received policy can be reset based on changes in
 // dependent user-level policies.
-TEST_F(UserPermissionServiceImplTest,
+TEST_P(UserPermissionServiceImplTest,
        ResetConsentIfNeeded_DependentPolicyChanged) {
   std::array<ResetDependentPolicyTestCase, 4> test_cases = {
       ResetDependentPolicyTestCase{/*machine_scope=*/true, /*user_scope=*/true,
@@ -442,5 +517,7 @@ TEST_F(UserPermissionServiceImplTest,
               !test_case.expect_consent_reset);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(, UserPermissionServiceImplTest, testing::Bool());
 
 }  // namespace device_signals

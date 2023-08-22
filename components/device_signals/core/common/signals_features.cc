@@ -60,4 +60,8 @@ bool IsConsentDialogEnabled() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
+BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,
+             "NewEvSignalsUnaffiliatedEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_signals::features

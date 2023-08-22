@@ -44,6 +44,7 @@ static_library("browser") {
 
   deps = [
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -107,6 +108,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/device_signals/core/common",
+    "//components/device_signals/core/common:features",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
     "//components/prefs",

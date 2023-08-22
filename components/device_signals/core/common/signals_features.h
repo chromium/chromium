@@ -37,6 +37,10 @@ bool IsConsentDialogEnabled();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Feature flag for supporting the new private SecureConnect functions in
+// unaffiliated contexts via the consent flow.
+BASE_DECLARE_FEATURE(kNewEvSignalsUnaffiliatedEnabled);
+
 }  // namespace enterprise_signals::features
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_SIGNALS_FEATURES_H_

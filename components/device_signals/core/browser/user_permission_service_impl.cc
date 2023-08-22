@@ -7,15 +7,26 @@
 #include <set>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
+#include "components/device_signals/core/common/signals_features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 
 namespace device_signals {
+
+namespace {
+
+bool IsNewEvSignalsUnaffiliatedEnabled() {
+  return base::FeatureList::IsEnabled(
+      enterprise_signals::features::kNewEvSignalsUnaffiliatedEnabled);
+}
+
+}  // namespace
 
 UserPermissionServiceImpl::UserPermissionServiceImpl(
     policy::ManagementService* management_service,
@@ -53,8 +64,15 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() const {
     return false;
   }
 
+  // Unmanaged profiles are not considered unaffiliated contexts.
+  bool is_unaffiliated_user = IsDeviceCloudManaged() &&
+                              user_delegate_->IsManagedUser() &&
+                              !user_delegate_->IsAffiliated();
+
   bool consent_required_by_specific_policy =
-      !IsDeviceCloudManaged() && IsConsentFlowPolicyEnabled();
+      IsConsentFlowPolicyEnabled() &&
+      (!IsDeviceCloudManaged() ||
+       (IsNewEvSignalsUnaffiliatedEnabled() && is_unaffiliated_user));
 
   bool consent_required_by_dependent_policy = false;
   std::set<policy::PolicyScope> scopes =
@@ -63,7 +81,7 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() const {
     if (IsDeviceCloudManaged()) {
       // Managed device, only trigger the consent flow if the user is
       // unaffiliated.
-      consent_required_by_dependent_policy = !user_delegate_->IsAffiliated();
+      consent_required_by_dependent_policy = is_unaffiliated_user;
     } else {
       // Unmanaged device.
       consent_required_by_dependent_policy = true;
@@ -90,16 +108,12 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
     return UserPermission::kConsumerUser;
   }
 
-  // User consent is required on Cloud-unmanaged devices. Collection of the
-  // user's consent happens via its own flow and hooks, so only the resulting
-  // value needs to be evaluated here.
-  if (!IsDeviceCloudManaged()) {
+  // User consent is required on Cloud-unmanaged devices, or in unaffiliated
+  // contexts. Collection of the user's consent happens via its own flow and
+  // hooks, so only the resulting value needs to be evaluated here.
+  if (!IsDeviceCloudManaged() || !user_delegate_->IsAffiliated()) {
     return HasUserConsented() ? UserPermission::kGranted
                               : UserPermission::kMissingConsent;
-  }
-
-  if (!user_delegate_->IsAffiliated()) {
-    return UserPermission::kUnaffiliated;
   }
 
   // At this point, the given user is:
