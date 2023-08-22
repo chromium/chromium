@@ -75,6 +75,10 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   };
 
   struct AvifIOData {
+    AvifIOData();
+    AvifIOData(const SegmentReader* reader, bool all_data_received);
+    ~AvifIOData();
+
     const SegmentReader* reader = nullptr;
     std::vector<uint8_t> buffer ALLOW_DISCOURAGED_TYPE("Required by libavif");
     bool all_data_received = false;

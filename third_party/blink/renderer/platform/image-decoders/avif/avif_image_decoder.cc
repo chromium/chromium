@@ -1326,10 +1326,8 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   out_gainmap_data = CreateGainmapSegmentReader(features, data_.get());
 
   // Parse gainmap image to get gainmap XMP.
-  AvifIOData gainmap_avif_io_data = {
-      .reader = out_gainmap_data.get(),
-      .all_data_received = IsAllDataReceived(),
-  };
+  AvifIOData gainmap_avif_io_data(out_gainmap_data.get(), IsAllDataReceived());
+
   avifIO gainmap_avif_io = {.destroy = nullptr,
                             .read = ReadFromSegmentReader,
                             .write = nullptr,
@@ -1371,5 +1369,11 @@ bool AVIFImageDecoder::GetGainmapInfoAndData(
   }
   return true;
 }
+
+AVIFImageDecoder::AvifIOData::AvifIOData() = default;
+AVIFImageDecoder::AvifIOData::AvifIOData(const SegmentReader* reader,
+                                         bool all_data_received)
+    : reader(reader), all_data_received(all_data_received) {}
+AVIFImageDecoder::AvifIOData::~AvifIOData() = default;
 
 }  // namespace blink
