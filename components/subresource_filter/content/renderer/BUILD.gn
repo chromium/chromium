@@ -44,4 +44,7 @@ source_set("unit_tests") {
     "//third_party/blink/public:blink",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:subresource_filter_test_bundle_data" ]
+  }
 }

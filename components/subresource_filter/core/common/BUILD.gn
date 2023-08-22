@@ -81,6 +81,9 @@ source_set("unit_tests") {
     "//third_party/protobuf:protobuf_lite",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ "//components/test:subresource_filter_test_bundle_data" ]
+  }
 }
 
 fuzzer_test("indexed_ruleset_fuzzer") {
