@@ -376,13 +376,12 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->session_rate_impact.type = SessionRateImpact::Type::NONE;
-    // Used to increase the usage of Customize Chrome for users who have opened
-    // it 0 times in the last 360 days.
+    // Show IPH regardless of customize_chrome usage
     config->used =
-        EventConfig("customize_chrome_opened", Comparator(EQUAL, 0), 360, 360);
-    // Triggered when IPH hasn't been shown in the past day.
-    config->trigger = EventConfig("iph_customize_chrome_triggered",
-                                  Comparator(EQUAL, 0), 1, 360);
+        EventConfig("customize_chrome_opened", Comparator(ANY, 0), 360, 360);
+    // Triggered when IPH has been shown less than twice this year.
+    config->trigger = EventConfig("iph_customize_chrome_refresh_triggered",
+                                  Comparator(LESS_THAN, 2), 360, 360);
     config->snooze_params.max_limit = 4;
     return config;
   }
