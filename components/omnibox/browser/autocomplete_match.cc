@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
@@ -1284,6 +1285,11 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
   return from_on_device_provider && subtypes.contains(271);
 }
 
+bool AutocompleteMatch::IsUrlScoringEligible() const {
+  return scoring_signals.has_value() &&
+         type != AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+}
+
 void AutocompleteMatch::FilterOmniboxActions(
     const std::vector<OmniboxActionId>& allowed_action_ids) {
   // Short circuit if there's nothing to do.
@@ -1514,6 +1520,15 @@ void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
   if (!other.scoring_signals.has_value()) {
     return;
   }
+
+  // Records the ACMatch type of the duplicate match when two or more matches
+  // with different ml scoring signals are merged.
+  const char kACMatchPropertyScoringSignalsMerged[] = "Scoring signals merged";
+  RecordAdditionalInfo(
+      kACMatchPropertyScoringSignalsMerged,
+      GetAdditionalInfo(kACMatchPropertyScoringSignalsMerged) +
+          AutocompleteMatchType::ToString(other.type) + ", " +
+          other.GetAdditionalInfo(kACMatchPropertyScoringSignalsMerged));
 
   if (!scoring_signals.has_value()) {
     scoring_signals = absl::make_optional<ScoringSignals>();

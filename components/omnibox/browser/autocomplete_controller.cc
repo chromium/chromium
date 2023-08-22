@@ -1686,7 +1686,7 @@ void AutocompleteController::RunBatchUrlScoringModel(
 
   size_t eligible_matches_count = base::ranges::count_if(
       result_.matches_,
-      [](const auto& match) { return match.scoring_signals.has_value(); });
+      [](const auto& match) { return match.IsUrlScoringEligible(); });
 
   // If `eligible_matches_count` is 0, call `completion_callback` immediately.
   if (eligible_matches_count == 0) {
@@ -1700,7 +1700,7 @@ void AutocompleteController::RunBatchUrlScoringModel(
   std::vector<std::string> stripped_destination_urls;
   stripped_destination_urls.reserve(eligible_matches_count);
   for (auto& match : result_) {
-    if (!match.scoring_signals.has_value()) {
+    if (!match.IsUrlScoringEligible()) {
       continue;
     }
     batch_scoring_signals.push_back(&match.scoring_signals.value());
