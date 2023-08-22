@@ -55,7 +55,8 @@ LegacyTechService* LegacyTechServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
-KeyedService* LegacyTechServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LegacyTechServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -63,7 +64,7 @@ KeyedService* LegacyTechServiceFactory::BuildServiceInstanceFor(
   // any report created.
   // Report uploading will be decided individually for every single report.
   // Use base::Unretained as the factory is base::NoDestructor.
-  return new LegacyTechService(
+  return std::make_unique<LegacyTechService>(
       profile, base::BindRepeating(&LegacyTechServiceFactory::ReportEventImpl,
                                    base::Unretained(GetInstance())));
 }
