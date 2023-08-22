@@ -42,9 +42,10 @@ BadgeManagerFactory::BadgeManagerFactory()
 
 BadgeManagerFactory::~BadgeManagerFactory() = default;
 
-KeyedService* BadgeManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BadgeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BadgeManager(Profile::FromBrowserContext(context));
+  return std::make_unique<BadgeManager>(Profile::FromBrowserContext(context));
 }
 
 }  // namespace badging
