@@ -47,11 +47,12 @@ ClientHintsFactory::ClientHintsFactory()
 
 ClientHintsFactory::~ClientHintsFactory() = default;
 
-KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ClientHintsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // CookieSettingsFactory::GetForProfile can only be called on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return new client_hints::ClientHints(
+  return std::make_unique<client_hints::ClientHints>(
       context, g_browser_process->network_quality_tracker(),
       HostContentSettingsMapFactory::GetForProfile(context),
       CookieSettingsFactory::GetForProfile(
