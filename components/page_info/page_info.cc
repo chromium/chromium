@@ -257,7 +257,6 @@ PageInfo::PageInfo(std::unique_ptr<PageInfoDelegate> delegate,
   visible_security_state_for_metrics_ = delegate_->GetVisibleSecurityState();
 
   // TabSpecificContentSetting needs to be created before page load.
-  DCHECK(GetPageSpecificContentSettings());
   ComputeUIInputs(site_url_);
 
   // Every time this is created, page info dialog is opened.
@@ -1382,14 +1381,16 @@ void PageInfo::PresentSitePermissions() {
 
 std::set<net::SchemefulSite> PageInfo::GetTwoSitePermissionRequesters(
     ContentSettingsType type) {
-  auto* pscs = GetPageSpecificContentSettings();
-  auto* map = GetContentSettings();
   std::set<net::SchemefulSite> requesters;
   // Collect sites that have tried to request a permission.
-  for (auto& [requester, allowed] : pscs->GetTwoSiteRequests(type)) {
-    requesters.insert(requester);
+  auto* pscs = GetPageSpecificContentSettings();
+  if (pscs) {
+    for (auto& [requester, allowed] : pscs->GetTwoSiteRequests(type)) {
+      requesters.insert(requester);
+    }
   }
   // Collect sites that were previously granted a permission
+  auto* map = GetContentSettings();
   for (auto& setting : map->GetSettingsForOneType(type)) {
     if (setting.primary_pattern == ContentSettingsPattern::Wildcard() &&
         setting.secondary_pattern == ContentSettingsPattern::Wildcard()) {
@@ -1474,6 +1475,8 @@ void PageInfo::PresentSiteData(base::OnceClosure done) {
           base::BindOnce(&PageInfo::PresentSiteDataInternal,
                          weak_factory_.GetWeakPtr(), std::move(done)));
     }
+  } else {
+    std::move(done).Run();
   }
 }
 
