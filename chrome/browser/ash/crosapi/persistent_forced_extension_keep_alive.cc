@@ -106,9 +106,9 @@ PersistentForcedExtensionKeepAliveFactory::
 PersistentForcedExtensionKeepAliveFactory::
     ~PersistentForcedExtensionKeepAliveFactory() = default;
 
-KeyedService*
-PersistentForcedExtensionKeepAliveFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> PersistentForcedExtensionKeepAliveFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   if (!browser_util::IsLacrosEnabled())
     return nullptr;
   Profile* profile = Profile::FromBrowserContext(context);
@@ -118,7 +118,7 @@ PersistentForcedExtensionKeepAliveFactory::BuildServiceInstanceFor(
     // Does not have to be registered on the sign-in profile.
     return nullptr;
   }
-  return new PersistentForcedExtensionKeepAlive(
+  return std::make_unique<PersistentForcedExtensionKeepAlive>(
       user_prefs::UserPrefs::Get(context));
 }
 
