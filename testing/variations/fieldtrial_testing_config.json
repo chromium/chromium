@@ -5771,6 +5771,21 @@
             ]
         }
     ],
+    "EnableImmediateDrawDuringScrollInteraction": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DrawImmediatelyWhenInteractive",
+                    "enable_features": [
+                        "DrawImmediatelyWhenInteractive"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableMSAAOnNewIntelGPUs": [
         {
             "platforms": [
