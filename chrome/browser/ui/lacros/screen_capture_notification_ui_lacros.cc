@@ -60,6 +60,8 @@ gfx::NativeViewId ScreenCaptureNotificationUILacros::OnStarted(
       text_, ui::ImageModel(), std::u16string(), GURL(),
       message_center::NotifierId(), data, delegate);
 
+  notification.set_pinned(true);
+
   Profile* profile = ProfileManager::GetActiveUserProfile();
   bridge_delegate_->Display(NotificationHandler::Type::TRANSIENT, profile,
                             notification, nullptr);
