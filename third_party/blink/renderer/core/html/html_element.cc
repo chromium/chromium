@@ -2457,6 +2457,9 @@ bool HTMLElement::HasDirectionAuto() const {
          EqualIgnoringASCIICase(direction, "auto");
 }
 
+// TODO(https://crbug.com/576815): Once the CSSPseudoDir flag is
+// removed, this function no longer needs to be templatized over
+// Traversal since it can always use NodeTraversal.
 template <typename Traversal>
 absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
     bool& is_deferred,
@@ -2484,7 +2487,7 @@ absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
     }
 
     auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node);
-    if (slot) {
+    if (slot && !RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
       ShadowRoot* root = slot->ContainingShadowRoot();
       // Defer to adjust the directionality to avoid recalcuating slot
       // assignment in FlatTreeTraversal when updating slot.
@@ -2504,6 +2507,18 @@ absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
         node = Traversal::NextSkippingChildren(*node, stay_within);
         continue;
       }
+    }
+
+    // TODO(https://crbug.com/576815): Once we have final spec text for
+    // https://github.com/whatwg/html/issues/3699 we should recheck the
+    // relative order of this check and the "Skip elements with valid
+    // dir attribute" check above, and add tests for the case that
+    // exercises both.  (Note that if the order is switched, this test
+    // needs to consider the dir attribute on the slot element rather
+    // than just jumping to its shadow host.)
+    if (slot && RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      ShadowRoot* root = slot->ContainingShadowRoot();
+      return root->host().CachedDirectionality();
     }
 
     if (node->IsTextNode()) {
