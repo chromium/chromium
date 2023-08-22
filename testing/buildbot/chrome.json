@@ -1709,7 +1709,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R118-15574.0.0",
+        "cros_img": "strongbad-release/R118-15585.0.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "resultdb": {
           "enable": true,

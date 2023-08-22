@@ -280,8 +280,8 @@
   "CROS_STRONGBAD_RELEASE_LKGM": {
     "skylab": {
       "cros_board": "strongbad",
-      "cros_chrome_version": "117.0.5936.0",
-      "cros_img": "strongbad-release/R118-15574.0.0",
+      "cros_chrome_version": "118.0.5956.0",
+      "cros_img": "strongbad-release/R118-15585.0.0",
       "autotest_name": "tast.lacros-from-gcs"
     },
     "enabled": true,

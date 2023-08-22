@@ -1407,7 +1407,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R118-15574.0.0",
+        "cros_img": "strongbad-release/R118-15585.0.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
@@ -1484,7 +1484,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R118-15574.0.0",
+        "cros_img": "strongbad-release/R118-15585.0.0",
         "name": "ozone_unittests STRONGBAD_RELEASE_LKGM",
         "test": "ozone_unittests",
         "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
@@ -1557,7 +1557,7 @@
       {
         "autotest_name": "tast.lacros-from-gcs",
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R118-15574.0.0",
+        "cros_img": "strongbad-release/R118-15585.0.0",
         "name": "viz_unittests STRONGBAD_RELEASE_LKGM",
         "test": "viz_unittests",
         "test_id_prefix": "ninja://components/viz:viz_unittests/",

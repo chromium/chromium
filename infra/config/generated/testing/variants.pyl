@@ -595,7 +595,7 @@
     'identifier': 'STRONGBAD_RELEASE_LKGM',
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_img': 'strongbad-release/R118-15574.0.0',
+      'cros_img': 'strongbad-release/R118-15585.0.0',
       'autotest_name': 'tast.lacros-from-gcs',
     },
   },
