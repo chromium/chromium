@@ -1,9 +1,8 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Run web platform tests for Chromium-related products."""
+r"""Run web platform tests as described in //docs/testing/web_platform_tests_wptrunner.md"""
 
-import argparse
 import contextlib
 import functools
 import json
@@ -20,6 +19,7 @@ from typing import List, Optional
 from blinkpy.common import exit_codes
 from blinkpy.common import path_finder
 from blinkpy.common.host import Host
+from blinkpy.common.system import command_line
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
 from blinkpy.web_tests.port.base import Port
@@ -621,10 +621,8 @@ def handle_interrupt_signals():
 
 
 def parse_arguments(argv):
-    parser = argparse.ArgumentParser(
-        usage='%(prog)s [options] [tests]',
-        description=('Runs WPT tests as described in '
-                     '//docs/testing/web_platform_tests_wptrunner.md'))
+    parser = command_line.ArgumentParser(usage='%(prog)s [options] [tests]',
+                                         description=__doc__.splitlines()[0])
     factory.add_configuration_options_group(parser,
                                             rwt=False,
                                             product_choices=list(
