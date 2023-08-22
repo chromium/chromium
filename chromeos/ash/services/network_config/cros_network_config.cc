@@ -42,6 +42,7 @@
 #include "chromeos/ash/components/network/prohibited_technologies_handler.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "chromeos/ash/components/sync_wifi/network_eligibility_checker.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -1636,11 +1637,23 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
                 ->GetUserTextMessageSuppressionState(network_state->guid());
         cellular->allow_text_messages = mojom::ManagedBoolean::New();
         cellular->allow_text_messages->active_value =
-            state != UserTextMessageSuppressionState::kSuppress;
-
-        // TODO(b/293432140) Map the policy value from
-        // |ManagedNetworkConfigurationHandler| to the policy_value of the
-        // |allow_text_messages| property.
+            state == UserTextMessageSuppressionState::kAllow;
+        PolicyTextMessageSuppressionState policy_state =
+            NetworkHandler::Get()
+                ->managed_network_configuration_handler()
+                ->GetAllowTextMessages();
+        if (policy_state != PolicyTextMessageSuppressionState::kUnset) {
+          cellular->allow_text_messages->policy_value =
+              policy_state == PolicyTextMessageSuppressionState::kAllow;
+          // |active_value| should match policy value when policy is enforced.
+          cellular->allow_text_messages->active_value =
+              cellular->allow_text_messages->policy_value;
+          // We manually set the policy source to device enforced as that aligns
+          // with the implemented behavior. This field is read in WebUI to
+          // determine whether the policy value should be used or not.
+          cellular->allow_text_messages->policy_source = ::chromeos::
+              network_config::mojom::PolicySource::kDevicePolicyEnforced;
+        }
       }
       result->type_properties =
           mojom::NetworkTypeManagedProperties::NewCellular(std::move(cellular));
