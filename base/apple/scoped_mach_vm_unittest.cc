@@ -41,13 +41,18 @@ TEST(ScopedMachVMTest, Basic) {
   EXPECT_EQ(address, scoper.address());
   EXPECT_EQ(size, scoper.size());
 
-  // Test the initial region.
+  // Test the initial region. In some cases on some platforms (macOS 13 on
+  // Intel, for example), Darwin may combine the requested allocation with
+  // an existing one. As a result, the allocated region may live in a
+  // larger region. Therefore, when we GetRegionInfo(), we want to check
+  // that our original region is a subset of (region_address, region_size)
+  // rather than being exactly equal to it.
   vm_address_t region_address = address;
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
   EXPECT_EQ(KERN_SUCCESS, kr);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(1u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + size, region_address + region_size);
 
   {
     ScopedMachVM scoper2;
@@ -84,8 +89,8 @@ TEST(ScopedMachVMTest, Reset) {
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
   EXPECT_EQ(KERN_SUCCESS, kr);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(1u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + size, region_address + region_size);
 
   scoper.reset();
 
@@ -125,10 +130,13 @@ TEST(ScopedMachVMTest, ResetSmallerAddress) {
 }
 
 TEST(ScopedMachVMTest, ResetLargerAddressAndSize) {
+  const vm_size_t kOnePage = base::GetPageSize();
+  const vm_size_t kTwoPages = 2 * kOnePage;
+  const vm_size_t kThreePages = 3 * kOnePage;
+
   vm_address_t address;
-  vm_size_t size = 3 * base::GetPageSize();
   kern_return_t kr =
-      vm_allocate(mach_task_self(), &address, size, VM_FLAGS_ANYWHERE);
+      vm_allocate(mach_task_self(), &address, kThreePages, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(KERN_SUCCESS, kr);
 
   // Test the initial region.
@@ -136,25 +144,27 @@ TEST(ScopedMachVMTest, ResetLargerAddressAndSize) {
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
   EXPECT_EQ(KERN_SUCCESS, kr);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(3u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kThreePages, region_address + region_size);
 
-  ScopedMachVM scoper(address + 2 * base::GetPageSize(), base::GetPageSize());
+  ScopedMachVM scoper(address + kTwoPages, kOnePage);
   // Expand the region to be larger.
-  scoper.reset(address, size);
+  scoper.reset(address, kThreePages);
 
   // Verify that the region is still three pages.
   region_address = address;
   GetRegionInfo(&region_address, &region_size);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(3u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kThreePages, region_address + region_size);
 }
 
 TEST(ScopedMachVMTest, ResetLargerAddress) {
+  const vm_size_t kThreePages = 3 * base::GetPageSize();
+  const vm_size_t kSixPages = 2 * kThreePages;
+
   vm_address_t address;
-  vm_size_t size = 6 * base::GetPageSize();
   kern_return_t kr =
-      vm_allocate(mach_task_self(), &address, size, VM_FLAGS_ANYWHERE);
+      vm_allocate(mach_task_self(), &address, kSixPages, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(KERN_SUCCESS, kr);
 
   // Test the initial region.
@@ -162,28 +172,29 @@ TEST(ScopedMachVMTest, ResetLargerAddress) {
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
   EXPECT_EQ(KERN_SUCCESS, kr);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(6u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kSixPages, region_address + region_size);
 
-  ScopedMachVM scoper(address + 3 * base::GetPageSize(),
-                      3 * base::GetPageSize());
+  ScopedMachVM scoper(address + kThreePages, kThreePages);
 
   // Shift the region by three pages; the last three pages should be
   // deallocated, while keeping the first three.
-  scoper.reset(address, 3 * base::GetPageSize());
+  scoper.reset(address, kThreePages);
 
   // Verify that the region is just three pages.
   region_address = address;
   GetRegionInfo(&region_address, &region_size);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(3u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kThreePages, region_address + region_size);
 }
 
 TEST(ScopedMachVMTest, ResetUnaligned) {
+  const vm_size_t kOnePage = base::GetPageSize();
+  const vm_size_t kTwoPages = 2 * kOnePage;
+
   vm_address_t address;
-  vm_size_t size = 2 * base::GetPageSize();
   kern_return_t kr =
-      vm_allocate(mach_task_self(), &address, size, VM_FLAGS_ANYWHERE);
+      vm_allocate(mach_task_self(), &address, kTwoPages, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(KERN_SUCCESS, kr);
 
   ScopedMachVM scoper;
@@ -192,21 +203,19 @@ TEST(ScopedMachVMTest, ResetUnaligned) {
   vm_address_t region_address = address;
   vm_size_t region_size;
   GetRegionInfo(&region_address, &region_size);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(2u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kTwoPages, region_address + region_size);
 
   // Initialize with unaligned size.
-  scoper.reset_unaligned(address + base::GetPageSize(),
-                         base::GetPageSize() - 3);
+  scoper.reset_unaligned(address + kOnePage, kOnePage - 3);
   // Reset with another unaligned size.
-  scoper.reset_unaligned(address + base::GetPageSize(),
-                         base::GetPageSize() - 11);
+  scoper.reset_unaligned(address + kOnePage, kOnePage - 11);
 
   // The entire unaligned page gets deallocated.
   region_address = address;
   GetRegionInfo(&region_address, &region_size);
-  EXPECT_EQ(address, region_address);
-  EXPECT_EQ(1u * base::GetPageSize(), region_size);
+  EXPECT_GE(address, region_address);
+  EXPECT_LE(address + kOnePage, region_address + region_size);
 
   // Reset with the remaining page.
   scoper.reset_unaligned(address, base::GetPageSize());
@@ -215,14 +224,16 @@ TEST(ScopedMachVMTest, ResetUnaligned) {
 #if DCHECK_IS_ON()
 
 TEST(ScopedMachVMTest, ResetMustBeAligned) {
+  const vm_size_t kOnePage = base::GetPageSize();
+  const vm_size_t kTwoPages = 2 * kOnePage;
+
   vm_address_t address;
-  vm_size_t size = 2 * base::GetPageSize();
   kern_return_t kr =
-      vm_allocate(mach_task_self(), &address, size, VM_FLAGS_ANYWHERE);
+      vm_allocate(mach_task_self(), &address, kTwoPages, VM_FLAGS_ANYWHERE);
   ASSERT_EQ(KERN_SUCCESS, kr);
 
   ScopedMachVM scoper;
-  EXPECT_DCHECK_DEATH(scoper.reset(address, base::GetPageSize() + 1));
+  EXPECT_DCHECK_DEATH(scoper.reset(address, kOnePage + 1));
 }
 
 #endif  // DCHECK_IS_ON()
