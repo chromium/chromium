@@ -386,7 +386,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
-    units="microseconds" expires_after="2024-04-01">
+    units="microseconds" expires_after="2024-02-18">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -2760,7 +2760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.AsyncScript"
-    enum="RevalidationPolicy" expires_after="2023-12-17">
+    enum="RevalidationPolicy" expires_after="2024-02-18">
   <owner>hiroshige@chromium.org</owner>
   <owner>lizeb@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
@@ -2808,7 +2808,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.RevalidationPolicy.{ResourceType}"
-    enum="RevalidationPolicy" expires_after="2023-10-01">
+    enum="RevalidationPolicy" expires_after="2024-02-18">
   <owner>hiroshige@chromium.org</owner>
   <owner>gjc@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -3898,7 +3898,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold3{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-02-18">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -3914,7 +3914,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold3{BlinkVisibleLoadTimeSuffixes}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2024-02-18">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -4063,7 +4063,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{Host}.RenderTaskDuration.{Context}.{Filter}"
-    units="microseconds" expires_after="2024-04-01">
+    units="microseconds" expires_after="2024-02-18">
   <owner>junov@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>

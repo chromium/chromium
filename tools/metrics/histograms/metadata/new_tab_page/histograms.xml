@@ -736,7 +736,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.HistoryClusters.Layout{LayoutNum}.ImageDisplayState"
-    enum="NTPHistoryClustersImageDisplayState" expires_after="2023-12-10">
+    enum="NTPHistoryClustersImageDisplayState" expires_after="2024-02-18">
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
