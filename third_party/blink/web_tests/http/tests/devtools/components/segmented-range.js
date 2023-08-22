@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {DataGridTestRunner} from 'data_grid_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests SegmentedRange\n`);
 
@@ -12,13 +14,13 @@ import {DataGridTestRunner} from 'data_grid_test_runner';
     TestRunner.addResult('Test case: ' + testName);
     TestRunner.addResult('Input Segments: ' + JSON.stringify(data));
 
-    var forwardRange = new Common.SegmentedRange(merge);
-    data.map(entry => new Common.Segment(entry[0], entry[1], entry[2])).forEach(forwardRange.append, forwardRange);
+    var forwardRange = new Common.SegmentedRange.SegmentedRange(merge);
+    data.map(entry => new Common.SegmentedRange.Segment(entry[0], entry[1], entry[2])).forEach(forwardRange.append, forwardRange);
     var forward = forwardRange.segments();
 
-    var backwardRange = new Common.SegmentedRange(merge);
+    var backwardRange = new Common.SegmentedRange.SegmentedRange(merge);
     data.reverse()
-        .map(entry => new Common.Segment(entry[0], entry[1], entry[2]))
+        .map(entry => new Common.SegmentedRange.Segment(entry[0], entry[1], entry[2]))
         .forEach(backwardRange.append, backwardRange);
     var backward = backwardRange.segments();
 
