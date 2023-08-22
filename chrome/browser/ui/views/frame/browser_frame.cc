@@ -437,16 +437,17 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  const auto* theme_service =
+      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
+
   // color_mode.
-  [this, &key]() {
+  [this, &key, theme_service]() {
     // Currently the incognito browser is implemented as unthemed dark mode.
     if (IsIncognitoBrowser()) {
       key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
       return;
     }
 
-    const auto* theme_service =
-        ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
     const auto browser_color_scheme = theme_service->GetBrowserColorScheme();
 
     if (browser_color_scheme != ThemeService::BrowserColorScheme::kSystem) {
@@ -457,9 +458,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
     }
   }();
 
-  const auto* theme_service =
-      ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
-
   // is_grayscale.
   // Incognito mode browser should be forced to grayscale.
   key.is_grayscale = IsIncognitoBrowser() ||
@@ -467,7 +465,7 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
                       theme_service->GetIsGrayscale());
 
   // user_color.
-  [this, &key]() {
+  [&key, theme_service]() {
     // The grayscale theme also assumes that the baseline palette is used.
     if (key.is_grayscale) {
       // Baseline palette is used when `ColorProviderKey::user_color` is empty.
@@ -475,8 +473,6 @@ ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
       return;
     }
 
-    const auto* theme_service =
-        ThemeServiceFactory::GetForProfile(browser_view_->browser()->profile());
     if (!theme_service) {
       return;
     }
