@@ -197,7 +197,8 @@ void NetworkHandler::Init() {
       network_state_handler_.get(), technology_state_controller_.get());
   network_sms_handler_->Init();
   if (features::IsSuppressTextMessagesEnabled()) {
-    text_message_provider_->Init(network_sms_handler_.get());
+    text_message_provider_->Init(network_sms_handler_.get(),
+                                 managed_network_configuration_handler_.get());
   }
   geolocation_handler_->Init();
 }
@@ -248,6 +249,10 @@ void NetworkHandler::InitializePrefServices(
       connection_info_metrics_logger_.get()));
   hidden_network_handler_->SetNetworkMetadataStore(
       network_metadata_store_.get());
+  if (features::IsSuppressTextMessagesEnabled()) {
+    text_message_provider_->SetNetworkMetadataStore(
+        network_metadata_store_.get());
+  }
 }
 
 void NetworkHandler::ShutdownPrefServices() {

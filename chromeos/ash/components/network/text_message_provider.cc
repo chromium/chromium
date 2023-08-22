@@ -4,8 +4,11 @@
 
 #include "chromeos/ash/components/network/text_message_provider.h"
 
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 #include "components/device_event_log/device_event_log.h"
 
 namespace ash {
@@ -14,8 +17,15 @@ TextMessageProvider::TextMessageProvider() = default;
 
 TextMessageProvider::~TextMessageProvider() = default;
 
-void TextMessageProvider::Init(NetworkSmsHandler* network_sms_handler) {
+void TextMessageProvider::Init(
+    NetworkSmsHandler* network_sms_handler,
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
+  CHECK(network_sms_handler);
+  CHECK(managed_network_configuration_handler);
+  managed_network_configuration_handler_ =
+      managed_network_configuration_handler;
   network_sms_handler_observer_.Observe(network_sms_handler);
+  network_policy_observer_.Observe(managed_network_configuration_handler_);
 }
 
 void TextMessageProvider::MessageReceivedFromNetwork(
@@ -33,9 +43,18 @@ void TextMessageProvider::MessageReceivedFromNetwork(
   }
 }
 
+void TextMessageProvider::PoliciesChanged(const std::string& userhash) {
+  policy_suppression_state_ =
+      managed_network_configuration_handler_->GetAllowTextMessages();
+}
+
 bool TextMessageProvider::ShouldAllowTextMessages(const std::string& guid) {
-  // TODO(b/290350602): Implement ShouldAllowTextMessages with policy.
-  return true;
+  if (policy_suppression_state_ != PolicyTextMessageSuppressionState::kUnset) {
+    return policy_suppression_state_ ==
+           PolicyTextMessageSuppressionState::kAllow;
+  }
+  return network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
+         UserTextMessageSuppressionState::kAllow;
 }
 
 void TextMessageProvider::AddObserver(Observer* observer) {
@@ -44,6 +63,12 @@ void TextMessageProvider::AddObserver(Observer* observer) {
 
 void TextMessageProvider::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void TextMessageProvider::SetNetworkMetadataStore(
+    NetworkMetadataStore* network_metadata_store) {
+  CHECK(network_metadata_store);
+  network_metadata_store_ = network_metadata_store;
 }
 
 }  // namespace ash

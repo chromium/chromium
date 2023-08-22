@@ -59,6 +59,19 @@ TextMessageData::TextMessageData(absl::optional<const std::string> number,
 
 TextMessageData::~TextMessageData() = default;
 
+TextMessageData::TextMessageData(TextMessageData&& other) {
+  number = std::move(other.number);
+  text = std::move(other.text);
+  timestamp = std::move(other.timestamp);
+}
+
+TextMessageData& TextMessageData::operator=(TextMessageData&& other) {
+  number = std::move(other.number);
+  text = std::move(other.text);
+  timestamp = std::move(other.timestamp);
+  return *this;
+}
+
 class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
   NetworkSmsDeviceHandler() = default;

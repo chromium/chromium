@@ -26,8 +26,8 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageData {
   TextMessageData(absl::optional<const std::string> number,
                   absl::optional<const std::string> text,
                   absl::optional<const std::string> timestamp);
-  TextMessageData(TextMessageData&& other) = delete;
-  TextMessageData& operator=(TextMessageData&& other) = delete;
+  TextMessageData(TextMessageData&& other);
+  TextMessageData& operator=(TextMessageData&& other);
   ~TextMessageData();
 
   absl::optional<std::string> number;

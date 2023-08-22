@@ -9,13 +9,17 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_metadata_store.h"
+#include "chromeos/ash/components/network/network_policy_observer.h"
 #include "chromeos/ash/components/network/network_sms_handler.h"
+#include "chromeos/ash/components/network/text_message_suppression_state.h"
 
 namespace ash {
 
 // Provides non-suppressed text messages to its listeners.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
-    : NetworkSmsHandler::Observer {
+    : NetworkSmsHandler::Observer,
+      NetworkPolicyObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -34,15 +38,36 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) TextMessageProvider
   void MessageReceivedFromNetwork(const std::string& guid,
                                   const TextMessageData& message_data) override;
 
+  // NetworkPolicyObserver:
+  void PoliciesChanged(const std::string& userhash) override;
+
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  void Init(NetworkSmsHandler* network_sms_handler);
+  void Init(NetworkSmsHandler* network_sms_handler,
+            ManagedNetworkConfigurationHandler*
+                managed_network_configuration_handler);
+  void SetNetworkMetadataStore(NetworkMetadataStore* network_metadata_store);
 
  private:
+  friend class TextMessageProviderTest;
+
   bool ShouldAllowTextMessages(const std::string& guid);
+
+  PolicyTextMessageSuppressionState policy_suppression_state_ =
+      PolicyTextMessageSuppressionState::kUnset;
+
   base::ScopedObservation<NetworkSmsHandler, NetworkSmsHandler::Observer>
       network_sms_handler_observer_{this};
+
+  base::ScopedObservation<ManagedNetworkConfigurationHandler,
+                          NetworkPolicyObserver>
+      network_policy_observer_{this};
+
+  raw_ptr<ManagedNetworkConfigurationHandler>
+      managed_network_configuration_handler_ = nullptr;
+
+  raw_ptr<NetworkMetadataStore> network_metadata_store_ = nullptr;
 
   base::ObserverList<TextMessageProvider::Observer> observers_;
 };

@@ -162,14 +162,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataStore
   }
 
   // Sets user suppression state to configure text message notifications.
-  void SetUserTextMessageSuppressionState(
+  virtual void SetUserTextMessageSuppressionState(
       const std::string& network_guid,
       const UserTextMessageSuppressionState& state);
 
   // Returns the user set text message suppression state. When no user state has
   // been configured this will return |TextMessageSuppressionState::kAllow|
   // which will default to allowing text message notifications.
-  UserTextMessageSuppressionState GetUserTextMessageSuppressionState(
+  virtual UserTextMessageSuppressionState GetUserTextMessageSuppressionState(
       const std::string& network_guid);
 
   // Sets whether the deviceReportXDREvents policy is enabled.
