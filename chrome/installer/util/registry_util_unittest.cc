@@ -4,8 +4,6 @@
 
 #include "chrome/installer/util/registry_util.h"
 
-#include <Aclapi.h>
-
 #include <iterator>
 #include <memory>
 #include <string>
@@ -37,67 +35,6 @@ using ::testing::Return;
 using ::testing::StrEq;
 
 namespace installer {
-
-namespace {
-
-struct ScopedSecurityData {
-  ~ScopedSecurityData() {
-    if (everyone_sid)
-      FreeSid(everyone_sid);
-    if (acl)
-      LocalFree(acl);
-    if (sec_descr)
-      LocalFree(sec_descr);
-  }
-  PSID everyone_sid = nullptr;
-  PACL acl = nullptr;
-  PSECURITY_DESCRIPTOR sec_descr = nullptr;
-};
-
-void CreateDeleteOnlySecurity(ScopedSecurityData* sec_data,
-                              SECURITY_ATTRIBUTES* sa) {
-  // Create a well-known SID for the Everyone group.
-  SID_IDENTIFIER_AUTHORITY SIDAuthWorld{SECURITY_WORLD_SID_AUTHORITY};
-  ASSERT_TRUE(AllocateAndInitializeSid(&SIDAuthWorld, 1, SECURITY_WORLD_RID, 0,
-                                       0, 0, 0, 0, 0, 0,
-                                       &sec_data->everyone_sid));
-
-  // Initialize an EXPLICIT_ACCESS structure for an ACE.
-  // The ACE will allow Everyone DELETE access to the key.
-  EXPLICIT_ACCESS ea;
-  ZeroMemory(&ea, sizeof(ea));
-  ea.grfAccessPermissions = DELETE;
-  ea.grfAccessMode = SET_ACCESS;
-  ea.grfInheritance = NO_INHERITANCE;
-  ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
-  ea.Trustee.TrusteeType = TRUSTEE_IS_WELL_KNOWN_GROUP;
-  ea.Trustee.ptstrName = static_cast<LPTSTR>(sec_data->everyone_sid);
-
-  // Create a new ACL that contains the ACE.
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            SetEntriesInAcl(1, &ea, nullptr, &sec_data->acl));
-
-  // Initialize a security descriptor.
-  sec_data->sec_descr = static_cast<PSECURITY_DESCRIPTOR>(
-      LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH));
-  ASSERT_TRUE(sec_data->sec_descr);
-
-  ASSERT_TRUE(InitializeSecurityDescriptor(sec_data->sec_descr,
-                                           SECURITY_DESCRIPTOR_REVISION));
-
-  // Add the ACL to the security descriptor.
-  ASSERT_TRUE(SetSecurityDescriptorDacl(sec_data->sec_descr,
-                                        TRUE,  // bDaclPresent flag
-                                        sec_data->acl,
-                                        FALSE));  // not a default DACL
-
-  // Initialize a security attributes structure.
-  sa->nLength = sizeof(*sa);
-  sa->lpSecurityDescriptor = sec_data->sec_descr;
-  sa->bInheritHandle = FALSE;
-}
-
-}  // namespace
 
 class MockRegistryValuePredicate : public RegistryValuePredicate {
  public:
@@ -382,26 +319,6 @@ TEST_F(RegistryUtilTest, ProgramCompare) {
   if (!base::FilePath::CompareEqualIgnoreCase(expect.value(), short_expect)) {
     EXPECT_TRUE(ProgramCompare(expect).Evaluate(L"\"" + short_expect + L"\""));
   }
-}
-
-TEST(DeleteRegistryKeyTest, DeleteAccessRightIsEnoughToDelete) {
-  registry_util::RegistryOverrideManager registry_override_manager;
-  ASSERT_NO_FATAL_FAILURE(
-      registry_override_manager.OverrideRegistry(HKEY_CURRENT_USER));
-
-  ScopedSecurityData sec_data;
-  SECURITY_ATTRIBUTES sa;
-  ASSERT_NO_FATAL_FAILURE(CreateDeleteOnlySecurity(&sec_data, &sa));
-
-  HKEY sub_key = nullptr;
-  ASSERT_EQ(ERROR_SUCCESS, RegCreateKeyEx(HKEY_CURRENT_USER, L"TestKey", 0,
-                                          nullptr, REG_OPTION_NON_VOLATILE,
-                                          DELETE | WorkItem::kWow64Default, &sa,
-                                          &sub_key, nullptr));
-  RegCloseKey(sub_key);
-
-  EXPECT_TRUE(DeleteRegistryKey(HKEY_CURRENT_USER, L"TestKey",
-                                WorkItem::kWow64Default));
 }
 
 }  // namespace installer

@@ -13,7 +13,9 @@
 
 #include "base/base_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/types/expected.h"
 #include "base/win/windows_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace win {
@@ -153,6 +155,26 @@ class BASE_EXPORT RegKey {
 
  private:
   class Watcher;
+
+  // Opens the key `subkey` under `rootkey` with the given options and
+  // access rights. `options` may be 0 or `REG_OPTION_OPEN_LINK`. Returns
+  // ERROR_SUCCESS or a Windows error code.
+  [[nodiscard]] LONG Open(HKEY rootkey,
+                          const wchar_t* subkey,
+                          DWORD options,
+                          REGSAM access);
+
+  // Returns true if the key is a symbolic link, false if it is not, or a
+  // Windows error code in case of a failure to determine. `this` *MUST* have
+  // been opened via at least `Open(..., REG_OPTION_OPEN_LINK,
+  // REG_QUERY_VALUE);`.
+  expected<bool, LONG> IsLink() const;
+
+  // Deletes the key if it is a symbolic link. Returns ERROR_SUCCESS if the key
+  // was a link and was deleted, a Windows error code if checking the key or
+  // deleting it failed, or `nullopt` if the key exists and is not a symbolic
+  // link.
+  absl::optional<LONG> DeleteIfLink();
 
   // Recursively deletes a key and all of its subkeys.
   static LONG RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access);

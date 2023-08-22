@@ -26,6 +26,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/threading/simple_thread.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,8 +44,8 @@ class RegistryTest : public testing::Test {
   RegistryTest() : root_key_(std::wstring(L"Software\\") + kRootKey) {}
 
   void SetUp() override {
-    ASSERT_NO_FATAL_FAILURE(
-        registry_override_.OverrideRegistry(HKEY_CURRENT_USER));
+    ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
+        HKEY_CURRENT_USER, &override_path_));
 
     // Create the test's root key.
     RegKey key(HKEY_CURRENT_USER, L"", KEY_CREATE_SUB_KEY);
@@ -58,9 +59,12 @@ class RegistryTest : public testing::Test {
   // use by a test.
   const std::wstring& root_key() const { return root_key_; }
 
+  const std::wstring& override_path() const { return override_path_; }
+
  private:
   registry_util::RegistryOverrideManager registry_override_;
   const std::wstring root_key_;
+  std::wstring override_path_;
 };
 
 }  // namespace
@@ -462,6 +466,65 @@ TEST_F(RegistryTest, DeleteWithInvalidRegKey) {
   EXPECT_EQ(key.DeleteKey(kFooName), ERROR_INVALID_HANDLE);
   EXPECT_EQ(key.DeleteEmptyKey(kFooName), ERROR_INVALID_HANDLE);
   EXPECT_EQ(key.DeleteValue(kFooName), ERROR_INVALID_HANDLE);
+}
+
+// Test that DeleteKey does not follow symbolic links.
+TEST_F(RegistryTest, DeleteDoesNotFollowLinks) {
+  // Create a subkey that should not be deleted.
+  std::wstring target_path = root_key() + L"\\LinkTarget";
+  {
+    RegKey target;
+    ASSERT_EQ(target.Create(HKEY_CURRENT_USER, target_path.c_str(), KEY_WRITE),
+              ERROR_SUCCESS);
+    ASSERT_EQ(target.WriteValue(L"IsTarget", 1U), ERROR_SUCCESS);
+  }
+
+  // Create a link to the above key.
+  std::wstring source_path = root_key() + L"\\LinkSource";
+  {
+    HKEY link_handle = {};
+    ASSERT_EQ(RegCreateKeyEx(HKEY_CURRENT_USER, source_path.c_str(), 0, nullptr,
+                             REG_OPTION_CREATE_LINK | REG_OPTION_NON_VOLATILE,
+                             KEY_WRITE, nullptr, &link_handle, nullptr),
+              ERROR_SUCCESS);
+    RegKey link(std::exchange(link_handle, HKEY{}));
+    ASSERT_TRUE(link.Valid());
+
+    std::wstring user_sid;
+    ASSERT_TRUE(GetUserSidString(&user_sid));
+
+    std::wstring value =
+        base::StrCat({L"\\Registry\\User\\", user_sid, L"\\", override_path(),
+                      L"\\", root_key(), L"\\LinkTarget"});
+    ASSERT_EQ(link.WriteValue(L"SymbolicLinkValue", value.data(),
+                              value.size() * sizeof(wchar_t), REG_LINK),
+              ERROR_SUCCESS);
+  }
+
+  // Verify that the link works.
+  {
+    RegKey link;
+    ASSERT_EQ(link.Open(HKEY_CURRENT_USER, source_path.c_str(), KEY_READ),
+              ERROR_SUCCESS);
+    DWORD value = 0;
+    ASSERT_EQ(link.ReadValueDW(L"IsTarget", &value), ERROR_SUCCESS);
+    ASSERT_EQ(value, 1U);
+  }
+
+  // Now delete the link and ensure that it was deleted, but not the target.
+  ASSERT_EQ(RegKey(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ)
+                .DeleteKey(L"LinkSource"),
+            ERROR_SUCCESS);
+  {
+    RegKey source;
+    ASSERT_NE(source.Open(HKEY_CURRENT_USER, source_path.c_str(), KEY_READ),
+              ERROR_SUCCESS);
+  }
+  {
+    RegKey target;
+    ASSERT_EQ(target.Open(HKEY_CURRENT_USER, target_path.c_str(), KEY_READ),
+              ERROR_SUCCESS);
+  }
 }
 
 // A test harness for tests that use HKLM to test WoW redirection and such.
