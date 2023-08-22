@@ -39,14 +39,15 @@ SystemIndicatorManagerFactory::SystemIndicatorManagerFactory()
 
 SystemIndicatorManagerFactory::~SystemIndicatorManagerFactory() = default;
 
-KeyedService* SystemIndicatorManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SystemIndicatorManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
   StatusTray* status_tray = g_browser_process->status_tray();
   if (status_tray == NULL)
     return NULL;
 
-  return new SystemIndicatorManager(static_cast<Profile*>(profile),
-                                    status_tray);
+  return std::make_unique<SystemIndicatorManager>(
+      static_cast<Profile*>(profile), status_tray);
 }
 
 bool SystemIndicatorManagerFactory::ServiceIsCreatedWithBrowserContext() const {
