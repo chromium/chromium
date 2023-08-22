@@ -42,9 +42,11 @@ InstallTrackerFactory::InstallTrackerFactory()
 
 InstallTrackerFactory::~InstallTrackerFactory() = default;
 
-KeyedService* InstallTrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+InstallTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new InstallTracker(context, ExtensionPrefs::Get(context));
+  return std::make_unique<InstallTracker>(context,
+                                          ExtensionPrefs::Get(context));
 }
 
 }  // namespace extensions
