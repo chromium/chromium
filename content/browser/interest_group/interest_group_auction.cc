@@ -325,6 +325,171 @@ ReportBuyersConfigForPaBuyers(
   return it->second;
 }
 
+// Takes private aggregation requests for `state`, if there are any, and moves
+// them into `private_aggregation_requests_reserved` and
+// `private_aggregation_requests_non_reserved`.
+//
+// Calculates bucket/value using `signals` and `top_level_signals` as needed.
+//
+// `winner` points to the BidState associated with the winning bid, if there
+// is one.
+//
+// `signals` are the PostAuctionSignals from the auction `state` was a part of.
+void TakePrivateAggregationRequestsForBidState(
+    std::unique_ptr<InterestGroupAuction::BidState>& state,
+    bool is_component_auction,
+    const InterestGroupAuction::BidState* winner,
+    const InterestGroupAuction::BidState* non_kanon_winner,
+    const InterestGroupAuction::PostAuctionSignals& signals,
+    const absl::optional<InterestGroupAuction::PostAuctionSignals>&
+        top_level_signals,
+    std::map<url::Origin,
+             InterestGroupAuctionReporter::PrivateAggregationRequests>&
+        private_aggregation_requests_reserved,
+    std::map<std::string,
+             InterestGroupAuctionReporter::PrivateAggregationRequests>&
+        private_aggregation_requests_non_reserved) {
+  bool is_winner = state.get() == winner;
+  for (auto& [key, requests] : state->private_aggregation_requests) {
+    const url::Origin& origin = key.first;
+    InterestGroupAuction::PrivateAggregationPhase phase = key.second;
+    double winning_bid_to_use = signals.winning_bid;
+    double highest_scoring_other_bid_to_use = signals.highest_scoring_other_bid;
+    // When component auctions are in use, a BuyerHelper for a component
+    // auction calls here for the scoreAd() aggregation calls from the
+    // top-level; in that case the relevant signals are in
+    // `top_level_signals` and not `signals`. `highest_scoring_other_bid`
+    // is also not reported for top-levels.
+    if (phase ==
+            InterestGroupAuction::PrivateAggregationPhase::kTopLevelSeller &&
+        is_component_auction) {
+      highest_scoring_other_bid_to_use = 0;
+      winning_bid_to_use =
+          top_level_signals.has_value() ? top_level_signals->winning_bid : 0.0;
+    }
+
+    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+         requests) {
+      absl::optional<PrivateAggregationRequestWithEventType> converted_request =
+          FillInPrivateAggregationRequest(
+              std::move(request), winning_bid_to_use,
+              highest_scoring_other_bid_to_use, state->reject_reason,
+              state->pa_timings(phase), is_winner);
+      if (converted_request.has_value()) {
+        PrivateAggregationRequestWithEventType converted_request_value =
+            std::move(converted_request.value());
+        const absl::optional<std::string>& event_type =
+            converted_request_value.event_type;
+        if (event_type.has_value()) {
+          // The request has a non-reserved event type.
+          private_aggregation_requests_non_reserved[event_type.value()]
+              .emplace_back(std::move(converted_request_value.request));
+        } else {
+          private_aggregation_requests_reserved[origin].emplace_back(
+              std::move(converted_request_value.request));
+        }
+      }
+    }
+  }
+  if (non_kanon_winner == state.get()) {
+    const url::Origin& bidder = state->bidder->interest_group.owner;
+    for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+         state->non_kanon_private_aggregation_requests) {
+      absl::optional<PrivateAggregationRequestWithEventType> converted_request =
+          FillInPrivateAggregationRequest(
+              std::move(request), signals.winning_bid,
+              signals.highest_scoring_other_bid,
+              auction_worklet::mojom::RejectReason::kBelowKAnonThreshold,
+              state->pa_timings(
+                  InterestGroupAuction::PrivateAggregationPhase::kBidder),
+              false);
+      if (converted_request.has_value()) {
+        PrivateAggregationRequestWithEventType converted_request_value =
+            std::move(converted_request.value());
+        // Only reserved types are supported for k-anon failures.
+        // This *should* be guaranteed by `FillInPrivateAggregationRequest`
+        // since we passed in `false` for `is_winner`.
+        DCHECK(!converted_request_value.event_type.has_value());
+        private_aggregation_requests_reserved[bidder].emplace_back(
+            std::move(converted_request_value.request));
+      }
+    }
+  }
+}
+
+// Adds debug reporting URLs for `bid_state` to `debug_win_report_urls` and
+// `debug_loss_report_urls`, if there are any, filling in report URL template
+// parameters as needed. The URLs are moved away from `bid_state`.
+//
+// `winner` points to the BidState associated with the winning bid, if there
+// is one.
+//
+// `signals` are the PostAuctionSignals from the auction `state` was a part of.
+//
+// `top_level_signals` are the PostAuctionSignals of the top-level auction, if
+// the computation is for a component auction, and nullopt otherwise.
+void TakeDebugReportUrlsForBidState(
+    std::unique_ptr<InterestGroupAuction::BidState>& bid_state,
+    const InterestGroupAuction::BidState* winner,
+    const InterestGroupAuction::PostAuctionSignals& signals,
+    const absl::optional<InterestGroupAuction::PostAuctionSignals>&
+        top_level_signals,
+    std::vector<GURL>& debug_win_report_urls,
+    std::vector<GURL>& debug_loss_report_urls) {
+  if (bid_state.get() == winner) {
+    if (winner->bidder_debug_win_report_url.has_value()) {
+      debug_win_report_urls.emplace_back(
+          InterestGroupAuction::FillPostAuctionSignals(
+              std::move(winner->bidder_debug_win_report_url).value(), signals));
+    }
+    if (winner->seller_debug_win_report_url.has_value()) {
+      debug_win_report_urls.emplace_back(
+          InterestGroupAuction::FillPostAuctionSignals(
+              std::move(winner->seller_debug_win_report_url).value(), signals,
+              top_level_signals));
+    }
+    // `top_level_signals` is passed as parameter `signals` for top-level
+    // seller.
+    if (winner->top_level_seller_debug_win_report_url.has_value()) {
+      debug_win_report_urls.emplace_back(
+          InterestGroupAuction::FillPostAuctionSignals(
+              std::move(winner->top_level_seller_debug_win_report_url).value(),
+              top_level_signals.value()));
+    }
+    return;
+  }
+  if (bid_state->bidder_debug_loss_report_url.has_value()) {
+    // Losing and rejected bidders should not get highest_scoring_other_bid
+    // and made_highest_scoring_other_bid signals. (And also the currency
+    // bit for those).
+    debug_loss_report_urls.emplace_back(
+        InterestGroupAuction::FillPostAuctionSignals(
+            std::move(bid_state->bidder_debug_loss_report_url).value(),
+            InterestGroupAuction::PostAuctionSignals(
+                signals.winning_bid, signals.winning_bid_currency,
+                signals.made_winning_bid, /*highest_scoring_other_bid=*/0.0,
+                /*highest_scoring_other_bid_currency=*/absl::nullopt,
+                /*made_highest_scoring_other_bid=*/false),
+            /*top_level_signals=*/absl::nullopt, bid_state->reject_reason));
+  }
+  // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
+  if (bid_state->seller_debug_loss_report_url.has_value()) {
+    debug_loss_report_urls.emplace_back(
+        InterestGroupAuction::FillPostAuctionSignals(
+            std::move(bid_state->seller_debug_loss_report_url).value(), signals,
+            top_level_signals));
+  }
+  // `top_level_signals` is passed as parameter `signals` for top-level
+  // seller.
+  if (bid_state->top_level_seller_debug_loss_report_url.has_value()) {
+    debug_loss_report_urls.emplace_back(
+        InterestGroupAuction::FillPostAuctionSignals(
+            std::move(bid_state->top_level_seller_debug_loss_report_url)
+                .value(),
+            top_level_signals.value()));
+  }
+}
+
 // Retrieves the timeout from `buyer_timeouts` associated with `buyer`, if any.
 // Used for both `buyer_timeouts` and `buyer_cumulative_timeouts`, stored in
 // AuctionConfigs. Callers should use PerBuyerTimeout() and
@@ -837,52 +1002,9 @@ class InterestGroupAuction::BuyerHelper
       std::vector<GURL>& debug_win_report_urls,
       std::vector<GURL>& debug_loss_report_urls) {
     for (std::unique_ptr<BidState>& bid_state : bid_states_) {
-      if (bid_state.get() == winner) {
-        if (winner->bidder_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->bidder_debug_win_report_url).value(), signals));
-        }
-        if (winner->seller_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->seller_debug_win_report_url).value(), signals,
-              top_level_signals));
-        }
-        // `top_level_signals` is passed as parameter `signals` for top-level
-        // seller.
-        if (winner->top_level_seller_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->top_level_seller_debug_win_report_url).value(),
-              top_level_signals.value()));
-        }
-        continue;
-      }
-      if (bid_state->bidder_debug_loss_report_url.has_value()) {
-        // Losing and rejected bidders should not get highest_scoring_other_bid
-        // and made_highest_scoring_other_bid signals. (And also the currency
-        // bit for those).
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state->bidder_debug_loss_report_url).value(),
-            PostAuctionSignals(
-                signals.winning_bid, signals.winning_bid_currency,
-                signals.made_winning_bid, /*highest_scoring_other_bid=*/0.0,
-                /*highest_scoring_other_bid_currency=*/absl::nullopt,
-                /*made_highest_scoring_other_bid=*/false),
-            /*top_level_signals=*/absl::nullopt, bid_state->reject_reason));
-      }
-      // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
-      if (bid_state->seller_debug_loss_report_url.has_value()) {
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state->seller_debug_loss_report_url).value(), signals,
-            top_level_signals));
-      }
-      // `top_level_signals` is passed as parameter `signals` for top-level
-      // seller.
-      if (bid_state->top_level_seller_debug_loss_report_url.has_value()) {
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state->top_level_seller_debug_loss_report_url)
-                .value(),
-            top_level_signals.value()));
-      }
+      TakeDebugReportUrlsForBidState(bid_state, winner, signals,
+                                     top_level_signals, debug_win_report_urls,
+                                     debug_loss_report_urls);
     }
   }
 
@@ -903,71 +1025,11 @@ class InterestGroupAuction::BuyerHelper
       std::map<std::string, PrivateAggregationRequests>&
           private_aggregation_requests_non_reserved) {
     for (std::unique_ptr<BidState>& state : bid_states_) {
-      bool is_winner = state.get() == winner;
-      for (auto& [key, requests] : state->private_aggregation_requests) {
-        const url::Origin& origin = key.first;
-        PrivateAggregationPhase phase = key.second;
-        double winning_bid_to_use = signals.winning_bid;
-        double highest_scoring_other_bid_to_use =
-            signals.highest_scoring_other_bid;
-        // When component auctions are in use, a BuyerHelper for a component
-        // auction calls here for the scoreAd() aggregation calls from the
-        // top-level; in that case the relevant signals are in
-        // `top_level_signals` and not `signals`. `highest_scoring_other_bid`
-        // is also not reported for top-levels.
-        if (phase == PrivateAggregationPhase::kTopLevelSeller &&
-            auction_->parent_) {
-          highest_scoring_other_bid_to_use = 0;
-          winning_bid_to_use = top_level_signals.has_value()
-                                   ? top_level_signals->winning_bid
-                                   : 0.0;
-        }
-
-        for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-             requests) {
-          absl::optional<PrivateAggregationRequestWithEventType>
-              converted_request = FillInPrivateAggregationRequest(
-                  std::move(request), winning_bid_to_use,
-                  highest_scoring_other_bid_to_use, state->reject_reason,
-                  state->pa_timings(phase), is_winner);
-          if (converted_request.has_value()) {
-            PrivateAggregationRequestWithEventType converted_request_value =
-                std::move(converted_request.value());
-            const absl::optional<std::string>& event_type =
-                converted_request_value.event_type;
-            if (event_type.has_value()) {
-              // The request has a non-reserved event type.
-              private_aggregation_requests_non_reserved[event_type.value()]
-                  .emplace_back(std::move(converted_request_value.request));
-            } else {
-              private_aggregation_requests_reserved[origin].emplace_back(
-                  std::move(converted_request_value.request));
-            }
-          }
-        }
-      }
-      if (non_kanon_winner == state.get()) {
-        const url::Origin& bidder = state->bidder->interest_group.owner;
-        for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
-             state->non_kanon_private_aggregation_requests) {
-          absl::optional<PrivateAggregationRequestWithEventType>
-              converted_request = FillInPrivateAggregationRequest(
-                  std::move(request), signals.winning_bid,
-                  signals.highest_scoring_other_bid,
-                  auction_worklet::mojom::RejectReason::kBelowKAnonThreshold,
-                  state->pa_timings(PrivateAggregationPhase::kBidder), false);
-          if (converted_request.has_value()) {
-            PrivateAggregationRequestWithEventType converted_request_value =
-                std::move(converted_request.value());
-            // Only reserved types are supported for k-anon failures.
-            // This *should* be guaranteed by `FillInPrivateAggregationRequest`
-            // since we passed in `false` for `is_winner`.
-            DCHECK(!converted_request_value.event_type.has_value());
-            private_aggregation_requests_reserved[bidder].emplace_back(
-                std::move(converted_request_value.request));
-          }
-        }
-      }
+      TakePrivateAggregationRequestsForBidState(
+          state, /*is_component_auction=*/auction_->parent_, winner,
+          non_kanon_winner, signals, top_level_signals,
+          private_aggregation_requests_reserved,
+          private_aggregation_requests_non_reserved);
     }
   }
 

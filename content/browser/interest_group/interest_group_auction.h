@@ -726,6 +726,17 @@ class CONTENT_EXPORT InterestGroupAuction
   static absl::optional<GURL> GetDirectFromSellerSellerSignals(
       const SubresourceUrlBuilder* subresource_url_builder);
 
+  // Replaces `${}` placeholders in a debug report URL's query string for post
+  // auction signals if exist. Only replaces unescaped placeholder ${}, but
+  // not escaped placeholder (i.e., %24%7B%7D).
+  static GURL FillPostAuctionSignals(
+      const GURL& url,
+      const PostAuctionSignals& signals,
+      const absl::optional<PostAuctionSignals>& top_level_signals =
+          absl::nullopt,
+      const absl::optional<auction_worklet::mojom::RejectReason> reject_reason =
+          absl::nullopt);
+
  private:
   // Note: this needs to be a type with iterator stability, since we both pass
   // iterators around and remove things from here.
@@ -948,17 +959,6 @@ class CONTENT_EXPORT InterestGroupAuction
 
   // Computes a key for a worklet associated with `bid_state`
   AuctionWorkletManager::WorkletKey BidderWorkletKey(BidState& bid_state);
-
-  // Replaces `${}` placeholders in a debug report URL's query string for post
-  // auction signals if exist. Only replaces unescaped placeholder ${}, but
-  // not escaped placeholder (i.e., %24%7B%7D).
-  static GURL FillPostAuctionSignals(
-      const GURL& url,
-      const PostAuctionSignals& signals,
-      const absl::optional<PostAuctionSignals>& top_level_signals =
-          absl::nullopt,
-      const absl::optional<auction_worklet::mojom::RejectReason> reject_reason =
-          absl::nullopt);
 
   // Determines if an extended private aggregation buyers request should be
   // made, and if so, issues the request. Otherwise, does nothing.
