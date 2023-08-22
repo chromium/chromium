@@ -14,14 +14,12 @@ import '../settings_shared.css.js';
 
 import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_property_update_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSetting, ContentSettingsTypes, INVALID_CATEGORY_SUBTYPE} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list.html.js';
-import {StorageAccessSiteListEntryElement} from './storage_access_site_list_entry.js';
 
 export interface StorageAccessSiteListElement {
   $: {
@@ -88,9 +86,6 @@ export class StorageAccessSiteListElement extends
 
   private storageAccessExceptions_: StorageAccessSiteException[];
 
-  // Allows for keyboard arrow navigation between `StorageAccessSiteListEntry`s.
-  private focusGrid_: FocusGrid = new FocusGrid();
-
   override connectedCallback() {
     super.connectedCallback();
 
@@ -104,14 +99,7 @@ export class StorageAccessSiteListElement extends
         });
     this.addWebUiListener(
         'onIncognitoStatusChanged', () => this.populateList_());
-    this.addEventListener('update-focus-grid', this.updateFocusGrid_);
     this.browserProxy.updateIncognitoStatus();
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
-
-    this.focusGrid_.destroy();
   }
 
   /**
@@ -182,23 +170,6 @@ export class StorageAccessSiteListElement extends
             propNamesEmbedding =>
                 embedding[propNamesEmbedding].toLowerCase().includes(
                     searchFilter)));
-  }
-
-  /**
-   * Updates the `focusGrid_` with the children `FocusRows` when signaled.
-   */
-  private updateFocusGrid_() {
-    this.focusGrid_.destroy();
-    const entries =
-        this.shadowRoot!.querySelectorAll<StorageAccessSiteListEntryElement>(
-            'storage-access-site-list-entry');
-
-    entries.forEach(
-        (entry: StorageAccessSiteListEntryElement) =>
-            entry.createFocusRows().forEach(
-                row => this.focusGrid_.addRow(row)));
-
-    this.focusGrid_.ensureRowActive();
   }
 }
 

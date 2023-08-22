@@ -16,18 +16,18 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
+import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import {StorageAccessEmbeddingException, StorageAccessSiteException} from './site_settings_prefs_browser_proxy.js';
 import {getTemplate} from './storage_access_site_list_entry.html.js';
-import {StorageAccessStaticSiteListEntry, StorageAccessStaticSiteListEntryElement} from './storage_access_static_site_list_entry.js';
+import {StorageAccessStaticSiteListEntry} from './storage_access_static_site_list_entry.js';
 
 const StorageAccessSiteListEntryElementBase =
-    SiteSettingsMixin(I18nMixin(PolymerElement));
+    FocusRowMixin(SiteSettingsMixin(I18nMixin(PolymerElement)));
 
 export class StorageAccessSiteListEntryElement extends
     StorageAccessSiteListEntryElementBase {
@@ -68,11 +68,6 @@ export class StorageAccessSiteListEntryElement extends
   private expandAriaLabel_: string;
   private expanded_: boolean;
 
-  override connectedCallback() {
-    super.connectedCallback();
-    this.addEventListener('dom-change', this.notifyFocusUpdate_);
-  }
-
   /**
    * Triggered when the top row reset button is clicked.
    * Resets all the permissions in `model.exceptions` i.e. all
@@ -105,10 +100,6 @@ export class StorageAccessSiteListEntryElement extends
 
     this.description_ = this.computeDescription_();
     this.expandAriaLabel_ = this.computeExpandButtonAriaLabel_();
-
-    // Notify the parent to update the grid focus with or without the nested
-    // rows.
-    this.notifyFocusUpdate_();
 
     if (!this.expanded_) {
       return;
@@ -188,75 +179,6 @@ export class StorageAccessSiteListEntryElement extends
       embeddingOrigin: item.embeddingOrigin,
       incognito: item.incognito,
     };
-  }
-
-  /**
-   * @returns focus rows to be utilized with a `FocusGrid` in the parent widget.
-   */
-  createFocusRows(): FocusRow[] {
-    const rows: FocusRow[] = [];
-
-    if (this.shouldBeStatic_()) {
-      rows.push(...this.getFocusRowsStaticEntry_());
-    }
-
-    if (this.shouldBeCollapsible_()) {
-      const listItem =
-          this.shadowRoot!.querySelector<HTMLElement>('.list-item');
-      if (!listItem) {
-        return rows;
-      }
-
-      const row = new FocusRow(listItem, null);
-      row.addItem('embedded-site', '#expandButton');
-      row.addItem('reset', '#resetAllButton');
-      rows.push(row);
-
-      if (this.expanded_) {
-        // Make sure the nested rows have been rendered.
-        this.shadowRoot!.querySelector<DomIf>('#originList')!.render();
-        const listFrame =
-            this.shadowRoot!.querySelector<HTMLElement>('.list-frame')!;
-        rows.push(...this.getFocusRowsStaticEntry_(listFrame));
-      }
-    }
-
-    return rows;
-  }
-
-  /**
-   * Fetches the `FocusRow`s for the `StorageAccessStaticSiteListEntry`
-   * elements to enable keyboard navigation.
-   *
-   * @param parent, if present, only selects child static entries. otherwise,
-   *     selects every static entry.
-   * @returns the static entries' `FocusRow`s.
-   */
-  private getFocusRowsStaticEntry_(parent?: HTMLElement): FocusRow[] {
-    const rows: FocusRow[] = [];
-
-    const entries = parent ?
-        parent.querySelectorAll<StorageAccessStaticSiteListEntryElement>(
-            'storage-access-static-site-list-entry') :
-        this.shadowRoot!
-            .querySelectorAll<StorageAccessStaticSiteListEntryElement>(
-                'storage-access-static-site-list-entry');
-
-    entries.forEach(
-        (entry: StorageAccessStaticSiteListEntryElement) =>
-            rows.push(entry.createFocusRow()));
-
-    return rows;
-  }
-
-  private notifyFocusUpdate_() {
-    // Refresh focus after all rows are rendered.
-    this.fire_('update-focus-grid');
-  }
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 }
 

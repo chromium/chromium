@@ -14,7 +14,6 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
-import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ContentSettingsTypes} from './constants.js';
@@ -37,7 +36,6 @@ export interface StorageAccessStaticSiteListEntryElement {
   $: {
     displayName: HTMLElement,
     resetButton: HTMLElement,
-    listItem: HTMLElement,
   };
 }
 
@@ -70,19 +68,6 @@ export class StorageAccessStaticSiteListEntryElement extends
     this.browserProxy.resetCategoryPermissionForPattern(
         this.model.origin, this.model.embeddingOrigin,
         ContentSettingsTypes.STORAGE_ACCESS, this.model.incognito);
-  }
-
-  /**
-   * @returns focus rows to be utilized with a `FocusGrid` in the parent widget.
-   */
-  createFocusRow(): FocusRow {
-    const row = new FocusRow(this.$.listItem, null);
-    if (this.model.incognito) {
-      row.addItem('incognito', '#incognitoTooltip');
-    }
-    row.addItem('reset', '#resetButton');
-
-    return row;
   }
 }
 
