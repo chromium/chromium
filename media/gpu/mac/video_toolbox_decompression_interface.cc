@@ -184,10 +184,17 @@ bool VideoToolboxDecompressionInterface::CreateSession(
       decoder_config,
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
+
+  // We don't have software HEVC decoders to fall back to.
+  // TODO(crbug.com/1331597): Plumb hardware requirement from the accelerator.
+  FourCharCode codec_type = CMFormatDescriptionGetMediaSubType(format);
+  bool require_hardware = (codec_type != kCMVideoCodecType_HEVC) &&
+                          (codec_type != kCMVideoCodecType_HEVCWithAlpha);
+
   CFDictionarySetValue(
       decoder_config,
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
-      kCFBooleanTrue);
+      require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
 #endif
 
   if (!decompression_session_->Create(format, decoder_config)) {

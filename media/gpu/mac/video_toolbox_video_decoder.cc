@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,6 +19,7 @@
 #include "base/task/bind_post_task.h"
 #include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h264_decoder.h"
@@ -26,6 +28,11 @@
 #include "media/gpu/mac/video_toolbox_vp9_accelerator.h"
 #include "media/gpu/vp9_decoder.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+#include "media/gpu/h265_decoder.h"
+#include "media/gpu/mac/video_toolbox_h265_accelerator.h"
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 namespace media {
 
@@ -48,6 +55,19 @@ bool SupportsVP9() {
   static const bool initialized = InitializeVP9();
   return initialized;
 }
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+bool SupportsHEVC() {
+  // HEVC should be supported with 10.13+, but per crbug.com/1300444#c9 it is
+  // only reliable on Intel hardware with 11+.
+  if (base::FeatureList::IsEnabled(media::kPlatformHEVCDecoderSupport)) {
+    if (__builtin_available(macOS 11.0, *)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
 }  // namespace
 
@@ -168,6 +188,16 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
               std::move(accelerator_output_cb)),
           config.profile(), config.color_space_info());
       break;
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      accelerator_ = std::make_unique<H265Decoder>(
+          std::make_unique<VideoToolboxH265Accelerator>(
+              media_log_->Clone(), std::move(accelerator_decode_cb),
+              std::move(accelerator_output_cb)),
+          config.profile(), config.color_space_info());
+      break;
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
     default:
       task_runner_->PostTask(
@@ -388,13 +418,15 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
   // TODO(crbug.com/1331597): Test support for other H.264 profiles.
   // TODO(crbug.com/1331597): Exclude resolutions that are not accelerated.
   // TODO(crbug.com/1331597): Check if higher resolutions are supported.
-  supported.emplace_back(
-      /*profile_min=*/H264PROFILE_BASELINE,
-      /*profile_max=*/H264PROFILE_HIGH,
-      /*coded_size_min=*/gfx::Size(16, 16),
-      /*coded_size_max=*/gfx::Size(4096, 4096),
-      /*allow_encrypted=*/false,
-      /*require_encrypted=*/false);
+  if (!gpu_workarounds.disable_accelerated_h264_decode) {
+    supported.emplace_back(
+        /*profile_min=*/H264PROFILE_BASELINE,
+        /*profile_max=*/H264PROFILE_HIGH,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
+  }
 
   if (!gpu_workarounds.disable_accelerated_vp9_decode && SupportsVP9()) {
     supported.emplace_back(
@@ -404,14 +436,35 @@ VideoToolboxVideoDecoder::GetSupportedVideoDecoderConfigs(
         /*coded_size_max=*/gfx::Size(4096, 4096),
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
+    if (!gpu_workarounds.disable_accelerated_vp9_profile2_decode) {
+      supported.emplace_back(
+          /*profile_min=*/VP9PROFILE_PROFILE2,
+          /*profile_max=*/VP9PROFILE_PROFILE2,
+          /*coded_size_min=*/gfx::Size(16, 16),
+          /*coded_size_max=*/gfx::Size(4096, 4096),
+          /*allow_encrypted=*/false,
+          /*require_encrypted=*/false);
+    }
+  }
+
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (!gpu_workarounds.disable_accelerated_hevc_decode && SupportsHEVC()) {
     supported.emplace_back(
-        /*profile_min=*/VP9PROFILE_PROFILE2,
-        /*profile_max=*/VP9PROFILE_PROFILE2,
+        /*profile_min=*/HEVCPROFILE_MIN,
+        /*profile_max=*/HEVCPROFILE_MAX,
         /*coded_size_min=*/gfx::Size(16, 16),
-        /*coded_size_max=*/gfx::Size(4096, 4096),
+        /*coded_size_max=*/gfx::Size(8192, 8192),
+        /*allow_encrypted=*/false,
+        /*require_encrypted=*/false);
+    supported.emplace_back(
+        /*profile_min=*/HEVCPROFILE_REXT,
+        /*profile_max=*/HEVCPROFILE_REXT,
+        /*coded_size_min=*/gfx::Size(16, 16),
+        /*coded_size_max=*/gfx::Size(8192, 8192),
         /*allow_encrypted=*/false,
         /*require_encrypted=*/false);
   }
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
   return supported;
 }

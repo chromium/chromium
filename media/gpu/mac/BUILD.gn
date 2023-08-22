@@ -42,6 +42,12 @@ source_set("mac") {
     "vt_video_encode_accelerator_mac.cc",
     "vt_video_encode_accelerator_mac.h",
   ]
+  if (enable_hevc_parser_and_hw_decoder) {
+    sources += [
+      "video_toolbox_h265_accelerator.cc",
+      "video_toolbox_h265_accelerator.h",
+    ]
+  }
   public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
   frameworks = [
     "CoreFoundation.framework",
@@ -91,4 +97,7 @@ source_set("unit_tests") {
     "vp9_super_frame_bitstream_filter_unittest.cc",
     "vt_config_util_unittest.cc",
   ]
+  if (enable_hevc_parser_and_hw_decoder) {
+    sources += [ "video_toolbox_h265_accelerator_unittest.cc" ]
+  }
 }

@@ -79,6 +79,18 @@ H265Decoder::H265Accelerator::H265Accelerator() = default;
 
 H265Decoder::H265Accelerator::~H265Accelerator() = default;
 
+void H265Decoder::H265Accelerator::ProcessVPS(
+    const H265VPS* vps,
+    base::span<const uint8_t> vps_nalu_data) {}
+
+void H265Decoder::H265Accelerator::ProcessSPS(
+    const H265SPS* sps,
+    base::span<const uint8_t> sps_nalu_data) {}
+
+void H265Decoder::H265Accelerator::ProcessPPS(
+    const H265PPS* pps,
+    base::span<const uint8_t> pps_nalu_data) {}
+
 H265Decoder::H265Accelerator::Status H265Decoder::H265Accelerator::SetStream(
     base::span<const uint8_t> stream,
     const DecryptConfig* decrypt_config) {
@@ -216,6 +228,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
     }
 
     // 8.1.2 We only want nuh_layer_id of zero.
+    // TODO(crbug.com/1331597): Support alpha on macOS.
     if (curr_nalu_->nuh_layer_id) {
       DVLOG(4) << "Skipping NALU with nuh_layer_id="
                << curr_nalu_->nuh_layer_id;
@@ -317,13 +330,30 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         last_slice_hdr_.swap(curr_slice_hdr_);
         curr_slice_hdr_.reset();
         break;
+      case H265NALU::VPS_NUT:
+        CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
+        int vps_id;
+        par_res = parser_.ParseVPS(&vps_id);
+        if (par_res != H265Parser::kOk) {
+          SET_ERROR_AND_RETURN();
+        }
+        accelerator_->ProcessVPS(
+            parser_.GetVPS(vps_id),
+            base::span<const uint8_t>(
+                curr_nalu_->data,
+                base::checked_cast<size_t>(curr_nalu_->size)));
+        break;
       case H265NALU::SPS_NUT:
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
         int sps_id;
         par_res = parser_.ParseSPS(&sps_id);
         if (par_res != H265Parser::kOk)
           SET_ERROR_AND_RETURN();
-
+        accelerator_->ProcessSPS(
+            parser_.GetSPS(sps_id),
+            base::span<const uint8_t>(
+                curr_nalu_->data,
+                base::checked_cast<size_t>(curr_nalu_->size)));
         break;
       case H265NALU::PPS_NUT:
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());
@@ -331,6 +361,11 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         par_res = parser_.ParsePPS(*curr_nalu_, &pps_id);
         if (par_res != H265Parser::kOk)
           SET_ERROR_AND_RETURN();
+        accelerator_->ProcessPPS(
+            parser_.GetPPS(pps_id),
+            base::span<const uint8_t>(
+                curr_nalu_->data,
+                base::checked_cast<size_t>(curr_nalu_->size)));
 
         // For ARC CTS tests they expect us to request the buffers after only
         // processing the SPS/PPS, we can't wait until we get the first IDR. To

@@ -69,8 +69,8 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   OutputCB output_cb_;
 
   // Raw parameter set bytes that have been observed.
-  base::flat_map<int, std::vector<uint8_t>> seen_sps_data_;
-  base::flat_map<int, std::vector<uint8_t>> seen_pps_data_;
+  base::flat_map<int, std::vector<uint8_t>> seen_sps_data_;  // IDs can be 0-31
+  base::flat_map<int, std::vector<uint8_t>> seen_pps_data_;  // IDs can be 0-255
 
   // Raw parameter set bytes used to produce |active_format_|, so that they
   // can be checked for changes.

@@ -80,6 +80,24 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // this situation as normal and return from Decode() with kRanOutOfSurfaces.
     virtual scoped_refptr<H265Picture> CreateH265Picture() = 0;
 
+    // Provides the raw NALU data for a VPS. The |vps| passed to
+    // SubmitFrameMetadata() is always the most recent VPS passed to
+    // ProcessVPS() with the same |vps_video_parameter_set_id|.
+    virtual void ProcessVPS(const H265VPS* vps,
+                            base::span<const uint8_t> vps_nalu_data);
+
+    // Provides the raw NALU data for an SPS. The |sps| passed to
+    // SubmitFrameMetadata() is always the most recent SPS passed to
+    // ProcessSPS() with the same |sps_video_parameter_set_id|.
+    virtual void ProcessSPS(const H265SPS* sps,
+                            base::span<const uint8_t> sps_nalu_data);
+
+    // Provides the raw NALU data for a PPS. The |pps| passed to
+    // SubmitFrameMetadata() is always the most recent PPS passed to
+    // ProcessPPS() with the same |pps_pic_parameter_set_id|.
+    virtual void ProcessPPS(const H265PPS* pps,
+                            base::span<const uint8_t> pps_nalu_data);
+
     // Submit metadata for the current frame, providing the current |sps|, |pps|
     // and |slice_hdr| for it. |ref_pic_list| contains the set of pictures as
     // described in 8.3.2 from the lists RefPicSetLtCurr, RefPicSetLtFoll,
