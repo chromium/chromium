@@ -5337,25 +5337,6 @@
             ]
         }
     ],
-    "DisableRenameJourneys": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "RenameJourneys"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableSHA1ServerSignature": [
         {
             "platforms": [

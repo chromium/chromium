@@ -4,13 +4,10 @@
 
 #include "components/omnibox/browser/history_cluster_provider.h"
 
-#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/history_clusters/core/url_constants.h"
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -166,12 +163,10 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
 
   const auto& text = search_match.contents;
 
-  match.destination_url = GURL(
-      base::UTF8ToUTF16(history_clusters::GetChromeUIHistoryClustersURL() +
-                        base::StringPrintf("?q=%s", base::EscapeQueryParamValue(
-                                                        base::UTF16ToUTF8(text),
-                                                        /*use_plus=*/false)
-                                                        .c_str())));
+  match.destination_url = GURL(base::UTF8ToUTF16(base::StringPrintf(
+      "chrome://history/journeys?q=%s",
+      base::EscapeQueryParamValue(base::UTF16ToUTF8(text), /*use_plus=*/false)
+          .c_str())));
 
   match.fill_into_edit = text;
 
@@ -181,9 +176,7 @@ AutocompleteMatch HistoryClusterProvider::CreateMatch(
       ACMatchClassification::MATCH, ACMatchClassification::NONE);
 
   match.contents = l10n_util::GetStringUTF16(
-      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-          ? IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT
-          : IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT);
+      IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT);
   match.contents_class = {{0, ACMatchClassification::DIM}};
 
   CompleteHistoryClustersMatch(base::UTF16ToUTF8(text),

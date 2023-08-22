@@ -200,8 +200,8 @@ export class HistoryClustersModuleElement extends I18nMixin
       composed: true,
       detail: {
         message: loadTimeData.getStringF(
-            'disableQuestsModuleToastMessage',
-            loadTimeData.getString('disableQuestsModuleToastName')),
+            'disableModuleToastMessage',
+            loadTimeData.getString('modulesJourneysSentence2')),
       },
     });
     this.dispatchEvent(disableEvent);

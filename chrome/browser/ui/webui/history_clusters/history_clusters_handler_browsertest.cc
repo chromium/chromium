@@ -31,7 +31,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), GURL(GetChromeUIHistoryClustersURL())));
+        browser(), GURL(kChromeUIHistoryClustersURL)));
     EXPECT_TRUE(content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents()));
     handler_ = browser()

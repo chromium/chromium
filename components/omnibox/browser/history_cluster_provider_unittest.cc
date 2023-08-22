@@ -8,11 +8,9 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history_clusters/core/config.h"
-#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
@@ -45,9 +43,6 @@ class HistoryClustersProviderTest : public testing::Test,
                                     public AutocompleteProviderListener {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        history_clusters::kRenameJourneys);
-
     config_.is_journeys_enabled_no_locale_check = true;
     config_.omnibox_history_cluster_provider = true;
     history_clusters::SetConfigForTesting(config_);
@@ -121,8 +116,6 @@ class HistoryClustersProviderTest : public testing::Test,
   std::vector<bool> on_provider_update_calls_;
 
   base::test::TaskEnvironment task_environment_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<FakeAutocompleteProviderClient> autocomplete_provider_client_;
 

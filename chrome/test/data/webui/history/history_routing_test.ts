@@ -28,7 +28,6 @@ import {navigateTo} from './test_util.js';
         enableHistoryClusters: 'Enable',
         isHistoryClustersEnabled,
         isHistoryClustersVisible: true,
-        renameJourneys: false,
       });
     });
 
