@@ -540,8 +540,14 @@ class ExtensionUninstallDialogViewInteractiveBrowserTest
   ExtensionOrigin extension_origin_;
 };
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1471425): Enable the test again.
+#define MAYBE_InvokeUi_ManualUninstall DISABLED_InvokeUi_ManualUninstall
+#else
+#define MAYBE_InvokeUi_ManualUninstall InvokeUi_ManualUninstall
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_ManualUninstall) {
+                       MAYBE_InvokeUi_ManualUninstall) {
   RunTest(MANUAL_UNINSTALL, EXTENSION_LOCAL_SOURCE);
 }
 
@@ -550,8 +556,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
   RunTest(MANUAL_UNINSTALL, EXTENSION_FROM_WEBSTORE);
 }
 
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1471425): Enable the test again.
+#define MAYBE_InvokeUi_UninstallByExtension \
+  DISABLED_InvokeUi_UninstallByExtension
+#else
+#define MAYBE_InvokeUi_UninstallByExtension InvokeUi_UninstallByExtension
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogViewInteractiveBrowserTest,
-                       InvokeUi_UninstallByExtension) {
+                       MAYBE_InvokeUi_UninstallByExtension) {
   RunTest(UNINSTALL_BY_EXTENSION, EXTENSION_LOCAL_SOURCE);
 }
 
