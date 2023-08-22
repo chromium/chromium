@@ -83,8 +83,8 @@ interface PrintCompositor {
       => (Status status,
           mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
 
-  // Sets the URL which is committed in the main frame of the WebContents,
-  // for use in crash diagnosis.
+  // Tells the service what URL is committed in the main frame of the
+  // WebContents that is printing, for use in crash diagnosis.
   SetWebContentsURL(url.mojom.Url url);
 
   // Sets the user-agent string for the document.

@@ -8,20 +8,9 @@ import "mojo/public/mojom/base/shared_memory.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// This set of interfaces is used to do Nup PDF conversion.
-// Usage:
-// - generate a PdfNupConverter.
-//
-// - call PdfNupConverter.NupPageConvert() to import N PDF pages into one N-up
-//   PDF page.
-//
-// - call PdfNupConverter.NupDocumentConvert() to convert a PDF document to a
-//   N-up PDF document.
-//
-// - call PdfNupConverter.SetWebContentsURL() to set the URL that is committed
-//   in the main frame of the WebContents for crash diagnosis.
+// Used by the browser process to perform N-up PDF conversion in a separate
+// sandboxed service process, as the PDF data is untrusted user input.
 interface PdfNupConverter {
-
   // The status of PDF conversion execution.
   enum Status {
     SUCCESS = 0,
@@ -29,7 +18,7 @@ interface PdfNupConverter {
     HANDLE_MAP_ERROR = 2,
   };
 
-  // Convert a list of PDF pages to a N-up PDF.
+  // Converts a list of PDF pages to a N-up PDF.
   // `pages_per_sheet` is the number of pages to put on a single sheet.
   // `page_size` is the output page size, measured in PDF "user space" units.
   // `printable_area` is the printable area of the output page, measured in
@@ -45,7 +34,7 @@ interface PdfNupConverter {
       array<mojo_base.mojom.ReadOnlySharedMemoryRegion> pdf_page_regions)
    => (Status status, mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
 
-  // Convert a PDF document to a N-up PDF document.
+  // Converts a PDF document to a N-up PDF document.
   // `pages_per_sheet` is the number of pages to put on a single sheet.
   // `page_size` is the output page size, measured in PDF "user space" units.
   // `printable_area` is the printable area of the output page, measured in
@@ -56,8 +45,8 @@ interface PdfNupConverter {
                      mojo_base.mojom.ReadOnlySharedMemoryRegion src_pdf_region)
    => (Status status, mojo_base.mojom.ReadOnlySharedMemoryRegion? pdf_region);
 
-  // Sets the URL which is committed in the main frame of the WebContents,
-  // for use in crash diagnosis.
+  // Tells the service what URL is committed in the main frame of the
+  // WebContents that is printing, for use in crash diagnosis.
   SetWebContentsURL(url.mojom.Url url);
 
   // Sets the status for enterprise policy `kPdfUseSkiaRendererEnabled`. It
