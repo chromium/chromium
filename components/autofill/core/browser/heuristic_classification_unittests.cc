@@ -288,9 +288,10 @@ const base::FilePath& GetInputDir() {
 
 // Returns all "*.json" files in `GetInputDir()`.
 std::vector<base::FilePath> GetTestFiles() {
-  base::FileEnumerator input_files(GetInputDir(), false,
-                                   base::FileEnumerator::FILES,
-                                   FILE_PATH_LITERAL("*.json"));
+  base::FileEnumerator input_files(
+      GetInputDir(), /*recursive=*/true, base::FileEnumerator::FILES,
+      FILE_PATH_LITERAL("*.json"),
+      base::FileEnumerator::FolderSearchPolicy::ALL);
   std::vector<base::FilePath> files;
   input_files.ForEach(
       [&files](const base::FilePath& item) { files.push_back(item); });
