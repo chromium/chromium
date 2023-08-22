@@ -92,9 +92,10 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
 
 PasswordsPrivateDelegateFactory::~PasswordsPrivateDelegateFactory() = default;
 
-KeyedService* PasswordsPrivateDelegateFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordsPrivateDelegateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new PasswordsPrivateDelegateProxy(profile);
+  return std::make_unique<PasswordsPrivateDelegateProxy>(profile);
 }
 
 }  // namespace extensions
