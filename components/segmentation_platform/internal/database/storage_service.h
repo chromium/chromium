@@ -41,7 +41,6 @@ class SignalStorageConfigs;
 }  // namespace proto
 
 class DatabaseMaintenanceImpl;
-class DefaultModelManager;
 class ModelManager;
 class ModelProviderFactory;
 class SegmentInfoDatabase;
@@ -98,7 +97,6 @@ class StorageService {
   StorageService(std::unique_ptr<SegmentInfoDatabase> segment_info_database,
                  std::unique_ptr<SignalDatabase> signal_database,
                  std::unique_ptr<SignalStorageConfig> signal_storage_config,
-                 std::unique_ptr<DefaultModelManager> default_model_manager,
                  std::unique_ptr<ModelManager> model_manager,
                  std::unique_ptr<ConfigHolder> config_holder,
                  UkmDataManager* ukm_data_manager);
@@ -128,11 +126,6 @@ class StorageService {
 
   CachedResultWriter* cached_result_writer() {
     return cached_result_writer_.get();
-  }
-
-  DefaultModelManager* default_model_manager() {
-    DCHECK(default_model_manager_);
-    return default_model_manager_.get();
   }
 
   ModelManager* model_manager() {
@@ -182,8 +175,6 @@ class StorageService {
   std::unique_ptr<SignalDatabase> signal_database_;
   std::unique_ptr<SignalStorageConfig> signal_storage_config_;
 
-  // Default models.
-  std::unique_ptr<DefaultModelManager> default_model_manager_;
   // Provides provider for default and server models.
   std::unique_ptr<ModelManager> model_manager_;
 

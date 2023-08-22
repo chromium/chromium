@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,7 +42,6 @@ class ModelManagerImpl : public ModelManager {
       ModelProviderFactory* model_provider_factory,
       base::Clock* clock,
       SegmentInfoDatabase* segment_database,
-      DefaultModelManager* default_model_manager,
       const SegmentationModelUpdatedCallback& model_updated_callback);
 
   ~ModelManagerImpl() override;
@@ -106,9 +104,6 @@ class ModelManagerImpl : public ModelManager {
 
   // Database for segment information and metadata.
   raw_ptr<SegmentInfoDatabase> segment_database_;
-
-  // Class to get segment info from default models.
-  const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // Invoked whenever there is an update to any of the relevant ML models.
   SegmentationModelUpdatedCallback model_updated_callback_;

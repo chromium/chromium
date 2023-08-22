@@ -21,7 +21,6 @@
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/execution/model_manager.h"
@@ -49,6 +48,9 @@ const int64_t kModelVersion = 123;
 
 constexpr SegmentId kSearchUserSegmentId =
     SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+
+constexpr SegmentId kPasswordManagerUserSegmentId =
+    SegmentId::PASSWORD_MANAGER_USER;
 
 using Sample = SignalDatabase::Sample;
 
@@ -95,10 +97,7 @@ class ModelManagerTest : public testing::Test {
     clock_.SetNow(base::Time::Now());
     // Initialize DB and default models.
     model_provider_data_.segments_supporting_default_model = {
-        kSearchUserSegmentId};
-    default_model_manager_ = std::make_unique<DefaultModelManager>(
-        &model_provider_factory_,
-        model_provider_data_.segments_supporting_default_model);
+        kSearchUserSegmentId, kPasswordManagerUserSegmentId};
   }
 
   void TearDown() override {
@@ -113,7 +112,7 @@ class ModelManagerTest : public testing::Test {
       const ModelManager::SegmentationModelUpdatedCallback& callback) {
     model_manager_ = std::make_unique<ModelManagerImpl>(
         segment_ids, &model_provider_factory_, &clock_, segment_database_.get(),
-        default_model_manager_.get(), callback);
+        callback);
     model_manager_->Initialize();
   }
 
@@ -132,8 +131,6 @@ class ModelManagerTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   std::unique_ptr<MockSignalDatabase> signal_database_;
-  std::unique_ptr<DefaultModelManager> default_model_manager_;
-
   std::unique_ptr<ModelManagerImpl> model_manager_;
 };
 
@@ -308,7 +305,7 @@ TEST_F(ModelManagerTest,
 }
 
 TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
-  auto segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER;
+  auto segment_id = kSearchUserSegmentId;
   // Fill in old data for default model in the SegmentInfo database.
   segment_database_->SetBucketDuration(
       segment_id, 456, proto::TimeUnit::MONTH,
@@ -371,6 +368,19 @@ TEST_F(ModelManagerTest, DatabaseUpdateForDefaultModel) {
   // The metadata should have been updated.
   EXPECT_EQ(proto::TimeUnit::DAY,
             segment_info_from_db_2->model_metadata().time_unit());
+}
+
+TEST_F(ModelManagerTest, GetModelProvider) {
+  CreateModelManager({kSearchUserSegmentId, kPasswordManagerUserSegmentId},
+                     base::DoNothing());
+  ASSERT_TRUE(model_manager_->GetModelProvider(
+      kSearchUserSegmentId, proto::ModelSource::DEFAULT_MODEL_SOURCE));
+  ASSERT_TRUE(model_manager_->GetModelProvider(
+      kPasswordManagerUserSegmentId, proto::ModelSource::DEFAULT_MODEL_SOURCE));
+  ASSERT_TRUE(model_manager_->GetModelProvider(
+      kSearchUserSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE));
+  ASSERT_TRUE(model_manager_->GetModelProvider(
+      kPasswordManagerUserSegmentId, proto::ModelSource::SERVER_MODEL_SOURCE));
 }
 
 }  // namespace segmentation_platform

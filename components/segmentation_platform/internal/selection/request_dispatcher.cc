@@ -10,6 +10,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"

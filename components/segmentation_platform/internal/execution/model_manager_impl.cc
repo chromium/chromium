@@ -36,13 +36,11 @@ ModelManagerImpl::ModelManagerImpl(
     ModelProviderFactory* model_provider_factory,
     base::Clock* clock,
     SegmentInfoDatabase* segment_database,
-    DefaultModelManager* default_model_manager,
     const SegmentationModelUpdatedCallback& model_updated_callback)
     : segment_ids_(segment_ids),
       model_provider_factory_(model_provider_factory),
       clock_(clock),
       segment_database_(segment_database),
-      default_model_manager_(default_model_manager),
       model_updated_callback_(model_updated_callback) {}
 
 void ModelManagerImpl::Initialize() {
@@ -58,13 +56,19 @@ void ModelManagerImpl::Initialize() {
         std::move(provider));
 
     // Default models
-    auto* default_provider =
-        default_model_manager_->GetDefaultProvider(segment_id);
+    std::unique_ptr<DefaultModelProvider> default_provider =
+        model_provider_factory_->CreateDefaultProvider(segment_id);
     if (!default_provider) {
+      segment_database_->UpdateSegment(segment_id,
+                                       ModelSource::DEFAULT_MODEL_SOURCE,
+                                       absl::nullopt, base::DoNothing());
       continue;
     }
     std::unique_ptr<DefaultModelProvider::ModelConfig> model_config =
         default_provider->GetModelConfig();
+    model_providers_.emplace(
+        std::make_pair(segment_id, ModelSource::DEFAULT_MODEL_SOURCE),
+        std::move(default_provider));
     OnSegmentationModelUpdated(ModelSource::DEFAULT_MODEL_SOURCE, segment_id,
                                model_config->metadata,
                                model_config->model_version);
@@ -76,13 +80,10 @@ ModelManagerImpl::~ModelManagerImpl() = default;
 ModelProvider* ModelManagerImpl::GetModelProvider(
     proto::SegmentId segment_id,
     proto::ModelSource model_source) {
-  // TODO(ritikagup) : Remove the explicit check once default models are stored
-  // in `model_providers_`.
-  if (model_source == ModelSource::DEFAULT_MODEL_SOURCE) {
-    return default_model_manager_->GetDefaultProvider(segment_id);
-  }
   auto it = model_providers_.find(std::make_pair(segment_id, model_source));
-  DCHECK(it != model_providers_.end());
+  if (it == model_providers_.end()) {
+    return nullptr;
+  }
   return it->second.get();
 }
 

@@ -8,7 +8,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/database/storage_service.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/execution_request.h"
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"

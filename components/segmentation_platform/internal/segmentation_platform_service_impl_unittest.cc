@@ -93,8 +93,6 @@ class SegmentationPlatformServiceImplTest
     SegmentationPlatformServiceTestBase::InitPlatform(
         ukm_data_manager_.get(), /*history_service=*/nullptr);
 
-    SetUpDefaultModelProviders();
-
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
   }
@@ -326,6 +324,7 @@ TEST_F(SegmentationPlatformServiceImplTest,
   // segment on demand is executed.
   EXPECT_TRUE(segmentation_platform_service_impl_->IsPlatformInitialized());
   EXPECT_EQ(pending_queue_size, GetPendingActionsQueueSize());
+  SetUpDefaultModelProviders();
   AssertSelectedSegmentOnDemand(
       kTestSegmentationKey4, /*is_ready=*/true,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHOPPING_USER);

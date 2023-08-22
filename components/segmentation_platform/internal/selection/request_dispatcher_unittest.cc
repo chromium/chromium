@@ -110,7 +110,7 @@ class RequestDispatcherTest : public testing::Test {
         std::make_unique<ClientResultPrefs>(&prefs_), &clock_);
     cached_result_writer_ = cached_result_writer.get();
     storage_service_ = std::make_unique<StorageService>(
-        nullptr, nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
+        nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
         &ukm_data_manager_);
     storage_service_->set_cached_result_writer_for_testing(
         std::move(cached_result_writer));

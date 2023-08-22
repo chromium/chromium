@@ -83,15 +83,11 @@ StorageService::StorageService(
       signal_storage_config_(std::make_unique<SignalStorageConfig>(
           std::move(signal_storage_config_db),
           clock)),
-      default_model_manager_(std::make_unique<DefaultModelManager>(
-          model_provider_factory,
-          config_holder_->all_segment_ids())),
       model_manager_(
           std::make_unique<ModelManagerImpl>(config_holder_->all_segment_ids(),
                                              model_provider_factory,
                                              clock,
                                              segment_info_database_.get(),
-                                             default_model_manager_.get(),
                                              model_updated_callback)),
       ukm_data_manager_(ukm_data_manager),
       database_maintenance_(std::make_unique<DatabaseMaintenanceImpl>(
@@ -108,7 +104,6 @@ StorageService::StorageService(
     std::unique_ptr<SegmentInfoDatabase> segment_info_database,
     std::unique_ptr<SignalDatabase> signal_database,
     std::unique_ptr<SignalStorageConfig> signal_storage_config,
-    std::unique_ptr<DefaultModelManager> default_model_manager,
     std::unique_ptr<ModelManager> model_manager,
     std::unique_ptr<ConfigHolder> config_holder,
     UkmDataManager* ukm_data_manager)
@@ -116,7 +111,6 @@ StorageService::StorageService(
       segment_info_database_(std::move(segment_info_database)),
       signal_database_(std::move(signal_database)),
       signal_storage_config_(std::move(signal_storage_config)),
-      default_model_manager_(std::move(default_model_manager)),
       model_manager_(std::move(model_manager)),
       ukm_data_manager_(ukm_data_manager) {}
 

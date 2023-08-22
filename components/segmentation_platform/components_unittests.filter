@@ -6,7 +6,6 @@ ContextualPageActionsModelTest.*
 CrossDeviceUserModelTest.*
 CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
-DefaultModelManagerTest.*
 DeviceSwitcherModelTest.*
 DeviceSwitcherResultDispatcherTest.*
 DeviceTierSegmentTest.*

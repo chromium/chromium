@@ -114,8 +114,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
             storage_service_->segment_info_database(),
             storage_service_->signal_storage_config(),
             init_params->profile_prefs, config.get(),
-            field_trial_register_.get(), init_params->clock, platform_options_,
-            storage_service_->default_model_manager());
+            field_trial_register_.get(), init_params->clock, platform_options_);
   }
 
   proxy_ = std::make_unique<ServiceProxyImpl>(

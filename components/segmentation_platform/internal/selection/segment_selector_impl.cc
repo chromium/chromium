@@ -81,8 +81,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     const Config* config,
     FieldTrialRegister* field_trial_register,
     base::Clock* clock,
-    const PlatformOptions& platform_options,
-    DefaultModelManager* default_model_manager)
+    const PlatformOptions& platform_options)
     : SegmentSelectorImpl(
           segment_database,
           signal_storage_config,
@@ -90,8 +89,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
           config,
           field_trial_register,
           clock,
-          platform_options,
-          default_model_manager) {}
+          platform_options) {}
 
 SegmentSelectorImpl::SegmentSelectorImpl(
     SegmentInfoDatabase* segment_database,
@@ -100,12 +98,10 @@ SegmentSelectorImpl::SegmentSelectorImpl(
     const Config* config,
     FieldTrialRegister* field_trial_register,
     base::Clock* clock,
-    const PlatformOptions& platform_options,
-    DefaultModelManager* default_model_manager)
+    const PlatformOptions& platform_options)
     : result_prefs_(std::move(prefs)),
       segment_database_(segment_database),
       signal_storage_config_(signal_storage_config),
-      default_model_manager_(default_model_manager),
       config_(config),
       field_trial_register_(field_trial_register),
       clock_(clock),

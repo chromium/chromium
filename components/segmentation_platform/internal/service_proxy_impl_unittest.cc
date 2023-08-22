@@ -11,7 +11,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
-#include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
@@ -98,8 +97,7 @@ class FakeSegmentSelectorImpl : public SegmentSelectorImpl {
                             config,
                             nullptr,
                             nullptr,
-                            PlatformOptions::CreateDefault(),
-                            nullptr) {}
+                            PlatformOptions::CreateDefault()) {}
   ~FakeSegmentSelectorImpl() override = default;
 
   void UpdateSelectedSegment(SegmentId new_selection, float) override {

@@ -281,6 +281,9 @@ TEST_F(SegmentInfoCacheTest, UpdateSegmentInfo) {
   EXPECT_TRUE(segment_info_.has_value());
   EXPECT_EQ(kSegmentId, segment_info_.value().segment_id());
   EXPECT_EQ(2, segment_info_.value().model_version());
+  // Deleting a non existing entry.
+  segment_info_cache_->UpdateSegmentInfo(kSegmentId3, kServerModelSource,
+                                         absl::nullopt);
 }
 
 TEST_F(SegmentInfoCacheTest, GetSegmentInfoForBothModelsWithEmptyDatabase) {

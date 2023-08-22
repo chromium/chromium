@@ -177,8 +177,6 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
     storage_service_ = std::make_unique<StorageService>(
         std::move(test_segment_info_db), nullptr,
         std::move(signal_storage_config),
-        std::make_unique<DefaultModelManager>(nullptr,
-                                              base::flat_set<SegmentId>()),
         std::make_unique<MockModelManager>(),
         std::make_unique<ConfigHolder>(std::move(configs_)),
         &ukm_data_manager_);

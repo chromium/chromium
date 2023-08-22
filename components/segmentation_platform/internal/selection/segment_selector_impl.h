@@ -26,7 +26,6 @@ class Clock;
 namespace segmentation_platform {
 
 struct Config;
-class DefaultModelManager;
 class ExperimentalGroupRecorder;
 class FieldTrialRegister;
 class SegmentationResultPrefs;
@@ -40,8 +39,7 @@ class SegmentSelectorImpl : public SegmentSelector {
                       const Config* config,
                       FieldTrialRegister* field_trial_register,
                       base::Clock* clock,
-                      const PlatformOptions& platform_options,
-                      DefaultModelManager* default_model_manager);
+                      const PlatformOptions& platform_options);
 
   SegmentSelectorImpl(SegmentInfoDatabase* segment_database,
                       SignalStorageConfig* signal_storage_config,
@@ -49,8 +47,7 @@ class SegmentSelectorImpl : public SegmentSelector {
                       const Config* config,
                       FieldTrialRegister* field_trial_register,
                       base::Clock* clock,
-                      const PlatformOptions& platform_options,
-                      DefaultModelManager* default_model_manager);
+                      const PlatformOptions& platform_options);
 
   ~SegmentSelectorImpl() override;
 
@@ -130,9 +127,6 @@ class SegmentSelectorImpl : public SegmentSelector {
 
   // The database to determine whether the signal storage requirements are met.
   const raw_ptr<SignalStorageConfig> signal_storage_config_;
-
-  // The default model manager is used for the default model fallbacks.
-  const raw_ptr<DefaultModelManager> default_model_manager_;
 
   // The config for providing configuration params.
   const raw_ptr<const Config, DanglingUntriaged> config_;
