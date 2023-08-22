@@ -47,6 +47,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
@@ -536,6 +537,24 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
   bubble_delegate->SetEnableArrowKeyTraversal(true);
   bubble_delegate_ = bubble_delegate.get();
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+
+  if (!is_primary_partial_view_) {
+    // The main view is shown after clicking on the toolbar button.
+    // Record the time from click to shown.
+    DCHECK_NE(button_click_time_, base::TimeTicks());
+    bubble_delegate_->GetWidget()
+        ->GetCompositor()
+        ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+            [](base::TimeTicks click_time, base::TimeTicks presentation_time) {
+              UmaHistogramTimes(
+                  "Download.Bubble.ToolbarButtonClickToFullViewShownLatency",
+                  presentation_time - click_time);
+            },
+            button_click_time_));
+    // Reset click time.
+    button_click_time_ = base::TimeTicks();
+  }
+
   // The bubble can either be shown as active or inactive. When the current
   // browser is inactive, make the bubble inactive to avoid stealing focus from
   // non-Chrome windows or showing on a different workspace.
@@ -621,6 +640,7 @@ void DownloadToolbarButtonView::AutoClosePartialView() {
 void DownloadToolbarButtonView::ButtonPressed() {
   if (!bubble_delegate_) {
     is_primary_partial_view_ = false;
+    button_click_time_ = base::TimeTicks::Now();
     CreateBubbleDialogDelegate();
   }
   controller_->OnButtonPressed();

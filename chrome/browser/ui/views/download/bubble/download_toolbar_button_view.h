@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
@@ -172,6 +173,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   std::unique_ptr<base::RetainingOneShotTimer> auto_close_bubble_timer_;
   // Whether we are allowed to create the above timer, may be false in tests.
   bool create_auto_close_timer_ = true;
+
+  base::TimeTicks button_click_time_;
 
   // RenderTexts used for the number in the badge. Stores the text for "n" at
   // index n - 1, and stores the text for the placeholder ("9+") at index 0.
