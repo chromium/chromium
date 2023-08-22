@@ -4,6 +4,7 @@
 ] partial interface Window {
   [
     MeasureAs=SharedStorageAPI_SharedStorage_DOMReference,
-    SecureContext
+    SecureContext,
+    RaisesException
   ] readonly attribute SharedStorage sharedStorage;
 };
