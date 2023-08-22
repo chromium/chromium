@@ -312,7 +312,8 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
     PasswordManagerSettingsServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
-          return std::make_unique<MockPasswordManagerSettingsService>();
+          return std::make_unique<
+              NiceMock<MockPasswordManagerSettingsService>>();
         }));
   }
 
@@ -325,6 +326,10 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   ChromePasswordManagerClient* GetClient();
+  MockPasswordManagerSettingsService& settings_service() {
+    return static_cast<MockPasswordManagerSettingsService&>(
+        *PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
+  }
   syncer::TestSyncService* sync_service() {
     return static_cast<syncer::TestSyncService*>(
         SyncServiceFactory::GetInstance()->GetForProfile(profile()));
@@ -458,10 +463,7 @@ TEST_F(ChromePasswordManagerClientTest,
        SavingPasswordsTrueDeterminedByService) {
   // Test that saving passwords depends on querying the settings service.
   ChromePasswordManagerClient* client = GetClient();
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
   const GURL kUrlOn("https://accounts.google.com");
@@ -472,10 +474,7 @@ TEST_F(ChromePasswordManagerClientTest,
        SavingPasswordsFalseDeterminedByService) {
   // Test that saving passwords depends on querying the settings service.
   ChromePasswordManagerClient* client = GetClient();
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*settings_service,
+  EXPECT_CALL(settings_service(),
               IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillOnce(Return(false));
   const GURL kUrlOn("https://accounts.google.com");
@@ -490,9 +489,6 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
       MockChromePasswordManagerClient::CreateForWebContentsAndGet(
           test_web_contents.get());
   ON_CALL(*client, GetMainFrameCertStatus()).WillByDefault(Return(0));
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
   // Functionality disabled if there is an SSL error.
   EXPECT_CALL(*client, GetMainFrameCertStatus())
       .WillRepeatedly(Return(net::CERT_STATUS_AUTHORITY_INVALID));
@@ -501,7 +497,7 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   EXPECT_FALSE(client->IsFillingEnabled(kUrlOn));
 
   // Disable password saving.
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(false));
 
@@ -517,7 +513,7 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
   EXPECT_TRUE(client->IsFillingEnabled(kUrlOn));
 
   // Enable password saving.
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
 
@@ -530,10 +526,7 @@ TEST_F(ChromePasswordManagerClientTest, SavingAndFillingEnabledConditionsTest) {
 
 TEST_F(ChromePasswordManagerClientTest,
        SavingAndFillingDisabledConditionsInGuestAndIncognitoProfiles) {
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
   std::unique_ptr<WebContents> incognito_web_contents(
@@ -569,10 +562,7 @@ TEST_F(ChromePasswordManagerClientTest, AutoSignInEnabledDeterminedByService) {
   // Test that auto sign in being allowed depends on querying the settings
   // service.
   ChromePasswordManagerClient* client = GetClient();
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kAutoSignIn))
       .WillByDefault(Return(true));
   EXPECT_TRUE(client->IsAutoSignInEnabled());
@@ -588,10 +578,7 @@ TEST_F(ChromePasswordManagerClientTest,
   // Test that auto sign in being disallowed depends on querying the settings
   // service.
   ChromePasswordManagerClient* client = GetClient();
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kAutoSignIn))
       .WillByDefault(Return(false));
   EXPECT_FALSE(client->IsAutoSignInEnabled());
@@ -626,12 +613,9 @@ TEST_P(ChromePasswordManagerClientAutomatedTest, SavingDependsOnAutomation) {
   // Test that saving passwords UI is disabled for automated tests,
   // and enabled for non-automated tests.
   ChromePasswordManagerClient* client = GetClient();
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
   // If saving isn't allowed it shouldn't be due to the setting, so make
   // sure that is enabled.
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
   const GURL kUrlOn("https://accounts.google.com");
@@ -711,10 +695,7 @@ TEST_P(ChromePasswordManagerClientSchemeTest,
   });
   // If saving isn't allowed it shouldn't be due to the setting, so make
   // sure that is enabled.
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
   ASSERT_FALSE(it == std::end(kSchemeTestCases));
@@ -968,11 +949,7 @@ TEST_F(ChromePasswordManagerClientTest,
   feature_list.InitAndDisableFeature(
       password_manager::features::kUnifiedPasswordManagerAndroid);
 #endif
-
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*settings_service, RequestSettingsFromBackend).Times(0);
+  EXPECT_CALL(settings_service(), RequestSettingsFromBackend).Times(0);
   GetClient()->RefreshPasswordManagerSettingsIfNeeded();
 }
 
@@ -1019,7 +996,7 @@ void ChromePasswordManagerClientAndroidTest::SetUp() {
       GetBrowserContext(),
       base::BindRepeating([](content::BrowserContext* context)
                               -> std::unique_ptr<KeyedService> {
-        return std::make_unique<MockPasswordManagerSettingsService>();
+        return std::make_unique<NiceMock<MockPasswordManagerSettingsService>>();
       }));
 }
 
@@ -1044,10 +1021,7 @@ void ChromePasswordManagerClientAndroidTest::SetUpGenerationPreconditions(
   NavigateAndCommit(url);
 
   // Make sure saving passwords is enabled.
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  ON_CALL(*settings_service,
+  ON_CALL(settings_service(),
           IsSettingEnabled(PasswordManagerSetting::kOfferToSavePasswords))
       .WillByDefault(Return(true));
 
@@ -1364,10 +1338,7 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
   feature_list.InitAndEnableFeatureWithParameters(
       password_manager::features::kUnifiedPasswordManagerAndroid, params);
 
-  MockPasswordManagerSettingsService* settings_service =
-      static_cast<MockPasswordManagerSettingsService*>(
-          PasswordManagerSettingsServiceFactory::GetForProfile(profile()));
-  EXPECT_CALL(*settings_service, RequestSettingsFromBackend);
+  EXPECT_CALL(settings_service(), RequestSettingsFromBackend);
   GetClient()->RefreshPasswordManagerSettingsIfNeeded();
 }
 #endif  //  BUILDFLAG(IS_ANDROID)
