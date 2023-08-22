@@ -1005,22 +1005,22 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     angle = container->irot.angle;
     CHECK_LT(angle, 4);
   }
-  // |mode| specifies how the mirroring is performed.
+  // |axis| specifies how the mirroring is performed.
   //   -1: No mirroring.
   //    0: The top and bottom parts of the image are exchanged.
   //    1: The left and right parts of the image are exchanged.
-  int mode = -1;
+  int axis = -1;
   if (container->transformFlags & AVIF_TRANSFORM_IMIR) {
-    mode = container->imir.mode;
-    CHECK_LT(mode, 2);
+    axis = container->imir.axis;
+    CHECK_LT(axis, 2);
   }
   // MIAF Section 7.3.6.7 (Clean aperture, rotation and mirror) says:
   //   These properties, if used, shall be indicated to be applied in the
   //   following order: clean aperture first, then rotation, then mirror.
   //
-  // In the kModeAngleToOrientation array, the first dimension is mode (with an
+  // In the kAxisAngleToOrientation array, the first dimension is axis (with an
   // offset of 1). The second dimension is angle.
-  constexpr ImageOrientationEnum kModeAngleToOrientation[3][4] = {
+  constexpr ImageOrientationEnum kAxisAngleToOrientation[3][4] = {
       // No mirroring.
       {ImageOrientationEnum::kOriginTopLeft,
        ImageOrientationEnum::kOriginLeftBottom,
@@ -1037,7 +1037,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
        ImageOrientationEnum::kOriginBottomLeft,
        ImageOrientationEnum::kOriginLeftTop},
   };
-  orientation_ = kModeAngleToOrientation[mode + 1][angle];
+  orientation_ = kAxisAngleToOrientation[axis + 1][angle];
 
   // Determine whether the image can be decoded to YUV.
   // * Alpha channel is not supported.
