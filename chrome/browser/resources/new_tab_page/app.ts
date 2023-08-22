@@ -428,8 +428,11 @@ export class AppElement extends AppElementBase {
         NewTabPageProxy.getInstance()
             .callbackRouter.showWebstoreToast.addListener(() => {
               if (this.showCustomize_) {
-                $$<CrToastElement>(this, '#webstoreToast')!.hidden = false;
-                $$<CrToastElement>(this, '#webstoreToast')!.show();
+                const toast = $$<CrToastElement>(this, '#webstoreToast');
+                if (toast) {
+                  toast!.hidden = false;
+                  toast!.show();
+                }
               }
             });
 
