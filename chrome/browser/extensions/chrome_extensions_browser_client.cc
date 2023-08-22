@@ -198,17 +198,15 @@ bool ChromeExtensionsBrowserClient::AreExtensionsDisabled(
          profile->GetPrefs()->GetBoolean(prefs::kDisableExtensions);
 }
 
-bool ChromeExtensionsBrowserClient::IsValidContext(
-    content::BrowserContext* context) {
+bool ChromeExtensionsBrowserClient::IsValidContext(void* context) {
   DCHECK(context);
   if (!g_browser_process) {
     LOG(ERROR) << "Unexpected null g_browser_process";
     NOTREACHED();
     return false;
   }
-  Profile* profile = static_cast<Profile*>(context);
   return g_browser_process->profile_manager() &&
-         g_browser_process->profile_manager()->IsValidProfile(profile);
+         g_browser_process->profile_manager()->IsValidProfile(context);
 }
 
 bool ChromeExtensionsBrowserClient::IsSameContext(

@@ -129,8 +129,10 @@ class ExtensionsBrowserClient {
   virtual bool AreExtensionsDisabled(const base::CommandLine& command_line,
                                      content::BrowserContext* context) = 0;
 
-  // Returns true if the |context| is known to the embedder.
-  virtual bool IsValidContext(content::BrowserContext* context) = 0;
+  // Returns true if the `context` is known to the embedder.
+  // Note: This is a `void*` to ensure downstream uses do not use the `context`
+  // in case it is *not* valid.
+  virtual bool IsValidContext(void* context) = 0;
 
   // Returns true if the BrowserContexts could be considered equivalent, for
   // example, if one is an off-the-record context owned by the other.
