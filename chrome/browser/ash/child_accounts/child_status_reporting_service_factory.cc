@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service.h"
 
@@ -37,9 +39,10 @@ ChildStatusReportingServiceFactory::ChildStatusReportingServiceFactory()
 ChildStatusReportingServiceFactory::~ChildStatusReportingServiceFactory() =
     default;
 
-KeyedService* ChildStatusReportingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChildStatusReportingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ChildStatusReportingService(context);
+  return std::make_unique<ChildStatusReportingService>(context);
 }
 
 }  // namespace ash
