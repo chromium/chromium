@@ -10,6 +10,51 @@ load("@stdlib//internal/luci/common.star", "builder_ref", "keys", "kinds")
 
 _CHROMIUM_NS_KIND = "@chromium"
 
+def _create_singleton_node_type(kind):
+    """Create a singleton node type.
+
+    Singleton nodes types only allow for a single node of the type to exist.
+    This can be used for creating configuration nodes for generators since
+    generators are unable to access lucicfg vars.
+
+    Args:
+        kind: (str) An identifier for the kind of the node. Must be unique
+            within the chromium namespace.
+
+    Returns:
+        A node type that can be used for creating and getting a node of
+        the given kind.
+
+        The type has the following properties:
+        * kind: The kind of node of the type.
+
+        The node type has the following methods:
+        * key(): Creates a key for the node.
+        * add(**kwargs): Adds a node with a key created via `key()`.
+            `graph.add_node` will be called with the key and `**kwargs`.
+            Returns the key.
+        * get(): Gets the node with the key given by
+            `key(bucket_name, key_value)`.
+    """
+
+    def key():
+        return graph.key(_CHROMIUM_NS_KIND, "", kind, "")
+
+    def add(**kwargs):
+        k = key()
+        graph.add_node(k, **kwargs)
+        return k
+
+    def get():
+        return graph.node(key())
+
+    return struct(
+        kind = kind,
+        key = key,
+        add = add,
+        get = get,
+    )
+
 def _create_unscoped_node_type(kind, allow_unnamed = False):
     """Create an unscoped node type.
 
@@ -340,6 +385,7 @@ def _create_link_node_type(kind, parent_node_type, child_node_type):
 
 nodes = struct(
     BUILDER = _BUILDER,
+    create_singleton_node_type = _create_singleton_node_type,
     create_unscoped_node_type = _create_unscoped_node_type,
     create_bucket_scoped_node_type = _create_bucket_scoped_node_type,
     create_node_type_with_builder_ref = _create_node_type_with_builder_ref,

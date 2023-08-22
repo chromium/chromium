@@ -7,6 +7,7 @@
 # for information on starlark/lucicfg
 
 load("//lib/branches.star", "branches")
+load("//lib/chrome_settings.star", "chrome_settings")
 load("//project.star", "settings")
 
 lucicfg.check_version(
@@ -138,6 +139,10 @@ luci.milo(
 
 luci.notify(
     tree_closing_enabled = True,
+)
+
+chrome_settings.per_builder_outputs(
+    root_dir = "builders",
 )
 
 # An all-purpose public realm.

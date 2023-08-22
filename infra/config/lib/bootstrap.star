@@ -22,6 +22,7 @@ builder definition its and it must be using a bootstrappable recipe. See
 //recipes.star for more information on bootstrappable recipes.
 """
 
+load("./chrome_settings.star", "per_builder_outputs_config")
 load("./nodes.star", "nodes")
 load("//project.star", "settings")
 
@@ -163,7 +164,9 @@ def _bootstrap_properties(ctx):
                 if builder_shadow_properties != None:
                     non_bootstrapped_shadow_properties = get_non_bootstrapped_properties(builder_shadow_properties)
 
-                properties_file = "builders/{}/{}/properties.json".format(bucket_name, builder_name)
+                root_out_dir = per_builder_outputs_config().root_dir
+                out_dir = "{}/{}/{}".format(root_out_dir, bucket_name, builder_name)
+                properties_file = "{}/properties.json".format(out_dir)
                 bootstrap_property = {
                     "top_level_project": {
                         "repo": {
@@ -175,7 +178,7 @@ def _bootstrap_properties(ctx):
                     "properties_file": "infra/config/generated/{}".format(properties_file),
                 }
                 if builder_shadow_properties:
-                    shadow_properties_file = "builders/{}/{}/shadow-properties.json".format(bucket_name, builder_name)
+                    shadow_properties_file = "{}/shadow-properties.json".format(out_dir)
                     bootstrap_property["shadow_properties_file"] = "infra/config/generated/{}".format(shadow_properties_file)
                     ctx.output[shadow_properties_file] = json.indent(json.encode(builder_shadow_properties), indent = "  ")
 
