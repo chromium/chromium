@@ -71,7 +71,8 @@ bool AutocompleteClassifierFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* AutocompleteClassifierFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutocompleteClassifierFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return BuildInstanceFor(static_cast<Profile*>(profile)).release();
+  return BuildInstanceFor(static_cast<Profile*>(profile));
 }
