@@ -1544,8 +1544,13 @@ try {
     if (expected_url.SchemeIs(url::kHttpsScheme)) {
       WaitForUrl(expected_url);
     } else {
-      // The only other URLs this should be used with are about:blank URLs.
-      ASSERT_EQ(GURL(url::kAboutBlankURL), expected_url);
+      // The only other URLs this should be used with are about:blank URLs or
+      // loopback http URLs.
+      if (expected_url.SchemeIs(url::kHttpScheme)) {
+        EXPECT_EQ("127.0.0.1", expected_url.host());
+      } else {
+        ASSERT_EQ(GURL(url::kAboutBlankURL), expected_url);
+      }
     }
 
     // Wait for the load to complete.
@@ -1978,6 +1983,26 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   received_groups = GetAllInterestGroups();
   EXPECT_THAT(received_groups,
               testing::UnorderedElementsAreArray(expected_groups));
+}
+
+// Can't join or leave interest groups from http://localhost, even though it's
+// a "secure context" (since it's potentially trustworthy).
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, CantJoinLeaveHttpLocalhost) {
+  GURL test_url = embedded_test_server()->GetURL("/echo");
+  ASSERT_TRUE(test_url.SchemeIs(url::kHttpScheme));
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  EXPECT_EQ(
+      "SecurityError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "May only joinAdInterestGroup from an https origin.",
+      JoinInterestGroup(url::Origin::Create(GURL("https://example.org/")),
+                        "cars"));
+
+  EXPECT_EQ(
+      "SecurityError: Failed to execute 'leaveAdInterestGroup' on 'Navigator': "
+      "May only leaveAdInterestGroup from an https origin.",
+      LeaveInterestGroup(url::Origin::Create(GURL("https://example.org/")),
+                         "cars"));
 }
 
 // Test the case of a cross-origin iframe joining and leaving same-origin
@@ -7518,6 +7543,36 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
                                                              test_case));
     EXPECT_EQ("Did not crash", result) << test_case;
   }
+}
+
+// Can't do zero-argument leave of interest groups from http://localhost, even
+// though it's a "secure context" (since it's potentially trustworthy).
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       CantLeaveZeroArgHttpLocalhost) {
+  GURL test_url = embedded_test_server()->GetURL("/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  GURL resource_url = embedded_test_server()->GetURL(
+      "/set-header?Supports-Loading-Mode: fenced-frame");
+
+  // This is to get the raw exception string rather than the nicer
+  // (but more complicated) error message.
+  const char kLeaveScript[] = R"(
+    (async function() {
+      try {
+        await navigator.leaveAdInterestGroup();
+        return "success";
+      } catch (e) {
+        return e.toString();
+      }
+    })()
+  )";
+
+  NavigateFencedFrameAndWait(resource_url, resource_url, shell());
+  EXPECT_EQ(
+      "SecurityError: Failed to execute 'leaveAdInterestGroup' on 'Navigator': "
+      "May only leaveAdInterestGroup from an https origin.",
+      EvalJs(GetFencedFrameRenderFrameHost(shell()), kLeaveScript));
 }
 
 // Runs auction just like test InterestGroupBrowserTest.RunAdAuctionWithWinner,

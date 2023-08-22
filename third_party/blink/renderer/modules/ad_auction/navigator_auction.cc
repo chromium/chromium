@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "url/url_constants.h"
 #include "v8/include/v8-primitive.h"
 #include "v8/include/v8-value.h"
 
@@ -2364,6 +2365,11 @@ ScriptPromise JoinAdInterestGroupInternal(
   }
   RecordCommonFledgeUseCounters(navigator.DomWindow()->document());
   const ExecutionContext* context = ExecutionContext::From(script_state);
+  if (context->GetSecurityOrigin()->Protocol() != url::kHttpsScheme) {
+    exception_state.ThrowSecurityError(
+        "May only joinAdInterestGroup from an https origin.");
+    return ScriptPromise();
+  }
   if (!context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
     exception_state.ThrowDOMException(
@@ -2973,6 +2979,13 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroup(
     return ScriptPromise();
   }
 
+  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
+      url::kHttpsScheme) {
+    exception_state.ThrowSecurityError(
+        "May only leaveAdInterestGroup from an https origin.");
+    return ScriptPromise();
+  }
+
   bool is_cross_origin = !ExecutionContext::From(script_state)
                               ->GetSecurityOrigin()
                               ->IsSameOriginWith(owner.get());
@@ -3000,11 +3013,16 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   LocalDOMWindow* window = GetSupplementable()->DomWindow();
-
   if (!window) {
     exception_state.ThrowSecurityError(
         "May not leaveAdInterestGroup from a Document that is not fully "
         "active");
+    return ScriptPromise();
+  }
+  if (ExecutionContext::From(script_state)->GetSecurityOrigin()->Protocol() !=
+      url::kHttpsScheme) {
+    exception_state.ThrowSecurityError(
+        "May only leaveAdInterestGroup from an https origin.");
     return ScriptPromise();
   }
   if (!window->GetFrame()->IsInFencedFrameTree()) {
