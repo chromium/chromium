@@ -193,9 +193,8 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [PolicyAppInterface clearPolicies];
 }
 
-// Tests that a closed tab appears in the Recent Tabs panel, and that tapping
-// the entry in the Recent Tabs panel re-opens the closed tab.
-- (void)testClosedTabAppearsInRecentTabsPanel {
+// Tests reopening a closed tab from a regular tab.
+- (void)testOpenCloseTabFromRegular {
   const GURL testPageURL = TestPageURL();
 
   // Open the test page in a new tab.
@@ -213,6 +212,9 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   // appear.
   [ChromeEarlGrey closeCurrentTab];
 
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey waitForMainTabCount:1];
+
   // Open the Recent Tabs panel and check that the test page is present.
   OpenRecentTabsPanel();
   [[EarlGrey selectElementWithMatcher:TitleOfTestPage()]
@@ -225,6 +227,8 @@ id<GREYAction> HistorySyncScrollSearchAction() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(
                             testPageURL.GetContent())];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
 }
 
 // Tests that tapping "Show Full History" open the history.
@@ -958,19 +962,6 @@ id<GREYAction> HistorySyncScrollSearchAction() {
       verifyCopyLinkActionWithText:[NSString
                                        stringWithUTF8String:testURL.spec()
                                                                 .c_str()]];
-}
-
-// Tests the Open in New Tab action on a recent tab's context menu.
-- (void)testContextMenuOpenInNewTab {
-  [self loadTestURL];
-  OpenRecentTabsPanel();
-  [self longPressTestURLTab];
-
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:TestPageURL().GetContent()];
-
-  // Verify that Recent Tabs closed.
-  [[EarlGrey selectElementWithMatcher:RecentTabsTable()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.

@@ -33,8 +33,6 @@ struct DistantSession;
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
-// Disposition for tabs restored by this object. Defaults to CURRENT_TAB.
-@property(nonatomic, assign) WindowOpenDisposition restoredTabDisposition;
 // RecentTabsTableViewControllerDelegate delegate.
 @property(nonatomic, weak) id<RecentTabsTableViewControllerDelegate> delegate;
 // Delegate for UI-related events.

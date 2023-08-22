@@ -197,7 +197,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (self) {
     _sessionState = SessionsSyncUserState::USER_SIGNED_OUT;
     _syncedSessions.reset(new synced_sessions::SyncedSessions());
-    _restoredTabDisposition = WindowOpenDisposition::CURRENT_TAB;
     _preventUpdates = YES;
   }
   return self;
@@ -1561,21 +1560,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
         session_util::CreateWebStateWithNavigationEntries(
             self.browserState, toLoad->current_navigation_index,
             toLoad->navigations);
-    switch (self.restoredTabDisposition) {
-      case WindowOpenDisposition::CURRENT_TAB:
-        self.webStateList->ReplaceWebStateAt(self.webStateList->active_index(),
-                                             std::move(web_state));
-        break;
-      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
-        self.webStateList->InsertWebState(
-            self.webStateList->count(), std::move(web_state),
-            (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
-            WebStateOpener());
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+    self.webStateList->InsertWebState(
+        self.webStateList->count(), std::move(web_state),
+        (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
+        WebStateOpener());
   }
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
@@ -1603,13 +1591,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       self.isIncognito, self.webStateList->GetActiveWebState(),
       new_tab_page_uma::ACTION_OPENED_RECENTLY_CLOSED_ENTRY);
 
-  // If RecentTabs is being displayed from incognito, the resulting tab will
-  // open in the corresponding normal BVC. Change the disposition to avoid
-  // clobbering any tabs.
-  WindowOpenDisposition disposition =
-      self.isIncognito ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                       : self.restoredTabDisposition;
-  RestoreTab(entry_id, disposition, self.browser);
+  RestoreTab(entry_id, WindowOpenDisposition::NEW_FOREGROUND_TAB, self.browser);
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 

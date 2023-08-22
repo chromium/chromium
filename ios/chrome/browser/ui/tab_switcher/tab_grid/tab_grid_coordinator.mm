@@ -870,8 +870,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       applicationCommandsHandler;
   baseViewController.remoteTabsViewController.loadStrategy =
       UrlLoadStrategy::ALWAYS_NEW_FOREGROUND_TAB;
-  baseViewController.remoteTabsViewController.restoredTabDisposition =
-      WindowOpenDisposition::NEW_FOREGROUND_TAB;
   baseViewController.remoteTabsViewController.presentationDelegate = self;
 
   self.firstPresentation = YES;

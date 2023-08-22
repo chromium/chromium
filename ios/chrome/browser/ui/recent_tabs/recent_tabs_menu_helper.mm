@@ -74,14 +74,6 @@
     if (item.URL) {
       gurl = item.URL.gurl;
     }
-    [menuElements
-        addObject:
-            [actionFactory
-                actionToOpenInNewTabWithURL:gurl
-                                 completion:^{
-                                   [weakSelf.recentTabsPresentationDelegate
-                                           showActiveRegularTabFromRecentTabs];
-                                 }]];
 
     if (base::ios::IsMultipleScenesSupported()) {
       [menuElements

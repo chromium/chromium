@@ -557,6 +557,37 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
   [ChromeEarlGreyUI assertHistoryHasNoEntries];
 }
 
+#pragma mark - Recent Tabs
+
+// Tests reopening a closed tab from an incognito tab.
+- (void)testOpenCloseTabFromIncognito {
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Close the tab, making it appear in Recent Tabs.
+  [ChromeEarlGrey closeAllNormalTabs];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGreyUI openTabGrid];
+
+  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForMainTabCount:0];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityLabel(kTitle1),
+                                          grey_sufficientlyVisible(), nil)]
+      atIndex:0] performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
+      assertWithMatcher:chrome_test_util::OmniboxText(_URL1.GetContent())];
+
+  [ChromeEarlGrey waitForMainTabCount:1];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+}
+
 #pragma mark - Recent Tabs Context Menu
 
 // Tests the Copy Link action on a recent tab's context menu.
@@ -568,18 +599,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       verifyCopyLinkActionWithText:[NSString
                                        stringWithUTF8String:_URL1.spec()
                                                                 .c_str()]];
-}
-
-// Tests the Open in New Tab action on a recent tab's context menu.
-- (void)testRecentTabsContextMenuOpenInNewTab {
-  [self prepareRecentTabWithURL:_URL1 response:kResponse1];
-  [self longPressTabWithTitle:kTitle1];
-
-  [ChromeEarlGrey verifyOpenInNewTabActionWithURL:_URL1.GetContent()];
-
-  // Verify that the Tab Grid is closed.
-  [[EarlGrey selectElementWithMatcher:TabGridOtherDevicesPanelButton()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests the Open in New Window action on a recent tab's context menu.
