@@ -36,7 +36,7 @@ class SyncErrorNotifierFactory : public ProfileKeyedServiceFactory {
   ~SyncErrorNotifierFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
