@@ -539,7 +539,6 @@ TEST_F(IntegrationTest, OverinstallRedundant) {
   ASSERT_NO_FATAL_FAILURE(InstallApp("test"));
 
   ASSERT_TRUE(WaitForUpdaterExit());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test"));
 
@@ -1580,6 +1579,32 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
                                                  &exit_code));
       EXPECT_EQ(0, exit_code);
     });
+
+    ExpectAppInstalled(app_id, version);
+  }
+
+  void SetUpdateDefaultGroupPolicy(int policy) {
+    EXPECT_EQ(ERROR_SUCCESS,
+              base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
+                                Wow6432(KEY_WRITE))
+                  .WriteValue(L"UpdateDefault", policy));
+  }
+
+  void SetAppUpdateGroupPolicy(const std::string& appid, int policy) {
+    EXPECT_EQ(ERROR_SUCCESS,
+              base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
+                                Wow6432(KEY_WRITE))
+                  .WriteValue(base::ASCIIToWide(
+                                  base::StringPrintf("Update%s", appid.c_str()))
+                                  .c_str(),
+                              policy));
+  }
+
+  void SetCloudPolicyOverridesPlatformPolicy() {
+    EXPECT_EQ(ERROR_SUCCESS,
+              base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
+                                Wow6432(KEY_WRITE))
+                  .WriteValue(L"CloudPolicyOverridesPlatformPolicy", 1));
   }
 
   void ExpectAppInstalled(const std::string& appid,
@@ -1650,22 +1675,11 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   const base::Version kApp3UpdatedVersion = base::Version("1.1");
 
   ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kApp1InitialVersion));
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId2, kApp2InitialVersion));
   ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kApp1InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2InitialVersion));
-  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3InitialVersion));
-
-  // Group policy sets app2 to auto-update.
-  base::win::RegKey key(HKEY_LOCAL_MACHINE, UPDATER_POLICIES_KEY,
-                        Wow6432(KEY_WRITE));
-  EXPECT_EQ(
-      ERROR_SUCCESS,
-      key.WriteValue(
-          base::ASCIIToWide(base::StringPrintf("Update%s", kAppId2)).c_str(),
-          kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId2, kPolicyEnabled));
 
   // Cloud policy sets update default to disabled, app1 to auto-update, and
   // app2 to manual-update.
@@ -1704,7 +1718,66 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kApp1UpdatedVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2UpdatedVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3InitialVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
 
+TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
+  ASSERT_NO_FATAL_FAILURE(SetCloudPolicyOverridesPlatformPolicy());
+
+  const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
+  const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
+  const base::Version kApp2InitialVersion = base::Version("100.0.0.0");
+  const base::Version kApp2UpdatedVersion = base::Version("101.0.0.0");
+  const base::Version kApp3InitialVersion = base::Version("1.0");
+  const base::Version kApp3UpdatedVersion = base::Version("1.1");
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId1, kApp1InitialVersion));
+  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId2, kApp2InitialVersion));
+  ASSERT_NO_FATAL_FAILURE(InstallAppWithVersion(kAppId3, kApp3InitialVersion));
+
+  ASSERT_NO_FATAL_FAILURE(SetUpdateDefaultGroupPolicy(kPolicyDisabled));
+  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId1, kPolicyDisabled));
+  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId2, kPolicyEnabled));
+  ASSERT_NO_FATAL_FAILURE(SetAppUpdateGroupPolicy(kAppId3, kPolicyEnabled));
+
+  // Overrides app1 to auto-update, app2 to manual-update with cloud policy.
+  PushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  ApplicationSettings app1;
+  app1.set_app_guid(kAppId1);
+  app1.set_update(enterprise_management::AUTOMATIC_UPDATES_ONLY);
+  omaha_settings.mutable_application_settings()->Add(std::move(app1));
+  ApplicationSettings app2;
+  app2.set_app_guid(kAppId2);
+  app2.set_update(enterprise_management::MANUAL_UPDATES_ONLY);
+  omaha_settings.mutable_application_settings()->Add(std::move(app2));
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+
+  const base::FilePath crx_path = GetInstallerPath(kAppCRX);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation({kAppId1, kApp1InitialVersion,
+                                kApp1UpdatedVersion,
+                                /*should_update=*/true, false, "", crx_path}),
+          AppUpdateExpectation({kAppId2, kApp2InitialVersion,
+                                kApp2InitialVersion,
+                                /*should_update=*/false, false, "", crx_path}),
+          AppUpdateExpectation({kAppId3, kApp3InitialVersion,
+                                kApp3UpdatedVersion,
+                                /*should_update=*/true, false, "", crx_path}),
+      });
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId1, kApp1UpdatedVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId2, kApp2InitialVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kAppId3, kApp3UpdatedVersion));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }

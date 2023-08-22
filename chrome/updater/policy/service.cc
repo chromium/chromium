@@ -82,6 +82,7 @@ PolicyService::PolicyManagerVector CreatePolicyManagerVector(
       should_take_policy_critical_section,
       external_constants->IsMachineManaged());
   if (group_policy_manager->CloudPolicyOverridesPlatformPolicy()) {
+    VLOG(1) << __func__ << ": CloudPolicyOverridesPlatformPolicy=1";
     managers.push_back(std::move(group_policy_manager));
   } else {
     managers.insert(managers.begin(), std::move(group_policy_manager));
