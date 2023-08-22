@@ -50,6 +50,12 @@ public class SafeBrowsingFragment extends Fragment
         mStandardProtectionFriendlier =
                 (RadioButtonWithDescription) view.findViewById(R.id.standard_option_friendlier);
 
+        // The enhanced protection description is being overwritten when the flag is enabled
+        if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsEnhancedProtection.isEnabled()) {
+            mEnhancedProtection.setDescriptionText(getContext().getString(
+                    R.string.safe_browsing_enhanced_protection_summary_updated));
+        }
+
         if (ChromeFeatureList.sFriendlierSafeBrowsingSettingsStandardProtection.isEnabled()) {
             mStandardProtection.setVisibility(View.GONE);
             mStandardProtectionFriendlier.setVisibility(View.VISIBLE);
@@ -88,8 +94,14 @@ public class SafeBrowsingFragment extends Fragment
     public void onAuxButtonClicked(int clickedButtonId) {
         LayoutInflater inflater = LayoutInflater.from(getView().getContext());
         if (clickedButtonId == mEnhancedProtection.getId()) {
-            displayBottomSheet(
-                    inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));
+            if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)) {
+                displayBottomSheet(inflater.inflate(
+                        R.layout.privacy_guide_sb_enhanced_explanation_updated, null));
+            } else {
+                displayBottomSheet(
+                        inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));
+            }
         } else if (clickedButtonId == mStandardProtection.getId()) {
             displayBottomSheet(
                     inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null));

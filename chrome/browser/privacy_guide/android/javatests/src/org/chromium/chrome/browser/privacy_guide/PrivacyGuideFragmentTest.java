@@ -333,6 +333,17 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
+    public void testRenderSBFriendlierEnhancedBottomSheet() throws IOException {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
+        mRenderTestRule.render(getRootView(), "privacy_guide_sb_enhanced_sheet_friendlier");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
     public void testRenderSBStandardBottomSheet() throws IOException {
         launchPrivacyGuide();
         goToSafeBrowsingCard();
@@ -1043,6 +1054,24 @@ public class PrivacyGuideFragmentTest {
 
         clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
         onViewWaiting(withId(R.id.sb_enhanced_sheet)).check(matches(isDisplayed()));
+
+        pressBack();
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures({ChromeFeatureList.PRIVACY_GUIDE_POST_MVP,
+            ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION})
+    public void
+    testSafeBrowsingCard_enhancedFriendlierBottomSheetBackButtonBehaviour() {
+        launchPrivacyGuide();
+        goToSafeBrowsingCard();
+
+        clickOnArrowNextToRadioButtonWithText(R.string.privacy_guide_safe_browsing_enhanced_title);
+        onViewWaiting(withId(R.id.sb_enhanced_sheet_updated)).check(matches(isDisplayed()));
 
         pressBack();
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_enhanced_title))

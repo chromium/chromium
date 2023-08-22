@@ -62,6 +62,8 @@ public class SafeBrowsingFragmentTest {
     private RadioButtonWithDescriptionAndAuxButton mEnhancedProtectionButton;
     private RadioButtonWithDescriptionAndAuxButton mStandardProtectionButton;
     private RadioButtonWithDescription mStandardProtectionButtonFriendlier;
+    private String mFriendlierESBDescription;
+    private String mOriginalESBDescription;
     private final UserActionTester mActionTester = new UserActionTester();
 
     @Before
@@ -88,6 +90,10 @@ public class SafeBrowsingFragmentTest {
             mStandardProtectionButton = fragment.getView().findViewById(R.id.standard_option);
             ((SafeBrowsingFragment) fragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
+            mFriendlierESBDescription = fragment.getContext().getString(
+                    R.string.safe_browsing_enhanced_protection_summary_updated);
+            mOriginalESBDescription = fragment.getContext().getString(
+                    R.string.privacy_guide_safe_browsing_enhanced_description);
         });
     }
 
@@ -170,5 +176,19 @@ public class SafeBrowsingFragmentTest {
         assertTrue(mStandardProtectionButton.isChecked());
         assertEquals(View.GONE, mStandardProtectionButtonFriendlier.getVisibility());
         assertFalse(mStandardProtectionButtonFriendlier.isChecked());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
+    public void testUpdatedDescriptionEnhancedProtection() {
+        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
+        assertEquals(mFriendlierESBDescription, mEnhancedProtectionButton.getDescriptionText());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
+    public void testOriginalDescriptionEnhancedProtection() {
+        initFragmentWithSBState(SafeBrowsingState.ENHANCED_PROTECTION);
+        assertEquals(mOriginalESBDescription, mEnhancedProtectionButton.getDescriptionText());
     }
 }
