@@ -1686,41 +1686,17 @@
     },
 
     # The `cr23` variants of tests run the normal test suites with
-    # `--enable-features=ChromeRefesh2023`. We do not have the capacity
-    # to run all of browser_tests and interactive_ui_tests in the CQ,
-    # so these suites define two variants of the two test suites.
-    # One set, in the `cr23_regressed_*tests` suites, are subsets of the whole
-    # test suites that previously failed. We hope will get us enough coverage of
-    # the feature to catch issues pre-submit. The others, in the `cr23_*tests` form,
-    # run the whole test suites, but they only run them on the `*cr23*` optional
-    # try bots and fyi bots. When tests start to fail in the `cr23_*tests` suites
-    # (and aren't also failing in the non-cr23 variety), we can add them
-    # to the `cr23_regressed_*tests` suites.
+    # `--enable-features=ChromeRefesh2023` and other refresh-related flags.
+    # The `fyi` versions of these test suites just include the normal
+    # versions of browser_tests and interactive_ui_tests to make it easier
+    # to garden the FYI bots and tell if a failure is likely to be
+    # cr23-specific or not.
+
     'cr23_fyi_linux_gtests': {
       'browser_tests': {
         'swarming': {
           'shards': 20,
         },
-      },
-      'cr23_regressed_browser_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
-           '../../testing/buildbot/filters/cr23.linux.cr23_browser_tests.filter'
-          ),
-        ],
-        'test': 'browser_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-      'cr23_regressed_interactive_ui_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
-           '../../testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'test': 'interactive_ui_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
@@ -1733,34 +1709,6 @@
         'swarming': {
           'shards': 20,
         },
-        'ci_only': True,
-      },
-      'cr23_regressed_browser_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
-           '../../testing/buildbot/filters/cr23.mac.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-        'test': 'browser_tests',
-        'ci_only': True,
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-      'cr23_regressed_interactive_ui_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
-           '../../testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-        'test': 'interactive_ui_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
@@ -1773,29 +1721,6 @@
         'swarming': {
           'shards': 20,
         },
-      },
-      'cr23_regressed_browser_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_browser_tests.filter;'
-           '../../testing/buildbot/filters/cr23.win.cr23_browser_tests.filter'
-          ),
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-        'test': 'browser_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
-      },
-      'cr23_regressed_interactive_ui_tests': {
-        'args': [
-          ('--test-launcher-filter-file='
-           '../../testing/buildbot/filters/cr23.tests.cr23_interactive_ui_tests.filter;'
-           '../../testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter'
-          ),
-        ],
-        'test': 'interactive_ui_tests',
-        'mixins': [ 'chrome-refresh-2023' ],
       },
       'interactive_ui_tests': {
         'swarming': {
