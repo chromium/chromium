@@ -35,6 +35,8 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -453,9 +455,10 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
     builder.AddNumber("responseStatus", responseStatus());
   }
 
-  ScriptState* script_state = builder.GetScriptState();
-  builder.Add("serverTiming", FreezeV8Object(ToV8(serverTiming(), script_state),
-                                             script_state->GetIsolate()));
+  builder.Add("serverTiming",
+              ToV8Traits<IDLArray<PerformanceServerTiming>>::ToV8(
+                  builder.GetScriptState(), serverTiming())
+                  .ToLocalChecked());
 }
 
 void PerformanceResourceTiming::Trace(Visitor* visitor) const {

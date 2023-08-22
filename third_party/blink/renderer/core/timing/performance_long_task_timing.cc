@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -44,9 +46,9 @@ TaskAttributionVector PerformanceLongTaskTiming::attribution() const {
 
 void PerformanceLongTaskTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  ScriptState* script_state = builder.GetScriptState();
-  builder.Add("attribution", FreezeV8Object(ToV8(attribution_, script_state),
-                                            script_state->GetIsolate()));
+  builder.Add("attribution", ToV8Traits<IDLArray<TaskAttributionTiming>>::ToV8(
+                                 builder.GetScriptState(), attribution_)
+                                 .ToLocalChecked());
 }
 
 void PerformanceLongTaskTiming::Trace(Visitor* visitor) const {
