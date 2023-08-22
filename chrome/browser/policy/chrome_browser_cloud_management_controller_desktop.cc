@@ -15,6 +15,7 @@
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader.h"
 #include "chrome/browser/enterprise/remote_commands/cbcm_remote_commands_factory.h"
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -247,12 +248,20 @@ std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
 ChromeBrowserCloudManagementControllerDesktop::CreateDeviceTrustKeyManager() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   if (enterprise_connectors::IsDeviceTrustConnectorFeatureEnabled()) {
+    auto* browser_dm_token_storage = BrowserDMTokenStorage::Get();
+    auto* device_management_service = GetDeviceManagementService();
+    auto shared_url_loader_factory = GetSharedURLLoaderFactory();
+
     auto key_rotation_launcher =
         enterprise_connectors::KeyRotationLauncher::Create(
-            BrowserDMTokenStorage::Get(), GetDeviceManagementService(),
-            GetSharedURLLoaderFactory());
+            browser_dm_token_storage, device_management_service,
+            shared_url_loader_factory);
+    auto key_loader = enterprise_connectors::KeyLoader::Create(
+        browser_dm_token_storage, device_management_service,
+        shared_url_loader_factory);
+
     return std::make_unique<enterprise_connectors::DeviceTrustKeyManagerImpl>(
-        std::move(key_rotation_launcher));
+        std::move(key_rotation_launcher), std::move(key_loader));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
   return nullptr;

@@ -87,12 +87,15 @@ RotationStatusToPermanentFailure(KeyRotationCommand::Status status,
 }  // namespace
 
 DeviceTrustKeyManagerImpl::DeviceTrustKeyManagerImpl(
-    std::unique_ptr<KeyRotationLauncher> key_rotation_launcher)
+    std::unique_ptr<KeyRotationLauncher> key_rotation_launcher,
+    std::unique_ptr<KeyLoader> key_loader)
     : key_rotation_launcher_(std::move(key_rotation_launcher)),
+      key_loader_(std::move(key_loader)),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
   DCHECK(key_rotation_launcher_);
+  DCHECK(key_loader_);
 }
 
 DeviceTrustKeyManagerImpl::~DeviceTrustKeyManagerImpl() = default;
@@ -231,28 +234,21 @@ void DeviceTrustKeyManagerImpl::AddPendingRequest(
 void DeviceTrustKeyManagerImpl::LoadKey(bool create_on_fail) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_ = InitializationState::kLoadingKey;
-  background_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&LoadPersistedKey),
-      base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyLoaded,
-                     weak_factory_.GetWeakPtr(), create_on_fail));
+  key_loader_->LoadKey(base::BindOnce(&DeviceTrustKeyManagerImpl::OnKeyLoaded,
+                                      weak_factory_.GetWeakPtr(),
+                                      create_on_fail));
 }
 
 void DeviceTrustKeyManagerImpl::OnKeyLoaded(
     bool create_on_fail,
-    scoped_refptr<SigningKeyPair> loaded_key_pair) {
+    KeyLoader::DTCLoadKeyResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (loaded_key_pair && !loaded_key_pair->is_empty()) {
-    key_pair_ = std::move(loaded_key_pair);
-
-    // Kick off key synchronization in the background as non-blocking.
-    key_rotation_launcher_->SynchronizePublicKey(
-        key_pair_,
-        base::BindOnce(&DeviceTrustKeyManagerImpl::OnSynchronizationFinished,
-                       weak_factory_.GetWeakPtr()));
+  sync_key_response_code_ = result.status_code;
+  if (result.key_pair && !result.key_pair->is_empty()) {
+    key_pair_ = std::move(result.key_pair);
   } else {
     key_pair_.reset();
-    sync_key_response_code_ = absl::nullopt;
   }
 
   state_ = InitializationState::kDefault;
@@ -281,11 +277,6 @@ void DeviceTrustKeyManagerImpl::OnKeyLoaded(
   // successfully answered to. If a key was not loaded, then might as well
   // respond with a failure instead of keeping them waiting even longer.
   ResumePendingCallbacks();
-}
-
-void DeviceTrustKeyManagerImpl::OnSynchronizationFinished(
-    absl::optional<int> response_code) {
-  sync_key_response_code_ = response_code;
 }
 
 void DeviceTrustKeyManagerImpl::StartKeyRotationInner(
