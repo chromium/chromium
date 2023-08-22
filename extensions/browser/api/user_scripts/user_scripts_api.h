@@ -33,6 +33,22 @@ class UserScriptsRegisterFunction : public ExtensionFunction {
   void OnUserScriptsRegistered(const absl::optional<std::string>& error);
 };
 
+class UserScriptsGetScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.getScripts", USERSCRIPTS_GETSCRIPTS)
+
+  UserScriptsGetScriptsFunction() = default;
+  UserScriptsGetScriptsFunction(const UserScriptsRegisterFunction&) = delete;
+  const UserScriptsGetScriptsFunction& operator=(
+      const UserScriptsGetScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsGetScriptsFunction() override = default;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_USER_SCRIPTS_USER_SCRIPTS_API_H_

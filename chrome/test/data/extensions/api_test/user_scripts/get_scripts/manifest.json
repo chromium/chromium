@@ -1,0 +1,14 @@
+{
+  "name": "User script test extension",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "Tests a variety of user scripts API calls for retrieving registered user scripts.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "userScripts",
+    "scripting"
+  ]
+}

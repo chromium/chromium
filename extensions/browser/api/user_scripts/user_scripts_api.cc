@@ -97,6 +97,45 @@ std::unique_ptr<UserScript> ParseUserScript(
   return result;
 }
 
+// Converts a UserScript object to a api::user_scripts::RegisteredUserScript
+// object, used for getScripts.
+api::user_scripts::RegisteredUserScript CreateRegisteredUserScriptInfo(
+    const UserScript& script) {
+  api::user_scripts::RegisteredUserScript script_info;
+  CHECK_EQ(UserScript::Source::kDynamicUserScript, script.GetSource());
+
+  script_info.id = script.id();
+  script_info.all_frames = script.match_all_frames();
+  script_info.run_at = ConvertRunLocationForAPI(script.run_location());
+
+  script_info.matches.emplace();
+  script_info.matches->reserve(script.url_patterns().size());
+  for (const URLPattern& pattern : script.url_patterns()) {
+    script_info.matches->push_back(pattern.GetAsString());
+  }
+
+  if (!script.exclude_url_patterns().is_empty()) {
+    script_info.exclude_matches.emplace();
+    script_info.exclude_matches->reserve(script.exclude_url_patterns().size());
+    for (const URLPattern& pattern : script.exclude_url_patterns()) {
+      script_info.exclude_matches->push_back(pattern.GetAsString());
+    }
+  }
+
+  // File paths may be normalized in the returned object and can differ slightly
+  // compared to what was originally passed into userScripts.register.
+  if (!script.js_scripts().empty()) {
+    script_info.js.reserve(script.js_scripts().size());
+    for (const auto& file : script.js_scripts()) {
+      api::user_scripts::ScriptSource source;
+      source.file = file->relative_path().AsUTF8Unsafe();
+      script_info.js.push_back(std::move(source));
+    }
+  }
+
+  return script_info;
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
@@ -200,6 +239,47 @@ void UserScriptsRegisterFunction::OnUserScriptsRegistered(
     Respond(NoArguments());
   }
   Release();  // Matches the `AddRef()` in `Run()`.
+}
+
+ExtensionFunction::ResponseAction UserScriptsGetScriptsFunction::Run() {
+  absl::optional<api::user_scripts::GetScripts::Params> params =
+      api::user_scripts::GetScripts::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  absl::optional<api::user_scripts::UserScriptFilter>& filter = params->filter;
+  std::set<std::string> id_filter;
+  if (filter && filter->ids) {
+    id_filter.insert(std::make_move_iterator(filter->ids->begin()),
+                     std::make_move_iterator(filter->ids->end()));
+  }
+
+  ExtensionUserScriptLoader* loader =
+      ExtensionSystem::Get(browser_context())
+          ->user_script_manager()
+          ->GetUserScriptLoaderForExtension(extension()->id());
+  const UserScriptList& dynamic_scripts = loader->GetLoadedDynamicScripts();
+
+  std::vector<api::user_scripts::RegisteredUserScript> registered_user_scripts;
+  for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
+    if (script->GetSource() != UserScript::Source::kDynamicUserScript) {
+      continue;
+    }
+
+    std::string id_without_prefix = script->GetIDWithoutPrefix();
+    if (filter && filter->ids &&
+        !base::Contains(id_filter, id_without_prefix)) {
+      continue;
+    }
+
+    auto user_script = CreateRegisteredUserScriptInfo(*script);
+    // Remove the internally used prefix from the `script`'s ID before
+    // returning.
+    user_script.id = id_without_prefix;
+    registered_user_scripts.push_back(std::move(user_script));
+  }
+
+  return RespondNow(ArgumentList(
+      api::user_scripts::GetScripts::Results::Create(registered_user_scripts)));
 }
 
 }  // namespace extensions

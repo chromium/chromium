@@ -239,7 +239,9 @@ chrome.test.runTests([
         await chrome.scripting.getRegisteredContentScripts();
     chrome.test.assertEq('contentScript', registered_content_scripts[0].id);
     // TODO(crbug.com/1385165): Assert user script was registered once we add
-    // a User Scripts API method for retrieving user scripts.
+    // a User Scripts API method for retrieving user scripts and unregistering
+    // them in between tests (otherwise we would retrieve here all user scripts
+    // across tests).
 
     chrome.test.succeed();
   },

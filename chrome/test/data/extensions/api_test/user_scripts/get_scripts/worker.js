@@ -1,0 +1,94 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+chrome.test.runTests([
+
+  // Tests that calling getScripts with no filter returns all user scripts.
+  async function getScripts_NoFilter() {
+    const userScriptsToRegister = [
+      {
+        id: 'script1',
+        matches: ['*://*/*'],
+        excludeMatches: ['*://abc.com/*'],
+        allFrames: true,
+        js: [{file: 'empty.js'}]
+      },
+      {
+        id: 'script2',
+        matches: ['*://requested.com/*'],
+        js: [{file: 'empty2.js'}],
+        runAt: 'document_end'
+      }
+    ];
+
+    const contentScriptsToRegister =
+        [{id: 'contentScript', matches: ['*://*/*'], js: ['empty.js']}];
+
+    // Some fields are populated with their default values, and file paths are
+    // normalized.
+    const expectedUserScripts = [
+      {
+        id: 'script1',
+        matches: ['*://*/*'],
+        excludeMatches: ['*://abc.com/*'],
+        allFrames: true,
+        js: [{file: 'empty.js'}],
+        runAt: 'document_idle'
+      },
+      {
+        id: 'script2',
+        matches: ['*://requested.com/*'],
+        js: [{file: 'empty2.js'}],
+        allFrames: false,
+        runAt: 'document_end'
+      }
+
+    ];
+
+    await chrome.userScripts.register(userScriptsToRegister);
+    await chrome.scripting.registerContentScripts(contentScriptsToRegister);
+
+    // Calling getScripts with no filter returns all user scripts.
+    let scripts = await chrome.userScripts.getScripts();
+    chrome.test.assertEq(expectedUserScripts, scripts);
+
+    // Calling getScripts with an empty filter returns all user scripts.
+    scripts = await chrome.userScripts.getScripts({});
+    chrome.test.assertEq(expectedUserScripts, scripts);
+
+    // Calling getScripts with empty ids in filter returns no scripts.
+    // TODO(crbug.com/385165): Move to its separate test after implementing
+    // userScripts.unregister(), so we can unregister scripts in between tests.
+    scripts = await chrome.userScripts.getScripts({ids: []});
+    chrome.test.assertEq([], scripts);
+
+    chrome.test.succeed();
+  },
+
+  // Tests that calling getScripts with a given filter returns only scripts
+  // matching the filter.
+  async function getScripts_Filter() {
+    const scriptsToRegister = [
+      {id: 'script3', matches: ['*://*/*'], js: [{file: 'empty.js'}]},
+      {id: 'script4', matches: ['*://*/*'], js: [{file: 'empty2.js'}]}
+    ];
+
+    const expectedScripts = [{
+      id: 'script3',
+      matches: ['*://*/*'],
+      allFrames: false,
+      js: [{file: 'empty.js'}],
+      runAt: 'document_idle'
+    }];
+
+    await chrome.userScripts.register(scriptsToRegister);
+
+    let scripts =
+        await chrome.userScripts.getScripts({ids: ['script3', 'nonExistent']});
+    chrome.test.assertEq(expectedScripts, scripts);
+
+    chrome.test.succeed();
+  },
+
+]);

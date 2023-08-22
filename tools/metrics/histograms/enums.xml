@@ -37590,6 +37590,7 @@ Called by update_extension_histograms.py.-->
   <int value="1819" label="OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE"/>
   <int value="1820" label="FILEMANAGERPRIVATE_DISMISSIOTASK"/>
   <int value="1821" label="ACCESSIBILITY_PRIVATE_SHOWTOAST"/>
+  <int value="1822" label="USERSCRIPTS_GETSCRIPTS"/>
 </enum>
 
 <enum name="ExtensionIconState">

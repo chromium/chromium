@@ -38,7 +38,11 @@ UserScriptsAPITest::UserScriptsAPITest() {
 }
 
 IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, RegisterUserScripts) {
-  ASSERT_TRUE(RunExtensionTest("user_scripts/")) << message_;
+  ASSERT_TRUE(RunExtensionTest("user_scripts/register")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(UserScriptsAPITest, GetUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("user_scripts/get_scripts")) << message_;
 }
 
 }  // namespace extensions
