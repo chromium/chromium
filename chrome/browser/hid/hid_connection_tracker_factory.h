@@ -26,7 +26,7 @@ class HidConnectionTrackerFactory : public ProfileKeyedServiceFactory {
   ~HidConnectionTrackerFactory() override;
 
   // BrowserContextKeyedBaseFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 };
