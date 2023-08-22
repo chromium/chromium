@@ -60,6 +60,8 @@ void AddPrintManagementStrings(content::WebUIDataSource* html_source) {
       {"dateColumn", IDS_PRINT_MANAGEMENT_DATE_COLUMN},
       {"statusColumn", IDS_PRINT_MANAGEMENT_STATUS_COLUMN},
       {"printJobTitle", IDS_PRINT_MANAGEMENT_TITLE},
+      {"clearAllHistoryDialogTitle",
+       IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_DIALOG_TITLE},
       {"clearAllHistoryLabel",
        IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_BUTTON_TEXT},
       {"clearHistoryConfirmationText",

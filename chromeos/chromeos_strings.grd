@@ -613,6 +613,9 @@
         <message name="IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_CONFIRMATION_TEXT" desc="A confirmation text that ask users for confirmation that they want to delete their print jobs. Also notifies users that their ongoing jobs will not be deleted.">
           Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.
         </message>
+        <message name="IDS_PRINT_MANAGEMENT_CLEAR_ALL_HISTORY_DIALOG_TITLE" desc="Title displayed on dialog that asks user for confirmation that they want to delete all their print jobs.">
+          Clear all print history
+        </message>
         <message name="IDS_PRINT_MANAGEMENT_CANCEL_BUTTON_LABEL" desc="The label for the button that closes the clear print history dialog.">
           Cancel
         </message>
