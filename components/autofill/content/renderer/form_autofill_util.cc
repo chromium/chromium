@@ -2082,7 +2082,8 @@ void WebFormControlElementToFormField(
   if (IsAutofillableInputElement(input_element) || IsTextAreaElement(element) ||
       IsSelectOrSelectListElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
-    field->is_autofilled = element.IsAutofilled();
+    field->is_autofilled =
+        element.GetAutofillState() == WebAutofillState::kAutofilled;
     field->is_focusable = IsWebElementFocusableForAutofill(element);
     field->is_visible = IsWebElementVisible(element);
     field->should_autocomplete =
