@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_MAC_METRICS_UTIL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_CORE_MAC_METRICS_UTIL_H_
 
+#include <Security/Security.h>
+
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/mac/secure_enclave_client.h"
 
 namespace enterprise_connectors {
@@ -23,11 +25,20 @@ enum class SecureEnclaveOperationStatus {
   kMaxValue = kUpdateSecureKeyLabelDataProtectionKeychainFailed,
 };
 
-// Metrics for the Secure Enclave key `operation` with the
-// key`type` describing where the key is stored (i.e permanent or temporary key
-// storage).
-void RecordKeyOperationStatus(SecureEnclaveOperationStatus operation,
-                              SecureEnclaveClient::KeyType type);
+// Enum for the operation being performed on the Device Trust key pair. This is
+// used for recording the key operation status.
+enum class KeychainOperation {
+  kCreate = 0,
+  kCopy = 1,
+  kDelete = 2,
+  kUpdate = 3,
+};
+
+// Logs UMA metrics for the Keychain `operation` failing with `error_code` for
+// the given key `type`.
+void RecordKeyOperationStatus(KeychainOperation operation,
+                              SecureEnclaveClient::KeyType type,
+                              OSStatus error_code);
 
 }  // namespace enterprise_connectors
 

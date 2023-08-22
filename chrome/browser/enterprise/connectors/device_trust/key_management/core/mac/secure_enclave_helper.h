@@ -26,24 +26,30 @@ class SecureEnclaveHelper {
   static std::unique_ptr<SecureEnclaveHelper> Create();
 
   // Uses the SecKeyCreateRandomKey API to create the secure key with its key
-  // `attributes`. Returns the key or a nullptr on failure.
+  // `attributes`. Returns the key or a nullptr on failure. If an `error`
+  // pointer is given, its value will be set to the OSStatus returned by the
+  // Keychain API call.
   virtual base::ScopedCFTypeRef<SecKeyRef> CreateSecureKey(
-      CFDictionaryRef attributes) = 0;
+      CFDictionaryRef attributes,
+      OSStatus* error) = 0;
 
   // Uses the SecItemCopyMatching API to search the keychain using the
   // `query` dictionary. Returns the reference to the secure key or a nullptr
-  // if the key is not found.
-  virtual base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query) = 0;
+  // if the key is not found. If an `error` pointer
+  // is given, its value will be set to the OSStatus returned by the Keychain
+  // API call.
+  virtual base::ScopedCFTypeRef<SecKeyRef> CopyKey(CFDictionaryRef query,
+                                                   OSStatus* error) = 0;
 
   // Uses the SecItemUpdate API to update the the key retrieved with the
-  // `query` with its `attributes_to_update`. Returns true if the key
-  // attributes were updated successfully and false otherwise.
-  virtual bool Update(CFDictionaryRef query,
-                      CFDictionaryRef attributes_to_update) = 0;
+  // `query` with its `attributes_to_update`. Returns the OSStatus value
+  // returned by the Keychain API call.
+  virtual OSStatus Update(CFDictionaryRef query,
+                          CFDictionaryRef attributes_to_update) = 0;
 
   // Uses the SecItemDelete API to delete the key retrieved with the `query`.
-  // Returns true if the key was deleted and false otherwise.
-  virtual bool Delete(CFDictionaryRef query) = 0;
+  // Returns the OSStatus value returned by the Keychain API call.
+  virtual OSStatus Delete(CFDictionaryRef query) = 0;
 
   // Uses the crypto library to check whether the Secure Enclave is supported on
   // the device. Returns true if it is supported and false otherwise.

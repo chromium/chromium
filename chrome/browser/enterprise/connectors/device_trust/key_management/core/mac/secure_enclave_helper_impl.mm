@@ -18,28 +18,41 @@ namespace enterprise_connectors {
 SecureEnclaveHelperImpl::~SecureEnclaveHelperImpl() = default;
 
 base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CreateSecureKey(
-    CFDictionaryRef attributes) {
+    CFDictionaryRef attributes,
+    OSStatus* error) {
+  base::ScopedCFTypeRef<CFErrorRef> error_ref;
   base::ScopedCFTypeRef<SecKeyRef> key(
-      SecKeyCreateRandomKey(attributes, nullptr));
+      SecKeyCreateRandomKey(attributes, error_ref.InitializeInto()));
+
+  if (error && error_ref) {
+    *error = CFErrorGetCode(error_ref);
+  }
+
   return key;
-}
-
-bool SecureEnclaveHelperImpl::Update(CFDictionaryRef query,
-                                     CFDictionaryRef attributes_to_update) {
-  return SecItemUpdate(query, attributes_to_update) == errSecSuccess;
-}
-
-bool SecureEnclaveHelperImpl::Delete(CFDictionaryRef query) {
-  return SecItemDelete(query) == errSecSuccess;
 }
 
 base::ScopedCFTypeRef<SecKeyRef> SecureEnclaveHelperImpl::CopyKey(
-    CFDictionaryRef query) {
+    CFDictionaryRef query,
+    OSStatus* error) {
   base::ScopedCFTypeRef<SecKeyRef> key;
-  SecItemCopyMatching(
+  OSStatus status = SecItemCopyMatching(
       query, const_cast<CFTypeRef*>(
                  reinterpret_cast<const CFTypeRef*>(key.InitializeInto())));
+
+  if (error) {
+    *error = status;
+  }
+
   return key;
+}
+
+OSStatus SecureEnclaveHelperImpl::Update(CFDictionaryRef query,
+                                         CFDictionaryRef attributes_to_update) {
+  return SecItemUpdate(query, attributes_to_update);
+}
+
+OSStatus SecureEnclaveHelperImpl::Delete(CFDictionaryRef query) {
+  return SecItemDelete(query);
 }
 
 bool SecureEnclaveHelperImpl::IsSecureEnclaveSupported() {
