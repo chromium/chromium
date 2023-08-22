@@ -75,7 +75,8 @@ class HoldingSpaceTrayChildBubbleTestBase : public HoldingSpaceAshTestBase {
 
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<HoldingSpaceViewDelegate> view_delegate_;
-  raw_ptr<HoldingSpaceTrayChildBubble, ExperimentalAsh> child_bubble_ = nullptr;
+  raw_ptr<HoldingSpaceTrayChildBubble, DanglingUntriaged | ExperimentalAsh>
+      child_bubble_ = nullptr;
 };
 
 // HoldingSpaceTrayChildBubblePlaceholderTest ----------------------------------
@@ -144,8 +145,9 @@ class HoldingSpaceTrayChildBubblePlaceholderTest
   }
 
   // Owned by view hierarchy.
-  raw_ptr<views::View, ExperimentalAsh> placeholder_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> section_ = nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> placeholder_ =
+      nullptr;
+  raw_ptr<views::View, DanglingUntriaged | ExperimentalAsh> section_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

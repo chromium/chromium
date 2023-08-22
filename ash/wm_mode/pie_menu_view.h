@@ -128,7 +128,7 @@ class PieMenuView : public views::View {
 
   // The delegate of this view which takes care of handling button presses. Not
   // null.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
 
   // The container hosting the buttons on the main menu of this view. When this
   // is visible, `active_sub_menus_stack_` should be empty, and `back_button_`

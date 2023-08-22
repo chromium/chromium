@@ -205,7 +205,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::map<std::string, nearbyshare::proto::PublicCertificate> db_entries_;
   raw_ptr<leveldb_proto::test::FakeDB<nearbyshare::proto::PublicCertificate>,
-          ExperimentalAsh>
+          DanglingUntriaged | ExperimentalAsh>
       db_;
   std::unique_ptr<NearbyShareCertificateStorage> cert_store_;
   std::vector<nearbyshare::proto::PublicCertificate> public_certificates_;

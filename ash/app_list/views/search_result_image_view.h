@@ -70,7 +70,8 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   raw_ptr<SearchResultImageListView, ExperimentalAsh> const list_view_;
 
   // Child pulsing block view that is used as a placeholder.
-  raw_ptr<PulsingBlockView, ExperimentalAsh> pulsing_block_view_ = nullptr;
+  raw_ptr<PulsingBlockView, DanglingUntriaged | ExperimentalAsh>
+      pulsing_block_view_ = nullptr;
 
   // The preferred width of the image view which is used to calculate the
   // preferred size. This is set by the parent container view so that the image

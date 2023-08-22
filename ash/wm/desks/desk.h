@@ -81,7 +81,7 @@ class ASH_EXPORT Desk {
   // used to support per-desk z-orders for all-desk windows. Entries are stored
   // in ascending `order`.
   struct AllDeskWindowStackingData {
-    raw_ptr<aura::Window, ExperimentalAsh> window = nullptr;
+    raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> window = nullptr;
     // The z-order of the window.
     // Note: this is reversed from how child windows are ordered in
     // `aura::Window`, so an entry with `order == 0` means topmost.

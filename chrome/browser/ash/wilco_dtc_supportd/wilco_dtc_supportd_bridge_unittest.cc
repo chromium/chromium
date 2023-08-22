@@ -264,7 +264,7 @@ class WilcoDtcSupportdBridgeTest : public testing::Test {
           &mojo_wilco_dtc_supportd_service_};
 
   raw_ptr<StrictMock<MockWilcoDtcSupportdNotificationController>,
-          ExperimentalAsh>
+          DanglingUntriaged | ExperimentalAsh>
       notification_controller_;
 
   std::unique_ptr<WilcoDtcSupportdBridge> wilco_dtc_supportd_bridge_;

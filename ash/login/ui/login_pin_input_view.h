@@ -106,7 +106,8 @@ class ASH_EXPORT LoginPinInputView
   bool is_read_only_ = false;
 
   // The input field owned by this view.
-  raw_ptr<LoginPinInput, ExperimentalAsh> code_input_ = nullptr;
+  raw_ptr<LoginPinInput, DanglingUntriaged | ExperimentalAsh> code_input_ =
+      nullptr;
 
   // Whether the 'Return' key should trigger an unlock with an empty PIN.
   bool authenticate_with_empty_pin_on_return_key_ = false;

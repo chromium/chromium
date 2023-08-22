@@ -87,7 +87,7 @@ class WifiHotspotConnector : public NetworkStateHandlerObserver {
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<NetworkConnect, ExperimentalAsh> network_connect_;
+  raw_ptr<NetworkConnect, DanglingUntriaged | ExperimentalAsh> network_connect_;
   std::unique_ptr<base::OneShotTimer> timer_;
   raw_ptr<base::Clock, ExperimentalAsh> clock_;
 

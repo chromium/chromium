@@ -64,7 +64,7 @@ class SyncAppListHelper {
                  ChromeAppListItem* item,
                  const std::string& label);
 
-  raw_ptr<SyncTest, ExperimentalAsh> test_ = nullptr;
+  raw_ptr<SyncTest, DanglingUntriaged | ExperimentalAsh> test_ = nullptr;
   bool setup_completed_ = false;
 };
 

@@ -353,7 +353,7 @@ class EasyUnlockServiceTest : public testing::Test {
   scoped_refptr<testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
 
   raw_ptr<testing::StrictMock<MockEasyUnlockNotificationController>,
-          ExperimentalAsh>
+          DanglingUntriaged | ExperimentalAsh>
       mock_notification_controller_;
 
   views::TestViewsDelegate view_delegate_;

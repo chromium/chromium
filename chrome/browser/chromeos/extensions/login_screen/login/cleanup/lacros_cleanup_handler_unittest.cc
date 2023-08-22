@@ -55,7 +55,7 @@ class TestCleanupTriggeredObserver
   absl::optional<std::string> error_;
   bool should_reset_ = false;
   raw_ptr<mojo::Receiver<crosapi::mojom::LacrosCleanupTriggeredObserver>,
-          ExperimentalAsh>
+          DanglingUntriaged | ExperimentalAsh>
       receiver_;
 };
 
