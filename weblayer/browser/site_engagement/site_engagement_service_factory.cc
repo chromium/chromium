@@ -36,9 +36,10 @@ SiteEngagementServiceFactory::~SiteEngagementServiceFactory() {
   SiteEngagementService::ClearServiceProvider(this);
 }
 
-KeyedService* SiteEngagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SiteEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new SiteEngagementService(browser_context);
+  return std::make_unique<SiteEngagementService>(browser_context);
 }
 
 content::BrowserContext* SiteEngagementServiceFactory::GetBrowserContextToUse(
