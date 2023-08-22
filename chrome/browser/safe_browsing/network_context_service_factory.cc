@@ -34,10 +34,11 @@ NetworkContextServiceFactory::NetworkContextServiceFactory()
 
 NetworkContextServiceFactory::~NetworkContextServiceFactory() = default;
 
-KeyedService* NetworkContextServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NetworkContextServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new NetworkContextService(profile);
+  return std::make_unique<NetworkContextService>(profile);
 }
 
 }  // namespace safe_browsing
