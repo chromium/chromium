@@ -80,6 +80,7 @@ struct AccessDetails {
                 bool blocked_by_policy,
                 bool is_from_primary_page);
   ~AccessDetails();
+  bool operator<(const AccessDetails& other) const;
 
   SiteDataType site_data_type = SiteDataType::kUnknown;
   AccessType access_type = AccessType::kUnknown;

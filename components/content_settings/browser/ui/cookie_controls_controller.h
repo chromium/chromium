@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_UI_COOKIE_CONTROLS_CONTROLLER_H_
 
+#include <set>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -97,6 +99,7 @@ class CookieControlsController
 
     TabObserver(const TabObserver&) = delete;
     TabObserver& operator=(const TabObserver&) = delete;
+    ~TabObserver() override;
 
     // PageSpecificContentSettings::SiteDataObserver:
     void OnSiteDataAccessed(const AccessDetails& access_details) override;
@@ -116,6 +119,10 @@ class CookieControlsController
     // The number of detected page reloads for |last_visited_url_| in the last
     // 30 seconds.
     int reload_count_ = 0;
+
+    // Cache of cookie access details that have been already reported for the
+    // current page load.
+    std::set<AccessDetails> cookie_accessed_set_;
 
     void ResetReloadCounter();
   };
