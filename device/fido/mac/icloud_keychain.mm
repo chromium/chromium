@@ -147,6 +147,8 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner =
         base::SequencedTaskRunner::GetCurrentDefault();
     __block auto internal_callback = std::move(callback);
+    const std::vector<PublicKeyCredentialDescriptor> allow_list =
+        request.allow_list;
     const std::string rp_id = request.rp_id;
     auto handler = ^(
         NSArray<ASAuthorizationWebBrowserPlatformPublicKeyCredential*>*
@@ -154,8 +156,16 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
       std::vector<DiscoverableCredentialMetadata> ret;
       for (NSUInteger i = 0; i < credentials.count; i++) {
         const auto& cred = credentials[i];
+        std::vector<uint8_t> cred_id = ToVector(cred.credentialID);
+        if (!allow_list.empty() &&
+            base::ranges::none_of(
+                allow_list,
+                [&cred_id](const PublicKeyCredentialDescriptor& allow_list_cred)
+                    -> bool { return allow_list_cred.id == cred_id; })) {
+          continue;
+        }
         ret.emplace_back(AuthenticatorType::kICloudKeychain, rp_id,
-                         ToVector(cred.credentialID),
+                         std::move(cred_id),
                          PublicKeyCredentialUserEntity(
                              ToVector(cred.userHandle), cred.name.UTF8String,
                              /* iCloud Keychain does not store

@@ -408,6 +408,40 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   }
 }
 
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
+  if (@available(macOS 13.5, *)) {
+    const std::vector<DiscoverableCredentialMetadata> creds = {
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 4},
+         {{4, 3, 2, 1}, "name", absl::nullopt}},
+        {AuthenticatorType::kICloudKeychain,
+         "example.com",
+         {1, 2, 3, 5},
+         {{4, 3, 2, 2}, "name", absl::nullopt}},
+    };
+    fake_->SetCredentials(creds);
+    test::TestCallbackReceiver<std::vector<DiscoverableCredentialMetadata>,
+                               FidoRequestHandlerBase::RecognizedCredential>
+        callback;
+    CtapGetAssertionRequest request("example.com", "{}");
+    request.allow_list = {{CredentialType::kPublicKey, {1, 2, 3, 4}}};
+    CtapGetAssertionOptions options;
+
+    CHECK(authenticator_);
+    authenticator_->GetPlatformCredentialInfoForRequest(request, options,
+                                                        callback.callback());
+    callback.WaitForCallback();
+    auto result = callback.TakeResult();
+    std::vector<DiscoverableCredentialMetadata> creds_out =
+        std::move(std::get<0>(result));
+
+    // The second credential should have been filtered out by the allow list.
+    ASSERT_EQ(creds_out.size(), 1u);
+    EXPECT_EQ(creds[0], creds_out[0]);
+  }
+}
+
 TEST_F(iCloudKeychainTest, FetchCredentialMetadataNoPermission) {
   if (@available(macOS 13.5, *)) {
     fake_->set_auth_state(FakeSystemInterface::kAuthNotAuthorized);
