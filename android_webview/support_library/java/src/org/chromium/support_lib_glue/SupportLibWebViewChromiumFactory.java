@@ -382,7 +382,7 @@ class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryBoundary
                     mServiceWorkerController =
                             BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                                     new SupportLibServiceWorkerControllerAdapter(
-                                            mAwInit.getServiceWorkerController()));
+                                            mAwInit.getDefaultServiceWorkerController()));
                 }
             }
             return mServiceWorkerController;

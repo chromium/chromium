@@ -708,20 +708,20 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public GeolocationPermissions getGeolocationPermissions() {
-        return mAwInit.getGeolocationPermissions();
+        return mAwInit.getDefaultGeolocationPermissions();
     }
 
     @Override
     public CookieManager getCookieManager() {
-        return mAwInit.getCookieManager();
+        return mAwInit.getDefaultCookieManager();
     }
 
     @Override
     public ServiceWorkerController getServiceWorkerController() {
         synchronized (mAwInit.getLock()) {
             if (mServiceWorkerController == null) {
-                mServiceWorkerController =
-                        new ServiceWorkerControllerAdapter(mAwInit.getServiceWorkerController());
+                mServiceWorkerController = new ServiceWorkerControllerAdapter(
+                        mAwInit.getDefaultServiceWorkerController());
             }
         }
         return mServiceWorkerController;
@@ -739,12 +739,12 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     @Override
     public WebStorage getWebStorage() {
-        return mAwInit.getWebStorage();
+        return mAwInit.getDefaultWebStorage();
     }
 
     @Override
     public WebViewDatabase getWebViewDatabase(final Context context) {
-        return mAwInit.getWebViewDatabase(context);
+        return mAwInit.getDefaultWebViewDatabase(context);
     }
 
     WebViewDelegate getWebViewDelegate() {
@@ -772,7 +772,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     // Only on UI thread.
     AwBrowserContext getBrowserContextOnUiThread() {
-        return mAwInit.getBrowserContextOnUiThread();
+        return mAwInit.getDefaultBrowserContextOnUiThread();
     }
 
     WebViewChromiumAwInit getAwInit() {

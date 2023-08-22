@@ -13,7 +13,6 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.util.Collections;
 import java.util.Set;
@@ -24,8 +23,7 @@ import java.util.Set;
  * Methods in this class can be called from any thread, including threads created by
  * the client of WebView.
  */
-@Lifetime.Singleton
-@JNINamespace("android_webview")
+@Lifetime.Profile
 public class AwServiceWorkerSettings {
     // Must be maximum 20 characters, hence the abbreviation
     private static final String TAG = "AwSWSettings";

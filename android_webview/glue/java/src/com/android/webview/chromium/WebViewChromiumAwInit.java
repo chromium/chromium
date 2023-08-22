@@ -72,16 +72,16 @@ public class WebViewChromiumAwInit {
 
     // TODO(gsennton): store aw-objects instead of adapters here
     // Initialization guarded by mLock.
-    private AwBrowserContext mBrowserContext;
+    private AwBrowserContext mDefaultBrowserContext;
     private AwTracingController mTracingController;
     private SharedStatics mSharedStatics;
-    private GeolocationPermissionsAdapter mGeolocationPermissions;
-    private CookieManagerAdapter mCookieManager;
+    private GeolocationPermissionsAdapter mDefaultGeolocationPermissions;
+    private CookieManagerAdapter mDefaultCookieManager;
 
     private WebIconDatabaseAdapter mWebIconDatabase;
-    private WebStorageAdapter mWebStorage;
-    private WebViewDatabaseAdapter mWebViewDatabase;
-    private AwServiceWorkerController mServiceWorkerController;
+    private WebStorageAdapter mDefaultWebStorage;
+    private WebViewDatabaseAdapter mDefaultWebViewDatabase;
+    private AwServiceWorkerController mDefaultServiceWorkerController;
     private AwTracingController mAwTracingController;
     private VariationsSeedLoader mSeedLoader;
     private Thread mSetUpResourcesThread;
@@ -226,13 +226,14 @@ public class WebViewChromiumAwInit {
             try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped(
                          "WebViewChromiumAwInit.initThreadUnsafeSingletons")) {
                 // Initialize thread-unsafe singletons.
-                AwBrowserContext awBrowserContext = getBrowserContextOnUiThread();
-                mGeolocationPermissions = new GeolocationPermissionsAdapter(
-                        mFactory, awBrowserContext.getGeolocationPermissions());
-                mWebStorage =
-                        new WebStorageAdapter(mFactory, mBrowserContext.getQuotaManagerBridge());
+                AwBrowserContext defaultBrowserContext = getDefaultBrowserContextOnUiThread();
+                mDefaultGeolocationPermissions = new GeolocationPermissionsAdapter(
+                        mFactory, defaultBrowserContext.getGeolocationPermissions());
+                mDefaultWebStorage = new WebStorageAdapter(
+                        mFactory, defaultBrowserContext.getQuotaManagerBridge());
                 mAwTracingController = getTracingController();
-                mServiceWorkerController = awBrowserContext.getServiceWorkerController();
+                mDefaultServiceWorkerController =
+                        defaultBrowserContext.getServiceWorkerController();
                 mAwProxyController = new AwProxyController();
             }
 
@@ -408,7 +409,7 @@ public class WebViewChromiumAwInit {
     }
 
     // Only on UI thread.
-    AwBrowserContext getBrowserContextOnUiThread() {
+    AwBrowserContext getDefaultBrowserContextOnUiThread() {
         assert mInitState == INIT_FINISHED;
 
         if (BuildConfig.ENABLE_ASSERTS && !ThreadUtils.runningOnUiThread()) {
@@ -416,10 +417,10 @@ public class WebViewChromiumAwInit {
                     "getBrowserContextOnUiThread called on " + Thread.currentThread());
         }
 
-        if (mBrowserContext == null) {
-            mBrowserContext = AwBrowserContext.getDefault();
+        if (mDefaultBrowserContext == null) {
+            mDefaultBrowserContext = AwBrowserContext.getDefault();
         }
-        return mBrowserContext;
+        return mDefaultBrowserContext;
     }
 
     /**
@@ -443,31 +444,31 @@ public class WebViewChromiumAwInit {
         return mSharedStatics;
     }
 
-    public GeolocationPermissions getGeolocationPermissions() {
+    public GeolocationPermissions getDefaultGeolocationPermissions() {
         synchronized (mLock) {
-            if (mGeolocationPermissions == null) {
+            if (mDefaultGeolocationPermissions == null) {
                 ensureChromiumStartedLocked(true);
             }
         }
-        return mGeolocationPermissions;
+        return mDefaultGeolocationPermissions;
     }
 
-    public CookieManager getCookieManager() {
+    public CookieManager getDefaultCookieManager() {
         synchronized (mLock) {
-            if (mCookieManager == null) {
-                mCookieManager = new CookieManagerAdapter(new AwCookieManager());
+            if (mDefaultCookieManager == null) {
+                mDefaultCookieManager = new CookieManagerAdapter(new AwCookieManager());
             }
         }
-        return mCookieManager;
+        return mDefaultCookieManager;
     }
 
-    public AwServiceWorkerController getServiceWorkerController() {
+    public AwServiceWorkerController getDefaultServiceWorkerController() {
         synchronized (mLock) {
-            if (mServiceWorkerController == null) {
+            if (mDefaultServiceWorkerController == null) {
                 ensureChromiumStartedLocked(true);
             }
         }
-        return mServiceWorkerController;
+        return mDefaultServiceWorkerController;
     }
 
     public android.webkit.WebIconDatabase getWebIconDatabase() {
@@ -480,25 +481,25 @@ public class WebViewChromiumAwInit {
         return mWebIconDatabase;
     }
 
-    public WebStorage getWebStorage() {
+    public WebStorage getDefaultWebStorage() {
         synchronized (mLock) {
-            if (mWebStorage == null) {
+            if (mDefaultWebStorage == null) {
                 ensureChromiumStartedLocked(true);
             }
         }
-        return mWebStorage;
+        return mDefaultWebStorage;
     }
 
-    public WebViewDatabase getWebViewDatabase(final Context context) {
+    public WebViewDatabase getDefaultWebViewDatabase(final Context context) {
         synchronized (mLock) {
             ensureChromiumStartedLocked(true);
-            if (mWebViewDatabase == null) {
-                mWebViewDatabase = new WebViewDatabaseAdapter(mFactory,
+            if (mDefaultWebViewDatabase == null) {
+                mDefaultWebViewDatabase = new WebViewDatabaseAdapter(mFactory,
                         HttpAuthDatabase.newInstance(context, HTTP_AUTH_DATABASE_FILE),
-                        mBrowserContext);
+                        mDefaultBrowserContext);
             }
         }
-        return mWebViewDatabase;
+        return mDefaultWebViewDatabase;
     }
 
     // See comments in VariationsSeedLoader.java on when it's safe to call this.
