@@ -3250,9 +3250,10 @@ const char kTabGroupsContinuationAndroidName[] = "Tab Groups Continuation";
 const char kTabGroupsContinuationAndroidDescription[] =
     "Allows users to access continuation features in Tab Group on phones.";
 
-const char kTabGroupsSaveName[] = "Tab Groups Save";
+const char kTabGroupsSaveName[] = "Tab Groups Save and Sync";
 const char kTabGroupsSaveDescription[] =
-    "Enables users to explicitly save and recall tab groups.";
+    "Enable saving and recalling of tab groups. Right click a tab group to "
+    "save it. Recall groups from the bookmarks bar.";
 
 const char kTabHoverCardImageSettingsName[] = "Tab Hover Card Image Setting";
 const char kTabHoverCardImageSettingsDescription[] =
