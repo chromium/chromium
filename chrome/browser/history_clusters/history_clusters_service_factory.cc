@@ -85,9 +85,10 @@ HistoryClustersServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildService);
 }
 
-KeyedService* HistoryClustersServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HistoryClustersServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildService(context).release();
+  return BuildService(context);
 }
 
 // static
