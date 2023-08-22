@@ -50,7 +50,7 @@ class RealTimeUrlLookupServiceFactory
       const RealTimeUrlLookupServiceFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   // TODO(crbug.com/1171215): Remove this once browsertests can enable this
