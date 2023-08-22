@@ -590,6 +590,19 @@ TemplateURLService::TemplateURLVector TemplateURLService::GetTemplateURLs() {
   return result;
 }
 
+TemplateURLService::OwnedTemplateURLVector
+TemplateURLService::GetTemplateURLsForChoiceScreen() {
+  // TODO (b/282656014): Update the returned list of search engines to comply
+  // with choice screen requirements.
+  OwnedTemplateURLVector result;
+  std::vector<std::unique_ptr<TemplateURLData>> engines =
+      TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(prefs_);
+  for (const auto& engine : engines) {
+    result.push_back(std::make_unique<TemplateURL>(*engine));
+  }
+  return result;
+}
+
 void TemplateURLService::IncrementUsageCount(TemplateURL* url) {
   DCHECK(url);
   // Extension-controlled search engines are not persisted.

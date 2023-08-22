@@ -491,3 +491,22 @@ TEST_F(TemplateURLPrepopulateDataTest, FindGoogleIndex) {
   EXPECT_LT(index, urls.size());
   EXPECT_EQ(urls[index]->prepopulate_id, kGoogleId);
 }
+
+TEST_F(TemplateURLPrepopulateDataTest, GetPrepopulatedEnginesForChoiceScreen) {
+  std::vector<std::unique_ptr<TemplateURLData>> ordered_urls;
+  std::vector<std::unique_ptr<TemplateURLData>> shuffled_urls;
+  prefs_.SetInteger(country_codes::kCountryIDAtInstall, 'U' << 8 | 'S');
+  ordered_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEngines(&prefs_, nullptr);
+
+  shuffled_urls =
+      TemplateURLPrepopulateData::GetPrepopulatedEnginesForChoiceScreen(
+          &prefs_);
+
+  EXPECT_EQ(ordered_urls.size(), shuffled_urls.size());
+  for (const auto& url_data : ordered_urls) {
+    EXPECT_TRUE(base::ranges::find(shuffled_urls, url_data->prepopulate_id,
+                                   &TemplateURLData::prepopulate_id) !=
+                shuffled_urls.end());
+  }
+}
