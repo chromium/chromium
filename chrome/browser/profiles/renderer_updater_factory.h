@@ -26,7 +26,7 @@ class RendererUpdaterFactory : public ProfileKeyedServiceFactory {
 
  protected:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 
