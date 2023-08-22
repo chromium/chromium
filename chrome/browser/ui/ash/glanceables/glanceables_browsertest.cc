@@ -8,11 +8,22 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
+#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
+#include "ash/glanceables/tasks/glanceables_task_view.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/style/combobox.h"
+#include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/unified/date_tray.h"
+#include "ash/system/unified/glanceable_tray_bubble.h"
+#include "ash/system/unified/tasks_bubble_view.h"
+#include "ash/test/ash_test_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,12 +43,59 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 constexpr char kTestUserName[] = "test@test.test";
 constexpr char kTestUserGaiaId[] = "123456";
+
+constexpr char kDueDate[] = "2 Aug 2025 10:00 GMT";
+
+views::Label* FindViewWithLabel(views::View* search_root,
+                                const std::u16string& label) {
+  if (views::Label* const label_view =
+          views::AsViewClass<views::Label>(search_root);
+      label_view && label_view->GetText() == label) {
+    return label_view;
+  }
+
+  // Keep searching in children views.
+  for (views::View* const child : search_root->children()) {
+    if (views::Label* const found = FindViewWithLabel(child, label)) {
+      return found;
+    }
+  }
+
+  return nullptr;
+}
+
+views::Label* FindViewWithLabelFromWindow(aura::Window* search_root,
+                                          const std::u16string& label) {
+  if (views::Widget* const root_widget =
+          views::Widget::GetWidgetForNativeWindow(search_root)) {
+    return FindViewWithLabel(root_widget->GetRootView(), label);
+  }
+
+  for (aura::Window* const child : search_root->children()) {
+    if (auto* found = FindViewWithLabelFromWindow(child, label)) {
+      return found;
+    }
+  }
+
+  return nullptr;
+}
+
+views::Label* FindMenuItemLabelWithString(const std::u16string& label) {
+  return FindViewWithLabelFromWindow(
+      Shell::GetContainer(Shell::GetPrimaryRootWindow(),
+                          kShellWindowId_MenuContainer),
+      label);
+}
 
 }  // namespace
 
@@ -49,16 +107,16 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
 
     // The test harness adds --no-first-run. Remove it so glanceables show up.
-    command_line->RemoveSwitch(switches::kNoFirstRun);
+    command_line->RemoveSwitch(::switches::kNoFirstRun);
 
     // Don't open a browser window, because doing so would hide glanceables.
     // Note that InProcessBrowserTest::browser() will be null.
-    command_line->AppendSwitch(switches::kNoStartupWindow);
+    command_line->AppendSwitch(::switches::kNoStartupWindow);
 
-    command_line->AppendSwitch(ash::switches::kLoginManager);
-    command_line->AppendSwitchASCII(ash::switches::kLoginProfile,
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitchASCII(switches::kLoginProfile,
                                     TestingProfile::kTestUserProfileDir);
-    command_line->AppendSwitch(ash::switches::kAllowFailedPolicyFetchForTest);
+    command_line->AppendSwitch(switches::kAllowFailedPolicyFetchForTest);
   }
 
   void CreateAndStartUserSession() {
@@ -69,7 +127,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
 
     profile_ = &profiles::testing::CreateProfileSync(
         g_browser_process->profile_manager(),
-        ash::ProfileHelper::GetProfilePathByUserIdHash(
+        ProfileHelper::GetProfilePathByUserIdHash(
             user_manager::UserManager::Get()
                 ->FindUser(account_id)
                 ->username_hash()));
@@ -78,8 +136,8 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     session_manager->SessionStarted();
   }
 
-  ash::GlanceablesController* glanceables_controller() {
-    return ash::Shell::Get()->glanceables_controller();
+  GlanceablesController* glanceables_controller() {
+    return Shell::Get()->glanceables_controller();
   }
 
   signin::IdentityManager* identity_manager() {
@@ -87,7 +145,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList features_{ash::features::kGlanceables};
+  base::test::ScopedFeatureList features_{features::kGlanceables};
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 };
 
@@ -117,12 +175,90 @@ IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
 
 class GlanceablesV2BrowserTest : public InProcessBrowserTest {
  public:
-  ash::GlanceablesV2Controller* glanceables_controller() {
-    return ash::Shell::Get()->glanceables_v2_controller();
+  GlanceablesV2Controller* glanceables_controller() {
+    return Shell::Get()->glanceables_v2_controller();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
+    base::Time date;
+    ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
+    fake_glanceables_tasks_client_ =
+        std::make_unique<FakeGlanceablesTasksClient>(date);
+    Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
+        account_id_,
+        GlanceablesV2Controller::ClientsRegistration{
+            .classroom_client = glanceables_controller()->GetClassroomClient(),
+            .tasks_client = fake_glanceables_tasks_client_.get()});
+    Shell::Get()->glanceables_v2_controller()->OnActiveUserSessionChanged(
+        account_id_);
+
+    date_tray_ = StatusAreaWidgetTestHelper::GetStatusAreaWidget()->date_tray();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        Shell::GetPrimaryRootWindow());
+  }
+
+  DateTray* GetDateTray() const { return date_tray_; }
+
+  ui::test::EventGenerator* GetEventGenerator() const {
+    return event_generator_.get();
+  }
+
+  GlanceableTrayBubble* GetGlanceableTrayBubble() const {
+    return date_tray_->bubble_.get();
+  }
+
+  FakeGlanceablesTasksClient* fake_glanceables_tasks_client() const {
+    return fake_glanceables_tasks_client_.get();
+  }
+
+  TasksBubbleView* GetTasksView() const {
+    return GetGlanceableTrayBubble()->GetTasksView();
+  }
+
+  Combobox* GetTasksComboBoxView() const {
+    return views::AsViewClass<Combobox>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
+  }
+
+  views::View* GetTasksItemContainerView() const {
+    return views::AsViewClass<views::View>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleListContainer)));
+  }
+
+  views::LabelButton* GetTaskListFooterSeeAllButton() const {
+    return views::AsViewClass<views::LabelButton>(GetTasksView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+  }
+
+  std::vector<std::string> GetCurrentTaskListItemTitles() const {
+    std::vector<std::string> current_items;
+    for (views::View* child : GetTasksItemContainerView()->children()) {
+      if (views::View* task_item = views::AsViewClass<views::View>(child)) {
+        current_items.push_back(
+            base::UTF16ToUTF8(views::AsViewClass<views::Label>(
+                                  task_item->GetViewByID(base::to_underlying(
+                                      GlanceablesViewId::kTaskItemTitleLabel)))
+                                  ->GetText()));
+      }
+    }
+    return current_items;
+  }
+
+  GlanceablesTaskView* GetTaskItemView(int item_index) {
+    return views::AsViewClass<GlanceablesTaskView>(
+        GetTasksItemContainerView()->children()[item_index]);
   }
 
  private:
-  base::test::ScopedFeatureList features_{ash::features::kGlanceablesV2};
+  raw_ptr<DateTray, ExperimentalAsh> date_tray_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+  AccountId account_id_ =
+      AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
+  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+
+  base::test::ScopedFeatureList features_{features::kGlanceablesV2};
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpensClassroomUrlInBrowser) {
@@ -135,3 +271,125 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpensClassroomUrlInBrowser) {
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       classroom_url);
 }
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ViewAndSwitchTaskLists) {
+  ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  // Check that task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  // Click on the combo box to show the task lists.
+  GetEventGenerator()->MoveMouseTo(
+      GetTasksComboBoxView()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  views::Label* second_menu_item_label =
+      FindMenuItemLabelWithString(u"Task List 2 Title");
+
+  // Click on the second menu item label to switch to the second task list.
+  ASSERT_TRUE(second_menu_item_label);
+  GetEventGenerator()->MoveMouseTo(
+      second_menu_item_label->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Make sure that task list items from the second list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>({"Task List 2 Item 1 Title",
+                                      "Task List 2 Item 2 Title",
+                                      "Task List 2 Item 3 Title"}));
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllTasksButton) {
+  ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  // Check that task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  // Click the "See All" button in the tasks glanceable footer, and check that
+  // the correct URL is opened.
+  GetEventGenerator()->MoveMouseTo(
+      GetTaskListFooterSeeAllButton()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, CheckOffTaskItems) {
+  ASSERT_TRUE(glanceables_controller()->GetTasksClient());
+  EXPECT_FALSE(GetGlanceableTrayBubble());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetTasksView());
+
+  // Check that the tasks glanceable is completely shown on the primary screen.
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetTasksView()->GetBoundsInScreen()));
+
+  // Check that task list items from the first list are shown.
+  EXPECT_EQ(GetCurrentTaskListItemTitles(),
+            std::vector<std::string>(
+                {"Task List 1 Item 1 Title", "Task List 1 Item 2 Title"}));
+
+  EXPECT_FALSE(GetTaskItemView(/*item_index=*/0)->GetCompletedForTest());
+  EXPECT_FALSE(GetTaskItemView(/*item_index=*/1)->GetCompletedForTest());
+
+  // Click to check off the first task item and check that it has been marked
+  // complete.
+  GetEventGenerator()->MoveMouseTo(GetTaskItemView(/*item_index=*/0)
+                                       ->GetButtonForTest()
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(GetTaskItemView(/*item_index=*/0)->GetCompletedForTest());
+  EXPECT_FALSE(GetTaskItemView(/*item_index=*/1)->GetCompletedForTest());
+
+  // Click to check off the second task item and check that it has been marked
+  // complete.
+  GetEventGenerator()->MoveMouseTo(GetTaskItemView(/*item_index=*/1)
+                                       ->GetButtonForTest()
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(GetTaskItemView(/*item_index=*/0)->GetCompletedForTest());
+  EXPECT_TRUE(GetTaskItemView(/*item_index=*/1)->GetCompletedForTest());
+}
+
+}  // namespace ash
