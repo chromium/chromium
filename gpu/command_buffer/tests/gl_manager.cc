@@ -64,11 +64,11 @@ void InitializeGpuPreferencesForTestingFromCommandLine(
       command_line.HasSwitch(switches::kEnableGPUServiceLoggingGPU);
 }
 
-class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
+class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
  public:
-  GpuMemoryBufferImpl(base::RefCountedBytes* bytes,
-                      const gfx::Size& size,
-                      gfx::BufferFormat format)
+  GpuMemoryBufferImplTest(base::RefCountedBytes* bytes,
+                          const gfx::Size& size,
+                          gfx::BufferFormat format)
       : mapped_(false), bytes_(bytes), size_(size), format_(format) {}
 
   // Overridden from gfx::GpuMemoryBuffer:
@@ -248,7 +248,7 @@ std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
   std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
   auto bytes = base::RefCountedBytes::TakeVector(&data);
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
-      new GpuMemoryBufferImpl(bytes.get(), size, format));
+      new GpuMemoryBufferImplTest(bytes.get(), size, format));
 }
 
 void GLManager::Initialize(const GLManager::Options& options) {
