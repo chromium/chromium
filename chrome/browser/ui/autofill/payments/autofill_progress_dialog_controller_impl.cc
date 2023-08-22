@@ -79,6 +79,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingTitle() const {
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_FIDO_AUTHENTICATION_PROMPT_TITLE);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
@@ -92,6 +93,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationTitle()
   switch (autofill_progress_dialog_type_) {
     case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_DIALOG_TITLE);
     case AutofillProgressDialogType::kUnspecified:
@@ -106,6 +108,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
     case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
       return l10n_util::GetStringUTF16(IDS_CANCEL);
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
     case AutofillProgressDialogType::kUnspecified:
@@ -121,6 +124,9 @@ std::u16string AutofillProgressDialogControllerImpl::GetLoadingMessage() const {
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_PROGRESS_BAR_MESSAGE);
+    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_MASKED_SERVER_CARD_RISK_BASED_UNMASK_PROGRESS_BAR_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:
       NOTREACHED();
       return std::u16string();
@@ -133,6 +139,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetConfirmationMessage()
     case AutofillProgressDialogType::kAndroidFIDOProgressDialog:
       return std::u16string();
     case AutofillProgressDialogType::kVirtualCardUnmaskProgressDialog:
+    case AutofillProgressDialogType::kServerCardUnmaskProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CONFIRMATION_MESSAGE);
     case AutofillProgressDialogType::kUnspecified:

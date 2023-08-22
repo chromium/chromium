@@ -912,6 +912,11 @@ class AutofillMetrics {
   static void LogProgressDialogShown(
       AutofillProgressDialogType autofill_progress_dialog_type);
 
+  // Returns a string representation of the given AutofillProgressDialogType for
+  // constructing subhistogram paths.
+  static std::string_view GetDialogTypeStringForLogging(
+      AutofillProgressDialogType autofill_progress_dialog_type);
+
   // Should be called when credit card scan is finished. |duration| should be
   // the time elapsed between launching the credit card scanner and getting back
   // the result. |completed| should be true if a credit card was scanned, false
