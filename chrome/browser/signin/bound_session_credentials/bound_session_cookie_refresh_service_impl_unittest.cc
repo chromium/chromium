@@ -38,7 +38,7 @@ constexpr char kWrappedKey[] = "wrapped_key";
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
   explicit FakeBoundSessionCookieController(
-      bound_session_credentials::RegistrationParams registration_params,
+      const bound_session_credentials::RegistrationParams& registration_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate)
       : BoundSessionCookieController(registration_params,
@@ -121,7 +121,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   ~BoundSessionCookieRefreshServiceImplTest() override = default;
 
   std::unique_ptr<BoundSessionCookieController> GetBoundSessionCookieController(
-      bound_session_credentials::RegistrationParams registration_params,
+      const bound_session_credentials::RegistrationParams& registration_params,
       const base::flat_set<std::string>& cookie_names,
       BoundSessionCookieController::Delegate* delegate) {
     std::unique_ptr<FakeBoundSessionCookieController> controller =

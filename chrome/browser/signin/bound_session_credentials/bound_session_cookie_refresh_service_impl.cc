@@ -203,7 +203,7 @@ void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
 
 std::unique_ptr<BoundSessionCookieController>
 BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
-    bound_session_credentials::RegistrationParams registration_params,
+    const bound_session_credentials::RegistrationParams& registration_params,
     const base::flat_set<std::string>& cookie_names) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(

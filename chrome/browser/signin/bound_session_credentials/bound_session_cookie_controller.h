@@ -44,7 +44,7 @@ class BoundSessionCookieController {
   };
 
   BoundSessionCookieController(
-      bound_session_credentials::RegistrationParams registration_params,
+      const bound_session_credentials::RegistrationParams& registration_params,
       const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
