@@ -68,12 +68,9 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
     EXPECT_FALSE(transformer_.HasTransformedFrameCallback());
   }
 
-  RTCEncodedAudioUnderlyingSink* CreateSink(
-      ScriptState* script_state,
-      webrtc::TransformableFrameInterface::Direction expected_direction =
-          webrtc::TransformableFrameInterface::Direction::kSender) {
+  RTCEncodedAudioUnderlyingSink* CreateSink(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-        script_state, transformer_.GetBroker(), expected_direction);
+        script_state, transformer_.GetBroker());
   }
 
   RTCEncodedAudioStreamTransformer* GetTransformer() { return &transformer_; }
@@ -155,29 +152,27 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDataFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
-TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInvalidDirectionFails) {
+TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteInDifferentDirectionIsAllowed) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* sink = CreateSink(
-      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  auto* sink = CreateSink(script_state);
 
-  // Write an encoded chunk with direction set to Receiver should fail as it
-  // doesn't match the expected direction of our sink.
+  // Write an encoded chunk with direction set to Receiver should work even
+  // though it doesn't match the direction of sink creation.
   DummyExceptionStateForTesting dummy_exception_state;
   sink->write(script_state,
               CreateEncodedAudioFrameChunk(
                   script_state,
                   webrtc::TransformableFrameInterface::Direction::kReceiver),
               /*controller=*/nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  EXPECT_FALSE(dummy_exception_state.HadException());
 }
 
 TEST_F(RTCEncodedAudioUnderlyingSinkTest,
        WriteLargeButNotTooLargeFrameSucceeds) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* sink = CreateSink(
-      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  auto* sink = CreateSink(script_state);
   RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(script_state);
   frame->setData(
       DOMArrayBuffer::Create(/*num_elements=*/1000, /*element_byte_size=*/1));
@@ -196,8 +191,7 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest,
 TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteTooLargeFrameFails) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
-  auto* sink = CreateSink(
-      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+  auto* sink = CreateSink(script_state);
   RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(script_state);
   // Set too much data on the frame.
   frame->setData(

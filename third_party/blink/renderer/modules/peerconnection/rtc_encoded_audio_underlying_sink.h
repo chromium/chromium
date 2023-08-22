@@ -21,8 +21,7 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  public:
   RTCEncodedAudioUnderlyingSink(
       ScriptState*,
-      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>,
-      webrtc::TransformableFrameInterface::Direction);
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
 
   // UnderlyingSinkBase
   ScriptPromise start(ScriptState*,
@@ -42,7 +41,6 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
  private:
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       transformer_broker_;
-  webrtc::TransformableFrameInterface::Direction expected_direction_;
   THREAD_CHECKER(thread_checker_);
 };
 
