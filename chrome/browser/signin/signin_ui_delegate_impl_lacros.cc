@@ -46,6 +46,9 @@ GetAddAccountSourceFromAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
       return account_manager::AccountManagerFacade::AccountAdditionSource::
           kChromeMenuTurnOnSync;
+    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+      return account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeSigninPromoAddAccount;
     default:
       NOTREACHED() << "Add account is requested from an unknown access point "
                    << static_cast<int>(access_point);

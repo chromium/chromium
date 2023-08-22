@@ -52,6 +52,11 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint);
 
+// This function is used to sign-in the user into Chrome without offering sync.
+// This function does nothing if the user is already signed in to Chrome.
+void ShowSigninPromptFromPromo(Profile* profile,
+                               signin_metrics::AccessPoint access_point);
+
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.
 // * If |account| is empty, then it presents the Chrome sign-in page.

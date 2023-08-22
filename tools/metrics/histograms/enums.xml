@@ -1299,6 +1299,7 @@ Unknown properties are collapsed to zero. -->
   <int value="17"
       label="Launched from ChromeOS Projector App for re-authentication"/>
   <int value="18" label="Turn on sync menu item in Chrome app menu"/>
+  <int value="19" label="Account addition flow triggered from a Sign-in promo"/>
 </enum>
 
 <enum name="AccountManagerAccountUpsertionResultStatus">

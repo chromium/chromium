@@ -26,6 +26,7 @@ enum class ReauthAccessPoint;
 }
 
 class SigninViewController;
+class Profile;
 
 // Responsible for triggering authentication flows related to the passwords
 // account storage. Used only by desktop.
@@ -37,6 +38,7 @@ class AccountStorageAuthHelper {
   // because the controller is per window, while this helper is per tab. It
   // may return null.
   AccountStorageAuthHelper(
+      Profile* profile,
       signin::IdentityManager* identity_manager,
       password_manager::PasswordFeatureManager* password_feature_manager,
       base::RepeatingCallback<SigninViewController*()>
@@ -56,11 +58,9 @@ class AccountStorageAuthHelper {
           void(password_manager::PasswordManagerClient::ReauthSucceeded)>
           reauth_callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Redirects the user to a sign-in in a new tab. |access_point| is used for
-  // metrics recording and represents where the sign-in was triggered.
+  // Shows a sign-in prompt to the user. |access_point| is used for metrics
+  // recording and represents where the sign-in was triggered.
   void TriggerSignIn(signin_metrics::AccessPoint access_point);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:
   void OnOptInReauthCompleted(
@@ -68,6 +68,8 @@ class AccountStorageAuthHelper {
           void(password_manager::PasswordManagerClient::ReauthSucceeded)>
           reauth_callback,
       signin::ReauthResult result);
+
+  const raw_ptr<Profile> profile_;
 
   const raw_ptr<signin::IdentityManager> identity_manager_;
 

@@ -656,7 +656,7 @@ void ChromePasswordManagerClient::TriggerReauthForPrimaryAccount(
 
 void ChromePasswordManagerClient::TriggerSignIn(
     signin_metrics::AccessPoint access_point) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   account_storage_auth_helper_.TriggerSignIn(access_point);
 #endif
 }
@@ -1332,6 +1332,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
       account_storage_auth_helper_(
+          profile_,
           IdentityManagerFactory::GetForProfile(profile_),
           &password_feature_manager_,
           base::BindRepeating(

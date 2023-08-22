@@ -29,6 +29,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -573,6 +574,31 @@ TEST_F(SigninUiUtilTest, ShowExtensionSigninPrompt_AsLockedProfile) {
                             /*email_hint=*/std::string());
   EXPECT_EQ(0, tab_strip->count());
 }
+
+TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromo) {
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  ShowSigninPromptFromPromo(profile, access_point_);
+  EXPECT_EQ(1, tab_strip->count());
+
+  content::WebContents* tab = tab_strip->GetWebContentsAt(0);
+  ASSERT_TRUE(tab);
+  EXPECT_TRUE(
+      base::StartsWith(tab->GetVisibleURL().spec(),
+                       GaiaUrls::GetInstance()->add_account_url().spec(),
+                       base::CompareCase::INSENSITIVE_ASCII));
+}
+
+TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(0, tab_strip->count());
+  ShowSigninPromptFromPromo(profile, access_point_);
+  EXPECT_EQ(0, tab_strip->count());
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -746,6 +772,25 @@ TEST_F(MirrorSigninUiUtilTest,
   entry->LockForceSigninProfile(true);
 
   ShowExtensionSigninPrompt(profile(), /*enable_sync=*/true, kMainEmail);
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptFromPromo) {
+  signin_metrics::AccessPoint kAccessPoint =
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN;
+  ExpectAddAccount(
+      /*enable_sync=*/false, kAccessPoint,
+      signin_metrics::PromoAction::
+          PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
+  ShowSigninPromptFromPromo(profile(), kAccessPoint);
+}
+
+TEST_F(MirrorSigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
+  signin::MakePrimaryAccountAvailable(
+      IdentityManagerFactory::GetForProfile(profile()), "foo@example.com",
+      signin::ConsentLevel::kSignin);
+  ShowSigninPromptFromPromo(
+      profile(),
+      signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

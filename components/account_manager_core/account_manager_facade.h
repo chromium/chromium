@@ -98,8 +98,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kChromeOSProjectorAppReauth = 17,
     // Chrome Menu -> Turn on Sync
     kChromeMenuTurnOnSync = 18,
+    // Sign-in promo with a new account.
+    kChromeSigninPromoAddAccount = 19,
 
-    kMaxValue = kChromeMenuTurnOnSync
+    kMaxValue = kChromeSigninPromoAddAccount
   };
 
   AccountManagerFacade();
