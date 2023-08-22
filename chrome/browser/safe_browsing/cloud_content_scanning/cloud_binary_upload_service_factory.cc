@@ -38,11 +38,12 @@ CloudBinaryUploadServiceFactory::CloudBinaryUploadServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-KeyedService* CloudBinaryUploadServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CloudBinaryUploadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // TODO(b/226679912): Add logic to select service based on analysis settings.
   Profile* profile = Profile::FromBrowserContext(context);
-  return new CloudBinaryUploadService(profile);
+  return std::make_unique<CloudBinaryUploadService>(profile);
 }
 
 }  // namespace safe_browsing
