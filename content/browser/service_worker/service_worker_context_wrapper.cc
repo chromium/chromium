@@ -300,9 +300,11 @@ void ServiceWorkerContextWrapper::Shutdown() {
 
   ClearRunningServiceWorkers();
   storage_partition_ = nullptr;
-  process_manager_->Shutdown();
   storage_control_.reset();
   context_core_.reset();
+  // Shutdown the `process_manager_` at the end so that the steps above can have
+  // a valid browser context pointer through `process_manager_`.
+  process_manager_->Shutdown();
 }
 
 void ServiceWorkerContextWrapper::DeleteAndStartOver() {
