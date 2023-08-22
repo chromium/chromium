@@ -321,9 +321,8 @@ TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
 
   EXPECT_CALL(progress_callback,
               Run(Field(&ProgressStatus::state, State::kPaused)));
-  // // TODO(b/295887686): Uncomment when fixed.
-  //   EXPECT_CALL(progress_callback,
-  //               Run(Field(&ProgressStatus::state, State::kInProgress)));
+  EXPECT_CALL(progress_callback,
+              Run(Field(&ProgressStatus::state, State::kInProgress)));
   EXPECT_CALL(complete_callback,
               Run(Field(&ProgressStatus::state, State::kSuccess)))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
@@ -353,6 +352,9 @@ TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
                 base::DoNothing(), task_id, std::move(warning_files),
                 policy::DlpFileDestination(), policy::dlp::FileAction::kMove);
 
+            auto* move_task = task->GetMoveTaskForTesting();
+            ASSERT_TRUE(move_task);
+            EXPECT_TRUE(move_task->progress().IsPaused());
             EXPECT_TRUE(task->progress().IsPaused());
             // Resume.
             ResumeParams params;
@@ -362,8 +364,8 @@ TEST_F(RestoreToDestinationIOTaskWithDLPTest, PauseResume) {
             // start the transfer and set the correct state.
             std::move(result_callback).Run({});
 
-            // TODO(b/295887686): Uncomment when fixed.
-            // EXPECT_FALSE(task->progress().IsPaused());
+            EXPECT_FALSE(move_task->progress().IsPaused());
+            EXPECT_FALSE(task->progress().IsPaused());
           }));
 
   task->Execute(progress_callback.Get(), complete_callback.Get());

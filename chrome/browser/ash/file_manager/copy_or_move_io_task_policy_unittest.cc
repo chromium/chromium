@@ -1681,6 +1681,13 @@ TEST_F(CopyOrMoveIOTaskWithDLPTest, WarnMultipleFiles) {
                 Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
                 Property(&ProgressStatus::GetDestinationFolder, dest),
                 Field(&ProgressStatus::state, State::kInProgress),
+                Field(&ProgressStatus::bytes_transferred, 0))));
+  EXPECT_CALL(
+      progress_callback,
+      Run(AllOf(Field(&ProgressStatus::type, OperationType::kCopy),
+                Field(&ProgressStatus::sources, EntryStatusUrls(source_urls)),
+                Property(&ProgressStatus::GetDestinationFolder, dest),
+                Field(&ProgressStatus::state, State::kInProgress),
                 Field(&ProgressStatus::bytes_transferred, 1 * kTestFileSize))));
   // Task is completed.
   EXPECT_CALL(

@@ -458,6 +458,11 @@ void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
   }
 
   if (settings_.empty() || report_only_scans_) {
+    // Re-enter state progress if needed.
+    if (progress_->state != State::kInProgress) {
+      progress_->state = State::kInProgress;
+      progress_callback_.Run(*progress_);
+    }
     // Don't do any scans. It's either dlp-only restrictions (if `settings_` is
     // empty), or the scans will performed after the copy/move is completed
     // (report_only_scans_ is true).
