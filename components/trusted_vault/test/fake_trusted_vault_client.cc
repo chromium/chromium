@@ -1,0 +1,181 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/trusted_vault/test/fake_trusted_vault_client.h"
+
+#include <list>
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/containers/contains.h"
+#include "base/functional/callback.h"
+#include "base/observer_list.h"
+#include "components/signin/public/identity_manager/account_info.h"
+
+namespace trusted_vault {
+
+FakeTrustedVaultClient::CachedKeysPerUser::CachedKeysPerUser() = default;
+FakeTrustedVaultClient::CachedKeysPerUser::~CachedKeysPerUser() = default;
+
+FakeTrustedVaultClient::FakeServer::FakeServer() = default;
+FakeTrustedVaultClient::FakeServer::~FakeServer() = default;
+
+void FakeTrustedVaultClient::FakeServer::StoreKeysOnServer(
+    const std::string& gaia_id,
+    const std::vector<std::vector<uint8_t>>& keys) {
+  gaia_id_to_keys_[gaia_id] = keys;
+}
+
+void FakeTrustedVaultClient::FakeServer::MimicKeyRetrievalByUser(
+    const std::string& gaia_id,
+    TrustedVaultClient* client) {
+  DCHECK(client);
+  DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
+      << "StoreKeysOnServer() should have been called for " << gaia_id;
+
+  client->StoreKeys(gaia_id, gaia_id_to_keys_[gaia_id],
+                    /*last_key_version=*/
+                    static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1);
+}
+
+std::vector<std::vector<uint8_t>>
+FakeTrustedVaultClient::FakeServer::RequestRotatedKeysFromServer(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& key_known_by_client) {
+  auto it = gaia_id_to_keys_.find(gaia_id);
+  if (it == gaia_id_to_keys_.end()) {
+    return {};
+  }
+
+  const std::vector<std::vector<uint8_t>>& latest_keys = it->second;
+  if (!base::Contains(latest_keys, key_known_by_client)) {
+    // |key_known_by_client| is invalid or too old: cannot be used to follow
+    // key rotation.
+    return {};
+  }
+
+  return latest_keys;
+}
+
+FakeTrustedVaultClient::FakeTrustedVaultClient() = default;
+FakeTrustedVaultClient::~FakeTrustedVaultClient() = default;
+
+bool FakeTrustedVaultClient::CompleteFetchKeysRequest() {
+  if (pending_responses_.empty()) {
+    return false;
+  }
+
+  base::OnceClosure cb = std::move(pending_responses_.front());
+  pending_responses_.pop_front();
+  std::move(cb).Run();
+  return true;
+}
+
+void FakeTrustedVaultClient::SetIsRecoverabilityDegraded(
+    bool is_recoverability_degraded) {
+  is_recoverability_degraded_ = is_recoverability_degraded;
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultRecoverabilityChanged();
+  }
+}
+
+void FakeTrustedVaultClient::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeTrustedVaultClient::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+void FakeTrustedVaultClient::FetchKeys(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+        callback) {
+  const std::string& gaia_id = account_info.gaia;
+
+  ++fetch_count_;
+
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
+
+  // If there are no keys cached, the only way to bootstrap the client is by
+  // going through a retrieval flow, see MimicKeyRetrievalByUser().
+  if (cached_keys.keys.empty()) {
+    pending_responses_.push_back(base::BindOnce(
+        std::move(callback), std::vector<std::vector<uint8_t>>()));
+    return;
+  }
+
+  // If the locally cached keys are not marked as stale, return them directly.
+  if (!cached_keys.marked_as_stale) {
+    pending_responses_.push_back(
+        base::BindOnce(std::move(callback), cached_keys.keys));
+    return;
+  }
+
+  // Fetch keys from the server and cache them.
+  cached_keys.keys =
+      server_.RequestRotatedKeysFromServer(gaia_id, cached_keys.keys.back());
+  cached_keys.marked_as_stale = false;
+
+  // Return the newly-cached keys.
+  pending_responses_.push_back(
+      base::BindOnce(std::move(callback), cached_keys.keys));
+}
+
+void FakeTrustedVaultClient::StoreKeys(
+    const std::string& gaia_id,
+    const std::vector<std::vector<uint8_t>>& keys,
+    int last_key_version) {
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
+  cached_keys.keys = keys;
+  cached_keys.marked_as_stale = false;
+  for (Observer& observer : observer_list_) {
+    observer.OnTrustedVaultKeysChanged();
+  }
+}
+
+void FakeTrustedVaultClient::MarkLocalKeysAsStale(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(bool)> callback) {
+  const std::string& gaia_id = account_info.gaia;
+
+  ++keys_marked_as_stale_count_;
+
+  CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
+
+  if (cached_keys.keys.empty() || cached_keys.marked_as_stale) {
+    // Nothing changed so report `false`.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // The cache is stale and should be invalidated. Following calls to
+  // FetchKeys() will read from the server.
+  cached_keys.marked_as_stale = true;
+  std::move(callback).Run(true);
+}
+
+void FakeTrustedVaultClient::GetIsRecoverabilityDegraded(
+    const CoreAccountInfo& account_info,
+    base::OnceCallback<void(bool)> callback) {
+  ++get_is_recoverablity_degraded_call_count_;
+  std::move(callback).Run(is_recoverability_degraded_);
+}
+
+void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint,
+    base::OnceClosure callback) {
+  NOTIMPLEMENTED();
+}
+
+void FakeTrustedVaultClient::ClearLocalDataForAccount(
+    const CoreAccountInfo& account_info) {
+  NOTIMPLEMENTED();
+}
+
+}  // namespace trusted_vault

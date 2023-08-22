@@ -98,21 +98,33 @@ if (!is_android) {
       "//testing/gtest",
     ]
   }
+}
 
-  static_library("test_support") {
-    testonly = true
-    sources = [
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test/fake_trusted_vault_client.cc",
+    "test/fake_trusted_vault_client.h",
+  ]
+
+  deps = [ "//components/signin/public/identity_manager" ]
+
+  public_deps = [
+    ":trusted_vault",
+    "//base",
+  ]
+
+  if (!is_android) {
+    sources += [
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
     ]
 
-    public_deps = [
-      "//base",
+    public_deps += [
       "//components/trusted_vault/proto",
       "//net:test_support",
       "//url",
     ]
-
-    deps = [ ":trusted_vault" ]
   }
 }

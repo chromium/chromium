@@ -14,6 +14,8 @@
 
 namespace syncer {
 
+// TODO(crbug.com/1434667): replace usages with
+// trusted_vault::FakeTrustedVaultClient and delete this mock.
 class MockTrustedVaultClient : public trusted_vault::TrustedVaultClient {
  public:
   MockTrustedVaultClient();

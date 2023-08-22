@@ -4,14 +4,10 @@
 
 #include "components/sync/service/sync_service_crypto.h"
 
-#include <list>
-#include <map>
 #include <utility>
 
 #include "base/base64.h"
-#include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
+#include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/os_crypt/sync/os_crypt.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
@@ -21,7 +17,7 @@
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_status.h"
 #include "components/sync/test/mock_sync_engine.h"
-#include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,226 +132,19 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
   MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
 };
 
-// Object representing a server that contains the authoritative trusted vault
-// keys, and TestTrustedVaultClient reads from.
-class TestTrustedVaultServer {
- public:
-  TestTrustedVaultServer() = default;
-  ~TestTrustedVaultServer() = default;
-
-  void StoreKeysOnServer(const std::string& gaia_id,
-                         const std::vector<std::vector<uint8_t>>& keys) {
-    gaia_id_to_keys_[gaia_id] = keys;
-  }
-
-  // Mimics a user going through a key-retrieval flow (e.g. reauth) such that
-  // keys are fetched from the server and cached in |client|.
-  void MimicKeyRetrievalByUser(const std::string& gaia_id,
-                               trusted_vault::TrustedVaultClient* client) {
-    DCHECK(client);
-    DCHECK_NE(0U, gaia_id_to_keys_.count(gaia_id))
-        << "StoreKeysOnServer() should have been called for " << gaia_id;
-
-    client->StoreKeys(gaia_id, gaia_id_to_keys_[gaia_id],
-                      /*last_key_version=*/
-                      static_cast<int>(gaia_id_to_keys_[gaia_id].size()) - 1);
-  }
-
-  // Mimics the server RPC endpoint that allows key rotation.
-  std::vector<std::vector<uint8_t>> RequestRotatedKeysFromServer(
-      const std::string& gaia_id,
-      const std::vector<uint8_t>& key_known_by_client) const {
-    auto it = gaia_id_to_keys_.find(gaia_id);
-    if (it == gaia_id_to_keys_.end()) {
-      return {};
-    }
-
-    const std::vector<std::vector<uint8_t>>& latest_keys = it->second;
-    if (!base::Contains(latest_keys, key_known_by_client)) {
-      // |key_known_by_client| is invalid or too old: cannot be used to follow
-      // key rotation.
-      return {};
-    }
-
-    return latest_keys;
-  }
-
- private:
-  std::map<std::string, std::vector<std::vector<uint8_t>>> gaia_id_to_keys_;
-};
-
-// Simple in-memory implementation of TrustedVaultClient.
-class TestTrustedVaultClient : public trusted_vault::TrustedVaultClient {
- public:
-  explicit TestTrustedVaultClient(const TestTrustedVaultServer* server)
-      : server_(server) {}
-
-  ~TestTrustedVaultClient() override = default;
-
-  // Exposes the total number of calls to FetchKeys().
-  int fetch_count() const { return fetch_count_; }
-
-  // Exposes the total number of calls to MarkLocalKeysAsStale().
-  bool keys_marked_as_stale_count() const {
-    return keys_marked_as_stale_count_;
-  }
-
-  // Exposes the total number of calls to the server's RequestKeysFromServer().
-  int server_request_count() const { return server_request_count_; }
-
-  // Exposes the total number of calls to GetIsRecoverabilityDegraded().
-  int get_is_recoverablity_degraded_call_count() const {
-    return get_is_recoverablity_degraded_call_count_;
-  }
-
-  // Mimics the completion of the next (FIFO) FetchKeys() request.
-  bool CompleteFetchKeysRequest() {
-    if (pending_responses_.empty()) {
-      return false;
-    }
-
-    base::OnceClosure cb = std::move(pending_responses_.front());
-    pending_responses_.pop_front();
-    std::move(cb).Run();
-    return true;
-  }
-
-  void SetIsRecoverabilityDegraded(bool is_recoverability_degraded) {
-    is_recoverability_degraded_ = is_recoverability_degraded;
-    for (Observer& observer : observer_list_) {
-      observer.OnTrustedVaultRecoverabilityChanged();
-    }
-  }
-
-  // TrustedVaultClient implementation.
-  void AddObserver(Observer* observer) override {
-    observer_list_.AddObserver(observer);
-  }
-
-  void RemoveObserver(Observer* observer) override {
-    observer_list_.RemoveObserver(observer);
-  }
-
-  void FetchKeys(
-      const CoreAccountInfo& account_info,
-      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
-      override {
-    const std::string& gaia_id = account_info.gaia;
-
-    ++fetch_count_;
-
-    CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
-
-    // If there are no keys cached, the only way to bootstrap the client is by
-    // going through a retrieval flow, see MimicKeyRetrievalByUser().
-    if (cached_keys.keys.empty()) {
-      pending_responses_.push_back(
-          base::BindOnce(std::move(cb), std::vector<std::vector<uint8_t>>()));
-      return;
-    }
-
-    // If the locally cached keys are not marked as stale, return them directly.
-    if (!cached_keys.marked_as_stale) {
-      pending_responses_.push_back(
-          base::BindOnce(std::move(cb), cached_keys.keys));
-      return;
-    }
-
-    // Fetch keys from the server and cache them.
-    cached_keys.keys =
-        server_->RequestRotatedKeysFromServer(gaia_id, cached_keys.keys.back());
-    cached_keys.marked_as_stale = false;
-
-    // Return the newly-cached keys.
-    pending_responses_.push_back(
-        base::BindOnce(std::move(cb), cached_keys.keys));
-  }
-
-  // Store keys in the client-side cache, usually retrieved from the server as
-  // part of the key retrieval process, see MimicKeyRetrievalByUser().
-  void StoreKeys(const std::string& gaia_id,
-                 const std::vector<std::vector<uint8_t>>& keys,
-                 int last_key_version) override {
-    CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
-    cached_keys.keys = keys;
-    cached_keys.marked_as_stale = false;
-    for (Observer& observer : observer_list_) {
-      observer.OnTrustedVaultKeysChanged();
-    }
-  }
-
-  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
-                            base::OnceCallback<void(bool)> cb) override {
-    const std::string& gaia_id = account_info.gaia;
-
-    ++keys_marked_as_stale_count_;
-
-    CachedKeysPerUser& cached_keys = gaia_id_to_cached_keys_[gaia_id];
-
-    if (cached_keys.keys.empty() || cached_keys.marked_as_stale) {
-      // Nothing changed so report |false|.
-      std::move(cb).Run(false);
-      return;
-    }
-
-    // The cache is stale and should be invalidated. Following calls to
-    // FetchKeys() will read from the server.
-    cached_keys.marked_as_stale = true;
-    std::move(cb).Run(true);
-  }
-
-  void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
-                                   base::OnceCallback<void(bool)> cb) override {
-    ++get_is_recoverablity_degraded_call_count_;
-    std::move(cb).Run(is_recoverability_degraded_);
-  }
-
-  void AddTrustedRecoveryMethod(const std::string& gaia_id,
-                                const std::vector<uint8_t>& public_key,
-                                int method_type_hint,
-                                base::OnceClosure cb) override {
-    // Not relevant in these tests.
-    std::move(cb).Run();
-  }
-
-  void ClearLocalDataForAccount(const CoreAccountInfo& account_info) override {
-    // Not relevant in these tests.
-  }
-
- private:
-  struct CachedKeysPerUser {
-    bool marked_as_stale = false;
-    std::vector<std::vector<uint8_t>> keys;
-  };
-
-  const raw_ptr<const TestTrustedVaultServer> server_;
-
-  std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
-  base::ObserverList<Observer> observer_list_;
-  int fetch_count_ = 0;
-  int keys_marked_as_stale_count_ = 0;
-  int get_is_recoverablity_degraded_call_count_ = 0;
-  int server_request_count_ = 0;
-  std::list<base::OnceClosure> pending_responses_;
-  bool is_recoverability_degraded_ = false;
-};
-
 class SyncServiceCryptoTest : public testing::Test {
  protected:
   // Account used in most tests.
   const CoreAccountInfo kSyncingAccount =
       MakeAccountInfoWithGaia("syncingaccount");
 
-  // Initial trusted vault keys stored on the server |TestTrustedVaultServer|
-  // for |kSyncingAccount|.
+  // Initial trusted vault keys stored on the server for |kSyncingAccount|.
   const std::vector<std::vector<uint8_t>> kInitialTrustedVaultKeys = {
       {0, 1, 2, 3, 4}};
 
-  SyncServiceCryptoTest()
-      : trusted_vault_client_(&trusted_vault_server_),
-        crypto_(&delegate_, &trusted_vault_client_) {
-    trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia,
-                                            kInitialTrustedVaultKeys);
+  SyncServiceCryptoTest() : crypto_(&delegate_, &trusted_vault_client_) {
+    trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                      kInitialTrustedVaultKeys);
 
     ON_CALL(delegate_, GetPassphraseType())
         .WillByDefault(ReturnPointee(&passphrase_type_));
@@ -376,15 +165,14 @@ class SyncServiceCryptoTest : public testing::Test {
   }
 
   void MimicKeyRetrievalByUser() {
-    trusted_vault_server_.MimicKeyRetrievalByUser(kSyncingAccount.gaia,
-                                                  &trusted_vault_client_);
+    trusted_vault_client_.server()->MimicKeyRetrievalByUser(
+        kSyncingAccount.gaia, &trusted_vault_client_);
   }
 
   absl::optional<PassphraseType> passphrase_type_;
 
   testing::NiceMock<MockDelegate> delegate_;
-  TestTrustedVaultServer trusted_vault_server_;
-  TestTrustedVaultClient trusted_vault_client_;
+  trusted_vault::FakeTrustedVaultClient trusted_vault_client_;
   testing::NiceMock<MockSyncEngine> engine_;
   SyncServiceCrypto crypto_;
 };
@@ -955,9 +743,10 @@ TEST_F(SyncServiceCryptoTest, ShouldFollowKeyRotationDueToSecondFetch) {
 
   // Mimic server-side key rotation which the keys, in a way that the rotated
   // keys are a continuation of kInitialTrustedVaultKeys, such that
-  // TestTrustedVaultServer will allow the client to silently follow key
-  // rotation.
-  trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia, kRotatedKeys);
+  // FakeTrustedVaultClient::server() will allow the client to silently follow
+  // key rotation.
+  trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                    kRotatedKeys);
 
   // The engine replies with OnTrustedVaultKeyAccepted() only if |kRotatedKeys|
   // are provided.
@@ -1040,7 +829,8 @@ TEST_F(SyncServiceCryptoTest, ShouldRefetchTrustedVaultKeysWhenChangeObserved) {
   ASSERT_TRUE(crypto_.IsTrustedVaultKeyRequired());
 
   // Mimic server-side key reset and a new retrieval.
-  trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia, kNewKeys);
+  trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                    kNewKeys);
   MimicKeyRetrievalByUser();
 
   // Key retrieval should have initiated a third fetch.
@@ -1083,7 +873,8 @@ TEST_F(SyncServiceCryptoTest,
 
   // While there is an ongoing fetch, mimic server-side key reset and a new
   // retrieval.
-  trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia, kNewKeys);
+  trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                    kNewKeys);
   MimicKeyRetrievalByUser();
 
   // Because there's already an ongoing fetch, a second one should not have been
@@ -1142,7 +933,8 @@ TEST_F(
   // While the second fetch is ongoing, mimic additional keys being retrieved.
   // Because there's already an ongoing fetch, a third one should not have been
   // triggered yet and should be deferred instead.
-  trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia, kLatestKeys);
+  trusted_vault_client_.server()->StoreKeysOnServer(kSyncingAccount.gaia,
+                                                    kLatestKeys);
   MimicKeyRetrievalByUser();
   EXPECT_THAT(trusted_vault_client_.fetch_count(), Eq(2));
 
