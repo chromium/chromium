@@ -66,10 +66,11 @@ ShoppingServiceFactory::ShoppingServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-KeyedService* ShoppingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new ShoppingService(
+  return std::make_unique<ShoppingService>(
       GetCurrentCountryCode(g_browser_process->variations_service()),
       g_browser_process->GetApplicationLocale(),
       BookmarkModelFactory::GetInstance()->GetForBrowserContext(context),
