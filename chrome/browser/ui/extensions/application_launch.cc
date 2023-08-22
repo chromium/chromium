@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "apps/launcher.h"
 #include "base/command_line.h"
@@ -59,10 +60,6 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_commands_mac.h"
-#endif
-
 using content::WebContents;
 using extensions::Extension;
 using extensions::ExtensionPrefs;
@@ -89,7 +86,7 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
   EnableViaDialogFlow(const EnableViaDialogFlow&) = delete;
   EnableViaDialogFlow& operator=(const EnableViaDialogFlow&) = delete;
 
-  ~EnableViaDialogFlow() override {}
+  ~EnableViaDialogFlow() override = default;
 
   void Run() {
     DCHECK(!service_->IsExtensionEnabled(extension_id_));
@@ -111,9 +108,9 @@ class EnableViaDialogFlow : public ExtensionEnableFlowDelegate {
 
   void ExtensionEnableFlowAborted(bool user_initiated) override { delete this; }
 
-  raw_ptr<ExtensionService> service_;
-  raw_ptr<ExtensionRegistry> registry_;
-  raw_ptr<Profile> profile_;
+  const raw_ptr<ExtensionService> service_;
+  const raw_ptr<ExtensionRegistry> registry_;
+  const raw_ptr<Profile> profile_;
   extensions::ExtensionId extension_id_;
   base::OnceClosure callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
@@ -183,10 +180,12 @@ ui::WindowShowState DetermineWindowShowState(Profile* profile,
   // LAUNCH_TYPE_WINDOW launches in a default app window.
   extensions::LaunchType launch_type =
       extensions::GetLaunchType(ExtensionPrefs::Get(profile), extension);
-  if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN)
+  if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN) {
     return ui::SHOW_STATE_MAXIMIZED;
-  else if (launch_type == extensions::LAUNCH_TYPE_WINDOW)
+  }
+  if (launch_type == extensions::LAUNCH_TYPE_WINDOW) {
     return ui::SHOW_STATE_DEFAULT;
+  }
 #endif
 
   return ui::SHOW_STATE_DEFAULT;
@@ -569,13 +568,12 @@ void OpenApplicationWithReenablePrompt(Profile* profile,
   if (!service->IsExtensionEnabled(extension->id()) ||
       registry->GetExtensionById(extension->id(),
                                  ExtensionRegistry::TERMINATED)) {
-    // TODO(pkotwicz): Figure out which window should be used as the parent for
-    // the "enable application" dialog in Athena.
-    (new EnableViaDialogFlow(
-         service, registry, profile, extension->id(),
-         base::BindOnce(base::IgnoreResult(OpenEnabledApplication), profile,
-                        std::move(params))))
-        ->Run();
+    // Self deleting.
+    auto* flow = new EnableViaDialogFlow(
+        service, registry, profile, extension->id(),
+        base::BindOnce(base::IgnoreResult(OpenEnabledApplication), profile,
+                       std::move(params)));
+    flow->Run();
     return;
   }
 
@@ -589,12 +587,7 @@ WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
   launch_params.override_url = url;
 
-  WebContents* tab = OpenApplicationWindow(profile, launch_params, url);
-
-  if (!tab)
-    return nullptr;
-
-  return tab;
+  return OpenApplicationWindow(profile, launch_params, url);
 }
 
 bool CanLaunchViaEvent(const extensions::Extension* extension) {
@@ -628,20 +621,22 @@ void LaunchAppWithCallback(
 bool ShowBrowserForProfile(Profile* profile,
                            const apps::AppLaunchParams& params) {
   Browser* browser = chrome::FindTabbedBrowser(
-      profile, /*match_original_profiles*/ false, params.display_id);
+      profile, /*match_original_profiles=*/false, params.display_id);
   if (browser) {
     // For existing browser, ensure its window is shown and activated.
     browser->window()->Show();
     browser->window()->Activate();
-  } else {
-    // No browser for this profile, need to open a new one.
-    if (Browser::GetCreationStatusForProfile(profile) !=
-        Browser::CreationStatus::kOk) {
-      return false;
-    }
+    return true;
+  }
+
+  // No browser for this profile, need to open a new one.
+  if (Browser::GetCreationStatusForProfile(profile) ==
+      Browser::CreationStatus::kOk) {
     browser = Browser::Create(
         Browser::CreateParams(Browser::TYPE_NORMAL, profile, true));
     browser->window()->Show();
+    return true;
   }
-  return true;
+
+  return false;
 }
