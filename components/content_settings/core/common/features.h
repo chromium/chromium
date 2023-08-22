@@ -79,6 +79,16 @@ COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kUserBypassUIExceptionExpiration;
 
+// Determines how many refreshes within `kUserBypassUIReloadTime` are required
+// before a high confidence signal is returned.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<int> kUserBypassUIReloadCount;
+
+// Determines how long a user has to make `kUserBypassUIReloadCount` refreshes
+// before a high confidence signal is returned.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kUserBypassUIReloadTime;
+
 // Hide activity indicators if a permission is no longer used.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);

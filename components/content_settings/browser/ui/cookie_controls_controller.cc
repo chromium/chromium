@@ -43,10 +43,6 @@ using site_engagement::SiteEngagementService;
 
 namespace {
 
-// The number of page reloads in the last 30 seconds that is considered to be a
-// high confidence breakage signal.
-constexpr int kFrequentReloadThreshold = 3;
-
 constexpr char kEntryPointAnimatedKey[] = "entry_point_animated";
 constexpr char kLastExpirationKey[] = "last_expiration";
 constexpr char kLastVisitedActiveException[] = "last_visited_active_exception";
@@ -262,7 +258,7 @@ CookieControlsController::GetConfidenceLevel(CookieControlsStatus status,
     return CookieControlsBreakageConfidenceLevel::kMedium;
   }
 
-  if (recent_reloads_count_ >= kFrequentReloadThreshold) {
+  if (recent_reloads_count_ >= features::kUserBypassUIReloadCount.Get()) {
     return CookieControlsBreakageConfidenceLevel::kHigh;
   }
 
@@ -494,7 +490,7 @@ void CookieControlsController::OnPageReloadDetected(int recent_reloads_count) {
   recent_reloads_count_ = recent_reloads_count;
 
   // Only inform the observers if there is a potential confidence level change.
-  if (recent_reloads_count_ < kFrequentReloadThreshold &&
+  if (recent_reloads_count_ < features::kUserBypassUIReloadCount.Get() &&
       !has_exception_expired_since_last_visit_) {
     return;
   }
@@ -641,7 +637,7 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     timer_.Stop();
   } else {
     if (!timer_.IsRunning()) {
-      timer_.Start(FROM_HERE, base::Seconds(30), this,
+      timer_.Start(FROM_HERE, features::kUserBypassUIReloadTime.Get(), this,
                    &CookieControlsController::TabObserver::ResetReloadCounter);
     }
     reload_count_++;
