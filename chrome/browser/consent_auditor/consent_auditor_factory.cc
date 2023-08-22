@@ -54,7 +54,8 @@ ConsentAuditorFactory::ConsentAuditorFactory()
 
 ConsentAuditorFactory::~ConsentAuditorFactory() = default;
 
-KeyedService* ConsentAuditorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ConsentAuditorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
 
@@ -71,7 +72,7 @@ KeyedService* ConsentAuditorFactory::BuildServiceInstanceFor(
       std::make_unique<consent_auditor::ConsentSyncBridgeImpl>(
           std::move(store_factory), std::move(change_processor));
 
-  return new consent_auditor::ConsentAuditorImpl(
+  return std::make_unique<consent_auditor::ConsentAuditorImpl>(
       std::move(consent_sync_bridge),
       // The locale doesn't change at runtime, so we can pass it directly.
       g_browser_process->GetApplicationLocale(),
