@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/child_accounts/event_based_status_reporting_service_factory.h"
 
+#include <memory>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/child_accounts/child_status_reporting_service_factory.h"
@@ -45,9 +47,10 @@ EventBasedStatusReportingServiceFactory::
 EventBasedStatusReportingServiceFactory::
     ~EventBasedStatusReportingServiceFactory() = default;
 
-KeyedService* EventBasedStatusReportingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+EventBasedStatusReportingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new EventBasedStatusReportingService(context);
+  return std::make_unique<EventBasedStatusReportingService>(context);
 }
 
 }  // namespace ash
