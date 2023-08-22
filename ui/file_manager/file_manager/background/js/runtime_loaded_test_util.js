@@ -1059,7 +1059,7 @@ test.util.executeTestMessage = (request, sendResponse) => {
   }
   // Prepare arguments.
   if (!('args' in request)) {
-    throw new Error('Invalid request.');
+    throw new Error('Invalid request: no args provided.');
   }
 
   const args = request.args.slice();  // shallow copy
