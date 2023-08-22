@@ -37,9 +37,10 @@ PasswordManagerLogRouterFactory::PasswordManagerLogRouterFactory()
 
 PasswordManagerLogRouterFactory::~PasswordManagerLogRouterFactory() = default;
 
-KeyedService* PasswordManagerLogRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordManagerLogRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* /* context */) const {
-  return new LogRouter();
+  return std::make_unique<LogRouter>();
 }
 
 }  // namespace password_manager
