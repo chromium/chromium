@@ -13,11 +13,11 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -55,14 +55,12 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
-  CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   Browser* browser = &GetBrowser();
-  if (!browser->profile() || !browser->profile()->GetPrefs()) {
+  if (!browser->profile() || !browser->profile()->GetPrefs())
     return;
-  }
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -113,16 +111,19 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   // Read Anything as a side panel entry observer.
   Browser* browser = &GetBrowser();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
+  if (!browser_view)
     return;
-  }
+  SidePanelRegistry* global_registry =
+      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
+  global_registry->Deregister(
+      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
 }
 
-void ReadAnythingCoordinator::CreateAndRegisterSidePanelEntry(
-    SidePanelRegistry* registry) {
+void ReadAnythingCoordinator::CreateAndRegisterEntry(
+    SidePanelRegistry* global_registry) {
   auto side_panel_entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
       l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
@@ -131,14 +132,7 @@ void ReadAnythingCoordinator::CreateAndRegisterSidePanelEntry(
       base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
                           base::Unretained(this)));
   side_panel_entry->AddObserver(this);
-  registry->Register(std::move(side_panel_entry));
-}
-
-void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
-    TabStripModel* tab_strip_model) {
-  for (int index = 0; index < tab_strip_model->GetTabCount(); index++) {
-    CreateAndRegisterEntry(tab_strip_model->GetWebContentsAt(index));
-  }
+  global_registry->Register(std::move(side_panel_entry));
 }
 
 ReadAnythingController* ReadAnythingCoordinator::GetController() {
@@ -220,17 +214,6 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::Type::kInserted) {
-    for (const auto& inserted_tab : change.GetInsert()->contents) {
-      CreateAndRegisterEntry(inserted_tab.contents);
-    }
-  }
-  if (change.type() == TabStripModelChange::Type::kReplaced) {
-    raw_ptr<content::WebContents> new_contents =
-        change.GetReplace()->new_contents;
-    CHECK(new_contents);
-    CreateAndRegisterEntry(new_contents);
-  }
   if (!selection.active_tab_changed()) {
     return;
   }
