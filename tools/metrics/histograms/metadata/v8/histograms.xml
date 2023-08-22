@@ -369,15 +369,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.DebugFeatureUsage" enum="V8DebugFeature"
-    expires_after="2023-08-08">
-  <owner>yangguo@chromium.org</owner>
-  <owner>bmeurer@chromium.org</owner>
-  <summary>
-    Debugger feature used at least once per isolate, recorded on first use.
-  </summary>
-</histogram>
-
 <histogram name="V8.DebugPauseToPausedEventMilliSeconds" units="ms"
     expires_after="2023-10-01">
   <owner>bmeurer@chromium.org</owner>
