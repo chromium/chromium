@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">開咗更新外部裝置韌體嘅視窗。有 <ph name="NUM_UPDATES" /> 項可用嘅更新。</translation>
 <translation id="1145516343487477149">尋找說明文章，並回答 Chromebook 常見問題</translation>
+<translation id="1154390310959620237">你只可自訂 5 個快速鍵。如要新增快速鍵，請刪除現有快速鍵。</translation>
 <translation id="1164939766849482256">黎明到黑夜螢幕保護程式</translation>
 <translation id="1167755866710282443">開啟選單以自訂按鍵。拖曳選單以移動。</translation>
 <translation id="1175697296044146566">此 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理。</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">正在重新啟動…</translation>
 <translation id="2533048460510040082">建議的說明內容</translation>
 <translation id="2536159006530886390">無法連線至互聯網。</translation>
+<translation id="2555662516429796509">按下鍵盤上的 1 至 4 個輔助鍵和 1 個其他按鍵。</translation>
 <translation id="2570743873672969996">正在執行<ph name="TEST_NAME" />測試…</translation>
 <translation id="2584559707064218956">如要進行設定，請前往「設定」頁面</translation>
 <translation id="2597774443162333062">檔案將傳送至 Google 執行偵錯</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3373141842870501561">地球動態桌布</translation>
 <translation id="337375748120863155">所揀內容嘅相關資料。用向左或者向右箭咀掣就可以存取控制項。</translation>
+<translation id="3383623117265110236">獨家</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">校暗</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176659219503619100">控制台</translation>
+<translation id="4185315616950253617">如果快速鍵包括最上排的按鍵，亦需要使用搜尋鍵。</translation>
 <translation id="420283545744377356">關閉螢幕保護程式</translation>
 <translation id="4213104098953699324">USB 鍵盤</translation>
 <translation id="4227825898293920515">密碼在 <ph name="TIME" />後到期</translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">HTTP 延遲時間</translation>
 <translation id="4271957103967917607">以全螢幕模式瀏覽</translation>
 <translation id="4275663329226226506">媒體</translation>
+<translation id="4278766082079064416">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。如要解決衝突情況，請編輯或移除快速鍵。</translation>
 <translation id="4289540628985791613">概覽</translation>
 <translation id="4289849978083912975">投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
 <translation id="4873827928179867585">驗證演算法</translation>
 <translation id="4880328057631981605">接入點名稱 (APN)</translation>
+<translation id="488307179443832524">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。請按下新的快速鍵。</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">立即選擇新密碼</translation>
 <translation id="4891842000192098784">壓力</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">顯示屏校光亮度</translation>
 <translation id="57838592816432529">静音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
+<translation id="5816802250591013230">未指派任何快速鍵</translation>
 <translation id="5826644637650799838">關於此桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">不明</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
 <translation id="7041549558901442110">未連接裝置。</translation>
+<translation id="7046522406494308071">要將所有快速鍵重設為預設值嗎？</translation>
 <translation id="7058278511608979688">結束並儲存</translation>
 <translation id="7059230779847288458">充電中，<ph name="TIME_VALUE" />後完成充電</translation>
 <translation id="7068619307603204412">準備裝置</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (總共 <ph name="COUNT" /> 個)，名稱為 <ph name="NAME" />。</translation>
+<translation id="7107255225945990211">選擇 <ph name="PRODUCT_NAME" /> 獨家藝術圖片</translation>
 <translation id="7108668606237948702">Enter 鍵</translation>
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">流動服務供應商</translation>
 <translation id="725133483556299729">揀電郵地址</translation>
 <translation id="7271040990581020067">掃瞄器目前正在使用中，請稍後再試。</translation>
+<translation id="7273347807225967898">無法使用快速鍵。請透過輔助鍵 (Ctrl、Alt、Shift、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">感受微風</translation>
 <translation id="7287310195820267359">桌布收藏</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">鍵盤燈</translation>
 <translation id="773153675489693198">週期數</translation>
 <translation id="7747039790905080783">預先共用密鑰</translation>
+<translation id="7752963721013053477">黎明到黑夜 - 獨家</translation>
 <translation id="7762130827864645708">已成功變更您的密碼。請從現在開始改用新的密碼。</translation>
 <translation id="7763470514545477072">域名尾碼相符</translation>
 <translation id="7769672763586021400">型號識別碼</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
+<translation id="7903695460270716054">選擇精選藝術品和圖片</translation>
 <translation id="7915220255123750251">管理網絡 APN 設定。APN 會在流動網絡和互聯網之間建立連線。</translation>
 <translation id="7936303884198020182">找不到域名伺服器</translation>
 <translation id="7942349550061667556">紅色</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8094062939584182041">允許 Google 就此問題向您傳送電郵</translation>
 <translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
+<translation id="8111706652656628199">無法使用快速鍵。請透過 Shift 鍵和另外 1 個輔助鍵 (Ctrl、Alt、搜尋鍵或啟動器按鈕) 按下新的快速鍵。</translation>
 <translation id="811820734797650957">(Android) 可連線偵測到閘道</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">「Google 相片」中的相簿</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">「<ph name="CONFLICT_ACCEL_NAME" />」正在使用快速鍵。請按下新的快速鍵。如要取代原始快速鍵，請再次按下此快速鍵。</translation>
 <translation id="879568662008399081">此網絡可能有強制網絡入口</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">供應商名稱</translation>

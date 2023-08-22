@@ -21,6 +21,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">A janela de atualização de firmware para dispositivos externos está aberta. <ph name="NUM_UPDATES" /> atualizações disponíveis.</translation>
 <translation id="1145516343487477149">Encontre artigos de ajuda e respostas a perguntas comuns sobre Chromebooks</translation>
+<translation id="1154390310959620237">Só é possível personalizar cinco atalhos. Exclua um para adicionar outro.</translation>
 <translation id="1164939766849482256">Protetor de tela Do amanhecer à escuridão</translation>
 <translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para mover.</translation>
 <translation id="1175697296044146566">Este <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" />.</translation>
@@ -216,6 +217,7 @@
 <translation id="253029298928638905">Reiniciando…</translation>
 <translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível se conectar à Internet.</translation>
+<translation id="2555662516429796509">Pressione de um a quatro modificadores e mais uma tecla no teclado</translation>
 <translation id="2570743873672969996">Executando o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584559707064218956">Para definir, acesse as Configurações</translation>
 <translation id="2597774443162333062">Os arquivos vão ser enviados ao Google para depuração</translation>
@@ -296,6 +298,7 @@
 <translation id="3369013195428705271">Tem certeza de que quer limpar todo o histórico? Os trabalhos de impressão atuais não serão apagados.</translation>
 <translation id="3373141842870501561">Plano de fundo Fluxo da Terra</translation>
 <translation id="337375748120863155">Informações relacionadas à sua seleção. Use as teclas de seta para a esquerda ou direita para acessar os controles.</translation>
+<translation id="3383623117265110236">Exclusivos</translation>
 <translation id="3404249063913988450">Ativar o protetor de tela</translation>
 <translation id="3413935475507503304">Para continuar com a atualização, clique em "Próxima".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -401,6 +404,7 @@
 <translation id="4171077696775491955">diminuir brilho</translation>
 <translation id="4176463684765177261">Desativado</translation>
 <translation id="4176659219503619100">Painel de controle</translation>
+<translation id="4185315616950253617">O atalho com as teclas da primeira fileira precisa incluir a tecla de pesquisa.</translation>
 <translation id="420283545744377356">Desativar o protetor de tela</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
 <translation id="4227825898293920515">A senha expirará em <ph name="TIME" /></translation>
@@ -411,6 +415,7 @@
 <translation id="4258281355379922695">Latência do HTTP</translation>
 <translation id="4271957103967917607">Ver em tela cheia</translation>
 <translation id="4275663329226226506">Mídia</translation>
+<translation id="4278766082079064416">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Edite ou remova para resolver o conflito.</translation>
 <translation id="4289540628985791613">Visão geral</translation>
 <translation id="4289849978083912975">Apresentação de slides</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
@@ -491,6 +496,7 @@
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}one{<ph name="ERROR_MESSAGE" /> {0} tentativa restante}other{<ph name="ERROR_MESSAGE" /> {0} tentativas restantes}}</translation>
 <translation id="4873827928179867585">Algoritmo de autenticação</translation>
 <translation id="4880328057631981605">Nome do ponto de acesso</translation>
+<translation id="488307179443832524">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Escolha uma nova imediatamente</translation>
 <translation id="4891842000192098784">Estresse</translation>
@@ -606,6 +612,7 @@
 <translation id="576835345334454681">Aumentar o brilho da tela</translation>
 <translation id="57838592816432529">Desativar som</translation>
 <translation id="5784136236926853061">A latência do HTTP está alta</translation>
+<translation id="5816802250591013230">Nenhum atalho atribuído</translation>
 <translation id="5826644637650799838">Sobre a arte</translation>
 <translation id="5832805196449965646">Adicionar pessoa</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -767,6 +774,7 @@
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">Dispositivo não conectado.</translation>
+<translation id="7046522406494308071">Redefinir todos os atalhos para os valores padrão?</translation>
 <translation id="7058278511608979688">Concluir e salvar</translation>
 <translation id="7059230779847288458">Carregando. <ph name="TIME_VALUE" /> até a carga completa</translation>
 <translation id="7068619307603204412">Prepare o dispositivo</translation>
@@ -774,6 +782,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Falha: a autorização falhou</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />, chamado <ph name="NAME" />.</translation>
+<translation id="7107255225945990211">Escolher arte exclusiva do <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
@@ -795,6 +804,7 @@
 <translation id="7216409898977639127">Operadora de celular</translation>
 <translation id="725133483556299729">Selecione um e-mail</translation>
 <translation id="7271040990581020067">O scanner está em uso. Tente novamente mais tarde.</translation>
+<translation id="7273347807225967898">Atalho indisponível. Pressione um novo atalho usando uma tecla modificadora (ctrl, alt, shift, pesquisa ou acesso rápido).</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Sinta a brisa</translation>
 <translation id="7287310195820267359">Coleções de plano de fundo</translation>
@@ -854,6 +864,7 @@
 <translation id="7718231387947923843">luz do teclado</translation>
 <translation id="773153675489693198">Contagem de ciclos</translation>
 <translation id="7747039790905080783">Chave pré-compartilhada</translation>
+<translation id="7752963721013053477">Do amanhecer à escuridão (exclusivo)</translation>
 <translation id="7762130827864645708">Senha modificada. De agora em diante, use a nova senha.</translation>
 <translation id="7763470514545477072">Correspondência do sufixo de domínio</translation>
 <translation id="7769672763586021400">Código do modelo</translation>
@@ -873,6 +884,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de provedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
+<translation id="7903695460270716054">Escolher obras de arte e imagens selecionadas</translation>
 <translation id="7915220255123750251">Gerenciar configurações do APN de rede. Os APNs estabelecem uma conexão entre a rede celular e a Internet.</translation>
 <translation id="7936303884198020182">Nenhum servidor de nomes encontrado</translation>
 <translation id="7942349550061667556">Vermelho</translation>
@@ -899,6 +911,7 @@
 <translation id="808894953321890993">Alterar senha</translation>
 <translation id="8094062939584182041">Permitir que o Google envie um e-mail para você sobre esse problema</translation>
 <translation id="8104083085214006426">Você está usando uma rede aberta e não segura</translation>
+<translation id="8111706652656628199">Atalho indisponível. Pressione um novo atalho usando shift e mais uma tecla modificadora (ctrl, alt, pesquisa ou acesso rápido).</translation>
 <translation id="811820734797650957">(Android) O gateway pode receber um ping</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfego</translation>
@@ -977,6 +990,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="8789196995628578448">O atalho está sendo usado para "<ph name="CONFLICT_ACCEL_NAME" />". Pressione um novo atalho. Para substituir o atalho original, pressione-o novamente.</translation>
 <translation id="879568662008399081">Esta rede pode ter um portal cativo</translation>
 <translation id="8798099450830957504">Padrão</translation>
 <translation id="8798441408945964110">Nome do provedor</translation>

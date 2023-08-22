@@ -209,11 +209,13 @@
 <translation id="5527463683072221100">Отворај PDF-формат во Chromium</translation>
 <translation id="5614091477838198795">Кога е вклучено, ќе се одјавите и од Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Достапно е ажурирање за Chromium}=1{Достапно е ажурирање за Chromium}one{Достапно е ажурирање за Chromium веќе # ден}other{Достапно е ажурирање за Chromium веќе # дена}}</translation>
+<translation id="5643865575100044307">Секогаш бришете ги податоците од сајт од вашиот уред кога го затворате Chromium</translation>
 <translation id="5653831366781983928">Рестартирајте го Chromium сега</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Прикажи го Chromium на овој јазик</translation>
 <translation id="5862307444128926510">Добре дојдовте во Chromium</translation>
 <translation id="5883558403894052917">Chromium откри дека овие ставки содржат злонамерен софтвер:</translation>
+<translation id="5889361821821684993">Chromium редовно проверува за да се погрижи вашиот прелистувач да ги има најбезбедните поставки. Ќе ве известиме ако треба да се прегледа нешто.</translation>
 <translation id="5895138241574237353">Рестартирај</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Мрежно најавување</translation>
 <translation id="5924017743176219022">Се поврзува на интернет…</translation>
@@ -224,6 +226,7 @@
 <translation id="5988505247484123880">Нормално е сајтовите што ги посетувате да ги помнат работите што ве интересираат за да го персонализираат вашето доживување. Сајтовите можат и да зачувуваат податоци со Chromium за вашите интереси.</translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6040143037577758943">Затвори</translation>
+<translation id="6055611795418209449">Chromium блокира некои преземања</translation>
 <translation id="6055895534982063517">Достапна е нова верзија на Chromium и побрза е од кога било.</translation>
 <translation id="6063093106622310249">&amp;Отвори во Chromium</translation>
 <translation id="6072279588547424923"><ph name="EXTENSION_NAME" /> беше додадена на Chromium</translation>
@@ -237,6 +240,7 @@
 <translation id="6132897690380286411">Chromium ќе се затвори и ќе ги избрише податоците наскоро</translation>
 <translation id="6134968993075716475">„Безбедното прелистување“ е исклучено. Chromium препорачува да го вклучите.</translation>
 <translation id="6145820983052037069">Може да се префрлате помеѓу профилите на Chromium тука</translation>
+<translation id="6175304430031192654">Зависно од вашите поставки, Chromium може да испраќа и колачиња и вашата тековна URL-адреса</translation>
 <translation id="6183079672144801177">Проверете дали сте најавени на Chromium на <ph name="TARGET_DEVICE_NAME" /> и обидете се да испратите повторно.</translation>
 <translation id="6212496753309875659">Овој компјутер веќе има најнова верзија на Chromium. Доколку софтверот не работи, деинсталирајте го Chromium и обидете се повторно.</translation>
 <translation id="6219195342503754812">{0,plural, =0{Chromium ќе се рестартира сега}=1{Chromium ќе се рестартира по 1 секунда}one{Chromium ќе се рестартира по # секунда}other{Chromium ќе се рестартира по # секунди}}</translation>
@@ -257,6 +261,7 @@
 <translation id="6373523479360886564">Дали сте сигурни дека сакате да го деинсталирате Chromium?</translation>
 <translation id="6375219077595103062">Додајте кратенка до Password Manager</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Како ги користиме овие податоци:<ph name="END_BOLD" /> Chromium може да ги процени вашите интереси. Подоцна, сајтот што го посетувате може да побара од Chromium да ги види вашите интереси за да ги персонализира рекламите што ги гледате.</translation>
+<translation id="6400112897226594999">Логото на Chromium во екран на компјутер.</translation>
 <translation id="6403826409255603130">Chromium е веб-прелистувач што активира веб-страници и апликации со неверојатна брзина. Тој е брз, стабилен и лесно се користи. Побезбедно прелистувајте на веб со вградената заштита на Chromium од кражба на идентитет и злонамерен софтвер.</translation>
 <translation id="6442900851116057561">Рестартирајте го Chromium OS</translation>
 <translation id="6455857529632101747">Добре дојдовте во профили на Chromium</translation>
@@ -306,6 +311,7 @@
 <translation id="718435575166326686">На Chromium му треба дозвола за камерата за сајтов</translation>
 <translation id="7196312274710523067">Не може да се стартува Chromium. Обидете се повторно.</translation>
 <translation id="7197677400338048821">Chromium не може да ги провери вашите лозинки. Обидете се пак по 24 часа.</translation>
+<translation id="7213407614656404070">Користете го Chromium секогаш кога ќе кликнете линкови во пораки, документи и други апликации</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
 <translation id="7246575524853130370">Вашите интереси како што се проценети од Chromium</translation>
 <translation id="7309928523159922338">Мерењето на рекламите им овозможува на сајтовите што ги посетувате да бараат податоци од Chromium што му помагаат на сајтот да ја мери изведбата на своите реклами. Мерењето на рекламите го ограничува следењето меѓу сајтовите со префрлање што е можно помалку податоци меѓу сајтовите.</translation>

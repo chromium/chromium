@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Totale aantal lêers</translation>
 <translation id="1755345808328621801">Hierdie lêer is ontwerp vir ’n rekenaar wat Windows-sagteware gebruik. Dit is nie versoenbaar met jou toestel, wat Chrome-bedryfstelsel gebruik, nie. Deursoek asseblief die Chrome Webwinkel na ’n geskikte plaasvervangerprogram.</translation>
 <translation id="1757915090001272240">Breë Latyns</translation>
+<translation id="1761091787730831947">Deel met <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Stawingsertifikaat is plaaslik verwerp</translation>
 <translation id="1775381402323441512">Video-inligting</translation>
 <translation id="180035236176489073">Jy moet aanlyn wees om by hierdie lêers in te gaan.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Installeer program met Linux</translation>
 <translation id="2719020180254996569">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, besonderhede</translation>
 <translation id="2724954091494693138">Turks met F-sleutelbord</translation>
+<translation id="2732288874651063549">Bestuur <ph name="VM_NAME" />-deling</translation>
 <translation id="2732839045120506979">Viëtnamees-VNI</translation>
 <translation id="2735623501230989521">Gee Parallels Desktop toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="2764206540577097904">Jy het al jou individuele Google Workspace-berging gebruik.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="3511705761158917664">Berei tans voor om <ph name="NUMBER_OF_ITEMS" /> items te sinkroniseer …</translation>
 <translation id="3522708245912499433">Portugees</translation>
+<translation id="3523225005467146490">1 vouer gedeel met <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Wees versigtig: Hierdie lêers is tydelik en kan outomaties uitgevee word om skyfspasie beskikbaar te maak.  <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Vouer</translation>
 <translation id="3548125359243647069">’n Verkeerde PIN is te veel kere ingevoer.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Skoenlappers</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6170470584681422115">Toebroodjie</translation>
+<translation id="6181912134988520389">Gee <ph name="VM_NAME" /> toegang tot lêers in jou Google Drive. Veranderinge sal met jou ander toestelle gesinkroniseer word.</translation>
 <translation id="6187719147498869044">Hongaars</translation>
 <translation id="6198252989419008588">Verander PIN</translation>
 <translation id="6199801702437275229">Wag tans vir inligting oor spasie …</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Sweeds</translation>
 <translation id="6990081529015358884">Jy het nie meer spasie nie</translation>
 <translation id="6993826899923627728">Hierdie items is in jou asblik</translation>
+<translation id="6996593023542748157">Deel vouer met <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Jou organisasie benodig meer bergingspasie om die oplaai te voltooi.</translation>
 <translation id="7009985720488544166">Administrateursbeleid verhoed dat <ph name="COUNT" /> lêers geskuif kan word</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Belarussies</translation>
 <translation id="8336153091935557858">Gister <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">'n Lêer of gids met dieselfde naam bestaan reeds.</translation>
+<translation id="83651606385705612">Gee <ph name="VM_NAME" /> toegang tot lêers in die <ph name="FOLDER_NAME" />-vouer</translation>
 <translation id="8372369524088641025">Swak WEP-sleutel</translation>
 <translation id="8372852072747894550">Grieks</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" />-netwerk; koppel tans</translation>
 <translation id="8425213833346101688">Verander</translation>
 <translation id="8428213095426709021">Instellings</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> vouers gedeel met <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Verander SIM-PIN</translation>
 <translation id="8437209419043462667">VSA</translation>
 <translation id="8452135315243592079">Verlore SIM-kaart</translation>
