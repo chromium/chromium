@@ -69,7 +69,7 @@ CheckError CheckError::NotImplemented(const char* file,
   return check_error;
 }
 
-std::ostream& CheckError::stream() {
+base::strings::CStringBuilder& CheckError::stream() {
   return log_message_->stream();
 }
 

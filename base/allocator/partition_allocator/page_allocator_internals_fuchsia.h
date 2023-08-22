@@ -44,7 +44,7 @@ zx::resource GetVmexResource() {
   auto result = sync_vmex_resource_client->Get();
   if (result.is_error()) {
     PA_LOG(ERROR) << "VmexResource.Get():"
-                  << result.error_value().FormatDescription();
+                  << result.error_value().FormatDescription().c_str();
     return {};
   }
 

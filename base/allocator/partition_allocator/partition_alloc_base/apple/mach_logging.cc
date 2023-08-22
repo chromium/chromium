@@ -35,7 +35,7 @@ MachLogMessage::MachLogMessage(const char* file_path,
 
 MachLogMessage::~MachLogMessage() {
   stream() << ": " << mach_error_string(mach_err_)
-           << FormatMachErrorNumber(mach_err_);
+           << FormatMachErrorNumber(mach_err_).c_str();
 }
 
 }  // namespace partition_alloc::internal::logging

@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/cstring_builder.h"
 #include "build/build_config.h"
 
 // TODO(1151236): Need to update the description, because logging for PA
@@ -341,7 +342,8 @@ constexpr LogSeverity LOGGING_0 = LOGGING_ERROR;
   PA_LAZY_STREAM(PA_PLOG_STREAM(severity), \
                  PA_LOG_IS_ON(severity) && (condition))
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern std::ostream* g_swallow_stream;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+extern base::strings::CStringBuilder* g_swallow_stream;
 
 // Note that g_swallow_stream is used instead of an arbitrary PA_LOG() stream to
 // avoid the creation of an object with a non-trivial destructor (LogMessage).
@@ -429,16 +431,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LogMessage {
   LogMessage& operator=(const LogMessage&) = delete;
   virtual ~LogMessage();
 
-  std::ostream& stream() { return stream_; }
+  base::strings::CStringBuilder& stream() { return stream_; }
 
   LogSeverity severity() { return severity_; }
-  std::string str() { return stream_.str(); }
+  const char* c_str() { return stream_.c_str(); }
 
  private:
   void Init(const char* file, int line);
 
   const LogSeverity severity_;
-  std::ostringstream stream_;
+  base::strings::CStringBuilder stream_;
   size_t message_start_;  // Offset of the start of the message (past prefix
                           // info).
   // The file and line information passed in to the constructor.
@@ -459,7 +461,7 @@ class LogMessageVoidify {
   LogMessageVoidify() = default;
   // This has to be an operator with a precedence lower than << but
   // higher than ?:
-  void operator&(std::ostream&) {}
+  void operator&(base::strings::CStringBuilder&) {}
 };
 
 #if BUILDFLAG(IS_WIN)

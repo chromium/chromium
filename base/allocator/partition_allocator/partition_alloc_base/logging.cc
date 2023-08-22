@@ -112,7 +112,7 @@ logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
 // an object of the correct type on the LHS of the unused part of the ternary
 // operator.
-std::ostream* g_swallow_stream;
+base::strings::CStringBuilder* g_swallow_stream;
 
 void SetMinLogLevel(int level) {
   g_min_log_level = std::min(LOGGING_FATAL, level);
@@ -154,8 +154,8 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 }
 
 LogMessage::~LogMessage() {
-  stream_ << std::endl;
-  std::string str_newline(stream_.str());
+  stream_ << '\n';
+  std::string str_newline(stream_.c_str());
 
   // Give any log message handler first dibs on the message.
   if (g_log_message_handler &&
@@ -186,7 +186,7 @@ void LogMessage::Init(const char* file, int line) {
     }
     stream_ << ":" << filename << "(" << line << ")] ";
   }
-  message_start_ = stream_.str().length();
+  message_start_ = strlen(stream_.c_str());
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -236,7 +236,7 @@ Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 Win32ErrorLogMessage::~Win32ErrorLogMessage() {
-  stream() << ": " << SystemErrorCodeToString(err_);
+  stream() << ": " << SystemErrorCodeToString(err_).c_str();
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   DWORD last_error = err_;
@@ -250,7 +250,7 @@ ErrnoLogMessage::ErrnoLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 ErrnoLogMessage::~ErrnoLogMessage() {
-  stream() << ": " << SystemErrorCodeToString(err_);
+  stream() << ": " << SystemErrorCodeToString(err_).c_str();
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   int last_error = err_;

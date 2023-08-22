@@ -11,6 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/cstring_builder.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
@@ -50,7 +51,7 @@ class VoidifyStream {
   explicit VoidifyStream(bool ignored) {}
 
   // This operator has lower precedence than << but higher than ?:
-  void operator&(std::ostream&) {}
+  void operator&(base::strings::CStringBuilder&) {}
 };
 
 // Helper macro which avoids evaluating the arguments to a stream if the
@@ -65,7 +66,8 @@ class VoidifyStream {
   true ? (void)0                                                     \
        : ::partition_alloc::internal::logging::VoidifyStream(expr) & \
              (*::partition_alloc::internal::logging::g_swallow_stream)
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern std::ostream* g_swallow_stream;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+extern base::strings::CStringBuilder* g_swallow_stream;
 
 class LogMessage;
 
@@ -86,7 +88,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
                                    const char* function);
 
   // Stream for adding optional details to the error message.
-  std::ostream& stream();
+  base::strings::CStringBuilder& stream();
 
   PA_NOMERGE ~CheckError();
 
