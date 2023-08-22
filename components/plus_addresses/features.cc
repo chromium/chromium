@@ -12,10 +12,6 @@ BASE_FEATURE(kFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kEnterprisePlusAddressLabelOverrideName[] = "suggestion-label";
-const char kEnterprisePlusAddressOAuthScopeName[] = "oauth-scope";
-
 const base::FeatureParam<std::string> kEnterprisePlusAddressLabelOverride{
     &kFeature, kEnterprisePlusAddressLabelOverrideName, "Lorem Ipsum"};
-const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope{
-    &kFeature, kEnterprisePlusAddressOAuthScopeName, ""};
 }  // namespace plus_addresses

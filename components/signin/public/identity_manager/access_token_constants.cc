@@ -6,7 +6,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/plus_addresses/features.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace signin {
@@ -21,7 +20,7 @@ const char* const kExtensionsIdentityAPIOAuthConsumerName =
 
 const std::set<std::string> GetUnconsentedOAuth2Scopes() {
   // clang-format off
-  std::set<std::string> allowlist = {
+  return {
       // Used to fetch account information.
       GaiaConstants::kGoogleUserInfoEmail,
       GaiaConstants::kGoogleUserInfoProfile,
@@ -98,12 +97,6 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 // clang-format on
-  std::string plus_address_scope =
-      plus_addresses::kEnterprisePlusAddressOAuthScope.Get();
-  if (!plus_address_scope.empty()) {
-    allowlist.insert(plus_address_scope);
-  }
-  return allowlist;
 }
 
 const std::set<std::string> GetPrivilegedOAuth2Scopes() {
