@@ -1,5 +1,5 @@
 # Frequently Asked Questions
-Last updated: July 7, 2023
+Last updated: August 21, 2023
 
 [TOC]
 
@@ -114,7 +114,7 @@ The table below shows the rollout of these new features across platforms.
 
 | Chrome on...\*  | Chrome Root Store Rollout Begins\*\* | Chrome Root Store Enabled by Default | Sunset of Enterprise Policy\*\*\* |
 | --------------- | ------------------------------------ | ------------------------------------ | -------------------------------------  |
-| Android         | Chrome 114                           | [Rollout in progress]                | TBD                                    |
+| Android         | Chrome 114                           | Chrome 115                           | Chrome 120                             |
 | Chrome OS       | Chrome 114                           | Chrome 114                           | Chrome 119                             |                                                                                                                                                                                                                                                         |
 | iOS\*\*\*\*     | N/A                                  | N/A                                  | N/A                                    |
 | Linux           | Chrome 114                           | Chrome 114                           | Chrome 119                             |
