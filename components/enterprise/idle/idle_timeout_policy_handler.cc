@@ -2,25 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
+#include "components/enterprise/idle/idle_timeout_policy_handler.h"
 
-#include <cstring>
-#include <regex>
 #include <string>
 
-#include "base/containers/span.h"
 #include "base/json/values_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/enterprise/idle/action.h"
-#include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
+#include "components/enterprise/idle/action_type.h"
+#include "components/enterprise/idle/idle_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_logger.h"
@@ -34,97 +29,18 @@ namespace enterprise_idle {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kCloseBrowsersActionName[] = "close_browsers";
-const char kShowProfilePickerActionName[] = "show_profile_picker";
-#endif  // !BUILDFLAG(IS_ANDROID)
-const char kClearBrowsingHistoryActionName[] = "clear_browsing_history";
-const char kClearDownloadHistoryActionName[] = "clear_download_history";
-const char kClearCookiesAndOtherSiteDataActionName[] =
-    "clear_cookies_and_other_site_data";
-const char kClearCachedImagesAndFilesActionName[] =
-    "clear_cached_images_and_files";
-const char kClearPasswordSigninActionName[] = "clear_password_signin";
-const char kClearAutofillActionName[] = "clear_autofill";
-const char kClearSiteSettingsActionName[] = "clear_site_settings";
-const char kClearHostedAppDataActionName[] = "clear_hosted_app_data";
-const char kReloadPagesActionName[] = "reload_pages";
-
 // If `other_policy_name` is unset, adds an error to `errors` and returns false.
 bool CheckOtherPolicySet(const policy::PolicyMap& policies,
                          const std::string& this_policy_name,
                          const std::string& other_policy_name,
                          policy::PolicyErrorMap* errors) {
-  if (policies.GetValueUnsafe(other_policy_name))
+  if (policies.GetValueUnsafe(other_policy_name)) {
     return true;
+  }
 
   errors->AddError(this_policy_name, IDS_POLICY_DEPENDENCY_ERROR_ANY_VALUE,
                    other_policy_name);
   return false;
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-bool RequiresSyncDisabled(const std::string& name) {
-  static const char* kActionsAllowedWithSync[] = {
-      kCloseBrowsersActionName,
-      kShowProfilePickerActionName,
-      kClearDownloadHistoryActionName,
-      kClearCookiesAndOtherSiteDataActionName,
-      kClearCachedImagesAndFilesActionName,
-      kReloadPagesActionName,
-      kClearHostedAppDataActionName};
-  return !base::ranges::any_of(
-      base::make_span(kActionsAllowedWithSync),
-      [&name](const char* s) { return !std::strcmp(s, name.c_str()); });
-}
-#endif  //! BUILDFLAG(IS_ANDROID)
-
-absl::optional<ActionType> NameToActionType(const std::string& name) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (name == kCloseBrowsersActionName) {
-    return ActionType::kCloseBrowsers;
-  }
-  if (name == kShowProfilePickerActionName) {
-    return ActionType::kShowProfilePicker;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-  if (name == kClearBrowsingHistoryActionName) {
-    return ActionType::kClearBrowsingHistory;
-  }
-  if (name == kClearDownloadHistoryActionName) {
-    return ActionType::kClearDownloadHistory;
-  }
-  if (name == kClearCookiesAndOtherSiteDataActionName) {
-    return ActionType::kClearCookiesAndOtherSiteData;
-  }
-  if (name == kClearCachedImagesAndFilesActionName) {
-    return ActionType::kClearCachedImagesAndFiles;
-  }
-  if (name == kClearPasswordSigninActionName) {
-    return ActionType::kClearPasswordSignin;
-  }
-  if (name == kClearAutofillActionName) {
-    return ActionType::kClearAutofill;
-  }
-  if (name == kClearSiteSettingsActionName) {
-    return ActionType::kClearSiteSettings;
-  }
-  if (name == kClearHostedAppDataActionName) {
-    return ActionType::kClearHostedAppData;
-  }
-  if (name == kReloadPagesActionName) {
-    return ActionType::kReloadPages;
-  }
-  return absl::nullopt;
-}
-
-std::string GetActionBrowsingDataTypeName(const std::string& action) {
-  // Get the data type to be cleared if the action is to clear browsig data.
-  const char kPrefix[] = "clear_";
-  if (!base::StartsWith(action, kPrefix, base::CompareCase::SENSITIVE)) {
-    return std::string();
-  }
-  return action.substr(std::strlen(kPrefix));
 }
 
 }  // namespace
@@ -246,7 +162,7 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
         policies.GetValue(policy_name(), base::Value::Type::LIST);
     DCHECK(value);
     for (const base::Value& action : value->GetList()) {
-      if (action.is_string() && RequiresSyncDisabled(action.GetString())) {
+      if (action.is_string() && !AllowsSyncEnabled(action.GetString())) {
         invalid_actions.push_back(action.GetString());
       }
     }

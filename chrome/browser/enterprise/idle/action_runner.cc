@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "components/enterprise/idle/idle_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_idle {

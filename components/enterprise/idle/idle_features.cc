@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/idle/idle_features.h"
+#include "components/enterprise/idle/idle_features.h"
 
 namespace enterprise_idle {
 

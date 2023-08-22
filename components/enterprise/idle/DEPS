@@ -1,0 +1,11 @@
+include_rules = [
+    "+components/browsing_data/core",
+    "+components/strings",
+    "+components/sync/base",
+]
+
+specific_include_rules = {
+    "idle_timeout_policy_handler_unittest.cc" : [
+      "+ui/base/l10n",
+    ]
+}

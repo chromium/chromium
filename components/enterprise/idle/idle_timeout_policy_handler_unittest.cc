@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/idle/idle_timeout_policy_handler.h"
+#include "components/enterprise/idle/idle_timeout_policy_handler.h"
 
 #include <iterator>
 #include <string>
@@ -14,9 +14,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/idle/action.h"
-#include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/features.h"
+#include "components/enterprise/idle/action_type.h"
+#include "components/enterprise/idle/idle_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -63,8 +63,9 @@ class IdleTimeoutPolicyHandlerTest : public testing::Test {
   }
 
   void CheckAndApplyPolicySettings() {
-    if (CheckPolicySettings())
+    if (CheckPolicySettings()) {
       ApplyPolicySettings();
+    }
   }
 
   PrefValueMap& prefs() { return prefs_; }

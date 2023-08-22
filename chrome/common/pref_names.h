@@ -1864,18 +1864,6 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
 #endif
 
-// Number of minutes of inactivity before running actions from
-// kIdleTimeoutActions. Controlled via the IdleTimeout policy.
-inline constexpr char kIdleTimeout[] = "idle_timeout";
-
-// Actions to run when the idle timeout is reached. Controller via the
-// IdleTimeoutActions policy.
-inline constexpr char kIdleTimeoutActions[] = "idle_timeout_actions";
-
-// If true, show the IdleTimeout bubble when Chrome starts.
-inline constexpr char kIdleTimeoutShowBubbleOnStartup[] =
-    "idle_timeout_show_bubble_on_startup";
-
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

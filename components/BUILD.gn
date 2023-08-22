@@ -418,6 +418,10 @@ test("components_unittests") {
     ]
   }
 
+  if (is_linux || is_win || is_mac || is_android) {
+    deps += [ "//components/enterprise/idle:unit_tests" ]
+  }
+
   if (is_ios) {
     deps += [
       ":components_tests_pak_bundle_data",

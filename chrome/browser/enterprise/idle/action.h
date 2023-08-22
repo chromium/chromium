@@ -15,42 +15,12 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/idle_dialog.h"
+#include "components/enterprise/idle/action_type.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 class Profile;
 
 namespace enterprise_idle {
-
-// Action types supported by IdleTimeoutActions.
-//
-// Actions run in order, based on their numerical value. Lower values run first.
-// Keep this enum sorted by priority.
-enum class ActionType {
-  kShowDialog = 0,  // Not an IdleTimeoutAction value. Added as a side-effect.
-#if !BUILDFLAG(IS_ANDROID)
-  kCloseBrowsers = 1,
-  kShowProfilePicker = 2,
-#endif  // !BUILDFLAG(IS_ANDROID)
-  kClearBrowsingHistory = 3,
-  kClearDownloadHistory,
-  kClearCookiesAndOtherSiteData,
-  kClearCachedImagesAndFiles,
-  kClearPasswordSignin,
-  kClearAutofill,
-  kClearSiteSettings,
-  kClearHostedAppData,
-  kReloadPages,
-  kShowBubble,  // Not an IdleTimeoutAction value. Added as a side-effect.
-};
-
-// A mapping of names to enums, for the ConfigurationPolicyHandler to make
-// conversions.
-struct ActionTypeMapEntry {
-  const char* name;
-  ActionType action_type;
-};
-extern const ActionTypeMapEntry kActionTypeMap[];
-extern const size_t kActionTypeMapSize;
 
 // An action that should Run() when a given event happens. See *Actions
 // policies, e.g. IdleTimeoutActions.

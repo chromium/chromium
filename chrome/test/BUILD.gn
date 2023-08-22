@@ -9163,8 +9163,8 @@ test("unit_tests") {
     sources += [
       "../browser/enterprise/idle/action_runner_unittest.cc",
       "../browser/enterprise/idle/action_unittest.cc",
-      "../browser/enterprise/idle/idle_timeout_policy_handler_unittest.cc",
     ]
+    deps += [ "//components/enterprise/idle" ]
   }
 
   if (is_linux || is_mac || is_win) {
@@ -10864,6 +10864,8 @@ if (!is_android && !is_chromeos_device) {
         "../browser/ui/views/profiles/first_run_interactive_uitest.cc",
         "../browser/ui/views/profiles/profile_bubble_interactive_uitest.cc",
       ]
+
+      deps += [ "//components/enterprise/idle" ]
     }
 
     if (enable_print_preview) {

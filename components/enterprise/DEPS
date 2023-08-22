@@ -11,5 +11,5 @@ include_rules = [
   "+net",
   "+services/network/public",
   "+third_party/protobuf",
-  "+third_party/content_analysis_sdk"
+  "+third_party/content_analysis_sdk",
 ]
