@@ -408,9 +408,11 @@ ts_test_files = [
   "file_manager/state/reducers/folder_shortcuts_unittest.ts",
   "file_manager/state/reducers/navigation_unittest.ts",
   "file_manager/state/reducers/preferences_unittest.ts",
-  "file_manager/state/reducers/search_unittest.ts",
   "file_manager/state/reducers/ui_entries_unittest.ts",
-  "file_manager/state/reducers/volumes_unittest.ts",
+
+  # Ducks:
+  "file_manager/state/ducks/search_unittest.ts",
+  "file_manager/state/ducks/volumes_unittest.ts",
 
   # Widgets:
   "file_manager/widgets/xf_breadcrumb_unittest.ts",

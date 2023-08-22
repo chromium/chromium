@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerSearch) {
-  RunTestURL("state/reducers/search_unittest.js");
+  RunTestURL("state/ducks/search_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerUiEntries) {
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerUiEntries) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {
-  RunTestURL("state/reducers/volumes_unittest.js");
+  RunTestURL("state/ducks/volumes_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerBulkPinning) {
