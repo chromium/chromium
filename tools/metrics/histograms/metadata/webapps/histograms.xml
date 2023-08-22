@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AppBanners.BeforeInstallEvent"
-    enum="AppBannersBeforeInstallEvent" expires_after="2024-02-18">
+    enum="AppBannersBeforeInstallEvent" expires_after="2023-12-17">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
@@ -1381,7 +1381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
-    expires_after="2024-02-18">
+    expires_after="2023-12-16">
   <owner>camdenking@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

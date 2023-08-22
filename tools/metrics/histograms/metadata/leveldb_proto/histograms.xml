@@ -149,7 +149,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.GetSuccess.{LevelDBClient}" enum="BooleanSuccess"
-    expires_after="2024-02-18">
+    expires_after="2024-01-14">
   <owner>nyquist@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <summary>Whether a ProtoDB Get call was successful or not.</summary>

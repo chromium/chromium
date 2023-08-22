@@ -929,7 +929,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SegmentationPlatform.TrainingDataCollectionEvents.{SegmentationModel}"
     enum="SegmentationPlatformTrainingDataCollectionEvent"
-    expires_after="2024-02-18">
+    expires_after="2023-10-01">
   <owner>ssid@chromium.org</owner>
   <owner>qinmin@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
@@ -955,7 +955,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SegmentationPlatform.{SegmentationKey}.PostProcessing.TopLabel.Computed"
-    units="index" expires_after="2024-02-18">
+    units="index" expires_after="2023-10-01">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-segmentation-platform@google.com</owner>
   <summary>

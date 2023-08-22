@@ -917,7 +917,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.Clusters.Backend.GetMostRecentClusters.{Segment}{Source}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-10-01">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
@@ -1309,7 +1309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.UpdateClusters.{Segment}" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-10-01">
   <owner>manukh@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;Journeys</component>
