@@ -230,12 +230,14 @@ void FrameWidgetInputHandlerImpl::Copy() {
 }
 
 void FrameWidgetInputHandlerImpl::CopyToFindPboard() {
+#if BUILDFLAG(IS_MAC)
   RunOnMainThread(base::BindOnce(
       [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler) {
         if (handler)
           handler->CopyToFindPboard();
       },
       main_thread_frame_widget_input_handler_));
+#endif
 }
 
 void FrameWidgetInputHandlerImpl::CenterSelection() {

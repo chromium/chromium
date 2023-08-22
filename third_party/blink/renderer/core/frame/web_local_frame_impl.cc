@@ -871,8 +871,10 @@ bool WebLocalFrameImpl::UsePrintingLayout() const {
 }
 
 void WebLocalFrameImpl::CopyToFindPboard() {
+#if BUILDFLAG(IS_MAC)
   if (HasSelection())
     GetFrame()->GetSystemClipboard()->CopyToFindPboard(SelectionAsText());
+#endif
 }
 
 void WebLocalFrameImpl::CenterSelection() {
