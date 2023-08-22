@@ -478,6 +478,11 @@ BASE_FEATURE(kCrosPrivacyHub,
              "CrosPrivacyHub",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables app permissions view inside Priacy Hub.
+BASE_FEATURE(kCrosPrivacyHubAppPermissions,
+             "CrosPrivacyHubAppPermissions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables Privacy Hub features selected for dogfooding.
 BASE_FEATURE(kCrosPrivacyHubV0,
              "CrosPrivacyHubV0",
@@ -3023,6 +3028,11 @@ bool IsDnsOverHttpsWithIdentifiersEnabled() {
 
 bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
+}
+
+bool IsCrosPrivacyHubAppPermissionsEnabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHubAppPermissions) &&
+         IsCrosPrivacyHubEnabled();
 }
 
 bool IsCrosPrivacyHubEnabled() {

@@ -64093,6 +64093,7 @@ from previous Chrome versions.
   <int value="-158549277" label="enable-embeddedsearch-api"/>
   <int value="-158161384" label="SafeModeForCachedFlags:disabled"/>
   <int value="-157983843" label="CrostiniUseLxd5:disabled"/>
+  <int value="-157036790" label="CrosPrivacyHubAppPermissions:disabled"/>
   <int value="-154632776" label="HelpAppWelcomeTips:disabled"/>
   <int value="-153299083" label="NewProfilePicker:disabled"/>
   <int value="-152677714" label="AsmJsToWebAssembly:enabled"/>
@@ -66604,6 +66605,7 @@ from previous Chrome versions.
   <int value="1118109174" label="enable-launcher-search-provider-api"/>
   <int value="1118339487" label="MemoriesDebug:disabled"/>
   <int value="1120428727" label="TabGridLayoutAndroid:enabled"/>
+  <int value="1121879933" label="CrosPrivacyHubAppPermissions:enabled"/>
   <int value="1122217615" label="PasswordGenerationBottomSheet:enabled"/>
   <int value="1122820469" label="ArcImageCopyPasteCompat:enabled"/>
   <int value="1123140537" label="tab-link-drag-drop:disabled"/>
