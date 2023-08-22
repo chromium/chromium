@@ -220,6 +220,10 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, InspectableViewSortOrder) {
   RunTestCase("InspectableViewSortOrder");
 }
 
+IN_PROC_BROWSER_TEST_F(CrExtensionsItemsTest, EnableExtensionToggleTooltips) {
+  RunTestCase("EnableExtensionToggleTooltips");
+}
+
 class CrExtensionsDetailViewTest : public ExtensionsBrowserTest {
  protected:
   void RunTestCase(const std::string& testCase) {

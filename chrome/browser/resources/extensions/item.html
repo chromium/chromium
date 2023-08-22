@@ -338,9 +338,13 @@
         icon-class="cr20:kite"
         icon-aria-label="$i18n{parentDisabledPermissions}">
     </cr-tooltip-icon>
+    <paper-tooltip id="enable-toggle-tooltip" for="enableToggle" position="left"
+        aria-hidden="true" animation-delay="0" fit-to-visible-bounds>
+      [[getEnableToggleTooltipText_(data.*)]]
+    </paper-tooltip>
     <cr-toggle id="enableToggle"
         aria-label$="[[getEnableToggleAriaLabel_(data.*)]]"
-        aria-describedby="a11yAssociation"
+        aria-describedby="a11yAssociation enable-toggle-tooltip"
         checked="[[isEnabled_(data.state)]]"
         on-change="onEnableToggleChange_"
         disabled$="[[!isEnableToggleEnabled_(data.*)]]"

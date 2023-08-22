@@ -238,12 +238,17 @@
         </cr-tooltip-icon>
         <cr-toggle id="enableToggle"
             aria-label$="[[getEnableToggleAriaLabel_(data.*)]]"
-            aria-describedby="name"
+            aria-describedby="name enable-toggle-tooltip"
             checked="[[isEnabled_(data.state)]]"
             on-change="onEnableToggleChange_"
             disabled$="[[!isEnableToggleEnabled_(data.*)]]"
             hidden$="[[!showEnableToggle_(data.*)]]">
         </cr-toggle>
+        <paper-tooltip id="enable-toggle-tooltip" for="enableToggle"
+            position="left" aria-hidden="true" animation-delay="0"
+            fit-to-visible-bounds>
+          [[getEnableToggleTooltipText_(data.*)]]
+        </paper-tooltip>
       </div>
     </div>
     <div id="warnings" hidden$="[[!hasSevereWarnings_(data.*)]]">

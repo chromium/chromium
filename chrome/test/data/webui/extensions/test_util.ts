@@ -218,7 +218,7 @@ export function createExtensionInfo(
         offlineEnabled: false,
         runtimeErrors: [],
         runtimeWarnings: [],
-        permissions: {simplePermissions: []},
+        permissions: {simplePermissions: [], canAccessSiteData: false},
         state: 'ENABLED',
         type: 'EXTENSION',
         updateUrl: '',

@@ -29,7 +29,7 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {getTemplate} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
@@ -148,6 +148,10 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
     return getEnableToggleAriaLabel(
         this.isEnabled_(), this.data.type, this.i18n('appEnabled'),
         this.i18n('extensionEnabled'), this.i18n('itemOff'));
+  }
+
+  private getEnableToggleTooltipText_(): string {
+    return getEnableToggleTooltipText(this.data);
   }
 
   private observeIdVisibility_() {

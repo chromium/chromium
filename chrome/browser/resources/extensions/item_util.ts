@@ -219,3 +219,18 @@ export function getEnableControl(data: chrome.developerPrivate.ExtensionInfo):
   }
   return EnableControl.ENABLE_TOGGLE;
 }
+
+/**
+ * @return The tooltip to show for an extension's enable toggle.
+ */
+export function getEnableToggleTooltipText(
+    data: chrome.developerPrivate.ExtensionInfo): string {
+  if (!isEnabled(data.state)) {
+    return loadTimeData.getString('enableToggleTooltipDisabled');
+  }
+
+  return loadTimeData.getString(
+      data.permissions.canAccessSiteData ?
+          'enableToggleTooltipEnabledWithSiteAccess' :
+          'enableToggleTooltipEnabled');
+}

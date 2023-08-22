@@ -92,9 +92,10 @@ suite('ExtensionDetailViewTest', function() {
     assertFalse(testIsVisible('extensions-runtime-host-permissions'));
 
     assertTrue(testIsVisible('#no-permissions'));
-    item.set(
-        'data.permissions',
-        {simplePermissions: ['Permission 1', 'Permission 2']});
+    item.set('data.permissions', {
+      simplePermissions: ['Permission 1', 'Permission 2'],
+      canAccessSiteData: false,
+    });
     flush();
     assertTrue(testIsVisible('#permissions-list'));
     assertEquals(
@@ -107,7 +108,8 @@ suite('ExtensionDetailViewTest', function() {
     assertFalse(testIsVisible('extensions-runtime-host-permissions'));
     // Reset state.
     item.set('data.dependentExtensions', []);
-    item.set('data.permissions', {simplePermissions: []});
+    item.set(
+        'data.permissions', {simplePermissions: [], canAccessSiteData: false});
     flush();
 
     const optionsUrl =
@@ -197,6 +199,7 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: true,
         hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
       },
+      canAccessSiteData: true,
     };
     item.set('data.permissions', allSitesPermissions);
     flush();
@@ -214,6 +217,7 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: false,
         hostAccess: chrome.developerPrivate.HostAccess.ON_SPECIFIC_SITES,
       },
+      canAccessSiteData: true,
     };
     item.set('data.permissions', someSitesPermissions);
     flush();
@@ -489,7 +493,8 @@ suite('ExtensionDetailViewTest', function() {
     // the no site access message is in the permissions section and not in
     // the site access section.
     item.set('data.dependentExtensions', []);
-    item.set('data.permissions', {simplePermissions: []});
+    item.set(
+        'data.permissions', {simplePermissions: [], canAccessSiteData: false});
     item.enableEnhancedSiteControls = true;
     flush();
 
@@ -499,9 +504,10 @@ suite('ExtensionDetailViewTest', function() {
                        'itemPermissionsAndSiteAccessEmpty')));
     assertFalse(testIsVisible('#no-site-access'));
 
-    item.set(
-        'data.permissions',
-        {simplePermissions: ['Permission 1', 'Permission 2']});
+    item.set('data.permissions', {
+      simplePermissions: ['Permission 1', 'Permission 2'],
+      canAccessSiteData: false,
+    });
     flush();
 
     // The permissions list should contain the above 2 permissions as well
@@ -558,6 +564,7 @@ suite('ExtensionDetailViewTest', function() {
         hasAllHosts: true,
         hostAccess: chrome.developerPrivate.HostAccess.ON_CLICK,
       },
+      canAccessSiteData: true,
     };
     item.set('data.permissions', allSitesPermissions);
     item.set('data.showAccessRequestsInToolbar', true);

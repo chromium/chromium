@@ -212,6 +212,7 @@ declare global {
       export interface Permissions {
         simplePermissions: chrome.developerPrivate.Permission[];
         runtimeHostPermissions?: RuntimeHostPermissions;
+        canAccessSiteData: boolean;
       }
 
       export interface ExtensionInfo {

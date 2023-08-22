@@ -36,7 +36,7 @@ import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resource
 import {getTemplate} from './detail_view.html.js';
 import {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
-import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
+import {computeInspectableViewLabel, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, sortViews, userCanChangeEnablement} from './item_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import {ExtensionsToggleRowElement} from './toggle_row.js';
 
@@ -188,6 +188,10 @@ export class ExtensionsDetailViewElement extends
     return getEnableToggleAriaLabel(
         this.isEnabled_(), this.data.type, this.i18n('appEnabled'),
         this.i18n('extensionEnabled'), this.i18n('itemOff'));
+  }
+
+  private getEnableToggleTooltipText_(): string {
+    return getEnableToggleTooltipText(this.data);
   }
 
   private onCloseButtonClick_() {

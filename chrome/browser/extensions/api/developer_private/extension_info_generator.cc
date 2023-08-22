@@ -56,6 +56,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/offline_enabled_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
+#include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/manifest_url_handlers.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permission_message_util.h"
@@ -313,6 +314,19 @@ developer::RuntimeHostPermissions CreateRuntimeHostPermissionsInfo(
   return runtime_host_permissions;
 }
 
+// Returns if the extension can access site data. This checks for host
+// permissions, activeTab and API permissions that will surface a warning for
+// all hosts access.
+bool CanAccessSiteData(PermissionsManager* permissions_manager,
+                       const Extension& extension) {
+  return permissions_manager->ExtensionRequestsHostPermissionsOrActiveTab(
+             extension) ||
+         PermissionsParser::GetRequiredPermissions(&extension)
+             .ShouldWarnAllHosts() ||
+         PermissionsParser::GetOptionalPermissions(&extension)
+             .ShouldWarnAllHosts();
+}
+
 // Populates the |permissions| data for the given |extension|.
 void AddPermissionsInfo(content::BrowserContext* browser_context,
                         const Extension& extension,
@@ -333,6 +347,10 @@ void AddPermissionsInfo(content::BrowserContext* browser_context,
 
   PermissionsManager* permissions_manager =
       PermissionsManager::Get(browser_context);
+
+  permissions->can_access_site_data =
+      CanAccessSiteData(permissions_manager, extension);
+
   bool enable_runtime_host_permissions =
       permissions_manager->CanAffectExtension(extension);
 
