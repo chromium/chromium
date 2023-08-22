@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/clock.h"
+#include "base/trace_event/trace_event.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/model/entity_change.h"
@@ -41,6 +42,7 @@ ReadingListSyncBridge::~ReadingListSyncBridge() {
 void ReadingListSyncBridge::ModelReadyToSync(
     ReadingListModelImpl* model,
     std::unique_ptr<syncer::MetadataBatch> sync_metadata_batch) {
+  TRACE_EVENT0("ui", "ReadingListSyncBridge::ModelReadyToSync");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model);
   DCHECK(!model_);
