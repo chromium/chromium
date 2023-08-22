@@ -567,15 +567,6 @@ size_t HistoryFuzzyProvider::EstimateMemoryUsage() const {
   return res;
 }
 
-// static
-void HistoryFuzzyProvider::ApplyRelevancePenalty(AutocompleteMatch& match,
-                                                 int penalty) {
-  DCHECK_GE(penalty, 0);
-  DCHECK_LE(penalty, 100);
-  match.relevance -= match.relevance * penalty / 100;
-  match.fuzzy_match_penalty = penalty;
-}
-
 HistoryFuzzyProvider::~HistoryFuzzyProvider() = default;
 
 void HistoryFuzzyProvider::DoAutocomplete() {
@@ -707,7 +698,15 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
 
   // Apply relevance penalty; all corrections are equal and we only apply this
   // to the most relevant result, so edit distance isn't needed.
-  ApplyRelevancePenalty(match, penalty);
+  DCHECK_GE(penalty, 0);
+  DCHECK_LE(penalty, 100);
+  match.relevance -= match.relevance * penalty / 100;
+
+  // Scoring signals are calculated in the history and bookmark providers using
+  // the corrected input. These scoring signals are inaccurate for the true
+  // input, so clear them to prevent the ml model assigning an
+  // artificially high confidence to this suggestion.
+  match.scoring_signals.reset();
 
   return 1;
 }
