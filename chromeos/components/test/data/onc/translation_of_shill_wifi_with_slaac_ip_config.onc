@@ -1,0 +1,27 @@
+{
+  "GUID":"guid",
+  "IPAddressConfigType": "DHCP",
+  "IPConfigs":[
+    {
+      "Gateway":"1.1.1.1",
+      "IPAddress":"123.123.123.123",
+      "NameServers":[
+        "1.1.1.2",
+        "1.1.1.3"
+      ],
+      "RoutingPrefix":24,
+      "Type":"IPv4",
+      "WebProxyAutoDiscoveryUrl":"proxy.url"
+    },
+    {
+      "Gateway":"2001:db8:85a3::7a2e:370:7331",
+      "IPAddress":"2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+      "NameServers":[],
+      "RoutingPrefix":64,
+      "Type":"IPv6"
+    }
+  ],
+  "Name": "test_wifi",
+  "NameServersConfigType": "DHCP",
+  "Type": "WiFi"
+}

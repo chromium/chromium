@@ -797,7 +797,8 @@ void ShillToONCTranslator::TranslateIPConfig() {
       shill_ip_method == shill::kTypeDHCP) {
     type = ::onc::ipconfig::kIPv4;
   } else if (shill_ip_method == shill::kTypeIPv6 ||
-             shill_ip_method == shill::kTypeDHCP6) {
+             shill_ip_method == shill::kTypeDHCP6 ||
+             shill_ip_method == shill::kTypeSLAAC) {
     type = ::onc::ipconfig::kIPv6;
   } else {
     return;  // Ignore unhandled IPConfig types, e.g. bootp, zeroconf, ppp

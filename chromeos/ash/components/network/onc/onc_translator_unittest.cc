@@ -210,7 +210,9 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_cellular_with_roaming_required_"
                        "and_inactive.onc"),
         std::make_pair("shill_wifi_eap_empty_certid.json",
-                       "translation_of_shill_wifi_eap_empty_certid.onc")));
+                       "translation_of_shill_wifi_eap_empty_certid.onc"),
+        std::make_pair("shill_wifi_with_slaac_ip_config.json",
+                       "translation_of_shill_wifi_with_slaac_ip_config.onc")));
 
 TEST_F(ONCTranslatorShillToOncTest, TranslateCellularApnRevamp) {
   base::test::ScopedFeatureList scoped_feature_list;
