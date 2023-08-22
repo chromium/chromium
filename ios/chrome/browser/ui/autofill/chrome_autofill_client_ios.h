@@ -109,6 +109,7 @@ class ChromeAutofillClientIOS : public AutofillClient {
       const AutofillProfile* original_profile,
       SaveAddressProfilePromptOptions options,
       AddressProfileSavePromptCallback callback) override;
+  void ShowEditAddressProfileDialog(const AutofillProfile& profile) override;
   void ShowDeleteAddressProfileDialog() override;
   bool HasCreditCardScanFeature() override;
   void ScanCreditCard(CreditCardScanCallback callback) override;

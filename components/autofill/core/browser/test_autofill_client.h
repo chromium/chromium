@@ -391,6 +391,8 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::SaveAddressProfilePromptOptions options,
       AutofillClient::AddressProfileSavePromptCallback callback) override {}
 
+  void ShowEditAddressProfileDialog(const AutofillProfile& profile) override {}
+
   void ShowDeleteAddressProfileDialog() override {}
 
   bool HasCreditCardScanFeature() override { return false; }

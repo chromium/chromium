@@ -273,8 +273,13 @@ void AutofillClientImpl::ConfirmSaveAddressProfile(
   NOTREACHED();
 }
 
+void AutofillClientImpl::ShowEditAddressProfileDialog(
+    const AutofillProfile& profile) {
+  NOTREACHED_NORETURN();
+}
+
 void AutofillClientImpl::ShowDeleteAddressProfileDialog() {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 bool AutofillClientImpl::HasCreditCardScanFeature() {

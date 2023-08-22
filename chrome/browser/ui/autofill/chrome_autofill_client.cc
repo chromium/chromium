@@ -104,6 +104,7 @@
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/storage_partition.h"
 #include "delete_address_profile_dialog_controller_impl.h"
+#include "edit_address_profile_dialog_controller_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
@@ -802,6 +803,22 @@ void ChromeAutofillClient::ConfirmCreditCardFillAssist(
 #endif
 }
 
+void ChromeAutofillClient::ShowEditAddressProfileDialog(
+    const AutofillProfile& profile) {
+#if !BUILDFLAG(IS_ANDROID)
+  EditAddressProfileDialogControllerImpl::CreateForWebContents(web_contents());
+  EditAddressProfileDialogControllerImpl* controller =
+      EditAddressProfileDialogControllerImpl::FromWebContents(web_contents());
+  CHECK(controller);
+  controller->OfferEdit(profile, /*original_profile=*/nullptr,
+                        /*footer_message=*/u"", base::DoNothing(),
+                        /*is_migration_to_account=*/false);
+#else
+  // Edit address profile dialog is only available is desktop.
+  NOTREACHED_NORETURN();
+#endif
+}
+
 void ChromeAutofillClient::ShowDeleteAddressProfileDialog() {
 #if !BUILDFLAG(IS_ANDROID)
   DeleteAddressProfileDialogControllerImpl::CreateForWebContents(
@@ -811,7 +828,7 @@ void ChromeAutofillClient::ShowDeleteAddressProfileDialog() {
   controller->OfferDelete();
 #else
   // Delete address profile dialog is only available is desktop.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 #endif
 }
 

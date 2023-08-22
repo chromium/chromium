@@ -265,8 +265,15 @@ void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
                             callback:std::move(callback)];
 }
 
+void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
+    const AutofillProfile& profile) {
+  // Please note: This method is only implemented on desktop and is therefore
+  // unreachable here.
+  NOTREACHED();
+}
+
 void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog() {
-  // Please note: This method is only implemented on desktop and therefore
+  // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
   NOTREACHED();
 }

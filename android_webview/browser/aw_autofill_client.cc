@@ -206,6 +206,11 @@ void AwAutofillClient::ConfirmSaveCreditCardLocally(
   NOTIMPLEMENTED();
 }
 
+void AwAutofillClient::ShowEditAddressProfileDialog(
+    const autofill::AutofillProfile& profile) {
+  NOTREACHED();
+}
+
 void AwAutofillClient::ShowDeleteAddressProfileDialog() {
   NOTREACHED();
 }

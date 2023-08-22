@@ -682,6 +682,10 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmCreditCardFillAssist(const CreditCard& card,
                                            base::OnceClosure callback) = 0;
 
+  // Show an edit address profile dialog, giving the user an option to alter
+  // autofill profile data.
+  virtual void ShowEditAddressProfileDialog(const AutofillProfile& profile) = 0;
+
   // Show a delete address profile dialog asking if users want to proceed with
   // deletion.
   virtual void ShowDeleteAddressProfileDialog() = 0;
