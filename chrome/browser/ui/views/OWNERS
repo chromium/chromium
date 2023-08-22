@@ -18,6 +18,8 @@ pkasting@chromium.org
 sky@chromium.org
 tbergquist@chromium.org
 
+per-file content_settings*=file://components/content_settings/OWNERS
+
 per-file drag_and_drop_interactive_uitest.*=lukasza@chromium.org
 per-file drag_and_drop_interactive_uitest.*=file://content/OWNERS
 
