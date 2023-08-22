@@ -63,6 +63,9 @@ class SyncFileSystemService
   using ExtensionStatusMapCallback =
       base::OnceCallback<void(const RemoteFileSyncService::OriginStatusMap&)>;
 
+  // Uses SyncFileSystemServiceFactory instead.
+  explicit SyncFileSystemService(Profile* profile);
+  ~SyncFileSystemService() override;
   SyncFileSystemService(const SyncFileSystemService&) = delete;
   SyncFileSystemService& operator=(const SyncFileSystemService&) = delete;
 
@@ -107,9 +110,6 @@ class SyncFileSystemService
   friend std::default_delete<SyncFileSystemService>;
   friend class LocalSyncRunner;
   friend class RemoteSyncRunner;
-
-  explicit SyncFileSystemService(Profile* profile);
-  ~SyncFileSystemService() override;
 
   void Initialize(std::unique_ptr<LocalFileSyncService> local_file_service,
                   std::unique_ptr<RemoteFileSyncService> remote_file_service);

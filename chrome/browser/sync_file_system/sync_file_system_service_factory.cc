@@ -66,11 +66,13 @@ SyncFileSystemServiceFactory::SyncFileSystemServiceFactory()
 
 SyncFileSystemServiceFactory::~SyncFileSystemServiceFactory() = default;
 
-KeyedService* SyncFileSystemServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SyncFileSystemServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  SyncFileSystemService* service = new SyncFileSystemService(profile);
+  std::unique_ptr<SyncFileSystemService> service =
+      std::make_unique<SyncFileSystemService>(profile);
   service->Initialize(LocalFileSyncService::Create(profile),
                       RemoteFileSyncService::CreateForBrowserContext(
                           context, service->task_logger()));
