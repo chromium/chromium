@@ -73,8 +73,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   NGConstraintSpace BuildSpaceForFlexBasis(const NGBlockNode& flex_item) const;
   NGConstraintSpace BuildSpaceForIntrinsicBlockSize(
       const NGBlockNode& flex_item,
-      absl::optional<LayoutUnit> override_inline_size,
-      Phase phase) const;
+      absl::optional<LayoutUnit> override_inline_size) const;
   // |line_cross_size_for_stretch| should only be set when running the final
   // layout pass for stretch, when the line cross size is definite.
   // |block_offset_for_fragmentation| should only be set when running the final
@@ -115,13 +114,8 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
 
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
 
-  MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
-  // This implements 9.9.3. Flex Item Intrinsic Size Contributions, from
-  // https://drafts.csswg.org/css-flexbox/#intrinsic-item-contributions.
-  MinMaxSizesResult ComputeItemContributions(const NGConstraintSpace& space,
-                                             const FlexItem& item) const;
 
   // Return the amount of block space available in the current fragmentainer
   // for the node being laid out by this algorithm.

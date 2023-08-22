@@ -523,10 +523,6 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.is_restricted_block_size_table_cell_child;
   }
 
-  bool IsInFlexIntrinsicSizing() const {
-    return bitfields_.is_in_flex_intrinsic_sizing;
-  }
-
   bool IsPaintedAtomically() const { return bitfields_.is_painted_atomically; }
 
   // If specified a layout should produce a Fragment which fragments at the
@@ -1560,7 +1556,6 @@ class CORE_EXPORT NGConstraintSpace final {
           is_initial_block_size_indefinite(false),
           is_table_cell_child(false),
           is_restricted_block_size_table_cell_child(false),
-          is_in_flex_intrinsic_sizing(false),
           percentage_inline_storage(kSameAsAvailable),
           percentage_block_storage(kSameAsAvailable),
           replaced_percentage_block_storage(kSameAsAvailable) {}
@@ -1619,7 +1614,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_initial_block_size_indefinite : 1;
     unsigned is_table_cell_child : 1;
     unsigned is_restricted_block_size_table_cell_child : 1;
-    unsigned is_in_flex_intrinsic_sizing : 1;
 
     unsigned percentage_inline_storage : 2;           // NGPercentageStorage
     unsigned percentage_block_storage : 2;            // NGPercentageStorage

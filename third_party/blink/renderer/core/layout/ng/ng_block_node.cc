@@ -260,13 +260,6 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
     return false;
   }
 
-  if (constraint_space.IsInFlexIntrinsicSizing() !=
-      node.GetLayoutBox()->IntrinsicLogicalWidthsInFlexIntrinsicSizing()) {
-    UseCounter::Count(node.GetDocument(),
-                      WebFeature::kFlexIntrinsicSizesCacheMiss);
-    return false;
-  }
-
   return true;
 }
 
@@ -1026,8 +1019,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   box_->SetIntrinsicLogicalWidthsFromNG(
       initial_block_size, depends_on_block_constraints,
       /* child_depends_on_block_constraints */
-      result.depends_on_block_constraints,
-      constraint_space.IsInFlexIntrinsicSizing(), &result.sizes);
+      result.depends_on_block_constraints, result.sizes);
 
   if (IsNGTableCell()) {
     To<LayoutNGTableCell>(box_.Get())

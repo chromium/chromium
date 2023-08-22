@@ -2100,13 +2100,6 @@
       status: "stable",
     },
     {
-      name: "LayoutFlexNewRowAlgorithm",
-      implied_by: ["LayoutFlexNewRowAlgorithmV2"],
-    },
-    {
-      name: "LayoutFlexNewRowAlgorithmV2",
-    },
-    {
       name: "LayoutFlexNewRowAlgorithmV3",
       status: "test",
     },
