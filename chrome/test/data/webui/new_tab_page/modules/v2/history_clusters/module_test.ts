@@ -119,31 +119,25 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
     });
 
     test('Header info button click opens info dialog', async () => {
-      // Arrange.
-      const sampleClusterLabel = '"Sample Journey"';
       const moduleElements = await initializeModule(
-          [createSampleCluster(2, {label: sampleClusterLabel})]);
+          [createSampleCluster(2, {label: '"Sample Journey"'})]);
       const moduleElement = moduleElements[0];
-
-      // Act.
       assertTrue(!!moduleElement);
+
       const headerElement = $$(moduleElement, 'history-clusters-header-v2');
       assertTrue(!!headerElement);
-
       headerElement!.dispatchEvent(new Event('info-button-click'));
 
-      // Assert.
       assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
     });
 
     test('Header contains label that is not hidden', async () => {
       // Arrange.
-      const sampleClusterLabel = '"Sample Journey"';
       loadTimeData.overrideValues({
         historyClustersSuggestionChipHeaderEnabled: true,
       });
       const moduleElements = await initializeModule(
-          [createSampleCluster(2, {label: sampleClusterLabel})]);
+          [createSampleCluster(2, {label: '"Sample Journey"'})]);
       const moduleElement = moduleElements[0];
 
       // Act.
@@ -164,9 +158,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         'Backend is notified when module is dismissed and restored',
         async () => {
           // Arrange.
-          const sampleClusterLabel = '"Sample Journey"';
           const sampleCluster =
-              createSampleCluster(2, {label: sampleClusterLabel});
+              createSampleCluster(2, {label: '"Sample Journey"'});
           const moduleElements = await initializeModule([sampleCluster]);
           const moduleElement = moduleElements[0];
           assertTrue(!!moduleElement);
@@ -202,9 +195,8 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
         'Backend is notified when module is marked done and restored',
         async () => {
           // Arrange.
-          const sampleClusterLabel = '"Sample Journey"';
           const sampleCluster =
-              createSampleCluster(2, {label: sampleClusterLabel});
+              createSampleCluster(2, {label: '"Sample Journey"'});
           const moduleElements = await initializeModule([sampleCluster]);
           const moduleElement = moduleElements[0];
           assertTrue(!!moduleElement);
@@ -236,8 +228,26 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
               InteractionState.kDefault, 3);
         });
 
+    test(
+        'Show Journeys side panel is invoked when performing show all action',
+        async () => {
+          const sampleClusterLabel = '"Sample Journey"';
+          const moduleElements = await initializeModule(
+              [createSampleCluster(2, {label: sampleClusterLabel})]);
+          const moduleElement = moduleElements[0];
+          assertTrue(!!moduleElement);
+
+          const headerElement = $$(moduleElement, 'history-clusters-header-v2');
+          assertTrue(!!headerElement);
+          headerElement!.dispatchEvent(new Event('show-all-button-click'));
+
+          assertEquals(
+              sampleClusterLabel.substring(1, sampleClusterLabel.length - 1),
+              handler.getArgs('showJourneysSidePanel')[0]);
+        });
+
     [...Array(3).keys()].forEach(numRelatedSearches => {
-      test('module shows correct amount of related searches', async () => {
+      test('Module shows correct amount of related searches', async () => {
         // Arrange.
         const sampleClusterLabel = '"Sample Journey"';
         const moduleElements = await initializeModule([createSampleCluster(
