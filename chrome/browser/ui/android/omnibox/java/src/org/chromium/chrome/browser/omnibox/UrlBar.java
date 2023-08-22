@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.Layout;
@@ -220,21 +219,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             setFocusableInTouchMode(mAllowFocus);
         });
 
-        setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_URI
-                | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-
-        // The HTC Sense IME will attempt to autocomplete words in the Omnibox when Prediction is
-        // enabled.  We want to disable this feature and rely on the Omnibox's implementation.
-        // Their IME does not respect ~TYPE_TEXT_FLAG_AUTO_COMPLETE nor any of the other InputType
-        // options I tried, but setting the filter variation prevents it.  Sadly, it also removes
-        // the .com button, but the prediction was buggy as it would autocomplete words even when
-        // typing at the beginning of the omnibox text when other content was present (messing up
-        // what was previously there).  See bug: http://b/issue?id=6200071
-        String defaultIme = Settings.Secure.getString(
-                getContext().getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-        if (defaultIme != null && defaultIme.contains("com.htc.android.htcime")) {
-            setInputType(getInputType() | InputType.TYPE_TEXT_VARIATION_FILTER);
-        }
+        setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
         mGestureDetector =
                 new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
