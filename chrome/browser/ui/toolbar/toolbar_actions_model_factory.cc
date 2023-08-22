@@ -47,9 +47,10 @@ ToolbarActionsModelFactory::ToolbarActionsModelFactory()
 
 ToolbarActionsModelFactory::~ToolbarActionsModelFactory() = default;
 
-KeyedService* ToolbarActionsModelFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ToolbarActionsModelFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ToolbarActionsModel(
+  return std::make_unique<ToolbarActionsModel>(
       Profile::FromBrowserContext(context),
       extensions::ExtensionPrefsFactory::GetForBrowserContext(context));
 }
