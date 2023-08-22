@@ -36,9 +36,10 @@ LoginUIServiceFactory* LoginUIServiceFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* LoginUIServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new LoginUIService(static_cast<Profile*>(profile));
+std::unique_ptr<KeyedService>
+LoginUIServiceFactory::BuildServiceInstanceForBrowserContext(
+    content::BrowserContext* browser_context) const {
+  return std::make_unique<LoginUIService>(Profile::FromBrowserContext(browser_context));
 }
 
 bool LoginUIServiceFactory::ServiceIsCreatedWithBrowserContext() const {
