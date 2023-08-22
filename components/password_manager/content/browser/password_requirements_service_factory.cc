@@ -39,15 +39,15 @@ PasswordRequirementsServiceFactory::PasswordRequirementsServiceFactory()
 PasswordRequirementsServiceFactory::~PasswordRequirementsServiceFactory() =
     default;
 
-KeyedService* PasswordRequirementsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordRequirementsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord())
     return nullptr;
 
   return CreatePasswordRequirementsService(
-             context->GetDefaultStoragePartition()
-                 ->GetURLLoaderFactoryForBrowserProcess())
-      .release();
+      context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 }  // namespace password_manager
