@@ -270,6 +270,16 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
                                          cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
+  if (features::IsProductivityLauncherImageSearchEnabled()) {
+    views::ImageButton* filter_button = CreateFilterButton(base::BindRepeating(
+        &SearchBoxView::FilterButtonPressed, base::Unretained(this)));
+    filter_button->SetFlipCanvasOnPaintForRTLUI(false);
+    // TODO(crbug.com/1352636): Replace this with the l10n string.
+    std::u16string filter_button_label(u"Filter search categories");
+    filter_button->SetAccessibleName(filter_button_label);
+    filter_button->SetTooltipText(filter_button_label);
+  }
+
   views::ImageButton* close_button = CreateCloseButton(base::BindRepeating(
       &SearchBoxView::CloseButtonPressed, base::Unretained(this)));
   std::u16string close_button_label(
@@ -527,6 +537,12 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(chromeos::kAssistantIcon, GetSearchBoxIconSize(),
                             button_icon_color));
+  if (filter_button()) {
+    filter_button()->SetImage(
+        views::ImageButton::STATE_NORMAL,
+        gfx::CreateVectorIcon(kFilterIcon, GetSearchBoxIconSize(),
+                              button_icon_color));
+  }
   auto* focus_ring = views::FocusRing::Get(assistant_button());
   focus_ring->SetOutsetFocusRingDisabled(true);
   focus_ring->SetColorId(GetFocusColorId(is_jelly_enabled_));
@@ -876,6 +892,11 @@ void SearchBoxView::CloseButtonPressed() {
 
 void SearchBoxView::AssistantButtonPressed() {
   delegate_->AssistantButtonPressed();
+}
+
+// TODO(crbug.com/1352636): Implement opening the category filter bubble.
+void SearchBoxView::FilterButtonPressed() {
+  return;
 }
 
 void SearchBoxView::UpdateSearchIcon() {

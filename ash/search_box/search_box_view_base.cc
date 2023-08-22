@@ -44,6 +44,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -436,7 +437,7 @@ SearchBoxViewBase::SearchBoxViewBase()
   search_box_button_container_ =
       content_container_->AddChildView(std::make_unique<views::View>());
   search_box_button_container_->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
+      std::make_unique<views::BoxLayout>());
   content_container_->SetFlexForView(search_box_button_container_, 0,
                                      /*use_min_size=*/true);
 }
@@ -483,6 +484,15 @@ views::ImageButton* SearchBoxViewBase::CreateAssistantButton(
   return assistant_button_;
 }
 
+views::ImageButton* SearchBoxViewBase::CreateFilterButton(
+    const base::RepeatingClosure& button_callback) {
+  DCHECK(!filter_button_);
+  filter_button_ = search_box_button_container_->AddChildView(
+      std::make_unique<SearchBoxImageButton>(button_callback));
+  filter_button_->SetVisible(false);
+  return filter_button_;
+}
+
 bool SearchBoxViewBase::HasSearch() const {
   return !search_box_->GetText().empty();
 }
@@ -495,11 +505,15 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
 }
 
 views::ImageButton* SearchBoxViewBase::assistant_button() {
-  return static_cast<views::ImageButton*>(assistant_button_);
+  return views::AsViewClass<views::ImageButton>(assistant_button_);
 }
 
 views::ImageButton* SearchBoxViewBase::close_button() {
-  return static_cast<views::ImageButton*>(close_button_);
+  return views::AsViewClass<views::ImageButton>(close_button_);
+}
+
+views::ImageButton* SearchBoxViewBase::filter_button() {
+  return views::AsViewClass<views::ImageButton>(filter_button_);
 }
 
 views::ImageView* SearchBoxViewBase::search_icon() {
@@ -600,6 +614,9 @@ void SearchBoxViewBase::OnEnabledChanged() {
     close_button_->SetEnabled(enabled);
   if (assistant_button_)
     assistant_button_->SetEnabled(enabled);
+  if (filter_button_) {
+    filter_button_->SetEnabled(enabled);
+  }
 }
 
 const char* SearchBoxViewBase::GetClassName() const {
@@ -683,8 +700,14 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
 
   if (should_show_close_button) {
     MaybeFadeButtonIn(close_button_);
+    if (filter_button_) {
+      MaybeFadeButtonIn(filter_button_);
+    }
   } else {
     MaybeFadeButtonOut(close_button_);
+    if (filter_button_) {
+      MaybeFadeButtonOut(filter_button_);
+    }
   }
 
   if (assistant_button_) {
@@ -696,9 +719,13 @@ void SearchBoxViewBase::UpdateButtonsVisibility() {
       MaybeFadeButtonOut(assistant_button_);
     }
   }
+
+  // Explicitly call Layout as the number of the buttons showing may change.
+  InvalidateLayout();
 }
 
 void SearchBoxViewBase::MaybeFadeButtonIn(SearchBoxImageButton* button) {
+  CHECK(button);
   if (button->GetVisible() && button->is_showing())
     return;
 
@@ -720,6 +747,7 @@ void SearchBoxViewBase::MaybeFadeButtonIn(SearchBoxImageButton* button) {
 }
 
 void SearchBoxViewBase::MaybeFadeButtonOut(SearchBoxImageButton* button) {
+  CHECK(button);
   if (!button->GetVisible() || !button->is_showing())
     return;
 
@@ -808,6 +836,9 @@ void SearchBoxViewBase::UpdateBackgroundColor(SkColor color) {
     close_button_->UpdateInkDropColorAndOpacity(color);
   if (assistant_button_)
     assistant_button_->UpdateInkDropColorAndOpacity(color);
+  if (filter_button_) {
+    filter_button_->UpdateInkDropColorAndOpacity(color);
+  }
 }
 
 }  // namespace ash

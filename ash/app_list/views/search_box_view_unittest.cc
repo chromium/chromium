@@ -285,6 +285,17 @@ TEST_F(SearchBoxViewTest, CloseButtonVisibleAfterTyping) {
   EXPECT_TRUE(view()->close_button()->GetVisible());
 }
 
+// Tests that the filter button is not created if the image search feature is
+// disabled.
+TEST_F(SearchBoxViewTest, FilterButtonNotCreatedWithDisabledImageSearch) {
+  ASSERT_FALSE(features::IsProductivityLauncherImageSearchEnabled());
+  EXPECT_FALSE(view()->filter_button());
+
+  // The filter button is still not created after typing in the search box.
+  KeyPress(ui::VKEY_A);
+  EXPECT_FALSE(view()->filter_button());
+}
+
 // Tests that the close button is still visible after the search box is
 // activated (in zero state).
 TEST_F(SearchBoxViewTest, CloseButtonVisibleInZeroStateSearchBox) {
@@ -666,6 +677,32 @@ TEST_F(SearchBoxViewAssistantButtonTest,
 
   KeyPress(ui::VKEY_BACK);
   EXPECT_TRUE(view()->assistant_button()->GetVisible());
+}
+
+class SearchBoxViewFilterButtonTest : public SearchBoxViewTest {
+ public:
+  SearchBoxViewFilterButtonTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kJelly,
+         features::kProductivityLauncherImageSearch},
+        {});
+  }
+  SearchBoxViewFilterButtonTest(const SearchBoxViewFilterButtonTest&) = delete;
+  SearchBoxViewFilterButtonTest& operator=(
+      const SearchBoxViewFilterButtonTest&) = delete;
+  ~SearchBoxViewFilterButtonTest() override = default;
+};
+
+// Tests that the close button is invisible by default.
+TEST_F(SearchBoxViewFilterButtonTest, FilterButtonInvisibleByDefault) {
+  EXPECT_FALSE(view()->filter_button()->GetVisible());
+}
+
+// Tests that the close button becomes visible after typing in the search box.
+TEST_F(SearchBoxViewFilterButtonTest, FilterButtonVisibleAfterTyping) {
+  KeyPress(ui::VKEY_A);
+  EXPECT_TRUE(view()->filter_button()->GetVisible());
 }
 
 class SearchBoxViewAutocompleteTest : public SearchBoxViewTest,

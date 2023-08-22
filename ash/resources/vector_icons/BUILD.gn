@@ -112,6 +112,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "eight_files.icon",
     "expand_all.icon",
     "files_app.icon",
+    "filter.icon",
     "five_files.icon",
     "folder.icon",
     "four_files.icon",

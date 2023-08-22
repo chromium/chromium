@@ -181,6 +181,9 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Called when the assistant button within the search box gets pressed.
   void AssistantButtonPressed();
 
+  // Called when the filter button within the search box gets pressed.
+  void FilterButtonPressed();
+
   // Updates the icon shown left of the search box texfield.
   void UpdateSearchIcon();
 

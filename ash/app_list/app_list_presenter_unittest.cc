@@ -1680,6 +1680,7 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
             client->GetAndResetPastSearchQueries());
 
   SearchBoxView* search_box_view = GetSearchBoxView();
+  search_box_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_TRUE(search_box_view->close_button()->GetVisible());
   LeftClickOn(search_box_view->close_button());
 

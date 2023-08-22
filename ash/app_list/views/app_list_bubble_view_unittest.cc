@@ -677,6 +677,7 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
 
   // Close button is visible after typing text.
   SearchBoxView* search_box_view = GetSearchBoxView();
+  search_box_view->GetWidget()->LayoutRootViewIfNecessary();
   EXPECT_TRUE(search_box_view->close_button()->GetVisible());
   EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
 

@@ -53,7 +53,7 @@ class SearchBoxViewBase : public views::View,
 
   // Creates the search box close button at the right edge of the search box.
   // The close button will initially be hidden. The visibility will be updated
-  // appropriatelly when `UpdateButtonsVisibility()` gets called.
+  // appropriately when `UpdateButtonsVisibility()` gets called.
   views::ImageButton* CreateCloseButton(
       const base::RepeatingClosure& button_callback);
 
@@ -62,8 +62,17 @@ class SearchBoxViewBase : public views::View,
   // hidden, as the buttons have the same expected position within the search
   // box.
   // The assistant button will initially be hidden. The visibility will be
-  // updated appropriatelly when `UpdateButtonsVisibility()` gets called.
+  // updated appropriately when `UpdateButtonsVisibility()` gets called.
   views::ImageButton* CreateAssistantButton(
+      const base::RepeatingClosure& button_callback);
+
+  // Creates the search box category filter button at the right edge of the
+  // search box, where clicking on it shows a bubble for the users to select
+  // search categories to show.
+  // The filter button will initially be hidden and will be shown along with the
+  // close button. The visibility will be updated appropriately when
+  // `UpdateButtonsVisibility()` gets called.
+  views::ImageButton* CreateFilterButton(
       const base::RepeatingClosure& button_callback);
 
   bool HasSearch() const;
@@ -75,6 +84,7 @@ class SearchBoxViewBase : public views::View,
 
   views::ImageButton* assistant_button();
   views::ImageButton* close_button();
+  views::ImageButton* filter_button();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
 
@@ -223,6 +233,7 @@ class SearchBoxViewBase : public views::View,
   raw_ptr<SearchIconImageView, ExperimentalAsh> search_icon_ = nullptr;
   raw_ptr<SearchBoxImageButton, ExperimentalAsh> assistant_button_ = nullptr;
   raw_ptr<SearchBoxImageButton, ExperimentalAsh> close_button_ = nullptr;
+  raw_ptr<SearchBoxImageButton, ExperimentalAsh> filter_button_ = nullptr;
   raw_ptr<views::BoxLayoutView, ExperimentalAsh> text_container_ = nullptr;
 
   raw_ptr<views::Textfield, ExperimentalAsh> search_box_;
