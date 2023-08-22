@@ -39,9 +39,10 @@ TailoredSecurityServiceFactory::TailoredSecurityServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-KeyedService* TailoredSecurityServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TailoredSecurityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ChromeTailoredSecurityService(
+  return std::make_unique<ChromeTailoredSecurityService>(
       Profile::FromBrowserContext(context));
 }
 
