@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/storage_type.h"
@@ -154,7 +155,9 @@ bool ShouldRemoveExtensionByType(const base::StringPiece extension_id,
   switch (chrome_type) {
     case ChromeType::kAsh:
       return !base::Contains(kExtensionsAshOnly, extension_id) &&
-             !base::Contains(kExtensionsBothChromes, extension_id);
+             !base::Contains(
+                 extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser(),
+                 extension_id);
 
     case ChromeType::kLacros:
       return base::Contains(kExtensionsAshOnly, extension_id);
@@ -650,7 +653,9 @@ bool MigrateLevelDB(const base::FilePath& original_path,
   // Copy all the key-value pairs that need to be kept in Ash.
   for (const auto& [extension_id, keys] : original_keys) {
     if (base::Contains(kExtensionsAshOnly, extension_id) ||
-        base::Contains(kExtensionsBothChromes, extension_id)) {
+        base::Contains(
+            extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser(),
+            extension_id)) {
       for (const std::string& key : keys) {
         std::string value;
         status = original_db->Get(leveldb::ReadOptions(), key, &value);

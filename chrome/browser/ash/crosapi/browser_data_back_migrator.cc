@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -253,10 +254,10 @@ BrowserDataBackMigrator::TaskResult BrowserDataBackMigrator::MergeSplitItems(
   }
 
   // Merge IndexedDB.
-  for (const char* extension_id :
-       browser_data_migrator_util::kExtensionsBothChromes) {
+  for (const auto& extension_id :
+       extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()) {
     if (!MergeCommonIndexedDB(ash_profile_dir, lacros_default_profile_dir,
-                              extension_id)) {
+                              extension_id.data())) {
       return {TaskStatus::kMergeSplitItemsMergeIndexedDBFailed, errno};
     }
   }
@@ -749,8 +750,8 @@ bool BrowserDataBackMigrator::MergeCommonExtensionsDataFiles(
       return false;
     }
 
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsBothChromes) {
+    for (const auto& extension_id :
+         extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()) {
       base::FilePath lacros_target_path =
           lacros_target_dir.Append(extension_id);
 
@@ -779,8 +780,8 @@ bool BrowserDataBackMigrator::RemoveAshCommonExtensionsDataFiles(
   const base::FilePath ash_target_dir = ash_profile_dir.Append(target_dir);
 
   if (base::PathExists(ash_target_dir)) {
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsBothChromes) {
+    for (const auto& extension_id :
+         extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()) {
       base::FilePath ash_target_path = ash_target_dir.Append(extension_id);
 
       if (!base::DeletePathRecursively(ash_target_path)) {
@@ -1023,8 +1024,9 @@ bool BrowserDataBackMigrator::IsLacrosOnlyExtension(
     const base::StringPiece extension_id) {
   return !base::Contains(browser_data_migrator_util::kExtensionsAshOnly,
                          extension_id) &&
-         !base::Contains(browser_data_migrator_util::kExtensionsBothChromes,
-                         extension_id);
+         !base::Contains(
+             extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser(),
+             extension_id);
 }
 
 // static

@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator_metrics.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -44,8 +45,15 @@ constexpr size_t kLacrosDataSize = sizeof(kLacrosDataContent);
 // so we can be sure that it won't be included in `kExtensionsAshOnly`.
 constexpr char kLacrosOnlyExtensionId[] = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
-const char* kBothExtensionId =
-    browser_data_migrator_util::kExtensionsBothChromes[0];
+// ID of an extension that runs in both Lacros and Ash chrome.
+std::string_view GetBothChromesExtensionId() {
+  // Any id from the Ash allowlist works for tests. Pick the first
+  // element of the allowlist for convenience.
+  DCHECK(
+      !extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser().empty());
+  return extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()[0];
+}
+
 const char* kAshOnlyExtensionId =
     browser_data_migrator_util::kExtensionsAshOnly[0];
 
@@ -117,9 +125,9 @@ void SetUpExtensions(const base::FilePath& ash_profile_dir,
         lacros_extensions_path.Append(kLacrosOnlyExtensionId),
         kLacrosDataFilePath, kLacrosDataContent, kLacrosDataSize);
     // Generate Lacros data for an extension existing in both Chromes.
-    CreateDirectoryAndFile(lacros_extensions_path.Append(kBothExtensionId),
-                           kLacrosDataFilePath, kLacrosDataContent,
-                           kLacrosDataSize);
+    CreateDirectoryAndFile(
+        lacros_extensions_path.Append(GetBothChromesExtensionId()),
+        kLacrosDataFilePath, kLacrosDataContent, kLacrosDataSize);
   }
 
   if (setup != FilesSetup::kLacrosOnly) {
@@ -127,8 +135,9 @@ void SetUpExtensions(const base::FilePath& ash_profile_dir,
     CreateDirectoryAndFile(ash_extensions_path.Append(kAshOnlyExtensionId),
                            kAshDataFilePath, kAshDataContent, kAshDataSize);
     // Generate Ash data for an extension existing in both Chromes.
-    CreateDirectoryAndFile(ash_extensions_path.Append(kBothExtensionId),
-                           kAshDataFilePath, kAshDataContent, kAshDataSize);
+    CreateDirectoryAndFile(
+        ash_extensions_path.Append(GetBothChromesExtensionId()),
+        kAshDataFilePath, kAshDataContent, kAshDataSize);
   }
 }
 
@@ -184,7 +193,7 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
   if (setup != FilesSetup::kAshOnly) {
     const auto& [lacros_blob_path, lacros_leveldb_path] =
         browser_data_migrator_util::GetIndexedDBPaths(
-            lacros_default_profile_dir, kBothExtensionId);
+            lacros_default_profile_dir, GetBothChromesExtensionId().data());
 
     CreateDirectoryAndFile(lacros_blob_path, kLacrosDataFilePath,
                            kLacrosDataContent, kLacrosDataSize);
@@ -194,8 +203,8 @@ void SetUpIndexedDB(const base::FilePath& ash_profile_dir,
 
   if (setup != FilesSetup::kLacrosOnly) {
     const auto& [ash_blob_path, ash_leveldb_path] =
-        browser_data_migrator_util::GetIndexedDBPaths(ash_profile_dir,
-                                                      kBothExtensionId);
+        browser_data_migrator_util::GetIndexedDBPaths(
+            ash_profile_dir, GetBothChromesExtensionId().data());
     CreateDirectoryAndFile(ash_blob_path, kAshDataFilePath, kAshDataContent,
                            kAshDataSize);
     CreateDirectoryAndFile(ash_leveldb_path, kAshDataFilePath, kAshDataContent,
@@ -297,13 +306,15 @@ class BrowserDataBackMigratorTest : public testing::Test {
     kLacrosOnlyMetaKey = kMetaPrefix + std::string(kLacrosOnlyExtensionId);
     kLacrosOnlyValueKey =
         kKeyPrefix + std::string(kLacrosOnlyExtensionId) + "\x00key"s;
-    kBothChromesMetaKey = kMetaPrefix + std::string(kBothExtensionId);
+    kBothChromesMetaKey =
+        kMetaPrefix + std::string(GetBothChromesExtensionId());
     kBothChromesValueKey =
-        kKeyPrefix + std::string(kBothExtensionId) + "\x00key"s;
+        kKeyPrefix + std::string(GetBothChromesExtensionId()) + "\x00key"s;
 
     kAshOnlyStateStoreKey = std::string(kAshOnlyExtensionId) + ".key";
     kLacrosOnlyStateStoreKey = std::string(kLacrosOnlyExtensionId) + ".key";
-    kBothChromesStateStoreKey = std::string(kBothExtensionId) + ".key";
+    kBothChromesStateStoreKey =
+        std::string(GetBothChromesExtensionId()) + ".key";
   }
 
   void SetUp() override {
@@ -533,12 +544,14 @@ TEST_F(BrowserDataBackMigratorTest, MergeCommonExtensionsDataFiles) {
                                     .Append(kAshDataFilePath)));
 
   // The Ash version of the both-Chromes extension does not exist.
-  ASSERT_FALSE(base::PathExists(
-      tmp_extensions_path.Append(kBothExtensionId).Append(kAshDataFilePath)));
+  ASSERT_FALSE(
+      base::PathExists(tmp_extensions_path.Append(GetBothChromesExtensionId())
+                           .Append(kAshDataFilePath)));
 
   // The Lacros version of the both-Chromes extension exists.
   base::FilePath lacros_tmp_file_path =
-      tmp_extensions_path.Append(kBothExtensionId).Append(kLacrosDataFilePath);
+      tmp_extensions_path.Append(GetBothChromesExtensionId())
+          .Append(kLacrosDataFilePath);
   ASSERT_TRUE(base::PathExists(lacros_tmp_file_path));
 
   // The contents of the file in the temporary directory are the same as the
@@ -561,8 +574,7 @@ TEST_P(BrowserDataBackMigratorFilesSetupTest, MergeCommonIndexedDB) {
   auto files_setup = GetParam();
   SetUpIndexedDB(ash_profile_dir_, lacros_default_profile_dir_, files_setup);
 
-  const char* extension_id =
-      browser_data_migrator_util::kExtensionsBothChromes[0];
+  const char* extension_id = GetBothChromesExtensionId().data();
 
   ASSERT_TRUE(BrowserDataBackMigrator::MergeCommonIndexedDB(
       ash_profile_dir_, lacros_default_profile_dir_, extension_id));
@@ -773,8 +785,8 @@ TEST_F(BrowserDataBackMigratorTest,
   base::Value::Dict ash_split_pref_dict;
   ash_split_pref_dict.SetByDottedPath(
       browser_data_migrator_util::kExtensionsAshOnly[0], kAshPrefValue);
-  ash_split_pref_dict.SetByDottedPath(
-      browser_data_migrator_util::kExtensionsBothChromes[0], kAshPrefValue);
+  ash_split_pref_dict.SetByDottedPath(GetBothChromesExtensionId(),
+                                      kAshPrefValue);
   ash_split_pref_dict.SetByDottedPath(kLacrosOnlyExtensionId, kAshPrefValue);
   ash_prefs.SetByDottedPath(
       browser_data_migrator_util::kSplitPreferencesKeys[0],
@@ -784,8 +796,8 @@ TEST_F(BrowserDataBackMigratorTest,
   base::Value::Dict lacros_split_pref_dict;
   lacros_split_pref_dict.SetByDottedPath(
       browser_data_migrator_util::kExtensionsAshOnly[0], kLacrosPrefValue);
-  lacros_split_pref_dict.SetByDottedPath(
-      browser_data_migrator_util::kExtensionsBothChromes[0], kLacrosPrefValue);
+  lacros_split_pref_dict.SetByDottedPath(GetBothChromesExtensionId(),
+                                         kLacrosPrefValue);
   lacros_split_pref_dict.SetByDottedPath(kLacrosOnlyExtensionId,
                                          kLacrosPrefValue);
   lacros_prefs.SetByDottedPath(
@@ -818,8 +830,8 @@ TEST_F(BrowserDataBackMigratorTest,
       browser_data_migrator_util::kExtensionsAshOnly[0]);
   ASSERT_TRUE(ash_extension_value);
   ASSERT_EQ(ash_extension_value->GetInt(), kAshPrefValue);
-  const base::Value* common_extension_value = split_pref_dict->FindByDottedPath(
-      browser_data_migrator_util::kExtensionsBothChromes[0]);
+  const base::Value* common_extension_value =
+      split_pref_dict->FindByDottedPath(GetBothChromesExtensionId());
   ASSERT_TRUE(common_extension_value);
   ASSERT_EQ(common_extension_value->GetInt(), kAshPrefValue);
   const base::Value* lacros_extension_value =
@@ -850,8 +862,7 @@ TEST_F(BrowserDataBackMigratorTest,
   base::Value::Dict ash_prefs;
   base::Value::List ash_split_pref_list;
   ash_split_pref_list.Append(browser_data_migrator_util::kExtensionsAshOnly[0]);
-  ash_split_pref_list.Append(
-      browser_data_migrator_util::kExtensionsBothChromes[0]);
+  ash_split_pref_list.Append(GetBothChromesExtensionId());
   ash_split_pref_list.Append(kLacrosOnlyExtensionId);
   ash_prefs.SetByDottedPath(
       browser_data_migrator_util::kSplitPreferencesKeys[0],
@@ -890,10 +901,9 @@ TEST_F(BrowserDataBackMigratorTest,
       CountStringInList(*split_pref_list,
                         browser_data_migrator_util::kExtensionsAshOnly[0]),
       1u);
-  ASSERT_EQ(
-      CountStringInList(*split_pref_list,
-                        browser_data_migrator_util::kExtensionsBothChromes[0]),
-      1u);
+  ASSERT_EQ(CountStringInList(*split_pref_list,
+                              std::string(GetBothChromesExtensionId())),
+            1u);
   ASSERT_EQ(CountStringInList(*split_pref_list, kLacrosOnlyExtensionId), 1u);
 }
 

@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
@@ -78,4 +79,49 @@ IN_PROC_BROWSER_TEST_F(ExtensionKeeplistTest,
                               mojo_keeplist->extension_apps_run_in_os_only));
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionKeeplistTest, PerfettoNotInKeepListByDefault) {
+  ASSERT_FALSE(ash::switches::IsAshDebugBrowserEnabled());
+  ASSERT_FALSE(
+      base::Contains(extensions::GetExtensionsRunInOSAndStandaloneBrowser(),
+                     extension_misc::kPerfettoUIExtensionId));
+  ASSERT_FALSE(base::Contains(
+      extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser(),
+      extension_misc::kPerfettoUIExtensionId));
+}
+
+class ExtensionKeeplistAllowPerfettoTest
+    : public AshRequiresLacrosExtensionApiTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kEnableAshDebugBrowser);
+  }
+  test::AshBrowserTestStarter ash_starter_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionKeeplistAllowPerfettoTest, PerfettoInKeepList) {
+  if (!ash_starter_.HasLacrosArgument()) {
+    return;
+  }
+
+  ASSERT_TRUE(ash::switches::IsAshDebugBrowserEnabled());
+  ASSERT_TRUE(
+      base::Contains(extensions::GetExtensionsRunInOSAndStandaloneBrowser(),
+                     extension_misc::kPerfettoUIExtensionId));
+  ASSERT_TRUE(base::Contains(
+      extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser(),
+      extension_misc::kPerfettoUIExtensionId));
+
+  // Get the Ash extension keeplist data from Lacros.
+  base::test::TestFuture<crosapi::mojom::ExtensionKeepListPtr> future;
+  GetStandaloneBrowserTestController()->GetExtensionKeeplist(
+      future.GetCallback());
+  auto mojo_keeplist = future.Take();
+
+  ASSERT_EQ(extensions::GetExtensionsRunInOSAndStandaloneBrowser().size(),
+            ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest());
+  ASSERT_TRUE(IsIdenticalList(
+      extensions::GetExtensionsRunInOSAndStandaloneBrowser(),
+      mojo_keeplist->extensions_run_in_os_and_standalonebrowser));
+}
 }  // namespace extensions

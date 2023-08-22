@@ -170,6 +170,8 @@ extern const char kDeskApiExtensionId[];
 extern const char kBruSecurityKeyForwarderExtensionId[];
 // The extension id of the OneDrive FS external component extension.
 extern const char kODFSExtensionId[];
+// The extension id of Perfetto UI extension.
+extern const char kPerfettoUIExtensionId[];
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the Accessibility Common extension.

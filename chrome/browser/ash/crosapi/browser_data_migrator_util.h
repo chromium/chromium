@@ -210,13 +210,6 @@ constexpr const char* const kExtensionsAshOnly[] = {
     "cnbgggchhmkkdmeppjobngjoejnihlei",  // Arc Support (Play Store)
 };
 
-// List of extension ids to be kept in both Ash and Lacros.
-constexpr const char* const kExtensionsBothChromes[] = {
-    "cfmgaohenjcikllcgjpepfadgbflcjof",  // GCSE (Google Corp SSH Extension)
-    "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 (new Gnubby extension)
-    "beknehfpfkghjoafdifaflglpjkojoco",  // gnubbyd
-};
-
 // Extensions path.
 constexpr char kExtensionsFilePath[] = "Extensions";
 

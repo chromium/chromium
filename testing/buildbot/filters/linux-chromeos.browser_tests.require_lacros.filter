@@ -11,6 +11,7 @@ ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
 Dictation*
+ExtensionKeeplistAllowPerfettoTest*
 ExtensionKeeplistTest*
 NonKioskAcceleratorLacrosTest*
 SelectToSpeak*

@@ -61,7 +61,18 @@ ExtensionsRunInOSAndStandaloneBrowserAllowlist() {
       extension_misc::kGnubbyV3ExtensionId,
       extension_misc::kPdfExtensionId,
   };
-  return base::make_span(kKeeplist);
+
+  static const base::NoDestructor<std::vector<base::StringPiece>> keep_list([] {
+    std::vector<base::StringPiece> ids;
+    for (const auto& id : kKeeplist) {
+      ids.push_back(id);
+    }
+    if (ash::switches::IsAshDebugBrowserEnabled()) {
+      ids.push_back(extension_misc::kPerfettoUIExtensionId);
+    }
+    return ids;
+  }());
+  return base::make_span(*keep_list);
 }
 
 // For any extension apps running in both Ash and Lacros, it must be added to
@@ -495,6 +506,22 @@ bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id) {
 
 bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id) {
   return base::Contains(ExtensionsAppServiceBlocklistInOS(), extension_id);
+}
+
+base::span<const std::string_view>
+GetExtensionsAndAppsRunInOSAndStandaloneBrowser() {
+  static const base::NoDestructor<std::vector<std::string_view>> keep_list([] {
+    std::vector<std::string_view> ids;
+    for (const auto& id : ExtensionsRunInOSAndStandaloneBrowserAllowlist()) {
+      ids.push_back(id);
+    }
+    for (const auto& id : ExtensionAppsRunInOSAndStandaloneBrowserAllowlist()) {
+      ids.push_back(id);
+    }
+    return ids;
+  }());
+
+  return base::make_span(*keep_list);
 }
 
 size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest() {

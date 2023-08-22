@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -438,10 +439,10 @@ MoveMigrator::TaskResult MoveMigrator::SetupAshSplitDir(
       return {TaskStatus::kSetupAshDirCreateDirFailed, errno};
     }
 
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsBothChromes) {
+    for (const auto& extension_id :
+         extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()) {
       if (!browser_data_migrator_util::MigrateAshIndexedDB(
-              original_profile_dir, split_indexed_db_dir, extension_id,
+              original_profile_dir, split_indexed_db_dir, extension_id.data(),
               /*copy=*/true)) {
         return {TaskStatus::kSetupAshDirCopyIndexedDBFailed, errno};
       }
@@ -799,8 +800,8 @@ MoveMigrator::TaskResult MoveMigrator::CopyBothChromesSubdirs(
     }
 
     // Copy objects that belong to both Ash and Lacros.
-    for (const char* extension_id :
-         browser_data_migrator_util::kExtensionsBothChromes) {
+    for (const auto& extension_id :
+         extensions::GetExtensionsAndAppsRunInOSAndStandaloneBrowser()) {
       base::FilePath original_target_path =
           original_target_dir.Append(extension_id);
 

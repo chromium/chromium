@@ -102,11 +102,16 @@ bool ExtensionAppBlockListedForAppServiceInOS(base::StringPiece app_id);
 // the extension can't be published in app service by Ash.
 bool ExtensionBlockListedForAppServiceInOS(base::StringPiece extension_id);
 
+// Returns ids of the extensions and extension apps that are allow to run in
+// both Ash and Lacros.
+base::span<const std::string_view>
+GetExtensionsAndAppsRunInOSAndStandaloneBrowser();
+
 size_t ExtensionsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSAndStandaloneBrowserAllowlistSizeForTest();
 size_t ExtensionsRunInOSOnlyAllowlistSizeForTest();
 size_t ExtensionAppsRunInOSOnlyAllowlistSizeForTest();
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions
 
