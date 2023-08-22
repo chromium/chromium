@@ -43,19 +43,16 @@ def make_empty_test(other: TestNode) -> TestNode:
 
 
 def fill_implied_expectations(test: TestNode,
-                              extra_subtests: Optional[Set[str]] = None,
-                              test_type: str = 'testharness'):
+                              extra_subtests: Optional[Set[str]] = None):
     """Populate a test result with implied OK/PASS expectations.
 
     This is a helper for diffing WPT results.
     """
-    # TODO(crbug.com/1464051): Replace the `test_type` argument with
-    # `test.test_type`.
     default_expected = default_expected_by_type()
-    _ensure_expectation(test, default_expected[test_type, False])
+    _ensure_expectation(test, default_expected[test.test_type, False])
     for subtest in test.subtests:
         _ensure_expectation(test.get_subtest(subtest),
-                            default_expected[test_type, True])
+                            default_expected[test.test_type, True])
     missing_subtests = (extra_subtests or set()) - set(test.subtests)
     for subtest in missing_subtests:
         subtest_node = SubtestNode(wptnode.DataNode(subtest))

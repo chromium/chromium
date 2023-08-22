@@ -27,9 +27,8 @@ class WPTMetadataUnittest(unittest.TestCase):
             [test.html]
               [subtest]
             """)
-        wpt_metadata.fill_implied_expectations(test, {'extra-subtest'},
-                                               'testharness')
-
+        test.set('type', 'testharness')
+        wpt_metadata.fill_implied_expectations(test, {'extra-subtest'})
         self.assertEqual(test.expected, 'OK')
         self.assertEqual(test.known_intermittent, [])
         self.assertEqual(set(test.subtests), {'subtest', 'extra-subtest'})
@@ -43,7 +42,8 @@ class WPTMetadataUnittest(unittest.TestCase):
         test = _compile(b"""\
             [test.html]
             """)
-        wpt_metadata.fill_implied_expectations(test, test_type='reftest')
+        test.set('type', 'reftest')
+        wpt_metadata.fill_implied_expectations(test)
         self.assertEqual(test.expected, 'PASS')
         self.assertEqual(test.known_intermittent, [])
 
@@ -54,6 +54,7 @@ class WPTMetadataUnittest(unittest.TestCase):
               [subtest]
                 expected: FAIL
             """)
+        test.set('type', 'testharness')
         wpt_metadata.fill_implied_expectations(test)
         self.assertEqual(test.expected, 'ERROR')
         self.assertEqual(test.known_intermittent, ['OK'])

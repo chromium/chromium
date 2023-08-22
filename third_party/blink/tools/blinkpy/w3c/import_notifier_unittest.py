@@ -368,7 +368,7 @@ class ImportNotifierTest(unittest.TestCase):
             self.notifier.examine_metadata_changes(
                 'https://crrev.com/c/12345/3/')
 
-        # TODO(crbug.com/1464051): After the switch to wptrunner, check that
+        # TODO(crbug.com/1474702): After the switch to wptrunner, check that
         # non-wdspec tests can generate failures (i.e., delete the first
         # assertion, and turn the second one into `assertEqual`). For now,
         # require that no such failures are generated.

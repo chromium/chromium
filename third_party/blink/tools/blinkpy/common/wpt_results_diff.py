@@ -25,15 +25,11 @@ th { color: #444; background: #eed; text-align: right; vertical-align: baseline;
 """
 
 
-def wpt_results_diff(actual: TestNode,
-                     expected: Optional[TestNode] = None,
-                     test_type: str = 'testharness'):
+def wpt_results_diff(actual: TestNode, expected: Optional[TestNode] = None):
     if not expected:
         expected = wpt_metadata.make_empty_test(actual)
-    wpt_metadata.fill_implied_expectations(expected, set(actual.subtests),
-                                           test_type)
-    wpt_metadata.fill_implied_expectations(actual, set(expected.subtests),
-                                           test_type)
+    wpt_metadata.fill_implied_expectations(expected, set(actual.subtests))
+    wpt_metadata.fill_implied_expectations(actual, set(expected.subtests))
     return _TEMPLATE % WPTResultsDiffGenerator().generate_tbody(
         expected, actual)
 

@@ -179,7 +179,7 @@ class ImportNotifier:
                 continue
             test_type = manifest.get_test_type(
                 self.finder.strip_wpt_path(test_path))
-            # TODO(crbug.com/1464051): After the switch to wptrunner, change the
+            # TODO(crbug.com/1474702): After the switch to wptrunner, change the
             # condition to just `if not test_type` to check for failures in
             # metadata for other test types. Then, remove the other `examine_*`
             # methods.
@@ -232,11 +232,9 @@ class ImportNotifier:
             if not test_before:
                 test_before = wpt_metadata.make_empty_test(test_after)
             wpt_metadata.fill_implied_expectations(test_before,
-                                                   set(test_after.subtests),
-                                                   test_before.test_type)
+                                                   set(test_after.subtests))
             wpt_metadata.fill_implied_expectations(test_after,
-                                                   set(test_before.subtests),
-                                                   test_after.test_type)
+                                                   set(test_before.subtests))
             assert set(test_before.subtests) == set(test_after.subtests)
             nodes = [(test_before, test_after)]
             nodes.extend((
