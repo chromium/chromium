@@ -1121,7 +1121,8 @@ TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {
       {kManagementExtensionReportUsername, "username"},
       {kManagementReportExtensions, "extension"},
       {kManagementReportAndroidApplications, "android application"},
-      {kManagementReportDlpEvents, "dlp events"}};
+      {kManagementReportDlpEvents, "dlp events"},
+      {kManagementReportLoginLogout, "login-logout"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1145,7 +1146,8 @@ TEST_F(ManagementUIHandlerTests,
       {kManagementCrostiniContainerConfiguration, "crostini"},
       {kManagementExtensionReportUsername, "username"},
       {kManagementReportExtensions, "extension"},
-      {kManagementReportAndroidApplications, "android application"}};
+      {kManagementReportAndroidApplications, "android application"},
+      {kManagementReportLoginLogout, "login-logout"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }
@@ -1218,7 +1220,8 @@ TEST_F(ManagementUIHandlerTests, ReportDeviceXdrEventsEnabled) {
   const base::Value::List info = SetUpForReportingInfo();
   const std::map<std::string, std::string> expected_elements = {
       {kManagementReportActivityTimes, "device activity"},
-      {kManagementReportAppInfoAndActivity, "app info and activity"}};
+      {kManagementReportAppInfoAndActivity, "app info and activity"},
+      {kManagementReportLoginLogout, "login-logout"}};
 
   ASSERT_PRED_FORMAT2(ReportingElementsToBeEQ, info, expected_elements);
 }

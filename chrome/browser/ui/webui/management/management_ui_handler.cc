@@ -475,7 +475,10 @@ void AddDeviceReportingInfo(base::Value::List* report_sources,
   bool report_login_logout = false;
   ash::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
                                        &report_login_logout);
-  if (report_login_logout) {
+  bool report_xdr_events = false;
+  ash::CrosSettings::Get()->GetBoolean(ash::kDeviceReportXDREvents,
+                                       &report_xdr_events);
+  if (report_login_logout || report_xdr_events) {
     AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
                               DeviceReportingType::kLoginLogout);
   }
@@ -838,15 +841,19 @@ void ManagementUIHandler::AddMonitoredNetworkPrivacyDisclosure(
   }
 
   // Check if DeviceReportXDREvents is enabled.
-  auto* xdr_policy_value = GetPolicyService()
-                               ->GetPolicies(policy::PolicyNamespace(
-                                   policy::POLICY_DOMAIN_CHROME, std::string()))
-                               .GetValue(policy::key::kDeviceReportXDREvents,
-                                         base::Value::Type::BOOLEAN);
-  bool xdr_policy_enabled = xdr_policy_value && xdr_policy_value->GetBool();
+  auto* report_xdr_events_policy_value =
+      GetPolicyService()
+          ->GetPolicies(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
+                                                std::string()))
+          .GetValue(policy::key::kDeviceReportXDREvents,
+                    base::Value::Type::BOOLEAN);
+  bool report_xdr_events_policy_enabled =
+      report_xdr_events_policy_value &&
+      report_xdr_events_policy_value->GetBool();
 
-  if (xdr_policy_enabled) {
-    response->Set("showMonitoredNetworkPrivacyDisclosure", xdr_policy_enabled);
+  if (report_xdr_events_policy_enabled) {
+    response->Set("showMonitoredNetworkPrivacyDisclosure",
+                  report_xdr_events_policy_enabled);
     return;
   }
 
