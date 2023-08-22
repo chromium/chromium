@@ -6056,6 +6056,7 @@ test("unit_tests") {
     "../browser/security_events/security_event_recorder_impl_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_config_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_profile_observer_unittest.cc",
+    "../browser/segmentation_platform/segmentation_platform_service_factory_unittest.cc",
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
 
     # TODO(hashimoto): those tests should be componentized and moved to
