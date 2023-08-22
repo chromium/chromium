@@ -26,6 +26,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/alias.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -1055,6 +1056,19 @@ bool IsSTA() {
   APTTYPEQUALIFIER apt_type_qualifier = APTTYPEQUALIFIER_NONE;
   return SUCCEEDED(::CoGetApartmentType(&apt_type, &apt_type_qualifier)) &&
          (apt_type == APTTYPE_STA || apt_type == APTTYPE_MAINSTA);
+}
+
+void ExpectIsSTA() {
+  VLOG(2) << __func__;
+  HRESULT hr = S_OK;
+  base::debug::Alias(&hr);
+  APTTYPE apt_type = APTTYPE_CURRENT;
+  base::debug::Alias(&apt_type);
+  APTTYPEQUALIFIER apt_type_qualifier = APTTYPEQUALIFIER_NONE;
+  base::debug::Alias(&apt_type_qualifier);
+  hr = ::CoGetApartmentType(&apt_type, &apt_type_qualifier);
+  DUMP_WILL_BE_CHECK(SUCCEEDED(hr) &&
+                     (apt_type == APTTYPE_STA || apt_type == APTTYPE_MAINSTA));
 }
 
 }  // namespace updater

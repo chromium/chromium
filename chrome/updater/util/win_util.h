@@ -411,6 +411,9 @@ template <typename T, typename I, typename... TArgs>
 // is not a form of STA.
 [[nodiscard]] bool IsSTA();
 
+// Expects the code is running in an STA or dumps without crashing.
+void ExpectIsSTA();
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_WIN_UTIL_H_
