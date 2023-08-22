@@ -82,10 +82,9 @@ interface AppController {
   // succeeded, the size of the returning icon is expected to be as close as
   // possible with the |size_hint_in_dip| set in the interface, but may not be
   // exactly the same.
-  // TODO(crbug/1380608): Deprecated this interface when enable the unfified
-  // AppService icon loading flag.
+  // DEPRECATED. Use GetCompressedIcon() instead.
   [MinVersion=5]
-  LoadIcon@5(
+  DEPRECATED_LoadIcon@5(
     string app_id,
     IconKey icon_key,
     IconType icon_type,

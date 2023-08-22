@@ -150,20 +150,13 @@ void LacrosWebAppsController::UnpauseApp(const std::string& app_id) {
   publisher_helper().UnpauseApp(app_id);
 }
 
-void LacrosWebAppsController::LoadIcon(const std::string& app_id,
-                                       apps::IconKeyPtr icon_key,
-                                       apps::IconType icon_type,
-                                       int32_t size_hint_in_dip,
-                                       apps::LoadIconCallback callback) {
-  if (!icon_key) {
-    // On failure, we still run the callback, with an empty IconValue.
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
-    return;
-  }
-
-  publisher_helper().LoadIcon(app_id, icon_type, size_hint_in_dip,
-                              static_cast<IconEffects>(icon_key->icon_effects),
-                              std::move(callback));
+void LacrosWebAppsController::DEPRECATED_LoadIcon(
+    const std::string& app_id,
+    apps::IconKeyPtr icon_key,
+    apps::IconType icon_type,
+    int32_t size_hint_in_dip,
+    apps::LoadIconCallback callback) {
+  NOTREACHED();
 }
 
 void LacrosWebAppsController::GetCompressedIcon(

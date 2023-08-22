@@ -64,11 +64,11 @@ class LacrosExtensionAppsController : public crosapi::mojom::AppController {
   void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
-  void LoadIcon(const std::string& app_id,
-                apps::IconKeyPtr icon_key,
-                apps::IconType icon_type,
-                int32_t size_hint_in_dip,
-                LoadIconCallback callback) override;
+  void DEPRECATED_LoadIcon(const std::string& app_id,
+                           apps::IconKeyPtr icon_key,
+                           apps::IconType icon_type,
+                           int32_t size_hint_in_dip,
+                           apps::LoadIconCallback callback) override;
   void GetCompressedIcon(const std::string& app_id,
                          int32_t size_in_dip,
                          ui::ResourceScaleFactor scale_factor,
