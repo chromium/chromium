@@ -472,6 +472,17 @@ public abstract class AsyncTask<Result> {
             try (TraceEvent e = TraceEvent.scoped(
                          "AsyncTask.run: " + mFuture.getBlamedClass().getName())) {
                 super.run();
+            } finally {
+                // Clear the interrupt on this background thread, if there is one, as it likely
+                // came from cancelling the FutureTask. It is possible this was already cleared
+                // in run() if something was listening for an interrupt; however, if it wasn't
+                // then the interrupt may still be around. By clearing it here the thread is in
+                // a clean state for the next task. See: crbug/1473731.
+
+                // This is safe and prevents future leaks because the state of the FutureTask
+                // should now be >= COMPLETING. Any future calls to cancel() will not trigger
+                // an interrupt.
+                Thread.interrupted();
             }
         }
 

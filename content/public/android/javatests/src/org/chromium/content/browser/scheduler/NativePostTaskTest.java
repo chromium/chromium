@@ -15,6 +15,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.PowerMonitor;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.AsyncTask.Status;
+import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -27,7 +30,9 @@ import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Test class for {@link PostTask}.
@@ -37,6 +42,43 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class NativePostTaskTest {
+    private static class BlockedTask extends BackgroundOnlyAsyncTask<Integer> {
+        private Object mStartLock = new Object();
+        private AtomicInteger mValue = new AtomicInteger(0);
+        private AtomicBoolean mStarted = new AtomicBoolean(false);
+        private Thread mBackgroundThread;
+
+        @Override
+        protected Integer doInBackground() {
+            synchronized (mStartLock) {
+                mBackgroundThread = Thread.currentThread();
+                mStarted.set(true);
+                mStartLock.notify();
+            }
+            while (mValue.get() == 0) {
+                // Busy wait because interrupting waiting on a lock or sleeping will clear the
+                // interrupt.
+            }
+            return mValue.get();
+        }
+
+        public void setValue(int value) {
+            mValue.set(value);
+        }
+
+        public void blockUntilDoInBackgroundStarts() throws Exception {
+            synchronized (mStartLock) {
+                while (!mStarted.get()) {
+                    mStartLock.wait();
+                }
+            }
+        }
+
+        public Thread getBackgroundThread() {
+            return mBackgroundThread;
+        }
+    }
+
     @After
     public void tearDown() {
         ThreadPoolTestHelpers.disableThreadPoolExecutionForTesting();
@@ -229,6 +271,68 @@ public class NativePostTaskTest {
                 lock.wait();
             }
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testNativeAsyncTask() throws Exception {
+        startNativeScheduler();
+
+        BlockedTask task = new BlockedTask();
+
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        task.blockUntilDoInBackgroundStarts();
+        Assert.assertEquals(Status.RUNNING, task.getStatus());
+
+        final int value = 5;
+        task.setValue(value);
+
+        Assert.assertEquals(value, task.get().intValue());
+
+        Assert.assertFalse(task.isCancelled());
+        Assert.assertEquals(Status.FINISHED, task.getStatus());
+
+        Assert.assertFalse(task.getBackgroundThread().isInterrupted());
+    }
+
+    @Test
+    @MediumTest
+    public void testNativeAsyncTaskInterruptIsCleared() throws Exception {
+        startNativeScheduler();
+
+        BlockedTask task = new BlockedTask();
+
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        task.blockUntilDoInBackgroundStarts();
+        Assert.assertEquals(Status.RUNNING, task.getStatus());
+
+        Assert.assertTrue(task.cancel(/*mayInterruptIfRunning=*/true));
+
+        // get() will raise an exception although the task is started.
+        try {
+            task.get();
+            Assert.fail();
+        } catch (CancellationException e) {
+            // expected
+        }
+
+        // Set a value to unblock the task.
+        task.setValue(3);
+
+        // Wait for the AsyncTask to finish.
+        while (task.getStatus() != Status.FINISHED) {
+            Thread.sleep(50);
+        }
+
+        // Sleep a bit longer for the FutureTask to finish.
+        Thread.sleep(500);
+
+        Assert.assertTrue(task.isCancelled());
+        Assert.assertEquals(Status.FINISHED, task.getStatus());
+
+        Assert.assertFalse(task.getBackgroundThread().isInterrupted());
     }
 
     private void startNativeScheduler() {
