@@ -106,6 +106,26 @@ void JNI_ImeAdapterImpl_AppendBackgroundColorSpan(JNIEnv*,
       std::vector<std::string>()));
 }
 
+// Callback from Java to convert ForegroundColorSpan data to a
+// ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
+void JNI_ImeAdapterImpl_AppendForegroundColorSpan(JNIEnv*,
+                                                  jlong ime_text_spans_ptr,
+                                                  jint start,
+                                                  jint end,
+                                                  jint foreground_color) {
+  DCHECK_GE(start, 0);
+  DCHECK_GE(end, 0);
+  // Do not check |foreground_color|.
+  std::vector<ui::ImeTextSpan>* ime_text_spans =
+      reinterpret_cast<std::vector<ui::ImeTextSpan>*>(ime_text_spans_ptr);
+  ime_text_spans->push_back(ui::ImeTextSpan(
+      ui::ImeTextSpan::Type::kComposition, static_cast<unsigned>(start),
+      static_cast<unsigned>(end), ui::ImeTextSpan::Thickness::kNone,
+      ui::ImeTextSpan::UnderlineStyle::kNone, SK_ColorTRANSPARENT,
+      SK_ColorTRANSPARENT, std::vector<std::string>(),
+      static_cast<unsigned>(foreground_color)));
+}
+
 // Callback from Java to convert SuggestionSpan data to a
 // ui::ImeTextSpan instance, and append it to |ime_text_spans_ptr|.
 void JNI_ImeAdapterImpl_AppendSuggestionSpan(

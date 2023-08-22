@@ -20,6 +20,7 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.CharacterStyle;
+import android.text.style.ForegroundColorSpan;
 import android.text.style.SuggestionSpan;
 import android.text.style.UnderlineSpan;
 import android.util.SparseArray;
@@ -1288,6 +1289,10 @@ public class ImeAdapterImpl
                 ImeAdapterImplJni.get().appendBackgroundColorSpan(imeTextSpans,
                         spannableString.getSpanStart(span), spannableString.getSpanEnd(span),
                         ((BackgroundColorSpan) span).getBackgroundColor());
+            } else if (span instanceof ForegroundColorSpan) {
+                ImeAdapterImplJni.get().appendForegroundColorSpan(imeTextSpans,
+                        spannableString.getSpanStart(span), spannableString.getSpanEnd(span),
+                        ((ForegroundColorSpan) span).getForegroundColor());
             } else if (span instanceof UnderlineSpan) {
                 ImeAdapterImplJni.get().appendUnderlineSpan(imeTextSpans,
                         spannableString.getSpanStart(span), spannableString.getSpanEnd(span));
@@ -1364,6 +1369,7 @@ public class ImeAdapterImpl
                 boolean isSystemKey, int unicodeChar);
         void appendUnderlineSpan(long spanPtr, int start, int end);
         void appendBackgroundColorSpan(long spanPtr, int start, int end, int backgroundColor);
+        void appendForegroundColorSpan(long spanPtr, int start, int end, int backgroundColor);
         void appendSuggestionSpan(long spanPtr, int start, int end, boolean isMisspelling,
                 boolean removeOnFinishComposing, int underlineColor, int suggestionHighlightColor,
                 String[] suggestions);

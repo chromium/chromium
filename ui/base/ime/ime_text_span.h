@@ -54,7 +54,8 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
       UnderlineStyle underline_style = UnderlineStyle::kSolid,
       SkColor background_color = SK_ColorTRANSPARENT,
       SkColor suggestion_highlight_color = SK_ColorTRANSPARENT,
-      const std::vector<std::string>& suggestions = std::vector<std::string>());
+      const std::vector<std::string>& suggestions = std::vector<std::string>(),
+      SkColor text_color = SK_ColorTRANSPARENT);
 
   ImeTextSpan(const ImeTextSpan& rhs);
 
@@ -85,7 +86,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) ImeTextSpan {
   SkColor underline_color = SK_ColorTRANSPARENT;
   Thickness thickness;
   UnderlineStyle underline_style;
-  SkColor text_color = SK_ColorTRANSPARENT;
+  SkColor text_color;
   SkColor background_color;
   SkColor suggestion_highlight_color;
   bool remove_on_finish_composing = false;
