@@ -102,7 +102,8 @@ TemplateURLServiceFactory::TemplateURLServiceFactory()
 
 TemplateURLServiceFactory::~TemplateURLServiceFactory() = default;
 
-KeyedService* TemplateURLServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TemplateURLServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -120,7 +121,7 @@ KeyedService* TemplateURLServiceFactory::BuildServiceInstanceFor(
   }
 #endif
 
-  return BuildInstanceFor(profile).release();
+  return BuildInstanceFor(profile);
 }
 
 void TemplateURLServiceFactory::RegisterProfilePrefs(
