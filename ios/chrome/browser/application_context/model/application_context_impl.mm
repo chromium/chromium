@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/application_context/application_context_impl.h"
+#import "ios/chrome/browser/application_context/model/application_context_impl.h"
 
 #import <algorithm>
 #import <vector>
@@ -51,7 +51,6 @@
 #import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/metrics/ios_chrome_metrics_services_manager_client.h"
-#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
@@ -59,6 +58,7 @@
 #import "ios/chrome/browser/segmentation_platform/otr_web_state_observer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
@@ -190,15 +190,17 @@ void ApplicationContextImpl::StartTearDown() {
   // destructor, which does a PostDelayedTask operation on the IO thread. (The
   // IO thread will handle that URLFetcher operation before going away.)
   metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service)
+  if (metrics_service) {
     metrics_service->LogCleanShutdown();
+  }
   metrics_services_manager_.reset();
   network_time_tracker_.reset();
 
   net_export_file_writer_.reset();
 
-  if (safe_browsing_service_)
+  if (safe_browsing_service_) {
     safe_browsing_service_->ShutDown();
+  }
 
   // Need to clear browser states before the IO thread.
   chrome_browser_state_manager_.reset();
@@ -207,12 +209,14 @@ void ApplicationContextImpl::StartTearDown() {
   // down while the IO threads is still alive. The monitoring framework owned by
   // `browser_policy_connector_` relies on `gcm_driver_`, so this must be
   // shutdown before `gcm_driver_` below.
-  if (browser_policy_connector_)
+  if (browser_policy_connector_) {
     browser_policy_connector_->Shutdown();
+  }
 
   // The GCMDriver must shut down while the IO thread is still alive.
-  if (gcm_driver_)
+  if (gcm_driver_) {
     gcm_driver_->Shutdown();
+  }
 
   if (local_state_) {
     local_state_->CommitPendingWrite();
@@ -252,11 +256,13 @@ void ApplicationContextImpl::OnAppEnterForeground() {
   }
 
   variations::VariationsService* variations_service = GetVariationsService();
-  if (variations_service)
+  if (variations_service) {
     variations_service->OnAppEnterForeground();
+  }
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service)
+  if (ukm_service) {
     ukm_service->OnAppEnterForeground();
+  }
 }
 
 void ApplicationContextImpl::OnAppEnterBackground() {
@@ -272,8 +278,9 @@ void ApplicationContextImpl::OnAppEnterBackground() {
     }
 
     PrefService* browser_state_prefs = browser_state->GetPrefs();
-    if (browser_state_prefs)
+    if (browser_state_prefs) {
       browser_state_prefs->CommitPendingWrite();
+    }
   }
 
   // Tell the metrics services they were cleanly shutdown.
@@ -283,8 +290,9 @@ void ApplicationContextImpl::OnAppEnterBackground() {
         /*keep_recording_in_background=*/true);
   }
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
-  if (ukm_service)
+  if (ukm_service) {
     ukm_service->OnAppEnterBackground();
+  }
 
   // Persisting to disk is protected by a critical task, so no other special
   // handling is necessary on iOS.
@@ -293,15 +301,17 @@ void ApplicationContextImpl::OnAppEnterBackground() {
 bool ApplicationContextImpl::WasLastShutdownClean() {
   DCHECK(thread_checker_.CalledOnValidThread());
   metrics::MetricsService* metrics_service = GetMetricsService();
-  if (metrics_service)
+  if (metrics_service) {
     return metrics_service->WasLastShutdownClean();
+  }
   return true;
 }
 
 PrefService* ApplicationContextImpl::GetLocalState() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!local_state_)
+  if (!local_state_) {
     CreateLocalState();
+  }
   return local_state_.get();
 }
 
@@ -338,8 +348,9 @@ const std::string& ApplicationContextImpl::GetApplicationCountry() {
 ios::ChromeBrowserStateManager*
 ApplicationContextImpl::GetChromeBrowserStateManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!chrome_browser_state_manager_)
+  if (!chrome_browser_state_manager_) {
     chrome_browser_state_manager_.reset(new ChromeBrowserStateManagerImpl());
+  }
   return chrome_browser_state_manager_.get();
 }
 
@@ -403,8 +414,9 @@ IOSChromeIOThread* ApplicationContextImpl::GetIOSChromeIOThread() {
 
 gcm::GCMDriver* ApplicationContextImpl::GetGCMDriver() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (!gcm_driver_)
+  if (!gcm_driver_) {
     CreateGCMDriver();
+  }
   DCHECK(gcm_driver_);
   return gcm_driver_.get();
 }

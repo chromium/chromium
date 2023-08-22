@@ -258,7 +258,7 @@ source_set("web_internal") {
     "//components/variations/service",
     "//components/version_info",
     "//ios/chrome/app/resources:ios_resources",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/application_context/model",
     "//ios/chrome/browser/autofill/bottom_sheet",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings",

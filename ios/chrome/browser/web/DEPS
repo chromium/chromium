@@ -24,7 +24,7 @@ include_rules = [
   "+ios/chrome/browser/supervised_user",
   "+ios/chrome/browser/url_loading",
   "+ios/chrome/browser/autofill",
-  "+ios/chrome/browser/application_context",
+  "+ios/chrome/browser/application_context/model",
   "+ios/chrome/browser/browser_state",
   "+ios/chrome/browser/crash_report",
   "+ios/chrome/browser/first_run",
