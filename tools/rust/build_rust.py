@@ -55,7 +55,7 @@ sys.path.append(
 
 from build import (AddCMakeToPath, AddZlibToPath, CheckoutGitRepo,
                    DownloadDebianSysroot, GetLibXml2Dirs, LLVM_BUILD_TOOLS_DIR,
-                   RunCommand)
+                   RunCommand, ZStdDirs)
 from update import (CHROMIUM_DIR, DownloadAndUnpack, EnsureDirExists,
                     GetDefaultHostOs, RmTree, UpdatePackage)
 
@@ -298,7 +298,7 @@ class XPy:
     runs. '''
 
     def __init__(self, zlib_path, libxml2_dirs, build_mac_arm, debian_sysroot,
-                 verbose):
+                 verbose, zstd_dirs):
         self._env = collections.defaultdict(str, os.environ)
         self._build_mac_arm = build_mac_arm
         self._verbose = verbose
@@ -373,6 +373,15 @@ class XPy:
                 f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
             self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
                 f' -Clink-arg={LD_PATH_FLAG}{libxml2_dirs.lib_dir}')
+
+        if zstd_dirs:
+            self._env['CFLAGS'] += f' -I{zstd_dirs.include_dir}'
+            self._env['CXXFLAGS'] += f' -I{zstd_dirs.include_dir}'
+            self._env['LDFLAGS'] += f' {LD_PATH_FLAG}{zstd_dirs.lib_dir}'
+            self._env['RUSTFLAGS_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{zstd_dirs.lib_dir}')
+            self._env['RUSTFLAGS_NOT_BOOTSTRAP'] += (
+                f' -Clink-arg={LD_PATH_FLAG}{zstd_dirs.lib_dir}')
 
         if debian_sysroot:
             # This mainly influences the glibc version that rustc itself needs.
@@ -676,6 +685,10 @@ def main():
     else:
         libxml2_dirs = None
 
+    # Require zstd compression. ZStd should be built altogether with llvm
+    # already.
+    zstd_dirs = ZStdDirs()
+
     # TODO(crbug.com/1271215): OpenSSL is somehow already present on the Windows
     # builder, but we should change to using a package from 3pp when it is
     # available.
@@ -685,7 +698,7 @@ def main():
         AddOpenSSLToEnv(args.build_mac_arm)
 
     xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, debian_sysroot,
-              args.verbose)
+              args.verbose, zstd_dirs)
 
     if args.dump_env:
         with open('rust-build-env', 'w') as f:
