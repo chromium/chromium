@@ -258396,7 +258396,7 @@
       },
       "text": {
        "2d.text.fontVariantCaps1.html": [
-        "b610c2240ffe96c7fe747a0db55c5bda51802e38",
+        "56acfc61f47c32092db1793eb2f4a9966fde04ef",
         [
          null,
          [
@@ -258408,21 +258408,8 @@
          {}
         ]
        ],
-       "2d.text.fontVariantCaps2.html": [
-        "f9d42ac3a60eb9f2a62ea2343c9f17a450713b71",
-        [
-         null,
-         [
-          [
-           "/html/canvas/element/text/2d.text.fontVariantCaps2-unexpected.html",
-           "!="
-          ]
-         ],
-         {}
-        ]
-       ],
        "2d.text.fontVariantCaps3.html": [
-        "a90e0c29b3dd1aa0176dabb653cd36d07abfadf4",
+        "c3d80d3e56caf84b9e5e1d7ab294300d722275cb",
         [
          null,
          [
@@ -258435,7 +258422,7 @@
         ]
        ],
        "2d.text.fontVariantCaps4.html": [
-        "b598fb60baf2d5126571eb020306cc57fd603464",
+        "1ee9053b4d9bc06343394cdae54950283873ed44",
         [
          null,
          [
@@ -258448,7 +258435,7 @@
         ]
        ],
        "2d.text.fontVariantCaps5.html": [
-        "b871f7c062409ffc0b263594c495bc0d5bde3896",
+        "d80de4ea31873274d14761cb9b1f171a4eb9b208",
         [
          null,
          [
@@ -258461,7 +258448,7 @@
         ]
        ],
        "2d.text.fontVariantCaps6.html": [
-        "e7bbd29341dcc6755848672047c3263cf4196fdd",
+        "c17fac18b773da2e581c5e55fb0d04dc64deafab",
         [
          null,
          [
@@ -259627,7 +259614,7 @@
       },
       "text": {
        "2d.text.fontVariantCaps1.html": [
-        "a2da7f557ce7c10d4b4dac0d9cd351fe11c062f1",
+        "3c216f07daac09924ae79221b05665ea0510000b",
         [
          null,
          [
@@ -259639,21 +259626,34 @@
          {}
         ]
        ],
-       "2d.text.fontVariantCaps2.html": [
-        "8a644fbb616bc42d223093b70a54fb6653c6b6d4",
+       "2d.text.fontVariantCaps1.w.html": [
+        "4bc1b36e17576a6ef35f75783e5ffd4fb16c0ffb",
         [
          null,
          [
           [
-           "/html/canvas/offscreen/text/2d.text.fontVariantCaps2-unexpected.html",
-           "!="
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps1-expected.html",
+           "=="
           ]
          ],
          {}
         ]
        ],
        "2d.text.fontVariantCaps3.html": [
-        "665a176087fba458e1b7708486d869ebd6862ce1",
+        "48699a640fe1f792ed275908b3b167e5e19aa01b",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps3-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps3.w.html": [
+        "cd5c1db818fcbf9c827cf3554d1ddd767ce2dac2",
         [
          null,
          [
@@ -259666,7 +259666,20 @@
         ]
        ],
        "2d.text.fontVariantCaps4.html": [
-        "84c5fbb4469f1ce6c844850dce34f79dbee62870",
+        "b1b81b81e28747f9ec671a63eefcc2cb13d3c5bd",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps4-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps4.w.html": [
+        "0bae66fcd46b3e2903a1ce2350f571224efeb591",
         [
          null,
          [
@@ -259679,7 +259692,20 @@
         ]
        ],
        "2d.text.fontVariantCaps5.html": [
-        "877d890ccc6d114fb70fa3df850366bd9a5bbe14",
+        "2a6f7b5f737ca8c549ae88d413241ada90543049",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps5-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps5.w.html": [
+        "8c59f5b517d4b8bd07b2d057a44792614eb55103",
         [
          null,
          [
@@ -259692,7 +259718,20 @@
         ]
        ],
        "2d.text.fontVariantCaps6.html": [
-        "08c70a3a2e2fd0b60020a21877575d10108a06c0",
+        "c33684d38869cd1fed409d44dc6bb1c6cfecf3e5",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/text/2d.text.fontVariantCaps6-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps6.w.html": [
+        "47f70d812b6664c19fb424102df09d4960caad97",
         [
          null,
          [
@@ -305956,11 +305995,15 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "be758f7252ef8c9d11323f1bdf07440132acb172",
+       "1e3f263447cecc562b28641a015d16762f79487a",
        []
       ],
       "color-computed-relative-color.html.ini": [
        "cd52a07975a7b0d3aaba0c37a1d2f8eef7b47142",
+       []
+      ],
+      "color-invalid-relative-color-expected.txt": [
+       "a518847d1a98c25f6fdb2ff807955d28e7d636d1",
        []
       ],
       "color-valid-color-function.html.ini": [
@@ -305980,7 +306023,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "ff73eaaad050a55ba85ffbfe5b802b46f463710e",
+       "0e9c4e7240a216285748a5658fa2269de307c6b3",
        []
       ],
       "color-valid-relative-color.html.ini": [
@@ -311133,7 +311176,7 @@
       []
      ],
      "flexbox-align-self-baseline-horiz-006-ref.xhtml": [
-      "248ca88a2f2dfb1627bf99b06585f3e2c6986dae",
+      "9b38d0955b6cf2f70151268454f0753d5f219021",
       []
      ],
      "flexbox-align-self-baseline-horiz-006.xhtml.ini": [
@@ -367689,7 +367732,7 @@
       []
      ],
      "empty-elements-insertion-expected.txt": [
-      "6bff876fb8662b5106e6e1f5f71793df0bfe2c00",
+      "74501eab59da19551d8500949035f9ab32db747e",
       []
      ],
      "empty-elements-insertion.html.ini": [
@@ -381671,15 +381714,11 @@
         []
        ],
        "2d.text.fontVariantCaps1-expected.html": [
-        "8ea3c22be13dd3bf1421c3f80b121edcc8b2d3bc",
-        []
-       ],
-       "2d.text.fontVariantCaps2-unexpected.html": [
-        "c64f5d0ec2aea8307ea4ba5257498f2f236186e6",
+        "e2cef0d77a64b17657bdfe99194930c5328cc3e8",
         []
        ],
        "2d.text.fontVariantCaps3-expected.html": [
-        "069fbfba8823e3e0f5fcf7ada4bd600b6dce1bbd",
+        "cf2d5ae119b549803b48521003d394313159944a",
         []
        ],
        "2d.text.fontVariantCaps3.html.ini": [
@@ -381687,7 +381726,7 @@
         []
        ],
        "2d.text.fontVariantCaps4-expected.html": [
-        "069fbfba8823e3e0f5fcf7ada4bd600b6dce1bbd",
+        "3813fd3684e8c94887337a551727e068469a66c5",
         []
        ],
        "2d.text.fontVariantCaps4.html.ini": [
@@ -381695,11 +381734,11 @@
         []
        ],
        "2d.text.fontVariantCaps5-expected.html": [
-        "8ea3c22be13dd3bf1421c3f80b121edcc8b2d3bc",
+        "4bda4ec4b5dc522b400df462b8a13b2fc7a9be8a",
         []
        ],
        "2d.text.fontVariantCaps6-expected.html": [
-        "c64f5d0ec2aea8307ea4ba5257498f2f236186e6",
+        "af9c736aea7f9b20f4fd09522a8aa2dd25a11ef1",
         []
        ],
        "2d.text.measure.baselines-expected.txt": [
@@ -382269,7 +382308,7 @@
         []
        ],
        "2d.text.fontVariantCaps1-expected.html": [
-        "942bcdec9cb938536738ef1f71a60cd1c85c9086",
+        "e2cef0d77a64b17657bdfe99194930c5328cc3e8",
         []
        ],
        "2d.text.fontVariantCaps1.html.ini": [
@@ -382281,7 +382320,7 @@
         []
        ],
        "2d.text.fontVariantCaps3-expected.html": [
-        "8d96d0ab0320ea8412e0045f59b6a3ca18260242",
+        "cf2d5ae119b549803b48521003d394313159944a",
         []
        ],
        "2d.text.fontVariantCaps3.html.ini": [
@@ -382289,7 +382328,7 @@
         []
        ],
        "2d.text.fontVariantCaps4-expected.html": [
-        "8d96d0ab0320ea8412e0045f59b6a3ca18260242",
+        "3813fd3684e8c94887337a551727e068469a66c5",
         []
        ],
        "2d.text.fontVariantCaps4.html.ini": [
@@ -382297,7 +382336,7 @@
         []
        ],
        "2d.text.fontVariantCaps5-expected.html": [
-        "942bcdec9cb938536738ef1f71a60cd1c85c9086",
+        "4bda4ec4b5dc522b400df462b8a13b2fc7a9be8a",
         []
        ],
        "2d.text.fontVariantCaps5.html.ini": [
@@ -382305,7 +382344,7 @@
         []
        ],
        "2d.text.fontVariantCaps6-expected.html": [
-        "dbcb8abd76a544d8a5ab48b1f477fc54c7ba008f",
+        "af9c736aea7f9b20f4fd09522a8aa2dd25a11ef1",
         []
        ],
        "2d.text.fontVariantCaps6.html.ini": [
@@ -382551,7 +382590,7 @@
         []
        ],
        "text.yaml": [
-        "93c86b8b5e59e4c9817698d248e3b670c69c9528",
+        "0e69cf2ccb9b6501877bb92c88045245b2f970b7",
         []
        ],
        "the-canvas-state.yaml": [
@@ -392677,7 +392716,7 @@
         ]
        },
        "selection-pointer-expected.txt": [
-        "a46cb70594b81466ca0c856428b12ce23e940d36",
+        "92255d9932e6a679b84e2b8f9100dc6183f29e47",
         []
        ],
        "selection-pointer.html.ini": [
@@ -401425,7 +401464,7 @@
     ]
    },
    "lint.ignore": [
-    "489c717cd6a715ce07dea9421863d3b69ad42cc9",
+    "761380e5356657d20a76c31e0e18ab94e4527d38",
     []
    ],
    "loading": {
@@ -401697,6 +401736,10 @@
      "resources": {
       "busy.js": [
        "9d761b6de5ee65c9067a4c576c90eb9e7dd6ef05",
+       []
+      ],
+      "busy_in_promise.js": [
+       "2eab6b6b8fd1df45df14ab7972a8ff774c3f4ec9",
        []
       ],
       "utils.js": [
@@ -474521,6 +474564,13 @@
       ],
       "content-visibility-086.html": [
        "51c1586098e4a1c54aa7095a9d7d70c2107c5f47",
+       [
+        null,
+        {}
+       ]
+      ],
+      "content-visibility-087.html": [
+       "f2faa45774cde805a295f3376b87444091500f47",
        [
         null,
         {}
@@ -560477,6 +560527,13 @@
          {}
         ]
        ],
+       "2d.text.fontVariantCaps2.html": [
+        "56efbb6fd3a990b04163889dcd0010538c714a5f",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.measure.actualBoundingBox.html": [
         "d0672b23dcd3f4902f1ca6375a3be62560f96902",
         [
@@ -572996,6 +573053,20 @@
         "8f653c36566afdf4ab5592ac0cf4c86084b678ac",
         [
          "html/canvas/offscreen/text/2d.text.font.weight.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps2.html": [
+        "e5bcff1831689321a0bd23983780769cce4e0669",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.fontVariantCaps2.worker.js": [
+        "89f4f48c7371f119098789c44d46e7a611664519",
+        [
+         "html/canvas/offscreen/text/2d.text.fontVariantCaps2.worker.html",
          {}
         ]
        ],
@@ -606664,6 +606735,15 @@
        }
       ]
      ],
+     "loaf-source-location-promise-resolver.html": [
+      "353b4160751cb125e3b203f604405474c3715ec6",
+      [
+       null,
+       {
+        "timeout": "long"
+       }
+      ]
+     ],
      "loaf-source-location.html": [
       "1065564206fc151e9690aca9bf512f7d48016099",
       [
@@ -619534,9 +619614,9 @@
      ]
     ],
     "pointerevent_attributes_nohover_pointers.html": [
-     "d501ae0afd45612f5bad13d08cdd7cb2646a38d9",
+     "374279135d0c182e605cb7e661d89b1a8e27ca6a",
      [
-      null,
+      "pointerevents/pointerevent_attributes_nohover_pointers.html?touch",
       {
        "testdriver": true
       }
@@ -679391,6 +679471,15 @@
    "webrtc-encoded-transform": {
     "RTCEncodedAudioFrame-clone.https.html": [
      "ec99338772029bf1e47de724edf85b96a3d0bc75",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "RTCEncodedAudioFrame-receive-cloned.https.html": [
+     "5a3bfeaf0aca51ae03f7244ff892035031720e74",
      [
       null,
       {
