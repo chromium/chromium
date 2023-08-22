@@ -679,9 +679,10 @@ DevicePermissionsManagerFactory::DevicePermissionsManagerFactory()
 DevicePermissionsManagerFactory::~DevicePermissionsManagerFactory() {
 }
 
-KeyedService* DevicePermissionsManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DevicePermissionsManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new DevicePermissionsManager(context);
+  return std::make_unique<DevicePermissionsManager>(context);
 }
 
 BrowserContext* DevicePermissionsManagerFactory::GetBrowserContextToUse(
