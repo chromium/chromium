@@ -216,6 +216,7 @@ int64_t ComputeDriveFsContentCacheSize(
     }
     running_size += file_info.GetSize();
   }
+  LOG(ERROR) << "ComputeDriveFsContentCacheSize: " << running_size;
   return running_size;
 }
 

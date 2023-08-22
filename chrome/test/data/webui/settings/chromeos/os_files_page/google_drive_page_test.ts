@@ -141,7 +141,7 @@ suite('<settings-google-drive-subpage>', function() {
           'Remove Drive access', connectDisconnectButton!.textContent!.trim());
     });
 
-    test('confirming drive disconnect updates pref', async function() {
+    test('confirming drive disconnect updates pref', async () => {
       page.setPrefValue('gdata.disabled', false);
       flush();
 
@@ -158,7 +158,7 @@ suite('<settings-google-drive-subpage>', function() {
 
     test(
         'cancelling drive disconnect confirmation dialog doesnt update pref',
-        async function() {
+        async () => {
           page.setPrefValue('gdata.disabled', false);
           flush();
 
@@ -173,7 +173,7 @@ suite('<settings-google-drive-subpage>', function() {
         });
 
 
-    test('free space shows the offline value returned', async function() {
+    test('free space shows the offline value returned', async () => {
       // Send back a normal pinned size result.
       testBrowserProxy.handler.setResultFor(
           'getContentCacheSize', {size: '100 MB'});
@@ -188,7 +188,7 @@ suite('<settings-google-drive-subpage>', function() {
     });
 
 
-    test('when clear offline files clicked show dialog', async function() {
+    test('when clear offline files clicked show dialog', async () => {
       page.setPrefValue('drivefs.bulk_pinning_enabled', false);
       testBrowserProxy.handler.setResultFor(
           'getContentCacheSize', {size: '100 MB'});
@@ -214,6 +214,23 @@ suite('<settings-google-drive-subpage>', function() {
           () =>
               testBrowserProxy.handler.getCallCount('clearPinnedFiles') === 1);
     });
+
+    test('clean up storage button is disabled at 0 B', async () => {
+      testBrowserProxy.handler.setResultFor(
+          'getContentCacheSize', {size: '0 B'});
+      page.onNavigated();
+      await assertAsync(() => clearOfflineStorageButton.disabled);
+
+      testBrowserProxy.handler.setResultFor(
+          'getContentCacheSize', {size: '100 MB'});
+      page.onNavigated();
+      await assertAsync(() => !clearOfflineStorageButton.disabled);
+
+      testBrowserProxy.handler.setResultFor(
+          'getContentCacheSize', {size: '0 B'});
+      page.onNavigated();
+      await assertAsync(() => clearOfflineStorageButton.disabled);
+    });
   });
 
   suite('with bulk pinning enabled', () => {
@@ -224,7 +241,7 @@ suite('<settings-google-drive-subpage>', function() {
       });
     });
 
-    test('removing drive access also disables bulk pinning', async function() {
+    test('removing drive access also disables bulk pinning', async () => {
       page.setPrefValue('gdata.disabled', false);
       page.setPrefValue('drivefs.bulk_pinning_enabled', true);
       flush();
@@ -242,8 +259,7 @@ suite('<settings-google-drive-subpage>', function() {
     });
 
     test(
-        'clicking the toggle updates the bulk pinning preference',
-        async function() {
+        'clicking the toggle updates the bulk pinning preference', async () => {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
           flush();
 
@@ -257,7 +273,7 @@ suite('<settings-google-drive-subpage>', function() {
 
     test(
         'progress sent via the browser proxy updates the sub title text',
-        async function() {
+        async () => {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
 
           /**
@@ -311,7 +327,7 @@ suite('<settings-google-drive-subpage>', function() {
               subTitle => !subTitle.includes(requiredSpaceText));
         });
 
-    test('disabling bulk pinning shows confirmation dialog', async function() {
+    test('disabling bulk pinning shows confirmation dialog', async () => {
       page.setPrefValue('drivefs.bulk_pinning_enabled', true);
       flush();
 
@@ -345,7 +361,7 @@ suite('<settings-google-drive-subpage>', function() {
 
     test(
         'atempting to enable bulk pinning when no free space shows dialog',
-        async function() {
+        async () => {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
 
           // Mock space values and the `kNotEnoughSpace` stage via the browser
@@ -389,7 +405,7 @@ suite('<settings-google-drive-subpage>', function() {
 
     test(
         'attempting to enable bulk pinning when no free space shows dialog',
-        async function() {
+        async () => {
           page.setPrefValue('drivefs.bulk_pinning_enabled', false);
 
           // Mock space values and the `kNotEnoughSpace` stage via the browser
@@ -431,34 +447,32 @@ suite('<settings-google-drive-subpage>', function() {
               'Pinning toggle should not be toggled');
         });
 
-    test(
-        'clear offline files disabled when bulk pinning enabled',
-        async function() {
-          page.setPrefValue('drivefs.bulk_pinning_enabled', false);
-          testBrowserProxy.handler.setResultFor(
-              'getContentCacheSize', {size: '100 MB'});
-          page.onNavigated();
-          testBrowserProxy.observerRemote.onProgress({
-            freeSpace: 'x',
-            requiredSpace: 'y',
-            stage: Stage.kStopped,
-            isError: false,
-          });
-          testBrowserProxy.observerRemote.$.flushForTesting();
-          await assertAsync(() => !clearOfflineStorageButton.disabled);
+    test('clear offline files disabled when bulk pinning enabled', async () => {
+      page.setPrefValue('drivefs.bulk_pinning_enabled', false);
+      testBrowserProxy.handler.setResultFor(
+          'getContentCacheSize', {size: '100 MB'});
+      page.onNavigated();
+      testBrowserProxy.observerRemote.onProgress({
+        freeSpace: 'x',
+        requiredSpace: 'y',
+        stage: Stage.kStopped,
+        isError: false,
+      });
+      testBrowserProxy.observerRemote.$.flushForTesting();
+      await assertAsync(() => !clearOfflineStorageButton.disabled);
 
-          page.setPrefValue('drivefs.bulk_pinning_enabled', true);
-          testBrowserProxy.handler.setResultFor(
-              'getContentCacheSize', {size: '100 MB'});
-          page.onNavigated();
-          testBrowserProxy.observerRemote.onProgress({
-            freeSpace: 'x',
-            requiredSpace: 'y',
-            stage: Stage.kSyncing,
-            isError: false,
-          });
-          testBrowserProxy.observerRemote.$.flushForTesting();
-          await assertAsync(() => clearOfflineStorageButton.disabled);
-        });
+      page.setPrefValue('drivefs.bulk_pinning_enabled', true);
+      testBrowserProxy.handler.setResultFor(
+          'getContentCacheSize', {size: '100 MB'});
+      page.onNavigated();
+      testBrowserProxy.observerRemote.onProgress({
+        freeSpace: 'x',
+        requiredSpace: 'y',
+        stage: Stage.kSyncing,
+        isError: false,
+      });
+      testBrowserProxy.observerRemote.$.flushForTesting();
+      await assertAsync(() => clearOfflineStorageButton.disabled);
+    });
   });
 });

@@ -129,6 +129,29 @@ class GoogleDriveHandlerTest
         });
   }
 
+  base::FilePath CreateFileInContentCache(int file_size_in_bytes) {
+    auto* const service =
+        drive::util::GetIntegrationServiceByProfile(browser()->profile());
+    {
+      // Ensure the content cache directory exists.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      if (!base::DirectoryExists(service->GetDriveFsContentCachePath())) {
+        EXPECT_TRUE(
+            base::CreateDirectory(service->GetDriveFsContentCachePath()));
+      }
+    }
+    std::string foo_contents = base::RandBytesAsString(file_size_in_bytes);
+    const base::FilePath file_path =
+        service->GetDriveFsContentCachePath().Append("foo.txt");
+    {
+      // Create a file of 32 bytes in the content_cache directory.
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::WriteFile(file_path, foo_contents));
+    }
+
+    return file_path;
+  }
+
  protected:
   OSSettingsBrowserTestMixin os_settings_mixin_{&mixin_host_};
   FakeSearchQuery fake_search_query_;
@@ -144,10 +167,6 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        NoSearchResultsReturnsNoRequiredOnlyFreeSpace) {
   SetUpSearchResultExpectations();
   fake_search_query_.SetSearchResults({});
-
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
 
   // Expect the free space to be 1 GB (1,073,741,824 bytes), the required space
   // to be 0 KB (0 items).
@@ -167,9 +186,6 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        OnlyUnpinnedResultsUpdateTheSpaceRequirements) {
   SetUpSearchResultExpectations();
 
-  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
-  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
-      .WillRepeatedly(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
 
   // Each item is 125 MB in size, total required space should be 500 MB.
   int64_t file_size = 125 * 1024 * 1024;
@@ -196,21 +212,7 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
 
   constexpr int file_size_in_bytes = 32;
-  auto* const service =
-      drive::util::GetIntegrationServiceByProfile(browser()->profile());
-  {
-    // Ensure the content cache directory exists.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::CreateDirectory(service->GetDriveFsContentCachePath()));
-  }
-  std::string foo_contents = base::RandBytesAsString(file_size_in_bytes);
-  const base::FilePath file_path =
-      service->GetDriveFsContentCachePath().Append("foo.txt");
-  {
-    // Create a file of 32 bytes in the content_cache directory.
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    ASSERT_TRUE(base::WriteFile(file_path, foo_contents));
-  }
+  CreateFileInContentCache(file_size_in_bytes);
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.AssertBulkPinningPinnedSize(
@@ -219,12 +221,24 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        ClearingOfflineFilesCallsProperMethods) {
-  SetUpSearchResultExpectations();
-
   // Mock no search results are returned (this avoids the call to
   // `CalculateRequiredSpace` from being ran here).
   fake_search_query_.SetSearchResults({});
   ash::FakeSpacedClient::Get()->set_free_disk_space(int64_t(3) << 30);
+
+  const base::FilePath file_path = CreateFileInContentCache(32);
+
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, ClearOfflineFiles(_))
+      .WillOnce(
+          [&file_path](
+              drivefs::mojom::DriveFs::ClearOfflineFilesCallback callback) {
+            {
+              base::ScopedAllowBlockingForTesting allow_blocking;
+              ASSERT_TRUE(base::DeleteFile(file_path));
+            }
+            std::move(callback).Run(drive::FILE_ERROR_OK);
+          });
 
   auto google_drive_settings = OpenGoogleDriveSettings();
   google_drive_settings.ClickClearOfflineFilesAndAssertNewSize(

@@ -459,7 +459,8 @@ export class SettingsGoogleDriveSubpageElement extends
   private shouldEnableCleanUpStorageButton_() {
     return !this.getPref(GOOGLE_DRIVE_BULK_PINNING_PREF).value &&
         this.contentCacheSize_ !== ContentCacheSizeType.UNKNOWN &&
-        this.contentCacheSize_ !== ContentCacheSizeType.CALCULATING;
+        this.contentCacheSize_ !== ContentCacheSizeType.CALCULATING &&
+        this.contentCacheSize_ !== '0 B';
   }
 
   /**

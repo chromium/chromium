@@ -710,11 +710,6 @@ void FakeDriveFs::SetDocsOfflineEnabled(
   std::move(callback).Run(drive::FILE_ERROR_OK);
 }
 
-void FakeDriveFs::ClearOfflineFiles(
-    drivefs::mojom::DriveFs::ClearOfflineFilesCallback callback) {
-  std::move(callback).Run(drive::FILE_ERROR_OK);
-}
-
 void FakeDriveFs::GetDocsOfflineStats(
     drivefs::mojom::DriveFs::GetDocsOfflineStatsCallback callback) {
   drivefs::mojom::DocsOfflineStatsPtr stats =
