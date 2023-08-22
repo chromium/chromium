@@ -9,8 +9,10 @@
 
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 
-// Enum specifying the type of Content Suggestions a module is showing. Entries
-// should not be renumbered and numeric values should never be reused.
+// Enum specifying the type of Content Suggestions a module is showing.
+// Entries should always keep synced with the IOSMagicStackModuleType histogram
+// enum. Entries should not be renumbered and numeric values should never be
+// reused.
 enum class ContentSuggestionsModuleType {
   kMostVisited = 0,
   kShortcuts = 1,
