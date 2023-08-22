@@ -75,6 +75,7 @@ base::TimeDelta GetPulseIntervalFromSpecifics(
 
 absl::optional<DeviceInfo::SharingInfo> SpecificsToSharingInfo(
     const DeviceInfoSpecifics& specifics) {
+  TRACE_EVENT0("sync", "syncer::SpecificsToSharingInfo");
   if (!specifics.has_sharing_fields()) {
     return absl::nullopt;
   }
@@ -654,6 +655,7 @@ void DeviceInfoSyncBridge::ForcePulseForTest() {
 }
 
 void DeviceInfoSyncBridge::NotifyObservers() {
+  TRACE_EVENT0("sync", "DeviceInfoSyncBridge::NotifyObservers");
   for (auto& observer : observers_) {
     observer.OnDeviceInfoChange();
   }
@@ -742,6 +744,7 @@ void DeviceInfoSyncBridge::OnReadAllData(
 void DeviceInfoSyncBridge::OnReadAllMetadata(
     const absl::optional<ModelError>& error,
     std::unique_ptr<MetadataBatch> metadata_batch) {
+  TRACE_EVENT0("sync", "DeviceInfoSyncBridge::OnReadAllMetadata");
   if (error) {
     change_processor()->ReportError(*error);
     return;
@@ -827,6 +830,7 @@ void DeviceInfoSyncBridge::OnCommit(
 }
 
 bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
+  TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ReconcileLocalAndStored");
   const DeviceInfo* current_info =
       local_device_info_provider_->GetLocalDeviceInfo();
   DCHECK(current_info);
@@ -981,6 +985,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {
+  TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ExpireOldEntries");
   const base::Time expiration_threshold =
       base::Time::Now() - kExpirationThreshold;
   std::unordered_set<std::string> cache_guids_to_expire;

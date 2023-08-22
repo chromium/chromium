@@ -4,6 +4,7 @@
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync_device_info/device_info_sync_client.h"
 #include "components/sync_device_info/device_info_util.h"
@@ -104,6 +105,7 @@ void LocalDeviceInfoProviderImpl::Initialize(
     const std::string& model_name,
     const std::string& full_hardware_class,
     std::unique_ptr<DeviceInfo> device_info_restored_from_store) {
+  TRACE_EVENT0("sync", "LocalDeviceInfoProviderImpl::Initialize");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!cache_guid.empty());
 
@@ -137,6 +139,8 @@ void LocalDeviceInfoProviderImpl::Initialize(
 
   full_hardware_class_ = full_hardware_class;
 
+  TRACE_EVENT0("ui",
+               "LocalDeviceInfoProviderImpl::Initialize::NotifyObservers");
   // Notify observers.
   closure_list_.Notify();
 }

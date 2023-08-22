@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_invalidation.h"

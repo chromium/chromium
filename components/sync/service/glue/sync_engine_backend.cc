@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/sync_invalidation_adapter.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"

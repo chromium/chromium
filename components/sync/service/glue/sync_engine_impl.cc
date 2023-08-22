@@ -18,6 +18,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -396,6 +397,8 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
     std::unique_ptr<ModelTypeConnector> model_type_connector,
     const std::string& birthday,
     const std::string& bag_of_chips) {
+  TRACE_EVENT0("sync",
+               "SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   model_type_connector_ = std::move(model_type_connector);

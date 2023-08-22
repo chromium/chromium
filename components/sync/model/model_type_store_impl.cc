@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_error.h"
@@ -119,6 +120,7 @@ void ModelTypeStoreImpl::ReadAllDataDone(
 }
 
 void ModelTypeStoreImpl::ReadAllMetadata(ReadMetadataCallback callback) {
+  TRACE_EVENT0("sync", "ModelTypeStoreImpl::ReadAllMetadata");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
@@ -137,6 +139,7 @@ void ModelTypeStoreImpl::ReadAllMetadataDone(
     ReadMetadataCallback callback,
     std::unique_ptr<MetadataBatch> metadata_batch,
     const absl::optional<ModelError>& error) {
+  TRACE_EVENT0("sync", "ModelTypeStoreImpl::ReadAllMetadataDone");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (error) {
