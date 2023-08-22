@@ -59,9 +59,9 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 
-KeyedService*
-ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> ChromeEnterpriseRealTimeUrlLookupServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   if (!g_browser_process->safe_browsing_service()) {
     return nullptr;
   }
@@ -69,7 +69,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
           profile->GetURLLoaderFactory());
-  return new ChromeEnterpriseRealTimeUrlLookupService(
+  return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile), profile,
       base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
