@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
 
+class ChromeBrowserState;
+
 namespace ios {
 namespace provider {
 
@@ -31,7 +33,8 @@ ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
     id<FirstRunScreenDelegate> first_run_delegate);
 
 // Creates a new ChoiceDisplayHandler instance.
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler();
+id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler(
+    ChromeBrowserState* browserState);
 
 // Creates a new ChoiceSceneAgent instance.
 id<SceneAgent> CreateChoiceSceneAgent(PromosManager* promosManager);

@@ -24,7 +24,8 @@ ChromeCoordinator* CreateChoiceCoordinatorForFREWithNavigationController(
   NOTREACHED_NORETURN();
 }
 
-id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler() {
+id<StandardPromoDisplayHandler> CreateChoiceDisplayHandler(
+    ChromeBrowserState* browserState) {
   NOTREACHED_NORETURN();
 }
 
