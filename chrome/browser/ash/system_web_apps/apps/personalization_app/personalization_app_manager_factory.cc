@@ -55,7 +55,8 @@ PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()
 
 PersonalizationAppManagerFactory::~PersonalizationAppManagerFactory() = default;
 
-KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PersonalizationAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(CanSeeWallpaperOrPersonalizationApp(
       Profile::FromBrowserContext(context)));
@@ -63,8 +64,8 @@ KeyedService* PersonalizationAppManagerFactory::BuildServiceInstanceFor(
       LocalSearchServiceProxyFactory::GetForBrowserContext(context);
   DCHECK(local_search_service_proxy);
 
-  return PersonalizationAppManager::Create(context, *local_search_service_proxy)
-      .release();
+  return PersonalizationAppManager::Create(context,
+                                           *local_search_service_proxy);
 }
 
 bool PersonalizationAppManagerFactory::ServiceIsNULLWhileTesting() const {
