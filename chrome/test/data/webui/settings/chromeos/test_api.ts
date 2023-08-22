@@ -9,7 +9,9 @@ import {SettingsRadioGroupElement} from 'chrome://os-settings/lazy_load.js';
 import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {PasswordSettingsApi} from './os_people_page/password_settings_api.js';
 import {PinSettingsApi} from './os_people_page/pin_settings_api.js';
+import {PasswordSettingsApiRemote} from './password_settings_api.test-mojom-webui.js';
 import {PinSettingsApiRemote} from './pin_settings_api.test-mojom-webui.js';
 import {GoogleDriveSettingsInterface, GoogleDriveSettingsReceiver, GoogleDriveSettingsRemote, LockScreenSettings_RecoveryDialogAction as RecoveryDialogAction, LockScreenSettingsInterface, LockScreenSettingsReceiver, LockScreenSettingsRemote, OSSettingsBrowserProcess, OSSettingsDriverInterface, OSSettingsDriverReceiver} from './test_api.test-mojom-webui.js';
 import {assertAsync, assertForDuration, hasBooleanProperty, hasProperty, Lazy, querySelectorShadow, retry, retryUntilSome} from './utils.js';
@@ -126,6 +128,35 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
 
   async authenticateIncorrectly(password: string): Promise<void> {
     await this.authenticate(password, false);
+  }
+
+  private queryPasswordSettings(): PasswordSettingsApi|null {
+    const el = this.shadowRoot().getElementById('passwordSettings');
+    if (!(el instanceof HTMLElement)) {
+      return null;
+    }
+    if (el.hidden) {
+      return null;
+    }
+
+    return new PasswordSettingsApi(el);
+  }
+
+  async assertPasswordControlVisibility(isVisible: boolean): Promise<void> {
+    const property = () => {
+      const settings = this.queryPasswordSettings();
+      return (settings !== null) === isVisible;
+    };
+
+    await assertAsync(property);
+    await assertForDuration(property);
+  }
+
+  public async goToPasswordSettings():
+      Promise<{passwordSettings: PasswordSettingsApiRemote}> {
+    const passwordSettings =
+        await retryUntilSome(() => this.queryPasswordSettings());
+    return {passwordSettings: passwordSettings.newRemote()};
   }
 
   private recoveryToggle(): HTMLElement&{checked: boolean}|null {
