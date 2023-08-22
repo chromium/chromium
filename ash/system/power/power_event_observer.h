@@ -49,6 +49,10 @@ class ASH_EXPORT PowerEventObserver
 
   ~PowerEventObserver() override;
 
+  // Called by D-Bus when the current switches state is successfully obtained.
+  void OnGetSwitchStates(
+      absl::optional<chromeos::PowerManagerClient::SwitchStates> result);
+
   // Called by the WebUIScreenLocker when all the lock screen animations have
   // completed.  This really should be implemented via an observer but since
   // ash/ isn't allowed to depend on chrome/ we need to have the
@@ -134,6 +138,8 @@ class ASH_EXPORT PowerEventObserver
   base::UnguessableToken block_suspend_token_;
 
   std::unique_ptr<LockOnSuspendUsage> lock_on_suspend_usage_;
+
+  base::WeakPtrFactory<PowerEventObserver> weak_factory_{this};
 };
 
 }  // namespace ash
