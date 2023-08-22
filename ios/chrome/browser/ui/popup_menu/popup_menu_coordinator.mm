@@ -48,6 +48,8 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_mediator.h"
@@ -318,6 +320,11 @@ enum class IOSOverflowMenuActionType {
         self.overflowMenuMediator.followBrowserAgent =
             FollowBrowserAgent::FromBrowser(self.browser);
       }
+      // Set the AuthenticationService with the one from the original
+      // ChromeBrowserState as the incognito one doesn't have that service.
+      self.overflowMenuMediator.authenticationService =
+          AuthenticationServiceFactory::GetForBrowserState(
+              self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
 
       self.contentBlockerMediator.consumer = self.overflowMenuMediator;
 

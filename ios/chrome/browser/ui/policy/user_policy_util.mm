@@ -14,22 +14,28 @@
 
 bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
                                     PrefService* prefService) {
-  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
-    // Return false immediately if none of the user policy features is enabled.
-    return false;
-  }
-
   if (prefService->GetBoolean(
           policy::policy_prefs::kUserPolicyNotificationWasShown)) {
     // Return false the notification was already shown in the past.
     return false;
   }
 
+  return CanFetchUserPolicy(authService, prefService);
+}
+
+bool CanFetchUserPolicy(AuthenticationService* authService,
+                        PrefService* prefService) {
+  bool enabled_for_signin = policy::IsAnyUserPolicyFeatureEnabled();
+
+  if (!enabled_for_signin) {
+    // Return false immediately if the user policy features isn't enabled for
+    // the minimal consent level.
+    return false;
+  }
+
   // TODO(crbug.com/1462552): Remove kSync usage after users are migrated to
   // kSignin only after kSync sunset. See ConsentLevel::kSync for more details.
 
-  bool enabled_for_signin =
-      policy::IsUserPolicyEnabledForSigninAndNoSyncConsentLevel();
   bool enabled_for_sync =
       policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel();
 

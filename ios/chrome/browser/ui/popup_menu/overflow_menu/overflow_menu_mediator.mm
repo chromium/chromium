@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
@@ -1036,9 +1037,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   self.helpActionsGroup.actions = helpActions;
 
+  bool hasMachineLevelPolicies =
+      _browserPolicyConnector &&
+      _browserPolicyConnector->HasMachineLevelPolicies();
+  bool canFetchUserPolicies =
+      _authenticationService && _browserStatePrefs &&
+      CanFetchUserPolicy(_authenticationService, _browserStatePrefs);
   // Set footer (on last section), if any.
-  if (_browserPolicyConnector &&
-      _browserPolicyConnector->HasMachineLevelPolicies()) {
+  if (hasMachineLevelPolicies || canFetchUserPolicies) {
+    // Set the Enterprise footer if there are machine level or user level
+    // (aka ChromeBrowserState level) policies.
     self.helpActionsGroup.footer = CreateOverflowMenuManagedFooter(
         IDS_IOS_TOOLS_MENU_ENTERPRISE_MANAGED,
         IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE, kTextMenuEnterpriseInfo,

@@ -12,4 +12,8 @@ class PrefService;
 bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
                                     PrefService* prefService);
 
+// Returns true if user policies can be fetched.
+bool CanFetchUserPolicy(AuthenticationService* authService,
+                        PrefService* prefService);
+
 #endif  // IOS_CHROME_BROWSER_UI_POLICY_USER_POLICY_UTIL_H_

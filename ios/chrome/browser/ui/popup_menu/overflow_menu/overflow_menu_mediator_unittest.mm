@@ -8,6 +8,7 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/default_clock.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_utils.h"
@@ -19,14 +20,19 @@
 #import "components/password_manager/core/browser/mock_password_store_interface.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
+#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
+#import "components/sync_preferences/pref_service_syncable.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
@@ -38,18 +44,29 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/promos_manager/mock_promos_manager.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/reading_list_test_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/system_identity.h"
+#import "ios/chrome/browser/signin/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/ui/popup_menu//overflow_menu/overflow_menu_orderer.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/constants.h"
@@ -60,6 +77,7 @@
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -76,7 +94,10 @@
 #import "ui/base/device_form_factor.h"
 
 using bookmarks::BookmarkModel;
+using sync_preferences::PrefServiceMockFactory;
+using sync_preferences::PrefServiceSyncable;
 using testing::Return;
+using user_prefs::PrefRegistrySyncable;
 
 namespace {
 
@@ -114,6 +135,16 @@ void CleanupNSUserDefaults() {
       removeObjectForKey:kWhatsNewM116UsageEntryKey];
 }
 
+// Creates a PrefService that can be used by the browser state.
+std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
+  PrefServiceMockFactory factory;
+  scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
+  std::unique_ptr<PrefServiceSyncable> prefs =
+      factory.CreateSyncable(registry.get());
+  RegisterBrowserStatePrefs(registry.get());
+  return prefs;
+}
+
 }  // namespace
 
 class OverflowMenuMediatorTest : public PlatformTest {
@@ -135,6 +166,10 @@ class OverflowMenuMediatorTest : public PlatformTest {
     CleanupNSUserDefaults();
 
     TestChromeBrowserState::Builder builder;
+    // Set a pref service for the ChromeBrowserState that is needed by some
+    // factories (e.g. AuthenticationServiceFactory). The browser prefs for
+    // testing the mediator are usually hosted in `browserStatePrefs_`.
+    builder.SetPrefService(CreatePrefServiceForBrowserState());
     builder.AddTestingFactory(
         ios::LocalOrSyncableBookmarkModelFactory::GetInstance(),
         ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
@@ -147,7 +182,15 @@ class OverflowMenuMediatorTest : public PlatformTest {
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
+    builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetInstance(),
+        AuthenticationServiceFactory::GetDefaultFactory());
+
     browser_state_ = builder.Build();
+
+    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
+        browser_state_.get(),
+        std::make_unique<FakeAuthenticationServiceDelegate>());
 
     web::test::OverrideJavaScriptFeatures(
         browser_state_.get(),
@@ -378,6 +421,12 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_env_;
+  // Set a local state for the test ApplicationContext that is scoped to the
+  // test (cleaned up on teardown). This is needed for certains factories that
+  // gets the local state from the ApplicationContext directly, e.g. the
+  // AuthenticationServiceFactory. Valid local state prefs for testing the
+  // mediator are usually hosted in `localStatePrefs_`.
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
 
@@ -566,9 +615,50 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoHidden) {
 
   ASSERT_FALSE(HasEnterpriseInfoItem());
 }
+// Tests that the "Managed by..." item is shown for user level policies when
+// the UserPolicy features is enabled and the browser is signed in with a
+// managed account.
+TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
+  // Enable the UserPolicy feature.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{policy::kUserPolicyForSigninOrSyncConsentLevel},
+      {});
 
-// Tests that the "Managed by..." item is shown.
-TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShown) {
+  // Add managed account to sign in with.
+  FakeSystemIdentityManager* fake_system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          GetApplicationContext()->GetSystemIdentityManager());
+  fake_system_identity_manager->AddManagedIdentities(@[ @"managedfoo" ]);
+  ChromeAccountManagerService* account_manager =
+      ChromeAccountManagerServiceFactory::GetForBrowserState(
+          browser_state_.get());
+
+  // Emulate signing in with managed account.
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+  authentication_service->SignIn(
+      account_manager->GetDefaultIdentity(),
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  EXPECT_TRUE(authentication_service->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+
+  CreateMediator(/*is_incognito=*/NO);
+  // Set the objects needed to detect the signed in managed account.
+  mediator_.authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+  mediator_.browserStatePrefs = browser_state_->GetPrefs();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  ASSERT_TRUE(HasEnterpriseInfoItem());
+}
+
+// Tests that the "Managed by..." item is shown for machine level policies
+// (e.g. from MDM or CBCM).
+TEST_F(OverflowMenuMediatorTest,
+       TestEnterpriseInfoShownForMachineLevelPolicies) {
   // Set a policy.
   base::ScopedTempDir state_directory;
   ASSERT_TRUE(state_directory.CreateUniqueTempDir());
