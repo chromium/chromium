@@ -4244,6 +4244,8 @@ crbug.com/1003715 [ Win ] http/tests/notifications/serviceworker-notification-pr
 crbug.com/1468875 http/tests/devtools/network/network-search.js [ Failure Pass ]
 crbug.com/1468875 http/tests/devtools/search/sources-search-scope-in-files.js [ Failure Pass ]
 crbug.com/1468875 http/tests/devtools/search/sources-search-scope-many-projects.js [ Failure Pass ]
+crbug.com/1468875 http/tests/devtools/sources/debugger-ui/show-generator-location.js [ Failure Pass ]
+crbug.com/1468875 http/tests/devtools/sources/debugger-ui/show-function-definition.js [ Failure Pass ]
 
 # Sheriff 2019-10-18
 crbug.com/1015975 media/video-currentTime.html [ Failure Pass ]
