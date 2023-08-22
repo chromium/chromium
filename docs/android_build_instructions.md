@@ -333,7 +333,7 @@ with `.*`), eg:
 
 ```shell
 export CHROMIUM_LOGCAT_HIGHLIGHT='(WARNING|cr_Child)'
-out/Default.bin/chrome_public_apk logcat
+out/Default/bin/chrome_public_apk logcat
 # Highlights messages/tags containing WARNING and cr_Child strings.
 ```
 
