@@ -151,4 +151,9 @@ FakeIntentHelperInstance::GetBroadcastsForAction(
 
 void FakeIntentHelperInstance::RequestDomainVerificationStatusUpdate() {}
 
+void FakeIntentHelperInstance::SetCaptionStyle(
+    arc::mojom::CaptionStylePtr caption_style) {
+  caption_style_ = std::move(caption_style);
+}
+
 }  // namespace arc

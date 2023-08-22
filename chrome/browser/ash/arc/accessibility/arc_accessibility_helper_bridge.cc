@@ -475,6 +475,8 @@ ArcAccessibilityHelperBridge::GetFilterType() {
   return ax::android::mojom::AccessibilityFilterType::OFF;
 }
 
+// TODO(b/177979962): Remove after Android starts accepting CaptionStyle from
+// arc_intent_helper.
 void ArcAccessibilityHelperBridge::UpdateCaptionSettings() const {
   ax::android::mojom::CaptionStylePtr caption_style =
       GetCaptionStyleFromPrefs(profile_->GetPrefs());

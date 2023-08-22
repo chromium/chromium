@@ -11,6 +11,7 @@
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/mojom/backup_settings.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/ash_features.h"
@@ -22,9 +23,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -47,6 +50,7 @@
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/live_caption/pref_names.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -58,6 +62,8 @@
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/base_type_conversion.h"
 
 // Enable VLOG level 1.
 #undef ENABLED_VLOG_LEVEL
@@ -76,6 +82,88 @@ constexpr char kSetProxyAction[] = "org.chromium.arc.intent_helper.SET_PROXY";
 constexpr char kArcProxyBypassListDelimiter[] = ",";
 
 constexpr float kAndroidFontScaleNormal = 1;
+
+// These values are based on
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_a11y_page/captions_subpage.ts;l=142;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
+constexpr char kTextShadowRaised[] = "-2px -2px 4px rgba(0, 0, 0, 0.5)";
+constexpr char kTextShadowDepressed[] = "2px 2px 4px rgba(0, 0, 0, 0.5)";
+constexpr char kTextShadowUniform[] =
+    "-1px 0px 0px black, 0px -1px 0px black, 1px 0px 0px black, 0px  1px 0px "
+    "black";
+constexpr char kTextShadowDropShadow[] =
+    "0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black";
+
+arc::mojom::CaptionColorPtr GetCaptionColorFromPrefs(
+    const PrefService* prefs,
+    const char* color_pref_name,
+    const char* opacity_pref_name) {
+  const std::string rgb = prefs->GetString(color_pref_name);
+  if (rgb.empty()) {
+    return nullptr;
+  }
+  const int opacity = prefs->GetInteger(opacity_pref_name);
+  std::string color_str =
+      base::StringPrintf("rgba(%s,%s)", rgb.c_str(),
+                         base::NumberToString(opacity / 100.0).c_str());
+
+  // Validate color value is correct by converting it to SkColor and retrieve
+  // the values if it's valid. The caveat is due to the method being very
+  // generic, it does some redundant stuffs (like utf16 conversion, removing rgb
+  // prefix). But since this path is frequently used, the benefit of reusing
+  // method outweighs the cons.
+  absl::optional<SkColor> sk_color =
+      ui::metadata::SkColorConverter::FromString(base::UTF8ToUTF16(color_str));
+  if (!sk_color) {
+    return nullptr;
+  }
+  SkColor color = sk_color.value();
+  return arc::mojom::CaptionColor::New(SkColorGetA(color), SkColorGetR(color),
+                                       SkColorGetG(color), SkColorGetB(color));
+}
+
+float GetFontScaleFromPref(const PrefService* prefs) {
+  std::string text_size =
+      prefs->GetString(::prefs::kAccessibilityCaptionsTextSize);
+  if (text_size.empty()) {
+    return 1.0f;
+  }
+  CHECK(text_size[text_size.size() - 1] == '%');
+  text_size = text_size.substr(0, text_size.size() - 1);
+  int font_scale;
+  CHECK(base::StringToInt(text_size, &font_scale));
+  return font_scale / 100.0f;
+}
+
+arc::mojom::CaptionStylePtr GetCaptionStyleFromPrefs(const PrefService* prefs) {
+  CHECK(prefs);
+
+  arc::mojom::CaptionStylePtr style = arc::mojom::CaptionStyle::New();
+
+  style->font_scale = GetFontScaleFromPref(prefs);
+  style->text_color =
+      GetCaptionColorFromPrefs(prefs, ::prefs::kAccessibilityCaptionsTextColor,
+                               ::prefs::kAccessibilityCaptionsTextOpacity);
+  style->background_color = GetCaptionColorFromPrefs(
+      prefs, ::prefs::kAccessibilityCaptionsBackgroundColor,
+      ::prefs::kAccessibilityCaptionsBackgroundOpacity);
+  style->user_locale = prefs->GetString(::language::prefs::kApplicationLocale);
+
+  const std::string text_shadow =
+      prefs->GetString(::prefs::kAccessibilityCaptionsTextShadow);
+  if (text_shadow == kTextShadowRaised) {
+    style->text_shadow_type = arc::mojom::CaptionTextShadowType::kRaised;
+  } else if (text_shadow == kTextShadowDepressed) {
+    style->text_shadow_type = arc::mojom::CaptionTextShadowType::kDepressed;
+  } else if (text_shadow == kTextShadowUniform) {
+    style->text_shadow_type = arc::mojom::CaptionTextShadowType::kUniform;
+  } else if (text_shadow == kTextShadowDropShadow) {
+    style->text_shadow_type = arc::mojom::CaptionTextShadowType::kDropShadow;
+  } else {
+    style->text_shadow_type = arc::mojom::CaptionTextShadowType::kNone;
+  }
+
+  return style;
+}
 
 bool GetHttpProxyServer(const ProxyConfigDictionary* proxy_config_dict,
                         std::string* host,
@@ -186,6 +274,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   void SyncAccessibilityLargeMouseCursorEnabled() const;
   void SyncAccessibilityVirtualKeyboardEnabled() const;
   void SyncBackupEnabled() const;
+  void SyncCaptionStyle() const;
   void SyncConsumerAutoUpdateToggle() const;
   void SyncDockedMagnifierEnabled() const;
   void SyncFocusHighlightEnabled() const;
@@ -306,6 +395,14 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
       return;
     }
     SyncProxySettings();
+  } else if (pref_name == ::prefs::kAccessibilityCaptionsBackgroundColor ||
+             pref_name == ::prefs::kAccessibilityCaptionsBackgroundOpacity ||
+             pref_name == ::prefs::kAccessibilityCaptionsTextColor ||
+             pref_name == ::prefs::kAccessibilityCaptionsTextFont ||
+             pref_name == ::prefs::kAccessibilityCaptionsTextOpacity ||
+             pref_name == ::prefs::kAccessibilityCaptionsTextShadow ||
+             pref_name == ::prefs::kAccessibilityCaptionsTextSize) {
+    SyncCaptionStyle();
   } else if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled) {
     SyncFocusHighlightEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityLargeCursorEnabled) {
@@ -327,6 +424,12 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
              pref_name == ::language::prefs::kPreferredLanguages) {
     SyncLocale();
+    // Android separates locale settings for system language and caption
+    // language, meanwhile ChromeOS settings treat it as one, hence we use
+    // this same setting to update Android's caption locale.
+    if (pref_name == ::language::prefs::kApplicationLocale) {
+      SyncCaptionStyle();
+    }
   } else if (pref_name == ::prefs::kConsumerAutoUpdateToggle) {
     SyncConsumerAutoUpdateToggle();
   } else if (pref_name == ::prefs::kUse24HourClock) {
@@ -420,6 +523,16 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   local_state_registrar_.Init(g_browser_process->local_state());
 
   // Keep these lines ordered lexicographically.
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsBackgroundColor);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsBackgroundOpacity);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsTextColor);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsTextFont);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsTextOpacity);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsTextShadow);
+  AddPrefToObserve(::prefs::kAccessibilityCaptionsTextSize);
+  AddPrefToObserve(::prefs::kResolveTimezoneByGeolocationMethod);
+  AddPrefToObserve(::prefs::kSystemProxyUserTrafficHostAndPort);
+  AddPrefToObserve(::prefs::kUse24HourClock);
   AddPrefToObserve(ash::prefs::kAccessibilityFocusHighlightEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityLargeCursorEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityScreenMagnifierEnabled);
@@ -429,12 +542,9 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(ash::prefs::kAccessibilityVirtualKeyboardEnabled);
   AddPrefToObserve(ash::prefs::kDockedMagnifierEnabled);
   AddPrefToObserve(ash::prefs::kUserGeolocationAllowed);
-  AddPrefToObserve(::prefs::kResolveTimezoneByGeolocationMethod);
-  AddPrefToObserve(::prefs::kSystemProxyUserTrafficHostAndPort);
-  AddPrefToObserve(::prefs::kUse24HourClock);
-  AddPrefToObserve(proxy_config::prefs::kProxy);
   AddPrefToObserve(onc::prefs::kDeviceOpenNetworkConfiguration);
   AddPrefToObserve(onc::prefs::kOpenNetworkConfiguration);
+  AddPrefToObserve(proxy_config::prefs::kProxy);
 
   // Keep these lines ordered lexicographically.
   AddLocalStatePrefToObserve(::prefs::kConsumerAutoUpdateToggle);
@@ -474,6 +584,7 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // Keep these lines ordered lexicographically.
   SyncAccessibilityLargeMouseCursorEnabled();
   SyncAccessibilityVirtualKeyboardEnabled();
+  SyncCaptionStyle();
   SyncConsumerAutoUpdateToggle();
   SyncDockedMagnifierEnabled();
   SyncFocusHighlightEnabled();
@@ -537,6 +648,22 @@ void ArcSettingsServiceImpl::SyncBackupEnabled() const {
     backup_settings->SetBackupEnabled(value->GetBool(),
                                       !pref->IsUserModifiable());
   }
+}
+
+void ArcSettingsServiceImpl::SyncCaptionStyle() const {
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->intent_helper(), SetCaptionStyle);
+  if (!instance) {
+    return;
+  }
+
+  const PrefService* pref_service = registrar_.prefs();
+  CHECK(pref_service);
+  arc::mojom::CaptionStylePtr caption_style =
+      GetCaptionStyleFromPrefs(pref_service);
+  CHECK(caption_style);
+
+  instance->SetCaptionStyle(std::move(caption_style));
 }
 
 void ArcSettingsServiceImpl::SyncFocusHighlightEnabled() const {

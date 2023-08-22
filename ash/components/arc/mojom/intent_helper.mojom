@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 52
+// Next MinVersion: 53
 
 module arc.mojom;
 
@@ -265,6 +265,45 @@ enum AndroidSetting {
   kGeoLocationUserTriggered,
 };
 
+// The type of shadow used for Chrome captions.
+// https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle
+[Extensible]
+enum CaptionTextShadowType {
+  // Edge type value specifying no character edges.
+  kNone = 0,
+
+  // Edge type value specifying uniformly outlined character edges.
+  kUniform = 1,
+
+  // Edge type value specifying drop-shadowed character edges.
+  kDropShadow = 2,
+
+  // Edge type value specifying raised bevel character edges.
+  kRaised = 3,
+
+  // Edge type value specifying depressed bevel character edges.
+  kDepressed = 4,
+
+  [Default] kInvalidEnumValue = -1,
+};
+
+struct CaptionColor {
+  uint8 alpha;
+  uint8 red;
+  uint8 green;
+  uint8 blue;
+};
+
+// Encapsulates settings to stylize captions.
+// https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle.html
+struct CaptionStyle {
+  string user_locale;
+  float font_scale;
+  CaptionColor? text_color;
+  CaptionColor? background_color;
+  CaptionTextShadowType text_shadow_type;
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -385,7 +424,7 @@ interface IntentHelperHost {
 
 // Sends intents to ARC on behalf of Chrome.
 // Deprecated method ID: 0, 7, 11, 12, 14, 17, 18
-// Next method ID: 22
+// Next method ID: 23
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
   // intent is sent with a URL that requires disambiguation, instead of opening
@@ -463,4 +502,7 @@ interface IntentHelperInstance {
   // Request ARC to send the domain verification status update for all packages
   // to Chrome OS.
   [MinVersion=37] RequestDomainVerificationStatusUpdate@19();
+
+  // Requests the service to set the caption style.
+  [MinVersion=52] SetCaptionStyle@22(CaptionStyle style);
 };

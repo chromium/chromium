@@ -62,6 +62,10 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   std::vector<Broadcast> GetBroadcastsForAction(
       const std::string& action) const;
 
+  arc::mojom::CaptionStylePtr GetCaptionStyle() const {
+    return caption_style_->Clone();
+  }
+
   // Sets a list of intent handlers to be returned in response to
   // RequestIntentHandlerList() calls with intents containing |action|.
   void SetIntentHandlers(const std::string& action,
@@ -123,6 +127,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
 
   void RequestDomainVerificationStatusUpdate() override;
 
+  void SetCaptionStyle(arc::mojom::CaptionStylePtr caption_style) override;
+
  private:
   std::vector<Broadcast> broadcasts_;
 
@@ -139,6 +145,8 @@ class FakeIntentHelperInstance : public mojom::IntentHelperInstance {
   // Keeps the binding alive so that calls to this class can be correctly
   // routed.
   mojo::Remote<mojom::IntentHelperHost> host_remote_;
+
+  arc::mojom::CaptionStylePtr caption_style_;
 };
 
 }  // namespace arc
