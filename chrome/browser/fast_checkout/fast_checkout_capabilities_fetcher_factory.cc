@@ -40,9 +40,10 @@ FastCheckoutCapabilitiesFetcherFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(browser_context, true));
 }
 
-KeyedService* FastCheckoutCapabilitiesFetcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FastCheckoutCapabilitiesFetcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new FastCheckoutCapabilitiesFetcherImpl(
+  return std::make_unique<FastCheckoutCapabilitiesFetcherImpl>(
       browser_context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
