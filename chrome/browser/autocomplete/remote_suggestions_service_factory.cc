@@ -25,10 +25,11 @@ RemoteSuggestionsServiceFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* RemoteSuggestionsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+RemoteSuggestionsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new RemoteSuggestionsService(
+  return std::make_unique<RemoteSuggestionsService>(
       DocumentSuggestionsServiceFactory::GetForProfile(
           profile, /*create_if_necessary=*/true),
       profile->GetDefaultStoragePartition()

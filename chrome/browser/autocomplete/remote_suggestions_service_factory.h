@@ -29,7 +29,7 @@ class RemoteSuggestionsServiceFactory : public ProfileKeyedServiceFactory {
   ~RemoteSuggestionsServiceFactory() override;
 
   // Overrides from BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
