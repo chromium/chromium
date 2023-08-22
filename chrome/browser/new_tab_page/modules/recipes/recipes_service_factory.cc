@@ -37,11 +37,12 @@ RecipesServiceFactory::RecipesServiceFactory()
 
 RecipesServiceFactory::~RecipesServiceFactory() = default;
 
-KeyedService* RecipesServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+RecipesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto url_loader_factory = context->GetDefaultStoragePartition()
                                 ->GetURLLoaderFactoryForBrowserProcess();
-  return new RecipesService(url_loader_factory,
-                            Profile::FromBrowserContext(context),
-                            g_browser_process->GetApplicationLocale());
+  return std::make_unique<RecipesService>(
+      url_loader_factory, Profile::FromBrowserContext(context),
+      g_browser_process->GetApplicationLocale());
 }
