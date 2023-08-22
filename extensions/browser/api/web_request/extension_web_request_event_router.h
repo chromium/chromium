@@ -406,6 +406,7 @@ class ExtensionWebRequestEventRouter {
   using ListenerIDs = std::vector<EventListener::ID>;
   using Listeners = std::vector<std::unique_ptr<EventListener>>;
   using ListenerMap = std::map<std::string, Listeners>;
+  using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
 
   // A collection of data associated with a given BrowserContext.
   struct BrowserContextData {
@@ -427,10 +428,14 @@ class ExtensionWebRequestEventRouter {
     // registry. For non-webview contexts, the default value defined by
     // `RulesRegistryService::kDefaultRulesRegistryID` is used.
     std::map<int, scoped_refptr<WebRequestRulesRegistry>> rules_registries;
+
+    // A map of network requests that are waiting for at least one event handler
+    // to respond. Blocked requests are stored on the regular BrowserContext for
+    // both it and any off-the-record BrowserContext that exists.
+    BlockedRequestMap blocked_requests;
   };
 
   using DataMap = std::map<BrowserContextID, BrowserContextData>;
-  using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
 
   ExtensionWebRequestEventRouter();
 
@@ -475,7 +480,8 @@ class ExtensionWebRequestEventRouter {
 
   // Ensures that future callbacks for |request| are ignored so that it can be
   // destroyed safely.
-  void ClearPendingCallbacks(const WebRequestInfo& request);
+  void ClearPendingCallbacks(content::BrowserContext* browser_context,
+                             const WebRequestInfo& request);
 
   bool DispatchEvent(content::BrowserContext* browser_context,
                      const WebRequestInfo* request,
@@ -588,12 +594,28 @@ class ExtensionWebRequestEventRouter {
   // Helper for |HasAnyExtraHeadersListener()|.
   bool HasAnyExtraHeadersListenerImpl(content::BrowserContext* browser_context);
 
+  // Returns the instance of the BlockedRequestMap for `browser_context`.
+  BlockedRequestMap& GetBlockedRequestMap(
+      content::BrowserContext* browser_context);
+
+  // Clears any entries in the BlockedRequestMap for `browser_context` with
+  // `id`.
+  void ClearBlockedRequest(content::BrowserContext* browser_context,
+                           uint64_t id);
+
+  // Gets the entry in the BlockedRequestMap for `browser_context` with `id`.
+  // The entry is created if it doesn't exist.
+  BlockedRequest& GetOrAddBlockedRequest(
+      content::BrowserContext* browser_context,
+      uint64_t id);
+
+  // Gets the existing entry in the BlockedRequestMap for `browser_context`
+  // with `id`. The entry is not created if it doesn't exist.
+  BlockedRequest* GetBlockedRequest(content::BrowserContext* browser_context,
+                                    uint64_t id);
+
   // A map of data associated with given BrowserContexts.
   DataMap data_;
-
-  // A map of network requests that are waiting for at least one event handler
-  // to respond.
-  BlockedRequestMap blocked_requests_;
 };
 
 }  // namespace extensions
