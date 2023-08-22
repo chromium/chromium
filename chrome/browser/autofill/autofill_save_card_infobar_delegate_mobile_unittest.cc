@@ -7,21 +7,18 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
-#include "components/prefs/pref_service.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -31,6 +28,15 @@ namespace autofill {
 class AutofillSaveCardInfoBarDelegateMobileTest
     : public ChromeRenderViewHostTestHarness {
  public:
+  struct CreateDelegateOptions {
+    int logo_icon_id = -1;
+    std::u16string title_text;
+    std::u16string confirm_text;
+    std::u16string cancel_text;
+    std::u16string description_text;
+    bool is_google_pay_branding_enabled = false;
+  };
+
   AutofillSaveCardInfoBarDelegateMobileTest();
 
   AutofillSaveCardInfoBarDelegateMobileTest(
@@ -47,6 +53,8 @@ class AutofillSaveCardInfoBarDelegateMobileTest
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> CreateDelegate(
       bool is_uploading,
       CreditCard credit_card = CreditCard());
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> CreateDelegate(
+      CreateDelegateOptions options);
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
   CreateDelegateWithLegalMessage(
       bool is_uploading,
@@ -106,6 +114,24 @@ AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegate(
 }
 
 std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
+AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegate(
+    CreateDelegateOptions options) {
+  AutofillSaveCardUiInfo ui_info;
+  ui_info.logo_icon_id = options.logo_icon_id;
+  ui_info.title_text = options.title_text;
+  ui_info.confirm_text = options.confirm_text;
+  ui_info.cancel_text = options.cancel_text;
+  ui_info.description_text = options.description_text;
+  ui_info.is_google_pay_branding_enabled =
+      options.is_google_pay_branding_enabled;
+  return std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+      std::move(ui_info),
+      std::make_unique<AutofillSaveCardDelegate>(
+          (AutofillClient::LocalSaveCardPromptCallback)base::DoNothing(),
+          AutofillClient::SaveCreditCardOptions()));
+}
+
+std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
 AutofillSaveCardInfoBarDelegateMobileTest::CreateDelegateWithLegalMessage(
     bool is_uploading,
     std::string legal_message_string,
@@ -131,18 +157,24 @@ AutofillSaveCardInfoBarDelegateMobileTest::
                             /*escape_apostrophes=*/true);
   }
   credit_card_to_save_ = credit_card;
-  return is_uploading
-             ? AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
-                   options, credit_card,
-                   base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
-                                      UploadSaveCardPromptCallback,
-                                  base::Unretained(this)),
-                   legal_message_lines, AccountInfo())
-             : AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(
-                   options, credit_card,
-                   base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
-                                      LocalSaveCardPromptCallback,
-                                  base::Unretained(this)));
+  if (is_uploading) {
+    return std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+        AutofillSaveCardUiInfo::CreateForUploadSave(
+            options, credit_card, legal_message_lines, AccountInfo()),
+        std::make_unique<AutofillSaveCardDelegate>(
+            base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
+                               UploadSaveCardPromptCallback,
+                           base::Unretained(this)),
+            options));
+  } else {
+    return std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+        AutofillSaveCardUiInfo::CreateForLocalSave(options, credit_card),
+        std::make_unique<AutofillSaveCardDelegate>(
+            base::BindOnce(&AutofillSaveCardInfoBarDelegateMobileTest::
+                               LocalSaveCardPromptCallback,
+                           base::Unretained(this)),
+            options));
+  }
 }
 
 // Test that local credit card save infobar metrics are logged correctly.
@@ -439,6 +471,68 @@ TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, LocalCardHasNoNickname) {
   std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
       CreateDelegate(/*is_uploading=*/true, card);
   EXPECT_EQ(delegate->card_label(), card.NetworkAndLastFourDigits());
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, IsGooglePayBrandingEnabled) {
+  for (bool param : {true, false}) {
+    auto delegate = CreateDelegate({
+        .is_google_pay_branding_enabled = param,
+    });
+
+    EXPECT_EQ(delegate->IsGooglePayBrandingEnabled(), param);
+  }
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, GetDescriptionText) {
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate({
+          .description_text = u"Mock Description Text",
+      });
+
+  EXPECT_EQ(delegate->GetDescriptionText(), u"Mock Description Text");
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, GetIconId) {
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate({
+          .logo_icon_id = 123456,
+      });
+
+  EXPECT_EQ(delegate->GetIconId(), 123456);
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, GetMessageText) {
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate({
+          .title_text = u"Mock Title Text",
+      });
+
+  EXPECT_EQ(delegate->GetMessageText(), u"Mock Title Text");
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest, GetButtonLabelForOkButton) {
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate({
+          .confirm_text = u"Mock Confirm Text",
+      });
+
+  EXPECT_EQ(
+      delegate->GetButtonLabel(
+          AutofillSaveCardInfoBarDelegateMobile::InfoBarButton::BUTTON_OK),
+      u"Mock Confirm Text");
+}
+
+TEST_F(AutofillSaveCardInfoBarDelegateMobileTest,
+       GetButtonLabelForCancelButton) {
+  std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate =
+      CreateDelegate({
+          .cancel_text = u"Mock Cancel Text",
+      });
+
+  EXPECT_EQ(
+      delegate->GetButtonLabel(
+          AutofillSaveCardInfoBarDelegateMobile::InfoBarButton::BUTTON_CANCEL),
+      u"Mock Cancel Text");
 }
 
 }  // namespace autofill

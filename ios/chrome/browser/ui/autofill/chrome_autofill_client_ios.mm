@@ -20,7 +20,9 @@
 #import "components/autofill/core/browser/form_structure.h"
 #import "components/autofill/core/browser/logging/log_manager.h"
 #import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 #import "components/autofill/core/browser/payments/payments_client.h"
@@ -283,8 +285,10 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
     LocalSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(
-          options, card, std::move(callback))));
+      std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+          AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
+          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
+                                                     options))));
 }
 
 void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
@@ -325,9 +329,11 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
-          options, card, std::move(callback), legal_message_lines,
-          account_info)));
+      std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+          AutofillSaveCardUiInfo::CreateForUploadSave(
+              options, card, legal_message_lines, account_info),
+          std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
+                                                     options))));
 }
 
 void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {

@@ -738,8 +738,10 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
   DCHECK(options.show_prompt);
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
-          AutofillSaveCardInfoBarDelegateMobile::CreateForLocalSave(
-              options, card, std::move(callback))));
+          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+              AutofillSaveCardUiInfo::CreateForLocalSave(options, card),
+              std::make_unique<AutofillSaveCardDelegate>(std::move(callback),
+                                                         options))));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
@@ -765,16 +767,18 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     autofill_save_card_bottom_sheet_bridge_->RequestShowContent();
     return;
   }
-
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
+      options, card, legal_message_lines, account_info);
+  auto common_delegate =
+      std::make_unique<AutofillSaveCardDelegate>(std::move(callback), options);
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
-          AutofillSaveCardInfoBarDelegateMobile::CreateForUploadSave(
-              options, card, std::move(callback), legal_message_lines,
-              account_info)));
+          std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
+              std::move(ui_info), std::move(common_delegate))));
 #else
   // Do lazy initialization of SaveCardBubbleControllerImpl.
   SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());

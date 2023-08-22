@@ -544,9 +544,13 @@ static_library("browser") {
       "payments/autofill_credit_card_filling_infobar_delegate_mobile.h",
       "payments/autofill_offer_notification_infobar_delegate_mobile.cc",
       "payments/autofill_offer_notification_infobar_delegate_mobile.h",
+      "payments/autofill_save_card_delegate.cc",
+      "payments/autofill_save_card_delegate.h",
       "payments/autofill_save_card_infobar_delegate_mobile.cc",
       "payments/autofill_save_card_infobar_delegate_mobile.h",
       "payments/autofill_save_card_infobar_mobile.h",
+      "payments/autofill_save_card_ui_info.cc",
+      "payments/autofill_save_card_ui_info.h",
       "payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.cc",
       "payments/autofill_virtual_card_enrollment_infobar_delegate_mobile.h",
       "payments/autofill_virtual_card_enrollment_infobar_mobile.h",
@@ -1089,6 +1093,8 @@ source_set("unit_tests") {
 
   if (is_ios || is_android) {
     sources += [
+      "payments/autofill_save_card_delegate_unittest.cc",
+      "payments/autofill_save_card_ui_info_unittest.cc",
       "ui/mobile_label_formatter_unittest.cc",
       "ui/payments/card_expiration_date_fix_flow_controller_impl_unittest.cc",
       "ui/payments/card_name_fix_flow_controller_impl_unittest.cc",
@@ -1192,6 +1198,10 @@ source_set("unit_tests") {
     "//ui/resources",
     "//url",
   ]
+
+  if (is_ios || is_android) {
+    deps += [ "//build:branding_buildflags" ]
+  }
 
   if (use_blink) {
     deps += [

@@ -8,38 +8,26 @@
 #include <memory>
 #include <string>
 
-#include "base/functional/callback.h"
-#include "base/memory/raw_ref.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_delegate.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
-
-struct AccountInfo;
-class MockAutofillSaveCardInfoBarDelegateMobile;
 
 namespace autofill {
 
-class CreditCard;
-
 // An InfoBarDelegate that enables the user to allow or deny storing credit
 // card information gathered from a form submission. Only used on mobile.
+// This class adapts AutofillSaveCardUiInfo and AutofillSaveCardDelegate to the
+// ConfirmInfoBarDelegate interface.
 class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
  public:
-  static std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
-  CreateForLocalSave(AutofillClient::SaveCreditCardOptions options,
-                     const CreditCard& card,
-                     AutofillClient::LocalSaveCardPromptCallback callback);
-
-  static std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile>
-  CreateForUploadSave(AutofillClient::SaveCreditCardOptions options,
-                      const CreditCard& card,
-                      AutofillClient::UploadSaveCardPromptCallback callback,
-                      const LegalMessageLines& legal_message_lines,
-                      const AccountInfo& displayed_target_account);
+  // Creates a new delegate given the UI info and common delegate.
+  AutofillSaveCardInfoBarDelegateMobile(
+      AutofillSaveCardUiInfo ui_info,
+      std::unique_ptr<AutofillSaveCardDelegate> common_delegate);
 
   AutofillSaveCardInfoBarDelegateMobile(
       const AutofillSaveCardInfoBarDelegateMobile&) = delete;
@@ -53,31 +41,32 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   static AutofillSaveCardInfoBarDelegateMobile* FromInfobarDelegate(
       infobars::InfoBarDelegate* delegate);
 
-  bool is_for_upload() const {
-    return absl::holds_alternative<
-        AutofillClient::UploadSaveCardPromptCallback>(callback_);
+  bool is_for_upload() const { return ui_info_.is_for_upload; }
+  int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
+  const std::u16string& card_label() const { return ui_info_.card_label; }
+  const std::u16string& card_sub_label() const {
+    return ui_info_.card_sub_label;
   }
-  int issuer_icon_id() const { return issuer_icon_id_; }
-  const std::u16string& card_label() const { return card_label_; }
-  const std::u16string& card_sub_label() const { return card_sub_label_; }
   const LegalMessageLines& legal_message_lines() const {
-    return legal_message_lines_;
+    return ui_info_.legal_message_lines;
   }
   const std::u16string& card_last_four_digits() const {
-    return card_last_four_digits_;
+    return ui_info_.card_last_four_digits;
   }
-  const std::u16string& cardholder_name() const { return cardholder_name_; }
+  const std::u16string& cardholder_name() const {
+    return ui_info_.cardholder_name;
+  }
   const std::u16string& expiration_date_month() const {
-    return expiration_date_month_;
+    return ui_info_.expiration_date_month;
   }
   const std::u16string& expiration_date_year() const {
-    return expiration_date_year_;
+    return ui_info_.expiration_date_year;
   }
   const std::u16string& displayed_target_account_email() const {
-    return displayed_target_account_email_;
+    return ui_info_.displayed_target_account_email;
   }
   const gfx::Image& displayed_target_account_avatar() const {
-    return displayed_target_account_avatar_;
+    return ui_info_.displayed_target_account_avatar;
   }
 
   // Called when a link in the legal message text was clicked.
@@ -111,74 +100,11 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
 #endif  // BUILDFLAG(IS_IOS)
 
  private:
-  friend class ::MockAutofillSaveCardInfoBarDelegateMobile;
-
-  // If an `callback` is an upload callback, `displayed_target_account` should
-  // be the account to which the card will be saved.
-  AutofillSaveCardInfoBarDelegateMobile(
-      AutofillClient::SaveCreditCardOptions options,
-      const CreditCard& card,
-      absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                    AutofillClient::UploadSaveCardPromptCallback> callback,
-      const LegalMessageLines& legal_message_lines,
-      const AccountInfo& displayed_target_account);
-
-  // Runs the appropriate local or upload save callback with the given
-  // |user_decision|, using the |user_provided_details|. If
-  // |user_provided_details| is empty then the current Card values will be used.
-  // The  cardholder name and expiration date portions of
-  // |user_provided_details| are handled separately, so if either of them are
-  // empty the current Card values will be used.
-  void RunSaveCardPromptCallback(
-      AutofillClient::SaveCardOfferUserDecision user_decision,
-      AutofillClient::UserProvidedCardDetails user_provided_details);
-
-  void LogUserAction(AutofillMetrics::InfoBarMetric user_action);
-
-  // If the cardholder name is missing, request the name from the user before
-  // saving the card. If the expiration date is missing, request the missing
-  // data from the user before saving the card.
-  AutofillClient::SaveCreditCardOptions options_;
-
-  // The callback to run once the user makes a decision with respect to the
-  // credit card offer-to-save prompt.
-  absl::variant<AutofillClient::LocalSaveCardPromptCallback,
-                AutofillClient::UploadSaveCardPromptCallback>
-      callback_;
-
-  // Did the user ever explicitly accept or dismiss this infobar?
-  bool had_user_interaction_;
-
-  // The resource ID for the icon that identifies the issuer of the card.
-  int issuer_icon_id_;
-
-  // The label for the card to show in the content of the infobar.
-  std::u16string card_label_;
-
-  // The sub-label for the card to show in the content of the infobar.
-  std::u16string card_sub_label_;
-
-  // The last four digits of the card for which save is being offered.
-  std::u16string card_last_four_digits_;
-
-  // The card holder name of the card for which save is being offered.
-  std::u16string cardholder_name_;
-
-  // The expiration month of the card for which save is being offered.
-  std::u16string expiration_date_month_;
-
-  // The expiration year of the card for which save is being offered.
-  std::u16string expiration_date_year_;
-
-  // The legal message lines to show in the content of the infobar.
-  LegalMessageLines legal_message_lines_;
-
-  // Information the infobar should display about the account where the card
-  // will be saved. Both the email and avatar can be empty, e.g. if the card
-  // won't be saved to any account (just locally) or the target account
-  // shouldn't appear.
-  std::u16string displayed_target_account_email_;
-  gfx::Image displayed_target_account_avatar_;
+  // Strings and assets provided to the info bar UI.
+  AutofillSaveCardUiInfo ui_info_;
+  // UI actions (accept, cancel, dismiss etc.) are forwarded to this object that
+  // invokes callbacks and logs metrics.
+  std::unique_ptr<AutofillSaveCardDelegate> delegate_;
 };
 
 }  // namespace autofill
