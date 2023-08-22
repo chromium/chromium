@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '../../state/store.js';
+
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -13,9 +15,8 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {addVolume, updateIsInteractiveVolume} from '../../state/actions/volumes.js';
+import {addVolume, convertVolumeInfoAndMetadataToVolume, trashRootKey, updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
-import {convertVolumeInfoAndMetadataToVolume, trashRootKey} from '../../state/reducers/volumes.js';
 import {createMyFilesDataWithVolumeEntry} from '../../state/reducers/volumes_unittest.js';
 
 import {CommandHandler} from './file_manager_commands.js';

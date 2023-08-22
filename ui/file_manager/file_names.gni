@@ -260,7 +260,6 @@ ts_files = [
   "file_manager/state/actions/navigation.ts",
   "file_manager/state/actions/preferences.ts",
   "file_manager/state/actions/ui_entries.ts",
-  "file_manager/state/actions/volumes.ts",
 
   # ActionsProducers.
   "file_manager/state/actions_producers/all_entries.ts",
@@ -276,10 +275,10 @@ ts_files = [
   "file_manager/state/reducers/navigation.ts",
   "file_manager/state/reducers/preferences.ts",
   "file_manager/state/reducers/ui_entries.ts",
-  "file_manager/state/reducers/volumes.ts",
 
   # Ducks.
   "file_manager/state/ducks/search.ts",
+  "file_manager/state/ducks/volumes.ts",
 
   # Containers.
   "file_manager/containers/breadcrumb_container.ts",

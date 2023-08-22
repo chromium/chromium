@@ -7,7 +7,7 @@ import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../
 import {Action, ActionType} from '../actions.js';
 
 /** Map of actions to reducers for the search slice. */
-export const searchReducerMap: ReducersMap<State, Action> = new Map();
+export const searchReducersMap: ReducersMap<State, Action> = new Map();
 
 /**
  * Helper function that does a deep comparison between two SearchOptions.
@@ -71,7 +71,7 @@ function searchReducer(state: State, payload: SearchData): State {
 
 const search = addReducer(
     ActionType.SEARCH, searchReducer as Reducer<State, Action>,
-    searchReducerMap);
+    searchReducersMap);
 
 /**
  * Generates a search action based on the supplied data.

@@ -36,8 +36,8 @@ import {updateBulkPinProgress} from '../../state/actions/bulk_pinning.js';
 import {updatePreferences} from '../../state/actions/preferences.js';
 import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
 import {updateSearch} from '../../state/ducks/search.js';
+import {trashRootKey} from '../../state/ducks/volumes.js';
 import {getMyFiles} from '../../state/reducers/all_entries.js';
-import {trashRootKey} from '../../state/reducers/volumes.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {ActionsController} from './actions_controller.js';

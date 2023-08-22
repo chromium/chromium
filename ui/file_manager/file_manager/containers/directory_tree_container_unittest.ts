@@ -17,10 +17,9 @@ import {State} from '../externs/ts/state.js';
 import {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 import {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
 import {MockMetadataModel} from '../foreground/js/metadata/mock_metadata.js';
-import {addVolume, removeVolume} from '../state/actions/volumes.js';
+import {addVolume, convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, removeVolume} from '../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../state/for_tests.js';
 import {convertEntryToFileData} from '../state/reducers/all_entries.js';
-import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey} from '../state/reducers/volumes.js';
 import {getEmptyState, getEntry, getFileData, getStore} from '../state/store.js';
 import {XfTree} from '../widgets/xf_tree.js';
 

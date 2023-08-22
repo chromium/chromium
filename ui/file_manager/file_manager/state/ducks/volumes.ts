@@ -7,12 +7,15 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {PropStatus, State, Volume} from '../../externs/ts/state.js';
+import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from '../actions/volumes.js';
+import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../lib/base_store.js';
+import {Action, ActionType} from '../actions.js';
+import {getMyFiles} from '../reducers/all_entries.js';
 import {getEntry} from '../store.js';
 
-import {getMyFiles} from './all_entries.js';
+/** Map of actions to reducers for the volumes slice. */
+export const volumesReducersMap: ReducersMap<State, Action> = new Map();
 
 const VolumeType = VolumeManagerCommon.VolumeType;
 export const myFilesEntryListKey =
@@ -86,9 +89,19 @@ export function convertVolumeInfoAndMetadataToVolume(
   };
 }
 
-export function addVolume(currentState: State, action: AddVolumeAction): State {
-  const volumeMetadata = action.payload.volumeMetadata;
-  const volumeInfo = action.payload.volumeInfo;
+/** Action to add single volume into the store. */
+export interface AddVolumeAction extends BaseAction {
+  type: ActionType.ADD_VOLUME;
+  payload: {
+    volumeMetadata: chrome.fileManagerPrivate.VolumeMetadata,
+    volumeInfo: VolumeInfo,
+  };
+}
+
+function addVolumeReducer(
+    currentState: State, payload: AddVolumeAction['payload']): State {
+  const volumeMetadata = payload.volumeMetadata;
+  const volumeInfo = payload.volumeInfo;
   if (!volumeInfo.fileSystem) {
     console.error(
         'Only add to the store volumes that have successfully resolved.');
@@ -162,9 +175,22 @@ export function addVolume(currentState: State, action: AddVolumeAction): State {
   };
 }
 
-export function removeVolume(
-    currentState: State, action: RemoveVolumeAction): State {
-  delete currentState.volumes[action.payload.volumeId];
+export const addVolume = addReducer(
+    ActionType.ADD_VOLUME, addVolumeReducer as Reducer<State, Action>,
+    volumesReducersMap);
+
+
+/** Action to remove single volume from the store. */
+export interface RemoveVolumeAction extends BaseAction {
+  type: ActionType.REMOVE_VOLUME;
+  payload: {
+    volumeId: VolumeId,
+  };
+}
+
+function removeVolumeReducer(
+    currentState: State, payload: RemoveVolumeAction['payload']): State {
+  delete currentState.volumes[payload.volumeId];
   const volumes = {
     ...currentState.volumes,
   };
@@ -175,22 +201,42 @@ export function removeVolume(
   };
 }
 
-export function updateIsInteractiveVolume(
-    currentState: State, action: UpdateIsInteractiveVolumeAction): State {
+export const removeVolume = addReducer(
+    ActionType.REMOVE_VOLUME, removeVolumeReducer as Reducer<State, Action>,
+    volumesReducersMap);
+
+
+/** Action to update isInteractive for a volume in the store. */
+export interface UpdateIsInteractiveVolumeAction extends BaseAction {
+  type: ActionType.UPDATE_IS_INTERACTIVE_VOLUME;
+  payload: {
+    volumeId: VolumeId,
+    isInteractive: boolean,
+  };
+}
+
+function updateIsInteractiveVolumeReducer(
+    currentState: State,
+    payload: UpdateIsInteractiveVolumeAction['payload']): State {
   const volumes = {
     ...currentState.volumes,
   };
 
   const updatedVolume = {
-    ...volumes[action.payload.volumeId],
-    isInteractive: action.payload.isInteractive,
+    ...volumes[payload.volumeId],
+    isInteractive: payload.isInteractive,
   };
 
   return {
     ...currentState,
     volumes: {
       ...volumes,
-      [action.payload.volumeId]: updatedVolume,
+      [payload.volumeId]: updatedVolume,
     },
   };
 }
+
+export const updateIsInteractiveVolume = addReducer(
+    ActionType.UPDATE_IS_INTERACTIVE_VOLUME,
+    updateIsInteractiveVolumeReducer as Reducer<State, Action>,
+    volumesReducersMap);

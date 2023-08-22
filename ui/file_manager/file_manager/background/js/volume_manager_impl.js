@@ -11,7 +11,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {removeVolume} from '../../state/actions/volumes.js';
+import {removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {EntryLocationImpl} from './entry_location_impl.js';

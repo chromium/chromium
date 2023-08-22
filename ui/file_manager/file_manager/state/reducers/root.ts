@@ -4,7 +4,8 @@
 
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
-import {searchReducerMap as searchReducersMap} from '../ducks/search.js';
+import {searchReducersMap} from '../ducks/search.js';
+import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 import {addAndroidApps} from './android_apps.js';
@@ -14,10 +15,9 @@ import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {updatePreferences} from './preferences.js';
 import {addUiEntry, removeUiEntry} from './ui_entries.js';
-import {addVolume, removeVolume, updateIsInteractiveVolume} from './volumes.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
-const rootReducersMap = new Map([...searchReducersMap]);
+const rootReducersMap = new Map([...searchReducersMap, ...volumesReducersMap]);
 
 /**
  * Root reducer for the State for Files app.
@@ -51,10 +51,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return updateDirectoryContent(state, action);
     case ActionType.UPDATE_METADATA:
       return updateMetadata(state, action);
-    case ActionType.ADD_VOLUME:
-      return addVolume(currentState, action);
-    case ActionType.REMOVE_VOLUME:
-      return removeVolume(currentState, action);
     case ActionType.REFRESH_NAVIGATION_ROOTS:
       return refreshNavigationRoots(currentState, action);
     case ActionType.UPDATE_NAVIGATION_ENTRY:
@@ -77,8 +73,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return updateBulkPinning(currentState, action);
     case ActionType.UPDATE_PREFERENCES:
       return updatePreferences(currentState, action);
-    case ActionType.UPDATE_IS_INTERACTIVE_VOLUME:
-      return updateIsInteractiveVolume(currentState, action);
     default:
       // Handles ducks reducers.
       const reducers = rootReducersMap.get(action.type);

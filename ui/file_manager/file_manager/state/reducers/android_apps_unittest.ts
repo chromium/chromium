@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/296792757)
+import '../store.js';
+
 import {State} from '../../externs/ts/state.js';
 import {addAndroidApps} from '../actions/android_apps.js';
 import {setupStore, waitDeepEquals} from '../for_tests.js';

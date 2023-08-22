@@ -15,10 +15,10 @@ import {constants} from '../../foreground/js/constants.js';
 import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
 import {Action, ActionType} from '../actions.js';
 import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from '../actions/all_entries.js';
+import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from '../ducks/volumes.js';
 import {getEntry, getFileData, getStore} from '../store.js';
 
 import {hasDlpDisabledFiles} from './current_directory.js';
-import {driveRootEntryListKey, getVolumeTypesNestedInMyFiles, makeRemovableParentKey, myFilesEntryListKey, recentRootKey, removableGroupKey} from './volumes.js';
 
 /**
  * Schedules the routine to remove stale entries from `allEntries`.

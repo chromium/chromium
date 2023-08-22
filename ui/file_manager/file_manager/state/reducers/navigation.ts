@@ -8,10 +8,10 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from '../actions/navigation.js';
+import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
 import {getEntry, getFileData} from '../store.js';
 
 import {getMyFiles} from './all_entries.js';
-import {driveRootEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
 
 const VolumeType = VolumeManagerCommon.VolumeType;
 

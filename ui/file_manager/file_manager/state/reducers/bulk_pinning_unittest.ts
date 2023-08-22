@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/296792757)
+import '../store.js';
+
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {updateBulkPinProgress} from '../actions/bulk_pinning.js';

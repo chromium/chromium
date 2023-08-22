@@ -10,8 +10,8 @@ import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortc
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './actions/navigation.js';
 import {UpdatePreferencesAction} from './actions/preferences.js';
 import {AddUiEntryAction, RemoveUiEntryAction} from './actions/ui_entries.js';
-import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from './actions/volumes.js';
 import {SearchAction} from './ducks/search.js';
+import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from './ducks/volumes.js';
 
 /**
  * Union of all types of Actions in Files app.

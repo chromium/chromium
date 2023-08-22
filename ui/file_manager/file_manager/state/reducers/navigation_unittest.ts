@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/296792757)
+import '../store.js';
+
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
@@ -14,7 +17,7 @@ import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeep
 import {getEmptyState} from '../store.js';
 
 import {convertEntryToFileData} from './all_entries.js';
-import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
+import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
 
 export function setUp() {
   setUpFileManagerOnWindow();

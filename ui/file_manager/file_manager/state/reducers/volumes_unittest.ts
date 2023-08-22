@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(b/296792757)
+import '../store.js';
+
 import {assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
@@ -12,12 +15,12 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State, Volume} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
-import {addVolume, removeVolume, updateIsInteractiveVolume} from '../actions/volumes.js';
+import {addVolume, removeVolume, updateIsInteractiveVolume} from '../ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
 import {getEmptyState, getEntry} from '../store.js';
 
 import {convertEntryToFileData} from './all_entries.js';
-import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey} from './volumes.js';
+import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey} from '../ducks/volumes.js';
 
 export function setUp() {
   setUpFileManagerOnWindow();

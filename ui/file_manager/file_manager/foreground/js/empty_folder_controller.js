@@ -10,7 +10,7 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {updateIsInteractiveVolume} from '../../state/actions/volumes.js';
+import {updateIsInteractiveVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {constants} from './constants.js';
