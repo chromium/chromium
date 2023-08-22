@@ -46,9 +46,10 @@ LocalPresentationManagerFactory::~LocalPresentationManagerFactory() {
   g_instance = nullptr;
 }
 
-KeyedService* LocalPresentationManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LocalPresentationManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new LocalPresentationManager;
+  return std::make_unique<LocalPresentationManager>();
 }
 
 }  // namespace media_router

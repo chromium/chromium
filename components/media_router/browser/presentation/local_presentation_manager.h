@@ -110,6 +110,9 @@ namespace media_router {
 // thread.
 class LocalPresentationManager : public KeyedService {
  public:
+  // Used by
+  // LocalPresentationManagerFactory::BuildServiceInstanceForBrowserContext.
+  LocalPresentationManager();
   LocalPresentationManager(const LocalPresentationManager&) = delete;
   LocalPresentationManager& operator=(const LocalPresentationManager&) = delete;
 
@@ -251,14 +254,10 @@ class LocalPresentationManager : public KeyedService {
   };
 
  private:
-  friend class LocalPresentationManagerFactory;
   friend class LocalPresentationManagerTest;
   friend class MockLocalPresentationManager;
   FRIEND_TEST_ALL_PREFIXES(PresentationServiceDelegateImplTest,
                            ConnectToLocalPresentation);
-
-  // Used by LocalPresentationManagerFactory::GetOrCreateForBrowserContext.
-  LocalPresentationManager();
 
   using LocalPresentationMap =
       std::map<std::string, std::unique_ptr<LocalPresentation>>;
