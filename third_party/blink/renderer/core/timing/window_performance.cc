@@ -907,10 +907,12 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     bool is_triggered_by_soft_navigation) {
   DOMHighResTimeStamp start_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(start_time);
-  base::TimeDelta render_timestamp = MonotonicTimeToTimeDelta(render_time);
-  base::TimeDelta load_timestamp = MonotonicTimeToTimeDelta(load_time);
-  base::TimeDelta first_animated_frame_timestamp =
-      MonotonicTimeToTimeDelta(first_animated_frame_time);
+  DOMHighResTimeStamp render_timestamp =
+      MonotonicTimeToDOMHighResTimeStamp(render_time);
+  DOMHighResTimeStamp load_timestamp =
+      MonotonicTimeToDOMHighResTimeStamp(load_time);
+  DOMHighResTimeStamp first_animated_frame_timestamp =
+      MonotonicTimeToDOMHighResTimeStamp(first_animated_frame_time);
   // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp, render_timestamp, paint_size, load_timestamp,

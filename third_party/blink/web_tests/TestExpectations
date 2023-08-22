@@ -4218,8 +4218,6 @@ crbug.com/994692 [ Win ] compositing/reflections/nested-reflection-anchor-point.
 crbug.com/996219 [ Win ] virtual/text-antialias/emoji-vertical-origin-visual.html [ Failure ]
 
 
-crbug.com/1015130 external/wpt/largest-contentful-paint/first-paint-equals-lcp-text.html [ Failure Pass ]
-
 crbug.com/1000051 media/controls/volume-slider.html [ Failure Pass Timeout ]
 
 # Test for LCP's mouseover heuristics. Tested only under virtual/lcp-mouseover-heuristics.
