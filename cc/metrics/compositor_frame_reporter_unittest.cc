@@ -116,8 +116,8 @@ class CompositorFrameReporterTest : public testing::Test {
     const base::TimeTicks arrived_in_browser_main_timestamp = AdvanceNowByUs(2);
     AdvanceNowByUs(3);
     return SetupEventMetrics(EventMetrics::CreateForTesting(
-        type, event_time, arrived_in_browser_main_timestamp,
-        &test_tick_clock_));
+        type, event_time, arrived_in_browser_main_timestamp, &test_tick_clock_,
+        absl::nullopt));
   }
 
   // Creates EventMetrics with elements in stage_durations representing each
@@ -146,7 +146,8 @@ class CompositorFrameReporterTest : public testing::Test {
         ScrollUpdateEventMetrics::CreateForTesting(
             ui::ET_GESTURE_SCROLL_UPDATE, ui::ScrollInputType::kWheel,
             is_inertial, scroll_update_type, /*delta=*/10.0f, event_time,
-            arrived_in_browser_main_timestamp, &test_tick_clock_),
+            arrived_in_browser_main_timestamp, &test_tick_clock_,
+            absl::nullopt),
         stage_durations);
   }
 
@@ -171,7 +172,7 @@ class CompositorFrameReporterTest : public testing::Test {
     return SetupEventMetrics(ScrollUpdateEventMetrics::CreateForTesting(
         ui::ET_GESTURE_SCROLL_UPDATE, input_type, is_inertial,
         scroll_update_type, /*delta=*/10.0f, event_time,
-        arrived_in_browser_main_timestamp, &test_tick_clock_));
+        arrived_in_browser_main_timestamp, &test_tick_clock_, absl::nullopt));
   }
 
   std::unique_ptr<EventMetrics> CreatePinchEventMetrics(

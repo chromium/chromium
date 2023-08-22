@@ -101,7 +101,8 @@ class CC_EXPORT EventMetrics {
       ui::EventType type,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   // Used to create an instance for an event generated based on an existing
   // event. If the new event is of an interesting type, we expect that the
@@ -394,7 +395,8 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
       float delta,
       base::TimeTicks timestamp,
       base::TimeTicks arrived_in_browser_main_timestamp,
-      const base::TickClock* tick_clock);
+      const base::TickClock* tick_clock,
+      absl::optional<TraceId> trace_id);
 
   // Used to create an instance for an event generated based on an existing
   // event. If the new event is of an interesting type, we expect that the

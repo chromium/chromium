@@ -248,11 +248,12 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
     ui::EventType type,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    const base::TickClock* tick_clock) {
+    const base::TickClock* tick_clock,
+    absl::optional<TraceId> trace_id) {
   DCHECK(!timestamp.is_null());
 
-  std::unique_ptr<EventMetrics> metrics = CreateInternal(
-      type, timestamp, base::TimeTicks(), tick_clock, absl::nullopt);
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, timestamp, base::TimeTicks(), tick_clock, trace_id);
   if (!metrics)
     return nullptr;
 
@@ -633,12 +634,13 @@ ScrollUpdateEventMetrics::CreateForTesting(
     float delta,
     base::TimeTicks timestamp,
     base::TimeTicks arrived_in_browser_main_timestamp,
-    const base::TickClock* tick_clock) {
+    const base::TickClock* tick_clock,
+    absl::optional<TraceId> trace_id) {
   DCHECK(!timestamp.is_null());
 
   std::unique_ptr<ScrollUpdateEventMetrics> metrics = CreateInternal(
       type, input_type, is_inertial, scroll_update_type, delta, timestamp,
-      arrived_in_browser_main_timestamp, tick_clock, absl::nullopt);
+      arrived_in_browser_main_timestamp, tick_clock, trace_id);
   if (!metrics)
     return nullptr;
 

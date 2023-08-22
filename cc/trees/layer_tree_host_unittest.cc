@@ -9491,7 +9491,7 @@ class LayerTreeHostTestEventsMetrics : public LayerTreeHostTest {
             /*is_inertial=*/false,
             ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
             /*delta=*/10.0f, event_time, arrived_in_browser_main_timestamp,
-            &tick_clock);
+            &tick_clock, absl::nullopt);
     DCHECK_NE(metrics, nullptr);
     {
       tick_clock.Advance(base::Microseconds(10));
