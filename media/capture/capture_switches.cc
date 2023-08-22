@@ -30,13 +30,3 @@ CAPTURE_EXPORT bool IsVideoCaptureUseGpuMemoryBufferEnabled() {
 }
 
 }  // namespace switches
-
-namespace features {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kLacrosAuraCapture,
-             "LacrosAuraCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-}  // namespace features

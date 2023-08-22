@@ -2994,11 +2994,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "enable-lacros-aura-capture",
-    "owners": ["alcooper", "mfoltz", "petermcneeley"],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lacros-in-chrome-kiosk",
     "owners": ["bfranz", "chromeos-kiosk-eng@google.com"],
     "expiry_milestone": 120

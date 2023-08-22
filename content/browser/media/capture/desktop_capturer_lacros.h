@@ -92,11 +92,6 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer,
   std::map<std::string, gfx::AcceleratedWidget> widget_map_
       GUARDED_BY(widget_map_lock_);
 
-  // Helper bool to cache the state of the `kLacrosAuraCapture` feature flag,
-  // since the state is the same unless Chrome is restarted. This is mostly to
-  // help improve readability, since the feature lookup is fairly cheap.
-  const bool is_aura_capture_enabled_;
-
 #if DCHECK_IS_ON()
   bool capturing_frame_ = false;
 #endif

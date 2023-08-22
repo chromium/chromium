@@ -4042,9 +4042,6 @@ extern const char kExperimentalWebAppProfileIsolationDescription[];
 extern const char kExperimentalWebAppStoragePartitionIsolationName[];
 extern const char kExperimentalWebAppStoragePartitionIsolationDescription[];
 
-extern const char kLacrosAuraCaptureName[];
-extern const char kLacrosAuraCaptureDescription[];
-
 extern const char kLacrosMergeIcuDataFileName[];
 extern const char kLacrosMergeIcuDataFileDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)

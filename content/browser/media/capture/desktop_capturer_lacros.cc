@@ -8,7 +8,6 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/common/content_features.h"
-#include "media/capture/capture_switches.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -45,25 +44,17 @@ class DesktopFrameSkia : public webrtc::DesktopFrame {
 DesktopCapturerLacros::DesktopCapturerLacros(
     CaptureType capture_type,
     const webrtc::DesktopCaptureOptions& options)
-    : capture_type_(capture_type),
-      options_(options),
-      is_aura_capture_enabled_(
-          base::FeatureList::IsEnabled(features::kLacrosAuraCapture)) {
+    : capture_type_(capture_type), options_(options) {
   // Allow this class to be constructed on any sequence.
   DETACH_FROM_SEQUENCE(sequence_checker_);
 
-  if (is_aura_capture_enabled_) {
-    InitializeWidgetMap();
-    aura::Env::GetInstance()->AddObserver(this);
-  }
+  InitializeWidgetMap();
+  aura::Env::GetInstance()->AddObserver(this);
 }
 
 DesktopCapturerLacros::~DesktopCapturerLacros() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (is_aura_capture_enabled_) {
-    aura::Env::GetInstance()->RemoveObserver(this);
-  }
+  aura::Env::GetInstance()->RemoveObserver(this);
 }
 
 bool DesktopCapturerLacros::GetSourceList(SourceList* result) {
@@ -82,7 +73,7 @@ bool DesktopCapturerLacros::GetSourceList(SourceList* result) {
     s.title = source->title;
     s.display_id = source->display_id;
 
-    if (is_aura_capture_enabled_ && source->window_unique_id) {
+    if (source->window_unique_id) {
       // Use the AcceleratedWidget's value as the in process identifier, since
       // that is unique to the process. Since we aren't called on the UI thread,
       // we cannot call |DesktopMediaID::RegisterNativeWindow()| directly.

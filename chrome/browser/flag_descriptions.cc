@@ -7033,11 +7033,6 @@ const char kExperimentalWebAppStoragePartitionIsolationDescription[] =
     "experimental. Enabling this flag could break things. And a factory reset"
     "might be needed to fully recover the state.";
 
-const char kLacrosAuraCaptureName[] = "Enable Lacros Aura Capture";
-const char kLacrosAuraCaptureDescription[] =
-    "Enables LaCrOS to perform an in-process capture of it's own windows "
-    "rather than needing to delegate the capture to Ash";
-
 const char kLacrosMergeIcuDataFileName[] =
     "Enable merging of icudtl.dat in Lacros";
 const char kLacrosMergeIcuDataFileDescription[] =
