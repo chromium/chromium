@@ -47,14 +47,14 @@
 </details>
 <script>
   var t1 = async_test("Adding open to 'details' should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
-  t2 = async_test("Removing open from 'details' should fire a toggle event at the 'details' element, with 'oldState: open' and 'newState: closed'"),
+  t2 = async_test("Adding open to 'details' and then removing open from that 'details' should fire only one toggle event at the 'details' element, with 'oldState: closed' and 'newState: closed'"),
   t3 = async_test("Adding open to 'details' (display:none) should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
   t4 = async_test("Adding open to 'details' (no children) should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
-  t6 = async_test("Calling open twice on 'details' fires only one toggle event, with 'oldState: closed' and 'newState: open'"),
-  t7 = async_test("Calling setAttribute('open', '') from 'details' should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
-  t8 = async_test("Calling removeAttribute('open') from 'details' should fire a toggle event at the 'details' element, with 'oldState: open' and 'newState: closed'"),
-  t9 = async_test("Setting open=true to opened 'details' element should not fire a toggle event at the 'details' element"),
-  t10 = async_test("Setting open=false to closed 'details' element should not fire a toggle event at the 'details' element"),
+  t6 = async_test("Adding open to 'details' and then removing open from that 'details' and then again adding open to that 'details' should fire only one toggle event at the 'details' element, with 'oldState: closed' and 'newState: closed'"),
+  t7 = async_test("Adding open to 'details' using setAttribute('open', '') should fire a toggle event at the 'details' element, with 'oldState: closed' and 'newState: open'"),
+  t8 = async_test("Adding open to 'details' and then calling removeAttribute('open') should fire only one toggle event at the 'details' element, with 'oldState: closed' and 'newState: closed'"),
+  t9 = async_test("Setting open=true on an opened 'details' element should not fire a toggle event at the 'details' element"),
+  t10 = async_test("Setting open=false on a closed 'details' element should not fire a toggle event at the 'details' element"),
 
   details1 = document.getElementById('details1'),
   details2 = document.getElementById('details2'),
@@ -76,13 +76,15 @@
 
   details1.ontoggle = t1.step_func_done(function(evt) {
     assert_equals(evt.oldState, "closed");
-    assert_equals(evt.newState, "open");+
+    assert_equals(evt.newState, "open");
     assert_true(details1.open);
     testEvent(evt)
   });
   details1.open = true; // opens details1
 
   details2.ontoggle = t2.step_func_done(function(evt) {
+    assert_equals(evt.oldState, "closed");
+    assert_equals(evt.newState, "closed");
     assert_false(details2.open);
     testEvent(evt);
   });
@@ -90,7 +92,7 @@
 
   details3.ontoggle = t3.step_func_done(function(evt) {
     assert_equals(evt.oldState, "closed");
-    assert_equals(evt.newState, "open");+
+    assert_equals(evt.newState, "open");
     assert_true(details3.open);
     testEvent(evt);
   });
@@ -107,6 +109,8 @@
   async_test(function(t) {
     var details5 = document.createElement("details");
     details5.ontoggle = t.step_func_done(function(evt) {
+      assert_equals(evt.oldState, "closed");
+      assert_equals(evt.newState, "open");
       assert_true(details5.open);
       testEvent(evt);
     })
@@ -119,6 +123,8 @@
     if (loop) {
       assert_unreached("toggle event fired twice");
     } else {
+      assert_equals(evt.oldState, "closed");
+      assert_equals(evt.newState, "closed");
       loop = true;
     }
   });
@@ -136,6 +142,8 @@
   details7.setAttribute('open', ''); // opens details7
 
   details8.ontoggle = t8.step_func_done(function(evt) {
+    assert_equals(evt.oldState, "closed");
+    assert_equals(evt.newState, "closed");
     assert_false(details8.open);
     testEvent(evt)
   });
