@@ -49,7 +49,8 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
-KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -64,7 +65,7 @@ KeyedService* ClientSideDetectionServiceFactory::BuildServiceInstanceFor(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  return new ClientSideDetectionService(
+  return std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
       opt_guide, background_task_runner);
 }
