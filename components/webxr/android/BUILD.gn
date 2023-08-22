@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//chrome/android/chrome_java_resources.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 source_set("android_utils") {
@@ -18,20 +17,6 @@ source_set("android_utils") {
   ]
 }
 
-android_resources("cardboard_java_resources") {
-  sources = [
-    "java/res/layout/cardboard_ui.xml",
-    "java/res/menu/settings_menu.xml",
-    "java/res/values/dimens.xml",
-    "java/res/values/styles.xml",
-  ]
-
-  deps = [
-    # Required to get the 3 dots image for the settings button.
-    "//components/browser_ui/widget/android:java_resources",
-    "//components/strings:components_strings_grd",
-  ]
-}
 source_set("android") {
   # TODO(https://crbug.com/1426233): Investigate why this cannot simply be an
   # assert(enable_vr).
@@ -190,10 +175,7 @@ android_library("xr_java") {
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardClassProvider.java",
       "//components/webxr/android/java/src/org/chromium/components/webxr/CardboardOverlayDelegate.java",
     ]
-    deps += [
-      ":cardboard_java_resources",
-      "//third_party/cardboard:cardboard_java",
-    ]
+    deps += [ "//third_party/cardboard:cardboard_java" ]
   } else if (enable_arcore || enable_openxr) {
     # These stub classes are needed for the general Xr infrastructure code, but
     # are not needed for the more broad always-available code. So we check that

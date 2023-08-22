@@ -13,12 +13,4 @@
       View augmented reality content
     </message>
   </if>
-  <if expr="enable_vr">
-    <message name="IDS_ABOUT_VR" desc="Short text shown on the settings menu to let the user open the About VR page.[CHAR_LIMIT=30]" formatter_data="android_java">
-      About VR
-    </message>
-    <message name="IDS_USE_ANOTHER_DEVICE" desc="Short text shown on the settings menu to let the user switch viewer.[CHAR_LIMIT=30]" formatter_data="android_java">
-      Use another device
-    </message>
-  </if>
 </grit-part>
