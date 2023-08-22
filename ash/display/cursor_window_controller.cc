@@ -178,7 +178,10 @@ CursorWindowController::CursorWindowController()
     : delegate_(new CursorWindowDelegate()),
       is_cursor_motion_blur_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kAshEnableCursorMotionBlur)) {}
+              switches::kAshEnableCursorMotionBlur)),
+      // TODO(b/296641218): Find another way to make sure gpu process is fully
+      // initialized first before updating cursor view.
+      start_time_(base::TimeTicks::Now()) {}
 
 CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
@@ -217,8 +220,9 @@ void CursorWindowController::SetCursorColor(SkColor cursor_color) {
 }
 
 bool CursorWindowController::ShouldEnableCursorCompositing() {
-  if (is_cursor_motion_blur_enabled_)
+  if (CanEnableMotionBlur()) {
     return true;
+  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceShowCursor)) {
@@ -392,6 +396,24 @@ void CursorWindowController::SetVisibility(bool visible) {
   UpdateCursorVisibility();
 }
 
+void CursorWindowController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  DCHECK_EQ(container_, window);
+
+  if (cursor_view_widget_) {
+    UpdateCursorView();
+  }
+}
+
+void CursorWindowController::OnWindowDestroying(aura::Window* window) {
+  DCHECK_EQ(container_, window);
+
+  scoped_container_observer_.Reset();
+}
+
 const aura::Window* CursorWindowController::GetContainerForTest() const {
   return container_;
 }
@@ -408,6 +430,9 @@ void CursorWindowController::SetContainer(aura::Window* container) {
   if (container_ == container) {
     return;
   }
+
+  scoped_container_observer_.Reset();
+
   container_ = container;
   if (!container) {
     cursor_window_.reset();
@@ -415,10 +440,12 @@ void CursorWindowController::SetContainer(aura::Window* container) {
     return;
   }
 
+  scoped_container_observer_.Observe(container_);
+
   bounds_in_screen_ = display_.bounds();
   rotation_ = display_.rotation();
 
-  if (is_cursor_motion_blur_enabled_) {
+  if (CanEnableMotionBlur()) {
     UpdateCursorView();
   } else {
     // Reusing the window does not work when the display is disconnected.
@@ -539,6 +566,11 @@ void CursorWindowController::UpdateCursorVisibility() {
 }
 
 void CursorWindowController::UpdateCursorView() {
+  // Return if the container's size is not updated yet.
+  if (container_->GetBoundsInRootWindow().size() != bounds_in_screen_.size()) {
+    return;
+  }
+
   cursor_view_widget_ =
       CursorView::Create(aura::Env::GetInstance()->last_mouse_location(),
                          is_cursor_motion_blur_enabled_, container_);
@@ -547,6 +579,11 @@ void CursorWindowController::UpdateCursorView() {
 
 const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
   return delegate_->cursor_image();
+}
+
+bool CursorWindowController::CanEnableMotionBlur() const {
+  return is_cursor_motion_blur_enabled_ &&
+         base::TimeTicks::Now() - start_time_ > base::Seconds(5);
 }
 
 }  // namespace ash
