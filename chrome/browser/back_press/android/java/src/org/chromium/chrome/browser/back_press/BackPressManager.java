@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.back_press;
 import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 
+import androidx.activity.BackEventCompat;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -69,9 +70,33 @@ public class BackPressManager implements Destroyable {
     }
 
     private final OnBackPressedCallback mCallback = new OnBackPressedCallback(false) {
+        private BackPressHandler mActiveHandler;
+
         @Override
         public void handleOnBackPressed() {
             BackPressManager.this.handleBackPress();
+            mActiveHandler = null;
+        }
+
+        // Following methods are only triggered on API 34+.
+        @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            mActiveHandler = getEnabledBackPressHandler();
+            assert mActiveHandler != null;
+            mActiveHandler.handleOnBackStarted(backEvent);
+        }
+
+        @Override
+        public void handleOnBackCancelled() {
+            assert mActiveHandler != null;
+            mActiveHandler.handleOnBackCancelled();
+            mActiveHandler = null;
+        }
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            assert mActiveHandler != null;
+            mActiveHandler.handleOnBackProgressed(backEvent);
         }
     };
 
@@ -240,6 +265,20 @@ public class BackPressManager implements Destroyable {
         } else {
             mCallback.setEnabled(intercept);
         }
+    }
+
+    @VisibleForTesting
+    BackPressHandler getEnabledBackPressHandler() {
+        for (int i = 0; i < mHandlers.length; i++) {
+            BackPressHandler handler = mHandlers[i];
+            if (handler == null) continue;
+            Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
+            if (enabled != null && enabled) {
+                return handler;
+            }
+        }
+        assert false;
+        return null;
     }
 
     private void handleBackPress() {
