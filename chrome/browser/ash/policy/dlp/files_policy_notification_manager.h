@@ -124,6 +124,9 @@ class FilesPolicyNotificationManager
   // files.
   void ShowBlockedNotifications();
 
+  // Clears any info stored about the task with `task_id`.
+  void OnErrorItemDismissed(file_manager::io_task::IOTaskId task_id);
+
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;
   // Returns whether IO task has a warning timeout timer.

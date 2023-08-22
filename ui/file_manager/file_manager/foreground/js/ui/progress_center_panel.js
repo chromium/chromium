@@ -480,6 +480,9 @@ export class ProgressCenterPanel {
         if (signal === 'cancel' && item.cancelCallback) {
           item.cancelCallback();
         } else if (signal === 'dismiss') {
+          if (item.dismissCallback) {
+            item.dismissCallback();
+          }
           this.feedbackHost_.removePanelItem(panelItem);
           this.dismissErrorItemCallback(item.id);
         } else if (
@@ -487,7 +490,10 @@ export class ProgressCenterPanel {
           extraButton.callback();
           this.feedbackHost_.removePanelItem(panelItem);
           // The extra-button currently acts as a dismissal to invoke the
-          // error item callback as well.
+          // dismiss and error item callbacks as well.
+          if (item.dismissCallback) {
+            item.dismissCallback();
+          }
           this.dismissErrorItemCallback(item.id);
         }
       };

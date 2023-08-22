@@ -1879,6 +1879,7 @@ enum HistogramValue {
   USERSCRIPTS_REGISTER = 1817,
   OS_DIAGNOSTICS_RUNBLUETOOTHSCANNINGROUTINE = 1818,
   OS_DIAGNOSTICS_RUNBLUETOOTHPAIRINGROUTINE = 1819,
+  FILEMANAGERPRIVATE_DISMISSIOTASK = 1820,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

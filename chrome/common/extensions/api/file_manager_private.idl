@@ -1952,6 +1952,10 @@ interface Functions {
   // each I/O task's progress status.
   static void resumeIOTask(long taskId, ResumeParams params);
 
+  // Notifies the browser that any info still stored about an already completed
+  // I/O task identified by id can be cleared.
+  static void dismissIOTask(long taskId);
+
   // Shows a policy dialog for a task. Task ids are communicated to the Files
   // App in each I/O task's progress status.
   static void showPolicyDialog(long taskId, PolicyDialogType type);

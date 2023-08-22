@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -437,6 +436,11 @@ void FilesPolicyNotificationManager::ShowBlockedNotifications() {
   }
 }
 
+void FilesPolicyNotificationManager::OnErrorItemDismissed(
+    file_manager::io_task::IOTaskId task_id) {
+  io_tasks_.erase(task_id);
+}
+
 std::map<DlpConfidentialFile, Policy>
 FilesPolicyNotificationManager::GetIOTaskBlockedFilesForTesting(
     file_manager::io_task::IOTaskId task_id) const {
@@ -771,14 +775,14 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
 
   switch (button_index.value()) {
     case NotificationButton::CANCEL:
-      io_tasks_.erase(task_id);
+      OnErrorItemDismissed(task_id);
       return;
     case NotificationButton::OK:
       if (io_tasks_.at(task_id).blocked_files().size() == 1) {
         // Single file - open help page.
         dlp::OpenLearnMore();
         // Only delete if we don't need to show the dialog.
-        io_tasks_.erase(task_id);
+        OnErrorItemDismissed(task_id);
       } else {
         // Multiple files - review.
         ShowDialog(task_id, FilesDialogType::kError);

@@ -347,6 +347,28 @@ TEST_F(FPNMIOTaskTest, ShowBlockedNotifications_IgnoresWarnedFiles) {
   EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
 }
 
+// Tests that calling FPNM::OnErrorItemDismissed() removes all stored info when
+// the task was tracked.
+TEST_F(FPNMIOTaskTest, OnErrorItemDismissedClearsInfoForTrackedTask) {
+  file_manager::io_task::IOTaskId task_id = 1;
+  ASSERT_FALSE(AddCopyOrMoveIOTask(task_id, /*is_copy=*/true).empty());
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+  AddBlockedFiles(Policy::kDlp, task_id,
+                  {base::FilePath(kFile1), base::FilePath(kFile2)},
+                  dlp::FileAction::kCopy);
+  fpnm_->OnErrorItemDismissed(task_id);
+  EXPECT_FALSE(fpnm_->HasIOTask(task_id));
+}
+
+// Tests that calling FPNM::OnErrorItemDismissed() for a non-tracked task
+// succeeds.
+TEST_F(FPNMIOTaskTest, OnErrorItemDismissedIgnoresNonTrackedTask) {
+  file_manager::io_task::IOTaskId task_id = 1;
+  EXPECT_FALSE(fpnm_->HasIOTask(task_id));
+  fpnm_->OnErrorItemDismissed(task_id);
+  EXPECT_FALSE(fpnm_->HasIOTask(task_id));
+}
+
 class FilesPolicyNotificationManagerDlpAndConnectorsTest
     : public FPNMIOTaskTest,
       public testing::WithParamInterface<Policy> {
@@ -1046,9 +1068,7 @@ INSTANTIATE_TEST_SUITE_P(
 class FPNMShowWarningTest
     : public FilesPolicyNotificationManagerTest,
       public ::testing::WithParamInterface<dlp::FileAction> {
-  void SetUp() override {
-    FilesPolicyNotificationManagerTest::SetUp();
-  }
+  void SetUp() override { FilesPolicyNotificationManagerTest::SetUp(); }
 };
 
 TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Single) {

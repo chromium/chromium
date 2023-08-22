@@ -149,6 +149,12 @@ export class FileOperationHandler {
                 getPolicyErrorFromIOTaskPolicyError_(event.policyError.type);
             item.policyFileCount = event.policyError.policyFileCount;
             item.policyFileName = event.policyError.fileName;
+            item.dismissCallback = () => {
+              // For policy errors, we keep track of the task's info since it
+              // might be required to review the details. Notify when dismissed
+              // that this can be cleared.
+              chrome.fileManagerPrivate.dismissIOTask(event.taskId);
+            };
             const extraButtonText = getPolicyExtraButtonText_(event);
             if (event.policyError.type !==
                     PolicyErrorType.DLP_WARNING_TIMEOUT &&

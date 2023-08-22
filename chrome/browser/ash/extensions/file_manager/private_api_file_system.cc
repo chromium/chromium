@@ -1846,6 +1846,32 @@ FileManagerPrivateResumeIOTaskFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+FileManagerPrivateDismissIOTaskFunction::Run() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  using extensions::api::file_manager_private::DismissIOTask::Params;
+  const absl::optional<Params> params = Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (params->task_id <= 0) {
+    return RespondNow(Error("Invalid task id"));
+  }
+
+  policy::FilesPolicyNotificationManager* manager =
+      policy::FilesPolicyNotificationManagerFactory::GetForBrowserContext(
+          browser_context());
+  if (!manager) {
+    LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
+                  "can't notify about task_id "
+               << params->task_id;
+    return RespondNow(NoArguments());
+  }
+  manager->OnErrorItemDismissed(params->task_id);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 FileManagerPrivateShowPolicyDialogFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -1870,7 +1896,7 @@ FileManagerPrivateShowPolicyDialogFunction::Run() {
     LOG(ERROR) << "No FilesPolicyNotificationManager instantiated,"
                   "can't show policy dialog for task_id "
                << params->task_id;
-    Respond(NoArguments());
+    return RespondNow(NoArguments());
   }
   manager->ShowDialog(params->task_id, type);
 

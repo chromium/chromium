@@ -154,6 +154,11 @@ export class ProgressCenterItem {
     this.cancelCallback = null;
 
     /**
+     * Optional callback to be invoked after dismissing the item.
+     */
+    this.dismissCallback = null;
+
+    /**
      * The predicted remaining time to complete the progress item in seconds.
      * @type {number}
      */
