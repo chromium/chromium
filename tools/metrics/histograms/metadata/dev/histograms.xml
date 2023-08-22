@@ -563,8 +563,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DevTools.TraceLoad" enum="DevToolsSyncSetting"
-    expires_after="2024-08-12">
+<histogram name="DevTools.TraceLoad" units="ms" expires_after="2024-08-12">
   <owner>paulirish@chromium.org</owner>
   <owner>jacktfranklin@chromium.org</owner>
   <owner>victorporof@chromium.org</owner>
