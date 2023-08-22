@@ -33,11 +33,21 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   enum class State {
     // The initial state.
     kWaitForBody,
-    // Transferred from |kWaitForBody|. Once data is available, the consumer
-    // handle will be committed to the original client.
+    // Transferred from |kWaitForBody|. The state indicates a redirect response
+    // is received.
+    kRedirect,
+    // Transferred from |kWaitForBody| or |kRedirect|. The state indicates data
+    // has been received.
+    kResponseReceived,
+    // Transferred from |kResponseReceived| or |kDataTransferFinished|. Once
+    // data is available, the consumer handle will be committed to the original
+    // client based on |owner_|'s commit responsibility.
+    //
+    // The response commit timing may be slower than the data transfer
+    // completion depending on the timing and bufferd data size.
     kResponseCommitted,
-    // Transferred from |kResponseCommitted|. This state indicates buffered data
-    // has been sent to the data pipe.
+    // Transferred from |kResponseReceived| or |kResponseCommitted|. This state
+    // indicates all buffered data has been sent to the data pipe.
     kDataTransferFinished,
     // Indicates the commit is completed. This state closes the data pipe.
     kCompleted,

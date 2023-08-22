@@ -96,6 +96,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     return;
   }
 
+  TransitionState(State::kResponseReceived);
   switch (data_consume_policy_) {
     case DataConsumePolicy::kTeeResponse:
       head_ = std::move(head);
@@ -116,6 +117,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
+  TransitionState(State::kRedirect);
   // If redirect happened, we don't have to create another data pipe.
   data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
 
@@ -201,7 +203,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse() {
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
-  if (!owner_ || state_ != State::kWaitForBody) {
+  if (!owner_ || state_ != State::kResponseReceived) {
     return;
   }
   TransitionState(State::kResponseCommitted);
@@ -468,25 +470,28 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
   switch (new_state) {
     case State::kWaitForBody:
       NOTREACHED_NORETURN();
-    case State::kResponseCommitted:
+    case State::kRedirect:
       CHECK_EQ(state_, State::kWaitForBody);
-      state_ = new_state;
+      break;
+    case State::kResponseReceived:
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect);
+      break;
+    case State::kResponseCommitted:
+      CHECK_EQ(state_, State::kResponseReceived);
       break;
     case State::kDataTransferFinished:
       CHECK_EQ(state_, State::kResponseCommitted);
-      state_ = new_state;
       break;
     case State::kCompleted:
       CHECK(state_ == State::kWaitForBody ||
             state_ == State::kResponseCommitted ||
             state_ == State::kDataTransferFinished)
           << "state_:" << static_cast<int>(state_);
-      state_ = new_state;
       break;
     case State::kAborted:
-      state_ = new_state;
       break;
   }
+  state_ = new_state;
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::DrainData(
