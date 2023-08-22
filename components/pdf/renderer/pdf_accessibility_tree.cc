@@ -1759,19 +1759,6 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 
   if (page_index == page_count_ - 1) {
     UnserializeNodes();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    if (features::IsPdfOcrEnabled() && !did_get_a_text_run_ && has_image) {
-      base::UmaHistogramBoolean(
-          "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
-          ocr_service_ != nullptr);
-
-      if (ocr_service_) {
-        // Record the number of pages in PDF opened for PDF OCR.
-        base::UmaHistogramCounts1000(
-            "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
-      }
-    }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
 }
 
@@ -1844,14 +1831,29 @@ void PdfAccessibilityTree::UnserializeNodes() {
   render_accessibility->SetPluginTreeSource(this);
   nodes_.clear();
 
-  if (!did_unserialize_nodes_once_) {
+  if (!sent_metrics_once_) {
     // If the user turns on PDF OCR after opening a PDF, its PDF a11y tree gets
-    // created again. `did_unserialize_nodes_once_` helps to determine whether
+    // created again. `sent_metrics_once_` helps to determine whether
     // it's first time to create a PDF a11y tree. When a PDF is opened, the UMA
-    // metric, "Accessibility.PDF.HasAccessibleText", needs be recorded once.
-    did_unserialize_nodes_once_ = true;
+    // metrics need be recorded once.
+    sent_metrics_once_ = true;
+
     base::UmaHistogramBoolean("Accessibility.PDF.HasAccessibleText",
                               did_get_a_text_run_);
+    if (!did_get_a_text_run_) {
+      base::UmaHistogramCounts1000(
+          "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
+    }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // TODO(crbug.com/1474770): Update this and other cases with a
+    // `IsAccessiblePDF` function.
+    if (features::IsPdfOcrEnabled() && !did_get_a_text_run_) {
+      base::UmaHistogramBoolean(
+          "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
+          ocr_service_ != nullptr);
+    }
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   }
 }
 
