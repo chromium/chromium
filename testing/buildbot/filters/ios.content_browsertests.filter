@@ -192,6 +192,7 @@
 
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
+-BackForwardCacheBrowserTest.CCNSAndWebSocketBothRecorded
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
