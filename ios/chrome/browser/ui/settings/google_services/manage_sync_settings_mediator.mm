@@ -512,6 +512,21 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 #pragma mark - Loads sign out section
 
+// Creates a footer item to display below the sign out button when forced
+// sign-in is enabled.
+- (TableViewItem*)createForcedSigninFooterItem {
+  // Add information about the forced sign-in policy below the sign-out
+  // button when forced sign-in is enabled.
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:SignOutItemFooterType];
+  footerItem.text = l10n_util::GetNSString(
+      IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
+  footerItem.urls =
+      @[ [[CrURL alloc] initWithGURL:GURL("chrome://management/")] ];
+  return footerItem;
+}
+
 - (void)loadSignOutAndTurnOffSyncSection {
   // The SignOutAndTurnOffSyncSection only exists in
   // SyncSettingsAccountState::kSyncing state.
@@ -547,16 +562,7 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
       toSectionWithIdentifier:SignOutSectionIdentifier];
 
   if (self.forcedSigninEnabled) {
-    // Add information about the forced sign-in policy below the sign-out
-    // button when forced sign-in is enabled.
-    TableViewLinkHeaderFooterItem* footerItem =
-        [[TableViewLinkHeaderFooterItem alloc]
-            initWithType:SignOutItemFooterType];
-    footerItem.text = l10n_util::GetNSString(
-        IDS_IOS_ENTERPRISE_FORCED_SIGNIN_MESSAGE_WITH_LEARN_MORE);
-    footerItem.urls =
-        @[ [[CrURL alloc] initWithGURL:GURL("chrome://management/")] ];
-    [model setFooter:footerItem
+    [model setFooter:[self createForcedSigninFooterItem]
         forSectionWithIdentifier:SignOutSectionIdentifier];
   }
 }
@@ -642,6 +648,11 @@ constexpr CGFloat kErrorSymbolPointSize = 22.;
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+
+  if (self.forcedSigninEnabled) {
+    [model setFooter:[self createForcedSigninFooterItem]
+        forSectionWithIdentifier:SignOutSectionIdentifier];
+  }
 }
 
 #pragma mark - Private

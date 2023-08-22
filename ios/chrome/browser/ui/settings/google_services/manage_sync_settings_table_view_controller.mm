@@ -213,10 +213,10 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
       case AccountSectionIdentifier:
         return kAccountSectionFooterHeightPointSize;
       case SyncDataTypeSectionIdentifier:
+      case SignOutSectionIdentifier:
         return UITableViewAutomaticDimension;
       case AdvancedSettingsSectionIdentifier:
       case SyncErrorsSectionIdentifier:
-      case SignOutSectionIdentifier:
         break;
     }
   }
