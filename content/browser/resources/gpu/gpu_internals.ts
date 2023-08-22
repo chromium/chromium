@@ -20,11 +20,17 @@ function onLoad() {
   document.querySelector('info-view')!.addBrowserBridgeListeners(browserBridge);
 
   // Because of inherent raciness (between the deprecated DevTools API which
-  // telemtry uses to drive the relevant tests, and the asynchronous loading of
-  // JS modules like this one) it's possible for telemetry tests to inject code
-  // *before* `browserBridge` is set and the DOM is populated. This flag is used
-  // to synchronize script injection by tests to prevent such races.
-  Object.assign(window, {gpuPagePopulated: true});
+  // telemetry uses to drive the relevant tests, and the asynchronous
+  // loading of JS modules like this one) it's possible for telemetry tests
+  // to inject code *before* `browserBridge` is set and the DOM is
+  // populated. This flag is used to synchronize script injection by tests
+  // to prevent such races.
+  Object.assign(window, {
+    gpuPagePopulated: true,
+    getGPUInfo(category: string, feature = '') {
+      return document.querySelector('info-view')!.getInfo(category, feature);
+    },
+  });
 }
 
 document.addEventListener('DOMContentLoaded', onLoad);

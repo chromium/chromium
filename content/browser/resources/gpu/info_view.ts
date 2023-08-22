@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './info_view_table.js';
-
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {AngleFeature, BrowserBridge, ClientInfo, FeatureStatus, Problem} from './browser_bridge.js';
 import {getTemplate} from './info_view.html.js';
-import {ArrayData, Data} from './info_view_table_row.js';
 import {VulkanInfo} from './vulkan_info.js';
 
 /**
@@ -28,12 +25,307 @@ const saveData = (function() {
   };
 }());
 
+function getProblemTextAndUrl(problem: Problem) {
+  let text = problem.description;
+  let url = '';
+  const pattern = ' Please update your graphics driver via this link: ';
+  const pos = text.search(pattern);
+  if (pos > 0) {
+    url = text.substring(pos + pattern.length);
+    text = text.substring(0, pos);
+  }
+  return {text, url};
+}
+
+function formatANGLEBug(bug: string) {
+  if (bug.includes('crbug.com/')) {
+    return bug.match(/\d+/)!.toString();
+  } else if (bug.includes('anglebug.com/')) {
+    return `anglebug:${bug.match(/\d+/)}`;
+  } else {
+    return bug;
+  }
+}
+
+/**
+ * Calls a function to insert an element between every element
+ * of an existing array
+ */
+function insertBetweenElements<Type>(
+    array: Type[], fn: (i: number) => Type): Type[] {
+  const newArray = array.slice(0, 1);
+  for (let i = 1; i < array.length; ++i) {
+    newArray.push(fn(i), array[i] as Type);
+  }
+  return newArray;
+}
+
+/** Inserts <span>, </span> between every element in array */
+function separateByCommas(array: HTMLElement[], comma = ', ') {
+  return insertBetweenElements(array, () => createElem('span', comma));
+}
+
+/**
+ * Conditionally add elements to an array
+ *
+ * ```js
+ * const array = [
+ *   "carrots",
+ *   "potatoes",
+ *   ...addIf(haveFruit, () => ["apple", "cherry"]),
+ * ]
+ * ```
+ *
+ * The function is not called if `cond` is false.
+ */
+function addIf<T>(cond: boolean, fn: () => T[]) {
+  return cond ? fn() : [];
+}
+
+/**
+ * Word wraps a string, prefixing each line.
+ */
+function wordWrap(s: string, prefix = '    ', maxLength?: number) {
+  maxLength = maxLength || (80 - prefix.length);
+  const lines: string[] = [];
+  const words = s.split(' ');
+  const line: string[] = [];
+  let length = 0;
+  for (const word of words) {
+    if (length + word.length + 1 >= maxLength) {
+      lines.push(line.join(' '));
+      line.length = 0;
+      length = 0;
+    }
+    line.push(word);
+    length += word.length + 1;
+  }
+  if (line.length) {
+    lines.push(line.join(' '));
+  }
+  return lines.map(s => `${prefix}${s}`).join('\n');
+}
+
+interface Attributes {
+  [key: string]: string|Attributes;
+}
+
+/**
+ * Creates an HTMLElement with optional attributes and children
+ *
+ * Examples:
+ *
+ * ```js
+ *   br = createElem('br');
+ *   p = createElem('p', 'hello world');
+ *   a = createElem('a', {href: 'https://google.com', textContent: 'Google'});
+ *   ul = createElement('ul', {}, [
+ *     createElem('li', 'apple'),
+ *     createElem('li', 'banana'),
+ *   ]);
+ *   h1 = createElem('h1', { style: { color: 'red' }, textContent: 'Title'})
+ * ```
+ */
+function createElem(
+    tag: string, attrs: Attributes|string = {}, children: HTMLElement[] = []) {
+  const elem = document.createElement(tag) as HTMLElement;
+  if (typeof attrs === 'string') {
+    elem.textContent = attrs;
+  } else {
+    const elemAsAttribs = elem as unknown as Attributes;
+    for (const [key, value] of Object.entries(attrs)) {
+      if (typeof value === 'function' && key.startsWith('on')) {
+        const eventName = key.substring(2).toLowerCase();
+        elem.addEventListener(eventName, value, {passive: false});
+      } else if (typeof value === 'object') {
+        for (const [k, v] of Object.entries(value)) {
+          (elemAsAttribs[key] as Attributes)[k] = v;
+        }
+      } else if (elemAsAttribs[key] === undefined) {
+        elem.setAttribute(key, value);
+      } else {
+        elemAsAttribs[key] = value;
+      }
+    }
+  }
+  for (const child of children) {
+    elem.appendChild(child);
+  }
+  return elem;
+}
+
+export interface Data {
+  description: string;
+  id?: string;
+  value: string;
+}
+
+export interface ArrayData {
+  description: string;
+  value: Data[];
+}
+
+/** Creates the td elements for a table row */
+function createInfoElements(
+    data: Data|ArrayData, padSize: number): HTMLElement[] {
+  const desc = createElem('td', {}, [
+    createElem('span', data.description.padEnd(padSize)),
+    createHidden(':'),
+  ]);
+
+  if (Array.isArray(data.value)) {
+    return [
+      desc,
+      createElem('td', {}, [createInfoTable((data as ArrayData).value)]),
+    ];
+  } else {
+    return [
+      desc,
+      createElem('td', {
+        textContent: data.value.toString().trim(),
+        id: (data as Data).id!,
+      }),
+    ];
+  }
+}
+
+/** Creates a table from the given data */
+function createInfoTable(data: Data[]|ArrayData[]) {
+  const longestDesc = Math.min(
+      32,
+      (data as Data[])
+          .reduce(
+              (longest, {description}) => Math.max(longest, description.length),
+              0));
+  return createElem('table', {className: 'info-table'}, [
+    createElem(
+        'tbody', {},
+        data.map(
+            data => createElem('tr', {}, createInfoElements(data, longestDesc)),
+            )),
+  ]);
+}
+
+/**
+ * Creates a hidden span that will only be used when the when
+ * the user copies or downloads text.
+ */
+function createHidden(textContent: string) {
+  return createElem('span', {className: 'copy', textContent});
+}
+
+/**
+ * Given a string or Attributes returns the `textContent`
+ * and the attributes with `textContent` removed
+ */
+function separateTextContentFromAttributes(attrs: Attributes|string = {}) {
+  return typeof attrs === 'string' ? {textContent: attrs, attribs: {}} : {
+    textContent: attrs['textContent'] as string || '',
+    attribs: {...attrs, textContent: ''},
+  };
+}
+
+/**
+ * Creates a list item with a hidden `*   ` span prepended for copy
+ */
+function createLi(attrs: Attributes|string = {}, children: HTMLElement[] = []) {
+  const {textContent, attribs} = separateTextContentFromAttributes(attrs);
+  return createElem('li', attribs, [
+    createHidden('*   '),
+    createElem('span', textContent),
+    ...children,
+  ]);
+}
+
+/**
+ * Creates a heading tag with hidden text for copying
+ * so the copy will be like markdown.
+ */
+function createHeading(
+    tag: string, padChar: string, attrs: Attributes|string = {},
+    children: HTMLElement[] = []) {
+  const {textContent, attribs} = separateTextContentFromAttributes(attrs);
+  return createElem(tag, attribs, [
+    createHidden('\n\n'),
+    createElem('span', textContent),
+    createHidden(`\n${''.padEnd(textContent.length, padChar)}`),
+    ...children,
+  ]);
+}
+
+/**
+ * Creates a link pair with an anchor tag that is visible
+ * in the page and hidden text for copying so the copy
+ * will appear as (href)
+ */
+function createLinkPair(textContent: string, href: string) {
+  return [
+    createElem('a', {
+      className: 'hide-on-copy',
+      textContent,
+      href,
+    }),
+    createHidden(`(${href})`),
+  ];
+}
+
+/**
+ * Adds hidden spans to an existing heading. Used when the text is
+ * copied to make the heading appear like markdown
+ */
+function addMarkdownHeading(padChar: string) {
+  return function(el: Element) {
+    el.appendChild(
+        createHidden(`\n${''.padEnd(el.textContent!.length, padChar)}`));
+  };
+}
+
+/**
+ * Get a string data value
+ */
+function getDataValue(data: Data|ArrayData): string {
+  return Array.isArray(data.value) ?
+      data.value.map(data => getDataValue(data)).join(',') :
+      data.value;
+}
+
+/**
+ * Go through Datas and find ones that start with 'GPUx'
+ * return the first with who's value ends itn '*ACTIVE*'
+ * or else the first one.
+ * @param data
+ * @returns
+ */
+function getActiveGPU(data: Data[]|ArrayData[]) {
+  // get list of GPUs
+  const gpus =
+      [...data].filter(({description}) => /^GPU\d+$/.test(description));
+  // get list of active GPUs
+  const active = gpus.filter(data => getDataValue(data).endsWith('*ACTIVE*'));
+  const all = [...active, ...gpus];
+  // get the first one
+  if (all.length > 0) {
+    const gpu = getDataValue(all[0]!);
+    const parts = gpu.split(', ')[0]!.split('=');
+    return parts.length === 2 && parts[0]! === 'VENDOR' ? parseInt(parts[1]!) :
+                                                          0;
+  }
+  return 0;
+}
+
+/** convert a value to a string or empty string if null or undefined */
+function safeString(value: any) {
+  return typeof value === 'undefined' || value === null ? '' : value.toString();
+}
+
 /**
  * @fileoverview This view displays information on the current GPU
  * hardware.  Its primary usefulness is to allow users to copy-paste
  * their data in an easy to read format for bug reports.
  */
 export class InfoViewElement extends CustomElement {
+  browserBridge?: BrowserBridge;
+
   static override get template() {
     return getTemplate();
   }
@@ -48,34 +340,132 @@ export class InfoViewElement extends CustomElement {
     this.refresh(browserBridge);
   }
 
+  /**
+   * public interface for testing
+   */
+  getInfo(category: string, feature: string = ''): string|string[] {
+    const gpuInfo = this.browserBridge?.gpuInfo;
+    if (!gpuInfo) {
+      throw new Error('no gpuInfo');
+    }
+
+    switch (category) {
+      case 'feature-status-for-hardware-gpu-list':
+        return safeString(
+            gpuInfo.featureStatusForHardwareGpu?.featureStatus[feature]);
+      case 'feature-status-list':
+        return safeString(gpuInfo.featureStatus?.featureStatus[feature]);
+      case 'active-gpu-for-hardware':
+        return safeString(getActiveGPU(gpuInfo.basicInfoForHardwareGpu));
+      case 'active-gpu':
+        return safeString(getActiveGPU(gpuInfo.basicInfo));
+      case 'workarounds':
+        return (gpuInfo.featureStatus || gpuInfo.featureStatusForHardwareGpu)
+                   ?.workarounds ||
+            [];
+      default:
+        throw new Error(`unknown category: ${category}`);
+    }
+  }
+
+  getSelectionText(all: boolean) {
+    const dynamicStyle = this.getRequiredElement('#dynamic-style')!;
+    dynamicStyle.textContent = `
+      #content { white-space: pre !important; }
+      .copy { display: initial; }
+      .hide-on-copy { display: none; }
+    `;
+    const contentDiv = this.getRequiredElement('#content')!;
+
+    // document.getSelection doesn't work through shadowDom
+    // and shadowRoot getSelection is non-standard chromium
+    const shadowDoc = this.shadowRoot! as unknown as Document;
+    const selection = shadowDoc.getSelection()!;
+
+    if (all) {
+      selection.removeAllRanges();
+      selection.selectAllChildren(contentDiv);
+    } else {
+      const position =
+          selection.anchorNode?.compareDocumentPosition(selection.focusNode!);
+      const [startNode, startOffset, endNode, endOffset] =
+          ((position || 0) & Node.DOCUMENT_POSITION_FOLLOWING) ?
+          [
+            selection.anchorNode!,
+            selection.anchorOffset,
+            selection.focusNode!,
+            selection.focusOffset,
+          ] :
+          [
+            selection.focusNode!,
+            selection.focusOffset,
+            selection.anchorNode!,
+            selection.anchorOffset,
+          ];
+      if (startOffset === 0) {
+        // Given the selection between > and <
+        //
+        //   * >abc
+        //   * def<
+        //
+        // We need to move the start of the selection back to the parent
+        // otherwise the selection above will copied as
+        //
+        //   abc
+        //   * def
+        //
+        // since the * (the list item's bullet) is not selectable directly.
+        const li = startNode.parentElement?.closest('li');
+        selection.setBaseAndExtent(
+            li || startNode.parentNode!, 0, endNode, endOffset);
+      }
+    }
+
+    // Get text and remove superfluous lines and whitespace.
+    const text = selection.toString()
+                     .replace(/\s*\n\s*\n\s*\n+/g, '\n\n')
+                     .replace(/\t/g, ' ')
+                     .trim();
+
+    if (all) {
+      shadowDoc.getSelection()?.removeAllRanges();
+    }
+
+    dynamicStyle.textContent = '';
+    return text;
+  }
+
+
   connectedCallback() {
     // Add handler to 'download report to clipboard' button
-    const downloadButton =
-        this.shadowRoot!.querySelector<HTMLElement>('#download-to-file')!;
+    const downloadButton = this.getRequiredElement('#download-to-file');
     assert(downloadButton);
     downloadButton.onclick = (() => {
-      // Make sure nothing is selected
-      const s = window.getSelection()!;
-      s.removeAllRanges();
-
-      // Select everything
-      s.selectAllChildren(this.shadowRoot!);
-      const text = s.toString();
-
-      // And deselect everything at the end.
-      window.getSelection()!.removeAllRanges();
-
+      const text = this.getSelectionText(true);
       const blob = new Blob([text], {type: 'text/text'});
       const filename = `about-gpu-${
           new Date().toISOString().replace(/[^a-z0-9-]/ig, '-')}.txt`;
       saveData(blob, filename);
     });
+
+    // Add a copy handler to massage the text for plain text.
+    document.addEventListener('copy', (event) => {
+      const text = this.getSelectionText(false);
+      event!.clipboardData!.setData('text/plain', text);
+      event.preventDefault();
+    });
+
+    this.shadowRoot!.querySelectorAll('h1, h2, h3')
+        .forEach(addMarkdownHeading('='));
+    this.shadowRoot!.querySelectorAll('h4, h5, h6')
+        .forEach(addMarkdownHeading('-'));
   }
 
   /**
    * Updates the view based on its currently known data
    */
   refresh(browserBridge: BrowserBridge) {
+    this.browserBridge = browserBridge;
     let clientInfo: ClientInfo;
     function createSourcePermalink(
         revisionIdentifier: string, filepath: string): string {
@@ -134,6 +524,8 @@ export class InfoViewElement extends CustomElement {
     const dawnInfoDiv = this.getRequiredElement('.dawn-info-div');
     const dawnInfoList = this.getRequiredElement('.dawn-info-list');
 
+
+
     const basicInfoForHardwareGpuDiv =
         this.getRequiredElement('.basic-info-for-hardware-gpu-div');
     const featureStatusForHardwareGpuDiv =
@@ -173,12 +565,8 @@ export class InfoViewElement extends CustomElement {
             featureStatusForHardwareGpuList, problemsForHardwareGpuDiv,
             problemsForHardwareGpuList, workaroundsForHardwareGpuDiv,
             workaroundsForHardwareGpuList);
-        if (gpuInfo.basicInfoForHardwareGpu) {
-          this.setTable_(
-              'basic-info-for-hardware-gpu', gpuInfo.basicInfoForHardwareGpu);
-        } else {
-          this.setTable_('basic-info-for-hardware-gpu', []);
-        }
+        this.setTable_(
+            'basic-info-for-hardware-gpu', gpuInfo.basicInfoForHardwareGpu);
       } else {
         basicInfoForHardwareGpuDiv.hidden = true;
         featureStatusForHardwareGpuDiv.hidden = true;
@@ -186,44 +574,19 @@ export class InfoViewElement extends CustomElement {
         workaroundsForHardwareGpuDiv.hidden = true;
       }
 
-      if (gpuInfo.basicInfo) {
-        this.setTable_('basic-info', gpuInfo.basicInfo);
-      } else {
-        this.setTable_('basic-info', []);
-      }
-
-      if (gpuInfo.compositorInfo) {
-        this.setTable_('compositor-info', gpuInfo.compositorInfo);
-      } else {
-        this.setTable_('compositor-info', []);
-      }
-
-      if (gpuInfo.gpuMemoryBufferInfo) {
-        this.setTable_('gpu-memory-buffer-info', gpuInfo.gpuMemoryBufferInfo);
-      } else {
-        this.setTable_('gpu-memory-buffer-info', []);
-      }
-
-      if (gpuInfo.displayInfo) {
-        this.setTable_('display-info', gpuInfo.displayInfo);
-      } else {
-        this.setTable_('display-info', []);
-      }
-
-      if (gpuInfo.videoAcceleratorsInfo) {
-        this.setTable_(
-            'video-acceleration-info', gpuInfo.videoAcceleratorsInfo);
-      } else {
-        this.setTable_('video-acceleration-info', []);
-      }
+      this.setTable_('basic-info', gpuInfo.basicInfo);
+      this.setTable_('compositor-info', gpuInfo.compositorInfo);
+      this.setTable_('gpu-memory-buffer-info', gpuInfo.gpuMemoryBufferInfo);
+      this.setTable_('display-info', gpuInfo.displayInfo);
+      this.setTable_('video-acceleration-info', gpuInfo.videoAcceleratorsInfo);
 
       if (gpuInfo.ANGLEFeatures) {
         if (gpuInfo.ANGLEFeatures.length) {
           angleFeaturesDiv.hidden = false;
           angleFeaturesList.textContent = '';
           for (const angleFeature of gpuInfo.ANGLEFeatures) {
-            const angleFeatureEl = this.createAngleFeatureEl_(angleFeature);
-            angleFeaturesList.appendChild(angleFeatureEl);
+            angleFeaturesList.appendChild(
+                this.createAngleFeatureEl_(angleFeature));
           }
         } else {
           angleFeaturesDiv.hidden = true;
@@ -253,23 +616,16 @@ export class InfoViewElement extends CustomElement {
         diagnosticsDiv.hidden = true;
       }
 
-      if (gpuInfo.vulkanInfo) {
-        const vulkanInfo = new VulkanInfo(gpuInfo.vulkanInfo);
-        const data = [{
-          'description': 'info',
-          'value': vulkanInfo.toString(),
-          'id': 'vulkan-info-value',
-        }];
-        this.setTable_('vulkan-info', data);
-      } else {
-        this.setTable_('vulkan-info', []);
-      }
+      this.setTable_(
+          'vulkan-info',
+          gpuInfo.vulkanInfo ? [{
+            'description': 'info',
+            'value': new VulkanInfo(gpuInfo.vulkanInfo).toString(),
+            'id': 'vulkan-info-value',
+          }] :
+                               []);
 
-      if (gpuInfo.devicePerfInfo) {
-        this.setTable_('device-perf-info', gpuInfo.devicePerfInfo);
-      } else {
-        this.setTable_('device-perf-info', []);
-      }
+      this.setTable_('device-perf-info', gpuInfo.devicePerfInfo);
     } else {
       this.setText_('basic-info', '... loading ...');
       diagnosticsDiv.hidden = true;
@@ -282,11 +638,8 @@ export class InfoViewElement extends CustomElement {
     const messageList = this.getRequiredElement('#log-messages > ul');
     messageList.innerHTML = window.trustedTypes!.emptyHTML;
     browserBridge.logMessages.forEach(messageObj => {
-      const messageEl = document.createElement('span');
-      messageEl.textContent = `${messageObj.header}: ${messageObj.message}`;
-      const li = document.createElement('li');
-      li.appendChild(messageEl);
-      messageList.appendChild(li);
+      messageList.appendChild(
+          createElem('li', `${messageObj.header}: ${messageObj.message}`));
     });
   }
 
@@ -333,7 +686,10 @@ export class InfoViewElement extends CustomElement {
         'class': 'feature-yellow',
       },
       'unavailable_off': {'label': 'Unavailable', 'class': 'feature-red'},
-      'unavailable_off_ok': {'label': 'Unavailable', 'class': 'feature-yellow'},
+      'unavailable_off_ok': {
+        'label': 'Unavailable',
+        'class': 'feature-yellow',
+      },
       'enabled_readback': {
         'label': 'Hardware accelerated but at reduced performance',
         'class': 'feature-yellow',
@@ -351,28 +707,32 @@ export class InfoViewElement extends CustomElement {
     featureStatusList.textContent = '';
     for (const featureName in featureInfo.featureStatus) {
       const featureStatus = featureInfo.featureStatus[featureName]!;
-      const featureEl = document.createElement('li');
 
-      const nameEl = document.createElement('span');
-      if (!featureLabelMap[featureName]) {
+      const label = featureLabelMap[featureName];
+      if (!label) {
         console.info('Missing featureLabel for', featureName);
       }
-      nameEl.textContent = featureLabelMap[featureName] + ': ';
-      featureEl.appendChild(nameEl);
 
-      const statusEl = document.createElement('span');
       const statusInfo = statusMap[featureStatus];
       if (!statusInfo) {
         console.info('Missing status for ', featureStatus);
-        statusEl.textContent = 'Unknown';
-        statusEl.className = 'feature-red';
-      } else {
-        statusEl.textContent = statusInfo['label'];
-        statusEl.className = statusInfo['class'];
       }
-      featureEl.appendChild(statusEl);
 
-      featureStatusList.appendChild(featureEl);
+      featureStatusList.appendChild(createLi({}, [
+        createElem('span', `${label}: `),
+
+        createElem(
+            'span',
+            statusInfo ? {
+              textContent: statusInfo['label'],
+              className: statusInfo['class'],
+            } :
+                         {
+                           textContent: 'Unknown',
+                           className: 'feature-red',
+                         },
+            ),
+      ]));
     }
 
     // problems list
@@ -380,8 +740,7 @@ export class InfoViewElement extends CustomElement {
       problemsDiv.hidden = false;
       problemsList.textContent = '';
       for (const problem of featureInfo.problems) {
-        const problemEl = this.createProblemEl_(problem);
-        problemsList.appendChild(problemEl);
+        problemsList.appendChild(this.createProblemEl_(problem));
       }
     } else {
       problemsDiv.hidden = true;
@@ -392,9 +751,7 @@ export class InfoViewElement extends CustomElement {
       workaroundsDiv.hidden = false;
       workaroundsList.textContent = '';
       for (const workaround of featureInfo.workarounds) {
-        const workaroundEl = document.createElement('li');
-        workaroundEl.textContent = workaround;
-        workaroundsList.appendChild(workaroundEl);
+        workaroundsList.appendChild(createLi(workaround));
       }
     } else {
       workaroundsDiv.hidden = true;
@@ -402,189 +759,134 @@ export class InfoViewElement extends CustomElement {
   }
 
   private createProblemEl_(problem: Problem): HTMLElement {
-    const problemEl = document.createElement('li');
+    const {text, url} = getProblemTextAndUrl(problem);
+    return createLi({}, [
+      createElem('span', text),
 
-    // Description of issue
-    const desc = document.createElement('a');
-    let text = problem.description;
-    const pattern = ' Please update your graphics driver via this link: ';
-    const pos = text.search(pattern);
-    let url = '';
-    if (pos > 0) {
-      url = text.substring(pos + pattern.length);
-      text = text.substring(0, pos);
-    }
-    desc.textContent = text;
-    problemEl.appendChild(desc);
+      // add bug separator
+      ...addIf(
+          problem.crBugs.length > 0, () => [createElem('span', ':\n    ')]),
 
-    // Spacing ':' element
-    if (problem.crBugs.length > 0) {
-      const tmp = document.createElement('span');
-      tmp.textContent = ': ';
-      problemEl.appendChild(tmp);
-    }
+      // add bugs
+      ...separateByCommas(problem.crBugs.map((id) => {
+        const bugId = parseInt(id);
+        const href = `http://crbug.com/${bugId}`;
+        return createElem('span', {}, createLinkPair(bugId.toString(), href));
+      })),
 
-    let nbugs = 0;
-    let j;
+      // add affectedGpuSettings
+      ...addIf(
+          problem.affectedGpuSettings.length > 0,
+          () =>
+              [createElem('br'),
+               createHidden('    '),
+               createElem(
+                   'i', {},
+                   [
+                     createElem(
+                         'span',
+                         problem.tag === 'disabledFeatures' ?
+                             'Disabled Features: ' :
+                             'Applied Workarounds: '),
+                     ...separateByCommas(
+                         problem.affectedGpuSettings.map(
+                             (textContent) => createElem('span', {
+                               textContent,
+                               className: problem.tag === 'disabledFeatures' ?
+                                   'feature-red' :
+                                   'feature-yellow',
+                             }),
+                             ),
+                         ',\n        '),
+                   ]),
+    ]),
 
-    // crBugs
-    for (j = 0; j < problem.crBugs.length; ++j) {
-      if (nbugs > 0) {
-        const tmp = document.createElement('span');
-        tmp.textContent = ', ';
-        problemEl.appendChild(tmp);
-      }
+      // add driver update link
+      ...addIf(
+          !!url,
+          () =>
+              [createElem('br'),
+               createHidden('    '),
+               createElem(
+                   'b', {className: 'bg-yellow'},
+                   [
+                     createElem(
+                         'span', 'Please update your graphics drive via '),
+                     createElem('a', {textContent: 'this link', href: url}),
+                   ]),
+    ]),
 
-      const link = document.createElement('a');
-      const bugid = parseInt(problem.crBugs[j]!);
-      link.textContent = bugid.toString();
-      link.href = 'http://crbug.com/' + bugid;
-      problemEl.appendChild(link);
-      nbugs++;
-    }
+      // for copy spacing
+      createElem('span', '\n\n'),
 
-    if (problem.affectedGpuSettings.length > 0) {
-      const brNode = document.createElement('br');
-      problemEl.appendChild(brNode);
-
-      const iNode = document.createElement('i');
-      problemEl.appendChild(iNode);
-
-      const headNode = document.createElement('span');
-      if (problem.tag === 'disabledFeatures') {
-        headNode.textContent = 'Disabled Features: ';
-      } else {  // problem.tag === 'workarounds'
-        headNode.textContent = 'Applied Workarounds: ';
-      }
-      iNode.appendChild(headNode);
-      for (j = 0; j < problem.affectedGpuSettings.length; ++j) {
-        if (j > 0) {
-          const separateNode = document.createElement('span');
-          separateNode.textContent = ', ';
-          iNode.appendChild(separateNode);
-        }
-        const nameNode = document.createElement('span');
-        if (problem.tag === 'disabledFeatures') {
-          nameNode.classList.add('feature-red');
-        } else {  // problem.tag === 'workarounds'
-          nameNode.classList.add('feature-yellow');
-        }
-        nameNode.textContent = problem.affectedGpuSettings[j]!;
-        iNode.appendChild(nameNode);
-      }
-    }
-
-    // Append driver update link.
-    if (pos > 0) {
-      const brNode = document.createElement('br');
-      problemEl.appendChild(brNode);
-
-      const bNode = document.createElement('b');
-      bNode.classList.add('bg-yellow');
-      problemEl.appendChild(bNode);
-
-      const tmp = document.createElement('span');
-      tmp.textContent = 'Please update your graphics driver via ';
-      bNode.appendChild(tmp);
-
-      const link = document.createElement('a');
-      link.textContent = 'this link';
-      link.href = url;
-      bNode.appendChild(link);
-    }
-
-    return problemEl;
+    ]);
   }
 
   private createAngleFeatureEl_(angleFeature: AngleFeature) {
-    const angleFeatureEl = document.createElement('li');
+    return createLi({}, [
+      // Name comes first, bolded
+      createElem('b', angleFeature.name),
 
-    // Name comes first, bolded
-    const name = document.createElement('b');
-    name.textContent = angleFeature.name;
-    angleFeatureEl.appendChild(name);
+      // If there's a category, it follows the name in parentheses
+      ...addIf(
+          !!angleFeature.category,
+          () =>
+              [createElem('span', ` (${angleFeature.category})`),
+    ]),
 
-    // If there's a category, it follows the name in parentheses
-    if (angleFeature.category) {
-      const separator = document.createElement('span');
-      separator.textContent = ' ';
-      angleFeatureEl.appendChild(separator);
+      // If there's a bug link, try to parse the crbug/anglebug number
+      ...addIf(
+          !!angleFeature.bug,
+          () =>
+              [createElem('span', ' '),
+               ...createLinkPair(
+                   formatANGLEBug(angleFeature.bug), angleFeature.bug),
+    ]),
 
-      const category = document.createElement('span');
-      category.textContent = '(' + angleFeature.category + ')';
-      angleFeatureEl.appendChild(category);
-    }
+      // Follow with a colon, and the status (colored)
+      createElem('span', ': '),
+      createElem(
+          'span',
+          angleFeature.status === 'enabled' ?
+              {className: 'feature-green', textContent: 'Enabled'} :
+              {className: 'feature-red', textContent: 'Disabled'}),
 
-    // If there's a bug link, try to parse the crbug/anglebug number
-    if (angleFeature.bug) {
-      const separator = document.createElement('span');
-      separator.textContent = ' ';
-      angleFeatureEl.appendChild(separator);
+      ...addIf(
+          !!angleFeature.condition,
+          () =>
+              [createHidden('\n    condition'),
+               createElem('span', {
+                 className: 'feature-gray',
+                 textContent: `: ${angleFeature.condition}`,
+               }),
+    ]),
 
-      const bug = document.createElement('a');
-      if (angleFeature.bug.includes('crbug.com/')) {
-        bug.textContent = angleFeature.bug.match(/\d+/)!.toString();
-      } else if (angleFeature.bug.includes('anglebug.com/')) {
-        bug.textContent = 'anglebug:' + angleFeature.bug.match(/\d+/);
-      } else {
-        bug.textContent = angleFeature.bug;
-      }
-      bug.href = angleFeature.bug;
-      angleFeatureEl.appendChild(bug);
-    }
+      ...addIf(
+          !!angleFeature.description,
+          () =>
+              [createElem('br'),
+               createElem('i', wordWrap(angleFeature.description!)),
+    ]),
 
-    // Follow with a colon, and the status (colored)
-    const separator = document.createElement('span');
-    separator.textContent = ': ';
-    angleFeatureEl.appendChild(separator);
-
-    const status = document.createElement('span');
-    if (angleFeature.status === 'enabled') {
-      status.textContent = 'Enabled';
-      status.classList.add('feature-green');
-    } else {
-      status.textContent = 'Disabled';
-      status.classList.add('feature-red');
-    }
-    angleFeatureEl.appendChild(status);
-
-    if (angleFeature.condition) {
-      const condition = document.createElement('span');
-      condition.textContent = ': ' + angleFeature.condition;
-      condition.classList.add('feature-gray');
-      angleFeatureEl.appendChild(condition);
-    }
-
-    // if there's a description, put on new line, italicized
-    if (angleFeature.description) {
-      const brNode = document.createElement('br');
-      angleFeatureEl.appendChild(brNode);
-
-      const iNode = document.createElement('i');
-      angleFeatureEl.appendChild(iNode);
-
-      const description = document.createElement('span');
-      description.textContent = angleFeature.description;
-      iNode.appendChild(description);
-    }
-
-    return angleFeatureEl;
+      // for copy spacing
+      createElem('span', '\n\n'),
+    ]);
   }
 
   private setText_(outputElementId: string, text: string) {
     this.getRequiredElement(`#${outputElementId}`).textContent = text;
   }
 
-  private setTable_(outputElementId: string, inputData: Data[]|ArrayData[]) {
-    const table = document.createElement('info-view-table');
-    table.setData(inputData);
+  private setTable_(
+      outputElementId: string, inputData: Data[]|ArrayData[]|undefined) {
+    const table = createInfoTable(inputData || []);
 
     const peg = this.$(`#${outputElementId}`);
     if (!peg) {
       throw new Error('Node ' + outputElementId + ' not found');
     }
 
-    peg.innerHTML = window.trustedTypes!.emptyHTML;
+    peg.textContent = '';
     peg.appendChild(table);
   }
 
@@ -593,26 +895,23 @@ export class InfoViewElement extends CustomElement {
     let inProcessingToggles = false;
 
     for (let i = 0; i < gpuDawnInfo.length; ++i) {
-      let infoString = gpuDawnInfo[i]!;
+      const infoString = gpuDawnInfo[i]!;
       let infoEl: HTMLElement;
 
       if (infoString.startsWith('<')) {
         // GPU type and backend type.
         // Add an empty line for the next adaptor.
-        const separator = document.createElement('br');
-        separator.textContent = '';
-        dawnInfoList.appendChild(separator);
+        dawnInfoList.appendChild(createElem('br'));
 
         // e.g. <Discrete GPU> D3D12 backend
-        infoEl = document.createElement('h3');
-        infoEl.textContent = infoString;
-        dawnInfoList.appendChild(infoEl);
+        infoEl = createHeading('h3', '-', infoString);
         inProcessingToggles = false;
       } else if (infoString.startsWith('[')) {
         // e.g. [Default Toggle Names]
-        infoEl = document.createElement('h4');
-        infoEl.classList.add('dawn-info-header');
-        infoEl.textContent = infoString;
+        infoEl = createHeading('h4', '-', {
+          className: 'dawn-info-header',
+          textContent: infoString,
+        });
 
         if (infoString === '[WebGPU Status]' ||
             infoString === '[Default Supported Features]') {
@@ -622,29 +921,22 @@ export class InfoViewElement extends CustomElement {
         }
       } else if (inProcessingToggles) {
         // Each toggle takes 3 strings
-        infoEl = document.createElement('li');
+        infoEl = createLi({}, [
+          // The toggle name comes first, bolded.
+          createElem('b', `${infoString}: \n    `),
 
-        // The toggle name comes first, bolded.
-        const name = document.createElement('b');
-        name.textContent = infoString + ':  ';
-        infoEl.appendChild(name);
+          // URL
+          ...createLinkPair(gpuDawnInfo[++i]!, gpuDawnInfo[i]!),
 
-        // URL
-        infoString = gpuDawnInfo[++i]!;
-        const url = document.createElement('a');
-        url.textContent = infoString;
-        url.href = infoString;
-        infoEl.appendChild(url);
+          // Description, italicized
+          createElem('i', `:\n${wordWrap(gpuDawnInfo[++i]!)}`),
 
-        // Description, italicized
-        infoString = gpuDawnInfo[++i]!;
-        const description = document.createElement('i');
-        description.textContent = ':  ' + infoString;
-        infoEl.appendChild(description);
+          // for copy spacing
+          createElem('span', '\n\n'),
+        ]);
       } else {
         // Display supported extensions
-        infoEl = document.createElement('li');
-        infoEl.textContent = infoString;
+        infoEl = createLi(infoString);
       }
 
       dawnInfoList.appendChild(infoEl);

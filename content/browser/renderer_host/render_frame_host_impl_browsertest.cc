@@ -4942,11 +4942,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, WebUiReloadAfterCrash) {
   EXPECT_EQ(main_frame_url, main_document->GetLastCommittedURL());
   // Execute script in an isolated world to avoid causing a Trusted Types
   // violation due to eval.
-  EXPECT_EQ("Graphics Feature Status",
-            EvalJs(main_document,
-                   "document.querySelector('info-view').shadowRoot"
-                   ".querySelector('h3').textContent",
-                   EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
+  EXPECT_THAT(EvalJs(main_document,
+                     "document.querySelector('info-view').shadowRoot"
+                     ".querySelector('h3').textContent",
+                     EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
+                  .ExtractString(),
+              testing::StartsWith("Graphics Feature Status"));
 }
 
 // Start with A(B), navigate A to C. By emulating a slow unload handler B, check

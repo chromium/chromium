@@ -14,19 +14,7 @@ from gpu_tests import gpu_integration_test
 
 test_harness_script = r"""
   function VerifyHardwareAccelerated(feature) {
-    feature += ': '
-    var list = document.querySelector('info-view').shadowRoot.querySelector(
-        '.feature-status-list');
-    for (var i=0; i < list.childElementCount; i++) {
-      var span_list = list.children[i].getElementsByTagName('span');
-      var feature_str = span_list[0].textContent;
-      var value_str = span_list[1].textContent;
-      if ((feature_str == feature) &&
-          (value_str == 'Hardware accelerated')) {
-        return true;
-      }
-    }
-    return false;
+    return getGPUInfo('feature-status-list', feature) === 'enabled';
   };
 """
 
@@ -61,7 +49,7 @@ class HardwareAcceleratedFeatureIntegrationTest(
 
   @classmethod
   def GenerateGpuTests(cls, options: ct.ParsedCmdArgs) -> ct.TestGenerator:
-    tests = ('WebGL', 'Canvas')
+    tests = ('webgl', '2d_canvas')
     for feature in tests:
       yield ('HardwareAcceleratedFeature_%s_accelerated' %
              safe_feature_name(feature), 'chrome://gpu', [feature])

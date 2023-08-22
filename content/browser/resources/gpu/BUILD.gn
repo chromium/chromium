@@ -9,11 +9,7 @@ build_webui("build") {
 
   static_files = [ "gpu_internals.html" ]
 
-  web_component_files = [
-    "info_view.ts",
-    "info_view_table.ts",
-    "info_view_table_row.ts",
-  ]
+  web_component_files = [ "info_view.ts" ]
 
   non_web_component_files = [
     "browser_bridge.ts",
