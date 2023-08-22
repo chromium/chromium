@@ -27,7 +27,7 @@ class NssServiceFactory : public ProfileKeyedServiceFactory {
   ~NssServiceFactory() override;
 
   // `BrowserContextKeyedServiceFactory` implementation:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
