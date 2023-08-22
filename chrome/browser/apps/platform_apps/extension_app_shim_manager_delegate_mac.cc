@@ -224,7 +224,8 @@ void ExtensionAppShimManagerDelegate::LaunchApp(
 void ExtensionAppShimManagerDelegate::LaunchShim(
     Profile* profile,
     const web_app::AppId& app_id,
-    bool recreate_shims,
+    web_app::LaunchShimUpdateBehavior update_behavior,
+    web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
     apps::ShimTerminatedCallback terminated_callback) {
   const Extension* extension = MaybeGetAppExtension(profile, app_id);
@@ -232,18 +233,18 @@ void ExtensionAppShimManagerDelegate::LaunchShim(
   // Only force recreation of shims when RemoteViews is in use (that is, for
   // PWAs). Otherwise, shims may be created unexpectedly.
   // https://crbug.com/941160
-  if (recreate_shims && AppUsesRemoteCocoa(profile, app_id)) {
+  if (web_app::RecreateShimsRequested(update_behavior) &&
+      AppUsesRemoteCocoa(profile, app_id)) {
     // Load the resources needed to build the app shim (icons, etc), and then
     // recreate the shim and launch it.
     web_app::GetShortcutInfoForApp(
         extension, profile,
-        base::BindOnce(
-            &web_app::LaunchShim,
-            web_app::LaunchShimUpdateBehavior::RECREATE_UNCONDITIONALLY,
-            std::move(launched_callback), std::move(terminated_callback)));
+        base::BindOnce(&web_app::LaunchShim, update_behavior, launch_mode,
+                       std::move(launched_callback),
+                       std::move(terminated_callback)));
   } else {
     web_app::LaunchShim(
-        web_app::LaunchShimUpdateBehavior::DO_NOT_RECREATE,
+        web_app::LaunchShimUpdateBehavior::kDoNotRecreate, launch_mode,
         std::move(launched_callback), std::move(terminated_callback),
         web_app::ShortcutInfoForExtensionAndProfile(extension, profile));
   }

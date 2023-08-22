@@ -27,6 +27,7 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
@@ -120,7 +121,8 @@ class AppShimManager
     // installed for |profile| when this method is called.
     virtual void LaunchShim(Profile* profile,
                             const web_app::AppId& app_id,
-                            bool recreate_shims,
+                            web_app::LaunchShimUpdateBehavior update_behavior,
+                            web_app::ShimLaunchMode launch_mode,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback) = 0;
 
@@ -189,7 +191,8 @@ class AppShimManager
   // AppShimHost::Client:
   void OnShimLaunchRequested(
       AppShimHost* host,
-      bool recreate_shims,
+      web_app::LaunchShimUpdateBehavior update_behavior,
+      web_app::ShimLaunchMode launch_mode,
       base::OnceCallback<void(base::Process)> launched_callback,
       base::OnceClosure terminated_callback) override;
   void OnShimProcessDisconnected(AppShimHost* host) override;
@@ -255,6 +258,9 @@ class AppShimManager
 
   // Return the profile for |path|, only if it is already loaded.
   virtual Profile* ProfileForPath(const base::FilePath& path);
+
+  // Return a profile to use for a background shim launch, virtual for tests.
+  virtual Profile* ProfileForBackgroundShimLaunch(const web_app::AppId& app_id);
 
   // Load a profile and call |callback| when completed or failed.
   virtual void LoadProfileAsync(const base::FilePath& path,
@@ -406,6 +412,10 @@ class AppShimManager
   // does not exist, create one.
   ProfileState* GetOrCreateProfileState(Profile* profile,
                                         const web_app::AppId& app_id);
+
+  void LaunchShimInBackgroundMode(
+      const web_app::AppId& app_id,
+      base::OnceCallback<void(AppShimHost*)> callback);
 
   // Returns a mapping of profile paths to how many of the files and urls passed
   // in in `params` each profile can handle.

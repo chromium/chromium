@@ -173,7 +173,8 @@ class AppShimHostTest : public testing::Test,
   // AppShimHost::Client:
   void OnShimLaunchRequested(
       AppShimHost* host,
-      bool recreate_shims,
+      web_app::LaunchShimUpdateBehavior update_behavior,
+      web_app::ShimLaunchMode launch_mode,
       apps::ShimLaunchedCallback launched_callback,
       apps::ShimTerminatedCallback terminated_callback) override {}
   void OnShimProcessDisconnected(AppShimHost* host) override {

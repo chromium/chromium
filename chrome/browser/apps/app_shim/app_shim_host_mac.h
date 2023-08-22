@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,7 +43,8 @@ class AppShimHost : public chrome::mojom::AppShimHost {
     // Request that the handler launch the app shim process.
     virtual void OnShimLaunchRequested(
         AppShimHost* host,
-        bool recreate_shims,
+        web_app::LaunchShimUpdateBehavior update_behavior,
+        web_app::ShimLaunchMode launch_mode,
         apps::ShimLaunchedCallback launched_callback,
         apps::ShimTerminatedCallback terminated_callback) = 0;
 
@@ -102,7 +104,8 @@ class AppShimHost : public chrome::mojom::AppShimHost {
 
   // Invoked to request that the shim be launched (if it has not been launched
   // already).
-  void LaunchShim();
+  void LaunchShim(
+      web_app::ShimLaunchMode launch_mode = web_app::ShimLaunchMode::kNormal);
 
   // Invoked when the app shim has launched and connected to the browser.
   virtual void OnBootstrapConnected(
@@ -128,15 +131,19 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   void ChannelError(uint32_t custom_reason, const std::string& description);
 
   // Helper function to launch the app shim process.
-  void LaunchShimInternal(bool recreate_shims);
+  void LaunchShimInternal(web_app::LaunchShimUpdateBehavior update_behavior,
+                          web_app::ShimLaunchMode launch_mode);
 
   // Called when LaunchShim has launched (or failed to launch) a process.
-  void OnShimProcessLaunched(bool recreate_shims_requested,
+  void OnShimProcessLaunched(web_app::LaunchShimUpdateBehavior update_behavior,
+                             web_app::ShimLaunchMode launch_mode,
                              base::Process shim_process);
 
   // Called when a shim process returned via OnShimLaunchCompleted has
   // terminated.
-  void OnShimProcessTerminated(bool recreate_shims_requested);
+  void OnShimProcessTerminated(
+      web_app::LaunchShimUpdateBehavior update_behavior,
+      web_app::ShimLaunchMode launch_mode);
 
   // chrome::mojom::AppShimHost.
   void FocusApp() override;

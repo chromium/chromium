@@ -363,26 +363,23 @@ void WebAppShimManagerDelegate::LaunchApp(
 void WebAppShimManagerDelegate::LaunchShim(
     Profile* profile,
     const AppId& app_id,
-    bool recreate_shims,
+    web_app::LaunchShimUpdateBehavior update_behavior,
+    web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
     apps::ShimTerminatedCallback terminated_callback) {
   DCHECK(AppIsInstalled(profile, app_id));
   if (UseFallback(profile, app_id)) {
-    fallback_delegate_->LaunchShim(profile, app_id, recreate_shims,
-                                   std::move(launched_callback),
+    fallback_delegate_->LaunchShim(profile, app_id, update_behavior,
+                                   launch_mode, std::move(launched_callback),
                                    std::move(terminated_callback));
     return;
   }
   WebAppProvider::GetForWebApps(profile)
       ->os_integration_manager()
       .GetShortcutInfoForApp(
-          app_id,
-          base::BindOnce(
-              &web_app::LaunchShim,
-              recreate_shims
-                  ? LaunchShimUpdateBehavior::RECREATE_UNCONDITIONALLY
-                  : LaunchShimUpdateBehavior::DO_NOT_RECREATE,
-              std::move(launched_callback), std::move(terminated_callback)));
+          app_id, base::BindOnce(&web_app::LaunchShim, update_behavior,
+                                 launch_mode, std::move(launched_callback),
+                                 std::move(terminated_callback)));
 }
 
 bool WebAppShimManagerDelegate::HasNonBookmarkAppWindowsOpen() {

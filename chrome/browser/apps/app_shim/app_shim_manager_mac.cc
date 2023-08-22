@@ -378,6 +378,12 @@ bool AppShimManager::AppState::ShouldDeleteAppState() const {
   // https://crbug.com/1139254,1132223 for closing when profiles close.
   if (IsMultiProfile() &&
       base::FeatureList::IsEnabled(features::kAppShimNewCloseBehavior)) {
+    // This might get called late enough during shutdown for ProfileManager to
+    // no longer exist. GetInstalledProfilesForApp requires ProfileManager to
+    // still exist, so if we're shutting down, just return true.
+    if (g_browser_process->IsShuttingDown()) {
+      return true;
+    }
     return profiles.empty() &&
            AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id).empty();
   }
@@ -469,25 +475,74 @@ AppShimManager::LaunchNotificationProvider(const web_app::AppId& app_id) {
       base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution));
 
   mojo::Remote<mac_notifications::mojom::MacNotificationProvider> remote;
-  AppShimHost* shim = nullptr;
+  auto bind_provider = base::BindOnce(
+      [](mojo::PendingReceiver<
+             mac_notifications::mojom::MacNotificationProvider> receiver,
+         base::WeakPtr<AppShimManager> manager, AppShimHost* host) {
+        if (!host) {
+          LOG(ERROR) << "Failed to launch app shim for notifications";
+          if (manager) {
+            manager->dummy_notification_provider_receivers_.Add(
+                manager.get(), std::move(receiver));
+          }
+          return;
+        }
+        host->GetAppShim()->BindNotificationProvider(std::move(receiver));
+      },
+      remote.BindNewPipeAndPassReceiver(), weak_factory_.GetWeakPtr());
 
   auto found_app = apps_.find(app_id);
-  if (found_app != apps_.end()) {
-    AppState* app_state = found_app->second.get();
-    CHECK(app_state->IsMultiProfile());
-    shim = app_state->multi_profile_host.get();
+  if (found_app == apps_.end()) {
+    // To check or display a notification associated with a specific app, calls
+    // to the notifications API need to happen from within that app. If we don't
+    // already have a running app shim, launch a new one, but launch it in
+    // "background" mode, so to the user it isn't noticeable that this is
+    // happening.
+    LaunchShimInBackgroundMode(app_id, std::move(bind_provider));
+    return remote;
   }
 
-  if (shim) {
-    shim->GetAppShim()->BindNotificationProvider(
-        remote.BindNewPipeAndPassReceiver());
-  } else {
-    // TODO(mek): Support launching a new app shim.
-    dummy_notification_provider_receivers_.Add(
-        this, remote.BindNewPipeAndPassReceiver());
-  }
-
+  AppState* app_state = found_app->second.get();
+  CHECK(app_state->IsMultiProfile());
+  AppShimHost* shim = app_state->multi_profile_host.get();
+  std::move(bind_provider).Run(shim);
   return remote;
+}
+
+Profile* AppShimManager::ProfileForBackgroundShimLaunch(
+    const web_app::AppId& app_id) {
+  if (profile_manager_) {
+    for (Profile* p : profile_manager_->GetLoadedProfiles()) {
+      if (!p->IsRegularProfile()) {
+        continue;
+      }
+      if (delegate_->AppIsInstalled(p, app_id)) {
+        return p;
+      }
+    }
+  }
+  return nullptr;
+}
+
+void AppShimManager::LaunchShimInBackgroundMode(
+    const web_app::AppId& app_id,
+    base::OnceCallback<void(AppShimHost*)> callback) {
+  // A shim can only be launched through an active profile, so find a profile
+  // through which to do the launch. This method should only be called for
+  // multi-profile apps, for which an arbitrary profile is good enough.
+  Profile* profile = ProfileForBackgroundShimLaunch(app_id);
+
+  if (!profile) {
+    LOG(ERROR) << "Failed to find loaded profile with " << app_id
+               << " installed";
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  CHECK(delegate_->AppIsMultiProfile(profile, app_id));
+  auto* profile_state = GetOrCreateProfileState(profile, app_id);
+  std::move(callback).Run(profile_state->GetHost());
+  profile_state->GetHost()->LaunchShim(web_app::ShimLaunchMode::kBackground);
 }
 
 void AppShimManager::BindNotificationService(
@@ -552,7 +607,8 @@ bool AppShimManager::BrowserUsesRemoteCocoa(Browser* browser) {
 
 void AppShimManager::OnShimLaunchRequested(
     AppShimHost* host,
-    bool recreate_shims,
+    web_app::LaunchShimUpdateBehavior update_behavior,
+    web_app::ShimLaunchMode launch_mode,
     apps::ShimLaunchedCallback launched_callback,
     apps::ShimTerminatedCallback terminated_callback) {
   // A shim can only be launched through an active profile, so find a profile
@@ -571,19 +627,20 @@ void AppShimManager::OnShimLaunchRequested(
     }
   }
 
-  // If `recreate_shims` is true, it is possible that the app got uninstalled
-  // while an initial launch attempt took place (and failed). So check first
-  // if the app is still installed.
+  // If `update_behavior` was set to possible recreate shims, it can happen that
+  // the app got uninstalled while an initial launch attempt took place (and
+  // failed). So check first if the app is still installed.
   // TODO(mek): Rather than this workaround, we should make sure to destroy
   // AppShimHost and terminate app shims when an app is uninstalled.
-  if (recreate_shims && !delegate_->AppIsInstalled(profile, host->GetAppId())) {
+  if (web_app::RecreateShimsRequested(update_behavior) &&
+      !delegate_->AppIsInstalled(profile, host->GetAppId())) {
     LOG(ERROR)
         << "Attempting to launch shim for an app that is no longer installed.";
     std::move(terminated_callback).Run();
     return;
   }
 
-  delegate_->LaunchShim(profile, host->GetAppId(), recreate_shims,
+  delegate_->LaunchShim(profile, host->GetAppId(), update_behavior, launch_mode,
                         std::move(launched_callback),
                         std::move(terminated_callback));
 }
@@ -1375,8 +1432,9 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
   // happens.
   std::string inconsistent_app_ids;
   for (const auto& [id, state] : apps_) {
-    if (state->ShouldDeleteAppState())
+    if (state->ShouldDeleteAppState()) {
       inconsistent_app_ids += id + " ";
+    }
   }
   if (!inconsistent_app_ids.empty())
     DumpError(inconsistent_app_ids);

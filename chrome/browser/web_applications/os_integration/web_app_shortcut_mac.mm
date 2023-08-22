@@ -524,6 +524,7 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
 void LaunchTheFirstShimThatWorksOnFileThread(
     std::vector<base::FilePath> shim_paths,
     bool launched_after_rebuild,
+    ShimLaunchMode launch_mode,
     const std::string& bundle_id,
     ShimLaunchedCallback launched_callback,
     ShimTerminatedCallback terminated_callback) {
@@ -552,11 +553,14 @@ void LaunchTheFirstShimThatWorksOnFileThread(
   }
 
   LaunchApplicationWithRetry(
-      shim_path, command_line, /*url_specs=*/{}, {.activate = false},
+      shim_path, command_line, /*url_specs=*/{},
+      {.activate = false,
+       .hidden_in_background = launch_mode == ShimLaunchMode::kBackground},
       base::BindOnce(
           [](base::FilePath shim_path,
              std::vector<base::FilePath> remaining_shim_paths,
-             bool launched_after_rebuild, const std::string& bundle_id,
+             bool launched_after_rebuild, ShimLaunchMode launch_mode,
+             const std::string& bundle_id,
              ShimLaunchedCallback launched_callback,
              ShimTerminatedCallback terminated_callback,
              NSRunningApplication* app, NSError* error) {
@@ -572,14 +576,16 @@ void LaunchTheFirstShimThatWorksOnFileThread(
                 FROM_HERE,
                 base::BindOnce(&LaunchTheFirstShimThatWorksOnFileThread,
                                remaining_shim_paths, launched_after_rebuild,
-                               bundle_id, std::move(launched_callback),
+                               launch_mode, bundle_id,
+                               std::move(launched_callback),
                                std::move(terminated_callback)));
           },
-          shim_path, shim_paths, launched_after_rebuild, bundle_id,
+          shim_path, shim_paths, launched_after_rebuild, launch_mode, bundle_id,
           std::move(launched_callback), std::move(terminated_callback)));
 }
 
 void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
+                            ShimLaunchMode launch_mode,
                             ShimLaunchedCallback launched_callback,
                             ShimTerminatedCallback terminated_callback,
                             const ShortcutInfo& shortcut_info) {
@@ -595,17 +601,17 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
   std::vector<base::FilePath> shim_paths;
   bool shortcuts_updated = true;
   switch (update_behavior) {
-    case LaunchShimUpdateBehavior::DO_NOT_RECREATE:
+    case LaunchShimUpdateBehavior::kDoNotRecreate:
       // Attempt to locate the shim's path using LaunchServices.
       shim_paths = shortcut_creator.GetAppBundlesById();
       break;
-    case LaunchShimUpdateBehavior::RECREATE_IF_INSTALLED:
+    case LaunchShimUpdateBehavior::kRecreateIfInstalled:
       // Only attempt to launch shims that were updated.
       launched_after_rebuild = true;
       shortcuts_updated = shortcut_creator.UpdateShortcuts(
           /*create_if_needed=*/false, &shim_paths);
       break;
-    case LaunchShimUpdateBehavior::RECREATE_UNCONDITIONALLY:
+    case LaunchShimUpdateBehavior::kRecreateUnconditionally:
       // Likewise, only attempt to launch shims that were updated.
       launched_after_rebuild = true;
       shortcuts_updated = shortcut_creator.UpdateShortcuts(
@@ -615,8 +621,9 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
   LOG_IF(ERROR, !shortcuts_updated) << "Could not write shortcut for app shim.";
 
   LaunchTheFirstShimThatWorksOnFileThread(
-      shim_paths, launched_after_rebuild, shortcut_creator.GetAppBundleId(),
-      std::move(launched_callback), std::move(terminated_callback));
+      shim_paths, launched_after_rebuild, launch_mode,
+      shortcut_creator.GetAppBundleId(), std::move(launched_callback),
+      std::move(terminated_callback));
 }
 
 base::FilePath GetLocalizableAppShortcutsSubdirName() {
@@ -1820,6 +1827,7 @@ void WebAppShortcutCreator::RevealAppShimInFinder(
 }
 
 void LaunchShim(LaunchShimUpdateBehavior update_behavior,
+                ShimLaunchMode launch_mode,
                 ShimLaunchedCallback launched_callback,
                 ShimTerminatedCallback terminated_callback,
                 std::unique_ptr<ShortcutInfo> shortcut_info) {
@@ -1831,7 +1839,7 @@ void LaunchShim(LaunchShimUpdateBehavior update_behavior,
   }
 
   internals::PostShortcutIOTask(
-      base::BindOnce(&LaunchShimOnFileThread, update_behavior,
+      base::BindOnce(&LaunchShimOnFileThread, update_behavior, launch_mode,
                      std::move(launched_callback),
                      std::move(terminated_callback)),
       std::move(shortcut_info));

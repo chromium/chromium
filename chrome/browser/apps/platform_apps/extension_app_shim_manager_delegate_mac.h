@@ -36,7 +36,8 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
       base::OnceClosure launch_finished_callback) override;
   void LaunchShim(Profile* profile,
                   const web_app::AppId& app_id,
-                  bool recreate_shims,
+                  web_app::LaunchShimUpdateBehavior update_behavior,
+                  web_app::ShimLaunchMode launch_mode,
                   ShimLaunchedCallback launched_callback,
                   ShimTerminatedCallback terminated_callback) override;
   bool HasNonBookmarkAppWindowsOpen() override;
