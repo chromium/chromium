@@ -45,9 +45,11 @@ bool MediaHistoryKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* MediaHistoryKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+  MediaHistoryKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new MediaHistoryKeyedService(Profile::FromBrowserContext(context));
+  return std::make_unique<MediaHistoryKeyedService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace media_history
