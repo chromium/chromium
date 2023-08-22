@@ -69,6 +69,53 @@ void NearbyPresenceCredentialStorage::Initialize(
       weak_ptr_factory_.GetWeakPtr(), std::move(on_fully_initialized)));
 }
 
+void NearbyPresenceCredentialStorage::SaveCredentials(
+    std::vector<mojom::LocalCredentialPtr> local_credentials,
+    SaveCredentialsCallback on_save_credential_callback) {
+  std::vector<::nearby::internal::LocalCredential> proto_local_credentials;
+  for (const auto& local_credential : local_credentials) {
+    proto_local_credentials.push_back(
+        proto::LocalCredentialFromMojom(local_credential.get()));
+  }
+
+  auto credential_pairs_to_save = std::make_unique<std::vector<
+      std::pair<std::string, ::nearby::internal::LocalCredential>>>();
+  for (const auto& local_credential : proto_local_credentials) {
+    credential_pairs_to_save->emplace_back(
+        std::make_pair(local_credential.secret_id(), local_credential));
+  }
+
+  // |delete_key_filter| is always set to true, since |entries_to_save| are not
+  // deleted if they match |delete_key_filter|. This avoids duplicating new keys
+  // in memory to be saved.
+  const leveldb_proto::KeyFilter clearAllFilter =
+      base::BindRepeating([](const std::string& key) { return true; });
+
+  private_db_->UpdateEntriesWithRemoveFilter(
+      std::move(credential_pairs_to_save), clearAllFilter,
+      base::BindOnce(
+          &NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved,
+          weak_ptr_factory_.GetWeakPtr(),
+          std::move(on_save_credential_callback)));
+}
+
+void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
+    SaveCredentialsCallback on_save_credential_callback,
+    bool success) {
+  mojom::StatusCode save_status;
+  if (success) {
+    save_status = mojom::StatusCode::kOk;
+  } else {
+    // TODO(b/287334363): Emit a failure metric.
+    LOG(ERROR) << __func__ << ": failed to save private credentials";
+    save_status = mojom::StatusCode::kFailure;
+  }
+
+  // TODO(b/287334195): Attempt to save public credentials if private
+  // credentials were successfully saved.
+  std::move(on_save_credential_callback).Run(save_status);
+}
+
 void NearbyPresenceCredentialStorage::OnPrivateDatabaseInitialized(
     base::OnceCallback<void(bool)> on_fully_initialized,
     leveldb_proto::Enums::InitStatus private_db_initialization_status) {

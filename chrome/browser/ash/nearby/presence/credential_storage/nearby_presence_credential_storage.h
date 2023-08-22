@@ -7,6 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/nearby/presence/conversions/proto_conversions.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
@@ -40,6 +42,10 @@ class NearbyPresenceCredentialStorage
   // credentials.
   void Initialize(base::OnceCallback<void(bool)> on_initialized);
 
+  // NearbyPresenceCredentialStorage:
+  void SaveCredentials(std::vector<mojom::LocalCredentialPtr> local_credentials,
+                       SaveCredentialsCallback callback) override;
+
  protected:
   NearbyPresenceCredentialStorage(
       std::unique_ptr<leveldb_proto::ProtoDatabase<
@@ -49,11 +55,15 @@ class NearbyPresenceCredentialStorage
           public_db);
 
  private:
+  void OnPrivateCredentialsSaved(
+      SaveCredentialsCallback on_save_credential_callback,
+      bool success);
+
   void OnPrivateDatabaseInitialized(
-      base::OnceCallback<void(bool)> on_initialized,
+      base::OnceCallback<void(bool)> on_fully_initialized,
       leveldb_proto::Enums::InitStatus status);
   void OnPublicDatabaseInitialized(
-      base::OnceCallback<void(bool)> on_initialized,
+      base::OnceCallback<void(bool)> on_fully_initialized,
       leveldb_proto::Enums::InitStatus status);
 
   std::unique_ptr<

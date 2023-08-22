@@ -3596,6 +3596,7 @@ source_set("ash") {
     "//chromeos/ash/components/mojo_service_manager/mojom",
     "//chromeos/ash/components/multidevice",
     "//chromeos/ash/components/nearby/presence",
+    "//chromeos/ash/components/nearby/presence/conversions",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/impl",
