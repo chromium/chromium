@@ -27,7 +27,8 @@ class CORE_EXPORT NGFragmentItemsBuilder {
  public:
   explicit NGFragmentItemsBuilder(WritingDirectionMode writing_direction);
   NGFragmentItemsBuilder(const NGInlineNode& node,
-                         WritingDirectionMode writing_direction);
+                         WritingDirectionMode writing_direction,
+                         bool is_block_fragmented);
   ~NGFragmentItemsBuilder();
 
   WritingDirectionMode GetWritingDirection() const {
