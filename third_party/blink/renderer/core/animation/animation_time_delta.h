@@ -53,6 +53,7 @@ class CORE_EXPORT AnimationTimeDelta {
 
   double InSecondsF() const { return delta_; }
   double InMillisecondsF() const { return delta_ * 1000; }
+  double InMicrosecondsF() const { return delta_ * 1000000; }
 
   bool is_max() const {
     return delta_ == std::numeric_limits<double>::infinity();

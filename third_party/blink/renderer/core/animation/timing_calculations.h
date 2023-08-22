@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_TIMING_CALCULATIONS_H_
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -45,6 +46,20 @@ inline bool EndsOnIterationBoundary(double iteration_count,
                                     double iteration_start) {
   DCHECK(std::isfinite(iteration_count));
   return !fmod(iteration_count + iteration_start, 1);
+}
+
+void RecordBoundaryMisalignment(AnimationTimeDelta misalignment) {
+  // Animations require 1 microsecond precision. For a scroll-based animation,
+  // percentages are internally converted to time. The animation duration in
+  // microseconds is 16 * (range in pixels).
+  // Refer to cc/animations/scroll_timeline.h for details.
+  //
+  // It is not particularly meaningful to report the misalignment as a time
+  // since there is no dependency on having a high resolution timer. Instead,
+  // we convert back to 16ths of a pixel by scaling accordingly.
+  int sample = std::round<int>(misalignment.InMicrosecondsF());
+  UMA_HISTOGRAM_EXACT_LINEAR("Blink.Animation.SDA.BoundaryMisalignment", sample,
+                             64);
 }
 
 }  // namespace
@@ -130,7 +145,8 @@ static inline Timing::Phase CalculatePhase(
 
   if (local_time.value() < before_active_boundary_time) {
     if (normalized.is_start_boundary_aligned) {
-      base::debug::DumpWithoutCrashing();
+      RecordBoundaryMisalignment(before_active_boundary_time -
+                                 local_time.value());
     }
     return Timing::kPhaseBefore;
   }
@@ -150,7 +166,8 @@ static inline Timing::Phase CalculatePhase(
   }
   if (local_time.value() > active_after_boundary_time) {
     if (normalized.is_end_boundary_aligned) {
-      base::debug::DumpWithoutCrashing();
+      RecordBoundaryMisalignment(local_time.value() -
+                                 active_after_boundary_time);
     }
     return Timing::kPhaseAfter;
   }

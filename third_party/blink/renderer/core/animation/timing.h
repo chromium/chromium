@@ -226,10 +226,10 @@ struct CORE_EXPORT Timing {
     AnimationTimeDelta active_duration;
     // Calculated as (start_delay + active_duration + end_delay)
     AnimationTimeDelta end_time;
-    // Indicates if the active-after phase boundary aligns with the maximum
+    // Indicates if the before-active phase boundary aligns with the minimum
     // scroll position.
     bool is_start_boundary_aligned = false;
-    // Indicates if the before-active phase boundary aligns with the minimum
+    // Indicates if the active-after phase boundary aligns with the maximum
     // scroll position.
     bool is_end_boundary_aligned = false;
   };

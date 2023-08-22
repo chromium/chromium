@@ -28,8 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "third_party/blink/renderer/core/animation/animation_effect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -428,6 +429,79 @@ TEST(AnimationTimingCalculationsTest, TransformedProgress) {
       StepsTimingFunction::Create(4, StepsTimingFunction::StepPosition::START);
   EXPECT_EQ(0, CalculateTransformedProgress(Timing::kPhaseAfter, 1e-16, false,
                                             step_start_timing_function));
+}
+
+TEST(AnimationTimingCalculationsTest, AlignmentHistogram) {
+  Timing::NormalizedTiming normalized_timing;
+  normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1);
+  normalized_timing.end_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  absl::optional<AnimationTimeDelta> local_time =
+      ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1);
+
+  const std::string histogram_name = "Blink.Animation.SDA.BoundaryMisalignment";
+  base::HistogramTester histogram_tester;
+
+  EXPECT_EQ(Timing::kPhaseAfter,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
+
+  normalized_timing.is_start_boundary_aligned = true;
+  EXPECT_EQ(Timing::kPhaseAfter,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
+
+  normalized_timing.is_end_boundary_aligned = true;
+  EXPECT_EQ(Timing::kPhaseActive,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
+
+  local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(1.003);
+  EXPECT_EQ(Timing::kPhaseAfter,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 3, 1);
+
+  // Repeat and ensure the counter increments.
+  EXPECT_EQ(Timing::kPhaseAfter,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 3, 2);
+
+  normalized_timing.is_end_boundary_aligned = false;
+  EXPECT_EQ(Timing::kPhaseAfter,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kForwards));
+  // Value remains unchanged.
+  histogram_tester.ExpectBucketCount(histogram_name, 3, 2);
+
+  local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(0);
+  EXPECT_EQ(Timing::kPhaseActive,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kBackwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
+
+  normalized_timing.is_start_boundary_aligned = false;
+  EXPECT_EQ(Timing::kPhaseBefore,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kBackwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 0, 0);
+
+  normalized_timing.is_start_boundary_aligned = true;
+  local_time = ANIMATION_TIME_DELTA_FROM_MILLISECONDS(-0.005);
+  EXPECT_EQ(Timing::kPhaseBefore,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kBackwards));
+  histogram_tester.ExpectBucketCount(histogram_name, 5, 1);
+
+  normalized_timing.is_start_boundary_aligned = false;
+  EXPECT_EQ(Timing::kPhaseBefore,
+            CalculatePhase(normalized_timing, local_time,
+                           Timing::AnimationDirection::kBackwards));
+  // Value remains unchanged.
+  histogram_tester.ExpectBucketCount(histogram_name, 5, 1);
 }
 
 }  // namespace blink

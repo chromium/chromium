@@ -196,6 +196,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Animation.SDA.BoundaryMisalignment"
+    units="16ths of a pixel" expires_after="2024-02-01">
+  <owner>kevers@chromium.org</owner>
+  <owner>animations-dev@chromium.org</owner>
+  <summary>
+    Unexpected misalignment of a phase boundary when aligned to a scroll-
+    boundary measured in 16ths of a pixel. Recorded each time phase calculation
+    determines the animation is in the before or after phase when a scroll-
+    driven animation has determined that the before-active or active-after
+    boundary is aligned to the bounds of the scroll range.
+  </summary>
+</histogram>
+
 <histogram name="Blink.AutomaticLazyFrameLoad.Reason"
     enum="AutomaticLazyFrameLoadReason" expires_after="2023-06-25">
   <owner>sisidovski@chromium.org</owner>
