@@ -36,10 +36,11 @@ GuestOsSessionTrackerFactory::GuestOsSessionTrackerFactory()
 
 GuestOsSessionTrackerFactory::~GuestOsSessionTrackerFactory() = default;
 
-KeyedService* GuestOsSessionTrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GuestOsSessionTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new GuestOsSessionTracker(
+  return std::make_unique<GuestOsSessionTracker>(
       ash::ProfileHelper::GetUserIdHashFromProfile(profile));
 }
 
