@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/android/modules/dev_ui/provider/dev_ui_module_provider.h"
 #include "chrome/browser/dev_ui/android/dev_ui_loader_error_page.h"
 #include "chrome/common/webui_url_constants.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
+#include "device/vr/buildflags/buildflags.h"
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
 
@@ -79,6 +81,9 @@ bool IsWebUiHostInDevUiDfm(const std::string& host) {
          host == content::kChromeUIServiceWorkerInternalsHost ||
          host == content::kChromeUIUkmHost ||
          host == content::kChromeUIWebRTCInternalsHost ||
+#if BUILDFLAG(ENABLE_VR)
+         host == content::kChromeUIWebXrInternalsHost ||
+#endif
          host == history_clusters_internals::
                      kChromeUIHistoryClustersInternalsHost ||
          host == optimization_guide_internals::
