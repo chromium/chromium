@@ -29,7 +29,7 @@ class OsSettingsManagerFactory : public ProfileKeyedServiceFactory {
   OsSettingsManagerFactory& operator=(const OsSettingsManagerFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

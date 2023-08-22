@@ -57,11 +57,12 @@ OsSettingsManagerFactory::OsSettingsManagerFactory()
 
 OsSettingsManagerFactory::~OsSettingsManagerFactory() = default;
 
-KeyedService* OsSettingsManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OsSettingsManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new OsSettingsManager(
+  return std::make_unique<OsSettingsManager>(
       profile,
       local_search_service::LocalSearchServiceProxyFactory::
           GetForBrowserContext(context),
