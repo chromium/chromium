@@ -4,8 +4,6 @@
 //
 #include "services/network/network_service_proxy_allow_list.h"
 
-#include <memory>
-
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
@@ -15,6 +13,30 @@
 #include "services/network/public/cpp/network_switches.h"
 
 namespace network {
+namespace {
+
+void AddBypassRulesForDomain(net::ProxyBypassRules& bypass_rules,
+                             const std::string& domain) {
+  CHECK(bypass_rules.AddRuleFromString(domain));
+  if (!(domain.starts_with(".") || domain.starts_with("*"))) {
+    // Also bypass proxy for any subdomains.
+    CHECK(bypass_rules.AddRuleFromString("." + domain));
+  }
+}
+
+net::ProxyBypassRules BuildBypassRules(
+    const masked_domain_list::ResourceOwner& resource_owner) {
+  net::ProxyBypassRules bypass_rules;
+  for (auto resource : resource_owner.owned_resources()) {
+    AddBypassRulesForDomain(bypass_rules, resource.domain());
+  }
+  for (auto property : resource_owner.owned_properties()) {
+    AddBypassRulesForDomain(bypass_rules, property);
+  }
+  return bypass_rules;
+}
+
+}  // namespace
 
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
   custom_proxy_config_ = network::mojom::CustomProxyConfig::New();
@@ -161,14 +183,8 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
   // domains that will allow proxy bypass.
   allow_list_with_bypass_map_.clear();
   for (auto owner : mdl.resource_owners()) {
-    net::ProxyBypassRules bypass_rules;
+    net::ProxyBypassRules bypass_rules = BuildBypassRules(owner);
     for (auto resource : owner.owned_resources()) {
-      for (auto property : owner.owned_properties()) {
-        CHECK(bypass_rules.AddRuleFromString(property));
-        // Also bypass proxy for any subdomains.
-        CHECK(bypass_rules.AddRuleFromString("." + property));
-      }
-
       AddDomainRules(resource.domain(), bypass_rules);
     }
   }

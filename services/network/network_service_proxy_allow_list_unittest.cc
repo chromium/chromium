@@ -185,7 +185,11 @@ const std::vector<MatchTest> kMatchTests = {
     // subdomains) in the MDL should be not be proxied when the top-level site
     // is a property with the same owner as the resource.
     MatchTest{"3PRsrcInPropSameOwner", "acme-ra.com", "acme-pa.com", false},
-    MatchTest{"3PRsrcInRsrcSameOwner", "acme-ra.com", "acme-rb.co.uk", true},
+    MatchTest{"3PRsrcInRsrcSameOwner", "acme-ra.com", "acme-rb.co.uk", false},
+    MatchTest{"3PRsrcInSubRsrcSameOwner", "acme-ra.com", "sub.acme-rb.co.uk",
+              false},
+    MatchTest{"3PSubRsrcInSubRsrcSameOwner", "sub.acme-ra.com",
+              "sub.acme-rb.co.uk", false},
     MatchTest{"3PSubSameOwner", "sub.acme-ra.com", "acme-pa.com", false},
     MatchTest{"3PSubSubSameOwner", "sub.sub.acme-ra.com", "acme-pa.com", false},
 };
