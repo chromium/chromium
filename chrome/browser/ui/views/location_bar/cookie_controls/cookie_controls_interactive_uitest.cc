@@ -49,6 +49,12 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   CookieControlsInteractiveUiTest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+
+    // Overriding `base::Time::Now()` to obtain a consistent X days until
+    // exception expiration calculation regardless of the time the test runs.
+    base::subtle::ScopedTimeClockOverrides time_override(
+        &CookieControlsInteractiveUiTest::GetReferenceTime,
+        /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   }
 
   ~CookieControlsInteractiveUiTest() override = default;
@@ -194,11 +200,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, BubbleOpens) {
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
-  // Overriding `base::Time::Now()` to obtain a consistent X days until
-  // exception expiration calculation regardless of the time the test runs.
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &CookieControlsInteractiveUiTest::GetReferenceTime,
-      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   // Open the bubble while 3PC are blocked, re-enable them for the site, and
   // confirm the appropriate exception is created.
   BlockThirdPartyCookies();
@@ -215,11 +216,6 @@ IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, CreateException) {
 }
 
 IN_PROC_BROWSER_TEST_F(CookieControlsInteractiveUiTest, RemoveException) {
-  // Overriding `base::Time::Now()` to obtain a consistent X days until
-  // exception expiration calculation regardless of the time the test runs.
-  base::subtle::ScopedTimeClockOverrides time_override(
-      &CookieControlsInteractiveUiTest::GetReferenceTime,
-      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   // Open the bubble while 3PC are blocked, but the page already has an
   // exception. Disable 3PC for the page, and confirm the exception is removed.
   BlockCookiesAndSetHighConfidenceForSite();
