@@ -83,9 +83,11 @@ UkmBackgroundRecorderFactory::UkmBackgroundRecorderFactory()
 
 UkmBackgroundRecorderFactory::~UkmBackgroundRecorderFactory() = default;
 
-KeyedService* UkmBackgroundRecorderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UkmBackgroundRecorderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new UkmBackgroundRecorderService(Profile::FromBrowserContext(context));
+  return std::make_unique<UkmBackgroundRecorderService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace ukm
