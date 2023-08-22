@@ -121,10 +121,10 @@ void H265Decoder::Reset() {
   state_ = kAfterReset;
 }
 
-H265Decoder::DecodeResult H265Decoder::Decode() {
+H265Decoder::DecodeResult H265Decoder::DecodeNALUs() {
   DCHECK(state_ != kError) << "Decoder in error state";
 
-  while (true) {
+  while (output_queue.empty()) {
     H265Parser::Result par_res;
 
     if (!curr_nalu_) {
@@ -293,6 +293,8 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
              << static_cast<int>(curr_nalu_->nal_unit_type);
     curr_nalu_.reset();
   }
+
+  return kOk;
 }
 
 bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
@@ -876,7 +878,7 @@ void H265Decoder::Flush() {
 
 VideoDecoder::Result H265Decoder::DecodeNextFrame() {
   while (!is_stream_over_ && output_queue.empty())
-    Decode();
+    DecodeNALUs();
 
   if (is_stream_over_)
     OutputAllRemainingPics();
