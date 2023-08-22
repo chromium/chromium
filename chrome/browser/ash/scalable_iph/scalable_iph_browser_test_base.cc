@@ -154,35 +154,55 @@ void ScalableIphBrowserTestBase::InitializeScopedFeatureList() {
 }
 
 void ScalableIphBrowserTestBase::AppendVersionNumber(
-    base::FieldTrialParams& params) {
-  params[FullyQualified(kScalableIphTest,
+    base::FieldTrialParams& params,
+    const base::Feature& feature,
+    const std::string& version_number) {
+  params[FullyQualified(feature,
                         scalable_iph::kCustomParamsVersionNumberParamName)] =
-      base::NumberToString(scalable_iph::kCurrentVersionNumber);
+      version_number;
+}
+
+void ScalableIphBrowserTestBase::AppendVersionNumber(
+    base::FieldTrialParams& params,
+    const base::Feature& feature) {
+  AppendVersionNumber(
+      params, feature,
+      base::NumberToString(scalable_iph::kCurrentVersionNumber));
+}
+
+void ScalableIphBrowserTestBase::AppendVersionNumber(
+    base::FieldTrialParams& params) {
+  AppendVersionNumber(params, kScalableIphTest);
+}
+
+void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
+    base::FieldTrialParams& params,
+    const base::Feature& feature) {
+  params[FullyQualified(feature, scalable_iph::kCustomUiTypeParamName)] =
+      scalable_iph::kCustomUiTypeValueNotification;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomNotificationIdParamName)] =
+      kTestNotificationId;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomNotificationTitleParamName)] =
+      kTestNotificationTitle;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomNotificationBodyTextParamName)] =
+      kTestNotificationBodyText;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomNotificationButtonTextParamName)] =
+      kTestNotificationButtonText;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomButtonActionTypeParamName)] =
+      kTestButtonActionTypeOpenChrome;
+  params[FullyQualified(feature,
+                        scalable_iph::kCustomButtonActionEventParamName)] =
+      kTestActionEventName;
 }
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsNotification(
     base::FieldTrialParams& params) {
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomUiTypeParamName)] =
-      scalable_iph::kCustomUiTypeValueNotification;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomNotificationIdParamName)] =
-      kTestNotificationId;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomNotificationTitleParamName)] =
-      kTestNotificationTitle;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomNotificationBodyTextParamName)] =
-      kTestNotificationBodyText;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomNotificationButtonTextParamName)] =
-      kTestNotificationButtonText;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomButtonActionTypeParamName)] =
-      kTestButtonActionTypeOpenChrome;
-  params[FullyQualified(kScalableIphTest,
-                        scalable_iph::kCustomButtonActionEventParamName)] =
-      kTestActionEventName;
+  AppendFakeUiParamsNotification(params, kScalableIphTest);
 }
 
 void ScalableIphBrowserTestBase::AppendFakeUiParamsBubble(
@@ -224,10 +244,13 @@ bool ScalableIphBrowserTestBase::IsMockDelegateCreatedFor(Profile* profile) {
   return mock_delegate_created_.contains(profile->GetProfileUserName());
 }
 
-void ScalableIphBrowserTestBase::EnableTestIphFeature() {
+void ScalableIphBrowserTestBase::EnableTestIphFeatures(
+    const std::vector<const base::Feature*> test_iph_features) {
+  const base::flat_set<const base::Feature*> test_iph_features_set(
+      test_iph_features.begin(), test_iph_features.end());
   ON_CALL(*mock_tracker(), ShouldTriggerHelpUI)
-      .WillByDefault([](const base::Feature& feature) {
-        return &feature == &kScalableIphTest;
+      .WillByDefault([test_iph_features_set](const base::Feature& feature) {
+        return test_iph_features_set.contains(&feature);
       });
 
   // Do not access profile via `browser()` as this method can be called before a
@@ -240,7 +263,11 @@ void ScalableIphBrowserTestBase::EnableTestIphFeature() {
   // called twice.
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(profile);
-  scalable_iph->OverrideFeatureListForTesting({&kScalableIphTest});
+  scalable_iph->OverrideFeatureListForTesting(test_iph_features);
+}
+
+void ScalableIphBrowserTestBase::EnableTestIphFeature() {
+  EnableTestIphFeatures({&kScalableIphTest});
 }
 
 const base::Feature& ScalableIphBrowserTestBase::TestIphFeature() const {

@@ -50,8 +50,8 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
-BASE_FEATURE(kScalableIphTest,
-             "ScalableIphTest",
+BASE_FEATURE(kScalableIphTestTwo,
+             "ScalableIphTestTwo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGoogleChrome() {
@@ -137,9 +137,9 @@ class ScalableIphBrowserTestVersionNumberIncorrect
     : public ScalableIphBrowserTest {
  protected:
   void AppendVersionNumber(base::FieldTrialParams& params) override {
-    params[FullyQualified(TestIphFeature(),
-                          scalable_iph::kCustomParamsVersionNumberParamName)] =
-        base::NumberToString(scalable_iph::kCurrentVersionNumber - 1);
+    ScalableIphBrowserTest::AppendVersionNumber(
+        params, TestIphFeature(),
+        base::NumberToString(scalable_iph::kCurrentVersionNumber - 1));
   }
 };
 
@@ -147,9 +147,31 @@ class ScalableIphBrowserTestVersionNumberInvalid
     : public ScalableIphBrowserTest {
  protected:
   void AppendVersionNumber(base::FieldTrialParams& params) override {
-    params[FullyQualified(TestIphFeature(),
-                          scalable_iph::kCustomParamsVersionNumberParamName)] =
-        "Invalid";
+    ScalableIphBrowserTest::AppendVersionNumber(params, TestIphFeature(),
+                                                "Invalid");
+  }
+};
+
+class ScalableIphBrowserTestMultipleIphs : public ScalableIphBrowserTest {
+ protected:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params_one;
+    AppendVersionNumber(params_one, TestIphFeature());
+    AppendFakeUiParamsNotification(params_one, TestIphFeature());
+    base::test::FeatureRefAndParams test_config_one(TestIphFeature(),
+                                                    params_one);
+
+    base::FieldTrialParams params_two;
+    AppendVersionNumber(params_two, kScalableIphTestTwo);
+    AppendFakeUiParamsNotification(params_two, kScalableIphTestTwo);
+    base::test::FeatureRefAndParams test_config_two(kScalableIphTestTwo,
+                                                    params_two);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config_one, test_config_two}, {});
   }
 };
 
@@ -325,7 +347,7 @@ class ScalableIphBrowserTestNotificationInvalidConfig
     base::FieldTrialParams params;
     AppendVersionNumber(params);
     AppendFakeUiParamsNotification(params);
-    params[FullyQualified(kScalableIphTest,
+    params[FullyQualified(TestIphFeature(),
                           scalable_iph::kCustomNotificationIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
@@ -344,7 +366,7 @@ class ScalableIphBrowserTestBubbleInvalidConfig
     base::FieldTrialParams params;
     AppendVersionNumber(params);
     AppendFakeUiParamsBubble(params);
-    params[FullyQualified(kScalableIphTest,
+    params[FullyQualified(TestIphFeature(),
                           scalable_iph::kCustomBubbleIdParamName)] = "";
     base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
 
@@ -585,6 +607,19 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, AppListShown) {
   ash::AppListController* app_list_controller = ash::AppListController::Get();
   CHECK(app_list_controller);
   app_list_controller->ShowAppList(ash::AppListShowSource::kSearchKey);
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestMultipleIphs, OneIphAtATime) {
+  EnableTestIphFeatures({&TestIphFeature(), &kScalableIphTestTwo});
+
+  // Expects that `ShowNotification` gets called exactly once as we expect that
+  // only a single IPH gets triggered at a time.
+  EXPECT_CALL(*mock_delegate(),
+              ShowNotification(::testing::_, ::testing::NotNull()))
+      .Times(1);
+  TriggerConditionsCheckWithAFakeEvent(
+      scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,

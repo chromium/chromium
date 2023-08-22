@@ -649,7 +649,7 @@ void ScalableIph::CheckTriggerConditions() {
           delegate_->ShowNotification(
               *notification_params.get(),
               std::make_unique<IphSession>(*feature, tracker_, this));
-          break;
+          return;
         }
         case UiType::kBubble: {
           std::unique_ptr<BubbleParams> bubble_params =
@@ -662,7 +662,7 @@ void ScalableIph::CheckTriggerConditions() {
           delegate_->ShowBubble(
               *bubble_params.get(),
               std::make_unique<IphSession>(*feature, tracker_, this));
-          break;
+          return;
         }
         case UiType::kNone:
           break;

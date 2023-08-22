@@ -59,7 +59,14 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
  protected:
   // Allow sub-classes to initialize scoped feature list with different values.
   virtual void InitializeScopedFeatureList();
+  void AppendVersionNumber(base::FieldTrialParams& params,
+                           const base::Feature& feature,
+                           const std::string& version_number);
+  void AppendVersionNumber(base::FieldTrialParams& params,
+                           const base::Feature& feature);
   virtual void AppendVersionNumber(base::FieldTrialParams& params);
+  void AppendFakeUiParamsNotification(base::FieldTrialParams& params,
+                                      const base::Feature& feature);
   void AppendFakeUiParamsNotification(base::FieldTrialParams& params);
   void AppendFakeUiParamsBubble(base::FieldTrialParams& params);
   static std::string FullyQualified(const base::Feature& feature,
@@ -78,6 +85,8 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   void AddOnlineNetwork();
 
+  void EnableTestIphFeatures(
+      const std::vector<const base::Feature*> test_iph_features);
   void EnableTestIphFeature();
   const base::Feature& TestIphFeature() const;
 
