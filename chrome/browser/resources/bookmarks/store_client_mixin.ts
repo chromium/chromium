@@ -61,19 +61,26 @@ export const StoreClientMixin = dedupingMixin(
         }
 
         onStateChanged(newState: BookmarksPageState) {
-          this.watches_.forEach((watch) => {
-            const oldValue = this.get(watch.localProperty);
-            const newValue = watch.valueGetter(newState);
+          // Collect all local property changes into a single object. This
+          // reduces churn on the element in case one state change results in
+          // multiple local property changes.
+          const changes = this.watches_.reduce(
+              (result: Record<string, any>, {localProperty, valueGetter}) => {
+                const oldValue = this.get(localProperty);
+                const newValue = valueGetter(newState);
 
-            // Avoid poking Polymer unless something has actually changed.
-            // Reducers must return new objects rather than mutating existing
-            // objects, so any real changes will pass through correctly.
-            if (oldValue === newValue || newValue === undefined) {
-              return;
-            }
+                // Avoid poking Polymer unless something has actually changed.
+                // Reducers must return new objects rather than mutating
+                // existing objects, so any real changes will pass through
+                // correctly.
+                if (newValue !== oldValue && newValue !== undefined) {
+                  result[localProperty] = newValue;
+                }
+                return result;
+              },
+              {});
 
-            this.set(watch.localProperty, newValue);
-          });
+          this.setProperties(changes);
         }
 
         updateFromStore() {
