@@ -2074,7 +2074,7 @@ BASE_FEATURE(kPrintManagementSetupAssistance,
 // Enables the new OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsRevamp,
              "PrinterSettingsRevamp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables showing discovered printers in the Print Preview dialog.
 BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
@@ -2084,7 +2084,7 @@ BASE_FEATURE(kPrintPreviewDiscoveredPrinters,
 // Enables showing printer status on the OS Printer Settings UI.
 BASE_FEATURE(kPrinterSettingsPrinterStatus,
              "PrinterSettingsPrinterStatus",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables to allocate more video capture buffers.
 BASE_FEATURE(kMoreVideoCaptureBuffers,

@@ -15,6 +15,7 @@ import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGE, assertNotReached, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/chromeos/test_util.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -309,7 +310,8 @@ suite('CupsSavedPrintersTests', () => {
     verifyPrintersList(savedPrinterEntries, printerList);
     assertTrue(!!page.shadowRoot!.querySelector('#savedPrinters'));
     await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
-    assertNull(page.shadowRoot!.querySelector('#savedPrinters'));
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#noSavedPrinters')));
+    assertEquals(0, getPrinterEntries(savedPrintersElement).length);
   });
 
   test('UpdateSavedPrinter', async () => {
