@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/test/gmock_expected_support.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 
 #include "base/files/file_util.h"
@@ -33,6 +34,7 @@
 namespace web_app {
 namespace {
 
+using base::test::HasValue;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::IsTrue;
@@ -102,8 +104,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
         /*expected_version=*/installed_version_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    InstallResult result = future.Take();
-    ASSERT_THAT(result.has_value(), IsTrue());
+    EXPECT_THAT(future.Take(), HasValue());
 
     const WebApp* web_app =
         provider()->registrar_unsafe().GetAppById(url_info_.app_id());
@@ -169,12 +170,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppApplyUpdateCommandBrowserTest, Succeeds) {
 
   PrepareAndStoreUpdateResult prepare_update_result = PrepareAndStoreUpdateInfo(
       PendingUpdateInfo(update_location_, update_version_));
-  EXPECT_THAT(prepare_update_result.has_value(), IsTrue())
-      << prepare_update_result.error();
+  EXPECT_THAT(prepare_update_result, HasValue());
 
   ApplyUpdateResult apply_update_result = ApplyUpdate();
-  EXPECT_THAT(apply_update_result.has_value(), IsTrue())
-      << apply_update_result.error();
+  EXPECT_THAT(apply_update_result, HasValue());
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());

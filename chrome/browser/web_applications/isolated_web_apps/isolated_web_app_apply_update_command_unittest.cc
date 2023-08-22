@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -44,6 +45,7 @@
 namespace web_app {
 namespace {
 
+using base::test::HasValue;
 using ::testing::Eq;
 using ::testing::HasSubstr;
 using ::testing::IsFalse;
@@ -186,7 +188,7 @@ TEST_F(IsolatedWebAppApplyUpdateCommandTest, Succeeds) {
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
   auto result = ApplyPendingUpdate();
-  EXPECT_THAT(result.has_value(), IsTrue()) << result.error();
+  EXPECT_THAT(result, HasValue());
 
   const WebApp* web_app =
       fake_provider().registrar_unsafe().GetAppById(url_info_.app_id());

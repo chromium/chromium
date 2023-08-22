@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_builder.h"
@@ -26,6 +27,7 @@
 namespace web_app {
 namespace {
 
+using ::base::test::HasValue;
 using ::testing::Eq;
 using ::testing::IsFalse;
 using ::testing::IsTrue;
@@ -90,7 +92,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
   auto status = ReadIntegrityBlockAndMetadata(*reader.get());
-  ASSERT_TRUE(status.has_value());
+  ASSERT_THAT(status, HasValue());
 
   auto response_reader =
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
@@ -103,7 +105,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        IsolatedWebAppResponseReader::Error>>
         response_future;
     response_reader->ReadResponse(request, response_future.GetCallback());
-    EXPECT_TRUE(response_future.Get().has_value());
+    EXPECT_THAT(response_future.Get(), HasValue());
   }
 
   {
@@ -114,7 +116,7 @@ TEST_F(IsolatedWebAppResponseReaderTest,
                        IsolatedWebAppResponseReader::Error>>
         response_future;
     response_reader->ReadResponse(request, response_future.GetCallback());
-    EXPECT_TRUE(response_future.Get().has_value());
+    EXPECT_THAT(response_future.Get(), HasValue());
   }
 }
 
@@ -122,7 +124,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
   base::FilePath web_bundle_path = CreateSignedBundleAndWriteToDisk();
   auto reader = SignedWebBundleReader::Create(web_bundle_path, base_url_);
   auto status = ReadIntegrityBlockAndMetadata(*reader.get());
-  ASSERT_TRUE(status.has_value());
+  ASSERT_THAT(status, HasValue());
 
   auto response_reader =
       std::make_unique<IsolatedWebAppResponseReader>(std::move(reader));
@@ -133,7 +135,7 @@ TEST_F(IsolatedWebAppResponseReaderTest, ReadResponseBody) {
                                         IsolatedWebAppResponseReader::Error>>
       response_future;
   response_reader->ReadResponse(request, response_future.GetCallback());
-  ASSERT_TRUE(response_future.Get().has_value());
+  ASSERT_THAT(response_future.Get(), HasValue());
 
   IsolatedWebAppResponseReader::Response response = *response_future.Take();
   EXPECT_THAT(response.head()->response_code, Eq(200));

@@ -233,11 +233,7 @@ TEST_P(IsolatedWebAppResponseReaderFactoryIntegrityBlockParserErrorTest,
   error->message = "test error";
   parser_factory_->RunIntegrityBlockCallback(nullptr, error->Clone());
 
-  ReaderResult result = reader_future.Take();
-
-  ASSERT_FALSE(result.has_value());
-  auto actual_error = result.error();
-  EXPECT_EQ(actual_error, UnusableSwbnFileError(error));
+  EXPECT_THAT(reader_future.Take(), ErrorIs(UnusableSwbnFileError(error)));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -326,7 +322,7 @@ TEST_P(IsolatedWebAppResponseReaderFactorySignatureVerificationErrorTest,
   if (skip_signature_verification_) {
     FulfillMetadata();
 
-    EXPECT_TRUE(reader_future.Take().has_value());
+    EXPECT_THAT(reader_future.Take(), HasValue());
 
     histogram_tester.ExpectBucketCount(
         ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -374,11 +370,7 @@ TEST_P(IsolatedWebAppResponseReaderFactoryMetadataParserErrorTest,
   parser_factory_->RunMetadataCallback(integrity_block_->size, nullptr,
                                        error->Clone());
 
-  ReaderResult result = reader_future.Take();
-
-  ASSERT_FALSE(result.has_value());
-  auto actual_error = result.error();
-  EXPECT_THAT(actual_error, Eq(UnusableSwbnFileError(error)));
+  EXPECT_THAT(reader_future.Take(), ErrorIs(Eq(UnusableSwbnFileError(error))));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -413,7 +405,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest, TestInvalidMetadataPrimaryUrl) {
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  ASSERT_THAT(reader_future.Take(),
+  EXPECT_THAT(reader_future.Take(),
               ErrorIs(Property(&UnusableSwbnFileError::message,
                                StartsWith("Primary URL must not be present"))));
 
@@ -437,7 +429,7 @@ TEST_F(IsolatedWebAppResponseReaderFactoryTest,
   parser_factory_->RunMetadataCallback(integrity_block_->size,
                                        std::move(metadata));
 
-  ASSERT_THAT(
+  EXPECT_THAT(
       reader_future.Take(),
       ErrorIs(Property(&UnusableSwbnFileError::message,
                        StartsWith("The URL of an exchange is invalid"))));

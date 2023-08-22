@@ -26,6 +26,7 @@ namespace web_app {
 
 namespace {
 using base::test::ErrorIs;
+using base::test::HasValue;
 using base::test::ValueIs;
 using ::testing::Eq;
 using ::testing::HasSubstr;
@@ -44,8 +45,8 @@ constexpr char kValidIsolatedWebAppUrl[] =
 using IsolatedWebAppUrlInfoTest = ::testing::Test;
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateSucceedsWithValidUrl) {
-  EXPECT_TRUE(
-      IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl)).has_value());
+  EXPECT_THAT(IsolatedWebAppUrlInfo::Create(GURL(kValidIsolatedWebAppUrl)),
+              HasValue());
 }
 
 TEST_F(IsolatedWebAppUrlInfoTest, CreateFailsWithInvalidScheme) {
