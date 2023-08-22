@@ -8,8 +8,6 @@ namespace net::websockets {
 
 const char kHttpProtocolVersion[] = "HTTP/1.1";
 
-const size_t kRawChallengeLength = 16;
-
 const char kSecWebSocketProtocol[] = "Sec-WebSocket-Protocol";
 const char kSecWebSocketExtensions[] = "Sec-WebSocket-Extensions";
 const char kSecWebSocketKey[] = "Sec-WebSocket-Key";
