@@ -42,9 +42,11 @@ HidChooserContextFactory::HidChooserContextFactory()
 
 HidChooserContextFactory::~HidChooserContextFactory() = default;
 
-KeyedService* HidChooserContextFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HidChooserContextFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new HidChooserContext(Profile::FromBrowserContext(context));
+  return std::make_unique<HidChooserContext>(
+      Profile::FromBrowserContext(context));
 }
 
 void HidChooserContextFactory::BrowserContextShutdown(
