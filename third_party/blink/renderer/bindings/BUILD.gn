@@ -12,7 +12,6 @@ import("//third_party/blink/renderer/bindings/generated_in_modules.gni")
 import("//third_party/blink/renderer/bindings/idl_in_core.gni")
 import("//third_party/blink/renderer/bindings/idl_in_extensions_chromeos.gni")
 import("//third_party/blink/renderer/bindings/idl_in_modules.gni")
-import("//third_party/blink/renderer/bindings/scripts/scripts.gni")
 
 visibility = [ "//third_party/blink/renderer/*" ]
 
@@ -20,7 +19,7 @@ bindings_gen_dir = get_path_info(".", "gen_dir")
 
 template("collect_idl_files") {
   action_with_pydeps(target_name) {
-    script = "${bindings_scripts_dir}/collect_idl_files.py"
+    script = "scripts/collect_idl_files.py"
 
     inputs = invoker.inputs
     outputs = [ invoker.output ]
@@ -100,7 +99,7 @@ collect_idl_files("web_idl_in_modules_for_testing") {
 action_with_pydeps("web_idl_database") {
   visibility += [ "//tools/privacy_budget/blink_apis:*" ]
 
-  script = "${bindings_scripts_dir}/build_web_idl_database.py"
+  script = "scripts/build_web_idl_database.py"
 
   input_data_files = get_target_outputs(":web_idl_in_core") +
                      get_target_outputs(":web_idl_in_core_for_testing") +
@@ -132,7 +131,7 @@ action_with_pydeps("web_idl_database") {
 
 template("generate_bindings") {
   action_with_pydeps(target_name) {
-    script = "${bindings_scripts_dir}/generate_bindings.py"
+    script = "scripts/generate_bindings.py"
 
     if (defined(invoker.visibility)) {
       visibility += invoker.visibility
@@ -235,7 +234,7 @@ generate_bindings("generate_bindings_all") {
 }
 
 action_with_pydeps("check_generated_file_list") {
-  script = "${bindings_scripts_dir}/check_generated_file_list.py"
+  script = "scripts/check_generated_file_list.py"
 
   web_idl_database_outputs = get_target_outputs(":web_idl_database")
   web_idl_database = web_idl_database_outputs[0]
@@ -402,7 +401,7 @@ action_with_pydeps("check_generated_file_list") {
 }
 
 action_with_pydeps("validate_web_idl") {
-  script = "${bindings_scripts_dir}/validate_web_idl.py"
+  script = "scripts/validate_web_idl.py"
 
   web_idl_database_outputs = get_target_outputs(":web_idl_database")
   web_idl_database = web_idl_database_outputs[0]
