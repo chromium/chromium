@@ -432,7 +432,7 @@ class MockFileSystem(object):
         return dot_dot + rel_path
 
     def remove(self, path, retry=True):
-        if self.files[path] is None:
+        if self.files.get(path) is None:
             self._raise_not_found(path)
         self.files[path] = None
         self.written_files[path] = None

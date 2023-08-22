@@ -124,6 +124,9 @@ class TestConfigurations(collections.abc.Mapping):
                     'port': port.version(),
                     'debug': debug,
                     'flag_specific': flag_specific or '',
+                    # TODO(crbug.com/1152503): Fully support virtual suites.
+                    # Will be addressed by crrev.com/c/4717388.
+                    'virtual_suite': '',
                 })
                 configs[config] = port
         return cls(host.filesystem, configs)

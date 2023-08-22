@@ -7,7 +7,7 @@ import io
 import json
 import textwrap
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, call, patch
 
 from blinkpy.common import path_finder
 from blinkpy.common.net.git_cl import TryJobStatus
@@ -191,6 +191,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'port': 'mac12',
                 'product': 'content_shell',
                 'flag_specific': '',
+                'virtual_suite': '',
                 'debug': False,
             },
             'results': [{
@@ -266,6 +267,7 @@ class UpdateMetadataExecuteTest(BaseUpdateMetadataTest):
                 'port': 'mac12',
                 'product': 'content_shell',
                 'flag_specific': '',
+                'virtual_suite': '',
                 'debug': False,
             },
             'results': [{
@@ -619,6 +621,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                     'os': 'mac',
                     'port': 'mac12',
                     'flag_specific': '',
+                    'virtual_suite': '',
                     'debug': False,
                     **(report.get('run_info') or {}),
                 }
@@ -730,6 +733,207 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             #Comment 5
             [multiglob.https.any.worker.html]
               expected: ERROR
+            """)
+
+    def test_migrate_disables(self):
+        self.write_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=bar/abc]
+              disabled:
+                if os == "win": overwrite this
+            """)
+        self.write_contents(
+            'NeverFixTests', """\
+            # tags: [ Linux Mac Win ]
+            # results: [ Skip ]
+            [ Mac ] external/wpt/variant.html?foo=bar/abc [ Skip ]
+            """)
+        self.write_contents(
+            'TestExpectations', """\
+            # tags: [ Linux Mac Win ]
+            # results: [ Skip ]
+            virtual/fake-vts/external/wpt/variant.html?foo=baz [ Skip ]
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'mac',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-mac-mac10.11'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'chrome',
+                    'os': 'linux',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'virtual_suite': 'fake-vts',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            },
+            migrate=True)
+        self.assert_contents(
+            'external/wpt/variant.html.ini', """\
+            [variant.html?foo=bar/abc]
+              disabled:
+                if (product == "content_shell") and (os == "mac"): neverfix
+
+            [variant.html?foo=baz]
+              disabled:
+                if (product == "content_shell") and (virtual_suite == "fake-vts"): skipped in TestExpectations
+            """)
+
+    def test_migrate_disables_glob_flag_specific(self):
+        self.write_contents('FlagSpecificConfig',
+                            json.dumps([{
+                                'name': 'fake-flag',
+                                'args': [],
+                            }]))
+        self.write_contents(
+            'FlagExpectations/fake-flag', """\
+            # results: [ Pass Skip ]
+            wpt_internal/dir/* [ Skip ]
+            wpt_internal/dir/multiglob.https.any.worker.html [ Pass ]
+            """)
+        flag_port = self.tool.port_factory.get('test-linux-trusty')
+        flag_port.set_option_default('flag_specific', 'fake-flag')
+        self.update(
+            {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'mac',
+                    'flag_specific': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-mac-mac10.11'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'flag_specific': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'chrome',
+                    'os': 'linux',
+                    'flag_specific': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'flag_specific': 'fake-flag',
+                },
+                'results': [],
+                'test_port': flag_port,
+            },
+            migrate=True)
+        self.assert_contents(
+            'wpt_internal/dir/__dir__.ini', """\
+            disabled:
+              if (product == "content_shell") and (os == "linux") and (flag_specific == "fake-flag"): skipped in TestExpectations
+            """)
+        self.assert_contents(
+            'wpt_internal/dir/multiglob.https.any.js.ini', """\
+            [multiglob.https.any.worker.html]
+              disabled:
+                if (product == "content_shell") and (os == "linux") and (flag_specific == "fake-flag"): @False
+            """)
+
+    def test_migrate_disables_glob_virtual(self):
+        self.write_contents(
+            'TestExpectations', """\
+            # results: [ Pass Skip ]
+            wpt_internal/dir/* [ Skip ]
+            virtual/fake-vts/wpt_internal/dir/* [ Pass ]
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'product': 'chrome',
+                    'os': 'linux',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            }, {
+                'run_info': {
+                    'product': 'content_shell',
+                    'os': 'linux',
+                    'virtual_suite': 'fake-vts',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            },
+            migrate=True)
+        self.assert_contents(
+            'wpt_internal/dir/__dir__.ini', """\
+            disabled:
+              if (product == "content_shell") and (virtual_suite == "fake-vts"): @False
+              if product == "chrome": skipped in TestExpectations
+              if (product == "content_shell") and (virtual_suite == ""): skipped in TestExpectations
+            """)
+
+    def test_migrate_disables_non_directory_glob(self):
+        self.write_contents(
+            'TestExpectations', """\
+            # results: [ Pass Failure Skip ]
+            wpt_internal/dir/* [ Failure ]
+            wpt_internal/dir/multiglob* [ Skip ]
+            """)
+        self.update(
+            {
+                'run_info': {
+                    'os': 'mac',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-mac-mac10.11'),
+            }, {
+                'run_info': {
+                    'os': 'linux',
+                    'virtual_suite': '',
+                },
+                'results': [],
+                'test_port': self.tool.port_factory.get('test-linux-trusty'),
+            },
+            migrate=True)
+        self.assertFalse(self.exists('wpt_internal/dir/__dir__.ini'))
+        self.assert_contents(
+            'wpt_internal/dir/multiglob.https.any.js.ini', """\
+            [multiglob.https.any.window.html]
+              disabled: skipped in TestExpectations
+
+            [multiglob.https.any.worker.html]
+              disabled: skipped in TestExpectations
             """)
 
     def test_remove_all_pass(self):
@@ -1056,8 +1260,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 },
                 'results': [{
                     'test': '/fail.html',
-                    'status': 'OK',
-                    'expected': 'OK',
+                    'status': 'PASS',
+                    'expected': 'PASS',
                 }],
             },
             overwrite_conditions='yes')
@@ -1069,7 +1273,6 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               expected:
                 if (product == "content_shell") and (os == "win"): FAIL
                 if (product == "content_shell") and (os == "mac"): TIMEOUT
-                OK
             """)
         # TODO(crbug.com/1299650): The branch order appears unstable, which we
         # should fix upstream to avoid create spurious diffs.
@@ -1267,8 +1470,9 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
                 if product == "content_shell": needs webdriver
               expected: FAIL
             """)
-        smoke_test_port.skipped_due_to_smoke_tests.assert_called_once_with(
-            'external/wpt/variant.html?foo=baz')
+        smoke_test_port.skipped_due_to_smoke_tests.assert_has_calls([
+            call('external/wpt/variant.html?foo=baz'),
+        ])
 
     def test_no_fill_for_unsupported_configs(self):
         from wptrunner.browsers import content_shell
@@ -1401,7 +1605,8 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
         self.assert_contents(
             'external/wpt/variant.html.ini', """\
             [variant.html?foo=baz]
-              disabled: times out even with extended deadline
+              disabled:
+                if product == "chrome": times out even with `timeout=long`
               expected:
                 if product == "chrome": TIMEOUT
             """)
