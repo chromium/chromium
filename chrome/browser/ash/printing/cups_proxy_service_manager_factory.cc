@@ -37,7 +37,8 @@ CupsProxyServiceManagerFactory::CupsProxyServiceManagerFactory()
 
 CupsProxyServiceManagerFactory::~CupsProxyServiceManagerFactory() = default;
 
-KeyedService* CupsProxyServiceManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CupsProxyServiceManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Only create the service for the primary user.
   Profile* profile = Profile::FromBrowserContext(context);
@@ -47,7 +48,7 @@ KeyedService* CupsProxyServiceManagerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new CupsProxyServiceManager(profile);
+  return std::make_unique<CupsProxyServiceManager>(profile);
 }
 
 bool CupsProxyServiceManagerFactory::ServiceIsCreatedWithBrowserContext()
