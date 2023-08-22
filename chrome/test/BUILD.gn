@@ -651,6 +651,8 @@ static_library("test_support") {
       "../browser/ui/views/frame/immersive_mode_tester.h",
     ]
     deps += [
+      "base/chromeos/crosier:proto",
+      "//base/test:proto_test_support",
       "//chrome/browser/chromeos",
       "//chromeos/dbus/constants",
     ]

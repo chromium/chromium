@@ -102,11 +102,23 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
- private:
+ protected:
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
 IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
+  chrome_test_base_chromeos_crosier::TestInfo info;
+  info.set_description(R"(
+This test verifies Chrome can launch and open version page.
+Manually:
+  1 Launch Chrome
+  2 Go to chrome://version
+  3 Make sure the page can open successfully.)");
+  info.add_contacts("svenzheng@chromium.org");
+  info.add_contacts("jamescook@chromium.org");
+  info.set_team_email("crosier-team@google.com");
+  info.set_buganizer("1394295");
+  chromeos_integration_test_mixin_.AddTestInfo(info);
   base::AddFeatureIdTagToTestResult(
       "screenplay-351d628b-e4a4-41c6-91e4-a4036ad12360");
 

@@ -1,0 +1,44 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_test_base_chromeos_crosier;
+
+message TestInfo {
+  // Test case description.
+  // Write in a way that non developers can also understand. If possible,
+  // include a manual test steps. The intention is for test and release
+  // teams to understand the impacts.
+  // e.g.
+  //   "This test verifies system UI can turn on bluetooth.
+  //    1 Open settings page.
+  //    2 Go to bluetooth page, turn off bluetooth.
+  //    3 Verify bluetooth is turned off.
+  //    4 Turn on bluetooth and verify it's turned on."
+  //   "This test verifies system UI can turn on bluetooth.
+  //    Manual test plan at https://shortn/<some_link>
+  optional string description = 1;
+
+  // Individual owners of the tests.
+  // Use full email address.
+  repeated string contacts = 2;
+
+  // The team of the test.
+  // If not set, the test is owned by the directory owner defined
+  // in DIR_METADATA.
+  optional string team_email = 3;
+
+  // Internal buganizer component id.
+  // If not set, the test failure bug will be filed to the buganizer component
+  // defined in DIR_METADATA.
+  // e.g. 123456
+  optional string buganizer = 4;
+
+  // Public buganizer component id.
+  // If not set, the test failure bug will be filed to the public buganizer
+  // component defined in DIR_METADATA.
+  // e.g. 123456
+  optional string buganizer_public = 5;
+}
