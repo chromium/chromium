@@ -6997,10 +6997,10 @@ To shut down the device, press and hold the power button on the device again.
         No thanks
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_DESCRIPTION_TEXT" desc="Text shown in the body of the dialog as part of the System UI Welcome Tour.">
-        Take a quick tour to get off to a smooth start. With 6 steps, it will just take a few minutes.
+        Take a quick tour to learn how to get around your Chromebook. Get up and running in 6 steps.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_DIALOG_TITLE_TEXT" desc="Text shown as the Welcome Tour dialog title.">
-        Hi there. Chromebooks are a little different.
+        Hi there. Chromebook is a little different.
       </message>
       <message name="IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT" desc="Text shown in the body of a help bubble anchored to the Explore app as part of the System UI Welcome Tour.">
         Those were the basics! Continue in Explore, our built-in app for tips and help. You’ll find tips for getting started, recommended apps, special offers, and the newest Chromebook features.
