@@ -233,9 +233,10 @@ AppWindowRegistry::Factory::Factory()
 
 AppWindowRegistry::Factory::~Factory() = default;
 
-KeyedService* AppWindowRegistry::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppWindowRegistry::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AppWindowRegistry(context);
+  return std::make_unique<AppWindowRegistry>(context);
 }
 
 bool AppWindowRegistry::Factory::ServiceIsCreatedWithBrowserContext() const {
