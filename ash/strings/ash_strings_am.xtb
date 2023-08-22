@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">የሙሉ ማያ ገፅ ማጉያ ነቅቷል። እንዲጠፋ አድርጎ እንደገና ለመቀያየር Ctrl+ፍለጋ+M ይጫኑ።</translation>
 <translation id="2302092602801625023">ይህ መለያ በFamily Link የሚተዳደር ነው</translation>
 <translation id="2303600792989757991">የመስኮት አጠቃላይ እይታን ቀያይር</translation>
+<translation id="2305738328104302723">የGoogle ተግባሮች ዝርዝር፦ <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />፦ የቅርብ ጊዜ የማያ ገፅ ቀረጻዎች፣ ውርዶች እና የተሰኩ ፋይሎች</translation>
 <translation id="2318576281648121272">ዛሬ <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />፣ የፍለጋ ውጤት ምድብ</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">ቀዳሚ ንጥልን በመደርደሪያ ላይ አድምቅ</translation>
 <translation id="3120421559657122717">መሣሪያ ይዘጋ?</translation>
 <translation id="3122464029669770682">ሲፒዩ</translation>
+<translation id="3125690294288312932">የክፍል ሥራ ዓይነት</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">ለማዘመን ዳግም ያስጀምሩ</translation>
 <translation id="3139188263101386725">የተዘመነውን አቋራጭ ይክፈቱ</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">ጫጫታ ማስወገጃ</translation>
 <translation id="3249513730522716925">መስኮት <ph name="WINDOW_TITLE" /> ከዴስክ <ph name="ACTIVE_DESK" /> ወደ ዴስክ <ph name="TARGET_DESK" /> ይወሰዳል</translation>
 <translation id="3252573918265662711">አዋቅር</translation>
+<translation id="3253743281242075461">የክፍል ሥራ ዓይነት፦ <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">ምን ማድረግ ይችላሉ?</translation>
 <translation id="3256109297135787951">በእርስዎ መደርደሪያ ላይ በንጥሉ ላይ ያለውን ማድመቂያ ያስወግዱ</translation>
 <translation id="3260969790895726815">ንግግር የሚሰናዳው በአካባቢ ሲሆን በቃል ማስጻፍ ከመስመር ውጭ ይሰራል ነገር ግን አንዳንድ የድምጽ ትዕዛዞች አይሰሩም።</translation>
@@ -1023,6 +1026,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ከተሰኘ መሣሪያ ጋር ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
 <translation id="5258528442992323769">ምንም የተቀመጡ ዴስኮች የሉም</translation>
 <translation id="5260676007519551770">ዴስክ 4</translation>
+<translation id="5268819379131021772">የGoogle ተግባሮች ዝርዝር</translation>
 <translation id="5278086053818066789">ChromeVox (የቃል ግብረመልስ)ን አብራ/አጥፋ</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> የእርስዎን ትኩረት ይፈልጋል።</translation>
 <translation id="5283198616748585639">1 ደቂቃ ያክሉ</translation>
@@ -1173,6 +1177,7 @@
 <translation id="5864748620896638071">ባትሪ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">የአውታረ መረብ መረጃን በመሰብሰብ ላይ</translation>
 <translation id="5867606971598166637">የስርዓትዎ አስተዳዳሪ የእርስዎን የማያ ገጾች እየተቆጣጠረ ነው</translation>
+<translation id="5876535466645959772">የተመረጠ ዝርዝር ባዶ ነው፣ አዲስ ተግባር ለማከል ወደታች ያስሱ</translation>
 <translation id="5876666360658629066">የወላጅ ኮድ ያስገቡ</translation>
 <translation id="5881540930187678962">የስልክ መገናኛን በኋላ ላይ ያቀናብሩ</translation>
 <translation id="5881663018261910378">ጠፍቷል</translation>

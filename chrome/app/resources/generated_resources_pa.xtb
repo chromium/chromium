@@ -270,7 +270,6 @@
 <translation id="1197935538609051549">ਅਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
 <translation id="1198066799963193307">ਘੱਟ ਨਜ਼ਰ ਵਾਲੇ ਲੋਕਾਂ ਲਈ ਲਿਖਤ ਤੋਂ ਬੋਲੀ ਸੰਬੰਧੀ ਟੂਲ</translation>
 <translation id="119944043368869598">ਸਾਰੇ ਹਟਾਓ</translation>
-<translation id="1199631150313925648">ਹੱਥੀਂ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="1199814941632954229">ਇਹਨਾਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਪ੍ਰੋਫਾਈਲਾਂ ਲਈ ਪ੍ਰਮਾਣ-ਪੱਤਰਾਂ ਦੀ ਵਿਵਸਥਾ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="120069043972472860">ਨਾ-ਦੇਖਣਯੋਗ</translation>
 <translation id="1201402288615127009">ਅੱਗੇ</translation>
@@ -1928,6 +1927,7 @@
 <translation id="2480868415629598489">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਅਤੇ ਪੇਸਟ ਕੀਤੇ ਗਏ ਡਾਟੇ ਨੂੰ ਸੋਧੋ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
 <translation id="2482895651873876648">ਟੈਬ ਨੂੰ <ph name="GROUP_NAME" /> ਵਿੱਚ ਲਿਜਾਇਆ ਗਿਆ - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Chrome ਬ੍ਰਾਊਜ਼ਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਖੋਜ ਇੰਜਣ ਨੂੰ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="2484743711056182585">ਅਨੁਦਾਨ ਹਟਾਓ</translation>
 <translation id="2484909293434545162">ਜੇ ਸਾਈਟ ਵੱਲੋਂ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾਂਦੀ ਹੈ ਤਾਂ ਉਹ ਇੱਥੇ ਦਿਸਣਗੀਆਂ</translation>
 <translation id="2484959914739448251">ਤੁਹਾਡੇ ਸਾਰੇ ਸਿੰਕ ਕੀਤੇ ਡੀਵਾਈਸਾਂ ਅਤੇ ਤੁਹਾਡੇ 'Google ਖਾਤੇ' ਵਿੱਚੋਂ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ<ph name="END_LINK" />।</translation>
@@ -2084,6 +2084,7 @@
 <translation id="2612676031748830579">ਕਾਰਡ ਨੰਬਰ</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> 'ਤੇ ਕਿਸੇ ਵੀ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕੇਗੀ</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਵਿੱਚ <ph name="FILE1" /> ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸਦਾ ਸੰਪਾਦਨ ਕਰੋ}one{ਇਸ ਐਪ ਵਿੱਚ <ph name="FILE1" />, ... ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ ਉਸਦਾ ਸੰਪਾਦਨ ਕਰੋ}other{ਇਸ ਐਪ ਵਿੱਚ <ph name="FILE1" />, ... ਨੂੰ ਖੋਲ੍ਹੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਸੰਪਾਦਨ ਕਰੋ}}</translation>
 <translation id="2616366145935564096">ਆਪਣਾ ਡਾਟਾ <ph name="WEBSITE_1" /> ਤੇ ਪੜ੍ਹੋ ਅਤੇ ਬਦਲੋ</translation>
 <translation id="2618797463720777311">'ਨਜ਼ਦੀਕੀ ਸਾਂਝ' ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4503,6 +4504,7 @@
 <translation id="4585793705637313973">ਪੰਨੇ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="4586275095964870617"><ph name="URL" /> ਕਿਸੇ ਵਿਕਲਪਿਕ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਨਾਲ ਸੰਪਰਕ ਕਰੋ।</translation>
 <translation id="4587589328781138893">ਸਾਈਟਾਂ</translation>
+<translation id="4588749726511456218">ਸਕ੍ਰੋਲ ਐਕਸੈੱਲਰੇਸ਼ਨ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ਲੌਗਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਡਾਇਰੈਕਟਰੀ ਵਿੱਚ ਸਫਲਤਾਪੂਰਕ ਲਿਖਿਆ ਗਿਆ।</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> ਵਿੱਚ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4592525994536856567">ਬ੍ਰਾਊਜ਼ ਅਤੇ ਖੋਜ ਕਰਨਾ ਤੇਜ਼ ਹੈ।</translation>
@@ -6344,6 +6346,7 @@
 <translation id="6130692320435119637">ਵਾਈ-ਫਾਈ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6130887916931372608">ਕੀ-ਬੋਰਡ ਕੁੰਜੀ</translation>
 <translation id="6132714462430777655">ਕੀ ਸਕੂਲ ਵਿੱਚ ਦਾਖਲੇ ਦੀ ਪ੍ਰਕਿਰਿਆ ਨੂੰ ਛੱਡਣਾ ਹੈ?</translation>
+<translation id="6134428719487602109">ਸਾਰੇ ਵਰਤੋਂਕਾਰ ਖਾਤੇ ਹਟਾਓ ਅਤੇ ਆਪਣੀ Chromebook ਨੂੰ ਬਿਲਕੁਲ ਨਵੀਂ ਵਾਂਗ ਰੀਸੈੱਟ ਕਰੋ।</translation>
 <translation id="6135823405800500595">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਫ਼ੋਨ ਨਜ਼ਦੀਕ ਹੈ, ਅਣਲਾਕ ਹੈ, ਅਤੇ ਬਲੂਟੁੱਥ ਅਤੇ ਵਾਈ-ਫਾਈ ਚਾਲੂ ਹਨ</translation>
 <translation id="6135826623269483856">ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਡਿਸਪਲੇਆਂ 'ਤੇ ਵਿੰਡੋਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="6136114942382973861">ਡਾਊਨਲੋਡ ਬਾਰ ਬੰਦ ਕਰੋ</translation>

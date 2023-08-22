@@ -368,6 +368,7 @@
 <translation id="3941014780699102620">Failed to resolve host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3954678691475912818">Device type is unknown.</translation>
+<translation id="3959413315969265597">Can’t enable this APN. Make sure a default APN is added.</translation>
 <translation id="3966286471246132217">For more accurate results, close all apps until the test is complete.</translation>
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3969602104473960991">Chrome OS password updated</translation>

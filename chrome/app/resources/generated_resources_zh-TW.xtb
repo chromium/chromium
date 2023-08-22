@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{請在 1 週內更新 <ph name="DEVICE_TYPE" />}other{請在 {NUM_WEEKS} 週內更新 <ph name="DEVICE_TYPE" />}}</translation>
+<translation id="1056398434290692818">使用滑動手勢瀏覽上一個或下一個頁面</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1056980582064308040">如果變更設定，系統將重新啟動無線基地台，屆時裝置與無線基地台的連線就會中斷。</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -263,7 +264,6 @@
 <translation id="1197935538609051549">停用</translation>
 <translation id="1198066799963193307">低視能語音工具</translation>
 <translation id="119944043368869598">全部清除</translation>
-<translation id="1199631150313925648">手動輸入</translation>
 <translation id="1199814941632954229">正在為這些憑證設定檔佈建憑證</translation>
 <translation id="120069043972472860">無法觀看</translation>
 <translation id="1201402288615127009">繼續</translation>
@@ -513,6 +513,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{移除應用程式}other{移除應用程式}}</translation>
 <translation id="1417497355604638350">傳送診斷和使用資料。</translation>
 <translation id="1418552618736477642">通知和應用程式</translation>
+<translation id="1418559532423038045">從「<ph name="DEVICE_TYPE" />」移除 <ph name="VM_NAME" />。請注意，這麼做會刪除虛擬機器中的所有應用程式和資料！</translation>
 <translation id="1418882096915998312">正在進行 Enterprise 註冊作業</translation>
 <translation id="1418954524306642206">請瀏覽並指定印表機 PPD</translation>
 <translation id="1420834118113404499">媒體授權</translation>
@@ -2371,6 +2372,7 @@
 <translation id="287205682142673348">連接埠轉送</translation>
 <translation id="287286579981869940">新增 <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">關閉</translation>
+<translation id="2873744479411987024">較高的刷新率能讓畫面顯示更流暢，細節更清晰。請注意，提高刷新率可能會影響電池續航力。</translation>
 <translation id="2873995907777332853">顯示封鎖所有 Cookie 的詳細資料</translation>
 <translation id="2874939134665556319">上一首曲目</translation>
 <translation id="2875698561019555027">(Chrome 錯誤頁面)</translation>
@@ -2460,6 +2462,7 @@
 <translation id="2944060181911631861">傳送使用狀況與診斷資料。讓系統自動將診斷資料以及裝置和應用程式的使用狀況資料傳送給 Google，協助改善你的 Android 使用體驗。這些資料將有助於系統和應用程式提高穩定性及做出其他改善。部分匯總資料還能夠為 Google 應用程式和合作夥伴 (例如 Android 開發人員) 提供幫助。如果你的「其他網路和應用程式活動」設定為開啟，系統可能會將這些資料儲存到你的 Google 帳戶。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">前往檔案</translation>
 <translation id="2946119680249604491">新增連線</translation>
+<translation id="2946190589196900944">顯示界線</translation>
 <translation id="2946640296642327832">啟用藍牙</translation>
 <translation id="2947605845283690091">網路瀏覽速度應該要快速流暢。現在就花點時間<ph name="BEGIN_LINK" />檢查擴充功能<ph name="END_LINK" />吧。</translation>
 <translation id="2948300991547862301">前往<ph name="PAGE_TITLE" /></translation>
@@ -2475,6 +2478,7 @@
 <translation id="2959127025785722291">發生錯誤，無法完成掃描作業。請再試一次。</translation>
 <translation id="2959842337402130152">儲存空間不足，因此無法復原。請釋出 <ph name="SPACE_REQUIRED" /> 的裝置儲存空間，然後再試一次。</translation>
 <translation id="2960208947600937804">設定 Linux 時發生錯誤，請與你的系統管理員聯絡。</translation>
+<translation id="2960942820860729477">刷新率</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (擴充功能已提供)</translation>
 <translation id="2961210776189273067">稱謂</translation>
 <translation id="2961695502793809356">按一下到下一頁，按住可查看記錄</translation>
@@ -4194,6 +4198,7 @@
 <translation id="4404843640767531781">貴家長已封鎖「<ph name="APP_NAME" />」。如要使用這個應用程式，請要求家長授予權限。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移至…</translation>
+<translation id="4405781821077215583">縮小或放大畫面上的項目，包括文字在內</translation>
 <translation id="4406883609789734330">即時字幕</translation>
 <translation id="4407039574263172582">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的姓名、電子郵件地址和個人資料相片提供給這個網站。請參閱這個網站的《<ph name="BEGIN_LINK" />服務條款<ph name="END_LINK" />》。</translation>
 <translation id="4408599188496843485">說明(&amp;E)</translation>
@@ -4630,6 +4635,7 @@
 <translation id="4773112038801431077">升級 Linux</translation>
 <translation id="4774456473286455263">使用 Android 手機進行設定</translation>
 <translation id="477548766361111120">允許擴充功能讀取及變更這個網站</translation>
+<translation id="4776311127346151860">「<ph name="DEVICE_NAME" />」已連線</translation>
 <translation id="4776594120007763294">如要儲存頁面以便稍後閱讀，請點選這個按鈕</translation>
 <translation id="4777458362738635055">這部裝置的其他使用者可以使用這個網路</translation>
 <translation id="4777813841994368231">已開啟 • 開發人員已取消發布這項擴充功能</translation>
@@ -6062,6 +6068,7 @@
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{為確保你可以持續瀏覽網路，請要求你的管理員移除這個應用程式。}other{為確保你可以持續瀏覽網路，請要求你的管理員移除這些應用程式。}}</translation>
+<translation id="5992225669837656567">所有滑鼠均已中斷連線</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{已完成 1 個網站的檢查}other{已完成 {NUM_SITES} 個網站的檢查}}</translation>
 <translation id="5997337190805127100">進一步瞭解網站存取權</translation>
 <translation id="5998458948782718639">協助改善自動填入功能</translation>
@@ -6303,6 +6310,7 @@
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
 <translation id="6196854373336333322">您的 Proxy 設定已受到擴充功能「<ph name="EXTENSION_NAME" />」控制，該擴充功能可變更、中斷、或監視您在網路上的行為。如果您不確定這項變更的發生原因，建議您停用該擴充功能。</translation>
 <translation id="6197128521826316819">為這個頁面建立 QR 圖碼</translation>
+<translation id="6198223452299275399">滑動瀏覽頁面</translation>
 <translation id="6198252989419008588">變更 PIN 碼</translation>
 <translation id="6200047250927636406">捨棄檔案</translation>
 <translation id="6200151268994853226">管理擴充功能</translation>
@@ -6700,6 +6708,7 @@
 <translation id="6532527800157340614">無法擷取你的存取憑證，因此登入失敗。請檢查網路連線，然後再試一次。</translation>
 <translation id="6532663472409656417">已註冊企業</translation>
 <translation id="6533315466883598769">使用 Google 翻譯</translation>
+<translation id="65334502113648172">按下方向鍵可縮減或擴大顯示區域。如要移動顯示區域，請按下 Shift 和 + 鍵，然後使用方向鍵操控。</translation>
 <translation id="6533636340637966565">開啟中...</translation>
 <translation id="6535331821390304775">一律允許 <ph name="ORIGIN" /> 使用相關聯的應用程式開啟這類連結</translation>
 <translation id="653659894138286600">掃描文件和圖片</translation>
@@ -7305,6 +7314,7 @@
 <translation id="7017354871202642555">無法在視窗建立之後再設定模式。</translation>
 <translation id="7019546817926942979">裝置必須接上電源。Linux 升級程序可能會相當耗電。請將裝置連接充電器，然後再試一次。</translation>
 <translation id="7019805045859631636">快</translation>
+<translation id="7022222879220069865">所有觸控板均已中斷連線</translation>
 <translation id="7022562585984256452">首頁已設定完成。</translation>
 <translation id="702455272205692181"><ph name="EXTENSION_NAME" /></translation>
 <translation id="7025082428878635038">全新的手勢瀏覽功能正式登場</translation>
@@ -7426,6 +7436,7 @@
 <translation id="7128151990937044829">封鎖通知時，在網址列上顯示圖示</translation>
 <translation id="7131040479572660648">讀取你在 <ph name="WEBSITE_1" />、<ph name="WEBSITE_2" /> 和 <ph name="WEBSITE_3" /> 上產生的資料</translation>
 <translation id="713122686776214250">新增網頁(&amp;G)...</translation>
+<translation id="7131431455372521159">所有 TrackPoint 均已中斷連線</translation>
 <translation id="7134098520442464001">縮小文字</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7136694880210472378">設為預設</translation>
@@ -9662,6 +9673,7 @@
 <translation id="8977811652087512276">密碼不正確或檔案毀損</translation>
 <translation id="8978154919215542464">開啟 - 同步處理所有資料</translation>
 <translation id="8978670037548431647">重新整理網路共用功能</translation>
+<translation id="8978939272793553320">「<ph name="DEVICE_NAME" />」已中斷連線</translation>
 <translation id="897939795688207351">在 <ph name="ORIGIN" /> 上</translation>
 <translation id="8980345560318123814">使用狀況報告</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 已當機</translation>

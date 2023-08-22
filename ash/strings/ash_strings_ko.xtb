@@ -300,6 +300,7 @@
 <translation id="2298170939937364391">전체 화면 돋보기가 사용 설정되었습니다. 사용 중지하려면 Ctrl+Search+M을 다시 누르세요.</translation>
 <translation id="2302092602801625023">Family Link에서 관리되는 계정입니다.</translation>
 <translation id="2303600792989757991">창 전환 개요</translation>
+<translation id="2305738328104302723">Google 할 일 목록: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: 최근 화면 캡처, 다운로드, 고정된 파일</translation>
 <translation id="2318576281648121272">오늘 <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, 검색결과 카테고리</translation>
@@ -483,6 +484,7 @@
 <translation id="3113492864356515707">앱 표시줄의 이전 항목 강조 표시</translation>
 <translation id="3120421559657122717">기기를 종료할까요?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">수업 과제 유형</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">업데이트하려면 다시 시작</translation>
 <translation id="3139188263101386725">업데이트된 단축키 사용</translation>
@@ -509,6 +511,7 @@
 <translation id="324366796737464147">주변 소음 제거</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> 창이 <ph name="ACTIVE_DESK" /> 데스크에서 <ph name="TARGET_DESK" /> 데스크로 이동했습니다.</translation>
 <translation id="3252573918265662711">설정</translation>
+<translation id="3253743281242075461">수업 과제 유형: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">무엇을 할 수 있어?</translation>
 <translation id="3256109297135787951">앱 표시줄에 있는 항목에서 강조표시를 삭제합니다.</translation>
 <translation id="3260969790895726815">음성이 로컬에서 처리되고 음성기록이 오프라인으로 작동하지만 일부 음성 명령은 작동하지 않습니다.</translation>
@@ -1002,6 +1005,7 @@
 <translation id="5253783950165989294">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨(배터리 <ph name="BATTERY_PERCENTAGE" />%)</translation>
 <translation id="5258528442992323769">저장된 데스크 없음</translation>
 <translation id="5260676007519551770">데스크 4</translation>
+<translation id="5268819379131021772">Google 할 일 목록</translation>
 <translation id="5278086053818066789">ChromeVox(음성 피드백) 사용 설정/사용 중지</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> 알림이 있습니다.</translation>
 <translation id="5283198616748585639">1분 추가</translation>
@@ -1148,6 +1152,7 @@
 <translation id="5864748620896638071">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">네트워크 정보 수집 중</translation>
 <translation id="5867606971598166637">시스템 관리자가 화면을 모니터링하고 있습니다.</translation>
+<translation id="5876535466645959772">선택한 목록이 비어 있습니다. 아래로 이동하여 새 할 일을 추가하세요.</translation>
 <translation id="5876666360658629066">부모 코드 입력</translation>
 <translation id="5881540930187678962">휴대전화 허브 나중에 설정하기</translation>
 <translation id="5881663018261910378">사용 안함</translation>

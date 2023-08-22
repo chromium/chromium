@@ -265,7 +265,6 @@
 <translation id="1197935538609051549">ନିଷ୍କ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="1198066799963193307">କମ୍ ଦେଖାଯାଉଥିବା ଲୋକମାନଙ୍କ ପାଇଁ ସ୍ପିଚ ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="119944043368869598">ସମସ୍ତ ଖାଲି କରନ୍ତୁ</translation>
-<translation id="1199631150313925648">ମାନୁଆଲୀ ଲେଖନ୍ତୁ</translation>
 <translation id="1199814941632954229">ଏହି ସାର୍ଟିଫିକେଟ୍ ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ପାଇଁ ସାର୍ଟିଫିକେଟଗୁଡ଼ିକ ବ୍ୟବସ୍ଥିତ କରାଯାଉଛି</translation>
 <translation id="120069043972472860">ଦେଖିବାଯୋଗ୍ୟ ନୁହେଁ</translation>
 <translation id="1201402288615127009">ପରବର୍ତ୍ତୀ</translation>
@@ -1744,6 +1743,7 @@
 <translation id="2369058545741334020">ରିଡିଂ ମୋଡରେ ଖୋଲନ୍ତୁ</translation>
 <translation id="236939127352773362">ଆଖପାଖର ଡିଭାଇସଗୁଡ଼ିକ ସେୟାର୍ କରୁଥିବା ବେଳେ</translation>
 <translation id="2371076942591664043">&amp;ସମାପ୍ତ ହେବା ପରେ ଖୋଲନ୍ତୁ</translation>
+<translation id="237336063998926520">ଲୋକେସନ ସ୍ଥିର କରିବା ପାଇଁ ଆପଣଙ୍କ IP ଠିକଣାକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2373666622366160481">କାଗଜ ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
 <translation id="2375406435414127095">ନିଜର ଫୋନ୍ ସହିତ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="2376056713414548745">ବଡ଼ ପାଟିରେ ପଢ଼ନ୍ତୁ</translation>
@@ -1884,6 +1884,7 @@
 <translation id="2480868415629598489">ଆପଣ କପି ଏବଂ ପେଷ୍ଟ କରୁଥିବା ଡାଟା ସଂଶୋଧନ କରନ୍ତୁ</translation>
 <translation id="2482878487686419369">ବିଜ୍ଞପ୍ତି</translation>
 <translation id="2482895651873876648"><ph name="GROUP_NAME" /> ଗୋଷ୍ଠୀକୁ ଟାବ୍ ମୁଭ୍ କରାଯାଇଛି - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Chrome ବ୍ରାଉଜର ସେଟିଂସରେ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ସେଟ କରନ୍ତୁ</translation>
 <translation id="2484743711056182585">ଅନୁମତି କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2484909293434545162">ଯଦି ଏକ ସାଇଟ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରେ, ତେବେ ତାହା ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="2484959914739448251">ଆପଣଙ୍କର ସିଙ୍କ ହୋଇଥିବା ସମସ୍ତ ଡିଭାଇସ୍ ଏବଂ ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରୁ ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରିବା ପାଇଁ, <ph name="BEGIN_LINK" />ଆପଣଙ୍କର ପାସଫ୍ରେଜ୍ ଲେଖନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -2038,6 +2039,7 @@
 <translation id="2612676031748830579">କାର୍ଡ ସଂଖ୍ୟା</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />ରେ କୌଣସି ଏକ୍ସଟେନସନକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" />କୁ ଏଡିଟ୍ କରିବାକୁ ସକ୍ଷମ ହେବ</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{<ph name="FILE1" />କୁ ଏହି ଏକ୍ସଟେନ୍ସନରେ ଖୋଲି ଏଡିଟ କରନ୍ତୁ}other{ଏହି ଆପରେ <ph name="FILE1" />, ... ଖୋଲି ଏଡିଟ କରନ୍ତୁ}}</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />ରେ ଆପଣଙ୍କର ଡାଟା ପଢ଼ନ୍ତୁ ଏବଂ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="2618797463720777311">Nearby Share ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4414,6 +4416,7 @@
 <translation id="4585793705637313973">ପୃଷ୍ଠା ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="4586275095964870617"><ph name="URL" />,ଏକ ବୈକଳ୍ପିକ ବ୍ରାଉଜର୍‌ରେ ଖୋଲି ହେଲା ନାହିଁ। ଦୟାକରି ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କୁ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="4587589328781138893">ସାଇଟଗୁଡ଼ିକ</translation>
+<translation id="4588749726511456218">ସ୍କ୍ରୋଲ ଆକ୍ସିଲିରେସନ <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ଡାଉନଲୋଡ୍ ଡିରେକ୍ଟୋରୀରେ ଲଗଗୁଡ଼ିକ ସଫଳତାର ସହ ଲେଖାଯାଇଛି।</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />ରେ କୌଣସି ଡିଭାଇସ ସେଭ ହୋଇନାହିଁ</translation>
 <translation id="4592525994536856567">ବ୍ରାଉଜ କରିବା ଏବଂ ସର୍ଚ୍ଚ କରିବା ଦ୍ରୁତତର ଅଟେ।</translation>
@@ -6231,6 +6234,7 @@
 <translation id="6130692320435119637">Wi-Fi ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6130887916931372608">କୀବୋର୍ଡର କୀ</translation>
 <translation id="6132714462430777655">ସ୍କୁଲ ପଞ୍ଜିକରଣକୁ ବାଦ୍ ଦେବେ?</translation>
+<translation id="6134428719487602109">ସମସ୍ତ ୟୁଜର ଆକାଉଣ୍ଟ କାଢ଼ି ଦେଇ ଆପଣଙ୍କ Chromebookକୁ ନୂଆ ପରି ରିସେଟ କରନ୍ତୁ।</translation>
 <translation id="6135823405800500595">ଆପଣଙ୍କ ଫୋନଟି ପାଖରେ ଅଛି, ଏହାକୁ ଅନଲକ କରାଯାଇଛି ଏବଂ ବ୍ଲୁଟୁଥ ଓ ୱାଇ-ଫାଇ ଚାଲୁ ଅଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6135826623269483856">ଆପଣଙ୍କ ସମସ୍ତ ଡିସପ୍ଲେରେ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="6136114942382973861">ଡାଉନ୍‌ଲୋଡ୍ ବାର୍‍କୁ ବନ୍ଦ କରନ୍ତୁ</translation>

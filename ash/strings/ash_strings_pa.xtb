@@ -672,6 +672,7 @@
 <translation id="380165613292957338">ਸਤਿ ਸ੍ਰੀ ਅਕਾਲ, ਮੈਂ ਤੁਹਾਡੀ ਮਦਦ ਕਿਵੇਂ ਕਰਾਂ?</translation>
 <translation id="3804737937830804242">ਕੈਮਰੇ ਨੂੰ ਸਮੇਟੋ</translation>
 <translation id="3824784079442479685">ਇਸ ਨਾਲ <ph name="APP_NAME" /> ਅਤੇ ਉਨ੍ਹਾਂ ਸਾਰੀਆਂ ਐਪਾਂ ਅਤੇ ਵੈੱਬਸਾਈਟਾਂ ਨੂੰ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ, ਜਿਨ੍ਹਾਂ ਕੋਲ ਕੈਮਰਾ ਇਜਾਜ਼ਤ ਹੈ। ਤੁਹਾਨੂੰ ਵੈੱਬ ਪੰਨੇ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰਨ ਜਾਂ ਐਪ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ।</translation>
+<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> ਵਿੱਚੋਂ <ph name="NUM_TURNED_IN" /> ਸਪੁਰਦ ਕੀਤੇ ਗਏ, <ph name="NUM_GRADED" /> ਨੂੰ ਗ੍ਰੇਡ ਦਿੱਤੇ ਗਏ</translation>
 <translation id="3826099427150913765">ਪਾਸਵਰਡ 'ਤੇ ਬਦਲੀ ਕਰੋ</translation>
 <translation id="383058930331066723">ਬੈਟਰੀ ਸੇਵਰ ਮੋਡ ਚਾਲੂ ਹੈ</translation>
 <translation id="383629559565718788">ਕੀ-ਬੋਰਡ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
@@ -1778,6 +1779,7 @@
 <translation id="8446884382197647889">ਹੋਰ ਜਾਣੋ</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">'ਚੁਣੋ ਅਤੇ ਸੁਣੋ' ਨੂੰ ਬੰਦ ਕਰੋ</translation>
+<translation id="8468806060683421065">ਨਿਯਤ ਤਾਰੀਖ <ph name="DUE_DATE_AND_TIME" /> ਹੈ</translation>
 <translation id="847056008324733326">ਡਿਸਪਲੇ ਸਕੇਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ਕੋਲ <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" /> ਹੈ।</translation>
 <translation id="8477270416194247200">ਰੱਦ ਕਰਨ ਲਈ Alt+Search ਜਾਂ Shift ਦਬਾਓ।</translation>
@@ -1863,6 +1865,7 @@
 <translation id="8853703225951107899">ਤੁਹਾਡੇ ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਹਾਲੇ ਵੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਨੋਟ ਕਰੋ: ਜੇ ਤੁਸੀਂ ਹਾਲ ਹੀ ਵਿੱਚ ਆਪਣਾ ਪਾਸਵਰਡ ਬਦਲਿਆ ਹੈ, ਤਾਂ ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਵਰਤੋ। ਇੱਕ ਵਾਰ ਸਾਈਨ-ਆਊਟ ਕਰਨ 'ਤੇ ਤੁਹਾਡਾ ਨਵਾਂ ਪਾਸਵਰਡ ਲਾਗੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="8855885154700222542">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਕੁੰਜੀ</translation>
 <translation id="8858369206579825206">ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ</translation>
+<translation id="8860366331836346216">ਈ-ਸਿਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8870509716567206129">ਐਪ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ।</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="8875021410787719674">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਜਾਓ</translation>

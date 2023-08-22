@@ -71,6 +71,7 @@
 <translation id="1054048317165655285">በእርስዎ ስልክ ላይ ማዋቀርን ያጠናቅቁ</translation>
 <translation id="1054153489933238809">የመጀመሪያውን ምስል በአዲስ ትር ክፈት</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" />ን በ1 ሳምንት ውስጥ ያዘምኑ}one{<ph name="DEVICE_TYPE" /> በ{NUM_WEEKS} ሳምንቶች ውስጥ ያዘምኑ}other{<ph name="DEVICE_TYPE" /> በ{NUM_WEEKS} ሳምንቶች ውስጥ ያዘምኑ}}</translation>
+<translation id="1056398434290692818">በማንሸራተት ምልክት ወደኋላ እና ወደፊት ያስሱ</translation>
 <translation id="1056898198331236512">ማስጠንቀቂያ</translation>
 <translation id="1056980582064308040">ቅንብሮችን መቀየር መገናኛ ነጥቡን እንደገና ያስጀምረዋል። መገናኛ ነጥቡን የሚጠቀሙ መሳሪያዎች ግንኙነታቸው ይቋረጣል።</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -268,7 +269,6 @@
 <translation id="1197935538609051549">አቦዝን</translation>
 <translation id="1198066799963193307">የዝቅተኛ-ዕይታ ንግግር መሣሪያዎች</translation>
 <translation id="119944043368869598">ሁሉንም አጽዳ</translation>
-<translation id="1199631150313925648">በራስዎ ያስገቡ</translation>
 <translation id="1199814941632954229">የዕውቅና ማረጋገጫዎች ለእነዚህ የዕውቅና ማረጋገጫ መገለጫዎች እየተያዙ ነው</translation>
 <translation id="120069043972472860">በጭራሽ ሊታይ አይችልም</translation>
 <translation id="1201402288615127009">ቀጣይ</translation>
@@ -519,6 +519,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{መተግበሪያ አስወግድ}one{መተግበሪያዎችን አስወግድ}other{መተግበሪያዎችን አስወግድ}}</translation>
 <translation id="1417497355604638350">የምርመራ እና የአጠቃቀም ውሂብ ይላኩ።</translation>
 <translation id="1418552618736477642">ማሳወቂያዎች እና መተግበሪያዎች</translation>
+<translation id="1418559532423038045">ከእርስዎ <ph name="DEVICE_TYPE" /> <ph name="VM_NAME" /> ያስወግዳል። ይህ በምናባዊ ማሽን ውስጥ ያሉትን ሁሉንም መተግበሪያዎች እና ውሂብ ይሰርዛል!</translation>
 <translation id="1418882096915998312">የድርጅት ምዝገባው በሂደት ላይ ነው</translation>
 <translation id="1418954524306642206">የእርስዎን አታሚ PPD ለመጥቀስ አሰሳ ያድርጉ</translation>
 <translation id="1420834118113404499">የማህደረመረጃ ፈቃዶች</translation>
@@ -2408,6 +2409,7 @@
 <translation id="287205682142673348">ወደብ ማስተላለፍ</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> አክል...</translation>
 <translation id="2872961005593481000">ዝጋ</translation>
+<translation id="2873744479411987024">በከፍተኛ የዕድሳት ፍጥነት ከተጨማሪ ዝርዝሮች ጋር ለስላሳ ማሳያ ይኖርዎታል። የተጨመረ የዕድሳት ፍጥነት የባትሪ ዕድሜ ላይ ተጽዕኖ ሊያሳድር ይችላል።</translation>
 <translation id="2873995907777332853">ሁሉንም ኩኪዎች ስለማገድ ዝርዝሮችን አሳይ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
 <translation id="2875698561019555027">(Chrome ስህተት ገጾች)</translation>
@@ -2498,6 +2500,7 @@
 <translation id="2944060181911631861">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ በራስ-ሰር ወደ Google በመላክ የAndroid ተሞክሮዎ እንዲሻሻል ያግዙ። ይህ የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። የእርስዎ የተጨማሪ ድር እና መተግበሪያ እንቅስቃሴ ቅንብር በርቶ ከሆነ ይህ ውሂብ በGoogle መለያዎ ላይ ሊቀመጥ ይችላል። <ph name="BEGIN_LINK1" />የበለጠ ለመረዳት<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">ወደ ፋይሎች ሂድ</translation>
 <translation id="2946119680249604491">ግንኑነት ያክሉ</translation>
+<translation id="2946190589196900944">የማሳያ ድንበሮች</translation>
 <translation id="2946640296642327832">ብሉቱዝን ያንቁ</translation>
 <translation id="2947605845283690091">ድርን ማሰስ ፈጣን መሆን አለበት። አሁን ጊዜ ወስደው <ph name="BEGIN_LINK" />ቅጥያዎችዎን ይፈትሹ<ph name="END_LINK" />።</translation>
 <translation id="2948300991547862301">ወደ <ph name="PAGE_TITLE" /> ይሂዱ</translation>
@@ -2513,6 +2516,7 @@
 <translation id="2959127025785722291">የሆነ ችግር ተፈጥሯል። መቃኘት ሊጠናቀቅ አልቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="2959842337402130152">በማከማቻ ቦታ እጥረት ምክንያት እንደነበረ መመለስ አይቻልም። ከመሣሪያው ላይ <ph name="SPACE_REQUIRED" /> ባዶ ቦታ ነፃ ያድርጉ እና እንደገና ይሞክሩ።</translation>
 <translation id="2960208947600937804">Linuxን በማዋቀር ላይ ሳለ አንድ ስህተት ተከስቶ ነበር። የእርስዎን አስተዳዳሪ ያነጋግሩ</translation>
+<translation id="2960942820860729477">የዕድሳት ፍጥነት</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (ቅጥያ ቀርቧል)</translation>
 <translation id="2961210776189273067">ርዕስ</translation>
 <translation id="2961695502793809356">ወደ ፊት ለመሄድ ጠቅ ያድርጉ፣ ታሪክ ለማየት ይያዙ</translation>
@@ -4259,6 +4263,7 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> በእርስዎ ወላጅ ታግዷል። ወላጅዎ ይህን መተግበሪያ እንዲጠቀሙ ፈቃድ ይጠይቋቸው።</translation>
 <translation id="4405117686468554883">*.jpeg፣ *.jpg፣ *.png</translation>
 <translation id="4405224443901389797">ውሰድ ወደ…</translation>
+<translation id="4405781821077215583">ጽሁፍን ጨምሮ በማያ ገፅዎ ላይ ያሉ ንጥሎችን ይበልጥ ትንሽ ወይም ትልቅ ያደርጋል</translation>
 <translation id="4406883609789734330">የቀጥታ ስርጭት መግለጫ ጽሁፍ</translation>
 <translation id="4407039574263172582">ለመቀጠል <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> የእርስዎን ስም፣ ኢሜይል አድራሻ እና የመገለጫ ሥዕል ለዚህ ጣቢያ ያጋራል። የዚህን ጣቢያ <ph name="BEGIN_LINK" />የአገልግሎት ውል<ph name="END_LINK" /> ይመልከቱ።</translation>
 <translation id="4408599188496843485">እ&amp;ገዛ</translation>
@@ -6393,6 +6398,7 @@
 <translation id="6196640612572343990">የሦስተኛ ወገን ኩኪዎችን አግድ</translation>
 <translation id="6196854373336333322">ይህ «<ph name="EXTENSION_NAME" />» ቅጥያ የተኪ ቅንብሮችዎን ተቆጣጥሯል፣ ይሄ ማለት መስመር ላይ የሚያደርጉት ማንኛውም ነገር ሊቀይር፣ ሊሰብር ወይም በድብቅ ሊከታተል ይችላል። ይሄ ለውጥ ለምን እንደተከሰተ እርግጠኛ ካልሆኑ የማይፈልጉት ነገር ሳይሆን አይቀርም።</translation>
 <translation id="6197128521826316819">ለዚህ ገፅ የQR ኮድ ፍጠር</translation>
+<translation id="6198223452299275399">በገፆች መካከል ያንሸራትቱ</translation>
 <translation id="6198252989419008588">ፒን ይቀይሩ</translation>
 <translation id="6200047250927636406">ፋይልን አስወግድ</translation>
 <translation id="6200151268994853226">ቅጥያ አቀናብር</translation>
@@ -6793,6 +6799,7 @@
 <translation id="6532527800157340614">የእርስዎ የመዳረሻ ማስመሰያ ተሰርስሮ ሊወጣ አልቻለም። እባክዎ የአውታረ መረብ ግንኙነትዎን ይፈትሹትና እንደገና ይሞክሩ።</translation>
 <translation id="6532663472409656417">በድርጅት ተመዝግቧል</translation>
 <translation id="6533315466883598769">Google ትርጉምን ይጠቀሙ</translation>
+<translation id="65334502113648172">የማሳያ አካባቢውን ለማሳነስ ወይም ለማስፋት የቀስት ቁልፎቹን ይጫኑ። የማሳያ አካባቢውን ለማንቀሳቀስ ቀያየርን እና + ይጫኑ፣ ከዚያም የቀስት ቁልፎቹን ይጠቀሙ።</translation>
 <translation id="6533636340637966565">በማብራት ላይ...</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> የዚህ ዓይነት አገናኞችን በተጓዳኙ መተግበሪያ ውስጥ እንዲከፍት ሁልጊዜ ፍቀድ</translation>
 <translation id="653659894138286600">ሰነዶችን እና ምስሎችን ይቃኙ</translation>

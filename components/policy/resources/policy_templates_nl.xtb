@@ -3324,7 +3324,6 @@ Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden
       Als je dit beleid niet toepast, kan het SPDY-protocol worden gebruikt.
 
       Als dit beleid niet wordt ingesteld, is het SPDY-protocol beschikbaar.</translation>
-<translation id="3887529334667818189">Trajecten zijn standaard zichtbaar op chrome://history/journeys en gebruikers kunnen de zichtbaarheid van trajecten wijzigen.</translation>
 <translation id="3889458462150559611">Sta toe dat websites op een onbeveiligde manier verzoeken naar een netwerkeindpunt sturen.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> niet toestaan verbinding te maken met apparaten op privé-IP-adressen</translation>
 <translation id="3891175633496805812">De wilco-controller voor diagnostische gegevens en telemetrie uitzetten</translation>
@@ -3449,7 +3448,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je dit beleid instelt op True, wordt de privacywaarschuwing na een paar seconden gesloten.
 
       Als je het beleid instelt op False of niet instelt, blijft de privacywaarschuwing in beeld tot de gebruiker deze sluit.</translation>
-<translation id="4008395195135046807">Trajecten zijn zichtbaar op chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Als dit beleid is ingesteld op True of niet is geconfigureerd, worden op het inlogscherm van <ph name="PRODUCT_OS_NAME" /> bestaande gebruikers getoond die kunnen worden geselecteerd.
 
       Als dit beleid is ingesteld op False, worden op het inlogscherm van <ph name="PRODUCT_OS_NAME" /> geen bestaande gebruikers getoond. In dat geval wordt het normale inlogscherm (waar de gebruiker om een e-mailadres en wachtwoord of telefoonnummer wordt gevraagd) of het SAML-interstitial-scherm (indien aangezet via het <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />-beleid) getoond, tenzij er een beheerde sessie is ingesteld. Wanneer er een beheerde sessie is ingesteld, worden alleen de accounts voor de beheerde sessie getoond en kun je alleen een van deze accounts selecteren.
@@ -4612,7 +4610,6 @@ Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagn
 <translation id="5130935469849337738">Altijd een vertaling aanbieden</translation>
 <translation id="5141670636904227950">Standaardtype van vergrootglas voor inlogscherm instellen</translation>
 <translation id="5142301680741828703">De volgende URL-patronen altijd verwerken in <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5143258831402123447">Trajecten zijn niet zichtbaar op chrome://history/journeys.</translation>
 <translation id="514870861066611127">Met dit beleid wordt bepaald of er informatie moet worden gerapporteerd die kan worden gebruikt om gebruikers te identificeren, zoals de OS-inloggegevens, de inloggegevens voor het <ph name="PRODUCT_NAME" />-profiel, de profielnaam voor <ph name="PRODUCT_NAME" />, het profielpad voor <ph name="PRODUCT_NAME" /> en het uitvoerbare pad voor <ph name="PRODUCT_NAME" />.
 
       Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of niet is toegepast, wordt dit beleid genegeerd.
@@ -4669,16 +4666,6 @@ Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagn
 <translation id="5179853299156742425">De URL waarop de bureautemplate kan worden gedownload.</translation>
 <translation id="5182055907976889880">Google Drive in <ph name="PRODUCT_OS_NAME" /> configureren.</translation>
 <translation id="5182483318861266793">De plank aan de rechterkant van het scherm plaatsen</translation>
-<translation id="5184298474980725716">Dit beleid bepaalt de zichtbaarheid van Trajecten op de Chrome-geschiedenispagina.
-
-      Als je het beleid toepast, zijn Trajecten zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet toepast, zijn Trajecten niet zichtbaar op chrome://history/journeys.
-
-      Als je het beleid niet instelt, zijn Trajecten standaard zichtbaar op chrome://history/journeys en kunnen gebruikers de zichtbaarheid van Trajecten wijzigen.
-
-      Als het beleid <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> niet wordt toegepast, maar <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> wel wordt toegepast of niet is ingesteld, zijn Trajecten nog steeds beschikbaar op chrome://history/journeys, maar misschien niet aanwezig in de omnibox en minder relevant voor de gebruiker.
-      </translation>
 <translation id="51859390023061147">De functie voor volledig herstel uitzetten.</translation>
 <translation id="5189360528842591274">Alleen verbinding met de bluetooth-services in de lijst toestaan</translation>
 <translation id="5190426551516379357">Als je het beleid instelt, werkt YouTube in een minimale beperkte modus en kunnen gebruikers geen minder beperkte modus kiezen. Als je het instelt op:
@@ -7251,7 +7238,6 @@ Als dit beleid is uitgezet, worden er geen beveiligingswaarschuwingen getoond al
 In <ph name="MS_WIN_NAME" /> is dit beleid alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, aan <ph name="MS_AAD_NAME" /> of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties die via MDM worden beheerd, via een MCX aan een domein zijn gekoppeld of zijn ingeschreven voor <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7403217961820363141">Trajecten tonen op de Chrome-geschiedenispagina</translation>
 <translation id="7406039009275722824">Als je <ph name="CHROME_SYNC_NAME" /> uitzet, werkt de Android-functie 'Back-up maken en resetten' niet meer naar behoren.</translation>
 <translation id="7406276857470642718">Bepaalt instellingen voor gebruikers die zijn geverifieerd via SAML met een externe IdP</translation>
 <translation id="7407441173422042771">Met dit beleid wordt netwerkvoorspelling in <ph name="PRODUCT_NAME" /> beheerd. Hiermee worden DNS-prefetching, het vooraf verbinden met TCP en SSL en het vooraf renderen van webpagina's beheerd.

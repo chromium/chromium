@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">휴대전화에서 설정 완료</translation>
 <translation id="1054153489933238809">새 탭에서 원본 이미지 열기</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{1주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}other{{NUM_WEEKS}주일 이내에 <ph name="DEVICE_TYPE" /> 업데이트}}</translation>
+<translation id="1056398434290692818">스와이프 동작으로 앞뒤로 이동</translation>
 <translation id="1056898198331236512">경고</translation>
 <translation id="1056980582064308040">설정을 변경하면 핫스팟이 다시 시작됩니다. 핫스팟을 사용하는 기기의 연결이 해제됩니다.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -265,7 +266,6 @@
 <translation id="1197935538609051549">비활성화</translation>
 <translation id="1198066799963193307">저시력 음성 도구</translation>
 <translation id="119944043368869598">모두 삭제</translation>
-<translation id="1199631150313925648">직접 입력</translation>
 <translation id="1199814941632954229">다음 인증서 프로필의 인증서가 프로비저닝되는 중입니다</translation>
 <translation id="120069043972472860">시청이 불가능할 정도</translation>
 <translation id="1201402288615127009">다음</translation>
@@ -515,6 +515,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{앱 삭제}other{앱 삭제}}</translation>
 <translation id="1417497355604638350">진단 및 사용 데이터 전송</translation>
 <translation id="1418552618736477642">알림 및 앱</translation>
+<translation id="1418559532423038045"><ph name="DEVICE_TYPE" />에서 <ph name="VM_NAME" />가 삭제됩니다. 이렇게 하면 가상 머신의 모든 앱과 데이터가 삭제됩니다.</translation>
 <translation id="1418882096915998312">기업용 등록 진행 중</translation>
 <translation id="1418954524306642206">탐색하여 프린터 PPD 지정</translation>
 <translation id="1420834118113404499">미디어 라이선스</translation>
@@ -2388,6 +2389,7 @@
 <translation id="287205682142673348">포트 전달</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> 추가...</translation>
 <translation id="2872961005593481000">종료</translation>
+<translation id="2873744479411987024">화면 재생 빈도가 높을수록 디테일이 살아 있는 더 부드러운 디스플레이가 표시됩니다. 화면 재생 빈도를 늘리면 배터리 수명에 영향을 줄 수 있습니다.</translation>
 <translation id="2873995907777332853">모든 쿠키 차단에 관한 세부정보 표시</translation>
 <translation id="2874939134665556319">이전 트랙</translation>
 <translation id="2875698561019555027">(Chrome 오류 페이지)</translation>
@@ -2477,6 +2479,7 @@
 <translation id="2944060181911631861">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">파일로 이동</translation>
 <translation id="2946119680249604491">연결 추가</translation>
+<translation id="2946190589196900944">디스플레이 경계</translation>
 <translation id="2946640296642327832">블루투스 사용</translation>
 <translation id="2947605845283690091">웹 탐색은 빨라야 합니다. 잠시 시간을 내어 <ph name="BEGIN_LINK" />확장 프로그램을 검토<ph name="END_LINK" />해 보세요.</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" />(으)로 이동</translation>
@@ -2492,6 +2495,7 @@
 <translation id="2959127025785722291">문제가 발생했습니다. 스캔을 완료할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="2959842337402130152">저장공간이 부족하여 복원할 수 없습니다. 기기에서 <ph name="SPACE_REQUIRED" />를 확보한 후 다시 시도해 보세요.</translation>
 <translation id="2960208947600937804">Linux를 설정하는 중에 오류가 발생했습니다. 관리자에게 문의하세요.</translation>
+<translation id="2960942820860729477">화면 재생 빈도</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" />(확장 프로그램에서 제공)</translation>
 <translation id="2961210776189273067">제목</translation>
 <translation id="2961695502793809356">클릭하면 다음 페이지로 가고 누르고 있으면 방문 기록이 나타납니다.</translation>
@@ -4210,6 +4214,7 @@
 <translation id="4404843640767531781">부모님이 <ph name="APP_NAME" /> 앱을 차단했습니다. 이 앱을 사용하려면 부모님에게 권한을 요청하세요.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
+<translation id="4405781821077215583">텍스트를 포함하여 화면에 표시된 항목을 작게 또는 크게 표시합니다.</translation>
 <translation id="4406883609789734330">실시간 자막</translation>
 <translation id="4407039574263172582">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 사이트의 <ph name="BEGIN_LINK" />서비스 약관<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="4408599188496843485">도움말(&amp;E)</translation>
@@ -6324,6 +6329,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6196640612572343990">서드 파티 쿠키 차단</translation>
 <translation id="6196854373336333322">'<ph name="EXTENSION_NAME" />' 확장 프로그램이 프록시 설정을 제어할 수 있게 되었으며, 따라서 사용자가 온라인에서 수행하는 모든 작업을 변경, 중단하거나 엿볼 수 있게 되었습니다. 이와 같이 변경된 이유를 잘 모른다면 이 설정을 사용하지 않는 것이 좋습니다.</translation>
 <translation id="6197128521826316819">이 페이지의 QR 코드 생성</translation>
+<translation id="6198223452299275399">페이지 간 스와이프</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6200047250927636406">파일 삭제</translation>
 <translation id="6200151268994853226">확장 프로그램 관리</translation>
@@ -6721,6 +6727,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6532527800157340614">액세스 토큰을 검색할 수 없어 로그인에 실패했습니다. 네트워크 연결을 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="6532663472409656417">기업 등록됨</translation>
 <translation id="6533315466883598769">Google 번역 사용</translation>
+<translation id="65334502113648172">화살표 키를 눌러 디스플레이 영역을 축소하거나 확대합니다. 디스플레이 영역에서 이동하려면 Shift 키와 +를 누른 다음 화살표 키를 사용하세요.</translation>
 <translation id="6533636340637966565">켜는 중…</translation>
 <translation id="6535331821390304775">항상 <ph name="ORIGIN" />에서 연결된 앱에 있는 이 유형의 링크를 열도록 허용</translation>
 <translation id="653659894138286600">문서 및 이미지 스캔</translation>

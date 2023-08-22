@@ -306,6 +306,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2298170939937364391">Lupa de ecran complet este activată. Apasă din nou pe Ctrl + tasta de căutare + M pentru a o dezactiva.</translation>
 <translation id="2302092602801625023">Acest cont este gestionat de Family Link</translation>
 <translation id="2303600792989757991">Activați/Dezactivați prezentarea ferestrei</translation>
+<translation id="2305738328104302723">Lista de activități Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: capturi de ecran, descărcări și fișiere fixate recente</translation>
 <translation id="2318576281648121272">Astăzi, la <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoria de rezultate ale căutării</translation>
@@ -494,6 +495,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3113492864356515707">Evidențiază elementul anterior de pe raft</translation>
 <translation id="3120421559657122717">Închizi dispozitivul?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Tipul activității la curs</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reporniți pentru a actualiza</translation>
 <translation id="3139188263101386725">Folosește comanda rapidă actualizată</translation>
@@ -520,6 +522,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="324366796737464147">Anularea zgomotului</translation>
 <translation id="3249513730522716925">Fereastra <ph name="WINDOW_TITLE" /> a fost mutată de pe desktopul <ph name="ACTIVE_DESK" /> pe desktopul <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configurează</translation>
+<translation id="3253743281242075461">Tipul activității la curs: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Ce poți face?</translation>
 <translation id="3256109297135787951">Elimină evidențierea de pe un element de pe raft</translation>
 <translation id="3260969790895726815">Vorbirea este procesată local și dictarea funcționează offline, dar unele comenzi vocale nu vor funcționa.</translation>
@@ -1023,6 +1026,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
 <translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
+<translation id="5268819379131021772">Lista de activități Google</translation>
 <translation id="5278086053818066789">Activează / dezactivează ChromeVox (feedback rostit)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> are nevoie de atenție.</translation>
 <translation id="5283198616748585639">Adaugă 1 min.</translation>
@@ -1173,6 +1177,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5864748620896638071">Baterie <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Se colectează informații despre rețea</translation>
 <translation id="5867606971598166637">Administratorul de sistem îți monitorizează ecranele</translation>
+<translation id="5876535466645959772">Lista selectată este goală. Navighează în jos pentru a adăuga o activitate nouă</translation>
 <translation id="5876666360658629066">Introdu codul pentru părinte</translation>
 <translation id="5881540930187678962">Configurează mai târziu Phone Hub</translation>
 <translation id="5881663018261910378">Dezactivat</translation>

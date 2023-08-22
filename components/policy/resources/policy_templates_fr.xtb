@@ -3317,7 +3317,6 @@ Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut
       Si cette règle est désactivée, le protocole SPDY peut être utilisé.
 
       Si cette règle n'est pas définie, le protocole SPDY est disponible.</translation>
-<translation id="3887529334667818189">Par défaut, les parcours seront visibles sur la page chrome://history/journeys. Les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="3889458462150559611">Autorise les sites Web à envoyer des requêtes à n'importe quel point de terminaison du réseau de façon non sécurisée.</translation>
 <translation id="388999630001435491">Autoriser <ph name="PRODUCT_NAME" /> à ne se connecter qu'aux appareils sur des adresses IP privées</translation>
 <translation id="3891175633496805812">Désactiver le dispositif de contrôle de diagnostic et de télémétrie de Wilco</translation>
@@ -3442,7 +3441,6 @@ Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut
       Si cette règle est définie sur "True", les avertissements concernant la confidentialité se ferment après quelques secondes.
 
       Si elle est définie sur "False" ou si elle n'est pas configurée, ces avertissements restent épinglés jusqu'à ce que l'utilisateur les ferme.</translation>
-<translation id="4008395195135046807">Les parcours seront visibles sur la page chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Si cette règle est définie sur True ou si elle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> affiche les utilisateurs existants sur l'écran de connexion et permet d'en choisir un.
 
       Si cette règle est définie sur False, <ph name="PRODUCT_OS_NAME" /> n'affiche pas les utilisateurs existants sur l'écran de connexion. L'écran de connexion habituel (demandant l'e-mail et le mot de passe ou le numéro de téléphone de l'utilisateur) ou l'écran interstitiel SAML (si autorisé via la règle <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) s'affiche, à moins qu'une session gérée ne soit configurée. Lorsqu'une session gérée est configurée, seuls les comptes de la session gérée s'affichent, et permettent d'en choisir un.
@@ -4602,7 +4600,6 @@ Si cette règle est définie sur "True" ou si elle n'est pas définie, les rappo
 <translation id="5130935469849337738">Toujours proposer une traduction</translation>
 <translation id="5141670636904227950">Activer la loupe plein écran sur l'écran de connexion</translation>
 <translation id="5142301680741828703">Toujours rendre les formats d'URL suivants dans <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5143258831402123447">Les parcours ne seront pas visibles sur la page chrome://history/journeys.</translation>
 <translation id="514870861066611127">Cette règle détermine si les informations exploitables à des fins d'identification des utilisateurs, telles que la connexion au système d'exploitation, la connexion au profil <ph name="PRODUCT_NAME" />, le nom du profil <ph name="PRODUCT_NAME" />, le chemin d'accès au profil <ph name="PRODUCT_NAME" /> et le chemin d'accès exécutable <ph name="PRODUCT_NAME" />, doivent être enregistrées.
 
       Cette règle est ignorée si la règle <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> n'est pas définie ou si elle est désactivée.
@@ -4659,16 +4656,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5179853299156742425">URL depuis laquelle le modèle de bureau peut être téléchargé.</translation>
 <translation id="5182055907976889880">Configurer Google Drive dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5182483318861266793">Placer l'étagère sur le côté droit de l'écran</translation>
-<translation id="5184298474980725716">Cette règle contrôle la visibilité des parcours sur la page de l'historique Chrome.
-
-      Si elle est activée, les parcours sont visibles sur chrome://history/journeys.
-
-      Si elle est désactivée, les parcours ne sont pas visibles sur chrome://history/journeys.
-
-      Si la règle n'est pas configurée, les parcours sont visibles par défaut sur chrome://history/journeys. Les utilisateurs peuvent modifier ce paramètre.
-
-      Notez que si la règle <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> est désactivée, mais que la règle <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> est activée ou n'est pas configurée, les parcours sont visibles sur chrome://history/journeys, mais peuvent être absents de l'omnibox, et moins pertinents pour l'utilisateur.
-      </translation>
 <translation id="51859390023061147">Désactiver la fonctionnalité de restauration complète.</translation>
 <translation id="5189360528842591274">N'autoriser la connexion qu'aux services Bluetooth de la liste</translation>
 <translation id="5190426551516379357">Permet d'appliquer un mode restreint minimal sur YouTube et d'empêcher les utilisateurs de choisir un mode moins restreint. Principe de cette règle :
@@ -7248,7 +7235,6 @@ Si cette règle est désactivée, ces avertissements ne s'affichent pas quand Ch
 Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instances associées à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7403217961820363141">Afficher les parcours sur la page de l'historique de Chrome.</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
 <translation id="7406276857470642718">Contrôle les paramètres des utilisateurs authentifiés via SAML avec un IdP externe</translation>
 <translation id="7407441173422042771">Cette règle permet de contrôler la prédiction réseau dans <ph name="PRODUCT_NAME" />. Elle contrôle la prélecture des DNS, ainsi que la préconnexion et le prérendu TCP et SSL des pages Web.

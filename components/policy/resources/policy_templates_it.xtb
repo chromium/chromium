@@ -3325,7 +3325,6 @@ Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app w
       Se la norma viene disattivata sarà possibile utilizzare il protocollo.
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
-<translation id="3887529334667818189">I percorsi saranno visibili in chrome://history/journeys per impostazione predefinita e gli utenti potranno modificare la visibilità di tali percorsi.</translation>
 <translation id="3889458462150559611">Consenti ai siti web di effettuare richieste a qualsiasi endpoint di rete in modo non sicuro.</translation>
 <translation id="388999630001435491">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati</translation>
 <translation id="3891175633496805812">Disattiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
@@ -3450,7 +3449,6 @@ Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app w
       Se il criterio viene impostato su True, la notifica di avviso sulla privacy viene chiusa dopo alcuni secondi.
 
       Se il criterio viene impostato su False o non viene impostato, la notifica di avviso sulla privacy viene bloccata finché non viene ignorata dall'utente.</translation>
-<translation id="4008395195135046807">I percorsi saranno visibili in chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Se questa norma viene impostata su True o non viene configurata, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> verranno visualizzati gli utenti esistenti tra cui sarà possibile selezionare un utente.
 
       Se la norma è impostata su False, nella schermata di accesso di <ph name="PRODUCT_OS_NAME" /> non verranno visualizzati gli utenti esistenti. Verrà visualizzata la normale schermata di accesso (richiesta di email utente e password o telefono) o la schermata interstiziale SAML (se attivata tramite la norma <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a meno che non sia stata configurata una sessione gestita. Quando viene configurata una sessione gestita, verranno visualizzati solo gli account della sessione gestita, consentendo di selezionarne uno.
@@ -4632,7 +4630,6 @@ Se questo criterio viene impostato su true o se non viene configurato, la segnal
 <translation id="5130935469849337738">Offri sempre la traduzione</translation>
 <translation id="5141670636904227950">Impostazione tipo di ingrandimento dello schermo predefinito attivato nella schermata di accesso</translation>
 <translation id="5142301680741828703">Visualizza sempre i seguenti schemi di URL in <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5143258831402123447">I percorsi non saranno visibili in chrome://history/journeys.</translation>
 <translation id="514870861066611127">Questo criterio consente di stabilire se segnalare o meno le informazioni che possono essere utilizzate per identificare gli utenti, ad esempio i dati di accesso al sistema operativo, i dati di accesso del profilo <ph name="PRODUCT_NAME" />, il nome del profilo <ph name="PRODUCT_NAME" />, il percorso del profilo <ph name="PRODUCT_NAME" /> e il percorso eseguibile di <ph name="PRODUCT_NAME" />.
 
       Se il criterio <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> non viene configurato o viene disattivato, viene ignorato.
@@ -4689,16 +4686,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="5179853299156742425">L'URL da cui è possibile scaricare il modello di scrivania.</translation>
 <translation id="5182055907976889880">Configura Google Drive in <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posiziona la barra delle app sul lato destro dello schermo</translation>
-<translation id="5184298474980725716">Questo criterio consente di stabilire la visibilità dei percorsi nella pagina Cronologia di Chrome.
-
-      Se il criterio viene impostato su Enabled, i percorsi saranno visibili all'indirizzo chrome://history/journeys.
-
-      Se viene impostato su Disabled, i percorsi non saranno visibili all'indirizzo chrome://history/journeys.
-
-      Se non viene configurato, i percorsi saranno visibili in chrome://history/journeys per impostazione predefinita e gli utenti potranno modificare la visibilità di tali percorsi.
-
-      Tieni presente che se il criterio <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> viene impostato su Disabled, ma il criterio <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> viene impostato su Enabled o non viene configurato, i percorsi continueranno a essere disponibili all'indirizzo chrome://history/journeys, ma potrebbero non essere presenti nella omnibox ed essere meno pertinenti per l'utente.
-      </translation>
 <translation id="51859390023061147">Disattiva la funzionalità di ripristino completo.</translation>
 <translation id="5189360528842591274">Consenti solo la connessione con i servizi Bluetooth nell'elenco</translation>
 <translation id="5190426551516379357">La configurazione del criterio applica un livello minimo della Modalità con restrizioni su YouTube e impedisce agli utenti di scegliere un livello meno restrittivo della modalità. Se il criterio viene impostato su:
@@ -7306,7 +7293,6 @@ Se il criterio viene disattivato, viene impedita la visualizzazione degli avvisi
 Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7403217961820363141">Mostra i percorsi nella pagina Cronologia di Chrome</translation>
 <translation id="7406039009275722824">Se disattivi <ph name="CHROME_SYNC_NAME" />, il servizio di backup e ripristino di Android non funzionerà correttamente.</translation>
 <translation id="7406276857470642718">Consente di gestire le impostazioni degli utenti autenticati tramite SAML con un IdP esterno</translation>
 <translation id="7407441173422042771">Questo criterio consente di controllare la previsione di rete in <ph name="PRODUCT_NAME" />, il precaricamento DNS, le preconnessioni TCP e SSL e il prerendering delle pagine web.

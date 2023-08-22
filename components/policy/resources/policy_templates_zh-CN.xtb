@@ -3298,7 +3298,6 @@
       如果停用此政策，将可以使用 SPDY 协议。
 
       如果未设置此政策，将可以使用 SPDY 协议。</translation>
-<translation id="3887529334667818189">历程将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的可见性设置。</translation>
 <translation id="3889458462150559611">允许网站以不安全的方式向任何网络端点发送请求。</translation>
 <translation id="388999630001435491">允许 <ph name="PRODUCT_NAME" /> 仅连接到位于专用 IP 地址的设备</translation>
 <translation id="3891175633496805812">停用 Wilco 诊断和遥测控制器</translation>
@@ -3423,7 +3422,6 @@
       如果此政策设为 True，系统会在隐私权警告通知显示了数秒后关闭它。
 
       如果此政策设为 False 或未设置，系统则会将隐私权警告通知固定在屏幕上，直到用户关闭它为止。</translation>
-<translation id="4008395195135046807">将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="4008507541867797979">如果此政策设为 true 或未配置，<ph name="PRODUCT_OS_NAME" />将会在登录屏幕上显示现有用户并允许选择其一。
 
       如果此政策设为 false，<ph name="PRODUCT_OS_NAME" />将不会在登录屏幕上显示现有用户。除非配置了受管理自助服务终端，否则系统将会显示标准登录屏幕（提示用户输入电子邮件地址和密码/手机号码）或 SAML 插页式屏幕（若已通过 <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" /> 政策启用的话）。如果配置了受管理自助服务终端，系统将仅会显示受管理自助服务终端账号并允许选择其一。
@@ -4575,7 +4573,6 @@
 <translation id="5130935469849337738">一律提供翻译</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
-<translation id="5143258831402123447">不将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -4632,16 +4629,6 @@
 <translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
 <translation id="5182055907976889880">在 <ph name="PRODUCT_OS_NAME" />中配置 Google 云端硬盘。</translation>
 <translation id="5182483318861266793">将文件架放置到屏幕右侧</translation>
-<translation id="5184298474980725716">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
-
-      如果此政策已启用，历程将会显示在 chrome://history/journeys 页面上。
-
-      如果此政策已停用，历程将不会显示在 chrome://history/journeys 页面上。
-
-      如果将此政策保留未设置状态，历程将默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的显示设置。
-
-      请注意，如果 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策已停用，但 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 已启用或保留未设置状态，历程仍会显示在 chrome://history/journeys 页面上，但可能不会显示在多功能框中，而且与用户的相关程度会变低。
-      </translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
 <translation id="5189360528842591274">仅允许连接到此列表中的蓝牙服务</translation>
 <translation id="5190426551516379357">通过设置此政策，您可以强制启用最基本的 YouTube 受限模式，并禁止用户选择限制条件更加宽松的模式。如果此政策设为：
@@ -7205,7 +7192,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
-<translation id="7403217961820363141">将历程显示在“Chrome 历史记录”页面上</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7406276857470642718">此政策旨在控制通过 SAML 向外部 IdP 验证身份的用户的设置</translation>
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。

@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">Einrichtung auf dem Smartphone abschließen</translation>
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
+<translation id="1056398434290692818">Mit Wisch-Touch-Geste vorwärts und rückwärts navigieren</translation>
 <translation id="1056898198331236512">Warnung</translation>
 <translation id="1056980582064308040">Durch das Ändern der Einstellungen wird der Hotspot neu gestartet. Die Verbindung der Geräte, die ihn verwenden, wird dadurch getrennt.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -262,7 +263,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1197935538609051549">Deaktivieren</translation>
 <translation id="1198066799963193307">Sprachausgabetools für Menschen mit eingeschränktem Sehvermögen</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
-<translation id="1199631150313925648">Manuell eingeben</translation>
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
 <translation id="120069043972472860">Ansehen nicht möglich</translation>
 <translation id="1201402288615127009">Weiter</translation>
@@ -512,6 +512,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{App entfernen}other{Apps entfernen}}</translation>
 <translation id="1417497355604638350">Damit werden Diagnose- und Nutzungsdaten gesendet.</translation>
 <translation id="1418552618736477642">Benachrichtigungen und Apps</translation>
+<translation id="1418559532423038045">Entfernt <ph name="VM_NAME" /> von deinem Gerät (<ph name="DEVICE_TYPE" />). Dadurch werden alle Apps und Daten der virtuellen Maschine gelöscht.</translation>
 <translation id="1418882096915998312">Enterprise-Registrierung wird durchgeführt</translation>
 <translation id="1418954524306642206">Dateien durchsuchen und PPD für den Drucker auswählen</translation>
 <translation id="1420834118113404499">Medienlizenzen</translation>
@@ -2367,6 +2368,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="287205682142673348">Portweiterleitung</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> hinzufügen...</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
+<translation id="2873744479411987024">Eine höhere Aktualisierungsrate sorgt dafür, dass dein Display Inhalte flüssiger und detailreicher darstellt. Dies kann sich auf die Akkulaufzeit auswirken.</translation>
 <translation id="2873995907777332853">Informationen zum Blockieren aller Cookies aufrufen</translation>
 <translation id="2874939134665556319">Vorheriger Titel</translation>
 <translation id="2875698561019555027">(Chrome-Fehlerseiten)</translation>
@@ -2456,6 +2458,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2944060181911631861">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- sowie Geräte- und App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten eventuell in deinem Google-Konto gespeichert. <ph name="BEGIN_LINK1" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Zu Dateien</translation>
 <translation id="2946119680249604491">Verbindung hinzufügen</translation>
+<translation id="2946190589196900944">Anzeigegrenzen</translation>
 <translation id="2946640296642327832">Bluetooth aktivieren</translation>
 <translation id="2947605845283690091">Wenn du im Web surfst, sollen aufgerufene Seiten schnell geladen werden. Nimm dir jetzt einen Moment Zeit, um deine <ph name="BEGIN_LINK" />Erweiterungen zu prüfen<ph name="END_LINK" />.</translation>
 <translation id="2948300991547862301">Zu <ph name="PAGE_TITLE" /> wechseln</translation>
@@ -2471,6 +2474,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2959127025785722291">Ein Fehler ist aufgetreten. Der Scan konnte nicht durchgeführt werden. Bitte versuche es noch einmal.</translation>
 <translation id="2959842337402130152">Die Wiederherstellung ist nicht möglich, da nicht genügend Speicherplatz verfügbar ist. Bitte gib <ph name="SPACE_REQUIRED" /> auf dem Gerät frei und versuche es dann noch einmal.</translation>
 <translation id="2960208947600937804">Bei der Konfiguration von Linux ist ein Fehler aufgetreten. Wende dich bitte an deinen Administrator.</translation>
+<translation id="2960942820860729477">Aktualisierungsrate</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (Verlängerung gewährt)</translation>
 <translation id="2961210776189273067">Anrede</translation>
 <translation id="2961695502793809356">Klicken, um weiterzugehen. Gedrückt halten, um den Verlauf aufzurufen</translation>
@@ -4191,6 +4195,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4404843640767531781"><ph name="APP_NAME" /> wurde von deinen Eltern blockiert. Bitte deine Eltern um Erlaubnis, diese App zu nutzen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Verschieben nach…</translation>
+<translation id="4405781821077215583">Du kannst Elemente auf dem Bildschirm vergrößern oder verkleinern, einschließlich Text</translation>
 <translation id="4406883609789734330">Automatische Untertitel</translation>
 <translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> teilt zum Fortfahren deinen Namen, deine E-Mail-Adresse und dein Profilbild mit dieser Website. Die Nutzungsbedingungen der Website <ph name="BEGIN_LINK" />findest du hier<ph name="END_LINK" />.</translation>
 <translation id="4408599188496843485">&amp;Hilfe</translation>
@@ -6301,6 +6306,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6196640612572343990">Drittanbieter-Cookies blockieren</translation>
 <translation id="6196854373336333322">Die Erweiterung <ph name="EXTENSION_NAME" /> hat die Kontrolle über deine Proxyeinstellungen übernommen. Das bedeutet, dass sie sämtliche Onlineaktivitäten ändern, abbrechen oder überwachen kann. Wenn du nicht sicher bist, wie es zu dieser Änderung gekommen ist, war sie wahrscheinlich nicht beabsichtigt.</translation>
 <translation id="6197128521826316819">QR-Code für diese Seite erstellen</translation>
+<translation id="6198223452299275399">Zwischen Seiten wechseln</translation>
 <translation id="6198252989419008588">PIN ändern</translation>
 <translation id="6200047250927636406">Datei verwerfen</translation>
 <translation id="6200151268994853226">Erweiterung verwalten</translation>
@@ -6698,6 +6704,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6532527800157340614">Eine Anmeldung ist nicht möglich, weil dein Zugriffstoken nicht abgerufen werden konnte. Bitte prüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="6532663472409656417">Unternehmenseigen</translation>
 <translation id="6533315466883598769">Google Übersetzer verwenden</translation>
+<translation id="65334502113648172">Mit den Pfeiltasten kannst du den Anzeigebereich verkleinern oder vergrößern. Um den Anzeigebereich zu verschieben, drücke die Umschalttaste und + und dann die Pfeiltasten.</translation>
 <translation id="6533636340637966565">Wird aktiviert…</translation>
 <translation id="6535331821390304775"><ph name="ORIGIN" /> immer erlauben, Links dieses Typs in der zugehörigen App zu öffnen</translation>
 <translation id="653659894138286600">Dokumente und Bilder scannen</translation>

@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" ಹೆಸರಿನ ಫೈಲ್ ಈಗಾಗಲೇ ಇದೆ. ಬೇರೊಂದು ಹೆಸರನ್ನು ಆರಿಸಿ.</translation>
 <translation id="9046895021617826162">ಸಂಪರ್ಕವು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="9065512565307033593">ನೀವು ಪರಿಶೀಲಿಸಲು ವಿಫಲವಾದರೆ, ನಿಮ್ಮ ನೆಟ್‌ವರ್ಕ್ ಪ್ರವೇಶವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 ಎಚ್ಚರಿಕೆ.}one{<ph name="COUNT" /> ಎಚ್ಚರಿಕೆಗಳು.}other{<ph name="COUNT" /> ಎಚ್ಚರಿಕೆಗಳು.}}</translation>
 <translation id="908378762078012445">ಫೋನೆಟಿಕ್ AATSEEL ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ರಷ್ಯನ್</translation>
 <translation id="9086302186042011942">ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="9099674669267916096">ಪುಟ ಎಣಿಕೆ</translation>

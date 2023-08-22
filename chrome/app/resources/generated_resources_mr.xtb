@@ -71,6 +71,7 @@
 <translation id="1054048317165655285">तुमच्या फोनवर सेटअप पूर्ण करा</translation>
 <translation id="1054153489933238809">नवीन टॅबमध्‍ये मूळ &amp;प्रतिमा उघडा</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{एका आठवड्याच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}other{{NUM_WEEKS} आठवड्यांच्‍या आत <ph name="DEVICE_TYPE" /> अपडेट करा}}</translation>
+<translation id="1056398434290692818">स्‍वाइप करण्याशी संबंधित जेश्चर वापरून मागे आणि पुढे नेव्हिगेट करा</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1056980582064308040">सेटिंग्ज बदलल्याने हॉटस्पॉट रीस्टार्ट होईल. हॉटस्पॉट वापरणारी डिव्हाइस डिस्कनेक्ट होतील.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -269,7 +270,6 @@
 <translation id="1197935538609051549">डीॲक्टिव्हेट करा</translation>
 <translation id="1198066799963193307">दृष्टिदोष असणाऱ्यांसाठी स्पीच टूल</translation>
 <translation id="119944043368869598">सर्व साफ करा</translation>
-<translation id="1199631150313925648">मॅन्‍युअली एंटर करा</translation>
 <translation id="1199814941632954229">या सर्टिफिकेट प्रोफाइलसाठी सर्टिफिकेटची तरतूद केली जात आहे</translation>
 <translation id="120069043972472860">पाहण्यायोग्य नाही</translation>
 <translation id="1201402288615127009">पुढील</translation>
@@ -520,6 +520,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{ॲप काढून टाका}other{ॲप्‍स काढून टाका}}</translation>
 <translation id="1417497355604638350">निदान आणि वापर डेटा पाठवा.</translation>
 <translation id="1418552618736477642">सूचना आणि अ‍ॅप्स</translation>
+<translation id="1418559532423038045">तुमच्या <ph name="DEVICE_TYPE" /> मधून <ph name="VM_NAME" /> काढून टाकते. हे व्हर्च्युअल मशीनमधील सर्व अ‍ॅप्स आणि डेटा हटवेल!</translation>
 <translation id="1418882096915998312">Enterprise नोंदणी प्रगतीपथावर आहे</translation>
 <translation id="1418954524306642206">तुमची प्रिंटर PPD नमूद करण्यासाठी ब्राउझ करा</translation>
 <translation id="1420834118113404499">मीडिया परवाने</translation>
@@ -2413,6 +2414,7 @@
 <translation id="287205682142673348">पोर्ट फॉरवर्डिंग</translation>
 <translation id="287286579981869940"><ph name="PROVIDER_NAME" /> जोडा...</translation>
 <translation id="2872961005593481000">बंद करा</translation>
+<translation id="2873744479411987024">उच्च रिफ्रेश रेटसह, तुमच्याकडे आणखी तपशिलांसह आणखी स्मूथ डिस्प्ले असेल. वाढलेल्या रिफ्रेश रेटचा बॅटरी लाइफवर परिणाम होऊ शकतो.</translation>
 <translation id="2873995907777332853">सर्व कुकी ब्लॉक करण्यासंबंधित तपशील दाखवा</translation>
 <translation id="2874939134665556319">मागील ट्रॅक</translation>
 <translation id="2875698561019555027">(Chrome एरर पेज)</translation>
@@ -2503,6 +2505,7 @@
 <translation id="2944060181911631861">वापर आणि निदान डेटा पाठवा. Google ला आपोआप निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा पाठवून तुमचा Android अनुभव सुधारण्यात मदत करा. हे सिस्ट्म आणि अ‍ॅप स्थिरता आणि इतर सुधारणा करण्यात मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर सारख्या भागीदारांनादेखील मदत करेल. तुमची अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेली असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">फाइलवर जा</translation>
 <translation id="2946119680249604491">कनेक्शन जोडा</translation>
+<translation id="2946190589196900944">डिस्प्लेच्या सीमा</translation>
 <translation id="2946640296642327832">Bluetooth सक्षम करा</translation>
 <translation id="2947605845283690091">वेब ब्राउझिंग वेगवान असले पाहिजे. थोडा वेळ काढा आणि आता <ph name="BEGIN_LINK" />तुमची एक्स्टेंशन तपासा<ph name="END_LINK" />.</translation>
 <translation id="2948300991547862301"><ph name="PAGE_TITLE" /> वर जा</translation>
@@ -2518,6 +2521,7 @@
 <translation id="2959127025785722291">काहीतरी चूक झाली. स्कॅनिंग पूर्ण करता आले नाही. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="2959842337402130152">स्टोरेज जागा कमी असल्यामुळे रिस्टोअर करू शकत नाही. डिव्हाइसमधील <ph name="SPACE_REQUIRED" /> जागा मोकळी करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2960208947600937804">Linux कॉंफिगर करताना एरर आली. तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
+<translation id="2960942820860729477">रिफ्रेश रेट</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (एक्स्टेंशन प्रदान केले)</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
 <translation id="2961695502793809356">पुढे जाण्यासाठी क्लिक करा, इतिहास पहाण्यासाठी होल्ड करा</translation>
@@ -4264,6 +4268,7 @@
 <translation id="4404843640767531781">तुमच्या पालकाने <ph name="APP_NAME" /> ब्लॉक केले आहे. तुमच्या पालकाकडे हे अ‍ॅप वापरण्याची परवानगी मागा.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>
+<translation id="4405781821077215583">मजकुराच्या समावेशासह तुमच्या स्क्रीनवरील आयटम आणखी लहान किंवा मोठे करा</translation>
 <translation id="4406883609789734330">लाइव्ह कॅप्शन</translation>
 <translation id="4407039574263172582">पुढे सुरू ठेवण्यासाठी, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> तुमचे नाव, ईमेल अ‍ॅड्रेस आणि प्रोफाइल फोटो या साइटसह शेअर करेल. या साइटच्या <ph name="BEGIN_LINK" />सेवा अटी<ph name="END_LINK" /> पहा.</translation>
 <translation id="4408599188496843485">मदत</translation>
@@ -6400,6 +6405,7 @@
 <translation id="6196640612572343990">तृतीय पक्ष कुकी ब्लॉक करा</translation>
 <translation id="6196854373336333322">"<ph name="EXTENSION_NAME" />" एक्स्टेंशनने तुमच्या प्रॉक्सी सेटिंग्जचे नियंत्रण घेतले आहे, याचा अर्थ हे तुम्ही ऑनलाइन करता ती कोणतीही गोष्ट बदलू शकते, खंडित करू शकते किंवा चोरून ऐकू शकते. हा बदल का झाला, याबद्दल तुम्ही खात्री नसल्यास, तुम्हाला कदाचित तो नको आहे.</translation>
 <translation id="6197128521826316819">या पेजसाठी QR कोड तयार करा</translation>
+<translation id="6198223452299275399">पेजदरम्यान स्‍वाइप करा</translation>
 <translation id="6198252989419008588">पिन बदला</translation>
 <translation id="6200047250927636406">फाइल काढून टाका</translation>
 <translation id="6200151268994853226">एक्स्टेंशन व्यवस्थापित करा</translation>
@@ -6800,6 +6806,7 @@
 <translation id="6532527800157340614">साइन इन करता आले नाही कारण तुमचे ॲक्सेस टोकन पुन्हा मिळवता आले नाही. कृपया तुमचे नेटवर्क कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="6532663472409656417">एंटरप्राइझची नोंदणी केली</translation>
 <translation id="6533315466883598769">Google Translate वापरा</translation>
+<translation id="65334502113648172">डिस्प्लेचा भाग लहान किंवा मोठा करण्यासाठी अ‍ॅरो की प्रेस नका. डिस्प्लेचा भाग आजूबाजूला हलवण्यासाठी, shift आणि + प्रेस करा, नंतर ॲरो की वापरा.</translation>
 <translation id="6533636340637966565">सुरू करत आहे…</translation>
 <translation id="6535331821390304775">या प्रकारच्या लिंक संबंधित अ‍ॅपमध्ये उघडण्याची <ph name="ORIGIN" /> ला नेहमी अनुमती द्या</translation>
 <translation id="653659894138286600">दस्तऐवज आणि इमेज स्कॅन करा</translation>

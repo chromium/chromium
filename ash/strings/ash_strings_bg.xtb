@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">Лупата за увеличаване на целия екран е активирана. За да я изключите, натиснете отново Ctrl + клавиша „Търсене“ + M.</translation>
 <translation id="2302092602801625023">Този профил се управлява от Family Link</translation>
 <translation id="2303600792989757991">Превключване на общия преглед на прозорците</translation>
+<translation id="2305738328104302723">Списък със задачи в Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: скорошни екранни снимки, изтегляния и фиксирани файлове</translation>
 <translation id="2318576281648121272">Днес, <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, категория на резултатите от търсенето</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">Открояване на предишния елемент в лентата</translation>
 <translation id="3120421559657122717">Да се изключи ли устройството?</translation>
 <translation id="3122464029669770682">Процесор</translation>
+<translation id="3125690294288312932">Тип работа в клас</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Рестартирайте, за да актуализирате</translation>
 <translation id="3139188263101386725">Използване на актуализираната клавишна комбинация</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">Потискане на шума</translation>
 <translation id="3249513730522716925">Прозорецът <ph name="WINDOW_TITLE" /> бе преместен от работен кът <ph name="ACTIVE_DESK" /> в работен кът <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Настройване</translation>
+<translation id="3253743281242075461">Тип работа в клас: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">„What can you do?“ („Какво можеш да правиш?“)</translation>
 <translation id="3256109297135787951">Премахване на фокуса от елемент в лавицата</translation>
 <translation id="3260969790895726815">Говорът се обработва локално и функцията за диктуване работи офлайн, но някои гласови команди няма да се поддържат.</translation>
@@ -1023,6 +1026,7 @@
 <translation id="5253783950165989294">Установена е връзка с устройство на име <ph name="DEVICE_NAME" />. Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
+<translation id="5268819379131021772">Списък със задачи в Google</translation>
 <translation id="5278086053818066789">Включване или изключване на ChromeVox (обратна връзка с говор)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> се нуждае от вниманието ви.</translation>
 <translation id="5283198616748585639">Добавяне на 1 мин</translation>
@@ -1173,6 +1177,7 @@
 <translation id="5864748620896638071">Батерия: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Събира се информация за мрежата</translation>
 <translation id="5867606971598166637">Системният ви администратор наблюдава екраните ви</translation>
+<translation id="5876535466645959772">Избраният списък е празен. Преминете надолу, за да добавите нова задача</translation>
 <translation id="5876666360658629066">Въведете код на родител</translation>
 <translation id="5881540930187678962">Настройте Phone Hub по-късно</translation>
 <translation id="5881663018261910378">Изкл.</translation>

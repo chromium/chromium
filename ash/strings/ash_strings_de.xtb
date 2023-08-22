@@ -300,6 +300,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2298170939937364391">Vollbildlupe aktiviert. Wenn du sie deaktivieren möchtest, drücke noch einmal Strg + Suchtaste + M.</translation>
 <translation id="2302092602801625023">Dieses Konto wird über Family Link verwaltet</translation>
 <translation id="2303600792989757991">Fensterübersicht umschalten</translation>
+<translation id="2305738328104302723">Google Tasks-Liste: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: Neueste Bildschirmaufnahmen, Downloads und angepinnte Dateien</translation>
 <translation id="2318576281648121272">Heute <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, Suchergebniskategorie</translation>
@@ -483,6 +484,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3113492864356515707">Vorheriges Element in der Ablage hervorheben</translation>
 <translation id="3120421559657122717">Gerät herunterfahren?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Kursaufgabentyp</translation>
 <translation id="3126026824346185272">Strg</translation>
 <translation id="3126069444801937830">Zum Aktualisieren neu starten</translation>
 <translation id="3139188263101386725">Aktualisierte Tastenkombination verwenden</translation>
@@ -509,6 +511,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="324366796737464147">Geräuschunterdrückung</translation>
 <translation id="3249513730522716925">Das Fenster "<ph name="WINDOW_TITLE" />" wurde von Desktop <ph name="ACTIVE_DESK" /> zu Desktop <ph name="TARGET_DESK" /> verschoben</translation>
 <translation id="3252573918265662711">Einrichtung</translation>
+<translation id="3253743281242075461">Kursaufgabentyp: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Was kannst du alles tun?</translation>
 <translation id="3256109297135787951">Markierung eines Elements in der Ablage entfernen</translation>
 <translation id="3260969790895726815">Sprachaufnahmen werden lokal verarbeitet und die Spracheingabe funktioniert offline, einige Sprachbefehle sind jedoch nicht verfügbar.</translation>
@@ -1001,6 +1004,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
 <translation id="5258528442992323769">Keine gespeicherten Desktops</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
+<translation id="5268819379131021772">Google Tasks-Liste</translation>
 <translation id="5278086053818066789">ChromeVox aktivieren oder deaktivieren (gesprochenes Feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5283198616748585639">1 min hinzufügen</translation>
@@ -1147,6 +1151,7 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5864748620896638071">Akku <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Netzwerkinformationen werden erfasst</translation>
 <translation id="5867606971598166637">Dein Systemadministrator greift auf deine Bildschirme zu</translation>
+<translation id="5876535466645959772">Die ausgewählte Liste ist leer – füge unten eine neue Aufgabe hinzu</translation>
 <translation id="5876666360658629066">Elterncode eingeben</translation>
 <translation id="5881540930187678962">Phone Hub später einrichten</translation>
 <translation id="5881663018261910378">Aus</translation>

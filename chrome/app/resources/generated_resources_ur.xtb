@@ -268,7 +268,6 @@
 <translation id="1197935538609051549">غیر فعال کریں</translation>
 <translation id="1198066799963193307">کم بصارت والے اسپیچ ٹولز</translation>
 <translation id="119944043368869598">سب کو صاف کریں</translation>
-<translation id="1199631150313925648">دستی طور پر درج کریں</translation>
 <translation id="1199814941632954229">ان سرٹیفکیٹ پروفائلز کے لیے سرٹیفکیٹس فراہم کیے جا رہے ہیں</translation>
 <translation id="120069043972472860">ناقابل دید</translation>
 <translation id="1201402288615127009">اگلا</translation>
@@ -1916,6 +1915,7 @@
 <translation id="2480868415629598489">آپ جو ڈیٹا کاپی اور پیسٹ کرتے ہیں اس میں ترمیم کریں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2482895651873876648">ٹیب کو گروپ میں منتقل کر دیا گیا <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">‏Chrome براؤزر کی ترتیبات میں سرچ انجن سیٹ کریں</translation>
 <translation id="2484743711056182585">رسائی حاصل کرنے کی اجازت کو ہٹائیں</translation>
 <translation id="2484909293434545162">اگر کوئی سائٹ کوکیز استعمال کرتی ہے تو وہ یہاں ظاہر ہوگی</translation>
 <translation id="2484959914739448251">‏اپنے سبھی مطابقت پذیر آلات اور اپنے Google اکاؤنٹ سے براؤزنگ ڈیٹا صاف کرنے کیلئے، <ph name="BEGIN_LINK" />اپنا پاس فریز درج کریں<ph name="END_LINK" />۔</translation>
@@ -2072,6 +2072,7 @@
 <translation id="2612676031748830579">کارڈ نمبر</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> پر کسی بھی ایکسٹینشنز کی اجازت نہ دیں</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکے گا</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{اس ایکسٹینشن میں <ph name="FILE1" /> کھولیں اور اس میں ترمیم کریں}other{اس ویب ایپ میں ... <ph name="FILE1" /> کھولیں اور اس میں ترمیم کریں}}</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
 <translation id="2618797463720777311">قریبی آلات کے ساتھ اشتراک کو سیٹ اپ کریں</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4495,6 +4496,7 @@
 <translation id="4585793705637313973">صفحہ میں ترمیم کریں</translation>
 <translation id="4586275095964870617"><ph name="URL" /> کو متبادل براؤزر میں نہیں کھولا جا سکا۔ براہ کرم اپنے سسٹم کے منتظم سے رابطہ کریں۔</translation>
 <translation id="4587589328781138893">سائٹیں</translation>
+<translation id="4588749726511456218">اسکرول ایکسلریشن کے بارے میں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ڈاؤن لوڈ ڈائریکٹری میں کامیابی کے ساتھ لکھے گئے لاگز۔</translation>
 <translation id="459204634473266369">کوئی بھی آلہ <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں ہے</translation>
 <translation id="4592525994536856567">براؤز اور تلاش کرنا تیزر تر ہے۔</translation>
@@ -6335,6 +6337,7 @@
 <translation id="6130692320435119637">‏Wi-Fi شامل کریں</translation>
 <translation id="6130887916931372608">کی بورڈ کی کلید</translation>
 <translation id="6132714462430777655">اسکول میں اندراج کو نظر انداز کریں؟</translation>
+<translation id="6134428719487602109">‏بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا Chromebook ری سیٹ کریں۔</translation>
 <translation id="6135823405800500595">‏یقینی بنائیں کہ آپ کا فون قریب ہے، غیر مقفل ہے، اور بلوٹوتھ اور Wi-Fi آن ہیں</translation>
 <translation id="6135826623269483856">آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہیں ہے</translation>
 <translation id="6136114942382973861">ڈاؤن لوڈز بار بند کریں</translation>

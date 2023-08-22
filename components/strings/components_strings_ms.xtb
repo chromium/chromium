@@ -135,6 +135,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Anda memasukkan kata laluan pada tapak yang tidak diurus oleh organisasi anda. Untuk melindungi akaun anda, jangan gunakan semula kata laluan anda pada apl dan tapak lain.</translation>
 <translation id="1257553931232494454">tahap zum</translation>
+<translation id="1258942153897182536">OCR dalam proses ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus tetapan Chrome anda</translation>
 <translation id="1264309058268477500">Alternatif</translation>
 <translation id="1264974993859112054">Sukan</translation>
@@ -311,6 +312,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1594030484168838125">Pilih</translation>
 <translation id="1596296697375291157">Filem ngeri, jenayah &amp; misteri</translation>
 <translation id="1597473228022844713">Anda menjejaki produk ini. Halaman ini disimpan dalam <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
+<translation id="1598816256585174656">Kunci laluan daripada Windows Hello</translation>
 <translation id="1599199147673445968">Kad baharu? <ph name="BEGIN_LINK" />Masukkan Butiran Kad<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Main permainan Dino Run dalam Chrome</translation>
 <translation id="161042844686301425">Sian</translation>
@@ -1352,6 +1354,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3827112369919217609">Mutlak</translation>
 <translation id="3827666161959873541">Filem keluarga</translation>
 <translation id="3828924085048779000">Kosongkan frasa laluan adalah tidak dibenarkan.</translation>
+<translation id="3830470485672984938">Gunakan kunci laluan lain</translation>
 <translation id="3831065134033923230">Semak kata laluan anda yang disimpan</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> telah memasang sambungan bagi fungsi tambahan. Sambungan mempunyai akses kepada sesetengah data anda.</translation>
 <translation id="3832522519263485449">Berbilang tebukan kiri</translation>
@@ -1408,6 +1411,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3964661563329879394">{COUNT,plural, =0{Tiada}=1{Daripada 1 tapak }other{Daripada # tapak }}</translation>
 <translation id="397105322502079400">Mengira...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> disekat</translation>
+<translation id="3983340834939868135">Kunci laluan daripada "<ph name="VENDOR_NAME" />"</translation>
 <translation id="3984581365661308170">Sampul #11</translation>
 <translation id="398470910934384994">Burung</translation>
 <translation id="3985750352229496475">Urus Alamat...</translation>
@@ -1787,6 +1791,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="4754461935447132332">Tidak dibenarkan untuk laman yang tidak selamat</translation>
 <translation id="4756388243121344051">&amp;Sejarah</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Kunci laluan daripada Profil Chrome anda</translation>
 <translation id="4757993714154412917">Anda baru sahaja memasukkan kata laluan pada laman yang menipu. Untuk melindungi akaun anda, Chromium mengesyorkan agar anda menyemak kata laluan anda yang disimpan.</translation>
 <translation id="4758311279753947758">Tambahkan maklumat hubungan</translation>
 <translation id="4761104368405085019">Gunakan mikrofon anda</translation>
@@ -1943,6 +1948,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5070838744279127212">Gulungan Kesepuluh</translation>
 <translation id="507130231501693183">Peti mel 4</translation>
 <translation id="5074134429918579056">Seluar &amp; Seluar Pendek</translation>
+<translation id="5077767274537436092">Gunakan Kunci Laluan Lain</translation>
 <translation id="5078060223219502807">Kata laluan yang baru anda gunakan ditemukan dalam pelanggaran data. Untuk melindungi akaun anda, Password Manager mengesyorkan agar anda menukarnya sekarang, kemudian menyemak kata laluan yang disimpan.</translation>
 <translation id="5086225927071063542">Perkomputeran awan &amp; teragih</translation>
 <translation id="5087286274860437796">Sijil pelayan tidak sah pada masa ini.</translation>
@@ -2112,6 +2118,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Tiada laman disekat}=1{1 laman disekat}other{# laman disekat}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> mahu menghantar pemberitahuan kepada anda</translation>
 <translation id="5430298929874300616">Alih keluar penanda halaman</translation>
+<translation id="54430913453805768"><ph name="URL" /> mahu mengawal dan mengatur cara semula peranti MIDI (SysEx) anda</translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
 <translation id="5447235695608032700">Benarkan <ph name="SITE" /> menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5447765697759493033">Tapak ini tidak akan diterjemah</translation>
@@ -2613,6 +2620,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6480864723214312258">Bateri Isi Rumah</translation>
 <translation id="6486200200930923183">Filem dokumentari</translation>
 <translation id="6489534406876378309">Mulakan muat naik ranap sistem</translation>
+<translation id="6491663123807473970"><ph name="URL" /> mahu menggunakan peranti MIDI anda</translation>
 <translation id="6493924760403974580">Apl ini hanya menyokong saiz ini.</translation>
 <translation id="6494750904506170417">tetingkap timbul dan ubah hala</translation>
 <translation id="6497295192259406877">Operasi perniagaan</translation>
@@ -2898,6 +2906,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7102079138917191645">Pembinaan &amp; penyenggaraan</translation>
 <translation id="7102554173784142865">Main permainan Dino Chrome</translation>
 <translation id="7102760431686146931">Peralatan Memasak &amp; Hidangan Makanan</translation>
+<translation id="7105998430540165694">Kunci laluan daripada iCloud Keychain</translation>
 <translation id="7106762743910369165">Penyemak imbas anda diurus oleh organisasi anda</translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> mahu menggunakan kamera anda</translation>
@@ -3153,6 +3162,7 @@ Butiran tambahan:
 <translation id="7582602800368606489">Buat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="7583969447617676942">Perkhidmatan perundangan</translation>
 <translation id="7586676035079382730">Pemberitahuan tidak dibenarkan</translation>
+<translation id="7588460771338574392">Kunci laluan daripada "<ph name="PHONE_NAME" />"</translation>
 <translation id="7588707273764747927">Pindahkan</translation>
 <translation id="7591288787774558753">Kongsi kandungan sulit?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> mahu menggunakan kuki dan data tapak pada <ph name="TOP_LEVEL_URL" /></translation>

@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Tệp có tên "<ph name="FILE_NAME" />" đã tồn tại. Vui lòng chọn một tên khác.</translation>
 <translation id="9046895021617826162">Kết nối không thành công</translation>
 <translation id="9065512565307033593">Nếu không xác minh được, bạn sẽ không thể dùng mạng.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 cảnh báo.}other{<ph name="COUNT" /> cảnh báo.}}</translation>
 <translation id="908378762078012445">Tiếng Nga bằng bàn phím phiên âm AATSEEL</translation>
 <translation id="9086302186042011942">Đang đồng bộ hóa</translation>
 <translation id="9099674669267916096">Số lượng trang</translation>

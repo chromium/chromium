@@ -300,6 +300,7 @@
 <translation id="2298170939937364391">Уключана поўнаэкранная лупа. Каб выключыць яе, зноў націсніце Ctrl + Пошук + M.</translation>
 <translation id="2302092602801625023">Гэты ўліковы запіс кіруецца праз Family Link</translation>
 <translation id="2303600792989757991">Уключэнне агляду вокнаў</translation>
+<translation id="2305738328104302723">Спіс Google Задач: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: нядаўнія здымкі экрана, спампоўкі і замацаваныя файлы</translation>
 <translation id="2318576281648121272">Сёння <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, катэгорыя вынікаў пошуку</translation>
@@ -483,6 +484,7 @@
 <translation id="3113492864356515707">Вылучыць папярэдні элемент на панэлі доступу</translation>
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
 <translation id="3122464029669770682">Працэсар</translation>
+<translation id="3125690294288312932">Тып задання</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Перазапусціце для абнаўлення</translation>
 <translation id="3139188263101386725">Карыстайцеся новым спалучэннем клавіш</translation>
@@ -509,6 +511,7 @@
 <translation id="324366796737464147">Падаўленне шуму</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Наладка</translation>
+<translation id="3253743281242075461">Тып задання: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Што ты ўмееш?</translation>
 <translation id="3256109297135787951">Скасаваць вылучэнне элемента на паліцы</translation>
 <translation id="3260969790895726815">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай. Некаторыя галасавыя каманды могуць не працаваць.</translation>
@@ -1001,6 +1004,7 @@
 <translation id="5253783950165989294">Устаноўлена падключэнне да прылады "<ph name="DEVICE_NAME" />", <ph name="BATTERY_PERCENTAGE" />% зараду акумулятара</translation>
 <translation id="5258528442992323769">Няма захаваных працоўных сталоў</translation>
 <translation id="5260676007519551770">Стол 4</translation>
+<translation id="5268819379131021772">Спіс Google Задач</translation>
 <translation id="5278086053818066789">Уключыць або выключыць ChromeVox (галасавая зваротная сувязь)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> патрабуе вашай увагі.</translation>
 <translation id="5283198616748585639">Дадаць 1 хвіліну</translation>
@@ -1147,6 +1151,7 @@
 <translation id="5864748620896638071">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Ідзе збор інфармацыі пра сетку</translation>
 <translation id="5867606971598166637">Вашы экраны адсочвае сістэмны адміністратар</translation>
+<translation id="5876535466645959772">Выбраны спіс пусты. Каб дадаць новую задачу, перайдзіце ўніз старонкі.</translation>
 <translation id="5876666360658629066">Увядзіце бацькоўскі код</translation>
 <translation id="5881540930187678962">Наладзьце Тэлефонны цэнтр пазней</translation>
 <translation id="5881663018261910378">Выключана</translation>

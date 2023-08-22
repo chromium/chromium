@@ -306,6 +306,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2298170939937364391">Full-screen Magnifier enabled. Press Ctrl+Search+M again to toggle it off.</translation>
 <translation id="2302092602801625023">This account is managed by Family Link</translation>
 <translation id="2303600792989757991">Toggle window overview</translation>
+<translation id="2305738328104302723">Google tasks list: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: recent screen captures, downloads and pinned files</translation>
 <translation id="2318576281648121272">Today <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , search result category</translation>
@@ -494,6 +495,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3113492864356515707">Highlight previous item on shelf</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Classwork type</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139188263101386725">Use the updated shortcut</translation>
@@ -520,6 +522,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Set-up</translation>
+<translation id="3253743281242075461">Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">What can you do?</translation>
 <translation id="3256109297135787951">Remove the highlight from an item on your shelf</translation>
 <translation id="3260969790895726815">Speech is processed locally and dictation works offline, but some voice commands won’t work.</translation>
@@ -1023,6 +1026,7 @@ Connect your device to power.</translation>
 <translation id="5253783950165989294">Connected to a device named <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
 <translation id="5258528442992323769">No saved desks</translation>
 <translation id="5260676007519551770">Desk 4</translation>
+<translation id="5268819379131021772">Google tasks list</translation>
 <translation id="5278086053818066789">Turn on/off ChromeVox (spoken feedback)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requests your attention.</translation>
 <translation id="5283198616748585639">Add 1 min</translation>
@@ -1173,6 +1177,7 @@ Connect your device to power.</translation>
 <translation id="5864748620896638071">Battery <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Collecting network information</translation>
 <translation id="5867606971598166637">Your system administrator is monitoring your screens</translation>
+<translation id="5876535466645959772">Selected list empty, navigate down to add a new task</translation>
 <translation id="5876666360658629066">Enter parental code</translation>
 <translation id="5881540930187678962">Set up Phone Hub later</translation>
 <translation id="5881663018261910378">Off</translation>

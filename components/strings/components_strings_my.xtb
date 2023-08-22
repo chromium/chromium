@@ -312,6 +312,7 @@
 <translation id="1594030484168838125">ရွေးချယ်ရန်</translation>
 <translation id="1596296697375291157">သည်းထိတ်ရင်ဖို၊ ရာဇဝတ်နှင့် လျှို့ဝှက်ဆန်းကြယ် ရုပ်ရှင်များ</translation>
 <translation id="1597473228022844713">ဤထုတ်ကုန်ကို စောင့်ကြည့်နေပါသည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> တွင် သိမ်းထားသည်</translation>
+<translation id="1598816256585174656">Windows Hello မှ လျှို့ဝှက်ကီး</translation>
 <translation id="1599199147673445968">ကတ် အသစ်လား? <ph name="BEGIN_LINK" />ကတ် အသေးစိတ်ထည့်ရန်<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome တွင် Dino Run ဂိမ်းကစားရန်</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -1352,6 +1353,7 @@
 <translation id="3827112369919217609">အပြည့်အဝ</translation>
 <translation id="3827666161959873541">မိသားစု ရုပ်ရှင်များ</translation>
 <translation id="3828924085048779000">စကားစုဝှက် ပလာ ဖြစ်မှု ခွင့်မပြုပါ။</translation>
+<translation id="3830470485672984938">အခြားလျှို့ဝှက်ကီး သုံးရန်</translation>
 <translation id="3831065134033923230">သိမ်းထားသော စကားဝှက်များကို စစ်ဆေးပါ</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> က နောက်ထပ်ဝန်ဆောင်မှုများအတွက် နောက်ဆက်တွဲများကို စနစ်ထည့်သွင်းထားသည်။ နောက်ဆက်တွဲများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
 <translation id="3832522519263485449">ဘယ်ဘက်တွင် အများအပြားဖောက်ရန်</translation>
@@ -1408,6 +1410,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{ဝဘ်ဆိုက် ၁ ခုမှ }other{ဝဘ်ဆိုက် # ခုမှ }}</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ကိုပိတ်ဆို့ထားသည်</translation>
+<translation id="3983340834939868135">“<ph name="VENDOR_NAME" />” ထံမှ လျှို့ဝှက်ကီး</translation>
 <translation id="3984581365661308170">#11 စာအိတ်</translation>
 <translation id="398470910934384994">ငှက်များ</translation>
 <translation id="3985750352229496475">လိပ်စာများ စီမံရန်...</translation>
@@ -1788,6 +1791,7 @@
 <translation id="4754461935447132332">မလုံခြုံသော ဝဘ်ဆိုက်များအတွက် ခွင့်မပြုပါ</translation>
 <translation id="4756388243121344051">မှတ်တမ်း</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">သင့် Chrome ပရိုဖိုင်မှ လျှို့ဝှက်ကီး</translation>
 <translation id="4757993714154412917">လှည့်ဖြားတတ်သော ဝဘ်ဆိုက်တစ်ခုတွင် သင့်စကားဝှက်ကို သင်က ယခုလေးတွင် ထည့်လိုက်သည်။ အကောင့်များ လုံခြုံစေရန်အတွက် သင်သိမ်းထားသည့် စကားဝှက်များကို စစ်ဆေးရန် Chromium ကအကြုံပြုပါသည်။</translation>
 <translation id="4758311279753947758">ဆက်သွယ်ရန်အချက်အလက် ထည့်ရန်</translation>
 <translation id="4761104368405085019">သင့်မိုက်ခရိုဖုန်းကို အသုံးပြုရန်</translation>
@@ -1944,6 +1948,7 @@
 <translation id="5070838744279127212">ဆယ်ခုမြောက်အလိပ်</translation>
 <translation id="507130231501693183">စာတိုက်ပုံး ၄</translation>
 <translation id="5074134429918579056">ဘောင်းဘီရှည်နှင့် အတို</translation>
+<translation id="5077767274537436092">အခြားလျှို့ဝှက်ကီး သုံးရန်</translation>
 <translation id="5078060223219502807">သင်သုံးလိုက်သောစကားဝှက်ကို ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ သင့်အကောင့်များကို လုံခြုံစေရန် ‘စကားဝှက်မန်နေဂျာ’ က သင်သိမ်းထားသော စကားဝှက်များကို ယခုပြောင်းရန်နှင့် စစ်ဆေးရန် အကြံပြုပါသည်။</translation>
 <translation id="5086225927071063542">ဖြန့်ချိထားသောစနစ်နှင့် cloud သုံးဝန်ဆောင်မှု</translation>
 <translation id="5087286274860437796">ဆာဗာ၏ အသိမှတ်ပြုလက်မှတ်သည် ယခုအချိန်တွင် မှန်ကန်မှုမရှိပါ။</translation>
@@ -2113,6 +2118,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{မည်သည့်ဝဘ်ဆိုက်မျှ ပိတ်မထားပါ}=1{ဝဘ်ဆိုက် ၁ ခု ပိတ်ထားသည်}other{ဝဘ်ဆိုက် # ခု ပိတ်ထားသည်}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> သည် သင့်ထံသို့ အကြောင်းကြားချက်များ ပို့လိုသည်</translation>
 <translation id="5430298929874300616">စာညှပ် ဖယ်ရှားရန်</translation>
+<translation id="54430913453805768"><ph name="URL" /> က သင့် MIDI စက်များ (SysEx) ကို စီမံပြီး ပရိုဂရမ်ပြန်လုပ်လိုသည်</translation>
 <translation id="5443468954631487277">ပြောင်းပြန်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
 <translation id="5447235695608032700">၎င်းတို့သိမ်းထားသော သင့်အကြောင်း အချက်အလက်များကို <ph name="SITE" /> အား သုံးခွင့်ပြုရန်</translation>
 <translation id="5447765697759493033">ဤဝဘ်ဆိုက်ကို ဘာသာပြန်မည် မဟုတ်ပါ</translation>
@@ -2613,6 +2619,7 @@
 <translation id="6480864723214312258">အိမ်ထောင်စုသုံးဘက်ထရီ</translation>
 <translation id="6486200200930923183">မှတ်တမ်းရုပ်ရှင်များ</translation>
 <translation id="6489534406876378309">ပျက်စီးမှုများ စတင် တင်မည်</translation>
+<translation id="6491663123807473970"><ph name="URL" /> က သင့် MIDI စက်များကို သုံးလိုသည်</translation>
 <translation id="6493924760403974580">ဤအက်ပ်က ယခုအရွယ်အစားကိုသာ ပံ့ပိုးသည်။</translation>
 <translation id="6494750904506170417">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ပြန်ညွှန်ပြခြင်းများ</translation>
 <translation id="6497295192259406877">လုပ်ငန်းလည်ပတ်မှုများ</translation>
@@ -2898,6 +2905,7 @@
 <translation id="7102079138917191645">ဆောက်လုပ်ခြင်းနှင့် ပြုပြင်ထိန်းသိမ်းခြင်း</translation>
 <translation id="7102554173784142865">Chrome Dino ဂိမ်းကစားရန်</translation>
 <translation id="7102760431686146931">အိုးခွက်ပန်းကန်</translation>
+<translation id="7105998430540165694">iCloud Keychain မှ လျှို့ဝှက်ကီး</translation>
 <translation id="7106762743910369165">သင့်ဘရောင်ဇာကို သင့်အဖွဲ့အစည်းက စီမံခန့်ခွဲသည်</translation>
 <translation id="7108338896283013870">ဝှက်ထားရန်</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> သည် သင်၏ကင်မရာကို အသုံးပြုလိုသည်</translation>
@@ -3154,6 +3162,7 @@
 <translation id="7582602800368606489">Google Calendar တွင် အစီအစဉ်အသစ် အမြန်ပြုလုပ်ရန်</translation>
 <translation id="7583969447617676942">ဥပဒေဆိုင်ရာဝန်ဆောင်မှုလုပ်ငန်းများ</translation>
 <translation id="7586676035079382730">အကြောင်းကြားချက်များ ခွင့်ပြုမထားပါ</translation>
+<translation id="7588460771338574392">“<ph name="PHONE_NAME" />” မှ လျှို့ဝှက်ကီး</translation>
 <translation id="7588707273764747927">လွှဲပြောင်းရန်</translation>
 <translation id="7591288787774558753">လျှို့ဝှက်အကြောင်းအရာကို မျှဝေမလား။</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> က <ph name="TOP_LEVEL_URL" /> တွင် ကွတ်ကီးနှင့် ဝဘ်ဆိုက်ဒေတာများ အသုံးပြုလိုသည်</translation>

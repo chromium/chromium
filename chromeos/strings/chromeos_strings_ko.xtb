@@ -366,6 +366,7 @@
 <translation id="3941014780699102620">호스트를 확인할 수 없습니다.</translation>
 <translation id="3942420633017001071">진단</translation>
 <translation id="3954678691475912818">기기 유형을 알 수 없습니다.</translation>
+<translation id="3959413315969265597">이 APN을 사용 설정할 수 없습니다. 기본 APN이 추가되었는지 확인하세요.</translation>
 <translation id="3966286471246132217">더욱 정확한 결과를 위해 테스트가 완료될 때까지 모든 앱을 닫으세요.</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3969602104473960991">ChromeOS 비밀번호 업데이트됨</translation>

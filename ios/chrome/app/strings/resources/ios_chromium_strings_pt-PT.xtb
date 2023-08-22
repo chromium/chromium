@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Ajudar a melhorar as funcionalidades e o desempenho do Chromium</translation>
 <translation id="1531155317299575425">Mostra pedidos para iniciar sessão no Chromium.</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
+<translation id="1647558790457890304">Definições do Chromium</translation>
 <translation id="1722370509450468186">A palavra-passe será guardada na sua Conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
 <translation id="1758508597843173586">Bloqueie a sua Navegação anónima quando sai do Chromium ou muda para uma app diferente.</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">Envia-lhe avisos sobre sites perigosos, mesmo aqueles que a Google desconhecia, ao analisar mais dados de sites do que a Proteção padrão. Pode optar por ignorar os avisos do Chromium.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="3827545470516145620">Vai obter a proteção de segurança padrão neste dispositivo</translation>
+<translation id="3886689467633467988">Inicie sessão neste site e no Chromium para obter os seus marcadores e muito mais em todos os seus dispositivos.</translation>
+<translation id="394413318816989199">A encriptação da frase de acesso não inclui métodos de pagamento nem moradas
+
+Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="3955621079070267756">Abra o Chromium a partir de qualquer app</translation>
 <translation id="4043291146360695975">As palavras-passe são guardadas no Gestor de palavras-passe apenas neste dispositivo.</translation>
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Para ajudar a melhorar a app, o Chromium envia relatórios de utilização e falhas para a Google. <ph name="BEGIN_LINK" />Faça a gestão<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ative o leitor do Chromium</translation>
 <translation id="4736424910885271643">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chromium serão limpos deste dispositivo</translation>
+<translation id="4790638144988730920">Continue a usar os dados do Chromium na sua Conta Google.</translation>
 <translation id="4828317641996116749">O Chromium não conseguiu verificar todas as palavras-passe. Tente mais tarde.</translation>
 <translation id="4985291216379576555">Está offline. O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="4996471330284142407">Faça mais com um Chromium simples, seguro e mais rápido do que nunca.</translation>
 <translation id="4999538639245140991">Uma vez que está a terminar sessão numa conta gerida por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os seus dados do Chromium serão eliminados deste dispositivo. Contudo, permanecem na sua Conta Google.</translation>
 <translation id="5042011327527167688">Toque em "Ver com o Google Maps no Chromium".</translation>
 <translation id="5048795749726991615">Para obter facilmente as palavras-passe guardadas nas outras apps, use o Chromium para o preenchimento automático</translation>
+<translation id="5131565040785979529">A sua organização, <ph name="DOMAIN" />, gere a conta na qual tem sessão iniciada e como o Chromium é usado.</translation>
 <translation id="5171868502429358653">Inicie sessão no Chromium</translation>
 <translation id="5224391634244552924">Não existem palavras-passe guardadas. O Chromium consegue verificar as suas palavras-passe quando as guarda.</translation>
+<translation id="5242782538551259282">Alguns dos seus dados do Chromium ainda não foram guardados na sua Conta Google.
+
+        Experimente aguardar alguns minutos antes de terminar sessão. Se terminar sessão agora, estes dados vão ser eliminados.</translation>
 <translation id="5308226104666789935">O Chromium não consegue verificar se existem atualizações.</translation>
 <translation id="5396916991083608703">Quer definir o Chromium como a predefinição?</translation>
 <translation id="5453478652154926037">O Chromium não consegue verificar as suas palavras-passe.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">Este cartão mostra sugestões sobre como tirar o máximo partido do Chromium.</translation>
 <translation id="5700709190537129682">O Chromium não consegue verificar as suas palavras-passe.</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
+<translation id="5889847953983052353">Quando a opção está ativada:
+<ph name="BEGIN_INDENT" /> • Ajude a melhorar o Chromium para as pessoas que o usam de forma semelhante à sua.<ph name="END_INDENT" />
+
+Aspetos a considerar:
+<ph name="BEGIN_INDENT" /> • São enviadas à Google informações sobre a sua utilização do Chromium, mas estas não são associadas a si.
+
+  • Se o Chromium falhar, os detalhes sobre a falha podem incluir algumas informações pessoais.
+
+  • Se sincronizar o histórico com a sua Conta Google, as métricas também podem incluir informações acerca dos URLs que visita.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">Está a iniciar sessão com uma conta gerida por <ph name="DOMAIN" /> e a conceder ao respetivo gestor o controlo dos seus dados do Chromium. Os dados ficarão permanentemente associados a esta conta. Terminar sessão no Chromium elimina os seus dados deste dispositivo, embora permaneçam armazenados na Conta Google.</translation>
+<translation id="5951593919357934226">Tire o máximo partido do Chromium.</translation>
 <translation id="5983312940147103417">Melhore o Chromium</translation>
 <translation id="6062449165341879460">A sua organização <ph name="DOMAIN" /> vai ter acesso aos seus dados do Chromium, marcadores, histórico, palavras-passe e outras definições que armazenar nesta conta. Quando terminar sessão, os dados são limpos deste dispositivo.  No entanto, os dados permanecem armazenados na sua Conta Google gerida e ficam disponíveis para a sua organização. A sua organização também pode definir Políticas do Utilizador específicas dessa conta que podem alterar o comportamento do Chromium.</translation>
 <translation id="61109258320235597">Para usar e guardar dados do Chromium na sua Conta Google, introduza a sua frase de acesso.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Quer terminar sessão no Chromium?</translation>
 <translation id="632825460376924298">Permitir o início de sessão no Chromium</translation>
 <translation id="6337530241089703714">Escolha se quer limpar os seus dados do Chromium deste dispositivo ou mantê-los</translation>
+<translation id="6407399265324739055">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chromium não é sincronizado.
+
+Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google não recebe nem armazena a frase de acesso. Se se esquecer da frase de acesso ou quiser alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chromium na sua conta<ph name="END_LINK" />.</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6563921047760808519">Saiba <ph name="BEGIN_LINK" />como o Chromium mantém os seus dados privados<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">O Chromium suporta agora Políticas do Utilizador para a sua conta gerida</translation>

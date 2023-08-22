@@ -71,6 +71,7 @@
 <translation id="1054048317165655285">Довршите подешавање на телефону</translation>
 <translation id="1054153489933238809">Отвори оригиналну сл&amp;ику на новој картици</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Ажурирајте <ph name="DEVICE_TYPE" /> у року од 1 недеље}one{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеље}few{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеље}other{Ажурирајте <ph name="DEVICE_TYPE" /> у року од {NUM_WEEKS} недеља}}</translation>
+<translation id="1056398434290692818">Померајте уназад и унапред помоћу покрета превлачења</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1056980582064308040">Ако промените подешавања, хотспот ће се рестартовати. Веза уређаја са хотспотом биће прекинута.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -269,7 +270,6 @@
 <translation id="1197935538609051549">Деактивирај</translation>
 <translation id="1198066799963193307">Алатке за говор за слабовиде</translation>
 <translation id="119944043368869598">Обриши све</translation>
-<translation id="1199631150313925648">Унесите ручно</translation>
 <translation id="1199814941632954229">Сертификати се додељују за следеће профиле сертификата</translation>
 <translation id="120069043972472860">Не може да се гледа</translation>
 <translation id="1201402288615127009">Даље</translation>
@@ -520,6 +520,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Уклони апликацију}one{Уклони апликације}few{Уклони апликације}other{Уклони апликације}}</translation>
 <translation id="1417497355604638350">Шаљите податке о дијагностици и коришћењу.</translation>
 <translation id="1418552618736477642">Обавештења и апликације</translation>
+<translation id="1418559532423038045">Уклања <ph name="VM_NAME" /> са уређаја <ph name="DEVICE_TYPE" />. Тиме ћете избрисати све апликације и податке на виртуелној машини.</translation>
 <translation id="1418882096915998312">Регистрација за предузећа је у току</translation>
 <translation id="1418954524306642206">Прегледајте да бисте навели PPD штампача</translation>
 <translation id="1420834118113404499">Лиценце за медије</translation>
@@ -2398,6 +2399,7 @@
 <translation id="287205682142673348">Прослеђивање порта</translation>
 <translation id="287286579981869940">Додај <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Искључи</translation>
+<translation id="2873744479411987024">Уз већу учесталост освежавања, имаћете течни приказ са више детаља. Већа брзина освежавања може да утиче на трајање батерије.</translation>
 <translation id="2873995907777332853">Приказуј детаље о блокирању свих колачића</translation>
 <translation id="2874939134665556319">Претходна песма</translation>
 <translation id="2875698561019555027">(Chrome странице са грешкама)</translation>
@@ -2488,6 +2490,7 @@
 <translation id="2944060181911631861">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да вам пружимо бољи доживљај Android-а тако што ћете аутоматски слати податке о дијагностици, уређају и коришћењу апликација Google-у. То ће помоћи у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. Ако укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу. <ph name="BEGIN_LINK1" />Сазнајте више<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Иди на фајлове</translation>
 <translation id="2946119680249604491">Додај везу</translation>
+<translation id="2946190589196900944">Прикажи границе</translation>
 <translation id="2946640296642327832">Омогући Bluetooth</translation>
 <translation id="2947605845283690091">Прегледање веба треба да буде брзо. Одвојите мало времена и <ph name="BEGIN_LINK" />проверите додатке<ph name="END_LINK" />.</translation>
 <translation id="2948300991547862301">Иди на <ph name="PAGE_TITLE" /></translation>
@@ -2503,6 +2506,7 @@
 <translation id="2959127025785722291">Дошло је до грешке. Скенирање није довршено. Пробајте поново.</translation>
 <translation id="2959842337402130152">Враћање није успело због недостатка меморијског простора. Ослободите <ph name="SPACE_REQUIRED" /> са уређаја и пробајте поново.</translation>
 <translation id="2960208947600937804">Дошло је до грешке при конфигурисању Linux-а. Обратите се администратору.</translation>
+<translation id="2960942820860729477">Учесталост освежавања</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (продужено је)</translation>
 <translation id="2961210776189273067">Звање</translation>
 <translation id="2961695502793809356">Кликните да бисте отишли напред, задржите да бисте видели историју</translation>
@@ -4251,6 +4255,7 @@
 <translation id="4404843640767531781">Родитељ блокира апликацију <ph name="APP_NAME" />. Затражи од родитеља дозволу за коришћење ове апликације.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Премести у...</translation>
+<translation id="4405781821077215583">Умањите или увећајте ставке на екрану, укључујући текст.</translation>
 <translation id="4406883609789734330">Титл уживо</translation>
 <translation id="4407039574263172582">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK" />Услове коришћења услуге<ph name="END_LINK" /> за овај сајт.</translation>
 <translation id="4408599188496843485">П&amp;омоћ</translation>
@@ -6385,6 +6390,7 @@
 <translation id="6196640612572343990">Блокирај колачиће треће стране</translation>
 <translation id="6196854373336333322">Додатак „<ph name="EXTENSION_NAME" />“ је преузео контролу над подешавањима проксија, што значи да може да мења, прекида или шпијунира све што радите онлајн. Ако нисте сигурни зашто је дошло до ове промене, вероватно вам није потребна.</translation>
 <translation id="6197128521826316819">Направи QR кôд за ову страницу</translation>
+<translation id="6198223452299275399">Листај странице</translation>
 <translation id="6198252989419008588">Промени PIN</translation>
 <translation id="6200047250927636406">Одбаци фајл</translation>
 <translation id="6200151268994853226">Управљајте додатком</translation>
@@ -6785,6 +6791,7 @@
 <translation id="6532527800157340614">Пријављивање није успело јер није преузета ознака приступа. Проверите мрежну везу и пробајте поново.</translation>
 <translation id="6532663472409656417">Регистровано за предузеће</translation>
 <translation id="6533315466883598769">Користи Google преводилац</translation>
+<translation id="65334502113648172">Притисните тастере са стрелицама да бисте смањили или проширили област приказа. Да бисте померали област приказа, притисните Shift и +, а затим користите тастере са стрелицама.</translation>
 <translation id="6533636340637966565">Укључује се…</translation>
 <translation id="6535331821390304775">Увек дозволи да <ph name="ORIGIN" /> отвара овај тип линкова у повезаној апликацији</translation>
 <translation id="653659894138286600">Скенирајте документе и слике</translation>

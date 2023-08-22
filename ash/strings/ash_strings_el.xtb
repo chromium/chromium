@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">Η Μεγέθυνση πλήρους οθόνης ενεργοποιήθηκε. Πατήστε Ctrl+Search+M ξανά για να τον απενεργοποιήσετε.</translation>
 <translation id="2302092602801625023">Αυτός ο λογαριασμός είναι διαχειριζόμενος από το Family Link</translation>
 <translation id="2303600792989757991">Επισκόπηση εναλλαγής παραθύρων</translation>
+<translation id="2305738328104302723">Λίστα εργασιών Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: Πρόσφατες καταγραφές οθόνης, λήψεις και καρφιτσωμένα αρχεία</translation>
 <translation id="2318576281648121272">Σήμερα <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , κατηγορία αποτελέσματος αναζήτησης</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">Επισήμανση προηγούμενου στοιχείου στο ράφι</translation>
 <translation id="3120421559657122717">Να τερματιστεί η λειτουργία της συσκευής;</translation>
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
+<translation id="3125690294288312932">Τύπος εργασιών</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Επανεκκίνηση για ενημέρωση</translation>
 <translation id="3139188263101386725">Χρησιμοποιήστε την ενημερωμένη συντόμευση</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">Εξουδετέρωση θορύβου</translation>
 <translation id="3249513730522716925">Η επιφάνεια εργασίας <ph name="WINDOW_TITLE" /> μετακινήθηκε από την επιφάνεια εργασίας <ph name="ACTIVE_DESK" /> στην επιφάνεια εργασίας <ph name="TARGET_DESK" />.</translation>
 <translation id="3252573918265662711">Ρυθμίσεις</translation>
+<translation id="3253743281242075461">Τύπος εργασιών: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Τι μπορείς να κάνεις;</translation>
 <translation id="3256109297135787951">Κατάργηση της επισήμανσης από κάποιο στοιχείο στο ράφι σας</translation>
 <translation id="3260969790895726815">Η επεξεργασία της ομιλίας γίνεται τοπικά και η υπαγόρευση λειτουργεί εκτός σύνδεσης, αλλά ορισμένες φωνητικές εντολές δεν θα λειτουργούν.</translation>
@@ -1023,6 +1026,7 @@
 <translation id="5253783950165989294">Πραγματοποιήθηκε σύνδεση σε συσκευή με όνομα <ph name="DEVICE_NAME" />, μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Δεν υπάρχουν αποθηκευμένα γραφεία.</translation>
 <translation id="5260676007519551770">Γραφείο 4</translation>
+<translation id="5268819379131021772">Λίστα εργασιών Google</translation>
 <translation id="5278086053818066789">Ενεργοποίηση/απενεργοποίηση ChromeVox (εκφωνημένα σχόλια)</translation>
 <translation id="5283099933536931082">Η εφαρμογή <ph name="APP_ITEM_TITLE" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="5283198616748585639">Προσθήκη 1 λεπτού</translation>
@@ -1173,6 +1177,7 @@
 <translation id="5864748620896638071">Μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Συλλογή πληροφοριών δικτύου</translation>
 <translation id="5867606971598166637">Ο διαχειριστής συστήματος παρακολουθεί τις οθόνες σας</translation>
+<translation id="5876535466645959772">Η επιλεγμένη λίστα είναι κενή. Πλοηγηθείτε προς τα κάτω για να προσθέσετε μια νέα εργασία</translation>
 <translation id="5876666360658629066">Εισαγάγετε κωδικό γονέα</translation>
 <translation id="5881540930187678962">Ρυθμίστε το Phone Hub αργότερα</translation>
 <translation id="5881663018261910378">Απενεργοποιημένο</translation>

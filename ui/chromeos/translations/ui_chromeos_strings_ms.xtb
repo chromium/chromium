@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Fail bernama "<ph name="FILE_NAME" />" sudah wujud. Sila pilih nama lain.</translation>
 <translation id="9046895021617826162">Gagal disambungkan</translation>
 <translation id="9065512565307033593">Jika anda gagal mengesahkan identiti anda, akses rangkaian anda akan dilumpuhkan.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 amaran.}other{<ph name="COUNT" /> amaran.}}</translation>
 <translation id="908378762078012445">Rusia dengan papan kekunci AATSEEL Fonetik</translation>
 <translation id="9086302186042011942">Menyegerak</translation>
 <translation id="9099674669267916096">Kiraan halaman</translation>

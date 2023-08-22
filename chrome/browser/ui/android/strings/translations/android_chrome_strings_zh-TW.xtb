@@ -297,6 +297,7 @@
 <translation id="2604446170045642109">你可以在設定中關閉網站的深色主題設定。</translation>
 <translation id="2612676031748830579">卡號</translation>
 <translation id="2625189173221582860">已複製密碼</translation>
+<translation id="2634393460268044753">將你造訪的網站網址和網頁內容、下載內容、擴充功能活動和系統資訊的少許樣本傳送給 Google 安全瀏覽服務，檢查是否有害。</translation>
 <translation id="2642087927315268160">登入底部功能表已關閉。</translation>
 <translation id="2643064289437760082">刪除瀏覽資料即可刪除廣告評估資料</translation>
 <translation id="2647434099613338025">新增語言</translation>
@@ -343,6 +344,7 @@
 <translation id="2888126860611144412">關於 Chrome</translation>
 <translation id="2891154217021530873">停止載入網頁</translation>
 <translation id="2893180576842394309">Google 可能會使用你的歷史記錄，為你提供個人化的 Google 搜尋和其他服務</translation>
+<translation id="2894821468041866720">不會大幅降低瀏覽器或裝置運作速度。</translation>
 <translation id="2900528713135656174">建立活動</translation>
 <translation id="2901411048554510387">此處顯示的是與「<ph name="WEBSITE_TITLE" />」相關的建議</translation>
 <translation id="2904414404539560095">要共用分頁的裝置清單已開啟，顯示於整個畫面。</translation>
@@ -948,7 +950,6 @@
 <translation id="6000066717592683814">繼續使用 Google</translation>
 <translation id="6000203700195075278">重新追蹤</translation>
 <translation id="6002122790816966947">你的裝置</translation>
-<translation id="6005538289190791541">建議的密碼</translation>
 <translation id="6011308810877101166">改善搜尋建議</translation>
 <translation id="6026538407078977628">展開至全螢幕模式</translation>
 <translation id="6030719887161080597">管理網站用來評估廣告成效的資訊</translation>
@@ -1315,6 +1316,7 @@
 <translation id="7808889146555843082">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶。請變更密碼或刪除你的 <ph name="SITE" /> 帳戶，以避免遭到他人盜用。</translation>
 <translation id="7810647596859435254">選擇開啟工具…</translation>
 <translation id="7815484226266492798">長螢幕截圖</translation>
+<translation id="7822705602465980873">當你登入後，這類資料會連結到 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後強化 Gmail 的防護機制。</translation>
 <translation id="78270725016672455">你的電腦想要註冊這部裝置以登入網站</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
 <translation id="7846296061357476882">Google 服務</translation>

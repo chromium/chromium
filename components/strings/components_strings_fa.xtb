@@ -311,6 +311,7 @@
 <translation id="1594030484168838125">انتخاب</translation>
 <translation id="1596296697375291157">فیلم‌های هیجان‌انگیز، جنایی، و رازآلود</translation>
 <translation id="1597473228022844713">این محصول را ردیابی می‌کنید. این صفحه در <ph name="LAST_BOOKMARKS_FOLDER" /> ذخیره شده است</translation>
+<translation id="1598816256585174656">‏گذرکلید از Windows Hello</translation>
 <translation id="1599199147673445968">کارت جدیدی دارید؟ <ph name="BEGIN_LINK" />جزئیات کارت را وارد کنید<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">‏بازی کردن بازی دویدن دایناسور در Chrome</translation>
 <translation id="161042844686301425">فیروزه‌ای</translation>
@@ -1351,6 +1352,7 @@
 <translation id="3827112369919217609">دقیق</translation>
 <translation id="3827666161959873541">فیلم خانوادگی</translation>
 <translation id="3828924085048779000">گذرعبارت خالی مجاز نیست.</translation>
+<translation id="3830470485672984938">استفاده از گذرکلیدی دیگر</translation>
 <translation id="3831065134033923230">گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> افزونه‌هایی را برای عملکردهای اضافی نصب کرده است. افزونه‌ها به برخی از داده‌های شما دسترسی دارند.</translation>
 <translation id="3832522519263485449">چندین سوراخ در چپ</translation>
@@ -1407,6 +1409,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{هیچ‌کدام}=1{از ۱ سایت }one{از # سایت }other{از # سایت }}</translation>
 <translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> مسدود شده است</translation>
+<translation id="3983340834939868135">گذرکلید از «<ph name="VENDOR_NAME" />»</translation>
 <translation id="3984581365661308170">پاکت شماره ۱۱</translation>
 <translation id="398470910934384994">پرندگان</translation>
 <translation id="3985750352229496475">مدیریت نشانی‌ها…</translation>
@@ -1786,6 +1789,7 @@
 <translation id="4754461935447132332">برای سایت‌های ناامن مجاز نیست</translation>
 <translation id="4756388243121344051">&amp;سابقه</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">‏گذرکلید از «نمایه Chrome» شما</translation>
 <translation id="4757993714154412917">‏اخیراً گذرواژه‌تان را در سایتی فریب‌کار وارد کرده‌اید. برای ایمن کردن حسابتان، Chromium توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="4758311279753947758">افزودن اطلاعات تماس</translation>
 <translation id="4761104368405085019">استفاده از میکروفون شما</translation>
@@ -1942,6 +1946,7 @@
 <translation id="5070838744279127212">رول دهم</translation>
 <translation id="507130231501693183">صندوق پست ۴</translation>
 <translation id="5074134429918579056">شلوار و شورت</translation>
+<translation id="5077767274537436092">استفاده از گذرکلیدی دیگر</translation>
 <translation id="5078060223219502807">گذرواژه‌ای که اکنون استفاده کردید در سرقت اطلاعات شبکه پیدا شده است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه» توصیه می‌کند گذرواژه‌تان را همین‌حالا تغییر دهید و سپس گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
 <translation id="5086225927071063542">پردازش ابری و توزیع‌شده</translation>
 <translation id="5087286274860437796">در حال حاضر گواهی سرور معتبر نیست.</translation>
@@ -2111,6 +2116,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{هیچ سایتی مسدود نشده است}=1{یک سایت مسدود}one{# سایت مسدود}other{# سایت مسدود}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> می‌خواهد برایتان اعلان  ارسال کند</translation>
 <translation id="5430298929874300616">حذف نشانک</translation>
+<translation id="54430913453805768">‏<ph name="URL" /> می‌خواهد دستگاه‌های MIDI شما را کنترل و مجدداً برنامه‌ریزی کند (SysEx)</translation>
 <translation id="5443468954631487277">روبه‌بالا به‌ترتیب معکوس</translation>
 <translation id="5447235695608032700">اجازه دادن به <ph name="SITE" /> برای استفاده از اطلاعاتی که درباره شما ذخیره کرده‌اند</translation>
 <translation id="5447765697759493033">این سایت ترجمه نخواهد شد</translation>
@@ -2612,6 +2618,7 @@
 <translation id="6480864723214312258">باتری‌های خانگی</translation>
 <translation id="6486200200930923183">فیلم مستند</translation>
 <translation id="6489534406876378309">شروع بارگذاری کردن خرابی‌ها</translation>
+<translation id="6491663123807473970">‏<ph name="URL" /> می‌خواهد از دستگاه‌های MIDI شما استفاده کند</translation>
 <translation id="6493924760403974580">این برنامه فقط از این اندازه پشتیبانی می‌کند.</translation>
 <translation id="6494750904506170417">بالاپرها و هدایت‌ها</translation>
 <translation id="6497295192259406877">فعالیت تجاری</translation>
@@ -2897,6 +2904,7 @@
 <translation id="7102079138917191645">ساخت‌و‌ساز و نگهداری</translation>
 <translation id="7102554173784142865">‏بازی کردن بازی «دایناسور Chrome»</translation>
 <translation id="7102760431686146931">وسایل آشپزی و غذاخوری</translation>
+<translation id="7105998430540165694">‏گذرکلید از iCloud Keychain</translation>
 <translation id="7106762743910369165">سازمانتان مرورگر را مدیریت می‌کند</translation>
 <translation id="7108338896283013870">عدم نمایش</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> می‌خواهد از دوربین شما استفاده کند</translation>
@@ -3152,6 +3160,7 @@
 <translation id="7582602800368606489">‏ایجاد سریع رویداد جدید در «تقویم Google»</translation>
 <translation id="7583969447617676942">خدمات حقوقی</translation>
 <translation id="7586676035079382730">اعلان‌ها مجاز نیست</translation>
+<translation id="7588460771338574392">گذرکلید از «<ph name="PHONE_NAME" />»</translation>
 <translation id="7588707273764747927">انتقال</translation>
 <translation id="7591288787774558753">محتوای محرمانه هم‌رسانی شود؟</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> می‌خواهد از کوکی‌ها و داده‌های سایت <ph name="TOP_LEVEL_URL" /> استفاده کند</translation>

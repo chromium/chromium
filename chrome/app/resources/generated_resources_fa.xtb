@@ -271,7 +271,6 @@
 <translation id="1197935538609051549">غیرفعال کردن</translation>
 <translation id="1198066799963193307">ابزارهای گفتاری کم‌بینایان</translation>
 <translation id="119944043368869598">پاک کردن همه</translation>
-<translation id="1199631150313925648">وارد کردن به‌صورت دستی</translation>
 <translation id="1199814941632954229">گواهینامه‌ها درحال به‌تأیید رسیدن برای این نمایه‌های دارای مجوز هستند</translation>
 <translation id="120069043972472860">غیرقابل تماشا</translation>
 <translation id="1201402288615127009">بعدی</translation>
@@ -428,6 +427,7 @@
 <translation id="1335282218035876586">‏Chromebook شما دیگر به‌روزرسانی‌های امنیتی و نرم‌افزاری را دریافت نمی‌کند. برای داشتن بهترین تجربه، Chromebook خود را ارتقا دهید.</translation>
 <translation id="133535873114485416">ورودی ترجیحی</translation>
 <translation id="1335929031622236846">دستگاهتان را ثبت‌نام کنید</translation>
+<translation id="133660899895084533">خواندن داده‌ها و اطلاعات دستگاه‌های جانبی مجهز به بلوتوث</translation>
 <translation id="1336902454946927954">کلید امنیتی شما قفل شده است زیرا اثر انگشتتان تشخیص داده نشد. برای باز کردن قفل آن، پین را وارد کنید.</translation>
 <translation id="1338631221631423366">درحال جفت کردن…</translation>
 <translation id="1338802252451106843"><ph name="ORIGIN" /> می‌خواهد این برنامه را باز کند.</translation>
@@ -1365,6 +1365,7 @@
 <translation id="2062354623176996748">با «پنجره ناشناس»، بدون ذخیره کردن سابقه مرور از وب استفاده کنید</translation>
 <translation id="206308717637808771">با بسته شدن همه پنجره‌ها، داده‌ها حذف می‌شود. با داده‌ها و سایتی که درحال مشاهده هستید یکسان رفتار می‌شود</translation>
 <translation id="2065405795449409761">‏Chrome توسط نرم‌افزار آزمایش خودکاری کنترل می‌شود.</translation>
+<translation id="2067591192939433190">از «<ph name="VENDOR_NAME" />»</translation>
 <translation id="2071393345806050157">فایل گزارش محلی وجود ندارد.</translation>
 <translation id="2071692954027939183">اعلان‌ها به‌طور خودکار مسدود شدند چون شما معمولاً اجازه نمی‌دهید نمایش داده شوند</translation>
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{برای نصب این افزونه، کلیک کنید}one{برای نصب این افزونه‌ها، کلیک کنید}other{برای نصب این افزونه‌ها، کلیک کنید}}</translation>
@@ -2198,6 +2199,7 @@
 <translation id="2713444072780614174">سفید</translation>
 <translation id="2714180132046334502">پس‌زمینه تیره</translation>
 <translation id="2714393097308983682">‏فروشگاه Google Play</translation>
+<translation id="2714926041741472174">گذرکلیدی برای <ph name="APP_NAME" /> انتخاب کنید</translation>
 <translation id="2715640894224696481">درخواست کلید امنیتی</translation>
 <translation id="2715751256863167692">‏این ارتقا Chromebook را بازنشانی می‌کند و داده‌های کاربر کنونی را برمی‌دارد.</translation>
 <translation id="2715934493766003251">وقتی همگام‌سازی فایل روشن باشد، نمی‌توان فضای ذخیره‌سازی را پاک کرد</translation>
@@ -2442,6 +2444,7 @@
 <translation id="2893013536106749396">کارت‌هایی را انتخاب کنید که شما را از چیزهایی که برایتان مهم است مطلع می‌کند</translation>
 <translation id="2893168226686371498">مرورگر پیش‌فرض</translation>
 <translation id="2893180576842394309">‏Google ممکن است از سابقه مرور شما برای شخصی کردن جستجو و سایر سرویس‌های Google استفاده کند</translation>
+<translation id="2893701697603065178">محیط توسعه نرم‌افزار تحت‌مدیریت</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="289695669188700754">شناسه کلید: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">وقتی همه پنجره‌های ناشناس را ببندید، این تنظیم سفارشی برداشته خواهد شد</translation>
@@ -2648,6 +2651,7 @@
 <translation id="3054766768827382232">غیرفعال‌سازی ممکن است باعث شود لوازم جانبی بهتر عمل کنند اما ممکن است داده‌های شخصی‌تان را ازطریق استفاده غیرمجاز درمعرض خطر قرار دهد.</translation>
 <translation id="3055113921564083271">علایقی که برداشته‌اید</translation>
 <translation id="3055590424724986000">با ارائه‌دهنده‌ای به انتخاب خودتان</translation>
+<translation id="3056438898277655057">‏به <ph name="SPECIFIC_NAME" /> اجازه می‌دهد به دستگاه‌های USB دسترسی پیدا کند. ‏<ph name="SPECIFIC_NAME" /> بعداز برداشتن دستگاه USB، آن را به‌خاطر نمی‌سپارد.</translation>
 <translation id="3058498974290601450">هرزمان خواستید می‌توانید همگام‌سازی را در تنظیمات روشن کنید</translation>
 <translation id="3058517085907878899">نام‌گذاری دستگاه</translation>
 <translation id="3059195548603439580">به‌دنبال مؤلفه‌های سیستم هستید؟ از این پیوند استفاده کنید:</translation>
@@ -2766,6 +2770,7 @@
 <translation id="3170072451822350649">همچنین می‌توانید از ورود به سیستم صرف‌نظر کرده، <ph name="LINK_START" />به عنوان مهمان مرور کنید<ph name="LINK_END" />.</translation>
 <translation id="3174311489448105660">‏تصاویر PDF را اسکن کنید تا درصورت امکان بتوانید محتوا را برای صفحه‌خوان به نوشتار تبدیل کنید. فقط در مرورگر Chrome پشتیبانی می‌شود.</translation>
 <translation id="31774765611822736">برگه جدید در سمت چپ</translation>
+<translation id="3177689682958561933">برای پیمایش به‌جلو و عقب، این تنظیم را روشن کنید</translation>
 <translation id="3177909033752230686">زبان صفحه:</translation>
 <translation id="3177914167275935955">‏Chrome Education Upgrade در دستگاهتان وجود دارد، اما نام کاربری شما با هیچ حساب Google for Education مرتبط نیست. لطفاً با رفتن به نشانی زیر در دستگاهی دیگر، حساب Google for Education بسازید: g.co/workspace/edusignup.</translation>
 <translation id="3179982752812949580">قلم نوشتار</translation>
@@ -2989,6 +2994,7 @@
 <translation id="3370260763947406229">تصحیح خودکار</translation>
 <translation id="3371140690572404006">‏دستگاه USB-C (درگاه جلوی سمت راست)</translation>
 <translation id="3371351218553893534">خط خیلی طولانی است: <ph name="ERROR_LINE" /></translation>
+<translation id="3372602033006349389">در دستگاه‌های دیگر</translation>
 <translation id="337286756654493126">خواندن پوشه‌هایی که در برنامه باز می‌کنید</translation>
 <translation id="3373059063088819384">باز کردن در «حالت خواندن»</translation>
 <translation id="3373196968211632036">‏«Steam ویژه Chromebook» (بتا) برای «حساب‌های Google» کودکان دردسترس نیست</translation>
@@ -3419,6 +3425,7 @@
 <translation id="371370241367527062">میکروفون جلو</translation>
 <translation id="3714195043138862580">این دستگاه نمایشی در وضعیت لغو مجوز دسترسی قرار داده شده است.</translation>
 <translation id="3714610938239537183">مرحله ۲ از ۴: انتخاب داده‌های عیب‌یابی برای صادر کردن</translation>
+<translation id="3716065403310915079">نصب‌کننده <ph name="VM_NAME" /></translation>
 <translation id="3719245268140483218">رویداد دستگاه</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> تکمیل شد.</translation>
 <translation id="3719826155360621982">صفحه اصلی</translation>
@@ -3583,6 +3590,7 @@
 <translation id="3828953470056652895">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" />، و <ph name="BEGIN_LINK3" />شرایط خدمات Play<ph name="END_LINK3" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - استفاده زیاد از حافظه - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">دستگاه ذخیره‌سازی متصل به شبکه برای کسب‌وکار کوچک و متوسط</translation>
+<translation id="3830470485672984938">استفاده از گذرکلیدی دیگر</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{سرپرستتان ۱ افزونه بالقوه مضر را دوباره روشن کرده است}one{سرپرستتان {NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده است}other{سرپرستتان {NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده است}}</translation>
 <translation id="3834728400518755610">‏برای اعمال تغییر ایجادشده در تنظیم میکروفون، باید Linux را خاموش کنید. برای ادامه دادن، Linux را خاموش کنید.</translation>
 <translation id="3834775135533257713">برنامه «<ph name="TO_INSTALL_APP_NAME" />» اضافه نشد، چون با «<ph name="INSTALLED_APP_NAME" />» ناسازگار است.</translation>
@@ -3748,6 +3756,7 @@
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">کنش‌های بیشتر برای <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3962119236270174787">محافظت استاندارد دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودنشان مشخص شده است</translation>
+<translation id="3963753386716096475">استفاده از تلفن، رایانه لوحی، یا کلید امنیتی دیگر</translation>
 <translation id="3964480518399667971">خاموش کردن شبکه تلفن همراه</translation>
 <translation id="3965811923470826124">با</translation>
 <translation id="3965965397408324205">خارج شدن از <ph name="PROFILE_NAME" /></translation>
@@ -5682,6 +5691,7 @@
 <translation id="558563010977877295">باز کردن یک صفحه خاص یا مجموعه‌ای از صفحات</translation>
 <translation id="5585898376467608182">فضای ذخیره‌سازی دستگاهتان کم است. حداقل<ph name="MINIMUM_SPACE" /> فضای آزاد برای استفاده از <ph name="APP_NAME" /> نیاز دارید. برای افزایش فضای آزاد، فایل‌ها را از دستگاه حذف کنید.</translation>
 <translation id="5585912436068747822">قالب‌بندی ناموفق بود</translation>
+<translation id="5587765208077583036">‏برای هم‌رسانی، روی پوشه‌ای در برنامه Files کلیک راست کنید، سپس «هم‌رسانی با <ph name="SPECIFIC_NAME" />» را انتخاب کنید.</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">درحال بار کردن برنامه...</translation>
 <translation id="5590418976913374224">پخش صدا هنگام راه‌اندازی دستگاه</translation>
@@ -5691,6 +5701,7 @@
 <translation id="5595307023264033512">مجموع فضای ذخیره‌سازی که سایت‌ها استفاده کرده‌اند: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">ویرایش آدرس</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
+<translation id="5599819890022137981">‏از Windows Hello</translation>
 <translation id="5600348067066185292">نصب در چند مرحله آسان انجام می‌شود. پیش‌از اعمال تغییرات در رایانه‌تان، فرصت دیگری برای تأیید آن‌ها خواهید داشت.</translation>
 <translation id="5600706100022181951">به‌روزرسانی با مصرف <ph name="UPDATE_SIZE_MB" /> مگابایت داده تلفن همراه بارگیری می‌شود. ادامه می‌دهید؟</translation>
 <translation id="5601503069213153581">پین</translation>
@@ -5707,6 +5718,7 @@
 <translation id="5612734644261457353">متأسفیم، تأیید گذرواژه شما همچنان امکان‌پذیر نیست. اگر به‌تازگی گذرواژه خود را تغییر داده‌اید، گذرواژه جدید شما هنگامی‌که از سیستم خارج شدید، اعمال می‌شود؛ لطفاً اینجا از گذرواژه قدیمی خود استفاده کنید.</translation>
 <translation id="5614190747811328134">اعلامیه کاربر</translation>
 <translation id="5614553682702429503">گذرواژه ذخیره شود؟</translation>
+<translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">فهرست سایت‌هایی که اخیراً بازدید کرده‌اید و درحین مرور شما می‌توانند آگهی به سایت‌های دیگر پیشنهاد دهند</translation>
 <translation id="5616571005307953937">قدیمی‌ترین</translation>
 <translation id="5616726534702877126">اختصاص حجم دیسک</translation>
@@ -6433,6 +6445,7 @@
 <translation id="6216239400972191926">سایت‌ها و برنامه‌های ردشده</translation>
 <translation id="6216601812881225442">‏محتوی شما از تغییر اندازه پشتیبانی نمی‌کند. برای تنظیم مقدار فضایی که ازقبل به Linux اختصاص داده شده است، پشتیبان‌گیری کنید و سپس در محتوی جدیدی بازیابی کنید.</translation>
 <translation id="6216696360484424239">ورود به سیستم به‌طور خودکار</translation>
+<translation id="6217806119082621377">پوشه‌های مشترک در <ph name="SPECIFIC_NAME" /> در <ph name="BASE_DIR" /> دردسترس است.</translation>
 <translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> آفلاین است. به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="6220413761270491930">خطا هنگام بارگیری برنامه افزودنی</translation>
 <translation id="622125358038862905">{NUM_OF_FILES,plural, =1{نمی‌توان فایل را در <ph name="CLOUD_PROVIDER" /> کپی کرد}one{نمی‌توان فایل را در <ph name="CLOUD_PROVIDER" /> کپی کرد}other{نمی‌توان فایل‌ها را در <ph name="CLOUD_PROVIDER" /> کپی کرد}}</translation>
@@ -6654,6 +6667,7 @@
 <translation id="6410390304316730527">«مرور ایمن» از شما در برابر مهاجمانی محافظت می‌کند که ممکن است فریبتان دهند تا کارهای خطرناکی انجام دهید؛ ازجمله نصب نرم‌افزار مخرب یا افشای اطلاعات شخصی مثل گذرواژه‌ها، شماره‌های تماس، یا کارت‌های اعتباری. اگر «مرور ایمن» را خاموش می‌کنید، هنگام مرور کردن در سایت‌های ناآشنا یا نامعتبر احتیاط کنید.</translation>
 <translation id="6410668567036790476">افزودن موتور جستجو</translation>
 <translation id="6411135999030237579">برای تکرار خودکار کلید، آن کلید فشرده و نگه داشته شود</translation>
+<translation id="6414618057231176439">انتخاب کنید کدام نسخه <ph name="VM_NAME" /> نصب شود.</translation>
 <translation id="641469293210305670">نصب به‌روزرسانی‌ها و برنامه‌ها</translation>
 <translation id="6414878884710400018">باز کردن اولویت‌های سیستم</translation>
 <translation id="6415757856498750027">‏برای دریافت «ư»، ‏«w» را تایپ کنید</translation>
@@ -7111,6 +7125,7 @@
 <translation id="6790497603648687708"><ph name="EXTENSION_NAME" /> ازراه‌دور اضافه شد</translation>
 <translation id="6790820461102226165">افزودن شخص...</translation>
 <translation id="6793879402816827484">↓ <ph name="STATUS" /></translation>
+<translation id="6794511157503068">‏اگر گذرکلید <ph name="APP_NAME" /> در کلید امنیتی USB قرار دارد، همین‌حالا آن را وارد و لمس کنید</translation>
 <translation id="679486139907144816">‏برای ورود به سیستم این سایت با گذرکلید، باید Windows Hello را در تنظیمات روشن کنید. سپس به این سایت برگردید و دوباره امتحان کنید.</translation>
 <translation id="6795371939514004514">اسکن خودکار به شما اجازه می‌دهد به‌طور خودکار بین موارد موجود در صفحه جابه‌جا شوید. وقتی موردی برجسته می‌شود، با فشار دادن «انتخاب» آن را فعال کنید.</translation>
 <translation id="6795884519221689054">پاندا</translation>
@@ -7389,6 +7404,7 @@
 <translation id="7000347579424117903">‏باید شامل Ctrl،‏ Alt یا Search‌ باشد</translation>
 <translation id="7001036685275644873">‏پشتیبان‌گیری از برنامه‌ها و فایل‌های Linux</translation>
 <translation id="7001066449188684145">برای چاپ با <ph name="PRINTER_NAME" />، تأیید هویت لازم است. لطفاً با سرپرست تماس بگیرید.</translation>
+<translation id="7001397294201412227">استفاده از تلفن، رایانه لوحی، یا کلید امنیتی</translation>
 <translation id="7003339318920871147">پایگاه‌های داده وب</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} فایل}one{{COUNT} فایل}other{{COUNT} فایل}}</translation>
 <translation id="7003705861991657723">آلفا</translation>
@@ -7527,6 +7543,7 @@
 <translation id="711840821796638741">نمایش نشانک‌های مدیریت شده</translation>
 <translation id="711985611146095797">‏در این صفحه می‌توانید «حساب‌های Google» خودتان را که به سیستم آن‌ها وارد شده‌اید مدیریت کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">‏مرورگر Chrome و ترافیک Android مسدود خواهند شد، مگراینکه VPN متصل باشد</translation>
+<translation id="7121126743816027786">‏از «نمایه Chrome» شما</translation>
 <translation id="7121438501124788993">حالت تولیدکننده</translation>
 <translation id="7121728544325372695">خط تیره‌های هوشمند</translation>
 <translation id="7123030151043029868">اجازه دارد چند فایل را به‌طور خودکار بارگیری کند</translation>
@@ -8544,6 +8561,7 @@
 <translation id="793923212791838">نمی‌توان از دستگاهتان در این سایت استفاده کرد</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>
 <translation id="7939412583708276221">درهر حال حفظ شود</translation>
+<translation id="7940087892955752820">لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعدی که <ph name="SPECIFIC_NAME" /> را خاموش کنید، پوشه لغو هم‌رسانی خواهد شد.</translation>
 <translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
 <translation id="7942349550061667556">قرمز</translation>
@@ -8570,6 +8588,7 @@
 <translation id="7955177647836564772">‏اگر Smart Lock روشن باشد و قفل تلفنتان باز باشد، لازم نیست گذرواژه یا پین را وارد کنید</translation>
 <translation id="7956373551960864128">چاپگرهای ذخیره‌شده شما</translation>
 <translation id="7957074856830851026">دیدن اطلاعات دستگاه، مانند شماره سریال یا شناسه دارایی آن</translation>
+<translation id="7958828865373988933">‏اگر می‌خواهید گذرکلیدی برای <ph name="APP_NAME" /> در کلید امنیتی USB ایجاد کنید، آن را اکنون وارد و لمس کنید</translation>
 <translation id="7959074893852789871">این فایل دارای چندین مجوز است، برخی از آن‌ها وارد نشده‌اند:</translation>
 <translation id="7959665254555683862">برگه ناشناس جدید</translation>
 <translation id="7961015016161918242">هرگز</translation>
@@ -9009,6 +9028,7 @@
 <translation id="831440797644402910">نمی‌توان این پوشه را باز کرد</translation>
 <translation id="8314835274931377415">راه‌اندازی «دسترسی کلیدی» شروع شود؟</translation>
 <translation id="8315018673856831477">گزینه‌های بهینه‌سازی حافظه</translation>
+<translation id="8315044115695361734">‏از iCloud Keychain</translation>
 <translation id="8317671367883557781">افزودن اتصال شبکه</translation>
 <translation id="8317965619823678157">کپی کردن گذرواژه‌ها</translation>
 <translation id="8318266828739827371">‏از نمای صفحهٔ دونیمه برای دیدن ناحیه درشت‌نمایی‌شده در صفحه‌نمایش استفاده کنید. از کلیدهای «جستجو + مهار + D» برای روشن و خاموش کردن ذره‌بین متصل استفاده کنید.</translation>
@@ -9529,6 +9549,7 @@
 <translation id="8741944563400125534">راهنمای راه‌اندازی «دسترسی کلیدی»</translation>
 <translation id="8742395827132970586">نصب ناموفق بود، درحال پاک‌سازی</translation>
 <translation id="8742998548129056176">‏این اطلاعاتی عمومی درباره دستگاه شما و نحوه استفاده شما از آن (مانند سطح باتری، فعالیت سیستم و برنامه، و خطاها) است. از این داده‌ها برای بهبود Android استفاده می‌شود و بعضی اطلاعات انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند برنامه‌ها و محصولاتشان را بهتر کنند.</translation>
+<translation id="8743357966416354615">محیط توسعه نرم‌افزار تحت‌مدیریت (<ph name="GENERAL_NAME" />)</translation>
 <translation id="8744641000906923997">Romaji</translation>
 <translation id="8745034592125932220">نمی‌تواند در دستگاهتان داده ذخیره کند</translation>
 <translation id="8746654918629346731">قبلاً «<ph name="EXTENSION_NAME" />» را درخواست کرده‌اید</translation>
@@ -10156,6 +10177,7 @@
 <translation id="947526284350604411">پاسخ شما</translation>
 <translation id="947667444780368238"><ph name="ORIGIN" /> نمی‌تواند فایل‌های این پوشه را باز کند زیرا فایل‌های سیستم در آن وجود دارد</translation>
 <translation id="949807244219288032">این برگه به دستگاه میانای انسانی متصل است</translation>
+<translation id="950079950995628542">از «<ph name="PHONE_NAME" />»</translation>
 <translation id="950307215746360464">راهنمای راه‌اندازی</translation>
 <translation id="951991426597076286">رد کردن</translation>
 <translation id="952471655966876828">وقتی دستگاه روشن شود و از آن استفاده شود، به‌طور خودکار وصل می‌شود</translation>

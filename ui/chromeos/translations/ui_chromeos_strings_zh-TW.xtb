@@ -1040,6 +1040,7 @@
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，你將無法存取網路。</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 則警告。}other{<ph name="COUNT" /> 則警告。}}</translation>
 <translation id="908378762078012445">俄文搭配拼音 (AATSEEL) 鍵盤</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>

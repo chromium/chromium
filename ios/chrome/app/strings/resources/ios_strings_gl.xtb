@@ -62,6 +62,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1283524564873030414">Últimas 24 horas</translation>
 <translation id="1285320974508926690">Non traducir nunca este sitio</translation>
 <translation id="1291506870746876680">Os permisos de <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> volverán desactivarse cando saias deste sitio.</translation>
+<translation id="1295289763199166823">Personalizar menú</translation>
 <translation id="1305822519689023679">Para asegurarte de poder usar sempre os contrasinais na túa Conta de Google, verifica a túa identidade.</translation>
 <translation id="1312721752506309252">A protección mellorada está activada</translation>
 <translation id="1316466854070752597">Ver todas as pestanas abertas</translation>
@@ -110,6 +111,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1554477036522844996">Nova ventá</translation>
 <translation id="1563071802032385236">Activa Preguntar para abrir ligazóns doutras aplicacións no modo de incógnito.</translation>
 <translation id="1565371473877914088">Nova pestana do modo de incógnito</translation>
+<translation id="1565395699240341063">Ocultos</translation>
 <translation id="1580715474678097352">Protéxete contra sitios web perigosos</translation>
 <translation id="1580783302095112590">Correo enviado.</translation>
 <translation id="1582732959743469162">Esta acción deterá o progreso da túa descarga actual.</translation>
@@ -446,6 +448,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3533436815740441613">Nova pestana</translation>
 <translation id="3540141921715814660">Engadir aos marcadores</translation>
 <translation id="3551320343578183772">Pechar pestana</translation>
+<translation id="3564513311876185114">Barra de menú con orde intelixente</translation>
 <translation id="3565207542107370586">Borrar datos de navegación…</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3577555362230509265">Usa Chrome noutras aplicacións.</translation>
@@ -1312,6 +1315,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="854938212724803178">Tes 1 contrasinal vulnerado. Cámbiao xa para non correr riscos.</translation>
 <translation id="8556590991644167667">{count,plural, =1{Ignoraches {count} aviso}other{Ignoraches {count} avisos}}</translation>
 <translation id="8558480467877843976">Agora podes usar Chrome sempre que explores contido ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>
+<translation id="8560253818350321773">Móstranse primeiro os elementos usados con máis frecuencia.</translation>
 <translation id="8580411965900177618">Non, grazas</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8591976964826315682">Bloquear cookies de terceiros no modo de incógnito</translation>

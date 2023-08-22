@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გთხოვთ, აირჩიოთ სხვა სახელი.</translation>
 <translation id="9046895021617826162">დაკავშირება ვერ მოხერხდა</translation>
 <translation id="9065512565307033593">თუ დადასტურებას ვერ მოახერხებთ, ქსელზე წვდომა გაითიშება.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 გაფრთხილება.}other{<ph name="COUNT" /> გაფრთხილება.}}</translation>
 <translation id="908378762078012445">რუსული ფონეტიკური AATSEEL კლავიატურით</translation>
 <translation id="9086302186042011942">სინქრონიზაცია</translation>
 <translation id="9099674669267916096">გვერდების რაოდენობა</translation>

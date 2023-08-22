@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M प्रेस करा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
+<translation id="2305738328104302723">Google टास्क सूची: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: अलीकडील स्क्रीन कॅप्चर, डाउनलोड आणि पिन केलेल्या फाइल</translation>
 <translation id="2318576281648121272">आज <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , शोध परिणामाची वर्गवारी</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">शेल्फवरील आधीचा आयटम हायलाइट करा</translation>
 <translation id="3120421559657122717">डिव्हाइस बंद करायचे का?</translation>
 <translation id="3122464029669770682">सीपीयू</translation>
+<translation id="3125690294288312932">वर्गपाठाचा प्रकार</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">अपडेटासाठी पुनर्सुरू करा</translation>
 <translation id="3139188263101386725">अपडेट केलेला शॉर्टकट वापरा</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">नॉइझ कॅंसलेशन</translation>
 <translation id="3249513730522716925">विंडो <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> वरून डेस्क <ph name="TARGET_DESK" /> वर हलवली</translation>
 <translation id="3252573918265662711">सेटअप</translation>
+<translation id="3253743281242075461">वर्गपाठाचा प्रकार: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">तुला काय करता येते?</translation>
 <translation id="3256109297135787951">तुमच्या शेल्फवरील आयटमवरील हायलाइट काढून टाका</translation>
 <translation id="3260969790895726815">स्पीचवर स्थानिकरीत्या प्रक्रिया केली जाते आणि डिक्टेशन ऑफलाइन काम करते, पण काही व्हॉइस कमांड काम करणार नाहीत.</translation>
@@ -1023,6 +1026,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले, बॅटरी<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">कोणतीही सेव्ह केलेली डेस्‍क नाहीत</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
+<translation id="5268819379131021772">Google टास्क सूची</translation>
 <translation id="5278086053818066789">ChromeVox सुरू/बंद करा (वाचिक फीडबॅक)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
 <translation id="5283198616748585639">एक मिनिट जोडा</translation>
@@ -1173,6 +1177,7 @@
 <translation id="5864748620896638071">बॅटरी <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">नेटवर्कसंबंधित माहिती गोळा करत आहे</translation>
 <translation id="5867606971598166637">तुमचा सिस्टीम अ‍ॅडमिनिस्ट्रेटर तुमच्या स्क्रीनवर लक्ष ठेवून आहे</translation>
+<translation id="5876535466645959772">निवडलेली सूची रिकामी आहे, नवीन टास्क जोडण्यासाठी खाली नेव्हिगेट करा</translation>
 <translation id="5876666360658629066">पालक कोड एंटर करा</translation>
 <translation id="5881540930187678962">नंतर फोन हब सेट करा</translation>
 <translation id="5881663018261910378">बंद आहे</translation>

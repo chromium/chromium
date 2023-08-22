@@ -2,14 +2,25 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pl">
 <translation id="1143896152279775643">Hasło zostanie zapisane w menedżerze haseł Google na koncie <ph name="EMAIL" />.</translation>
+<translation id="1180362651362502943">Nadal korzystaj z danych Chrome na koncie Google.</translation>
 <translation id="1282031177488366470">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="1352919863522755794">Menedżerowi haseł Google nie udało się sprawdzić haseł. Sprawdź połączenie z internetem.</translation>
+<translation id="1407843355326180937">Zaloguj się na tej stronie i w Chrome, aby mieć dostęp do zakładek i innych opcji na wszystkich swoich urządzeniach.</translation>
 <translation id="1462727070346936664">Zaloguj się, aby w pełni wykorzystać możliwości Chrome.</translation>
 <translation id="1479202195792305274">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
 <translation id="1491435845014430217">Włącz „Po zamknięciu Chrome blokuj karty incognito”.</translation>
 <translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="1511320244449497906">Jesteś zalogowany(-a) i synchronizujesz dane z kontem zarządzanym przez <ph name="DOMAIN" />. Administrator może teraz ustawiać specjalnie dla tego konta zasady dotyczące użytkowników, które mogą zmieniać działanie Chrome.</translation>
+<translation id="1526327845902180576">Po włączeniu:
+<ph name="BEGIN_INDENT" /> • Pomagaj w udoskonalaniu Chrome pod kątem potrzeb użytkowników, którzy korzystają z przeglądarki w taki sam sposób jak Ty.<ph name="END_INDENT" />
+
+Pamiętaj, że:
+<ph name="BEGIN_INDENT" /> •  Do Google są wysyłane Informacje o tym, jak używasz Chrome, ale nie są one powiązane z Tobą.
+
+  • Jeśli Chrome ulegnie awarii, szczegółowe informacje o problemie mogą zawierać niektóre dane osobowe.
+
+    Jeśli zsynchronizujesz historię przeglądania z kontem Google, dane mogą też zawierać informacje o adresach URL, które odwiedzasz.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Korzystasz z najlepszych zabezpieczeń Chrome przed szkodliwymi stronami</translation>
 <translation id="1682483655351012182">Synchronizuj dane Chrome</translation>
 <translation id="1733654336159102143">Po zamknięciu Chrome lub przełączeniu się na inną aplikację zablokuj tryb incognito.</translation>
@@ -56,6 +67,7 @@
 <translation id="3720541637541300822">Po zamknięciu Chrome blokuj karty incognito</translation>
 <translation id="3827545470516145620">Na tym urządzeniu korzystasz ze standardowej ochrony</translation>
 <translation id="384394811301901750">Google Chrome nie może teraz użyć aparatu</translation>
+<translation id="3901001113120561395">W pełni wykorzystuj potencjał Chrome.</translation>
 <translation id="3980220367029651214">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoje istniejące dane Chrome są zarządzane przez <ph name="DOMAIN" />. Spowoduje to usunięcie danych z tego urządzenia, ale pozostaną one na koncie <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Twoja organizacja nie pozwala Ci zalogować się w Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
@@ -71,6 +83,9 @@
 <translation id="4636900170638246267">Zaloguj się w na tej stronie i w Chrome.</translation>
 <translation id="4698415050768537821">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="4819268619367838612">Aby pomóc nam ulepszać aplikację, Chrome wysyła do Google dane o użytkowaniu i awariach. <ph name="BEGIN_LINK" />Zarządzaj<ph name="END_LINK" /></translation>
+<translation id="4831642696589369971">Niektóre dane z Chrome nie zostały jeszcze zapisane na Twoim koncie Google.
+
+        Odczekaj kilka minut, zanim się wylogujesz. Jeśli się teraz wylogujesz, te dane zostaną usunięte.</translation>
 <translation id="484033449593719797">Nieobsługiwane w Chrome Beta</translation>
 <translation id="4840404732697892756">Menedżer haseł Google może sprawdzać Twoje hasła, gdy zalogujesz się na konto Google.</translation>
 <translation id="4903674399067644695">Ta karta zawiera sugestie, które pomogą Ci w pełni wykorzystać możliwości Chrome.</translation>
@@ -78,6 +93,7 @@
 <translation id="5108659628347594808">Ulepszaj Chrome</translation>
 <translation id="5119391094379141756">Wybierz Chrome.</translation>
 <translation id="5162467219239570114">Przeglądarka Chrome jest nieaktualna. Jeśli w <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> nie ma dostępnej aktualizacji, Twoje urządzenie może już nie obsługiwać nowych wersji Chrome.</translation>
+<translation id="5190139289262548459">Twoja organizacja (<ph name="DOMAIN" />) zarządza kontem, na które się logujesz, i korzystaniem z Chrome.</translation>
 <translation id="5389212809648216794">Google Chrome nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="5395376160638294582">Upewnij się, że zawsze możesz używać danych Chrome na swoim koncie Google</translation>
 <translation id="5439191312780166229">Ostrzega o niebezpiecznych witrynach, nawet takich, które wcześniej nie były znane Google. Jest to możliwe dzięki analizowaniu większej ilości danych z witryn niż w trybie standardowej ochrony. Możesz wybrać pomijanie ostrzeżeń Chrome.</translation>
@@ -107,6 +123,9 @@
 <translation id="6648150602980899529">Logujesz się na konto, którym zarządza <ph name="DOMAIN" />, i przekazujesz jego administratorowi kontrolę nad Twoimi danymi Chrome. Zostaną one trwale przypisane do tego konta. Gdy się wylogujesz, znikną one z tego urządzenia, ale pozostaną zapisane na Twoim koncie Google.</translation>
 <translation id="6676840375528380067">Usunąć dane Chrome z tego urządzenia?</translation>
 <translation id="6709398533399187136">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Menedżer haseł Google zaleca, aby jak najszybciej je zmienić.</translation>
+<translation id="6815466750807582739">Formy płatności i adresy nie będą zaszyfrowane. Historia przeglądania z Chrome nie będzie synchronizowana.
+
+Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Hasło nie jest wysyłane do Google ani tam przechowywane. Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="6822673484890854830">Przeglądarce Chrome nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="6964931465519938134">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="6975725306479268850">Wybieranie Chrome do autouzupełniania</translation>
@@ -152,6 +171,9 @@
 <translation id="8772179140489533211">Pokazuj prośby o zalogowanie się w Chrome.</translation>
 <translation id="8788269841521769222">Nie musisz go zapamiętywać. Menedżer haseł Google zapisze je na koncie <ph name="EMAIL" /></translation>
 <translation id="8808828119384186784">Ustawienia Chrome</translation>
+<translation id="8856877214925961642">Szyfrowanie hasłem nie obejmuje form płatności ani adresów.
+
+Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="8857676124663337448">Menedżerowi haseł Google nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
 <translation id="8897749957032330183">Hasła są zapisywane w Menedżerze haseł Google na tym urządzeniu.</translation>
 <translation id="8969290730818637510">Po włączeniu:

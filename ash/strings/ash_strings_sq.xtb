@@ -659,6 +659,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="380165613292957338">Përshëndetje, si mund të të ndihmoj?</translation>
 <translation id="3804737937830804242">Palos kamerën</translation>
 <translation id="3824784079442479685">Kjo lejon qasjen te kamera për <ph name="APP_NAME" /> dhe të gjitha aplikacionet dhe sajtet e uebit me lejen e kamerës. Mund të duhet të rifreskosh faqen e uebit ose të rinisësh aplikacionin.</translation>
+<translation id="3825680296690914697">Të dorëzuara: <ph name="NUM_TURNED_IN" /> nga <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, të vlerësuara me nota: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Kalo te fjalëkalimi</translation>
 <translation id="383058930331066723">Modaliteti i kursimit të baterisë është aktiv</translation>
 <translation id="383629559565718788">Shfaq cilësimet e tastierës</translation>
@@ -1744,6 +1745,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Mbyll "Zgjidh që të thuhet"</translation>
+<translation id="8468806060683421065">afati më <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Cilësimet e shkallës së ekranit</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ka <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Shtyp Alt+"Kërko" ose "Shift" për të anuluar.</translation>
@@ -1827,6 +1829,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8853703225951107899">Kod yt PIN ose fjalëkalimi përsëri nuk mund të verifikoheshin. Shënim. Nëse e ke ndryshuar fjalëkalimin së fundi, përdor fjalëkalimin e vjetër. Fjalëkalimi yt i ri do të zbatohet pasi të dalësh nga llogaria.</translation>
 <translation id="8855885154700222542">Tasti i ekranit të plotë</translation>
 <translation id="8858369206579825206">Kontrollet e privatësisë</translation>
+<translation id="8860366331836346216">Shto kartë eSIM</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8875021410787719674">Kalo mes këndit të poshtëm djathtas, "Nisësit", shiritit të adresës, shiritit të faqeshënuesve, sajtit të uebit që është i hapur dhe shkarkimeve</translation>

@@ -95,6 +95,7 @@
 <translation id="174937106936716857">Łączna liczba plików</translation>
 <translation id="1755345808328621801">To jest plik na komputery z oprogramowaniem Windows. Jest on niezgodny z Twoim urządzeniem z Chrome OS. Poszukaj odpowiedniej aplikacji zastępczej w Chrome Web Store.</translation>
 <translation id="1757915090001272240">szeroka łacina</translation>
+<translation id="1761091787730831947">Udostępnij maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Certyfikat uwierzytelniania został odrzucony lokalnie</translation>
 <translation id="1775381402323441512">Informacje o pliku wideo</translation>
 <translation id="180035236176489073">Musisz być w trybie online, by uzyskać dostęp do tych plików.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Zainstaluj za pomocą Linuksa</translation>
 <translation id="2719020180254996569">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, szczegóły</translation>
 <translation id="2724954091494693138">Turecki z klawiaturą F</translation>
+<translation id="2732288874651063549">Zarządzaj udostępnianiem maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Wietnamski VNI</translation>
 <translation id="2735623501230989521">Przyznaj aplikacji Parallels Desktop uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="2764206540577097904">Wykorzystujesz całe swoje indywidualne miejsce na dane w Google Workspace.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
+<translation id="3523225005467146490">Udostępniono 1 folder maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="3524311639100184459">Uwaga: te pliki mają charakter tymczasowy i mogą zostać automatycznie usunięte w celu zwolnienia miejsca na dysku.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Folder</translation>
 <translation id="3548125359243647069">Zbyt wiele razy podano nieprawidłowy kod PIN.</translation>
@@ -662,6 +665,7 @@
 <translation id="6164412158936057769">Motyle</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6170470584681422115">Kanapka</translation>
+<translation id="6181912134988520389">Przyznaj maszynie wirtualnej <ph name="VM_NAME" /> uprawnienia dostępu do plików na Dysku Google. Zmiany będą synchronizowane z innymi urządzeniami.</translation>
 <translation id="6187719147498869044">Węgierski</translation>
 <translation id="6198252989419008588">Zmień kod PIN</translation>
 <translation id="6199801702437275229">Oczekuję na informacje o wolnym miejscu...</translation>
@@ -765,6 +769,7 @@
 <translation id="6989942356279143254">Szwedzki</translation>
 <translation id="6990081529015358884">Nie masz już miejsca</translation>
 <translation id="6993826899923627728">Te elementy są w koszu</translation>
+<translation id="6996593023542748157">Udostępnij folder maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">Aby ukończyć przesyłanie, Twoja organizacja potrzebuje więcej miejsca na dane.</translation>
 <translation id="7009985720488544166">Przenoszenie <ph name="COUNT" /> plików jest zablokowane przez zasady administratora</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Białoruski</translation>
 <translation id="8336153091935557858">Wczoraj, <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Plik lub katalog o tej nazwie już istnieje.</translation>
+<translation id="83651606385705612">Przyznaj maszynie wirtualnej <ph name="VM_NAME" /> uprawnienia dostępu do plików w folderze <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8372852072747894550">Grecki</translation>
 <translation id="8386903983509584791">Skanowanie ukończone</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472">Sieć <ph name="NETWORK_TYPE" />, łączę</translation>
 <translation id="8425213833346101688">Zmień</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
+<translation id="8429998526804961548">Udostępniono foldery (<ph name="NUMBER_OF_ITEMS" />) maszynie wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="8431909052837336408">Zmień PIN do karty SIM</translation>
 <translation id="8437209419043462667">amerykański</translation>
 <translation id="8452135315243592079">Brak karty SIM</translation>

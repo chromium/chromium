@@ -268,7 +268,6 @@
 <translation id="1197935538609051549">დეაქტივაცია</translation>
 <translation id="1198066799963193307">მეტყველების ხელსაწყოები სუსტი მხედველობისთვის</translation>
 <translation id="119944043368869598">ყველაფრის გასუფთავება</translation>
-<translation id="1199631150313925648">ხელით შეყვანა</translation>
 <translation id="1199814941632954229">ამ სერტიფიკატების პროფილებისთვის გაიცემა სერტიფიკატები</translation>
 <translation id="120069043972472860">ყურება შეუძლებელია</translation>
 <translation id="1201402288615127009">შემდეგი</translation>
@@ -4709,6 +4708,7 @@
 <translation id="4773112038801431077">განაახლეთ Linux-ის ვერსია</translation>
 <translation id="4774456473286455263">თქვენი Android ტელეფონით დაყენება</translation>
 <translation id="477548766361111120">გაფართოებისთვის ამ საიტის წაკითხვისა და შეცვლის დაშვება</translation>
+<translation id="4776311127346151860"><ph name="DEVICE_NAME" /> დაკავშირებულია</translation>
 <translation id="4776594120007763294">გვერდის მოგვიანებით წასაკითხად დასამატებლად დააწკაპუნეთ ღილაკზე</translation>
 <translation id="4777458362738635055">ამ ქსელის გამოყენება ამ მოწყობილობის სხვა მომხმარებლებსაც შეუძლია</translation>
 <translation id="4777813841994368231">ჩართული • ამ გაფართოების გამოქვეყნება გაუქმდა მისი დეველოპერის მიერ</translation>
@@ -6162,6 +6162,7 @@
 <translation id="5990266201903445068">მხოლოდ Wi-Fi</translation>
 <translation id="5990386583461751448">ნათარგმნია</translation>
 <translation id="599131315899248751">{NUM_APPLICATIONS,plural, =1{იმისთვის, რომ კვლავ შეძლოთ ვების დათვალიერება, სთხოვეთ თქვენს ადმინისტრატორს, ამოშალოს ეს აპლიკაცია.}other{იმისთვის, რომ კვლავ შეძლოთ ვების დათვალიერება, სთხოვეთ თქვენს ადმინისტრატორს, ამოშალოს ეს აპლიკაციები.}}</translation>
+<translation id="5992225669837656567">ყველა მაუსი გათიშულია</translation>
 <translation id="5993508466487156420">{NUM_SITES,plural, =1{შემოწმება შესრულდა 1 საიტისთვის}other{შემოწმება შესრულდა {NUM_SITES} საიტისთვის}}</translation>
 <translation id="5997337190805127100">შეიტყვეთ მეტი საიტების წვდომის შესახებ</translation>
 <translation id="5998458948782718639">დაგვეხმარეთ, გავაუმჯობესოთ ავტომატური შევსება</translation>
@@ -7421,6 +7422,7 @@
 <translation id="7019546817926942979">თქვენი მოწყობილობა მიერთებული უნდა იყოს. Linux-ის ახალ ვერსიაზე გადასვლისას ბატარეა შეიძლება საგრძნობლად დაიცალოს. მიაერთეთ მოწყობილობა დამტენს და ცადეთ ხელახლა.</translation>
 <translation id="7019805045859631636">სწრაფი</translation>
 <translation id="7021524108486027008">გაუშვით ხელსაწყოები, რედაქტორები და IDE-ები გარემოში, რომელიც თქვენს <ph name="DEVICE_TYPE" />-ზე კორპორაციულად იმართება.</translation>
+<translation id="7022222879220069865">ყველა სენსორული პანელი გათიშულია</translation>
 <translation id="7022562585984256452">მთავარი გვერდი დაყენდა.</translation>
 <translation id="7025082428878635038">წარმოგიდგენთ ჟესტებით ნავიგაციის ახალ ხერხს</translation>
 <translation id="7025190659207909717">მობილური მონაცემების სერვისის მართვა</translation>
@@ -7542,6 +7544,7 @@
 <translation id="7128151990937044829">შეტყობინებების დაბლოკვისას მისამართთა ზოლში ინდიკატორის ჩვენება</translation>
 <translation id="7131040479572660648">წაიკითხეთ თქვენი მონაცემები ვებსაიტებზე <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> და <ph name="WEBSITE_3" /></translation>
 <translation id="713122686776214250">გვ&amp;ერდის დამატება...</translation>
+<translation id="7131431455372521159">ყველა TrackPoint გათიშულია</translation>
 <translation id="7134098520442464001">დააპატარავეთ ტექსტი</translation>
 <translation id="7135729336746831607">გსურთ Bluetooth-ის ჩართვა?</translation>
 <translation id="7136694880210472378">აქციეთ ნაგულისხმევად</translation>
@@ -9816,6 +9819,7 @@
 <translation id="8977811652087512276">პაროლი არასწორია, ან დაზიანებულია ფაილი</translation>
 <translation id="8978154919215542464">ჩართული — ყველაფრის სინქრონიზაცია</translation>
 <translation id="8978670037548431647">ტეტერინგის შესაძლებლობების განახლება</translation>
+<translation id="8978939272793553320"><ph name="DEVICE_NAME" /> გათიშულია</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />-ზე</translation>
 <translation id="8980345560318123814">უკუკავშირის ანგარიშები</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> — ავარიულად გაითიშა</translation>

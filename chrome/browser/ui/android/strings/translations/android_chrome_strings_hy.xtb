@@ -120,6 +120,7 @@
 <translation id="1553358976309200471">Թարմացնել Chrome-ը</translation>
 <translation id="1554532453982918912">Օգնեք ավելի լավը դարձնել Chrome-ը ձեզ նման օգտատերերի համար</translation>
 <translation id="1558391695376153246">Փակել ինկոգնիտո ներդիրները</translation>
+<translation id="1568636008098739136">Հնչեցնել այս էջը։ Այս դյուրանցումը փոփոխելու համար հպեք դրան և պահեք։</translation>
 <translation id="1571304935088121812">Պատճենել օգտանունը</translation>
 <translation id="1592864538817356322">Սովորական պաշտպանություն՝</translation>
 <translation id="1594635596540195766"><ph name="SUGGESTIONS_COUNT" /> առաջարկվող տարր ներքևի ցուցակում։</translation>
@@ -128,6 +129,7 @@
 <translation id="1628019612362412531">{NUM_SELECTED,plural, =1{Հեռացնել ընտրված 1 տարրը}one{Հեռացնել ընտրված # տարրը}other{Հեռացնել ընտրված # տարրերը}}</translation>
 <translation id="1633659023549081553">Դիտեք բովանդակության առաջարկներ Chrome-ի գլխավոր էջում</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
+<translation id="1642309806724967937">Ձեր կարգավորումներից կախված՝ Chrome-ը կարող է նաև ուղարկել քուքիներ և ձեր ընթացիկ URL-ը</translation>
 <translation id="164269334534774161">Դուք դիտում եք տվյալ էջի <ph name="CREATION_TIME" />-ի անցանց պատճենը</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1657932388559784161">Էջի վիճակագրության ներքևի էկրանը փակված է</translation>
@@ -196,6 +198,7 @@
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ}one{Չհաջողվեց ներբեռնել # ֆայլ}other{Չհաջողվեց ներբեռնել # ֆայլ}}</translation>
 <translation id="2067805253194386918">տեքստ</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
+<translation id="2093731487903423814">վերջին 15 րոպեն</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
 <translation id="2100273922101894616">Ավտոմատ մուտք</translation>
 <translation id="2100314319871056947">Փորձեք ուղարկել տեքստը մաս-մաս</translation>
@@ -570,6 +573,7 @@
 <translation id="4056223980640387499">Սեպիա</translation>
 <translation id="4062305924942672200">Իրավական տեղեկություններ</translation>
 <translation id="4072805772816336153">Փորձեք ավելի ուշ</translation>
+<translation id="4080602171844412446">Առնչվող տեղեկություններ</translation>
 <translation id="4084682180776658562">Էջանիշ</translation>
 <translation id="4084712963632273211">Բովանդակությունը՝ <ph name="PUBLISHER_ORIGIN" /> կայքից։ <ph name="BEGIN_DEEMPHASIZED" />Մատուցվում է Google-ի կողմից<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="409109920254068737">Դուք կարող եք օգտագործել այս պլանշետը՝ հաշիվ մուտք գործելու սարքում, որում ցուցադրված է այս QR կոդը։</translation>
@@ -650,6 +654,7 @@
 <translation id="4484496141267039529">Կապ չկա։ Փորձեք ավելի ուշ։</translation>
 <translation id="4487967297491345095">Chrome հավելվածի բոլոր տվյալներն ընդմիշտ կջնջվեն, ներառյալ` բոլոր ֆայլերը, կարգավորումները, հաշիվները, տվյալների շտեմարանները և այլն:</translation>
 <translation id="449126573531210296">Գաղտնագրել համաժամացված գաղտնաբառերը Google հաշվի միջոցով</translation>
+<translation id="4491323382106587961">Ընտրեք հաշիվ։ Ներկայումս ընտրված է <ph name="EMAIL" /> հաշիվը։</translation>
 <translation id="4508528996305412043">Լրահոսի քարտի ընտրացանկը բացված է</translation>
 <translation id="4509501256689523862">Գովազդի անհատականացումը կախված է այս կարգավորումից, <ph name="BEGIN_LINK_1" />գովազդի թեմաներից<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />քուքիների կարգավորումներից<ph name="END_LINK_2" /> և այն կայքի կարգավորումներից, որը դուք դիտում եք</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
@@ -657,6 +662,7 @@
 <translation id="4521489764227272523">Ընտրված տվյալները հեռացվել են Chrome-ից և ձեր համաժամացված սարքերից:
 
 Այցելությունների պատմությունը կարող է պահվել նաև ձեր Google հաշվում, օրինակ՝ որոնումների և Google-ի ծառայություններում ձեր գործողությունների տեսքով: Այդ տվյալները կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
+<translation id="4523326818319942067">վերջին 1 ժամը</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4528638190900283934">Մուտք գործեք՝ լրացուցիչ գործառույթներից օգտվելու համար</translation>
 <translation id="4532845899244822526">Պանակի ընտրություն</translation>
@@ -705,6 +711,7 @@
 <translation id="4738836084190194332">Վերջին համաժամացումը՝ <ph name="WHEN" /></translation>
 <translation id="4741753828624614066">Հասցեագոտում կհայտնվեն բարելավված հուշումներ</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
+<translation id="4743664893327841597">Այն, ինչ մուտքագրում եք հասցեագոտում կամ որոնման դաշտում, ուղարկվում է ձեր կանխադրված որոնողական համակարգին</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
 <translation id="4758061975920522644">Կիսվել միայն պատկերով</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
@@ -713,6 +720,7 @@
 <translation id="4766678251456904326">Սարքում հաշիվ ավելացնել</translation>
 <translation id="4767947714785277816">Մենք գործարկում ենք գովազդի գաղտնիության նոր գործառույթ՝ «գովազդի արդյունավետության չափում» անվանումով։ Chrome-ը կայքերին և հավելվածներին շատ սահմանափակ տեղեկություններ է տրամադրում, օրինակ՝ երբ գովազդ է ցուցադրվում ձեզ՝ դրա արդյունավետությունը չափելու համար։</translation>
 <translation id="4769095993849849966">Ֆայլի նոր անվանումը</translation>
+<translation id="4775646243557794597"><ph name="TIME_PERIOD" /> ջնջվեց</translation>
 <translation id="4778653490315793244">Բովանդակություն չկա</translation>
 <translation id="4787736314074622408">Ջնջե՞լ <ph name="ITEM_TITLE" /> տարրը</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
@@ -814,6 +822,7 @@
 <translation id="5234971936051226002">«Հնչեցնել այս էջը» գործառույթի նվագարկիչը ծալվեց։</translation>
 <translation id="5235196193381275927">Չհաջողվեց մուտք գործել</translation>
 <translation id="5246093389635966745">Փոփոխել գործիքագոտու դյուրանցումը</translation>
+<translation id="5264813352784073502">վերջին 24 ժամը</translation>
 <translation id="5271967389191913893">Սարքը չի կարող բացել ներբեռնվող բովանդակությունը:</translation>
 <translation id="5292796745632149097">Ուղարկել</translation>
 <translation id="5300426565656326054">Գովազդի անհատականացում դիտարկիչում գործողությունների հիման վրա</translation>
@@ -826,6 +835,7 @@
 <translation id="5329858041417644019">Ձեր դիտարկիչը չի կառավարվում</translation>
 <translation id="5339031667684712858">Կայքերը, որոնք հեռացրել եք</translation>
 <translation id="5342314432463739672">Թույլտվությունների հարցումներ</translation>
+<translation id="534580735623577507">Կայքեր չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
 <translation id="53537532693258630">Այստեղ կհայտնվեն ձեր հեռացրած կայքերը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
 <translation id="5361107212971249203">տեքստ</translation>
@@ -841,6 +851,7 @@
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
 <translation id="5438292632479953702">Ներբեռնել նորից</translation>
 <translation id="5439191312780166229">Զգուշացնում է ձեզ վտանգավոր, այդ թվում՝ Google-ին նախկինում անհայտ կայքերի մասին, քանի որ ավելի շատ տվյալներ է վերլուծում կայքերում՝ համեմատած ստանդարտ պաշտպանության հետ։ Դուք կարող եք բաց թողնել Chrome-ի նախազգուշացումները։</translation>
+<translation id="5441137934526263133">Կայքը չի՞ աշխատում։ Երրորդ կողմի քուքիներն արգելափակված են</translation>
 <translation id="5441466871879044658">Թարգմանել այս լեզվով</translation>
 <translation id="5441522332038954058">Անցնել հասցեագոտի</translation>
 <translation id="5444999712122199445">Վերադառնալ կայք</translation>
@@ -938,6 +949,7 @@
 <translation id="5951119116059277034">Ակտիվ էջի դիտում</translation>
 <translation id="5956665950594638604">Բացել Chrome-ի օգնության կենտրոնը նոր ներդիրում</translation>
 <translation id="5957442310066583693">Ձեր թոփ կայքերը դիտելու համար սեղմեք գլխավոր էկրանի կոճակը</translation>
+<translation id="59577092665511740">Ընտրեք հաշիվ։</translation>
 <translation id="5958275228015807058">Ձեր ֆայլերն ու էջերը որոնեք «Ներբեռնումներ» պանակում</translation>
 <translation id="5958994127112619898">Պարզեցնել էջը</translation>
 <translation id="5962718611393537961">Հպեք՝ կոծկելու համար</translation>
@@ -949,7 +961,6 @@
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
 <translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
 <translation id="6002122790816966947">Ձեր սարքերը</translation>
-<translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6026538407078977628">Ցուցադրել լիաէկրան ռեժիմում</translation>
 <translation id="6030719887161080597">Կառավարեք կայքերի կողմից օգտագործվող տեղեկությունները՝ գովազդի արդյունավետությունը գնահատելու համար</translation>
@@ -1283,7 +1294,9 @@
 <translation id="7638584964844754484">Սխալ անցաբառ</translation>
 <translation id="7641339528570811325">Մաքրել այցելությունների պատմությունը…</translation>
 <translation id="7646772052135772216">Գաղտնաբառերի համաժամացումը չի աշխատում</translation>
+<translation id="7655240423373329753">վերջին 7 օրը</translation>
 <translation id="7655900163790317559">Bluetooth-ը միանում է…</translation>
+<translation id="7656721520530864426">Կայքեր չկան</translation>
 <translation id="7656862631699126784">Միացնել ինկոգնիտո ներդիրների կողպումը</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
 <translation id="7665369617277396874">Ավելացնել հաշիվ</translation>
@@ -1385,6 +1398,7 @@
 <translation id="8088176524274673045">Մոտակայքում գտնվող մարդկանց հետ կիսվելու համար սկանավորեք այս QR կոդը</translation>
 <translation id="8090732854597034573">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ</translation>
 <translation id="8100969750121413114">Մտեք հաշիվ՝ Chrome-ն անհատականացնելու համար</translation>
+<translation id="8101414242770404289">Ներդիրներ չկան նշված ժամանակահատվածից (<ph name="TIME_PERIOD" />)</translation>
 <translation id="8103578431304235997">Ինկոգնիտո ներդիր</translation>
 <translation id="8105613260829665809">Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Օգտագործման պայմանները<ph name="END_TOS_LINK" />։\nՀավելվածը բարելավելու նպատակով Chrome-ը ուղարկում է օգտագործման և խափանումների մասին տվյալները Google-ին։ <ph name="BEGIN_UMA_LINK" />Կառավարել<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
@@ -1436,6 +1450,7 @@
 <translation id="8414396119627470038">Մուտք գործեք <ph name="SITE_ETLD_PLUS_ONE" /> կայք <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ընկերության տվյալներով</translation>
 <translation id="8416347857511542594">Իմանալ ավելին Chrome-ում գովազդի անհատականացման մասին</translation>
 <translation id="8419244640277402268">Ներառել</translation>
+<translation id="8422250855136581222">Այս սարքում ներդիրներ չկան</translation>
 <translation id="8424781820952413435">Էջն ուղարկվեց։ Այն տեսնելու համար բացեք Chrome դիտարկիչը <ph name="DEVICE_TYPE" /> հեռախոսում։</translation>
 <translation id="8427875596167638501">Նախադիտման ներդիրը կիսաբաց է</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>

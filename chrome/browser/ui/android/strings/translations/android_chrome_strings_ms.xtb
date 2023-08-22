@@ -299,6 +299,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2604446170045642109">Anda boleh mematikan tema gelap untuk laman dalam tetapan anda.</translation>
 <translation id="2612676031748830579">Nombor kad</translation>
 <translation id="2625189173221582860">Kata laluan disalin</translation>
+<translation id="2634393460268044753">Menghantar URL laman yang anda lawati dan sedikit sampel kandungan halaman, muat turun, aktiviti sambungan dan maklumat sistem kepada Penyemakan Imbas Selamat Google untuk disemak jika sampel tersebut berbahaya.</translation>
 <translation id="2642087927315268160">Helaian bawah log masuk ditutup.</translation>
 <translation id="2643064289437760082">Anda sentiasa boleh memadamkan data pengukuran iklan dengan memadamkan data semakan imbas anda</translation>
 <translation id="2647434099613338025">Tambah bahasa</translation>
@@ -345,6 +346,7 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="2888126860611144412">Perihal Chrome</translation>
 <translation id="2891154217021530873">Hentikan pemuatan halaman</translation>
 <translation id="2893180576842394309">Google boleh menggunakan sejarah anda untuk memperibadikan Carian dan perkhidmatan Google yang lain</translation>
+<translation id="2894821468041866720">Tidak memperlahankan penyemak imbas atau peranti dengan ketara.</translation>
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2901411048554510387">Memaparkan cadangan untuk <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Senarai peranti untuk berkongsi tab dibuka pada ketinggian penuh.</translation>
@@ -961,7 +963,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="6000066717592683814">Kekalkan Google</translation>
 <translation id="6000203700195075278">Ikuti semula</translation>
 <translation id="6002122790816966947">Peranti anda</translation>
-<translation id="6005538289190791541">Kata laluan yang disyorkan</translation>
 <translation id="6011308810877101166">Tingkatkan cadangan carian</translation>
 <translation id="6026538407078977628">Kembangkan kepada skrin penuh</translation>
 <translation id="6030719887161080597">Urus maklumat yang digunakan oleh laman untuk mengukur prestasi iklan</translation>
@@ -1189,6 +1190,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7116588989735740310">Untuk kembali kepada laman yang telah anda lawati pada peranti lain, segerakkan tab dan sejarah anda</translation>
 <translation id="7130504491556983216">Senarai minat akan dipaparkan di sini semasa anda menyemak imbas web</translation>
 <translation id="7138678301420049075">Lain-lain</translation>
+<translation id="7140829094791862589">Isih ikut tertib manual</translation>
 <translation id="7146622961999026732">Tapak dan apl ini nampaknya penting kepada anda:</translation>
 <translation id="7149893636342594995">24 jam yang lalu</translation>
 <translation id="7155317020660659215">Untuk mengimbas Kod QR, tukar tetapan supaya Chrome boleh menggunakan kamera anda</translation>
@@ -1330,6 +1332,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7808889146555843082">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" />. Tukar kata laluan anda atau padamkan akaun anda pada <ph name="SITE" /> untuk melindungi kata laluan itu daripada orang lain.</translation>
 <translation id="7810647596859435254">Buka dengan...</translation>
 <translation id="7815484226266492798">Tangkapan Skrin Panjang</translation>
+<translation id="7822705602465980873">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
 <translation id="78270725016672455">Komputer anda ingin mendaftarkan peranti ini untuk log masuk ke laman</translation>
 <translation id="7844171778363018843">Tiada data yang dipilih untuk disegerakkan</translation>
 <translation id="7846296061357476882">Perkhidmatan Google</translation>

@@ -366,6 +366,7 @@
 <translation id="3941014780699102620">無法解析主機</translation>
 <translation id="3942420633017001071">診斷</translation>
 <translation id="3954678691475912818">裝置類型不明。</translation>
+<translation id="3959413315969265597">無法啟用這個 APN，請確認已新增預設的 APN。</translation>
 <translation id="3966286471246132217">如要獲得更準確的結果，請關閉所有應用程式，直到測試完成為止。</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3969602104473960991">已更新 Chrome OS 密碼</translation>

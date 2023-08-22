@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">ตั้งค่าในโทรศัพท์ให้เสร็จสมบูรณ์</translation>
 <translation id="1054153489933238809">เ&amp;ปิดภาพต้นฉบับในแท็บใหม่</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน 1 สัปดาห์}other{อัปเดต <ph name="DEVICE_TYPE" /> ภายใน {NUM_WEEKS} สัปดาห์}}</translation>
+<translation id="1056398434290692818">นำทางกลับและไปข้างหน้าด้วยท่าทางสัมผัสการปัด</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1056980582064308040">การเปลี่ยนการตั้งค่าจะรีสตาร์ทฮอตสปอต อุปกรณ์ที่ใช้ฮอตสปอตจะขาดจากการเชื่อมต่อ</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -263,7 +264,6 @@
 <translation id="1197935538609051549">ปิดใช้งาน</translation>
 <translation id="1198066799963193307">เครื่องมืออ่านออกเสียงสำหรับผู้ที่มีสายตาเลือนราง</translation>
 <translation id="119944043368869598">ล้างทั้งหมด</translation>
-<translation id="1199631150313925648">ป้อนด้วยตนเอง</translation>
 <translation id="1199814941632954229">กำลังจัดสรรใบรับรองสำหรับโปรไฟล์ใบรับรองเหล่านี้</translation>
 <translation id="120069043972472860">ดูไม่ได้</translation>
 <translation id="1201402288615127009">ถัดไป</translation>
@@ -513,6 +513,7 @@
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{นำแอปออก}other{นำแอปออก}}</translation>
 <translation id="1417497355604638350">ส่งข้อมูลการวินิจฉัยและการใช้งาน</translation>
 <translation id="1418552618736477642">การแจ้งเตือนและแอป</translation>
+<translation id="1418559532423038045">นํา <ph name="VM_NAME" /> ออกจาก <ph name="DEVICE_TYPE" /> การดําเนินการนี้จะลบแอปและข้อมูลทั้งหมดในเครื่องเสมือน</translation>
 <translation id="1418882096915998312">กำลังดำเนินการลงทะเบียน Chrome Enterprise Upgrade</translation>
 <translation id="1418954524306642206">เรียกดูเพื่อระบุ PPD ของเครื่องพิมพ์</translation>
 <translation id="1420834118113404499">ใบอนุญาตสื่อ</translation>
@@ -2371,6 +2372,7 @@
 <translation id="287205682142673348">การส่งต่อพอร์ต</translation>
 <translation id="287286579981869940">เพิ่ม <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">ปิด</translation>
+<translation id="2873744479411987024">เมื่อใช้อัตราการรีเฟรชสูงขึ้น คุณจะแสดงผลได้อย่างราบรื่นและมีรายละเอียดมากขึ้น อัตราการรีเฟรชที่เพิ่มขึ้นอาจส่งผลต่ออายุการใช้งานแบตเตอรี่</translation>
 <translation id="2873995907777332853">แสดงรายละเอียดเกี่ยวกับการบล็อกคุกกี้ทั้งหมด</translation>
 <translation id="2874939134665556319">แทร็กก่อนหน้า</translation>
 <translation id="2875698561019555027">(หน้าข้อผิดพลาดของ Chrome)</translation>
@@ -2460,6 +2462,7 @@
 <translation id="2944060181911631861">ส่งข้อมูลการใช้งานและการวินิจฉัย ช่วยปรับปรุงประสบการณ์การใช้งาน Android ของคุณให้ดีขึ้นด้วยการส่งข้อมูลการวินิจฉัย อุปกรณ์ และการใช้งานแอปไปยัง Google โดยอัตโนมัติ ซึ่งจะช่วยให้แอปและระบบมีความเสถียร พร้อมทั้งปรับปรุงด้านอื่นๆ ข้อมูลที่รวบรวมมาบางส่วนจะมีประโยชน์ต่อแอปและพาร์ทเนอร์ของ Google ด้วย เช่น นักพัฒนาแอป Android หากเปิดการตั้งค่ากิจกรรมเพิ่มเติมบนเว็บและแอปไว้ ระบบอาจบันทึกข้อมูลนี้ไว้ในบัญชี Google ของคุณ <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">ไปที่ไฟล์</translation>
 <translation id="2946119680249604491">เพิ่มการเชื่อมต่อ</translation>
+<translation id="2946190589196900944">ขอบเขตของการแสดงผล</translation>
 <translation id="2946640296642327832">เปิดใช้งานบลูทูธ</translation>
 <translation id="2947605845283690091">การท่องเว็บควรจะเร็ว โปรดใช้เวลาสักครู่เพื่อ<ph name="BEGIN_LINK" />ตรวจสอบส่วนขยาย<ph name="END_LINK" />ตอนนี้เลย</translation>
 <translation id="2948300991547862301">ไปที่ <ph name="PAGE_TITLE" /></translation>
@@ -2475,6 +2478,7 @@
 <translation id="2959127025785722291">เกิดข้อผิดพลาด สแกนไม่สำเร็จ โปรดลองอีกครั้ง</translation>
 <translation id="2959842337402130152">นำเข้าไม่ได้เนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ เพิ่มพื้นที่ว่าง <ph name="SPACE_REQUIRED" /> ในอุปกรณ์แล้วลองอีกครั้ง</translation>
 <translation id="2960208947600937804">เกิดข้อผิดพลาดขณะกำหนดค่า Linux โปรดติดต่อผู้ดูแลระบบ</translation>
+<translation id="2960942820860729477">อัตราการรีเฟรช</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (มีส่วนขยายให้มาด้วย)</translation>
 <translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
 <translation id="2961695502793809356">คลิกเพื่อไปข้างหน้า กดค้างเพื่อดูประวัติการเข้าชม</translation>
@@ -4195,6 +4199,7 @@
 <translation id="4404843640767531781">ผู้ปกครองของคุณบล็อก <ph name="APP_NAME" /> ไว้ โปรดขอสิทธิ์จากผู้ปกครองเพื่อใช้แอปนี้</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>
+<translation id="4405781821077215583">ทำให้รายการในหน้าจอรวมถึงข้อความมีขนาดเล็กลงหรือใหญ่ขึ้น</translation>
 <translation id="4406883609789734330">คำบรรยายสด</translation>
 <translation id="4407039574263172582">หากต้องการดำเนินการต่อ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> จะแชร์ชื่อ อีเมล และรูปโปรไฟล์ของคุณกับเว็บไซต์นี้ โปรดอ่าน<ph name="BEGIN_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_LINK" />ของเว็บไซต์</translation>
 <translation id="4408599188496843485">ความ&amp;ช่วยเหลือ</translation>
@@ -6305,6 +6310,7 @@
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6196854373336333322">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เข้าควบคุมการตั้งค่าพร็อกซีของคุณ ซึ่งหมายความว่าส่วนขยายนี้จะสามารถเปลี่ยนแปลง ทำให้เสียหาย หรือดักฟังทุกอย่างที่คุณทำทางออนไลน์ได้ หากคุณไม่แน่ใจว่าการเปลี่ยนแปลงนี้เกิดขึ้นได้อย่างไร คุณอาจไม่ต้องการส่วนขยายนี้</translation>
 <translation id="6197128521826316819">สร้างคิวอาร์โค้ดสำหรับหน้านี้</translation>
+<translation id="6198223452299275399">ปัดไปมาระหว่างหน้า</translation>
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
 <translation id="6200047250927636406">ทิ้งไฟล์</translation>
 <translation id="6200151268994853226">จัดการส่วนขยาย</translation>
@@ -6702,6 +6708,7 @@
 <translation id="6532527800157340614">ลงชื่อเข้าใช้ไม่สำเร็จเนื่องจากระบบเรียกดูโทเค็นเพื่อการเข้าถึงไม่ได้ โปรดตรวจสอบการเชื่อมต่อเครือข่ายแล้วลองอีกครั้ง</translation>
 <translation id="6532663472409656417">องค์กรที่ลงทะเบียน</translation>
 <translation id="6533315466883598769">ใช้ Google แปลภาษา</translation>
+<translation id="65334502113648172">กดแป้นลูกศรเพื่อย่อหรือขยายพื้นที่แสดงผล หากต้องการย้ายพื้นที่แสดงผลไปรอบๆ ให้กด Shift และ + แล้วใช้แป้นลูกศร</translation>
 <translation id="6533636340637966565">กำลังเปิด...</translation>
 <translation id="6535331821390304775">อนุญาตให้ <ph name="ORIGIN" /> เปิดลิงก์ประเภทนี้ในแอปที่เชื่อมโยงทุกครั้ง</translation>
 <translation id="653659894138286600">สแกนเอกสารและรูปภาพ</translation>

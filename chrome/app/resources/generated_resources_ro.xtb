@@ -71,6 +71,7 @@
 <translation id="1054048317165655285">Finalizează configurarea pe telefon</translation>
 <translation id="1054153489933238809">Deschide &amp;imaginea originală într-o filă nouă</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult o săptămână}few{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} săptămâni}other{Actualizează acest <ph name="DEVICE_TYPE" /> în cel mult {NUM_WEEKS} de săptămâni}}</translation>
+<translation id="1056398434290692818">Navighează înainte și înapoi folosind gestul de glisare</translation>
 <translation id="1056898198331236512">Avertisment</translation>
 <translation id="1056980582064308040">Dacă modifici setările, hotspotul va reporni. Dispozitivele care folosesc hotspotul se vor deconecta.</translation>
 <translation id="1058262162121953039">Codul PUK</translation>
@@ -268,7 +269,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1197935538609051549">Dezactivează</translation>
 <translation id="1198066799963193307">Instrumente de vorbire pentru persoanele cu vedere slabă</translation>
 <translation id="119944043368869598">Șterge-le pe toate</translation>
-<translation id="1199631150313925648">Introdu manual</translation>
 <translation id="1199814941632954229">Certificatele sunt acordate pentru aceste profiluri cu certificat</translation>
 <translation id="120069043972472860">Nu se poate viziona</translation>
 <translation id="1201402288615127009">Înainte</translation>
@@ -519,6 +519,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Elimină aplicația}few{Elimină aplicații}other{Elimină aplicații}}</translation>
 <translation id="1417497355604638350">Trimite date de diagnosticare și de utilizare.</translation>
 <translation id="1418552618736477642">Notificările și aplicațiile</translation>
+<translation id="1418559532423038045">Elimină <ph name="VM_NAME" /> de pe <ph name="DEVICE_TYPE" />. Astfel se vor șterge toate aplicațiile și datele de pe mașina virtuală!</translation>
 <translation id="1418882096915998312">Înregistrarea la Enterprise este în curs</translation>
 <translation id="1418954524306642206">Răsfoiește pentru a indica PPD-ul imprimantei</translation>
 <translation id="1420834118113404499">Licențe media</translation>
@@ -2400,6 +2401,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="287205682142673348">Redirecționare de port</translation>
 <translation id="287286579981869940">Adaugă <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Închide</translation>
+<translation id="2873744479411987024">Dacă rata de actualizare este mai mare, imaginile vor fi mai fluide, cu mai multe detalii. O rată de actualizare mai mare poate afecta autonomia bateriei.</translation>
 <translation id="2873995907777332853">Afișează detalii despre blocarea tuturor cookie-urilor</translation>
 <translation id="2874939134665556319">Melodia anterioară</translation>
 <translation id="2875698561019555027">(pagini de erori Chrome)</translation>
@@ -2490,6 +2492,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2944060181911631861">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android trimițând automat la Google date privind diagnosticarea și utilizarea dispozitivelor și a aplicațiilor. Aceasta va ajuta la stabilitatea sistemului, a aplicației și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. <ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Accesează fișierele</translation>
 <translation id="2946119680249604491">Adăugați o conexiune</translation>
+<translation id="2946190589196900944">Marginile ecranului</translation>
 <translation id="2946640296642327832">Activați Bluetooth</translation>
 <translation id="2947605845283690091">Navigarea pe web trebuie să fie rapidă. <ph name="BEGIN_LINK" />Verifică-ți extensiile<ph name="END_LINK" /> acum.</translation>
 <translation id="2948300991547862301">Accesați <ph name="PAGE_TITLE" /></translation>
@@ -2505,6 +2508,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2959127025785722291">A apărut o eroare. Verificarea nu s-a putut finaliza. Încearcă din nou.</translation>
 <translation id="2959842337402130152">Nu se poate restabili din cauza spațiului de stocare insuficient. Eliberează <ph name="SPACE_REQUIRED" /> pe dispozitiv și încearcă din nou.</translation>
 <translation id="2960208947600937804">A apărut o eroare la configurarea Linux. Contactează administratorul.</translation>
+<translation id="2960942820860729477">Rata de actualizare</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (oferit de extensie)</translation>
 <translation id="2961210776189273067">Titlu</translation>
 <translation id="2961695502793809356">Dă clic pentru a naviga înainte, ține apăsat pentru a vedea istoricul</translation>
@@ -4253,6 +4257,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4404843640767531781">Aplicația <ph name="APP_NAME" /> a fost blocată de părintele tău. Solicită părintelui permisiunea de a folosi această aplicație.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mută în…</translation>
+<translation id="4405781821077215583">Mărește sau micșorează elementele de pe ecran, inclusiv textul</translation>
 <translation id="4406883609789734330">Subtitrări live</translation>
 <translation id="4407039574263172582">Pentru a continua, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> va permite accesul site-ului la numele, adresa de e-mail și fotografia ta de profil. Vezi <ph name="BEGIN_LINK" />termenii și condițiile<ph name="END_LINK" /> acestui site.</translation>
 <translation id="4408599188496843485">&amp;Ajutor</translation>
@@ -6387,6 +6392,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6196640612572343990">Blochează cookie-urile terță parte</translation>
 <translation id="6196854373336333322">Extensia „<ph name="EXTENSION_NAME" />” a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
 <translation id="6197128521826316819">Creează un cod QR pentru această pagină</translation>
+<translation id="6198223452299275399">Glisează pentru a comuta între pagini</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>
 <translation id="6200047250927636406">Șterge fișierul</translation>
 <translation id="6200151268994853226">Gestionează extensia</translation>
@@ -6787,6 +6793,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6532527800157340614">Conectarea nu a reușit, deoarece indicativul de acces nu a putut fi preluat. Verifică starea conexiunii la rețea și încearcă din nou.</translation>
 <translation id="6532663472409656417">Înregistrat de întreprindere</translation>
 <translation id="6533315466883598769">Folosește Google Traducere</translation>
+<translation id="65334502113648172">Apasă tastele săgeată pentru a micșora sau a extinde zona de afișare. Pentru a muta zona de afișare, apasă Shift și +, apoi folosește tastele săgeată.</translation>
 <translation id="6533636340637966565">Se activează…</translation>
 <translation id="6535331821390304775">Permite întotdeauna ca <ph name="ORIGIN" /> să deschidă acest tip de linkuri în aplicația asociată</translation>
 <translation id="653659894138286600">Scanează documente și imagini</translation>

@@ -4,6 +4,7 @@
 <translation id="1006017844123154345">Buka versi Online</translation>
 <translation id="1036348656032585052">Nonaktifkan</translation>
 <translation id="1044891598689252897">Situs akan berfungsi secara normal</translation>
+<translation id="1073417869336441572">Bantu kami meningkatkan Chrome dengan memberi tahu kami alasan Anda mengizinkan cookie pihak ketiga. <ph name="BEGIN_LINK" />Kirim masukan<ph name="END_LINK" /></translation>
 <translation id="1124090076051167250">Ini akan menghapus <ph name="DATASIZE" /> data dan cookie yang disimpan oleh situs atau aplikasi di Layar utama Anda.</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1181037720776840403">Hapus</translation>
@@ -50,6 +51,7 @@
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="1994173015038366702">URL situs</translation>
+<translation id="1999195646219379110">{COUNT,plural, =1{Berakhir 1 hari lagi}other{Berakhir dalam # hari}}</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
 <translation id="2030769033451695672">Ketuk untuk kembali ke <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
@@ -140,6 +142,7 @@
 <translation id="3386292677130313581">Minta izin sebelum mengizinkan situs mengetahui lokasi Anda (disarankan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
 <translation id="344449859752187052">Cookie pihak ketiga diblokir</translation>
+<translation id="3465378418721443318">{DAYS,plural, =1{Chrome akan memblokir cookie lagi besok}other{# hari sebelum Chrome memblokir cookie lagi}}</translation>
 <translation id="3521663503435878242">Situs di domain <ph name="DOMAIN" /></translation>
 <translation id="3538390592868664640">Blokir situs agar tidak membuat peta 3D untuk area di sekeliling Anda atau melacak posisi kamera</translation>
 <translation id="3544058026430919413">Perusahaan dapat menentukan grup situs yang dapat menggunakan cookie untuk membagikan aktivitas Anda di grup tersebut. Ini nonaktif dalam mode Samaran.</translation>
@@ -162,6 +165,7 @@
 <translation id="381841723434055211">Nomor telepon</translation>
 <translation id="3826050100957962900">Login pihak ketiga</translation>
 <translation id="3835233591525155343">Penggunaan perangkat Anda</translation>
+<translation id="3843916486309149084">Chrome akan memblokir cookie lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari maju</translation>
 <translation id="3895926599014793903">Aktifkan zoom secara paksa</translation>
@@ -301,6 +305,7 @@
 <translation id="6367753977865761591">Blokir login pihak ketiga untuk situs tertentu.</translation>
 <translation id="6388207532828177975">Hapus &amp; reset</translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
+<translation id="640163077447496506">Berakhir hari ini</translation>
 <translation id="6405650995156823521"><ph name="FIRST_PART" /> • <ph name="SECOND_PART" /></translation>
 <translation id="6439114592976064011">Blokir situs agar tidak menggunakan perangkat dan data virtual reality Anda</translation>
 <translation id="6447842834002726250">Cookie</translation>
@@ -396,6 +401,7 @@
 <translation id="8131740175452115882">Konfirmasi</translation>
 <translation id="8154912474061769055">Fitur tertentu di banyak situs mungkin tidak berfungsi</translation>
 <translation id="8168435359814927499">Konten</translation>
+<translation id="8186479265534291036">Situs tidak berfungsi? Cookie pihak ketiga diblokir</translation>
 <translation id="8197286292360124385"><ph name="PERMISSION_1" /> diizinkan</translation>
 <translation id="8200772114523450471">Lanjutkan</translation>
 <translation id="8206354486702514201">Setelan ini diberlakukan oleh administrator Anda.</translation>

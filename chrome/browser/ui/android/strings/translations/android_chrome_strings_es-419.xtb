@@ -678,6 +678,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4634124774493850572">Usar contraseña</translation>
 <translation id="4637420359569396807">Con la medición de anuncios, se pueden compartir tipos limitados de datos entre sitios y apps para medir el rendimiento de sus anuncios, como la hora del día en que se te mostró un anuncio.</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
+<translation id="4645146721047390964">Cuando está activado el modo Incógnito, los sitios no pueden usar tus cookies para ver tu actividad de navegación en diferentes sitios, por ejemplo, para personalizar anuncios. Es posible que las características de algunos sitios no funcionen adecuadamente.</translation>
 <translation id="4650364565596261010">Predeterminado del sistema</translation>
 <translation id="4654641641922242357">Reproductor "Escuchar esta página".</translation>
 <translation id="465657074423018424">La Navegación segura te protege ante sitios web engañosos. Si la desactivas, debes tener mucho cuidado cuando navegas, en especial al ingresar contraseñas.</translation>
@@ -697,6 +698,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4719927025381752090">Ofrecer la traducción</translation>
 <translation id="4720023427747327413">Abrir en <ph name="PRODUCT_NAME" /></translation>
 <translation id="47217992755561375">Visualiza los sitios que más visitas</translation>
+<translation id="4731877163452936634">Velocidad de reproducción: <ph name="PLAYBACK_SPEED" />. Haz clic para cambiarla.</translation>
 <translation id="4732120983431207637">Desenredo de pila</translation>
 <translation id="4736934858538408121">Tarjeta virtual</translation>
 <translation id="473775607612524610">Actualizar</translation>
@@ -947,7 +949,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="6000066717592683814">Seguir usando Google</translation>
 <translation id="6000203700195075278">Volver a seguir</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
-<translation id="6005538289190791541">Contraseña sugerida</translation>
 <translation id="6011308810877101166">Mejorar las sugerencias de búsqueda</translation>
 <translation id="6026538407078977628">Expandir a pantalla completa</translation>
 <translation id="6030719887161080597">Administra la información que usan los sitios para medir el rendimiento de los anuncios</translation>
@@ -1257,6 +1258,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="751961395872307827">No se puede conectar al sitio</translation>
 <translation id="752220631458524187">Desconéctalo cuando termines.</translation>
 <translation id="7523960634226602883">Buscar con la cámara mediante Google Lens</translation>
+<translation id="752731652852882757">Bloquear cuando se usa el modo Incógnito</translation>
 <translation id="7539698981064401140">Sincroniza tu historial y pestañas</translation>
 <translation id="7562080006725997899">Borrando datos de navegación</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
@@ -1337,6 +1339,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7939485076072265087">Crear tarjeta con estilo para texto destacado</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> no está actualizado.</translation>
 <translation id="7944772052836377867">La Sincronización necesita verificar tu identidad</translation>
+<translation id="7945822420239537236">Adelantar <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
 <translation id="7957413488482743710">La tarjeta virtual oculta tu tarjeta real para protegerte contra posibles fraudes. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">Botón Atrás de las estadísticas de la página</translation>
@@ -1345,6 +1348,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7965838025086216108">Puedes usar las contraseñas guardadas en cualquier dispositivo. Se guardan en el Administrador de contraseñas de Google de <ph name="ACCOUNT" />.</translation>
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
+<translation id="7972866381678406344">Retroceder <ph name="NUMBER_OF_SECONDS" /> segundos</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="7986497153528221272">Para ver las contraseñas, primero establece un bloqueo de pantalla en el dispositivo.</translation>

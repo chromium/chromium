@@ -3390,7 +3390,6 @@ Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat d
       Menonaktifkan kebijakan ini akan memungkinkan penggunaan SPDY.
 
       Jika kebijakan ini tidak disetel, SPDY akan tersedia.</translation>
-<translation id="3887529334667818189">Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.</translation>
 <translation id="3889458462150559611">Izinkan situs membuat permintaan ke endpoint jaringan mana pun dengan cara yang tidak aman.</translation>
 <translation id="388999630001435491">Izinkan <ph name="PRODUCT_NAME" /> untuk hanya terhubung ke perangkat di alamat IP pribadi</translation>
 <translation id="3891175633496805812">Nonaktifkan diagnostik dan pengontrol telemetri wilco</translation>
@@ -3516,7 +3515,6 @@ Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat d
       Jika kebijakan ini disetel ke Benar (True), notifikasi peringatan privasi akan ditutup setelah beberapa detik.
 
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, notifikasi peringatan privasi akan terus ditampilkan hingga pengguna menutupnya.</translation>
-<translation id="4008395195135046807">Perjalanan akan dapat dilihat di chrome://history/journeys.</translation>
 <translation id="4008507541867797979">Jika kebijakan ini ditetapkan ke true atau tidak dikonfigurasi, <ph name="PRODUCT_OS_NAME" /> akan menampilkan pengguna yang ada di layar login dan diizinkan untuk memilih salah satu.
 
       Jika kebijakan ini ditetapkan ke false, <ph name="PRODUCT_OS_NAME" /> tidak akan menampilkan pengguna yang ada di layar login. Layar login normal (yang meminta email dan sandi atau ponsel pengguna) atau layar interstisial SAML (jika diaktifkan melalui kebijakan <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />) akan ditampilkan, kecuali jika Sesi Terkelola dikonfigurasi. Jika Sesi Terkelola dikonfigurasi, hanya akun Sesi Terkelola yang akan ditampilkan, sehingga memungkinkan untuk memilih salah satu akun.
@@ -4738,7 +4736,6 @@ Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pelaporan data di
 <translation id="5130935469849337738">Selalu tawarkan terjemahan</translation>
 <translation id="5141670636904227950">Menyetel jenis lup default yang diaktifkan di layar masuk</translation>
 <translation id="5142301680741828703">Selalu mengurai pola URL berikut di <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5143258831402123447">Perjalanan tidak akan dapat dilihat di chrome://history/journeys.</translation>
 <translation id="514870861066611127">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi pengguna akan dilaporkan atau tidak, misalnya login OS, login Profil <ph name="PRODUCT_NAME" />, nama Profil <ph name="PRODUCT_NAME" />, jalur Profil <ph name="PRODUCT_NAME" />, dan jalur eksekusi <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -4795,16 +4792,6 @@ Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pelaporan data di
 <translation id="5179853299156742425">URL tempat template desktop dapat didownload.</translation>
 <translation id="5182055907976889880">Konfigurasi Google Drive di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Posisikan rak di sisi kanan layar</translation>
-<translation id="5184298474980725716">Kebijakan ini mengontrol visibilitas Perjalanan di halaman histori Chrome.
-
-      Jika kebijakan disetel ke Aktif, Perjalanan akan dapat dilihat di chrome://history/journeys.
-
-      Jika kebijakan disetel ke Nonaktif, Perjalanan tidak akan dapat dilihat di chrome://history/journeys.
-
-      Jika kebijakan tidak disetel, Perjalanan akan dapat dilihat di chrome://history/journeys secara default dan pengguna dapat mengubah visibilitas Perjalanan.
-
-      Perlu diketahui, jika kebijakan <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> disetel ke Nonaktif, tetapi <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> disetel ke Aktif atau tidak disetel, Perjalanan akan tetap dapat dilihat di chrome://history/journeys. Namun, Perjalanan ini mungkin tidak ditampilkan di omnibox dan kurang relevan bagi pengguna.
-      </translation>
 <translation id="51859390023061147">Nonaktifkan fitur pemulihan penuh.</translation>
 <translation id="5189360528842591274">Hanya mengizinkan koneksi ke layanan Bluetooth dalam daftar</translation>
 <translation id="5190426551516379357">Menyetel kebijakan akan menerapkan Mode Terbatas minimum di YouTube dan mencegah pengguna memilih mode yang kurang dibatasi. Jika disetel ke:
@@ -7483,7 +7470,6 @@ Jika kebijakan disetel ke Nonaktif, peringatan keamanan akan dicegah muncul saat
 Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dihubungkan ke <ph name="MS_AAD_NAME" />, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang dikelola melalui MDM, dihubungkan ke domain melalui MCX, atau didaftarkan di <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7403217961820363141">Menampilkan Perjalanan di halaman histori Chrome</translation>
 <translation id="7406039009275722824">Menonaktifkan <ph name="CHROME_SYNC_NAME" /> akan menyebabkan Pencadangan dan Pemulihan Android tidak berfungsi dengan benar.</translation>
 <translation id="7406276857470642718">Mengontrol setelan untuk pengguna yang diautentikasi melalui SAML dengan IdP eksternal</translation>
 <translation id="7407441173422042771">Kebijakan ini mengontrol prediksi jaringan di <ph name="PRODUCT_NAME" />. Kebijakan ini mengontrol pengambilan data DNS, prakoneksi TCP dan SSL, serta pra-rendering halaman.

@@ -678,6 +678,7 @@
 <translation id="4634124774493850572">パスワードを使用</translation>
 <translation id="4637420359569396807">広告測定では、広告効果を測定するため、広告が表示された日時など、限られた種類のデータがウェブサイトやアプリ間で共有される場合があります。</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{不正使用されたパスワード: 1 件}other{不正使用されたパスワード: # 件}}</translation>
+<translation id="4645146721047390964">シークレット モードのとき、サイトは Cookie を使用して別のサイトでのあなたの閲覧アクティビティを確認できず、広告のカスタマイズなどを行えなくなります。一部サイトの機能が使用できなくなる可能性もあります。</translation>
 <translation id="4650364565596261010">システムのデフォルト</translation>
 <translation id="465657074423018424">セーフ ブラウジングでは不正なウェブサイトからデバイスを保護します。オフにする場合は、パスワード入力時など、ブラウジングの際は十分に気を付けてください。</translation>
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
@@ -696,6 +697,7 @@
 <translation id="4719927025381752090">翻訳するか尋ねる</translation>
 <translation id="4720023427747327413"><ph name="PRODUCT_NAME" /> で開く</translation>
 <translation id="47217992755561375">よく使用するサイトを表示します</translation>
+<translation id="4731877163452936634">再生速度: <ph name="PLAYBACK_SPEED" />。クリックすると変更できます。</translation>
 <translation id="4732120983431207637">スタック アンワインダー</translation>
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
@@ -945,7 +947,6 @@
 <translation id="6000066717592683814">Google のままにする</translation>
 <translation id="6000203700195075278">再フォロー</translation>
 <translation id="6002122790816966947">他のデバイス</translation>
-<translation id="6005538289190791541">推奨パスワード</translation>
 <translation id="6011308810877101166">検索候補の関連性を高める</translation>
 <translation id="6026538407078977628">フルスクリーンで拡大表示</translation>
 <translation id="6030719887161080597">広告効果を測定するためにサイトで使用される情報を管理します</translation>
@@ -1255,6 +1256,7 @@
 <translation id="751961395872307827">サイトに接続できません</translation>
 <translation id="752220631458524187">完了したら取り外してください</translation>
 <translation id="7523960634226602883">Google レンズを使ってカメラで検索します</translation>
+<translation id="752731652852882757">シークレット モードのときはブロックする</translation>
 <translation id="7539698981064401140">タブと履歴を同期</translation>
 <translation id="7562080006725997899">閲覧データの消去</translation>
 <translation id="756809126120519699">Chrome データの消去完了</translation>
@@ -1334,6 +1336,7 @@
 <translation id="7939485076072265087">スタイルが指定されたカードをハイライト表示で作成します</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> は最新ではありません。</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
+<translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> 秒早送り</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
 <translation id="7957413488482743710">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
 <translation id="7960972236129063347">ページの関連情報の [戻る] ボタン</translation>
@@ -1342,6 +1345,7 @@
 <translation id="7965838025086216108">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="ACCOUNT" /> の Google パスワード マネージャーに保存されます。</translation>
 <translation id="7968014550143838305">リーディング リストに追加しました</translation>
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
+<translation id="7972866381678406344"><ph name="NUMBER_OF_SECONDS" /> 秒巻き戻し</translation>
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">データ侵害で流出したパスワードを使用すると警告します。</translation>
 <translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>

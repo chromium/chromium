@@ -299,6 +299,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2604446170045642109">Bạn có thể tắt giao diện tối cho các trang web trong phần cài đặt.</translation>
 <translation id="2612676031748830579">Số thẻ</translation>
 <translation id="2625189173221582860">Đã sao chép mật khẩu</translation>
+<translation id="2634393460268044753">Gửi URL của các trang web bạn truy cập và một mẫu nhỏ nội dung trang, nội dung tải xuống, hoạt động của tiện ích và thông tin hệ thống cho dịch vụ Duyệt web An toàn của Google để kiểm tra xem các nội dung đó có gây hại hay không.</translation>
 <translation id="2642087927315268160">Đã đóng bảng đăng nhập ở dưới cùng.</translation>
 <translation id="2643064289437760082">Bạn có thể xoá dữ liệu đo lường quảng cáo bất cứ lúc nào bằng cách xoá dữ liệu duyệt web</translation>
 <translation id="2647434099613338025">Thêm ngôn ngữ</translation>
@@ -345,6 +346,7 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="2888126860611144412">Giới thiệu về Chrome</translation>
 <translation id="2891154217021530873">Ngừng tải trang</translation>
 <translation id="2893180576842394309">Google có thể sử dụng nhật ký hoạt động của bạn để điều chỉnh tính năng Tìm kiếm và các dịch vụ khác của Google cho phù hợp hơn với bạn</translation>
+<translation id="2894821468041866720">Gần như không ảnh hưởng đến tốc độ của trình duyệt hoặc thiết bị.</translation>
 <translation id="2900528713135656174">Tạo sự kiện</translation>
 <translation id="2901411048554510387">Hiển thị nội dung đề xuất cho <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở trên toàn màn hình.</translation>
@@ -961,7 +963,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="6000066717592683814">Giữ Google làm công cụ tìm kiếm mặc định</translation>
 <translation id="6000203700195075278">Theo dõi lại</translation>
 <translation id="6002122790816966947">Thiết bị của bạn</translation>
-<translation id="6005538289190791541">Mật khẩu đề xuất</translation>
 <translation id="6011308810877101166">Cải thiện cụm từ tìm kiếm được đề xuất</translation>
 <translation id="6026538407078977628">Mở chế độ toàn màn hình</translation>
 <translation id="6030719887161080597">Quản lý thông tin mà các trang web sử dụng để đo lường hiệu suất quảng cáo</translation>
@@ -1189,6 +1190,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7116588989735740310">Để quay lại trang web bạn đã truy cập trên các thiết bị khác, hãy đồng bộ hoá các thẻ và nhật ký</translation>
 <translation id="7130504491556983216">Danh sách mối quan tâm sẽ xuất hiện tại đây khi bạn duyệt web</translation>
 <translation id="7138678301420049075">Khác</translation>
+<translation id="7140829094791862589">Tự sắp xếp thứ tự</translation>
 <translation id="7146622961999026732">Các trang web và ứng dụng này có vẻ quan trọng đối với bạn:</translation>
 <translation id="7149893636342594995">24 giờ qua</translation>
 <translation id="7155317020660659215">Để quét mã QR, hãy thay đổi các chế độ cài đặt để Chrome có thể dùng máy ảnh của bạn</translation>
@@ -1330,6 +1332,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7808889146555843082">Thao tác xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="SITE" />. Hãy đổi mật khẩu hoặc xóa tài khoản của bạn trên <ph name="SITE" /> để giữ an toàn cho tài khoản của bạn.</translation>
 <translation id="7810647596859435254">Mở bằng…</translation>
 <translation id="7815484226266492798">Ảnh chụp toàn bộ màn hình</translation>
+<translation id="7822705602465980873">Khi bạn đăng nhập, dữ liệu này được liên kết với Tài khoản Google của bạn nhằm bảo vệ bạn trên các dịch vụ của Google, chẳng hạn như tăng cường khả năng bảo vệ trong Gmail sau sự cố bảo mật.</translation>
 <translation id="78270725016672455">Máy tính của bạn muốn đăng ký thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
 <translation id="7846296061357476882">Dịch vụ của Google</translation>

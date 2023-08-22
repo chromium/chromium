@@ -656,6 +656,7 @@
 <translation id="380165613292957338">はい、どんなご用でしょう？</translation>
 <translation id="3804737937830804242">カメラをたたむ</translation>
 <translation id="3824784079442479685">カメラへのアクセス権を持つ <ph name="APP_NAME" /> およびすべてのアプリとウェブサイトに対して、カメラへのアクセスを許可します。ウェブページの更新またはアプリの再起動が必要となる場合があります。</translation>
+<translation id="3825680296690914697"><ph name="TOTAL_NUM_OF_SUBMISSIONS" /> 件中 <ph name="NUM_TURNED_IN" /> 件提出済み、<ph name="NUM_GRADED" /> 件評価済み</translation>
 <translation id="3826099427150913765">パスワードに切り替える</translation>
 <translation id="383058930331066723">バッテリー セーバー モードがオンです</translation>
 <translation id="383629559565718788">キーボード設定を表示</translation>
@@ -1736,6 +1737,7 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" />+V</translation>
 <translation id="8462305545768648477">「選択して読み上げ」を閉じる</translation>
+<translation id="8468806060683421065">期限 <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">表示スケールの設定</translation>
 <translation id="8473301994082929012"><ph name="FEATURE_NAME" />は <ph name="ORGANIZATION_NAME" /> により<ph name="FEATURE_STATE" />に設定されています。</translation>
 <translation id="8477270416194247200">キャンセルするには Alt+ 検索キーまたは Shift キーを押します。</translation>
@@ -1818,6 +1820,7 @@
 <translation id="8853703225951107899">PIN またはパスワードはまだ確認されていません。注: パスワードを最近変更した場合は、古いパスワードを使用してください。新しいパスワードはログアウトした後に適用されます。</translation>
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>
+<translation id="8860366331836346216">eSIM を追加</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8875021410787719674">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を移動します</translation>

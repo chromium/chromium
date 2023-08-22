@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">協助改善 Chromium 的功能和效能</translation>
 <translation id="1531155317299575425">顯示登入 Chromium 的指示。</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
+<translation id="1647558790457890304">Chromium 設定</translation>
 <translation id="1722370509450468186">密碼將會儲存在您的帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 的資料</translation>
 <translation id="1758508597843173586">在您離開 Chromium 或切換至其他應用程式時鎖定無痕模式。</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">此防護機制分析的網站資料比標準保護多，因此即使是 Google 不知道的網站，此防護機制亦能提供危險網站警告。你可選擇略過 Chromium 警告。</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="3827545470516145620">此裝置即將啟用標準安全保護功能保護</translation>
+<translation id="3886689467633467988">登入此網站和 Chromium，即可在所有裝置上存取書籤及其他設定。</translation>
+<translation id="394413318816989199">密碼短語加密的資料不包括付款方法和地址。
+
+如要變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="3955621079070267756">從任何應用程式開啟 Chromium</translation>
 <translation id="4043291146360695975">密碼只會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">Chromium 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_LINK" />管理<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃瞄器</translation>
 <translation id="4736424910885271643">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chromium 資料將會從此裝置上清除</translation>
+<translation id="4790638144988730920">繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼。請稍後再試。</translation>
 <translation id="4985291216379576555">離線，Chromium 無法檢查更新</translation>
 <translation id="4996471330284142407">Chromium 比以前更簡便、安全而快速，讓您事半功倍。</translation>
 <translation id="4999538639245140991">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chromium 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="5042011327527167688">輕按「在 Chromium 中使用『Google 地圖』查看」。</translation>
 <translation id="5048795749726991615">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
+<translation id="5131565040785979529">你的機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和使用 Chromium 的方式。</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
+<translation id="5242782538551259282">部分 Chromium 資料尚未儲存至 Google 帳戶。
+
+        請等待幾分鐘後再嘗試登出。如果你現在登出，系統將刪除此資料。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
 <translation id="5396916991083608703">要將 Chromium 設定為預設瀏覽器嗎？</translation>
 <translation id="5453478652154926037">Chromium 無法檢查您的密碼。</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">此資訊卡會建議您如何充分運用 Chromium 的功能。</translation>
 <translation id="5700709190537129682">Chromium 無法檢查密碼</translation>
 <translation id="5777187867430702742">Chromium 頁面</translation>
+<translation id="5889847953983052353">開啟時：
+<ph name="BEGIN_INDENT" />  • 可協助 Chromium 為使用者提供更優質的使用體驗。<ph name="END_INDENT" />
+
+注意事項：
+<ph name="BEGIN_INDENT" />  • 系統會將 Chromium 使用情況傳送給 Google，但不會與你有任何關聯。
+
+  • Chromium 當機時，有關當機詳情可能會包括部分個人資料。
+
+  • 將記錄同步至 Google 帳戶後，數據可能亦會包括先前瀏覽網址的資料。<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312">您即將登入由 <ph name="DOMAIN" /> 管理的帳戶，並讓帳戶管理員控制您的 Chromium 資料。您的資料將與這個帳戶建立永久連結。如果您登出 Chromium，系統將刪除此裝置上的資料，但這些資料仍會儲存在您的 Google 帳戶中。</translation>
+<translation id="5951593919357934226">充分運用 Chromium 的所有功能。</translation>
 <translation id="5983312940147103417">讓 Chromium 更臻完美</translation>
 <translation id="6062449165341879460">您的機構 <ph name="DOMAIN" /> 將可存取您儲存在此帳戶中的 Chromium 資料、書籤、記錄、密碼和其他設定。登出帳戶後，系統會清除此裝置中的資料。不過，您的資料仍會儲存在受管 Google 帳戶中，並可供機構使用。您的機構亦可為該帳戶設定特定使用者政策，以變更 Chromium 的行為。</translation>
 <translation id="61109258320235597">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請輸入密碼短語。</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇要從此裝置上清除 Chromium 資料，還是要保留資料</translation>
+<translation id="6407399265324739055">系統將不會加密你的付款方法和地址，Chromium 上的瀏覽記錄將不會同步。
+
+只有知道密碼短語的使用者，才能讀取已加密的資料。系統不會將密碼短語傳送給 Google，Google 亦不會儲存密碼短語。如果忘記密碼短語或想變更此設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chromium 資料<ph name="END_LINK" />。</translation>
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6563921047760808519">進一步瞭解 <ph name="BEGIN_LINK" />Chromium 如何確保你的資料保密<ph name="END_LINK" /></translation>
 <translation id="6625409903340039086">Chromium 現在支援受管帳戶的使用者政策</translation>

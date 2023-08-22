@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">Igama eliqanjwe "<ph name="FILE_NAME" />" selivele likhona. Sicela ukhethe igama elihlukile.</translation>
 <translation id="9046895021617826162">Ukuxhumeka kuhlulekile</translation>
 <translation id="9065512565307033593">Uma wehluleka ukuqinisekisa, ukufinyelela kwakho kunethiwekhi kuzokhutshazwa.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 isexwayiso.}one{<ph name="COUNT" /> izexwayiso.}other{<ph name="COUNT" /> izexwayiso.}}</translation>
 <translation id="908378762078012445">Isi-Russian esinekhibhodi ye-Phonetic AATSEEL</translation>
 <translation id="9086302186042011942">Iyavumelanisa</translation>
 <translation id="9099674669267916096">Ukubalwa kwekhasi</translation>

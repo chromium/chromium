@@ -306,6 +306,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2298170939937364391">Lupa za ceo ekran je omogućena. Ponovo pritisnite Ctrl + taster za pretragu + M da biste je isključili.</translation>
 <translation id="2302092602801625023">Ovim nalogom upravlja Family Link</translation>
 <translation id="2303600792989757991">Uključi/isključi pregled prozora</translation>
+<translation id="2305738328104302723">Lista Google zadataka: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: nedavni snimci ekrana, preuzimanja i zakačeni fajlovi</translation>
 <translation id="2318576281648121272">Danas <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, kategorija rezultata pretrage</translation>
@@ -494,6 +495,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3113492864356515707">Istaknite prethodnu stavku na polici</translation>
 <translation id="3120421559657122717">Želite da isključite uređaj?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Tip školskih zadataka</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Pokrenite ponovo da biste ažurirali</translation>
 <translation id="3139188263101386725">Koristite ažuriranu prečicu</translation>
@@ -520,6 +522,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="324366796737464147">Umanjivanje šuma</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> je premešten sa radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Podešavanje</translation>
+<translation id="3253743281242075461">Tip školskih zadataka: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Šta možeš da radiš?</translation>
 <translation id="3256109297135787951">Uklonite isticanje sa stavke na polici</translation>
 <translation id="3260969790895726815">Govor se obrađuje lokalno i diktiranje radi oflajn, ali neke glasovne komande ne rade.</translation>
@@ -1024,6 +1027,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5253783950165989294">Povezani ste sa uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
+<translation id="5268819379131021772">Lista Google zadataka</translation>
 <translation id="5278086053818066789">Uključi ili isključi ChromeVox (govorne povratne informacije)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> zahteva vašu pažnju.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1174,6 +1178,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5864748620896638071">Baterija <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Prikupljaju se informacije o mreži</translation>
 <translation id="5867606971598166637">Administrator sistema nadgleda vaše ekrane</translation>
+<translation id="5876535466645959772">Izabrana lista je prazna. Pomerite nadole da biste dodali nov zadatak</translation>
 <translation id="5876666360658629066">Unesite kôd roditelja</translation>
 <translation id="5881540930187678962">Podesite Phone Hub kasnije</translation>
 <translation id="5881663018261910378">Isključeno</translation>

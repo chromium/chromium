@@ -135,6 +135,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">ನೀವು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿರ್ವಹಣೆ ಮಾಡದ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಖಾತೆಯನ್ನು ರಕ್ಷಿಸಲು, ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಲ್ಲಿ ಮತ್ತು ಸೈಟ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಬೇಡಿ.</translation>
 <translation id="1257553931232494454">ಝೂಮ್ ಹಂತಗಳು</translation>
+<translation id="1258942153897182536">OCR ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="1264309058268477500">ಪರ್ಯಾಯ</translation>
 <translation id="1264974993859112054">ಕ್ರೀಡೆ</translation>
@@ -310,6 +311,7 @@
 <translation id="1594030484168838125">ಆರಿಸಿ</translation>
 <translation id="1596296697375291157">ಥ್ರಿಲ್ಲರ್, ಕ್ರೈಂ ಮತ್ತು ರಹಸ್ಯಮಯ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="1597473228022844713">ನೀವು ಈ ಉತ್ಪನ್ನವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡುತ್ತಿದ್ದೀರಿ. ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
+<translation id="1598816256585174656">Windows Hello ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="1599199147673445968">ಹೊಸ ಕಾರ್ಡ್? <ph name="BEGIN_LINK" />ಕಾರ್ಡ್ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome ನಲ್ಲಿ Dino Run ಆಟವನ್ನು ಆಡಿ</translation>
 <translation id="161042844686301425">ಹಸಿರುನೀಲಿ</translation>
@@ -1348,6 +1350,7 @@
 <translation id="3827112369919217609">ಪರಿಪೂರ್ಣ</translation>
 <translation id="3827666161959873541">ಕೌಟುಂಬಿಕ ಚಲನಚಿತ್ರಗಳು</translation>
 <translation id="3828924085048779000">ಖಾಲಿ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="3830470485672984938">ಬೇರೆ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="3831065134033923230">ಉಳಿಸಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="3831915413245941253">ಹೆಚ್ಚುವರಿ ಕಾರ್ಯವಿಧಾನಗಳಿಗಾಗಿ <ph name="ENROLLMENT_DOMAIN" /> ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದೆ. ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ನಿಮ್ಮ ಕೆಲವು ಡೇಟಾಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತವೆ.</translation>
 <translation id="3832522519263485449">ಎಡಭಾಗದಲ್ಲಿ ಅನೇಕ ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
@@ -1404,6 +1407,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್‌ನಿಂದ }one{# ಸೈಟ್‌ಗಳಿಂದ }other{# ಸೈಟ್‌ಗಳಿಂದ }}</translation>
 <translation id="397105322502079400">ಎಣಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
+<translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ಅವರ ಪಾಸ್‌ಕೀ</translation>
 <translation id="3984581365661308170">ಎನ್ವಲಪ್ #11</translation>
 <translation id="398470910934384994">ಪಕ್ಷಿಗಳು</translation>
 <translation id="3985750352229496475">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
@@ -1783,6 +1787,7 @@
 <translation id="4754461935447132332">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="4756388243121344051">&amp;ಇತಿಹಾಸ</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">ನಿಮ್ಮ Chrome ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="4757993714154412917">ನೀವು ಈಗಷ್ಟೇ ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಭದ್ರಪಡಿಸಲು, ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="4758311279753947758">ಸಂಪರ್ಕ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4761104368405085019">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಿ</translation>
@@ -1939,6 +1944,7 @@
 <translation id="5070838744279127212">ಹತ್ತನೇ ರೋಲ್</translation>
 <translation id="507130231501693183">ಮೇಲ್‌ಬಾಕ್ಸ್ 4</translation>
 <translation id="5074134429918579056">ಪ್ಯಾಂಟ್‌ಗಳು ಮತ್ತು ಶಾರ್ಟ್ಸ್</translation>
+<translation id="5077767274537436092">ಬೇರೆ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="5078060223219502807">ನೀವು ಈಗಷ್ಟೇ ಬಳಸಿದ ಪಾಸ್‌ವರ್ಡ್ ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಕಂಡುಬಂದಿದೆ. ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸಲು, ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕವು ಅದನ್ನು ಈಗಲೇ ಬದಲಾಯಿಸುವಂತೆ ಹಾಗೂ ನಂತರ ನಿಮ್ಮ ಉಳಿಸಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸುವಂತೆ ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="5086225927071063542">ಡಿಸ್ಟ್ರಿಬ್ಯೂಟೆಡ್ ಮತ್ತು ಕ್ಲೌಡ್ ಕಂಪ್ಯೂಟಿಂಗ್</translation>
 <translation id="5087286274860437796">ಈ ಸಮಯದಲ್ಲಿ ಸರ್ವರ್‌ನ ಪ್ರಮಾಣಪತ್ರ ಮಾನ್ಯವಾಗಿಲ್ಲ.</translation>
@@ -2108,6 +2114,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{ಯಾವುದೇ ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿಲ್ಲ}=1{1 ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="5426179911063097041">ನಿಮಗೆ ಅಧಿಸೂಚನೆಗಳನ್ನು ಕಳುಹಿಸಲು <ph name="SITE" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="5430298929874300616">ಬುಕ್‌ಮಾರ್ಕ್‌ ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="54430913453805768"><ph name="URL" /> ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು (SysEx) ನಿಯಂತ್ರಿಸಲು ಮತ್ತು ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡಲು ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="5443468954631487277">ಹಿಮ್ಮುಖ ಆರ್ಡರ್ ಮುಖ ಮೇಲಕ್ಕೆ</translation>
 <translation id="5447235695608032700">ನಿಮ್ಮ ಬಗ್ಗೆ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು <ph name="SITE" /> ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="5447765697759493033">ಈ ಸೈಟ್ ಅನ್ನು ಅನುವಾದಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -2608,6 +2615,7 @@
 <translation id="6480864723214312258">ಮನೆಯ ಬ್ಯಾಟರಿಗಳು</translation>
 <translation id="6486200200930923183">ಸಾಕ್ಷ್ಯಚಿತ್ರಗಳು</translation>
 <translation id="6489534406876378309">ವಿಫಲತೆಗಳನ್ನು ಅಪ್‌ಲೋಡ್‌ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸು</translation>
+<translation id="6491663123807473970"><ph name="URL" /> ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಿದೆ</translation>
 <translation id="6493924760403974580">ಈ ಆ್ಯಪ್ ಈ ಗಾತ್ರವನ್ನು ಮಾತ್ರ ಬೆಂಬಲಿಸುತ್ತದೆ.</translation>
 <translation id="6494750904506170417">ಪಾಪ್-ಅಪ್‌ಗಳು ಹಾಗೂ ಮರುನಿರ್ದೇಶನಗಳು</translation>
 <translation id="6497295192259406877">ವ್ಯಾಪಾರ ಕಾರ್ಯಾಚರಣೆಗಳು</translation>
@@ -2894,6 +2902,7 @@
 <translation id="7102079138917191645">ನಿರ್ಮಾಣ ಮತ್ತು ನಿರ್ವಹಣೆ</translation>
 <translation id="7102554173784142865">Chrome Dino ಆಟವನ್ನು ಆಡಿ</translation>
 <translation id="7102760431686146931">ಅಡಿಗೆ ಮತ್ತು ಭೋಜನ ಪಾತ್ರೆಗಳು</translation>
+<translation id="7105998430540165694">iCloud Keychain ನಲ್ಲಿರುವ ಪಾಸ್‌ಕೀ</translation>
 <translation id="7106762743910369165">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="7108338896283013870">ಮರೆಮಾಡಿ</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ನಿಮ್ಮ ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
@@ -3148,6 +3157,7 @@
 <translation id="7582602800368606489">Google Calendar ನಲ್ಲಿ ಹೊಸ ಈವೆಂಟ್ ಅನ್ನು ತ್ವರಿತವಾಗಿ ರಚಿಸಿ</translation>
 <translation id="7583969447617676942">ಕಾನೂನು ಸೇವೆಗಳು</translation>
 <translation id="7586676035079382730">ಅಧಿಸೂಚನೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
+<translation id="7588460771338574392">"<ph name="PHONE_NAME" />" ಅವರ ಪಾಸ್‌ಕೀ</translation>
 <translation id="7588707273764747927">ವರ್ಗಾಯಿಸಿ</translation>
 <translation id="7591288787774558753">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ಹಂಚಿಕೊಳ್ಳಬೇಕೇ?</translation>
 <translation id="7591636454931265313"><ph name="TOP_LEVEL_URL" /> ನಲ್ಲಿ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಲು <ph name="EMBEDDED_URL" /> ಬಯಸುತ್ತಿದೆ</translation>

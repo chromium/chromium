@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">Бүтэн дэлгэц томруулагчийг идэвхжүүлсэн. Үүнийг унтраахын тулд Ctrl+Хайх+M-г дахин дарна уу.</translation>
 <translation id="2302092602801625023">Энэ бүртгэлийг Family Link-р удирддаг</translation>
 <translation id="2303600792989757991">Цонхыг тоймлож харах</translation>
+<translation id="2305738328104302723">Google-н ажлын жагсаалт: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: сүүлийн үеийн дэлгэцийн зураг, татаж авсан файл болон бэхэлсэн файл</translation>
 <translation id="2318576281648121272">Өнөөдөр <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , хайлтын илэрцийн ангилал</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">Тавиур дээрх өмнөх зүйлийг тодруулах</translation>
 <translation id="3120421559657122717">Төхөөрөмжийг унтраах уу?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Ангийн ажлыг харах</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Шинэчлэлт хийхээр дахин эхлүүлэх</translation>
 <translation id="3139188263101386725">Шинэчилсэн товчлол ашиглана уу</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">Шуугиан хасалт</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> цонхыг <ph name="ACTIVE_DESK" /> дэлгэцээс <ph name="TARGET_DESK" /> дэлгэц рүү зөөсөн</translation>
 <translation id="3252573918265662711">Тохиргоо хийх.</translation>
+<translation id="3253743281242075461">Ангийн ажлын төрөл: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Та юу хийх боломжтой вэ?</translation>
 <translation id="3256109297135787951">Тавиур дээрх зүйлээсээ тодруулгыг устгах</translation>
 <translation id="3260969790895726815">Яриаг дотоодод боловсруулдаг ба дуу хоолойгоор бичих офлайн үед ажилладаг хэдий ч зарим дуут тушаал ажиллахгүй.</translation>
@@ -1024,6 +1027,7 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон, <ph name="BATTERY_PERCENTAGE" />% батарей</translation>
 <translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
+<translation id="5268819379131021772">Google-н ажлын жагсаалт</translation>
 <translation id="5278086053818066789">ChromeVox-г асаах/унтраах (яриагаар өгөх санал)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5283198616748585639">1 минут нэмэх</translation>
@@ -1174,6 +1178,7 @@
 <translation id="5864748620896638071">Батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Сүлжээний мэдээлэл цуглуулж байна</translation>
 <translation id="5867606971598166637">Таны системийн администратор дэлгэцүүдийг тань хянаж байна</translation>
+<translation id="5876535466645959772">Сонгосон жагсаалт хоосон байна. Шинэ ажил нэмэхийн тулд доош шилжинэ үү</translation>
 <translation id="5876666360658629066">Эцэг эхийн кодыг оруулах</translation>
 <translation id="5881540930187678962">Phone Hub-г дараа тохируулах</translation>
 <translation id="5881663018261910378">Унтраалттай</translation>

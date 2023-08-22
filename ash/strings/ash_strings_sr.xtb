@@ -306,6 +306,7 @@
 <translation id="2298170939937364391">Лупа за цео екран је омогућена. Поново притисните Ctrl + тастер за претрагу + M да бисте је искључили.</translation>
 <translation id="2302092602801625023">Овим налогом управља Family Link</translation>
 <translation id="2303600792989757991">Укључи/искључи преглед прозора</translation>
+<translation id="2305738328104302723">Листа Google задатака: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: недавни снимци екрана, преузимања и закачени фајлови</translation>
 <translation id="2318576281648121272">Данас <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, категорија резултата претраге</translation>
@@ -494,6 +495,7 @@
 <translation id="3113492864356515707">Истакните претходну ставку на полици</translation>
 <translation id="3120421559657122717">Желите да искључите уређај?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Тип школских задатака</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
 <translation id="3139188263101386725">Користите ажурирану пречицу</translation>
@@ -520,6 +522,7 @@
 <translation id="324366796737464147">Умањивање шума</translation>
 <translation id="3249513730522716925">Прозор <ph name="WINDOW_TITLE" /> је премештен са радне површине <ph name="ACTIVE_DESK" /> на радну површину <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Подешавање</translation>
+<translation id="3253743281242075461">Тип школских задатака: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Шта можеш да радиш?</translation>
 <translation id="3256109297135787951">Уклоните истицање са ставке на полици</translation>
 <translation id="3260969790895726815">Говор се обрађује локално и диктирање ради офлајн, али неке гласовне команде не раде.</translation>
@@ -1024,6 +1027,7 @@
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
 <translation id="5258528442992323769">Нема сачуваних радних површина</translation>
 <translation id="5260676007519551770">Радна површина 4</translation>
+<translation id="5268819379131021772">Листа Google задатака</translation>
 <translation id="5278086053818066789">Укључи или искључи ChromeVox (говорне повратне информације)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> захтева вашу пажњу.</translation>
 <translation id="5283198616748585639">Додај 1 мин</translation>
@@ -1174,6 +1178,7 @@
 <translation id="5864748620896638071">Батерија <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Прикупљају се информације о мрежи</translation>
 <translation id="5867606971598166637">Администратор система надгледа ваше екране</translation>
+<translation id="5876535466645959772">Изабрана листа је празна. Померите надоле да бисте додали нов задатак</translation>
 <translation id="5876666360658629066">Унесите кôд родитеља</translation>
 <translation id="5881540930187678962">Подесите Phone Hub касније</translation>
 <translation id="5881663018261910378">Искључено</translation>

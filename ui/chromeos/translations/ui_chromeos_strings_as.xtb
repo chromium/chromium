@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামৰ ফাইল ইতিমধ্যে আছেই। অনুগ্ৰহ কৰি অন্য কোনো নাম বাছনি কৰক।</translation>
 <translation id="9046895021617826162">সংযোগ কৰিব পৰা নগ'ল</translation>
 <translation id="9065512565307033593">আপুনি যদি সত্যাপন কৰিব নোৱাৰে, আপোনাৰ নেটৱৰ্ক এক্সেছ অক্ষম কৰা হ’ব।</translation>
+<translation id="9083722265619106011">{0,plural, =1{১ টা সকীয়নি।}one{<ph name="COUNT" /> টা সকীয়নি।}other{<ph name="COUNT" /> টা সকীয়নি।}}</translation>
 <translation id="908378762078012445">ফ’নেটিক AATSEEL কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="9086302186042011942">ছিংক কৰি থকা হৈছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠাৰ সংখ্যা</translation>

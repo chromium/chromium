@@ -660,6 +660,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="380165613292957338">Hola, ¿cómo puedo ayudarte?</translation>
 <translation id="3804737937830804242">Contraer la cámara</translation>
 <translation id="3824784079442479685">Permite el acceso a la cámara para <ph name="APP_NAME" /> y todas las apps y sitios web con el permiso correspondiente. Es posible que debas actualizar la página web o reiniciar la app.</translation>
+<translation id="3825680296690914697">Entregadas: <ph name="NUM_TURNED_IN" /> de <ph name="TOTAL_NUM_OF_SUBMISSIONS" />, calificadas: <ph name="NUM_GRADED" /></translation>
 <translation id="3826099427150913765">Cambiar a contraseña</translation>
 <translation id="383058930331066723">El modo de Ahorro de batería está activado</translation>
 <translation id="383629559565718788">Mostrar la configuración del teclado</translation>
@@ -1745,6 +1746,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8456543082656546101"><ph name="SHORTCUT_KEY_NAME" /> + V</translation>
 <translation id="8462305545768648477">Cerrar Seleccionar para pronunciar</translation>
+<translation id="8468806060683421065">vence el <ph name="DUE_DATE_AND_TIME" /></translation>
 <translation id="847056008324733326">Configuración de escala de visualización</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> tiene <ph name="FEATURE_NAME" /> <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Presiona Alt y la tecla de búsqueda o mayúscula para cancelarlo.</translation>
@@ -1828,6 +1830,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8853703225951107899">Aún no se pudo verificar tu PIN o contraseña. Nota: Si cambiaste la contraseña recientemente, usa la anterior. Se aplicará la nueva cuando salgas de la cuenta.</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
+<translation id="8860366331836346216">Agregar eSIM</translation>
 <translation id="8870509716567206129">La app no es compatible con la función de pantalla dividida.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8875021410787719674">Desplazarse entre la esquina inferior derecha, el Selector, la barra de direcciones, la barra de favoritos, el sitio web abierto y las descargas</translation>

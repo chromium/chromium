@@ -263,7 +263,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1197935538609051549">Desactivar</translation>
 <translation id="1198066799963193307">Herramientas de texto a voz para personas con visión reducida</translation>
 <translation id="119944043368869598">Borrar todo</translation>
-<translation id="1199631150313925648">Ingresar manualmente</translation>
 <translation id="1199814941632954229">Se instalan los certificados para estos perfiles de certificados</translation>
 <translation id="120069043972472860">Pésima</translation>
 <translation id="1201402288615127009">Siguiente</translation>
@@ -1884,6 +1883,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2480868415629598489">Modificar los datos copiados y pegados</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2482895651873876648">Se movió la pestaña al grupo <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /></translation>
+<translation id="2483627560139625913">Establece el motor de búsqueda en la configuración del navegador Chrome</translation>
 <translation id="2484743711056182585">Quitar permiso</translation>
 <translation id="2484909293434545162">Si un sitio usa cookies, aparecerá aquí</translation>
 <translation id="2484959914739448251">Para borrar los datos de navegación de todos los dispositivos sincronizados y de tu Cuenta de Google, <ph name="BEGIN_LINK" />ingresa la frase de contraseña<ph name="END_LINK" />.</translation>
@@ -2038,6 +2038,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2612676031748830579">Número de tarjeta</translation>
 <translation id="2613210758071148851">No permitir extensiones en <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> podrá editar el archivo <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Abrir y editar <ph name="FILE1" /> en esta extensión}other{Abrir y editar <ph name="FILE1" /> en esta app}}</translation>
 <translation id="2616366145935564096">Leer y modificar tus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configura Compartir con Nearby</translation>
 <translation id="261953424982546039">&amp;Labs de Chrome…</translation>
@@ -4414,6 +4415,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4586275095964870617">No se pudo abrir <ph name="URL" /> en otro navegador. Comunícate con tu administrador del sistema.</translation>
 <translation id="4587589328781138893">Sitios</translation>
+<translation id="4588749726511456218">Aceleración de desplazamiento <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Se guardaron correctamente los registros en el directorio Descargas.</translation>
 <translation id="459204634473266369">No hay dispositivos guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">La navegación y la búsqueda son más rápidas.</translation>
@@ -6234,6 +6236,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6130692320435119637">Agregar Wi-Fi</translation>
 <translation id="6130887916931372608">Tecla del teclado</translation>
 <translation id="6132714462430777655">¿Deseas omitir la inscripción escolar?</translation>
+<translation id="6134428719487602109">Elimina todas las cuentas de usuario y restablece tu Chromebook para que quede como nueva.</translation>
 <translation id="6135823405800500595">Asegúrate de que el teléfono esté cerca y desbloqueado, y que el Bluetooth y el Wi-Fi estén encendidos</translation>
 <translation id="6135826623269483856">No pueden administrar las ventanas de todas tus pantallas</translation>
 <translation id="6136114942382973861">Cerrar la barra de descargas</translation>

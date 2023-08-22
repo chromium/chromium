@@ -267,7 +267,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1197935538609051549">Desactivar</translation>
 <translation id="1198066799963193307">Ferramentas de voz para persoas con problemas de vista</translation>
 <translation id="119944043368869598">Borrar todo</translation>
-<translation id="1199631150313925648">Introducir manualmente</translation>
 <translation id="1199814941632954229">Estanse proporcionando certificados para estes perfís de certificados</translation>
 <translation id="120069043972472860">Non se pode ver</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -1909,6 +1908,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2480868415629598489">Modificar os datos que copias e pegas</translation>
 <translation id="2482878487686419369">Notificacións</translation>
 <translation id="2482895651873876648">A pestana moveuse ao grupo <ph name="GROUP_NAME" /> (<ph name="GROUP_CONTENTS" />)</translation>
+<translation id="2483627560139625913">Definir buscador na configuración do navegador Chrome</translation>
 <translation id="2484743711056182585">Quitar permiso</translation>
 <translation id="2484909293434545162">Se un sitio utiliza cookies, aparecerá aquí</translation>
 <translation id="2484959914739448251">Para borrar os datos de navegación de todos os dispositivos sincronizados e da túa Conta de Google, tes que <ph name="BEGIN_LINK" />introducir a túa frase de acceso<ph name="END_LINK" />.</translation>
@@ -2065,6 +2065,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2612676031748830579">Número da tarxeta</translation>
 <translation id="2613210758071148851">Non permitir extensións en <ph name="RESTRICTED_SITE" /></translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> poderá editar <ph name="FILENAME" /></translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Abrir e editar <ph name="FILE1" /> nesta extensión}other{Abrir e editar <ph name="FILE1" />, ... nesta aplicación}}</translation>
 <translation id="2616366145935564096">Ler e cambiar os teus datos en <ph name="WEBSITE_1" /></translation>
 <translation id="2618797463720777311">Configurar a función Compartir por Nearby</translation>
 <translation id="261953424982546039">Chrome &amp;Labs...</translation>
@@ -4479,6 +4480,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4585793705637313973">Editar páxina</translation>
 <translation id="4586275095964870617">Non se puido abrir <ph name="URL" /> nun navegador alternativo. Ponte en contacto coa persoa que administra o teu sistema.</translation>
 <translation id="4587589328781138893">Sitios</translation>
+<translation id="4588749726511456218">Aceleración do desprazamento. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Os rexistros escribíronse correctamente no directorio Descargas.</translation>
 <translation id="459204634473266369">Non hai dispositivos gardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="4592525994536856567">A navegación e a busca son máis rápidas.</translation>
@@ -6314,6 +6316,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6130692320435119637">Engadir wifi</translation>
 <translation id="6130887916931372608">Tecla do teclado</translation>
 <translation id="6132714462430777655">Queres omitir a inscrición do centro educativo?</translation>
+<translation id="6134428719487602109">Quita todas as contas de usuario e restablece o teu Chromebook como se fose novo.</translation>
 <translation id="6135823405800500595">Asegúrate de ter o teléfono preto, desbloqueado e co Bluetooth e a wifi activados</translation>
 <translation id="6135826623269483856">Sitios aos que non se lles permite xestionar ventás en todas as pantallas</translation>
 <translation id="6136114942382973861">Pechar barra de descargas</translation>
