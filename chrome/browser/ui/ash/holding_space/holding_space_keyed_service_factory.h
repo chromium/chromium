@@ -31,7 +31,7 @@ class HoldingSpaceKeyedServiceFactory
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
@@ -45,7 +45,7 @@ class HoldingSpaceKeyedServiceFactory
   HoldingSpaceKeyedServiceFactory& operator=(
       const HoldingSpaceKeyedServiceFactory& other) = delete;
 
-  static KeyedService* BuildServiceInstanceForInternal(
+  static std::unique_ptr<KeyedService> BuildServiceInstanceForInternal(
       content::BrowserContext* context);
 };
 
