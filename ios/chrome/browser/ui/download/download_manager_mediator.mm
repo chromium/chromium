@@ -71,20 +71,25 @@ void DownloadManagerMediator::UpdateConsumer() {
   DownloadManagerState state = GetDownloadManagerState();
 
   if (state == kDownloadManagerStateSucceeded) {
-    download_path_ = task_->GetResponsePath();
+    base::FilePath user_download_path;
+    GetDownloadsDirectory(&user_download_path);
+    download_path_ = user_download_path.Append(task_->GenerateFileName());
+
+    base::FilePath task_path = task_->GetResponsePath();
 
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,
         {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(base::PathExists, download_path_),
+        base::BindOnce(base::PathExists, task_path),
         base::BindOnce(
             &DownloadManagerMediator::MoveToUserDocumentsIfFileExists,
-            weak_ptr_factory_.GetWeakPtr(), download_path_));
+            weak_ptr_factory_.GetWeakPtr(), task_path));
   }
 
   if (state == kDownloadManagerStateSucceeded && !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];
   }
+
   [consumer_ setState:state];
   [consumer_ setCountOfBytesReceived:task_->GetReceivedBytes()];
   [consumer_ setCountOfBytesExpectedToReceive:task_->GetTotalBytes()];
@@ -101,28 +106,22 @@ void DownloadManagerMediator::UpdateConsumer() {
 }
 
 void DownloadManagerMediator::MoveToUserDocumentsIfFileExists(
-    base::FilePath download_path,
+    base::FilePath task_path,
     bool file_exists) {
-  if (!file_exists || !task_)
+  if (!file_exists || !task_) {
     return;
-
-  base::FilePath user_download_path;
-  GetDownloadsDirectory(&user_download_path);
-  user_download_path = user_download_path.Append(task_->GenerateFileName());
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&base::Move, download_path, user_download_path),
-      base::BindOnce(&DownloadManagerMediator::RestoreDownloadPath,
-                     weak_ptr_factory_.GetWeakPtr(), user_download_path));
+      base::BindOnce(&base::Move, task_path, download_path_),
+      base::BindOnce(&DownloadManagerMediator::MoveComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DownloadManagerMediator::RestoreDownloadPath(
-    base::FilePath user_download_path,
-    bool moveCompleted) {
-  DCHECK(moveCompleted);
-  download_path_ = user_download_path;
+void DownloadManagerMediator::MoveComplete(bool move_completed) {
+  DCHECK(move_completed);
 }
 
 DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
