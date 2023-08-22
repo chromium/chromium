@@ -264,6 +264,12 @@ bool ContentDecryptionModuleAdapter::IsRemoteCdm() const {
   return false;
 }
 
+void ContentDecryptionModuleAdapter::AllocateSecureBuffer(
+    uint32_t size,
+    AllocateSecureBufferCB callback) {
+  ChromeOsCdmFactory::AllocateSecureBuffer(size, std::move(callback));
+}
+
 void ContentDecryptionModuleAdapter::OnSessionMessage(
     const std::string& session_id,
     media::CdmMessageType message_type,

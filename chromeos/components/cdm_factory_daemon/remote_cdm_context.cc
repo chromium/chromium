@@ -136,6 +136,12 @@ void RemoteCdmContext::GetScreenResolutions(GetScreenResolutionsCB callback) {
       std::move(callback));
 }
 
+void RemoteCdmContext::AllocateSecureBuffer(uint32_t size,
+                                            AllocateSecureBufferCB callback) {
+  mojo_sequence_state_->GetStableCdmContext()->AllocateSecureBuffer(
+      size, std::move(callback));
+}
+
 std::unique_ptr<media::CdmContextRef> RemoteCdmContext::GetCdmContextRef() {
   return std::make_unique<RemoteCdmContextRef>(base::WrapRefCounted(this));
 }

@@ -56,6 +56,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) RemoteCdmContext
   bool UsingArcCdm() const override;
   // IsRemoteCdm() may be called on any sequence.
   bool IsRemoteCdm() const override;
+  void AllocateSecureBuffer(uint32_t size,
+                            AllocateSecureBufferCB callback) override;
 
  private:
   friend class base::RefCountedThreadSafe<RemoteCdmContext>;

@@ -64,6 +64,14 @@ void StableCdmContextImpl::GetScreenResolutions(
       base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
+void StableCdmContextImpl::AllocateSecureBuffer(
+    uint32_t size,
+    AllocateSecureBufferCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cdm_context_->GetChromeOsCdmContext()->AllocateSecureBuffer(
+      size, std::move(callback));
+}
+
 void StableCdmContextImpl::CdmEventCallback(media::CdmContext::Event event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& cb : remote_event_callbacks_)

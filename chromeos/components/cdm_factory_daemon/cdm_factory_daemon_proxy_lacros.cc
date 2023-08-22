@@ -86,6 +86,18 @@ void CdmFactoryDaemonProxyLacros::GetAndroidHwKeyData(
   NOTREACHED();
 }
 
+void CdmFactoryDaemonProxyLacros::AllocateSecureBuffer(
+    uint32_t size,
+    AllocateSecureBufferCallback callback) {
+  if (ash_remote_) {
+    // This should always be bound unless it became disconnected in the middle
+    // of setting things up.
+    ash_remote_->AllocateSecureBuffer(size, std::move(callback));
+  } else {
+    std::move(callback).Run(mojo::PlatformHandle());
+  }
+}
+
 void CdmFactoryDaemonProxyLacros::EstablishAshConnection(
     base::OnceClosure callback) {
   // This may have happened already.

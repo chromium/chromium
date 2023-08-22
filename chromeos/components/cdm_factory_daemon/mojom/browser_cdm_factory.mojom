@@ -7,7 +7,7 @@
 // browser process for creating a CDM factory that will utilizes native HW
 // backed DRM protection for ChromeOS.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module chromeos.cdm.mojom;
 
@@ -17,7 +17,7 @@ import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next Method ID: 5
+// Next Method ID: 6
 // Used for the connection between browser (receiver) and GPU (remote) process;
 // or between the ash (receiver) and lacros (remote) browser processes; or
 // between the GPU (receiver) and OOP video decoder (remote) processes as a
@@ -50,4 +50,12 @@ interface BrowserCdmFactory {
   [MinVersion=1]
   GetAndroidHwKeyData@4(array<uint8> key_id, array<uint8> hw_identifier) =>
       (DecryptStatus status, array<uint8> key_data);
+
+  // Allocates a secure buffer in TrustZone on ARM platforms. The lifetime of
+  // this buffer is managed by the returned fd. This should be resolved to a
+  // secure handle through V4L2; the resulting secure handle can then be used
+  // for the target of decryption. If the allocation fails, a null handle is
+  // returned.
+  [MinVersion=2]
+  AllocateSecureBuffer@5(uint32 size) => (handle<platform>? fd);
 };

@@ -69,8 +69,8 @@ interface CdmContextEventCallback {
 };
 
 // Maps to the media::CdmContext interface for remoting it to another process.
-// Next MinVersion: 2
-// Next min method ID: 4
+// Next MinVersion: 3
+// Next min method ID: 5
 [Stable, Uuid="33c7a00e-2970-41b3-8c7b-f1074a539740"]
 interface StableCdmContext {
   // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
@@ -91,6 +91,11 @@ interface StableCdmContext {
   // GetScreenResolutions.
   [MinVersion=1]
   GetScreenResolutions@3() => (array<gfx.mojom.Size> resolutions);
+
+  // Proxies to
+  // media::CdmContext::GetChromeOsCdmContext()->AllocateSecureBuffer.
+  [MinVersion=2]
+  AllocateSecureBuffer@4(uint32 size) => (handle<platform>? secure_buffer);
 };
 
 // Based on |media.mojom.VideoDecoder|.

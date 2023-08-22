@@ -63,6 +63,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   static void GetScreenResolutions(
       ChromeOsCdmContext::GetScreenResolutionsCB callback);
 
+  // Allocates a secure buffer with ARM TrustZone for the target of decryption.
+  static void AllocateSecureBuffer(
+      uint32_t size,
+      ChromeOsCdmContext::AllocateSecureBufferCB callback);
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Invoked in the OOP Video Decoder utility process to set the Mojo connection
   // back to the browser process. Normally the GPU process has a Mojo connection

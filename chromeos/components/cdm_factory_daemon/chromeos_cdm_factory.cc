@@ -141,6 +141,10 @@ class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
   }
   bool UsingArcCdm() const override { return true; }
   bool IsRemoteCdm() const override { return true; }
+  void AllocateSecureBuffer(uint32_t size,
+                            AllocateSecureBufferCB callback) override {
+    ChromeOsCdmFactory::AllocateSecureBuffer(size, std::move(callback));
+  }
 
   // media::CdmContext implementation.
   ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
@@ -215,6 +219,19 @@ void ChromeOsCdmFactory::GetScreenResolutions(
     return;
   }
   GetBrowserCdmFactoryRemote()->GetScreenResolutions(std::move(callback));
+}
+
+// static
+void ChromeOsCdmFactory::AllocateSecureBuffer(
+    uint32_t size,
+    ChromeOsCdmContext::AllocateSecureBufferCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::AllocateSecureBuffer,
+                                  size, std::move(callback)));
+    return;
+  }
+  GetBrowserCdmFactoryRemote()->AllocateSecureBuffer(size, std::move(callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

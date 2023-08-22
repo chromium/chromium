@@ -115,6 +115,9 @@ class MockChromeOsCdmContext : public chromeos::ChromeOsCdmContext {
   MOCK_METHOD0(GetCdmContextRef, std::unique_ptr<CdmContextRef>());
   MOCK_CONST_METHOD0(UsingArcCdm, bool());
   MOCK_CONST_METHOD0(IsRemoteCdm, bool());
+  MOCK_METHOD2(AllocateSecureBuffer,
+               void(uint32_t,
+                    chromeos::ChromeOsCdmContext::AllocateSecureBufferCB));
 };
 // A real implementation of this class would actually hold onto a reference of
 // the owner of the CdmContext to ensure it is not destructed before the

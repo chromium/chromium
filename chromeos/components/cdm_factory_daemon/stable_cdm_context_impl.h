@@ -44,6 +44,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) StableCdmContextImpl
           callback) override;
   void GetHwConfigData(GetHwConfigDataCallback callback) override;
   void GetScreenResolutions(GetScreenResolutionsCallback callback) override;
+  void AllocateSecureBuffer(uint32_t size,
+                            AllocateSecureBufferCallback callback) override;
 
  private:
   // Receives callbacks from the |cdm_context_| after we register with it.

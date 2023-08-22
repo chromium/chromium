@@ -9,7 +9,7 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module chromeos.cdm.mojom;
 
@@ -44,7 +44,7 @@ interface CdmFactory {
               pending_associated_receiver<ContentDecryptionModule> cdm);
 };
 
-// Next Method ID: 8
+// Next Method ID: 9
 // Used for bootstrapping the connection between ash-chrome browser and the
 // cdm-oemcrypto ChromeOS daemon, then methods can be invoked to obtain
 // interfaces to perform CDM or OEMCrypto operations. For the OEMCrypto
@@ -97,4 +97,12 @@ interface CdmFactoryDaemon {
   [MinVersion=6]
   GetAndroidHwKeyData@7(array<uint8> key_id, array<uint8> hw_identifier) =>
       (DecryptStatus status, array<uint8> key_data);
+
+  // Allocates a secure buffer in TrustZone on ARM platforms. The lifetime of
+  // this buffer is managed by the returned fd. This should be resolved to a
+  // secure handle through V4L2; the resulting secure handle can then be used
+  // for the target of decryption. If the allocation fails, a null handle is
+  // returned.
+  [MinVersion=7]
+  AllocateSecureBuffer@8(uint32 size) => (handle<platform>? fd);
 };

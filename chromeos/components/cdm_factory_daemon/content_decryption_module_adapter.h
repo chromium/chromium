@@ -110,6 +110,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ContentDecryptionModuleAdapter
   std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override;
   bool UsingArcCdm() const override;
   bool IsRemoteCdm() const override;
+  void AllocateSecureBuffer(uint32_t size,
+                            AllocateSecureBufferCB callback) override;
 
   // cdm::mojom::ContentDecryptionModuleClient:
   void OnSessionMessage(const std::string& session_id,
