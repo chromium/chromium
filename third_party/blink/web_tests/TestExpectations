@@ -6778,3 +6778,9 @@ crbug.com/1473373 [ Mac12-arm64 ] wpt_internal/scheduler/task-signal-any-memory-
 crbug.com/1473373 [ Mac13 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Pass Timeout ]
 crbug.com/1473373 [ Mac13-arm64 ] wpt_internal/scheduler/task-signal-any-memory-abort.any.worker.html [ Pass Timeout ]
 crbug.com/1473474 [ Mac13 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure Pass ]
+
+# Disable the following tests to land and reenable after the land.
+crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
+crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
+crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
+crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
