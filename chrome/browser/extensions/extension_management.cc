@@ -934,11 +934,13 @@ ExtensionManagementFactory::ExtensionManagementFactory()
 
 ExtensionManagementFactory::~ExtensionManagementFactory() {}
 
-KeyedService* ExtensionManagementFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionManagementFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   TRACE_EVENT0("browser,startup",
                "ExtensionManagementFactory::BuildServiceInstanceFor");
-  return new ExtensionManagement(Profile::FromBrowserContext(context));
+  return std::make_unique<ExtensionManagement>(
+      Profile::FromBrowserContext(context));
 }
 
 void ExtensionManagementFactory::RegisterProfilePrefs(
