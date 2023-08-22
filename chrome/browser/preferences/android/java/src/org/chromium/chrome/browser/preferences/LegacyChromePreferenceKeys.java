@@ -60,7 +60,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.FLAGS_CACHED_ADAPTIVE_TOOLBAR_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_COMMAND_LINE_ON_NON_ROOTED_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED,
-                ChromePreferenceKeys.FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_START_SURFACE_ENABLED,
                 ChromePreferenceKeys.FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED,
                 ChromePreferenceKeys.FONT_USER_FONT_SCALE_FACTOR,

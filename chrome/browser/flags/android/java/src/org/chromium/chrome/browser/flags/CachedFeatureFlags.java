@@ -9,7 +9,6 @@ import androidx.annotation.AnyThread;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FieldTrialList;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -81,7 +80,6 @@ public class CachedFeatureFlags {
      * Do not add new simple boolean flags here, use {@link #cacheNativeFlags} instead.
      */
     public static void cacheAdditionalNativeFlags() {
-        cacheNetworkServiceWarmUpEnabled();
         CachedFlagsSafeMode.getInstance().cacheSafeModeForCachedFlagsEnabled();
         cacheReachedCodeProfilerTrialGroup();
 
@@ -122,24 +120,6 @@ public class CachedFeatureFlags {
     public static long getLastCachedMinimalBrowserFlagsTimeMillis() {
         return SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS, 0);
-    }
-
-    /**
-     * Cache whether warming up network service process is enabled, so that the value
-     * can be made available immediately on next start up.
-     */
-    private static void cacheNetworkServiceWarmUpEnabled() {
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED,
-                CachedFeatureFlagsJni.get().isNetworkServiceWarmUpEnabled());
-    }
-
-    /**
-     * @return whether warming up network service is enabled.
-     */
-    public static boolean isNetworkServiceWarmUpEnabled() {
-        return getConsistentBooleanValue(
-                ChromePreferenceKeys.FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED, false);
     }
 
     /**
@@ -314,10 +294,5 @@ public class CachedFeatureFlags {
 
     static void setSafeModeExperimentEnabledForTesting(Boolean value) {
         CachedFlagsSafeMode.getInstance().setExperimentEnabledForTesting(value);
-    }
-
-    @NativeMethods
-    interface Natives {
-        boolean isNetworkServiceWarmUpEnabled();
     }
 }

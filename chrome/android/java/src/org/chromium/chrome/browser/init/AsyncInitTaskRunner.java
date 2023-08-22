@@ -15,7 +15,6 @@ import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
@@ -167,9 +166,6 @@ public abstract class AsyncInitTaskRunner {
             --mNumPendingSuccesses;
             if (mNumPendingSuccesses == 0) {
                 // All tasks succeeded: Finish tasks, call onSuccess(), and reach terminal state.
-                if (CachedFeatureFlags.isNetworkServiceWarmUpEnabled()) {
-                    ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), false);
-                }
                 if (mAllocateChildConnection) {
                     ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
                 }

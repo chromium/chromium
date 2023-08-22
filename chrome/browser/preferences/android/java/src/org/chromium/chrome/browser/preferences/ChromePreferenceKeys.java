@@ -339,12 +339,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String FLAGS_CACHED_GRID_TAB_SWITCHER_ENABLED = "grid_tab_switcher_enabled";
     /**
-     * Whether warming up network service is enabled.
-     * Default value is false.
-     */
-    public static final String FLAGS_CACHED_NETWORK_SERVICE_WARM_UP_ENABLED =
-            "network_service_warm_up_enabled";
-    /**
      * Whether or not the start surface is enabled.
      * Default value is false.
      */
