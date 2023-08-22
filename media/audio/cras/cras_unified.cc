@@ -303,17 +303,22 @@ void CrasUnifiedStream::GetVolume(double* volume) {
 
 // Static callback asking for samples.
 int CrasUnifiedStream::UnifiedCallback(struct libcras_stream_cb_data* data) {
-  TRACE_EVENT_BEGIN("audio", "CrasUnifiedStream::UnifiedCallback");
   unsigned int frames;
   uint8_t* buf;
   struct timespec latency;
   void* usr_arg;
   struct timespec underrun_duration_ts;
+  cras_stream_id_t stream_id;
   libcras_stream_cb_data_get_frames(data, &frames);
   libcras_stream_cb_data_get_buf(data, &buf);
   libcras_stream_cb_data_get_latency(data, &latency);
   libcras_stream_cb_data_get_usr_arg(data, &usr_arg);
   libcras_stream_cb_data_get_underrun_duration(data, &underrun_duration_ts);
+  libcras_stream_cb_data_get_stream_id(data, &stream_id);
+  TRACE_EVENT_BEGIN(
+      "audio", "CrasUnifiedStream::UnifiedCallback",
+      perfetto::Flow::ProcessScoped(static_cast<uint64_t>(stream_id)));
+
   CrasUnifiedStream* me = static_cast<CrasUnifiedStream*>(usr_arg);
   base::TimeDelta underrun_duration =
       base::TimeDelta::FromTimeSpec(underrun_duration_ts);
@@ -344,7 +349,6 @@ uint32_t CrasUnifiedStream::WriteAudio(size_t frames,
   DCHECK_EQ(frames, static_cast<size_t>(output_bus_->frames()));
   const base::TimeDelta latency = base::TimeDelta::FromTimeSpec(*latency_ts);
   TRACE_EVENT("audio", "CrasUnifiedStream::WriteAudio",
-              perfetto::Flow::ProcessScoped(stream_id_),
               [&](perfetto::EventContext ctx) {
                 auto* event =
                     ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
