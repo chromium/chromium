@@ -38,7 +38,7 @@ class ResetReportUploaderFactory : public ProfileKeyedServiceFactory {
   ~ResetReportUploaderFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
