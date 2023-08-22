@@ -534,10 +534,19 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
   frame_rate_ = framerate;
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
-  session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
-                              frame_rate_);
-  session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
-                              static_cast<int32_t>(bitrate.target_bps()));
+  if (!session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
+                                   frame_rate_)) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kSystemAPICallError, "Can't change frame rate"});
+    return;
+  }
+  if (!session_property_setter.Set(
+          kVTCompressionPropertyKey_AverageBitRate,
+          static_cast<int32_t>(bitrate.target_bps()))) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Can't change average bitrate"});
+    return;
+  }
   // Here in case of VBR we'd like to set more relaxed bitrate constraints.
   // It looks like setting VTCompressionPropertyKey_DataRateLimits should be
   // appropriate her, but it is NOT compatible with
