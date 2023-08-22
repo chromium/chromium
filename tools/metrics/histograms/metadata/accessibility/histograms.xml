@@ -1793,8 +1793,8 @@ chromium-metrics-reviews@google.com.
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
-    Records the number of pages in an inaccessible PDF when a PDF accessibility
-    tree gets created for the PDF.
+    Records the number of pages in an inaccessible PDF opened for PDF OCR when a
+    PDF accessibility tree gets created for the PDF.
   </summary>
 </histogram>
 
