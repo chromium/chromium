@@ -12,7 +12,8 @@ instructions on how to enable it.
 
 Starting from version 117, Chrome experimentally supports Compression Dictionary
 Transport feature. This feature adds support for using designated previous
-responses, as an external dictionary for Brotli-compressing HTTP responses.
+responses, as an external dictionary for Brotli- or Zstandard-compressed HTTP
+responses.
 
 ## Activation
 
@@ -145,8 +146,11 @@ If a dictionary is available for the request, Chrome will add `sbr` the
 
 ## Supported compression scheme
 
-Currently Chrome only supports Shared Brotli. Supporting Zstandard's shared
-dictionary is tracked at [crbug.com/1462543][zstd-issue].
+Chrome 117.0.5857.0 introduced support for Shared Brotli, and Chrome
+118.0.5952.0 adds support for Shared Zstandard.
+
+Shared Zstandard can be enabled/disabled from
+[chrome://flags/#enable-shared-zstd][shared-zstd-flag].
 
 ## Debugging
 
@@ -180,10 +184,10 @@ There are a few demo sites that you can use to test the feature:
 [explainer]: https://github.com/WICG/compression-dictionary-transport
 [flag]: chrome://flags/#enable-compression-dictionary-transport
 [backend-flag]: chrome://flags/#enable-compression-dictionary-transport-backend
+[shared-zstd-flag]: chrome://flags/#enable-shared-zstd
 [shared_dictionary_readme]: ../../services/network/shared_dictionary/README.md#flags
 [ot-blog]: https://developer.chrome.com/blog/origin-trials/
 [ot-console]: https://developer.chrome.com/origintrials/#/trials/active
-[zstd-issue]: https://crbug.com/1462543
 [third-party-ot-dd]: https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit#heading=h.bvw2lcb2dczg
 [httpbis-draft]: https://datatracker.ietf.org/doc/draft-meenan-httpbis-compression-dictionary/
 [net-internals-sd]: chrome://net-internals/#sharedDictionary
