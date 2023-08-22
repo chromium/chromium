@@ -538,6 +538,8 @@ class WPTAdapter:
             'flag_specific': self.port.flag_specific_config_name() or '',
             'used_upstream': self.options.use_upstream_wpt,
             'sanitizer_enabled': self.options.enable_sanitizer,
+            # TODO(crbug.com/1152503): Fully support virtual suites.
+            'virtual_suite': '',
         }
         if self.options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
