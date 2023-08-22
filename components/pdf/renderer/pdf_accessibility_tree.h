@@ -130,9 +130,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
     }
 
    private:
-    // TODO(crbug.com/1443341): Increase initial value after batching issue is
-    // fixed.
-    uint32_t pages_per_batch_ = 1u;
+    uint32_t pages_per_batch_ = 20u;
 
     void OcrNextImage();
     void ReceiveOcrResultsForImage(PdfOcrRequest request,

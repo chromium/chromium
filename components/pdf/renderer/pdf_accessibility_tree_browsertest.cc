@@ -151,6 +151,10 @@ ui::AXTreeUpdate CreateMockOCRResult(const gfx::RectF& image_bounds,
 
   return child_tree_update;
 }
+
+uint32_t CalculateBatchCount(uint32_t page_count, uint32_t batch_size) {
+  return (page_count + batch_size - 1) / batch_size;
+}
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 // This class overrides PdfAccessibilityActionHandler to record received
@@ -2304,8 +2308,7 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
   ASSERT_NO_FATAL_FAILURE(CreateInaccessiblePdfAndOcrService(
       page_count, is_ocr_service_started_before_pdf_loads, kPagesPerBatch,
       /*create_empty_results=*/false));
-  const uint32_t kBatchCount = (page_count / kPagesPerBatch) +
-                               ((page_count % kPagesPerBatch == 0u) ? 0u : 1u);
+  const uint32_t kBatchCount = CalculateBatchCount(page_count, kPagesPerBatch);
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   // The first node of the root node's children is a status node. There
@@ -2406,7 +2409,7 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
 TEST_P(PdfOcrServiceTest, UMAMetrics) {
   CreatePdfAccessibilityTree();
 
-  constexpr uint32_t kPagesPerBatch = 1u;
+  constexpr uint32_t kPagesPerBatch = 20u;
   base::HistogramTester histograms;
   bool is_ocr_service_started_before_pdf_loads;
   uint32_t page_count;
@@ -2443,11 +2446,9 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
     WaitForThreadTasks();
   }
 
-  ASSERT_EQ(pdf_accessibility_tree_->GetTreeUpdates().size(), page_count);
-  for (uint32_t i = 0; i < page_count; ++i) {
-    // There are two mock images per page.
-    ASSERT_EQ(pdf_accessibility_tree_->GetTreeUpdates()[i].size(), 2u);
-  }
+  const auto& tree_updates = pdf_accessibility_tree_->GetTreeUpdates();
+  const uint32_t kBatchCount = CalculateBatchCount(page_count, kPagesPerBatch);
+  ASSERT_EQ(kBatchCount, tree_updates.size());
 
   histograms.ExpectBucketCount(
       "Accessibility.PdfOcr.ActiveWhenInaccessiblePdfOpened",
