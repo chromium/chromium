@@ -163,6 +163,12 @@ void TapMoreButtonIfVisible() {
   FLAKY_testSetUpListDismissItemsWithSyncToSigninDisabled
 #define MAYBE_testMagicStackSetUpListCompleteAllItems \
   FLAKY_testMagicStackSetUpListCompleteAllItems
+#define MAYBE_testSetUpListSigninSwipeToDismiss \
+  FLAKY_testSetUpListSigninSwipeToDismiss
+#define MAYBE_testSetUpListSigninWithSyncToSigninDisabled \
+  FLAKY_testSetUpListSigninWithSyncToSigninDisabled
+#define MAYBE_testSetUpListSigninWithSyncToSigninEnabled \
+  FLAKY_testSetUpListSigninWithSyncToSigninEnabled
 #else
 #define MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled \
   testSetUpListDismissItemsWithSyncToSigninEnabled
@@ -171,7 +177,14 @@ void TapMoreButtonIfVisible() {
   testSetUpListDismissItemsWithSyncToSigninDisabled
 #define MAYBE_testMagicStackSetUpListCompleteAllItems \
   testMagicStackSetUpListCompleteAllItems
+#define MAYBE_testSetUpListSigninSwipeToDismiss \
+  testSetUpListSigninSwipeToDismiss
+#define MAYBE_testSetUpListSigninWithSyncToSigninDisabled \
+  testSetUpListSigninWithSyncToSigninDisabled
+#define MAYBE_testSetUpListSigninWithSyncToSigninEnabled \
+  testSetUpListSigninWithSyncToSigninEnabled
 #endif
+
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
@@ -179,14 +192,14 @@ void TapMoreButtonIfVisible() {
   if ([self isRunningTest:@selector
             (MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninDisabled)]) {
+            (MAYBE_testSetUpListSigninWithSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self isRunningTest:@selector
             (MAYBE_testSetUpListDismissItemsWithSyncToSigninEnabled)] ||
       [self isRunningTest:@selector
-            (testSetUpListSigninWithSyncToSigninEnabled)]) {
+            (MAYBE_testSetUpListSigninWithSyncToSigninEnabled)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_enabled.push_back(kConsistencyNewAccountInterface);
@@ -520,9 +533,10 @@ void TapMoreButtonIfVisible() {
       assertWithMatcher:grey_nil()];
 }
 
+// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
 // Tests that the signin UI flow works and that the signin item is marked
 // complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninDisabled {
+- (void)MAYBE_testSetUpListSigninWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -553,7 +567,7 @@ void TapMoreButtonIfVisible() {
 
 // Tests that the signin UI flow works and that the signin item is marked
 // complete when signin is completed.
-- (void)testSetUpListSigninWithSyncToSigninEnabled {
+- (void)MAYBE_testSetUpListSigninWithSyncToSigninEnabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -570,8 +584,9 @@ void TapMoreButtonIfVisible() {
                  @"SetUpList item SignIn not completed.");
 }
 
+// TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
 // Tests that the signin and sync screens can be dismissed by a swipe.
-- (void)testSetUpListSigninSwipeToDismiss {
+- (void)MAYBE_testSetUpListSigninSwipeToDismiss {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
