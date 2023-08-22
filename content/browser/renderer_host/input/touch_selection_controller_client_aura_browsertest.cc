@@ -51,11 +51,9 @@
 namespace content {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Character dimensions in px, from the font size in `touch_selection.html`.
 constexpr int kCharacterWidth = 15;
 constexpr int kCharacterHeight = 15;
-#endif
 
 bool JSONToPoint(const std::string& str, gfx::PointF* point) {
   absl::optional<base::Value> value = base::JSONReader::Read(str);
@@ -75,7 +73,7 @@ bool JSONToPoint(const std::string& str, gfx::PointF* point) {
 
 gfx::RectF ConvertRectFToChildCoords(RenderWidgetHostViewAura* parent,
                                      RenderWidgetHostViewChildFrame* child,
-                                     const gfx::RectF rect) {
+                                     const gfx::RectF& rect) {
   return gfx::BoundingRect(
       child->TransformRootPointToViewCoordSpace(rect.origin()),
       child->TransformRootPointToViewCoordSpace(rect.bottom_right()));
@@ -269,25 +267,29 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 600));
   }
 
-  gfx::PointF GetPointInsideText() {
+  gfx::PointF GetPointInText(int cursor_index) const {
     gfx::PointF point;
-    JSONToPoint(EvalJs(shell(), "get_point_inside_text()").ExtractString(),
+    JSONToPoint(EvalJs(shell(), "get_top_left_of_text()").ExtractString(),
                 &point);
+    point.Offset(cursor_index * kCharacterWidth, 0.5f * kCharacterHeight);
     return point;
   }
 
-  gfx::PointF GetPointInsideTextfield() {
+  gfx::PointF GetPointInTextfield(int cursor_index) const {
     gfx::PointF point;
-    JSONToPoint(EvalJs(shell(), "get_point_inside_textfield()").ExtractString(),
+    JSONToPoint(EvalJs(shell(), "get_top_left_of_textfield()").ExtractString(),
                 &point);
+    point.Offset(cursor_index * kCharacterWidth, 0.5f * kCharacterHeight);
     return point;
   }
 
-  gfx::PointF GetPointInsideEmptyTextfield() {
+  gfx::PointF GetPointInsideEmptyTextfield() const {
     gfx::PointF point;
     JSONToPoint(
-        EvalJs(shell(), "get_point_inside_empty_textfield()").ExtractString(),
+        EvalJs(shell(), "get_top_left_of_empty_textfield()").ExtractString(),
         &point);
+    // Offset the point so that it is within the textfield.
+    point.Offset(0.5f * kCharacterWidth, 0.5f * kCharacterHeight);
     return point;
   }
 
@@ -418,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point = GetPointInsideText();
+  gfx::PointF point = GetPointInText(2);
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -630,9 +632,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_top_left_of_text()")
                   .ExtractString(),
               &point_f);
+  point_f.Offset(2.0 * kCharacterWidth, 0.5f * kCharacterHeight);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);
 
   // Initiate selection with a sequence of events that go through the targeting
@@ -758,9 +761,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text to select.
   gfx::PointF point_f;
-  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_top_left_of_text()")
                   .ExtractString(),
               &point_f);
+  point_f.Offset(2.0 * kCharacterWidth, 0.5f * kCharacterHeight);
   point_f = child_view->TransformPointToRootCoordSpaceF(point_f);
 
   // Initiate selection with a sequence of events that go through the targeting
@@ -934,9 +938,10 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
 
   // Find the location of some text in the child view to select.
   gfx::PointF point_in_text;
-  JSONToPoint(EvalJs(child->current_frame_host(), "get_point_inside_text()")
+  JSONToPoint(EvalJs(child->current_frame_host(), "get_top_left_of_text()")
                   .ExtractString(),
               &point_in_text);
+  point_in_text.Offset(2.0 * kCharacterWidth, 0.5f * kCharacterHeight);
   point_in_text = child_view->TransformPointToRootCoordSpaceF(point_in_text);
 
   // Long press to show selection handles.
@@ -1004,7 +1009,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
 
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.GestureTapAt(point);
 
@@ -1043,7 +1048,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Long pressing on readable text should select the closest word.
-  gfx::Point point_in_readable_text = gfx::ToRoundedPoint(GetPointInsideText());
+  gfx::Point point_in_readable_text = gfx::ToRoundedPoint(GetPointInText(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_readable_text);
   SelectWithLongPress(generator, point_in_readable_text);
@@ -1080,8 +1085,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Long pressing on editable text should select the closest word.
-  gfx::Point point_in_textfield =
-      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point_in_textfield = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_textfield);
   SelectWithLongPress(generator, point_in_textfield);
@@ -1118,8 +1122,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Double pressing on editable text should select the closest word.
-  gfx::Point point_in_textfield =
-      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point_in_textfield = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_textfield);
   SelectWithDoublePress(generator, point_in_textfield);
@@ -1156,8 +1159,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Double press in editable text to select the closest word.
-  gfx::Point point_in_textfield =
-      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point_in_textfield = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_textfield);
   SelectWithDoublePress(generator, point_in_textfield);
@@ -1211,8 +1213,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   ui::test::EventGenerator generator(native_view->GetRootWindow());
 
   // Double press in textfield then start touch selection dragging.
-  gfx::Point point_in_textfield =
-      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point_in_textfield = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_textfield);
   SelectWithDoublePress(generator, point_in_textfield);
@@ -1248,7 +1249,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
 
   // Mouse click inside the textfield to make a caret appear.
   selection_controller_client()->InitWaitForSelectionUpdate();
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.MoveMouseTo(point);
   generator.PressLeftButton();
@@ -1297,7 +1298,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // Tap inside the textfield to place a caret and show an insertion handle.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point caret_location = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point caret_location = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &caret_location);
   generator.GestureTapAt(caret_location);
   selection_controller_client()->Wait();
@@ -1350,8 +1351,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
   gfx::NativeView native_view = rwhva->GetNativeView();
   ui::test::EventGenerator generator(native_view->GetRootWindow());
-  gfx::Point point_in_textfield =
-      gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point_in_textfield = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view,
                                                &point_in_textfield);
 
@@ -1400,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point = GetPointInsideText();
+  gfx::PointF point = GetPointInText(2);
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -1466,7 +1466,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
 
-  gfx::PointF point = GetPointInsideText();
+  gfx::PointF point = GetPointInText(2);
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -1546,7 +1546,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // Tap to focus the textfield.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point start = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point start = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &start);
   generator.GestureTapAt(start);
   selection_controller_client()->Wait();
@@ -1595,7 +1595,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // Tap inside the textfield and wait for the insertion handle to appear.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.GestureTapAt(point);
   selection_controller_client()->Wait();
@@ -1651,7 +1651,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
   // Tap inside the textfield and wait for the insertion handle to appear.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
-  gfx::Point point = gfx::ToRoundedPoint(GetPointInsideTextfield());
+  gfx::Point point = gfx::ToRoundedPoint(GetPointInTextfield(2));
   generator.delegate()->ConvertPointFromTarget(native_view, &point);
   generator.GestureTapAt(point);
   selection_controller_client()->Wait();
@@ -1758,7 +1758,7 @@ IN_PROC_BROWSER_TEST_P(
   // Long-press on the text and wait for handles to appear.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::SELECTION_HANDLES_SHOWN);
-  gfx::PointF point = GetPointInsideText();
+  gfx::PointF point = GetPointInText(2);
   ui::GestureEventDetails long_press_details(ui::ET_GESTURE_LONG_PRESS);
   long_press_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
   ui::GestureEvent long_press(point.x(), point.y(), 0, ui::EventTimeForNow(),
@@ -1859,7 +1859,7 @@ IN_PROC_BROWSER_TEST_P(
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_SHOWN);
 
-  gfx::PointF point = GetPointInsideTextfield();
+  gfx::PointF point = GetPointInTextfield(2);
 
   ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
   gesture_tap_down_details.set_device_type(

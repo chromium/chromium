@@ -34,25 +34,27 @@ function focus_textfield() {
   window.getSelection().collapseToStart();
 }
 
-function get_point_inside(element) {
+// Returns the top left point of an element, excluding border and padding.
+function get_top_left(element) {
   var rect = element.getBoundingClientRect();
+  var cs = getComputedStyle(element);
   var point = {
-    x: rect.left + 8,
-    y: rect.top + 8
+    x: rect.left + parseFloat(cs.borderLeft) + parseFloat(cs.paddingLeft),
+    y: rect.top + parseFloat(cs.borderTop) + parseFloat(cs.paddingTop)
   };
   return JSON.stringify(point);
 }
 
-function get_point_inside_text() {
-  return get_point_inside(document.getElementById('textDiv'));
+function get_top_left_of_text() {
+  return get_top_left(document.getElementById('textDiv'));
 }
 
-function get_point_inside_textfield() {
-  return get_point_inside(document.getElementById('textfield'));
+function get_top_left_of_textfield() {
+  return get_top_left(document.getElementById('textfield'));
 }
 
-function get_point_inside_empty_textfield() {
-  return get_point_inside(document.getElementById('emptyTextfield'));
+function get_top_left_of_empty_textfield() {
+  return get_top_left(document.getElementById('emptyTextfield'));
 }
 
 </script>
