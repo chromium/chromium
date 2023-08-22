@@ -1285,7 +1285,7 @@
     "type",
 
     // deprecated gradients
-    "from",
+    // "from", now part of relative color syntax
     "to",
     "color-stop",
     "radial",
@@ -1369,6 +1369,25 @@
     "in",
     // The color-mix function https://www.w3.org/TR/css-color-5/#color-mix
     "color-mix",
+
+    // relative color syntax
+    "from",
+    // RCS channel keywords.
+    // r, g, b for rgb(), rgba() and color()
+    // x, y, z are already defined for "scale"
+    // h, s, l for hsl()
+    // h, w, b for hwb()
+    // l, a, b for lab() and oklab()
+    // l, c, h for lch() and oklch()
+    "r",
+    "g",
+    "b",
+    "h",
+    "s",
+    "l",
+    "w",
+    "a",
+    "c",
 
     // transform
     "matrix",

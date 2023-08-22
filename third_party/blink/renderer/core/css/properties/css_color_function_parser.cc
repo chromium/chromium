@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -65,9 +68,124 @@ static bool ColorChannelIsHue(Color::ColorSpace color_space, int channel) {
   return false;
 }
 
-bool ColorFunctionParser::ConsumeColorSpace(CSSParserTokenRange& range,
-                                            const CSSParserContext& context,
-                                            CSSParserTokenRange& args) {
+// https://www.w3.org/TR/css-color-5/#relative-colors
+// e.g. lab(from magenta l a b), consume the "magenta" after the from. The
+// result needs to be a blink::Color as we need actual values for the color
+// parameters.
+static bool ConsumeRelativeOriginColor(CSSParserTokenRange& args,
+                                       const CSSParserContext& context,
+                                       Color& result) {
+  if (!RuntimeEnabledFeatures::CSSRelativeColorEnabled()) {
+    return false;
+  }
+  // TODO(crbug.com/1447327): Just like with css_parsing_utils::ResolveColor(),
+  // currentcolor is not currently handled well.
+  if (CSSValue* css_color = css_parsing_utils::ConsumeColor(args, context)) {
+    if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_color)) {
+      result = color_value->Value();
+      return true;
+    } else {
+      CSSValueID value_id = To<CSSIdentifierValue>(css_color)->GetValueID();
+      // TODO(crbug.com/1447327): Handle color scheme.
+      result = StyleColor::ColorFromKeyword(value_id,
+                                            mojom::blink::ColorScheme::kLight);
+      return true;
+    }
+  }
+  return false;
+}
+
+static absl::optional<double> ConsumeRelativeColorChannel(
+    CSSParserTokenRange& input_range,
+    const CSSParserContext& context,
+    const HashMap<CSSValueID, double> color_channel_keyword_values) {
+  const CSSParserToken& token = input_range.Peek();
+  // Relative color channels can be calc() functions with color channel
+  // replacements. e.g. In "color(from magenta srgb calc(r / 2) 0 0)", the
+  // "calc" should substitute "1" for "r" (magenta has a full red channel).
+  if (token.GetType() == kFunctionToken) {
+    // Don't consume the range if the parsing fails.
+    CSSParserTokenRange calc_range = input_range;
+    CSSMathFunctionValue* calc_value = CSSMathFunctionValue::Create(
+        CSSMathExpressionNode::ParseMathFunction(
+            token.FunctionId(), css_parsing_utils::ConsumeFunction(calc_range),
+            context, true /* is_percentage_allowed */, kCSSAnchorQueryTypesNone,
+            color_channel_keyword_values),
+        CSSPrimitiveValue::ValueRange::kAll);
+    if (calc_value) {
+      if (calc_value->Category() != kCalcNumber) {
+        return absl::nullopt;
+      }
+      // Consume the range, since it has succeeded.
+      input_range = calc_range;
+      return calc_value->GetDoubleValueWithoutClamping();
+    }
+  }
+
+  // This is for just single variable swaps without calc(). e.g. The "l" in
+  // "lab(from cyan l 0.5 0.5)".
+  if (color_channel_keyword_values.Contains(token.Id())) {
+    input_range.ConsumeIncludingWhitespace();
+    return color_channel_keyword_values.at(token.Id());
+  }
+
+  return absl::nullopt;
+}
+
+// Relative color syntax requires "channel keyword" substitutions for color
+// channels. Each color space has three "channel keywords", plus "alpha", that
+// correspond to the three parameters stored on the origin color. This function
+// generates a map between the channel keywords and the stored values in order
+// to make said substitutions. e.g. color(from magenta srgb r g b) will need to
+// generate srgb keyword values for the origin color "magenta". This function
+// will return: {CSSValueID::kR: 1, CSSValueID::kG: 0, CSSValueID::kB: 1}.
+static HashMap<CSSValueID, double> GenerateChannelKeywordValues(
+    Color::ColorSpace color_space,
+    Color origin_color) {
+  std::vector<CSSValueID> channel_names;
+  switch (color_space) {
+    case Color::ColorSpace::kSRGB:
+    case Color::ColorSpace::kSRGBLinear:
+    case Color::ColorSpace::kSRGBLegacy:
+    case Color::ColorSpace::kDisplayP3:
+    case Color::ColorSpace::kA98RGB:
+    case Color::ColorSpace::kProPhotoRGB:
+    case Color::ColorSpace::kRec2020:
+    case Color::ColorSpace::kXYZD50:
+    case Color::ColorSpace::kXYZD65:
+      channel_names = {CSSValueID::kR, CSSValueID::kG, CSSValueID::kB};
+      break;
+    case Color::ColorSpace::kLab:
+    case Color::ColorSpace::kOklab:
+      channel_names = {CSSValueID::kL, CSSValueID::kA, CSSValueID::kB};
+      break;
+    case Color::ColorSpace::kLch:
+    case Color::ColorSpace::kOklch:
+      channel_names = {CSSValueID::kL, CSSValueID::kC, CSSValueID::kH};
+      break;
+    case Color::ColorSpace::kHSL:
+      channel_names = {CSSValueID::kH, CSSValueID::kS, CSSValueID::kL};
+      break;
+    case Color::ColorSpace::kHWB:
+      channel_names = {CSSValueID::kH, CSSValueID::kW, CSSValueID::kB};
+      break;
+    case Color::ColorSpace::kNone:
+      NOTREACHED();
+      break;
+  }
+
+  return {
+      {channel_names[0], origin_color.Param0()},
+      {channel_names[1], origin_color.Param1()},
+      {channel_names[2], origin_color.Param2()},
+      {CSSValueID::kAlpha, origin_color.Alpha()},
+  };
+}
+
+bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    CSSParserTokenRange& args) {
   // Get the color space. This will either be the name of the function, or it
   // will be the first argument of the "color" function.
   CSSValueID function_id = range.Peek().FunctionId();
@@ -80,10 +198,43 @@ bool ColorFunctionParser::ConsumeColorSpace(CSSParserTokenRange& range,
 
   // This is in the form color(COLOR_SPACE r g b)
   if (function_id == CSSValueID::kColor) {
+    if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
+      if (!ConsumeRelativeOriginColor(args, context, origin_color_)) {
+        return false;
+      }
+      is_relative_color_ = true;
+    }
     color_space_ =
         CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
     if (!Color::IsPredefinedColorSpace(color_space_)) {
       return false;
+    }
+  }
+
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
+    // Can't have more than one "from" in a single color.
+    // Relative color is invalid for rgba()/hsla functions
+    if (is_relative_color_ || function_id == CSSValueID::kRgba ||
+        function_id == CSSValueID::kHsla ||
+        !ConsumeRelativeOriginColor(args, context, origin_color_)) {
+      return false;
+    }
+    is_relative_color_ = true;
+  }
+
+  if (is_relative_color_) {
+    origin_color_.ConvertToColorSpace(color_space_);
+    channel_keyword_values_ =
+        GenerateChannelKeywordValues(color_space_, origin_color_);
+    if (Color::IsPredefinedColorSpace(color_space_)) {
+      // Relative colors with color() can use 'x', 'y', 'z' in the place of 'r',
+      // 'g', 'b'.
+      xyz_keyword_values_ = {
+          {CSSValueID::kX, origin_color_.Param0()},
+          {CSSValueID::kY, origin_color_.Param1()},
+          {CSSValueID::kZ, origin_color_.Param2()},
+          {CSSValueID::kAlpha, origin_color_.Alpha()},
+      };
     }
   }
 
@@ -100,6 +251,9 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
     return false;
   }
   if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
+    if (is_relative_color_) {
+      return false;
+    }
     is_legacy_syntax_ = true;
   }
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(args)) {
@@ -113,6 +267,11 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
     if (temp) {
       channels_[i] = temp->GetDoubleValue();
       channel_types_[i] = ChannelType::kNumber;
+      return true;
+    } else if (is_relative_color_ &&
+               (channels_[i] = ConsumeRelativeColorChannel(
+                    args, context, channel_keyword_values_))) {
+      channel_types_[i] = ChannelType::kRelative;
       return true;
     } else {
       return false;
@@ -131,6 +290,28 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
     channels_[i] = temp->GetDoubleValue() / 100.0;
     channel_types_[i] = ChannelType::kPercentage;
     return true;
+  }
+
+  if (is_relative_color_) {
+    channel_types_[i] = ChannelType::kRelative;
+    // First, check if the channel contains only the keyword "alpha", because
+    // that can be either an rgb or an xyz param.
+    if ((channels_[i] = ConsumeRelativeColorChannel(
+             args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}}))) {
+      return true;
+    }
+    if ((channels_[i] = ConsumeRelativeColorChannel(args, context,
+                                                    channel_keyword_values_))) {
+      uses_rgb_relative_params_ = true;
+      return true;
+    }
+
+    if (Color::IsPredefinedColorSpace(color_space_) &&
+        (channels_[i] =
+             ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
+      uses_xyz_relative_params_ = true;
+      return true;
+    }
   }
 
   // Missing components should not parse.
@@ -161,6 +342,26 @@ bool ColorFunctionParser::ConsumeAlpha(CSSParserTokenRange& args,
     return true;
   }
 
+  if ((alpha_ = ConsumeRelativeColorChannel(
+           args, context, {{CSSValueID::kAlpha, origin_color_.Alpha()}}))) {
+    // Same as above, check if the channel contains only the keyword
+    // "alpha", because that can be either an rgb or an xyz param.
+    return true;
+  }
+
+  if (is_relative_color_ && (alpha_ = ConsumeRelativeColorChannel(
+                                 args, context, channel_keyword_values_))) {
+    uses_rgb_relative_params_ = true;
+    return true;
+  }
+
+  if (is_relative_color_ && Color::IsPredefinedColorSpace(color_space_) &&
+      (alpha_ =
+           ConsumeRelativeColorChannel(args, context, xyz_keyword_values_))) {
+    uses_xyz_relative_params_ = true;
+    return true;
+  }
+
   return false;
 }
 
@@ -173,12 +374,12 @@ bool ColorFunctionParser::MakePerColorSpaceAdjustments() {
     bool uses_bare_numbers = false;
     for (int i = 0; i < 3; i++) {
       if (channel_types_[i] == ChannelType::kPercentage) {
-        if (uses_bare_numbers) {
+        if (uses_bare_numbers && !is_relative_color_) {
           return false;
         }
         uses_percentage = true;
       } else if (channel_types_[i] == ChannelType::kNumber) {
-        if (uses_percentage) {
+        if (uses_percentage && !is_relative_color_) {
           return false;
         }
         uses_bare_numbers = true;
@@ -266,16 +467,18 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   CSSParserTokenRange range = input_range;
   CSSParserTokenRange args = range;
 
-  if (!ConsumeColorSpace(range, context, args)) {
+  if (!ConsumeColorSpaceAndOriginColor(range, context, args)) {
     return false;
   }
 
+  // Parse the three color channel params.
   for (int i = 0; i < 3; i++) {
     if (!ConsumeChannel(args, context, i)) {
       return false;
     }
   }
 
+  // Parse alpha.
   bool expect_alpha = false;
   if (css_parsing_utils::ConsumeSlashIncludingWhitespace(args)) {
     expect_alpha = true;
@@ -289,9 +492,15 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   if (expect_alpha && !ConsumeAlpha(args, context)) {
     return false;
   }
+  if (!expect_alpha && is_relative_color_) {
+    alpha_ = channel_keyword_values_.at(CSSValueID::kAlpha);
+  }
 
+  // Cannot mix the two color channel keyword types.
   // "None" is not a part of the legacy syntax.
-  if (!args.AtEnd() || (is_legacy_syntax_ && has_none_)) {
+  if (!args.AtEnd() ||
+      (uses_rgb_relative_params_ && uses_xyz_relative_params_) ||
+      (is_legacy_syntax_ && has_none_)) {
     return false;
   }
 
@@ -299,6 +508,9 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     return false;
   }
 
+  // TODO(crbug.com/1447327) We should return color(srgb ... ) colors for legacy
+  // color spaces, but a lot of test expectations need to change for that. See:
+  // https://github.com/w3c/csswg-drafts/issues/8444
   result = Color::FromColorSpace(color_space_, channels_[0], channels_[1],
                                  channels_[2], alpha_);
   // The parsing was successful, so we need to consume the input.

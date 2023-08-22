@@ -22,10 +22,10 @@ class CORE_EXPORT ColorFunctionParser {
                                     Color& result);
 
  private:
-  enum class ChannelType { kNone, kPercentage, kNumber };
-  bool ConsumeColorSpace(CSSParserTokenRange& range,
-                         const CSSParserContext& context,
-                         CSSParserTokenRange& args);
+  enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
+  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& range,
+                                       const CSSParserContext& context,
+                                       CSSParserTokenRange& args);
   bool ConsumeChannel(CSSParserTokenRange& args,
                       const CSSParserContext& context,
                       int index);
@@ -41,6 +41,14 @@ class CORE_EXPORT ColorFunctionParser {
   // incompatible with CSSColor4 features like "none" or alpha with a slash.
   bool is_legacy_syntax_ = false;
   bool has_none_ = false;
+
+  // For relative colors
+  bool is_relative_color_ = false;
+  Color origin_color_;
+  HashMap<CSSValueID, double> channel_keyword_values_;
+  HashMap<CSSValueID, double> xyz_keyword_values_;
+  bool uses_rgb_relative_params_ = false;
+  bool uses_xyz_relative_params_ = false;
 };
 
 }  // namespace blink
