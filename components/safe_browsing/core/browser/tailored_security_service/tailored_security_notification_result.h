@@ -19,9 +19,10 @@ enum class TailoredSecurityNotificationResult {
   kSafeBrowsingControlledByPolicy = 5,
   kNoBrowserAvailable = 6,
   kNoBrowserWindowAvailable = 7,
-  kPreferencesNotSynced = 8,
+  // kPreferencesNotSynced = 8, // Deprecated: now using history sync optin
+  kHistoryNotSynced = 9,
 
-  kMaxValue = kPreferencesNotSynced,
+  kMaxValue = kHistoryNotSynced,
 };
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_BROWSER_TAILORED_SECURITY_SERVICE_TAILORED_SECURITY_NOTIFICATION_RESULT_H_

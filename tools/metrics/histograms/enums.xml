@@ -93851,7 +93851,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="SafeBrowsingControlledByPolicy"/>
   <int value="6" label="NoBrowserAvailable"/>
   <int value="7" label="NoBrowserWindowAvailable"/>
-  <int value="8" label="PreferencesNotSynced"/>
+  <int value="8" label="OBSOLETE_PreferencesNotSynced"/>
+  <int value="9" label="HistoryNotSynced"/>
 </enum>
 
 <enum name="SafeBrowsingTailoredSecurityOutcome">

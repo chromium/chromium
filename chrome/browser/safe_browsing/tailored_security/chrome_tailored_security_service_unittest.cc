@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -23,6 +24,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -92,6 +94,8 @@ class TestChromeTailoredSecurityService : public ChromeTailoredSecurityService {
 };
 }  // namespace
 
+// TODO(crbug.com/1473470): Move tests related to base class behavior of
+// MaybeNotifySyncUser to the test suite for TailoredSecurityService.
 class ChromeTailoredSecurityServiceTest : public testing::Test {
  public:
   ChromeTailoredSecurityServiceTest()
@@ -192,6 +196,11 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
 
   TestingProfile* profile() { return profile_; }
 
+  syncer::TestSyncService* sync_service() {
+    return static_cast<syncer::TestSyncService*>(
+        SyncServiceFactory::GetForProfile(profile()));
+  }
+
   signin::IdentityTestEnvironment* GetIdentityTestEnv() {
     DCHECK(identity_test_env_adaptor_);
     return identity_test_env_adaptor_->identity_test_env();
@@ -241,6 +250,63 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
   EXPECT_TRUE(tailored_security_service()->previous_show_enable_dialog_value());
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncDisabledDoesNotShowEnableDialog) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+  int initial_times_displayed =
+      tailored_security_service()->times_dialog_displayed();
+
+  // disable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
+            initial_times_displayed);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncDisabledLogsHistoryNotSynced) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  // disable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{});
+  base::HistogramTester tester;
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
+      TailoredSecurityNotificationResult::kHistoryNotSynced, 1);
+}
+
+TEST_F(ChromeTailoredSecurityServiceTest,
+       TailoredSecurityEnabledButHistorySyncEnabledDoesNotLogHistoryNotSynced) {
+  SetSafeBrowsingState(prefs(), SafeBrowsingState::STANDARD_PROTECTION);
+  const GURL google_url("https://www.google.com");
+  AddTab(google_url);
+
+  // enable history sync
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kHistory});
+  base::HistogramTester tester;
+  tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
+                                                   base::Time::Now());
+
+  tester.ExpectBucketCount(
+      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
+      TailoredSecurityNotificationResult::kHistoryNotSynced, 0);
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, TsEnabledEnablesEp) {
