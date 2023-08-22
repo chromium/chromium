@@ -65,9 +65,11 @@ ManagementServiceFactory::ManagementServiceFactory()
 
 ManagementServiceFactory::~ManagementServiceFactory() = default;
 
-KeyedService* ManagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ManagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BrowserManagementService(Profile::FromBrowserContext(context));
+  return std::make_unique<BrowserManagementService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace policy
