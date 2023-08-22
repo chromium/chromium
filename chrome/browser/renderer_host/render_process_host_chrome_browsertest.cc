@@ -26,9 +26,6 @@
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
@@ -46,8 +43,6 @@
 #include "content/public/browser/browser_child_process_host.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-using content::RenderViewHost;
-using content::RenderWidgetHost;
 using content::WebContents;
 
 namespace {
@@ -57,18 +52,13 @@ int RenderProcessHostCount() {
 }
 
 WebContents* FindFirstDevToolsContents() {
-  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
-      RenderWidgetHost::GetRenderWidgetHosts());
-  while (content::RenderWidgetHost* widget = widgets->GetNextHost()) {
-    if (!widget->GetProcess()->IsInitializedAndNotDead())
-      continue;
-    RenderViewHost* view_host = RenderViewHost::From(widget);
-    if (!view_host)
-      continue;
-    WebContents* contents = WebContents::FromRenderViewHost(view_host);
-    GURL url = contents->GetURL();
-    if (url.SchemeIs(content::kChromeDevToolsScheme))
-      return contents;
+  for (content::WebContents* web_contents : content::GetAllWebContents()) {
+    if (web_contents->GetURL().SchemeIs(content::kChromeDevToolsScheme) &&
+        web_contents->GetPrimaryMainFrame()
+            ->GetProcess()
+            ->IsInitializedAndNotDead()) {
+      return web_contents;
+    }
   }
   return nullptr;
 }

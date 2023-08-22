@@ -14,14 +14,12 @@
 #include "base/mac/mac_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
@@ -236,14 +234,9 @@ SkColor NSColorToSkColor(NSColor* color) {
         std::move(params));
   }
 
-  std::unique_ptr<content::RenderWidgetHostIterator> all_widgets(
-      content::RenderWidgetHostImpl::GetAllRenderWidgetHosts());
-  while (content::RenderWidgetHost* widget = all_widgets->GetNextHost()) {
-    content::RenderViewHost* rvh = content::RenderViewHost::From(widget);
-    if (!rvh)
-      continue;
-
-    content::WebContents::FromRenderViewHost(rvh)->OnWebPreferencesChanged();
+  for (content::WebContentsImpl* web_contents :
+       content::WebContentsImpl::GetAllWebContents()) {
+    web_contents->OnWebPreferencesChanged();
   }
 }
 

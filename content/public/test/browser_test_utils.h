@@ -914,6 +914,10 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(Page& page);
 std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
     WebContents* web_contents);
 
+// Returns all WebContents. Note that this includes WebContents from any
+// BrowserContext.
+std::vector<WebContents*> GetAllWebContents();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Executes the WebUI resource tests. Injects the test runner script prior to
 // executing the tests.

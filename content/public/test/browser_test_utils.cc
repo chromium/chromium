@@ -1827,6 +1827,15 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
   return visited_frames;
 }
 
+std::vector<WebContents*> GetAllWebContents() {
+  std::vector<WebContentsImpl*> all_wci = WebContentsImpl::GetAllWebContents();
+  std::vector<WebContents*> all_wc;
+  std::transform(all_wci.cbegin(), all_wci.cend(), std::back_inserter(all_wc),
+                 [](WebContentsImpl* wc) { return wc; });
+
+  return all_wc;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ExecuteWebUIResourceTest(WebContents* web_contents) {
   // Inject WebUI test runner script.

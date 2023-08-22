@@ -133,9 +133,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
@@ -4049,29 +4046,7 @@ std::string FileManagerBrowserTestBase::GetSwaAppId(
 
 std::vector<content::WebContents*>
 FileManagerBrowserTestBase::GetAllWebContents() {
-  // Code borrowed from WebContentsImpl.
-  std::vector<content::WebContents*> result;
-
-  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
-      content::RenderWidgetHost::GetRenderWidgetHosts());
-  while (content::RenderWidgetHost* rwh = widgets->GetNextHost()) {
-    content::RenderViewHost* rvh = content::RenderViewHost::From(rwh);
-    if (!rvh) {
-      continue;
-    }
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderViewHost(rvh);
-    if (!web_contents) {
-      continue;
-    }
-    if (web_contents->GetPrimaryMainFrame()->GetRenderViewHost() != rvh) {
-      continue;
-    }
-    // Because a WebContents can only have one current RVH at a time, there will
-    // be no duplicate WebContents here.
-    result.push_back(web_contents);
-  }
-  return result;
+  return content::GetAllWebContents();
 }
 
 content::WebContents*

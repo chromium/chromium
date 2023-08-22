@@ -14,9 +14,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/render_view_host.h"
-#include "content/public/browser/render_widget_host.h"
-#include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -98,20 +95,14 @@ DefaultKeyboardExtensionBrowserTest::GetKeyboardWebContents(
   client->ShowKeyboard();
 
   GURL url = extensions::Extension::GetBaseURLFromExtensionId(id);
-  std::unique_ptr<content::RenderWidgetHostIterator> widgets(
-      content::RenderWidgetHost::GetRenderWidgetHosts());
-  while (content::RenderWidgetHost* widget = widgets->GetNextHost()) {
-    content::RenderViewHost* view = content::RenderViewHost::From(widget);
-    if (!view)
-      continue;
-    content::WebContents* wc = content::WebContents::FromRenderViewHost(view);
-    if (wc &&
-        url == wc->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL()) {
+  for (content::WebContents* wc : content::GetAllWebContents()) {
+    if (url == wc->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL()) {
       // Waits for virtual keyboard to load.
       EXPECT_TRUE(content::WaitForLoadStop(wc));
       return wc;
     }
   }
+
   LOG(ERROR) << "Extension not found:" << url;
   return nullptr;
 }
