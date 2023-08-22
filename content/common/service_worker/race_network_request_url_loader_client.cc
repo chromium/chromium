@@ -96,36 +96,18 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
     return;
   }
 
-  // If we already know that the response from ServiceWorker will commit (e.g.
-  // redirect) here, we don't have to create another data pipe and transfer
-  // data. Just forwarding the response to |forwarding_client_|.
-  if (owner_->commit_responsibility() == FetchResponseFrom::kServiceWorker) {
-    forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
-                                          std::move(cached_metadata));
-    return;
+  switch (data_consume_policy_) {
+    case DataConsumePolicy::kTeeResponse:
+      head_ = std::move(head);
+      cached_metadata_ = std::move(cached_metadata);
+      body_ = std::move(body);
+      WatchDataUpdate();
+      break;
+    case DataConsumePolicy::kForwardingOnly:
+      forwarding_client_->OnReceiveResponse(std::move(head), std::move(body),
+                                            std::move(cached_metadata));
+      break;
   }
-
-  head_ = std::move(head);
-  cached_metadata_ = std::move(cached_metadata);
-  body_ = std::move(body);
-  body_consumer_watcher_.Watch(
-      body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
-  body_consumer_watcher_.ArmOrNotify();
-  data_pipe_for_race_network_request_.watcher.Watch(
-      data_pipe_for_race_network_request_.producer.get(),
-      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
-  data_pipe_for_fetch_handler_.watcher.Watch(
-      data_pipe_for_fetch_handler_.producer.get(),
-      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      base::BindRepeating(
-          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
-          weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
@@ -134,6 +116,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
   if (!owner_) {
     return;
   }
+  // If redirect happened, we don't have to create another data pipe.
+  data_consume_policy_ = DataConsumePolicy::kForwardingOnly;
+
   // TODO(crbug.com/1420517): Return a redirect response to |owner| as a
   // RaceNetworkRequest result without breaking the cache storage compatibility.
   // We need a mechanism to wait for the fetch handler completion.
@@ -188,12 +173,15 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
         redirected_);
   }
 
-  if (owner_->commit_responsibility() == FetchResponseFrom::kServiceWorker) {
-    forwarding_client_->OnComplete(status);
-    return;
+  switch (data_consume_policy_) {
+    case DataConsumePolicy::kTeeResponse:
+      completion_status_ = status;
+      MaybeCompleteResponse();
+      break;
+    case DataConsumePolicy::kForwardingOnly:
+      forwarding_client_->OnComplete(status);
+      break;
   }
-  completion_status_ = status;
-  MaybeCompleteResponse();
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::Bind(
@@ -305,6 +293,27 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {
       "ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete");
   TransitionState(State::kDataTransferFinished);
   MaybeCompleteResponse();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::WatchDataUpdate() {
+  body_consumer_watcher_.Watch(
+      body_.get(), MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(
+          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
+          weak_factory_.GetWeakPtr()));
+  body_consumer_watcher_.ArmOrNotify();
+  data_pipe_for_race_network_request_.watcher.Watch(
+      data_pipe_for_race_network_request_.producer.get(),
+      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(
+          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
+          weak_factory_.GetWeakPtr()));
+  data_pipe_for_fetch_handler_.watcher.Watch(
+      data_pipe_for_fetch_handler_.producer.get(),
+      MOJO_HANDLE_SIGNAL_WRITABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(
+          &ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite,
+          weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::ReadAndWrite(

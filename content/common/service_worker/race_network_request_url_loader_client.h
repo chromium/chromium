@@ -45,6 +45,16 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     kAborted,
   };
 
+  // The enum class that indicates how response data is consumed.
+  enum class DataConsumePolicy {
+    // Tee response data into 1) the data pipe for RaceNetworkRequest and 2) the
+    // data pipe for the fetch handler.
+    kTeeResponse,
+    // Just forward data to the data pipe for the fetch handler. This value
+    // doesn't invoke |ReadAndWrite()|.
+    kForwardingOnly,
+  };
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //
@@ -160,6 +170,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // the long fetch handler execution. and test case the mechanism to wait for
   // the fetch handler
   void ReadAndWrite(MojoResult);
+  void WatchDataUpdate();
+
   void Abort();
 
   State state_ = State::kWaitForBody;
@@ -178,6 +190,7 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   bool redirected_ = false;
   std::unique_ptr<mojo::DataPipeDrainer> data_drainer_;
+  DataConsumePolicy data_consume_policy_ = DataConsumePolicy::kTeeResponse;
 
   base::WeakPtrFactory<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       weak_factory_{this};
