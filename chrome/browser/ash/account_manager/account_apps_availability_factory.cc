@@ -43,7 +43,8 @@ AccountAppsAvailabilityFactory::AccountAppsAvailabilityFactory()
 
 AccountAppsAvailabilityFactory::~AccountAppsAvailabilityFactory() = default;
 
-KeyedService* AccountAppsAvailabilityFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountAppsAvailabilityFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(profile);
@@ -53,7 +54,7 @@ KeyedService* AccountAppsAvailabilityFactory::BuildServiceInstanceFor(
   if (!AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
     return nullptr;
 
-  return new AccountAppsAvailability(
+  return std::make_unique<AccountAppsAvailability>(
       ::GetAccountManagerFacade(profile->GetPath().value()),
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
 }
