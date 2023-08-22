@@ -4,15 +4,17 @@
 
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
+#include <errno.h>
 #include <signal.h>
 #include <unistd.h>
 
+#include "base/files/file_descriptor_watcher_posix.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
-#include "base/task/single_thread_task_runner.h"
+#include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -34,6 +36,26 @@
 namespace headless {
 
 namespace {
+
+int g_read_fd = 0;
+int g_write_fd = 0;
+
+bool CreatePipe() {
+  CHECK(!g_read_fd);
+  CHECK(!g_write_fd);
+
+  int pipe_fd[2];
+  int result = pipe(pipe_fd);
+  if (result < 0) {
+    PLOG(ERROR) << "Could not create signal pipe";
+    return false;
+  }
+
+  g_read_fd = pipe_fd[0];
+  g_write_fd = pipe_fd[1];
+
+  return true;
+}
 
 class BrowserShutdownHandler {
  public:
@@ -75,19 +97,32 @@ class BrowserShutdownHandler {
   }
 
   void Init(ShutdownCallback shutdown_callback) {
-    task_runner_ = content::GetUIThreadTaskRunner({});
     shutdown_callback_ = std::move(shutdown_callback);
+
+    // We cannot just PostTask from a signal handler, so route the signal
+    // through a pipe.
+    CHECK(CreatePipe());
+
+    file_descriptor_watcher_controller_ =
+        base::FileDescriptorWatcher::WatchReadable(
+            g_read_fd,
+            base::BindRepeating(
+                &BrowserShutdownHandler::OnFileCanReadWithoutBlocking,
+                base::Unretained(this)));
+  }
+
+  // This is called whenever data is available in |g_read_fd|.
+  void OnFileCanReadWithoutBlocking() {
+    int pipe_data;
+    if (HANDLE_EINTR(read(g_read_fd, &pipe_data, sizeof(pipe_data))) > 0) {
+      Shutdown(pipe_data);
+    }
   }
 
   void Shutdown(int signal) {
     if (shutdown_callback_) {
       int exit_code = 0x80u + signal;
-      if (!task_runner_->PostTask(
-              FROM_HERE,
-              base::BindOnce(std::move(shutdown_callback_), exit_code))) {
-        RAW_LOG(WARNING, "No valid task runner, exiting ungracefully.");
-        kill(getpid(), signal);
-      }
+      std::move(shutdown_callback_).Run(exit_code);
     }
   }
 
@@ -114,11 +149,14 @@ class BrowserShutdownHandler {
     action.sa_handler = SIG_DFL;
     RAW_CHECK(sigaction(signal, &action, nullptr) == 0);
 
-    GetInstance().Shutdown(signal);
+    // Send signal number through the pipe.
+    int pipe_data = signal;
+    std::ignore = write(g_write_fd, &pipe_data, sizeof(pipe_data));
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   ShutdownCallback shutdown_callback_;
+  std::unique_ptr<base::FileDescriptorWatcher::Controller>
+      file_descriptor_watcher_controller_;
 };
 
 }  // namespace
