@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "wolvic/browser/vr/moz_external_vr.h"
 #include "wolvic/browser/vr/wvr_graphics_delegate.h"
 
 namespace device {
@@ -143,6 +144,9 @@ class WvrManager : public device::mojom::XRPresentationProvider,
   base::CancelableOnceClosure webxr_frame_timeout_closure_;
 
   base::OnceClosure exit_vr_callback_;
+
+  mozilla::gfx::VRControllerState
+      controller_state_[mozilla::gfx::kVRControllerMaxCount];
 
   base::WeakPtrFactory<WvrManager> weak_ptr_factory_{this};
 };

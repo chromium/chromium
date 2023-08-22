@@ -5,6 +5,7 @@
 #include "wolvic/browser/vr/wvr_manager.h"
 
 #include "components/webxr/mailbox_to_surface_bridge_impl.h"
+#include "device/vr/util/xr_standard_gamepad_builder.h"
 #include "ui/gfx/geometry/decomposed_transform.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
@@ -16,7 +17,6 @@ namespace wolvic {
 namespace {
 
 const int64_t kFrameTimeOutMilliseconds = 1000;
-constexpr double kThumbstickDeadzone = 0.16; // From gamepad_builder.cc
 
 void WvrMatToTransform(const float in[16], gfx::Transform* out) {
   *out = gfx::Transform::RowMajor(in[0], in[1], in[2], in[3], in[4], in[5],
@@ -46,41 +46,82 @@ device::mojom::VRPosePtr PoseToVRPosePtr(const mozilla::gfx::VRPose* p) {
   return pose;
 }
 
-device::GamepadHand ToGamepadHand(mozilla::gfx::ControllerHand hand) {
+device::mojom::XRHandedness ToXRHandness(mozilla::gfx::ControllerHand hand) {
   using mozilla::gfx::ControllerHand;
-
   switch (hand) {
     case ControllerHand::Left:
-      return device::GamepadHand::kLeft;
+      return device::mojom::XRHandedness::LEFT;
     case ControllerHand::Right:
-      return device::GamepadHand::kRight;
+      return device::mojom::XRHandedness::RIGHT;
     case ControllerHand::_empty:
     case ControllerHand::EndGuard_:
-      DCHECK(false) << "Unexpected ControllerHand value: "
-                    << static_cast<uint8_t>(hand);
-      return device::GamepadHand::kNone;
+      // LEFT controller and RIGHT controller are currently the only supported
+      // controllers. In the future, other controllers such as sound (which
+      // does not have a handedness) will be added here.
+      NOTREACHED();
+      return device::mojom::XRHandedness::NONE;
   }
 }
 
 device::Gamepad ToGamepad(const mozilla::gfx::VRControllerState& controller) {
-  device::Gamepad gamepad;
-  gamepad.hand = ToGamepadHand(controller.hand);
-
+  DCHECK_GT(controller.numButtons, 0);
   DCHECK_LT(controller.numButtons, device::Gamepad::kButtonsLengthCap);
-  gamepad.buttons_length = controller.numButtons;
-  for (uint32_t i = 0; i < gamepad.buttons_length; ++i) {
-    gamepad.buttons[i].pressed = controller.buttonPressed & (1 << i);
-    gamepad.buttons[i].touched = controller.buttonTouched & (1 << i);
-    gamepad.buttons[i].value = controller.triggerValue[i];
-  }
 
-  DCHECK_LT(controller.numAxes, device::Gamepad::kAxesLengthCap);
-  gamepad.axes_length = controller.numAxes;
-  for (uint32_t i = 0; i < gamepad.axes_length; ++i) {
-    gamepad.axes[i] = std::fabs(controller.axisValue[i]) < kThumbstickDeadzone ? 0.0 : controller.axisValue[i];
+  // The xr-standard gamepad mapping is specified here
+  // https://www.w3.org/TR/webxr-gamepads-module-1/#xr-standard-gamepad-mapping
+  auto getGamepadButton = [&controller](int i) {
+    return device::GamepadButton(controller.buttonPressed & (1 << i),
+                                 controller.buttonTouched & (1 << i),
+                                 controller.triggerValue[i]);
   };
 
-  return gamepad;
+  using device::GamepadBuilder;
+  auto getAxesData =
+      [&controller](
+          GamepadBuilder::ButtonData::Type type) -> GamepadBuilder::ButtonData {
+    DCHECK_LT(controller.numAxes, device::Gamepad::kAxesLengthCap);
+    DCHECK_EQ(controller.numAxes, 4);
+
+    bool isThumbstick = type == GamepadBuilder::ButtonData::Type::kThumbstick;
+    DCHECK(type == GamepadBuilder::ButtonData::Type::kTouchpad || isThumbstick);
+
+    GamepadBuilder::ButtonData data = {
+        .type = type,
+        .x_axis = controller.axisValue[isThumbstick ? 2 : 0],
+        .y_axis = controller.axisValue[isThumbstick ? 3 : 1]};
+    int buttonIndex = isThumbstick ? 3 : 2;
+    data.touched = controller.buttonTouched & (1 << buttonIndex);
+    data.pressed = controller.buttonPressed & (1 << buttonIndex);
+    data.value = controller.triggerValue[buttonIndex];
+    return data;
+  };
+
+  device::XRStandardGamepadBuilder builder(ToXRHandness(controller.hand));
+  builder.SetPrimaryButton(getGamepadButton(0));
+
+  if (controller.numButtons > 1) {
+    builder.SetSecondaryButton(getGamepadButton(1));
+  }
+
+  if (controller.numButtons > 2) {
+    builder.SetTouchpadData(
+        getAxesData(GamepadBuilder::ButtonData::Type::kTouchpad));
+  }
+
+  if (controller.numButtons > 3) {
+    builder.SetThumbstickData(
+        getAxesData(GamepadBuilder::ButtonData::Type::kThumbstick));
+  }
+
+  if (controller.numButtons > 4) {
+    for (uint32_t i = 4; i < controller.numButtons; ++i) {
+      builder.AddOptionalButtonData(getGamepadButton(i));
+    }
+  }
+
+  // TODO: fill in hand tracking data here
+
+  return builder.GetGamepad().value();
 }
 
 device::mojom::XRViewPtr CreateView(
@@ -432,8 +473,18 @@ WvrManager::GetInputSourceState() {
     // To ensure that we don't have any collisions with other ids, increment
     // all of the ids by one.
     input_source->source_id = i + 1;
-    input_source->primary_input_pressed = controller.buttonPressed;
-    input_source->primary_input_clicked = controller.buttonTouched;
+    input_source->primary_input_pressed = controller.buttonPressed & 1ULL;
+    input_source->primary_input_clicked =
+        (controller_state_[i].buttonPressed & 1ULL) &&
+        !input_source->primary_input_pressed;
+
+    if (controller.numButtons > 1) {
+      input_source->primary_squeeze_pressed =
+          controller.buttonPressed & (1ULL << 1);
+      input_source->primary_squeeze_clicked =
+          (controller_state_[i].buttonPressed & (1ULL << 1)) &&
+          !input_source->primary_squeeze_pressed;
+    }
 
     input_source->description = device::mojom::XRInputSourceDescription::New();
     switch (controller.targetRayMode) {
@@ -487,6 +538,10 @@ WvrManager::GetInputSourceState() {
 
     input_sources.push_back(std::move(input_source));
   }
+
+  memcpy(controller_state_, wvr_api_->get_system_state().controllerState,
+         sizeof(controller_state_));
+
   return input_sources;
 }
 
