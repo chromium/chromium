@@ -11,6 +11,7 @@
 #include "ash/login_status.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/compiler_specific.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
@@ -116,6 +117,9 @@ class ASH_EXPORT PowerEventObserver
   // can be stopped for all root windows when device suspends.
   void OnCompositorsReadyForSuspend();
 
+  // Starts |wait_for_external_display_timer_|.
+  void StartExternalDisplayTimer();
+
   LockState lock_state_ = LockState::kUnlocked;
   chromeos::PowerManagerClient::LidState lid_state_ =
       chromeos::PowerManagerClient::LidState::OPEN;
@@ -138,6 +142,11 @@ class ASH_EXPORT PowerEventObserver
   base::UnguessableToken block_suspend_token_;
 
   std::unique_ptr<LockOnSuspendUsage> lock_on_suspend_usage_;
+
+  // Amount of time (in seconds) to wait for external displays when a display
+  // mode change occurs and the lid is closed.
+  int defer_external_display_timeout_s_ = 0;
+  base::OneShotTimer wait_for_external_display_timer_;
 
   base::WeakPtrFactory<PowerEventObserver> weak_factory_{this};
 };
