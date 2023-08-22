@@ -52,11 +52,12 @@ SiteEngagementServiceFactory::~SiteEngagementServiceFactory() {
   SiteEngagementService::ClearServiceProvider(this);
 }
 
-KeyedService* SiteEngagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SiteEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       Profile::FromBrowserContext(context), ServiceAccessType::IMPLICIT_ACCESS);
-  return new HistoryAwareSiteEngagementService(context, history);
+  return std::make_unique<HistoryAwareSiteEngagementService>(context, history);
 }
 
 SiteEngagementService* SiteEngagementServiceFactory::GetSiteEngagementService(
