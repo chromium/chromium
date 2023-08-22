@@ -358,8 +358,10 @@ int ProxyResolvingClientSocket::ReconsiderProxyAfterError(int error) {
   DCHECK_NE(error, net::ERR_IO_PENDING);
 
   // Check if the error was a proxy failure.
-  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_server(), error, &error))
+  if (!net::CanFalloverToNextProxy(proxy_info_.proxy_server(), error, &error,
+                                   proxy_info_.is_for_ip_protection())) {
     return error;
+  }
 
   // TODO(davidben): When adding proxy client certificate support to this class,
   // clear the SSLClientAuthCache entries on error.

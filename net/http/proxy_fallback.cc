@@ -11,7 +11,8 @@ namespace net {
 
 NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
                                        int error,
-                                       int* final_error) {
+                                       int* final_error,
+                                       bool is_for_ip_protection) {
   *final_error = error;
 
   if (proxy.is_quic()) {
@@ -32,12 +33,7 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
   // to proxy servers.  The hostname in those URLs might fail to resolve if we
   // are still using a non-proxy config.  We need to check if a proxy config
   // now exists that corresponds to a proxy server that could load the URL.
-  //
-  // A failure while establishing a tunnel to the proxy
-  // (ERR_TUNNEL_CONNECTION_FAILED) is NOT considered grounds for fallback.
-  // Other browsers similarly don't fallback, and some client's PAC
-  // configurations rely on this for some degree of content blocking.
-  // See https://crbug.com/680837 for details.
+
   switch (error) {
     case ERR_PROXY_CONNECTION_FAILED:
     case ERR_NAME_NOT_RESOLVED:
@@ -70,6 +66,14 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyServer& proxy,
       // ERR_ADDRESS_UNREACHABLE.
       *final_error = ERR_ADDRESS_UNREACHABLE;
       return false;
+
+    case ERR_TUNNEL_CONNECTION_FAILED:
+      // A failure while establishing a tunnel to the proxy is only considered
+      // grounds for fallback when connecting to an IP Protection proxy. Other
+      // browsers similarly don't fallback, and some client's PAC configurations
+      // rely on this for some degree of content blocking. See
+      // https://crbug.com/680837 for details.
+      return is_for_ip_protection;
   }
   return false;
 }
