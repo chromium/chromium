@@ -840,7 +840,8 @@ void WebAppPublisherHelper::UninstallWebApp(
             return browser_context;
           },
           base::Unretained(profile())),
-      origin, content::ClearSiteDataTypeSet::All(),
+      /*storage_partition_config=*/absl::nullopt, origin,
+      content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{}, /*avoid_closing_connections=*/false,
       /*cookie_partition_key=*/absl::nullopt,
       /*storage_key=*/absl::nullopt,

@@ -823,6 +823,7 @@ class BrowsingDataRemoverWithPasswordsAccountStorageBrowserTest
               return browser_context;
             },
             base::Unretained(GetBrowser()->profile())),
+        /*storage_partition_config=*/absl::nullopt,
         /*origin=*/origin, content::ClearSiteDataTypeSet::All(),
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
         /*avoid_closing_connections=*/true,
@@ -1012,6 +1013,7 @@ class BrowsingDataRemoverStorageBucketsBrowserTest
               return browser_context;
             },
             base::Unretained(GetBrowser()->profile())),
+        /*storage_partition_config=*/absl::nullopt,
         /*origin=*/origin, clear_site_data_types,
         /*storage_buckets_to_remove=*/storage_buckets_to_remove,
         /*avoid_closing_connections=*/true,

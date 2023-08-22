@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -33,15 +34,17 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
   SiteDataClearer(
       BrowserContext* browser_context,
+      const absl::optional<StoragePartitionConfig> storage_partition_config,
       const url::Origin& origin,
       const ClearSiteDataTypeSet clear_site_data_types,
       const std::set<std::string>& storage_buckets_to_remove,
       bool avoid_closing_connections,
-      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-      const absl::optional<blink::StorageKey>& storage_key,
+      const absl::optional<net::CookiePartitionKey> cookie_partition_key,
+      const absl::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback)
-      : origin_(origin),
+      : storage_partition_config_(storage_partition_config),
+        origin_(origin),
         clear_site_data_types_(clear_site_data_types),
         storage_buckets_to_remove_(storage_buckets_to_remove),
         avoid_closing_connections_(avoid_closing_connections),
@@ -90,6 +93,10 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
               cookie_partition_key_));
       cookie_filter_builder->SetPartitionedStateAllowedOnly(
           partitioned_state_allowed_only_);
+      if (storage_partition_config_.has_value()) {
+        cookie_filter_builder->SetStoragePartitionConfig(
+            storage_partition_config_.value());
+      }
 
       pending_task_count_++;
       uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_COOKIES;
@@ -110,9 +117,8 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       // For storage buckets, no mask is being passed per se. Therefore, when
       // the storage buckets are successfully removed, the `failed_data_types`
       // arg should be set to 0 to align with existing behaviour in this class.
-      // TODO(zelin): Pass down storage partition and replace nullopt.
       remover_->RemoveStorageBucketsAndReply(
-          absl::nullopt,
+          storage_partition_config_,
           storage_key_.value_or(blink::StorageKey::CreateFirstParty(origin_)),
           storage_buckets_to_remove_,
           base::BindOnce(&SiteDataClearer::OnBrowsingDataRemoverDone,
@@ -138,6 +144,10 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
               BrowsingDataFilterBuilder::Mode::kDelete));
       origin_filter_builder->AddOrigin(origin_);
       origin_filter_builder->SetStorageKey(storage_key_);
+      if (storage_partition_config_.has_value()) {
+        origin_filter_builder->SetStoragePartitionConfig(
+            storage_partition_config_.value());
+      }
 
       pending_task_count_++;
       remover_->RemoveWithFilterAndReply(
@@ -176,6 +186,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     delete this;
   }
 
+  const absl::optional<StoragePartitionConfig> storage_partition_config_;
   const url::Origin origin_;
   const ClearSiteDataTypeSet clear_site_data_types_;
   const std::set<std::string> storage_buckets_to_remove_;
@@ -195,12 +206,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
 void ClearSiteData(
     const base::RepeatingCallback<BrowserContext*()>& browser_context_getter,
+    const absl::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
-    const absl::optional<blink::StorageKey>& storage_key,
+    const absl::optional<net::CookiePartitionKey> cookie_partition_key,
+    const absl::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -213,10 +225,11 @@ void ClearSiteData(
     std::move(callback).Run();
     return;
   }
-  (new SiteDataClearer(browser_context, origin, clear_site_data_types,
-                       storage_buckets_to_remove, avoid_closing_connections,
-                       cookie_partition_key, storage_key,
-                       partitioned_state_allowed_only, std::move(callback)))
+  (new SiteDataClearer(browser_context, storage_partition_config, origin,
+                       clear_site_data_types, storage_buckets_to_remove,
+                       avoid_closing_connections, cookie_partition_key,
+                       storage_key, partitioned_state_allowed_only,
+                       std::move(callback)))
       ->RunAndDestroySelfWhenDone();
 }
 

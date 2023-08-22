@@ -364,10 +364,12 @@ void ClearSiteDataHandler::ExecuteClearingTask(
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     base::OnceClosure callback) {
-  ClearSiteData(browser_context_getter_, origin, clear_site_data_types,
-                storage_buckets_to_remove, true /*avoid_closing_connections*/,
-                cookie_partition_key_, storage_key_,
-                partitioned_state_allowed_only_, std::move(callback));
+  ClearSiteData(browser_context_getter_,
+                /*storage_partition_config=*/absl::nullopt, origin,
+                clear_site_data_types, storage_buckets_to_remove,
+                /*avoid_closing_connections=*/true, cookie_partition_key_,
+                storage_key_, partitioned_state_allowed_only_,
+                std::move(callback));
 }
 
 // static

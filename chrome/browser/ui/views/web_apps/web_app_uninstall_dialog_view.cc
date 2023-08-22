@@ -194,6 +194,7 @@ void WebAppUninstallDialogDelegateView::ClearWebAppSiteData() {
             return browser_context;
           },
           base::Unretained(profile_)),
+      /*storage_partition_config=*/absl::nullopt,
       url::Origin::Create(app_start_url_), content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{},
       /*avoid_closing_connections=*/false,

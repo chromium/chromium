@@ -1970,6 +1970,7 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {
           },
           base::Unretained(
               GetTargetShell()->web_contents()->GetBrowserContext())),
+      /*storage_partition_config=*/absl::nullopt,
       /*origin=*/url::Origin::Create(GetURL("/")),
       content::ClearSiteDataTypeSet::All(),
       /*storage_buckets_to_remove=*/{},
