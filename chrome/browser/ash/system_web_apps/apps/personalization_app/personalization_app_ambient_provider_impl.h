@@ -164,9 +164,6 @@ class PersonalizationAppAmbientProviderImpl
   // Whether the Settings updating is ongoing.
   bool is_updating_backend_ = false;
 
-  // Whether there are pending updates.
-  bool has_pending_updates_for_backend_ = false;
-
   // Whether to update previews when `UpdateSettings()` returns successfully.
   bool needs_update_previews_ = false;
 

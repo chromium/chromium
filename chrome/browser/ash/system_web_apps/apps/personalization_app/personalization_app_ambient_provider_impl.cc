@@ -369,7 +369,6 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged() {
     // UpdateSettings assumes that ambient is enabled. Since ambient is now
     // disabled, cancel any requests to update settings.
     write_weak_factory_.InvalidateWeakPtrs();
-    has_pending_updates_for_backend_ = false;
     is_updating_backend_ = false;
   }
 }
@@ -518,13 +517,9 @@ void PersonalizationAppAmbientProviderImpl::UpdateSettings() {
   // Prevent fetch settings callback changing `settings_` and `personal_albums_`
   // while updating.
   read_weak_factory_.InvalidateWeakPtrs();
+  // Cancel in-flight write requests, as this newer update will overwrite them.
+  write_weak_factory_.InvalidateWeakPtrs();
 
-  if (is_updating_backend_) {
-    has_pending_updates_for_backend_ = true;
-    return;
-  }
-
-  has_pending_updates_for_backend_ = false;
   is_updating_backend_ = true;
 
   // Explicitly set show_weather to true to force server to respond with
@@ -566,11 +561,7 @@ bool PersonalizationAppAmbientProviderImpl::MaybeScheduleNewUpdateSettings(
   const bool need_retry_update_settings_at_backend =
       !success && update_settings_retry_backoff_.failure_count() <= kMaxRetries;
 
-  // If there has pending updates or need to retry, then updates settings again.
-  const bool should_update_settings_at_backend =
-      has_pending_updates_for_backend_ || need_retry_update_settings_at_backend;
-
-  if (!should_update_settings_at_backend) {
+  if (!need_retry_update_settings_at_backend) {
     return false;
   }
 
@@ -757,7 +748,6 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   fetch_settings_retry_backoff_.Reset();
   has_pending_fetch_request_ = false;
   is_updating_backend_ = false;
-  has_pending_updates_for_backend_ = false;
 }
 
 void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {

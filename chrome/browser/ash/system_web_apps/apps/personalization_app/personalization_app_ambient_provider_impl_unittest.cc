@@ -349,10 +349,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return ambient_provider_->is_updating_backend_;
   }
 
-  bool HasPendingUpdatesAtProvider() const {
-    return ambient_provider_->has_pending_updates_for_backend_;
-  }
-
   base::TimeDelta GetFetchSettingsDelay() {
     return ambient_provider_->fetch_settings_retry_backoff_
         .GetTimeUntilRelease();
@@ -473,21 +469,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
-       OnAmbientModeEnabled_ShouldCancelPendingUpdateSettingsRequest) {
-  PrefService* pref_service = profile()->GetPrefs();
-  EXPECT_TRUE(pref_service);
-  UpdateSettings();
-  UpdateSettings();
-  // The second call creates pending updates for the provider.
-  EXPECT_TRUE(HasPendingUpdatesAtProvider());
-
-  pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, false);
-
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
-  EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-}
-
-TEST_F(PersonalizationAppAmbientProviderImplTest,
        OnAmbientModeEnabled_ShouldCancelDelayedUpdateSettingsRequest) {
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_TRUE(pref_service);
@@ -502,7 +483,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   FastForwardBy(delay1 * 1.5);
   // Since ambient mode has been disabled, the pending update has been cleared.
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -747,32 +727,40 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, TestUpdateSettings) {
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/true);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 }
 
-TEST_F(PersonalizationAppAmbientProviderImplTest, TestUpdateSettingsTwice) {
-  UpdateSettings();
-  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
-  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+TEST_F(PersonalizationAppAmbientProviderImplTest,
+       TestUpdateSettingsTwice_CancelsPreviousRequests) {
+  SetAmbientObserver();
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            ObservedTemperatureUnit());
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            GetCurrentTemperatureUnitInServer());
 
-  UpdateSettings();
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kFahrenheit);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_TRUE(HasPendingUpdatesAtProvider());
+
+  SetTemperatureUnit(ash::AmbientModeTemperatureUnit::kCelsius);
+  EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
+  EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
 
   ReplyUpdateSettings(/*success=*/true);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_TRUE(HasPendingUpdatesAtProvider());
 
-  FastForwardBy(GetUpdateSettingsDelay() * 1.5);
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
+  // The newer temperature unit is used. The second call to UpdateSettings
+  // cancels the first request.
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            ObservedTemperatureUnit());
+  EXPECT_EQ(ash::AmbientModeTemperatureUnit::kCelsius,
+            GetCurrentTemperatureUnitInServer());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -780,17 +768,14 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -798,23 +783,19 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   base::TimeDelta delay1 = GetUpdateSettingsDelay();
   FastForwardBy(delay1 * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   base::TimeDelta delay2 = GetUpdateSettingsDelay();
   EXPECT_GT(delay2, delay1);
@@ -822,7 +803,6 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   FastForwardBy(delay2 * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
@@ -830,51 +810,42 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
   UpdateSettings();
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   // 1st retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   // 2nd retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   // 3rd retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
   EXPECT_TRUE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   ReplyUpdateSettings(/*success=*/false);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 
   // Will not retry.
   FastForwardBy(GetUpdateSettingsDelay() * 1.5);
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());
   EXPECT_FALSE(IsUpdateSettingsPendingAtProvider());
-  EXPECT_FALSE(HasPendingUpdatesAtProvider());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
