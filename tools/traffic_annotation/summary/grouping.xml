@@ -38,6 +38,7 @@ after discussions on the right group.
     <sender name="Feed Library">
       <annotation id="interest_feedv2_send"/>
       <annotation id="interest_feedv2_image_send"/>
+      <annotation id="interest_feedv2_resource_send"/>
     </sender>
     <sender name="Phone as a Security Key">
       <annotation id="cablev2_websocket_from_client"/>

@@ -121,6 +121,14 @@ NetworkResponseInfo::NetworkResponseInfo(const NetworkResponseInfo&) = default;
 NetworkResponseInfo& NetworkResponseInfo::operator=(
     const NetworkResponseInfo&) = default;
 
+NetworkResponse::NetworkResponse() = default;
+NetworkResponse::NetworkResponse(const std::string& response_bytes,
+                                 int status_code)
+    : response_bytes(response_bytes), status_code(status_code) {}
+NetworkResponse::~NetworkResponse() = default;
+NetworkResponse::NetworkResponse(const NetworkResponse&) = default;
+NetworkResponse& NetworkResponse::operator=(const NetworkResponse&) = default;
+
 std::string ToString(ContentRevision c) {
   // The 'c/' prefix is used to identify slices as content. Don't change this
   // without updating the Java side.

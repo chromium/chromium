@@ -1215,6 +1215,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.ResourceFetchStatus"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-30">
+  <owner>jianli@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android: Status of resource fetches for the feed. Recorded for each resource
+    fetch. Fetches happen when the specific resource is needed to enhance the
+    feed content while the feed is being displayed.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.SendFeedback"
     enum="FeedSendFeedbackType" expires_after="2024-01-23">
   <owner>carlosk@chromium.org</owner>

@@ -136,6 +136,7 @@ class MetricsReporter {
   void OnEnterBackground();
 
   static void OnImageFetched(const GURL& url, int net_error_or_http_status);
+  static void OnResourceFetched(int net_error_or_http_status);
 
   // Actions upload.
   static void OnUploadActionsBatch(UploadActionsBatchStatus status);
