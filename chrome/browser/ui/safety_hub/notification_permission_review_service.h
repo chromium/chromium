@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -24,9 +25,9 @@ struct NotificationPermissions {
   ~NotificationPermissions();
 };
 
-// This class provides data for "Review Notification Permissions" module in site
-// settings notification page. This module shows the domains that send a lot of
-// notification, but have low engagement.
+// This class provides data for the "Review Notification Permissions" dialog.
+/// This module shows the domains that send a lot of notification, but have low
+// engagement.
 class NotificationPermissionsReviewService : public KeyedService,
                                              public content_settings::Observer {
  public:
@@ -63,6 +64,11 @@ class NotificationPermissionsReviewService : public KeyedService,
   void RemovePatternFromNotificationPermissionReviewBlocklist(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
+
+  // Returns a sorted list with the notification count for each domain to be
+  // shown on the 'Review Notification Permissions' dialog. Those domains send a
+  // lot of notifications, but have low site engagement.
+  base::Value::List PopulateNotificationPermissionReviewData(Profile* profile);
 
  private:
   // Used to update the notification permissions per URL.

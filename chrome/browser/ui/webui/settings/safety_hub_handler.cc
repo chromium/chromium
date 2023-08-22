@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
@@ -236,8 +237,12 @@ void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
 
   const base::Value& callback_id = args[0];
 
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  DCHECK(service);
+
   base::Value::List result =
-      site_settings::PopulateNotificationPermissionReviewData(profile_);
+      service->PopulateNotificationPermissionReviewData(profile_);
 
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
@@ -247,7 +252,7 @@ void SafetyHubHandler::HandleIgnoreOriginsForNotificationPermissionReview(
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
 
-  auto* service =
+  NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   DCHECK(service);
 
@@ -319,7 +324,7 @@ void SafetyHubHandler::HandleUndoIgnoreOriginsForNotificationPermissionReview(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   const base::Value::List& origins = args[0].GetList();
-  auto* service =
+  NotificationPermissionsReviewService* service =
       NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
   DCHECK(service);
 
@@ -420,11 +425,17 @@ void SafetyHubHandler::SendUnusedSitePermissionsReviewList() {
 }
 
 void SafetyHubHandler::SendNotificationPermissionReviewList() {
+  NotificationPermissionsReviewService* service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile_);
+  CHECK(service);
+
+  base::Value::List result =
+      service->PopulateNotificationPermissionReviewData(profile_);
   // Notify observers that the permission review list could have changed. Note
   // that the list is not guaranteed to have changed.
   FireWebUIListener(
       site_settings::kNotificationPermissionsReviewListMaybeChangedEvent,
-      site_settings::PopulateNotificationPermissionReviewData(profile_));
+      service->PopulateNotificationPermissionReviewData(profile_));
 }
 
 void SafetyHubHandler::SetClockForTesting(base::Clock* clock) {
