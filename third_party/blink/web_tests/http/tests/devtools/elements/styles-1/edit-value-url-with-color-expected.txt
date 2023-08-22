@@ -1,14 +1,14 @@
 Tests that colors are not re-formatted inside url(...) when editing property values.
 
-rgb(255, 255, 255)
+white
 url( white )
 url(white.png)
 url(../foo/white.png)
-rgb(0, 128, 0) url(white)
-url(white) rgb(0, 128, 0)
+green url(white)
+url(white) green
 url(white) green, url(green)
 url(white), url(green)
-rgb(191, 64, 64) url(white)
-url(white) rgb(191, 64, 64)
+hsl(0, 50%, 50%) url(white)
+url(white) hsl(0, 50%, 50%)
 url(../black/white.png)
 

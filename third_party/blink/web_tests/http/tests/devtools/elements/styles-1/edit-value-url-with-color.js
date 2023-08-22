@@ -26,10 +26,6 @@ import {ElementsTestRunner} from 'elements_test_runner';
   var maxIndex = 11;
   var idIndex = 1;
 
-  Common.Color.detectColorFormat = Common.Settings.detectColorFormat = function() {
-    return Common.Color.Format.RGB;
-  };
-
   selectDivAndEditValue();
 
   function selectDivAndEditValue() {
