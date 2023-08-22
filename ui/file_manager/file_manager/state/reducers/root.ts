@@ -4,12 +4,12 @@
 
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
+import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
 import {searchReducersMap} from '../ducks/search.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 import {addAndroidApps} from './android_apps.js';
-import {updateBulkPinning} from './bulk_pinning.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
@@ -17,7 +17,8 @@ import {updatePreferences} from './preferences.js';
 import {addUiEntry, removeUiEntry} from './ui_entries.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
-const rootReducersMap = new Map([...searchReducersMap, ...volumesReducersMap]);
+const rootReducersMap = new Map(
+    [...searchReducersMap, ...volumesReducersMap, ...bulkPinningReducersMap]);
 
 /**
  * Root reducer for the State for Files app.
@@ -69,8 +70,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return addAndroidApps(currentState, action);
     case ActionType.ADD_CHILD_ENTRIES:
       return addChildEntries(currentState, action);
-    case ActionType.UPDATE_BULK_PIN_PROGRESS:
-      return updateBulkPinning(currentState, action);
     case ActionType.UPDATE_PREFERENCES:
       return updatePreferences(currentState, action);
     default:

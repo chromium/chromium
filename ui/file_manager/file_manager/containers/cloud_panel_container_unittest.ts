@@ -9,8 +9,8 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
-import {updateBulkPinProgress} from '../state/actions/bulk_pinning.js';
 import {updatePreferences} from '../state/actions/preferences.js';
+import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
 import {waitDeepEquals} from '../state/for_tests.js';
 import {getEmptyState, getStore} from '../state/store.js';
 import {XfCloudPanel} from '../widgets/xf_cloud_panel.js';

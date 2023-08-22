@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../../externs/ts/state.js';
-import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../lib/base_store.js';
+import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
 
 /** Map of actions to reducers for the search slice. */

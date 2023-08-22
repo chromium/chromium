@@ -7,7 +7,7 @@ import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://w
 
 import {mockUtilVisitURL} from '../common/js/mock_util.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
-import {updateBulkPinProgress} from '../state/actions/bulk_pinning.js';
+import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
 import {getEmptyState, getStore} from '../state/store.js';
 
 import {BulkPinStage, XfBulkPinningDialog} from './xf_bulk_pinning_dialog.js';

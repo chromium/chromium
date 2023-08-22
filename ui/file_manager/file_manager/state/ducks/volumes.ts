@@ -9,7 +9,7 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {PropStatus, State, Volume, VolumeId} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {addReducer, BaseAction, Reducer, ReducerMap as ReducersMap} from '../../lib/base_store.js';
+import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
 import {Action, ActionType} from '../actions.js';
 import {getMyFiles} from '../reducers/all_entries.js';
 import {getEntry} from '../store.js';

@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerBulkPinning) {
-  RunTestURL("state/reducers/bulk_pinning_unittest.js");
+  RunTestURL("state/ducks/bulk_pinning_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerPreferences) {

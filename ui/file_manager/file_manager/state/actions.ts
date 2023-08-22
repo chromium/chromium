@@ -4,12 +4,12 @@
 
 import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from './actions/all_entries.js';
 import {AddAndroidAppsAction} from './actions/android_apps.js';
-import {UpdateBulkPinProgressAction} from './actions/bulk_pinning.js';
 import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './actions/current_directory.js';
 import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './actions/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './actions/navigation.js';
 import {UpdatePreferencesAction} from './actions/preferences.js';
 import {AddUiEntryAction, RemoveUiEntryAction} from './actions/ui_entries.js';
+import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';
 import {SearchAction} from './ducks/search.js';
 import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from './ducks/volumes.js';
 

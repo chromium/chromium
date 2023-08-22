@@ -217,7 +217,7 @@ export type Reducer<StateType, ActionType extends BaseAction> =
     (state: StateType, payload: ActionType['payload']) => StateType;
 
 /** A map from actions to arrays of reducers. */
-export type ReducerMap<StateType, ActionType extends BaseAction> =
+export type ReducersMap<StateType, ActionType extends BaseAction> =
     Map<ActionType['type'], Array<Reducer<StateType, ActionType>>>;
 
 /**
@@ -225,7 +225,7 @@ export type ReducerMap<StateType, ActionType extends BaseAction> =
  */
 export function addReducer<StateType, ActionType extends BaseAction>(
     type: ActionType['type'], reducer: Reducer<StateType, ActionType>,
-    reducerMap: ReducerMap<StateType, ActionType>) {
+    reducerMap: ReducersMap<StateType, ActionType>) {
   let reducerList = reducerMap.get(type);
   if (!reducerList) {
     reducerList = [];
