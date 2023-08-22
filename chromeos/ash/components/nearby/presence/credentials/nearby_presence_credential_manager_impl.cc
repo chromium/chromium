@@ -779,7 +779,8 @@ void NearbyPresenceCredentialManagerImpl::DownloadCredentials(
       request,
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess,
-          weak_ptr_factory_.GetWeakPtr(), download_credentials_result_callback),
+          weak_ptr_factory_.GetWeakPtr(), download_credentials_result_callback,
+          /*download_request_start_time=*/base::TimeTicks::Now()),
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure,
           weak_ptr_factory_.GetWeakPtr(),
@@ -843,8 +844,12 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsSuccess(
     base::RepeatingCallback<
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback,
+    base::TimeTicks download_request_start_time,
     const ash::nearby::proto::ListPublicCertificatesResponse& response) {
   server_response_timer_.Stop();
+  base::TimeDelta download_request_duration =
+      base::TimeTicks::Now() - download_request_start_time;
+  metrics::RecordSharedCredentialDownloadDuration(download_request_duration);
 
   std::vector<::nearby::internal::SharedCredential> remote_credentials;
   for (auto public_certificate : response.public_certificates()) {

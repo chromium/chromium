@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 #include "chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h"
@@ -242,6 +243,7 @@ class NearbyPresenceCredentialManagerImpl
       base::RepeatingCallback<
           void(std::vector<::nearby::internal::SharedCredential>, bool)>
           download_credentials_result_callback,
+      base::TimeTicks download_request_start_time,
       const ash::nearby::proto::ListPublicCertificatesResponse& response);
   void OnDownloadCredentialsFailure(
       base::RepeatingCallback<

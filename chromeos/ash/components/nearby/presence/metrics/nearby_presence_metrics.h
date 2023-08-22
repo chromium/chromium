@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_METRICS_NEARBY_PRESENCE_METRICS_H_
 #define CHROMEOS_ASH_COMPONENTS_NEARBY_PRESENCE_METRICS_NEARBY_PRESENCE_METRICS_H_
 
+#include "base/time/time.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
 
 namespace ash::nearby::presence::metrics {
@@ -18,10 +19,17 @@ void RecordSharedCredentialDownloadFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordSharedCredentialDownloadTotalAttemptsNeededCount(int attempt_count);
 void RecordSharedCredentialDownloadResult(bool success);
+void RecordSharedCredentialDownloadDuration(base::TimeDelta download_duration);
+void RecordFirstTimeRegistrationFlowResult(bool success);
+void RecordFirstTimeServerRegistrationFailureReason(
+    ash::nearby::NearbyHttpResult failure_reason);
+void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
+    int attempt_count);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync with
-// the FastPairPairFailure enum in src/tools/metrics/histograms/enums.xml.
+// the FirstTimeRegistrationResult enum in
+// src/tools/metrics/histograms/enums.xml.
 enum class FirstTimeRegistrationResult {
   kSuccess = 0,
   kRegistrationWithServerFailure = 1,

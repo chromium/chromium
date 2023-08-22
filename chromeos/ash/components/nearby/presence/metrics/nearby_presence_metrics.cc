@@ -47,6 +47,12 @@ void RecordFirstTimeRegistrationFlowResult(FirstTimeRegistrationResult result) {
       "Nearby.Presence.Credentials.FirstTimeRegistration.Result", result);
 }
 
+void RecordSharedCredentialDownloadDuration(base::TimeDelta download_duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Presence.Credentials.Download.ServerRequestDuration",
+      download_duration);
+}
+
 void RecordFirstTimeServerRegistrationFailureReason(
     ash::nearby::NearbyHttpResult failure_reason) {
   base::UmaHistogramEnumeration(
