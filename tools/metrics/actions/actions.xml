@@ -32210,6 +32210,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_HistorySync">
+  <owner>myuu@google.com</owner>
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when user takes an action on the History Sync Opt-In screen.
+    Recorded on iOS only.
+  </description>
+</action>
+
 <action name="Signin_ImportDataPrompt_Cancel">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -39596,6 +39606,25 @@ should be able to be added at any place in this file.
   <suffix name="SwitchingButton" label="Switching details page button"/>
   <suffix name="VideoCallButton" label="Video Call details page button"/>
   <affected-action name="DemoMode_Highlights_DetailsPage_Clicked"/>
+</action-suffix>
+
+<action-suffix separator="_" ordering="suffix">
+  <suffix name="Aborted"
+      label="The user or other events (identity disappeared, Chrome shutdown)
+             dismissed the History Sync Opt-In screen"/>
+  <suffix name="AlreadyOptedIn"
+      label="The History Sync Opt-In screen is skipped since the user has
+             already opted-in for history sync previously"/>
+  <suffix name="Completed" label="The user tapped on the accept button"/>
+  <suffix name="Declined" label="The user tapped on the decline button"/>
+  <suffix name="Skipped"
+      label="The History Sync Opt-In screen is skipped (Since sync is
+             disabled by policies or the user is signed-out)"/>
+  <suffix name="Started" label="The History Sync Opt-In screen is shown"/>
+  <suffix name="SwipedDown"
+      label="The user dismissed the History Sync Opt-In screen by swiping
+             down"/>
+  <affected-action name="Signin_HistorySync"/>
 </action-suffix>
 
 </actions>
