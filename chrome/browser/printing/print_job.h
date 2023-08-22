@@ -238,7 +238,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
       const GURL& url);
 
   void OnPdfConversionStarted(uint32_t page_count);
-  void OnPdfPageConverted(uint32_t page_number,
+  void OnPdfPageConverted(uint32_t page_index,
                           float scale_factor,
                           std::unique_ptr<MetafilePlayer> metafile);
 

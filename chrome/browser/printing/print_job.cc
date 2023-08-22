@@ -165,10 +165,11 @@ std::vector<uint32_t> PrintJob::GetFullPageMapping(
     const std::vector<uint32_t>& pages,
     uint32_t total_page_count) {
   std::vector<uint32_t> mapping(total_page_count, kInvalidPageIndex);
-  for (uint32_t page_number : pages) {
+  for (uint32_t page_index : pages) {
     // Make sure the page is in range.
-    if (page_number < total_page_count)
-      mapping[page_number] = page_number;
+    if (page_index < total_page_count) {
+      mapping[page_index] = page_index;
+    }
   }
   return mapping;
 }
@@ -417,13 +418,13 @@ void PrintJob::OnPdfConversionStarted(uint32_t page_count) {
       base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
 }
 
-void PrintJob::OnPdfPageConverted(uint32_t page_number,
+void PrintJob::OnPdfPageConverted(uint32_t page_index,
                                   float scale_factor,
                                   std::unique_ptr<MetafilePlayer> metafile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(pdf_conversion_state_);
-  if (!document_ || !metafile || page_number == kInvalidPageIndex ||
-      page_number >= pdf_page_mapping_.size()) {
+  if (!document_ || !metafile || page_index == kInvalidPageIndex ||
+      page_index >= pdf_page_mapping_.size()) {
     // Be sure to live long enough.
     scoped_refptr<PrintJob> handle(this);
     pdf_conversion_state_.reset();
@@ -433,9 +434,9 @@ void PrintJob::OnPdfPageConverted(uint32_t page_number,
 
   // Add the page to the document if it is one of the pages requested by the
   // user. If it is not, ignore it.
-  if (pdf_page_mapping_[page_number] != kInvalidPageIndex) {
+  if (pdf_page_mapping_[page_index] != kInvalidPageIndex) {
     // Update the rendered document. It will send notifications to the listener.
-    document_->SetPage(pdf_page_mapping_[page_number], std::move(metafile),
+    document_->SetPage(pdf_page_mapping_[page_index], std::move(metafile),
                        scale_factor, pdf_conversion_state_->page_size(),
                        pdf_conversion_state_->content_area());
   }
