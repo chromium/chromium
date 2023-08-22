@@ -98,9 +98,10 @@ ReadingListModelFactory::ReadingListModelFactory()
 
 ReadingListModelFactory::~ReadingListModelFactory() = default;
 
-KeyedService* ReadingListModelFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ReadingListModelFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildReadingListModel(context).release();
+  return BuildReadingListModel(context);
 }
 
 void ReadingListModelFactory::RegisterProfilePrefs(
