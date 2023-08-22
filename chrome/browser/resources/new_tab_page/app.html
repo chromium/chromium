@@ -361,7 +361,6 @@
 
   #webstoreToast {
     padding: 16px;
-    visibility: hidden;
   }
 </style>
 <div id="content" style="
@@ -399,7 +398,7 @@
     </template>
   </div>
   <template is="dom-if" if="[[lazyRender_]]" >
-    <cr-toast id="webstoreToast" duration="10000">
+    <cr-toast id="webstoreToast" duration="10000" hidden>
       <div>$i18n{webstoreThemesToastMessage}</div>
       <cr-button on-click="onWebstoreToastButtonClick_">
         $i18n{webstoreThemesToastButtonText}
