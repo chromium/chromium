@@ -128,6 +128,11 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
+      autoPictureInPictureEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+      },
+
       isPrivacySandboxSettings4_: {
         type: Boolean,
         value() {
@@ -156,6 +161,7 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
   private fpsEnterprisePref_: chrome.settingsPrivate.PrefObject;
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
+  private autoPictureInPictureEnabled_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
 

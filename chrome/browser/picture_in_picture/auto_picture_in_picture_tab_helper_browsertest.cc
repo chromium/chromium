@@ -6,11 +6,16 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
@@ -20,6 +25,8 @@
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "third_party/blink/public/common/features.h"
+
+using media_session::mojom::MediaSessionAction;
 
 namespace {
 
@@ -40,6 +47,10 @@ const base::FilePath::CharType kNotRegisteredPage[] =
 
 const base::FilePath::CharType kAutopipDelayPage[] =
     FILE_PATH_LITERAL("media/picture-in-picture/autopip-delay.html");
+
+const base::FilePath::CharType kAutopipToggleRegistrationPage[] =
+    FILE_PATH_LITERAL(
+        "media/picture-in-picture/autopip-toggle-registration.html");
 
 class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
  public:
@@ -101,6 +112,13 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
   }
 
+  void LoadAutopipToggleRegistrationPage(Browser* browser) {
+    GURL test_page_url = ui_test_utils::GetTestUrl(
+        base::FilePath(base::FilePath::kCurrentDirectory),
+        base::FilePath(kAutopipToggleRegistrationPage));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+  }
+
   void OpenNewTab(Browser* browser) {
     GURL test_page_url = ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
@@ -134,6 +152,31 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     web_contents->GetPrimaryMainFrame()
         ->ExecuteJavaScriptWithUserGestureForTests(
             u"openPip({automatic: true})", base::NullCallback());
+  }
+
+  void RegisterForAutopip(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"register()", base::NullCallback());
+  }
+
+  void UnregisterForAutopip(content::WebContents* web_contents) {
+    web_contents->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
+        u"unregister()", base::NullCallback());
+  }
+
+  void WaitForMediaSessionActionRegistered(content::WebContents* web_contents) {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *content::MediaSession::Get(web_contents));
+    observer.WaitForExpectedActions(
+        {MediaSessionAction::kEnterPictureInPicture,
+         MediaSessionAction::kEnterAutoPictureInPicture});
+  }
+
+  void WaitForMediaSessionActionUnregistered(
+      content::WebContents* web_contents) {
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *content::MediaSession::Get(web_contents));
+    observer.WaitForEmptyActions();
   }
 
   void WaitForMediaSessionPaused(content::WebContents* web_contents) {
@@ -192,6 +235,17 @@ class AutoPictureInPictureTabHelperBrowserTest : public WebRtcTestBase {
     // There should no longer be a picture-in-picture window.
     EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
     EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+  }
+
+  void SetContentSettingEnabled(content::WebContents* web_contents,
+                                bool enabled) {
+    GURL url = web_contents->GetLastCommittedURL();
+    ContentSetting setting =
+        enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
+    HostContentSettingsMapFactory::GetForProfile(
+        Profile::FromBrowserContext(web_contents->GetBrowserContext()))
+        ->SetContentSettingDefaultScope(
+            url, url, ContentSettingsType::AUTO_PICTURE_IN_PICTURE, setting);
   }
 
  private:
@@ -427,6 +481,69 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       RespectsAutoPictureInPictureContentSetting) {
+  // Load a page that registers for autopip and start video playback.
+  LoadAutoVideoPipPage(browser());
+  auto* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(original_web_contents);
+  WaitForAudioFocusGained();
+
+  // Disable the AUTO_PICTURE_IN_PICTURE content setting.
+  SetContentSettingEnabled(original_web_contents, false);
+
+  // There should not currently be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Open and switch to a new tab.
+  OpenNewTab(browser());
+  auto* second_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // There should not be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(
+          original_web_contents));
+
+  // There should still be no picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Re-enable the content setting.
+  SetContentSettingEnabled(original_web_contents, true);
+
+  // Switch back to the second tab.
+  content::MediaStartStopObserver enter_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kEnterPictureInPicture);
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(second_web_contents));
+  enter_pip_observer.Wait();
+
+  // A video picture-in-picture window should automatically open.
+  EXPECT_TRUE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+
+  // Switch back to the original tab.
+  content::MediaStartStopObserver exit_pip_observer(
+      original_web_contents,
+      content::MediaStartStopObserver::Type::kExitPictureInPicture);
+  browser()->tab_strip_model()->ActivateTabAt(
+      browser()->tab_strip_model()->GetIndexOfWebContents(
+          original_web_contents));
+  exit_pip_observer.Wait();
+
+  // There should no longer be a picture-in-picture window.
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
+  EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
                        DoesNotAutopipIfNotRegistered) {
   // Load a page that does not register for autopip and start video playback.
   LoadNotRegisteredPage(browser());
@@ -484,4 +601,31 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   // The page should no longer be in picture-in-picture.
   EXPECT_FALSE(original_web_contents->HasPictureInPictureVideo());
   EXPECT_FALSE(original_web_contents->HasPictureInPictureDocument());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
+                       HasEverBeenRegistered) {
+  // Load a page that can register and unregister for autopip.
+  LoadAutopipToggleRegistrationPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents);
+  ASSERT_NE(nullptr, tab_helper);
+
+  // Since the page has not yet registered, it should initially be false.
+  EXPECT_FALSE(tab_helper->HasAutoPictureInPictureBeenRegistered());
+
+  // Register for autopip. It should then return true.
+  RegisterForAutopip(web_contents);
+  WaitForMediaSessionActionRegistered(web_contents);
+  EXPECT_TRUE(tab_helper->HasAutoPictureInPictureBeenRegistered());
+
+  // After unregistering, it should still return true.
+  UnregisterForAutopip(web_contents);
+  WaitForMediaSessionActionUnregistered(web_contents);
+  EXPECT_TRUE(tab_helper->HasAutoPictureInPictureBeenRegistered());
+
+  // If we navigate the tab, it should return false again.
+  LoadNotRegisteredPage(browser());
+  EXPECT_FALSE(tab_helper->HasAutoPictureInPictureBeenRegistered());
 }

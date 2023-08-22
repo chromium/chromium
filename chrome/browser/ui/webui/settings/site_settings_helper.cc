@@ -138,6 +138,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
      "private-network-devices-data"},
     {ContentSettingsType::ANTI_ABUSE, "anti-abuse"},
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
+    {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -580,6 +581,11 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
     if (base::FeatureList::IsEnabled(
             network::features::kPrivateNetworkAccessPermissionPrompt)) {
       base_types->push_back(ContentSettingsType::PRIVATE_NETWORK_GUARD);
+    }
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kMediaSessionEnterPictureInPicture)) {
+      base_types->push_back(ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
     }
 
     initialized = true;

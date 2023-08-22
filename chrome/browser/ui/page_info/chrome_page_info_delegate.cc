@@ -54,6 +54,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/lookalikes/safety_tip_ui_helper.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -339,6 +340,17 @@ bool ChromePageInfoDelegate::IsSubresourceFilterActivated(
               ->settings_manager();
 
   return settings_manager->GetSiteActivationFromMetadata(site_url);
+}
+
+bool ChromePageInfoDelegate::HasAutoPictureInPictureBeenRegistered() {
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
+  auto* auto_pip_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(web_contents_);
+  return auto_pip_tab_helper &&
+         auto_pip_tab_helper->HasAutoPictureInPictureBeenRegistered();
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromePageInfoDelegate::IsContentDisplayedInVrHeadset() {

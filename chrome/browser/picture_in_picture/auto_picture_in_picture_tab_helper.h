@@ -15,6 +15,8 @@
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
+class HostContentSettingsMap;
+
 // The AutoPictureInPictureTabHelper is a TabHelper attached to each WebContents
 // that facilitates automatically opening and closing picture-in-picture windows
 // as the given WebContents becomes hidden or visible. WebContents are only
@@ -36,7 +38,13 @@ class AutoPictureInPictureTabHelper
   AutoPictureInPictureTabHelper& operator=(
       const AutoPictureInPictureTabHelper&) = delete;
 
+  // True if the current page has registered for auto picture-in-picture since
+  // last navigation. Remains true even if the page unregisters for auto
+  // picture-in-picture. It only resets on navigation.
+  bool HasAutoPictureInPictureBeenRegistered() const;
+
   // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
   void MediaPictureInPictureChanged(bool is_in_picture_in_picture) override;
 
   // TabStripModelObserver:
@@ -91,6 +99,10 @@ class AutoPictureInPictureTabHelper
   // setting for the current website of the observed WebContents.
   ContentSetting GetCurrentContentSetting() const;
 
+  // HostContentSettingsMap is tied to the Profile which outlives the
+  // WebContents (which we're tied to), so this is safe.
+  const raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+
   // Tracks when browser tab strips change so we can tell when the observed
   // WebContents changes between being the active tab and not being the active
   // tab.
@@ -129,6 +141,11 @@ class AutoPictureInPictureTabHelper
   // True if the 'EnterAutoPictureInPicture' action is available on the media
   // session.
   bool is_enter_auto_picture_in_picture_available_ = false;
+
+  // True if the current page has registered for auto picture-in-picture since
+  // last navigation. Remains true even if the page unregisters for auto
+  // picture-in-picture. It only resets on navigation.
+  bool has_ever_registered_for_auto_picture_in_picture_ = false;
 
   // Connections with the media session service to listen for audio focus
   // updates and control media sessions.

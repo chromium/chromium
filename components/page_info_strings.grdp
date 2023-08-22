@@ -370,6 +370,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_AR_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the AR permission is in the ask state and the site can prompt the user to ask if they want to allow the site to track their camera position.">
       Can ask to track your camera position
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_AUTO_PICTURE_IN_PICTURE_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the auto picture-in-picture permission is in the ask state and the site can prompt the user to ask if they want to allow the site to automatically open picture-in-picture windows..">
+      Can ask to automatically open picture-in-picture windows
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_AUTOMATIC_DOWNLOADS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the automatic download permission is in the ask state and the site can prompt the user to ask if they allow the site to automatically download multiple files.">
       Can ask to automatically download multiple files
     </message>

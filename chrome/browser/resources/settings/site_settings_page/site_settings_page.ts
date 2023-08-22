@@ -54,6 +54,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
           loadTimeData.getBoolean('enableSafeBrowsingSubresourceFilter'),
     },
     {
+      route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
+      id: Id.AUTO_PICTURE_IN_PICTURE,
+      label: 'siteSettingsAutoPictureInPicture',
+      // TODO(https://crbug.com/1471051): Use real icon.
+      icon: 'settings:window-management',
+      enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
+      disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
+      shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
+    },
+    {
       route: routes.SITE_SETTINGS_AUTO_VERIFY,
       id: Id.ANTI_ABUSE,
       label: 'siteSettingsAntiAbuse',
@@ -431,6 +441,7 @@ export class SettingsSiteSettingsPageElement extends
                   Id.IDLE_DETECTION,
                   Id.WINDOW_MANAGEMENT,
                   Id.LOCAL_FONTS,
+                  Id.AUTO_PICTURE_IN_PICTURE,
           ],
             ]),
             contentBasic: buildItemListFromIds([

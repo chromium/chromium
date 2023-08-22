@@ -16,6 +16,7 @@ export enum ContentSettingsTypes {
   ADS = 'ads',
   ANTI_ABUSE = 'anti-abuse',
   AR = 'ar',
+  AUTO_PICTURE_IN_PICTURE = 'auto-picture-in-picture',
   AUTOMATIC_DOWNLOADS = 'multiple-automatic-downloads',
   BACKGROUND_SYNC = 'background-sync',
   BLUETOOTH_DEVICES = 'bluetooth-devices',

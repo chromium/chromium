@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Autopip Register Picture-in-Picture action</title>
+</head>
+<body>
+</body>
+<script>
+function register() {
+  navigator.mediaSession.setActionHandler('enterpictureinpicture', _=>{});
+}
+
+function unregister() {
+  navigator.mediaSession.setActionHandler('enterpictureinpicture', null);
+}
+</script>

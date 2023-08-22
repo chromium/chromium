@@ -96,6 +96,7 @@
 #include "crypto/crypto_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/interaction/element_identifier.h"
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
@@ -522,6 +523,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "enablePermissionStorageAccessApi",
       base::FeatureList::IsEnabled(
           permissions::features::kPermissionStorageAccessAPI));
+
+  html_source->AddBoolean(
+      "autoPictureInPictureEnabled",
+      base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture));
 
   TryShowHatsSurveyWithTimeout();
 }

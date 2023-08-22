@@ -205,6 +205,9 @@ base::span<const PageInfoUI::PermissionUIInfo> GetContentSettingsUIInfo() {
      IDS_SITE_SETTINGS_TYPE_IDLE_DETECTION_MID_SENTENCE},
 #if !BUILDFLAG(IS_ANDROID)
     // Page Info Permissions that are not defined in Android.
+    {ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+     IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE,
+     IDS_SITE_SETTINGS_TYPE_AUTO_PICTURE_IN_PICTURE_MID_SENTENCE},
     {ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE,
      IDS_SITE_SETTINGS_TYPE_FILE_SYSTEM_ACCESS_WRITE_MID_SENTENCE},
@@ -361,6 +364,9 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_STORAGE_ACCESS_ASK;
+      break;
+    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_AUTO_PICTURE_IN_PICTURE_ASK;
       break;
     default:
       NOTREACHED();

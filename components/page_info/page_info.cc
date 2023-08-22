@@ -80,7 +80,9 @@
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/resources/android/theme_resources.h"
 #include "components/strings/grit/components_chromium_strings.h"
-#endif
+#else
+#include "third_party/blink/public/common/features.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using base::ASCIIToUTF16;
 using base::UTF16ToUTF8;
@@ -132,6 +134,9 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::AR,
     ContentSettingsType::IDLE_DETECTION,
     ContentSettingsType::FEDERATED_IDENTITY_API,
+#if !BUILDFLAG(IS_ANDROID)
+    ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 // The list of setting types which request permission for a pair of requesting
@@ -699,9 +704,11 @@ void PageInfo::OnSitePermissionChanged(
   }
 
   // Show the infobar only if permission's status is not handled by an origin.
-  // When the sound setting is changed, no reload is necessary.
+  // When the sound or auto picture-in-picture settings are changed, no reload
+  // is necessary.
   if (!is_subscribed_to_permission_change_event &&
-      type != ContentSettingsType::SOUND) {
+      type != ContentSettingsType::SOUND &&
+      type != ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
     show_info_bar_ = true;
   }
 
@@ -1248,6 +1255,18 @@ bool PageInfo::ShouldShowPermission(
       return true;
     }
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (info.type == ContentSettingsType::AUTO_PICTURE_IN_PICTURE) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kMediaSessionEnterPictureInPicture)) {
+      return false;
+    }
+    if (delegate_->HasAutoPictureInPictureBeenRegistered()) {
+      return true;
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   const bool is_incognito =
       web_contents_->GetBrowserContext()->IsOffTheRecord();

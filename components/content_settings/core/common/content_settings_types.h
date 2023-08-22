@@ -343,6 +343,10 @@ enum class ContentSettingsType : int32_t {
   // Setting for supporting 3PCD.
   TPCD_SUPPORT,
 
+  // Content setting used to indicate whether entering picture-in-picture
+  // automatically should be enabled.
+  AUTO_PICTURE_IN_PICTURE,
+
   NUM_TYPES,
 };
 

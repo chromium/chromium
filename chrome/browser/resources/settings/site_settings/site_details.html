@@ -266,4 +266,12 @@
           category="[[contentSettingsTypesEnum_.LOCAL_FONTS]]"
           icon="settings:local-fonts" label="$i18n{fonts}">
       </site-details-permission>
+      <template is="dom-if" if="[[autoPictureInPictureEnabled_]]">
+        <!-- TODO(https://crbug.com/1471051): Use real icon. -->
+        <site-details-permission
+            category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
+            icon="settings:window-management"
+            label="$i18n{siteSettingsAutoPictureInPicture}">
+        </site-details-permission>
+      </template>
     </div>
