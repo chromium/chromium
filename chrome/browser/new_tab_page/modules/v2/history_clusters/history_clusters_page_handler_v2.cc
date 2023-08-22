@@ -42,7 +42,7 @@ namespace {
 // visit.
 constexpr int kMinRequiredVisits = 3;
 
-constexpr int kMinRequiredRelatedSearches = 2;
+constexpr int kMinRequiredRelatedSearches = 0;
 
 }  // namespace
 
