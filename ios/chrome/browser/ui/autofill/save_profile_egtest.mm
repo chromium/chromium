@@ -5,18 +5,35 @@
 #import <memory>
 
 #import "base/test/ios/wait_util.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
+#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 // URLs of the test pages.
 const char kProfileForm[] = "/autofill_smoke_test.html";
+
+// Matcher for the banner button.
+id<GREYMatcher> BannerButtonMatcher() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
+}
+
+// Matcher for the "Save Address" modal button.
+id<GREYMatcher> ModalButtonMatcher() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
 
 }  // namepsace
 
@@ -51,15 +68,21 @@ const char kProfileForm[] = "/autofill_smoke_test.html";
   GREYAssertEqual(0U, [AutofillAppInterface profilesCount],
                   @"There should be no saved profile.");
 
-  // Shortcut explicit save prompts and automatically accept.
-  [AutofillAppInterface setAutoAcceptAddressImports:YES];
   [self fillAndSubmitForm];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
 
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
-
-  [AutofillAppInterface setAutoAcceptAddressImports:NO];
 }
 
 @end

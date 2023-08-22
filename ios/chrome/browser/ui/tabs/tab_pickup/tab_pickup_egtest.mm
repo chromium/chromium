@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
@@ -63,29 +64,6 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
   return grey_accessibilityLabel(titleText);
 }
 
-// Checks that the visibility of the infobar matches `should_show`.
-void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
-  GREYCondition* infobar_shown = [GREYCondition
-      conditionWithName:@"Infobar shown"
-                  block:^BOOL {
-                    NSError* error;
-                    [[EarlGrey
-                        selectElementWithMatcher:
-                            grey_accessibilityID(kInfobarBannerViewIdentifier)]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  // Wait for infobar to be shown or timeout after kWaitForUIElementTimeout.
-  BOOL success = [infobar_shown
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
-  if (should_show) {
-    GREYAssertTrue(success, @"Infobar does not appear.");
-  } else {
-    GREYAssertFalse(success, @"Infobar appeared.");
-  }
-}
-
 }  // namespace
 
 @interface TabPickupTestCase : ChromeTestCase
@@ -132,7 +110,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -151,7 +129,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is not displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 // Verifies that tapping on the open button of the TabPickup banner correctly
@@ -168,14 +146,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Verify that the location bar shows the distant tab URL in a short form.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
@@ -197,7 +175,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -226,14 +204,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Create a new distant session with 1 tab.
   [DistantTabsAppInterface
@@ -246,7 +224,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is not displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 // Verifies that a second TabPickup banner is displayed after backgrounding and
@@ -264,14 +242,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop-1")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Background and foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -288,7 +266,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop-2")]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -307,14 +285,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop-1")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Background and foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -330,7 +308,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is not displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 // Verifies that the same TabPickup banner is not displayed twice.
@@ -346,14 +324,14 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is correctly displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(true);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
   [[EarlGrey selectElementWithMatcher:BannerTitleMatcher(@"Desktop-1")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Accept the banner.
   [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
       performAction:grey_tap()];
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 
   // Background and foreground the app.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
@@ -370,7 +348,7 @@ void WaitUntilInfobarBannerVisibleOrTimeout(bool should_show) {
   [ChromeEarlGrey triggerSyncCycleForType:syncer::SESSIONS];
 
   // Check that the tabPickup banner is not displayed.
-  WaitUntilInfobarBannerVisibleOrTimeout(false);
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
 }
 
 @end

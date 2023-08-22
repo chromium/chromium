@@ -91,8 +91,16 @@ source_set("eg_test_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "infobar_earl_grey_ui_test_util.h",
+    "infobar_earl_grey_ui_test_util.mm",
     "infobar_manager_app_interface.h",
     "infobar_manager_app_interface_stub.mm",
   ]
-  deps = [ "//ios/testing/earl_grey:eg_test_support+eg2" ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/test:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }

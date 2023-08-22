@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/permissions/permissions_app_interface.h"
 #import "ios/chrome/browser/ui/permissions/permissions_constants.h"
@@ -185,30 +186,6 @@ void TapDoneButtonOnInfobarModal() {
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
 }
 
-// Checks that the visibility of the infobar matches `shouldShow`.
-- (void)waitUntilInfobarBannerVisibleOrTimeout:(BOOL)shouldShow {
-  GREYCondition* infobarShown = [GREYCondition
-      conditionWithName:@"Infobar shown"
-                  block:^BOOL {
-                    NSError* error;
-                    [[EarlGrey
-                        selectElementWithMatcher:
-                            grey_accessibilityID(kInfobarBannerViewIdentifier)]
-                        assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-  // Wait for infobar to be shown or timeout after kWaitForUIElementTimeout.
-  BOOL success = [infobarShown
-      waitWithTimeout:base::test::ios::kWaitForUIElementTimeout.InSecondsF()];
-  if (shouldShow) {
-    GREYAssertTrue(success, @"Infobar does not appear.");
-  } else {
-    GREYAssertFalse(success,
-                    @"Infobar appears despite that no permission is allowed.");
-  }
-}
-
 // Checks `expectedStatesForPermissions` matches the actual states for
 // permissions of the active web state; checks will fail if there is no active
 // web state.
@@ -252,7 +229,7 @@ void TapDoneButtonOnInfobarModal() {
                 l10n_util::GetNSString(
                     IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                       shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerCameraOnly()]
           assertWithMatcher:grey_sufficientlyVisible()];
       // Tap "Edit" to show infobar modal.
@@ -288,7 +265,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE)
                                     shouldAllow:YES];
-    [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+    [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
     [[EarlGrey selectElementWithMatcher:InfobarBannerMicrophoneOnly()]
         assertWithMatcher:grey_sufficientlyVisible()];
     // Swipe up to dismiss.
@@ -336,7 +313,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE)
                                     shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerCameraAndMicrophone()]
           assertWithMatcher:grey_sufficientlyVisible()];
       // Tap "Edit" to show infobar modal.
@@ -404,7 +381,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE)
                                     shouldAllow:NO];
-      [self waitUntilInfobarBannerVisibleOrTimeout:NO];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
       id<GREYMatcher> anyPermissionBadge =
           grey_anyOf(CameraBadge(/*accepted=*/YES), CameraBadge(NO),
                      MicrophoneBadge(YES), MicrophoneBadge(NO), nil);
@@ -437,7 +414,7 @@ void TapDoneButtonOnInfobarModal() {
                 l10n_util::GetNSString(
                     IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                       shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerCameraOnly()]
           assertWithMatcher:grey_sufficientlyVisible()];
       // Tap "Edit" to show infobar modal.
@@ -480,7 +457,7 @@ void TapDoneButtonOnInfobarModal() {
                 l10n_util::GetNSString(
                     IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                       shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
 
       // Kill the incognito browser while the banner is still presented.
       [ChromeEarlGreyUI openTabGrid];
@@ -506,7 +483,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE)
                                     shouldAllow:YES];
-    [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+    [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
     [[EarlGrey selectElementWithMatcher:InfobarBannerEditButton()]
         performAction:grey_tap()];
     [[EarlGrey
@@ -531,7 +508,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_MICROPHONE)
                                     shouldAllow:YES];
-    [self waitUntilInfobarBannerVisibleOrTimeout:YES];*/
+    [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];*/
     [self checkStatesForPermissions:@{
       @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
       @(web::PermissionMicrophone) : @(web::PermissionStateNotAccessible)
@@ -564,7 +541,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA_AND_MICROPHONE)
                                     shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerEditButton()]
           performAction:grey_tap()];
       [[EarlGrey
@@ -620,7 +597,7 @@ void TapDoneButtonOnInfobarModal() {
                 l10n_util::GetNSString(
                     IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                       shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerCameraOnly()]
           assertWithMatcher:grey_sufficientlyVisible()];
     }
@@ -653,7 +630,7 @@ void TapDoneButtonOnInfobarModal() {
                 l10n_util::GetNSString(
                     IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                       shouldAllow:YES];
-      [self waitUntilInfobarBannerVisibleOrTimeout:YES];
+      [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
       [[EarlGrey selectElementWithMatcher:InfobarBannerCameraOnly()]
           performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
       [[EarlGrey selectElementWithMatcher:CameraBadge(/*accepted=*/YES)]
@@ -678,7 +655,7 @@ void TapDoneButtonOnInfobarModal() {
               l10n_util::GetNSString(
                   IDS_IOS_PERMISSIONS_ALERT_DIALOG_PERMISSION_CAMERA)
                                     shouldAllow:NO];
-    [self waitUntilInfobarBannerVisibleOrTimeout:NO];
+    [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
     id<GREYMatcher> anyPermissionBadge =
         grey_anyOf(CameraBadge(/*accepted=*/YES), CameraBadge(NO),
                    MicrophoneBadge(YES), MicrophoneBadge(NO), nil);
@@ -716,7 +693,7 @@ void TapDoneButtonOnInfobarModal() {
 
   [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
       assertWithMatcher:grey_nil()];
-  [self waitUntilInfobarBannerVisibleOrTimeout:NO];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
   [self checkStatesForPermissions:@{
     @(web::PermissionCamera) : @(web::PermissionStateNotAccessible),
     @(web::PermissionMicrophone) : @(web::PermissionStateNotAccessible)

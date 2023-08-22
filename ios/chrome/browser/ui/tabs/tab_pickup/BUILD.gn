@@ -13,6 +13,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/tabs/tab_pickup:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/infobars:eg_test_support+eg2",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/browser/ui/tabs/tests:eg_test_support+eg2",
