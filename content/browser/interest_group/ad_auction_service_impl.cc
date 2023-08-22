@@ -600,25 +600,27 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
 
 bool AdAuctionServiceImpl::JoinOrLeaveApiAllowedFromRenderer(
     const url::Origin& owner) {
+  if (origin().scheme() != url::kHttpsScheme) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: Interest groups may only be joined or left from "
+        "https origins");
+    return false;
+  }
+
   // If the interest group API is not allowed for this context by Permissions
   // Policy, do nothing
   if (!render_frame_host().IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup)) {
-    ReportBadMessageAndDeleteThis("Unexpected request");
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: Interest groups may only be joined or left when "
+        "feature join-ad-interest-group is enabled by Permissions Policy");
     return false;
   }
 
   if (owner.scheme() != url::kHttpsScheme) {
     ReportBadMessageAndDeleteThis(
-        "Unexpected request: Interest groups may only be owned by secure "
+        "Unexpected request: Interest groups may only be owned by https "
         "origins");
-    return false;
-  }
-
-  if (origin().scheme() != url::kHttpsScheme) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: Interest groups may only be joined or left from "
-        "secure origins");
     return false;
   }
 
