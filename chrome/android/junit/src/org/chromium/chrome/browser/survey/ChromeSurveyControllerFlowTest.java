@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.hats.SurveyController;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -123,7 +124,7 @@ public class ChromeSurveyControllerFlowTest {
         mFieldTrialParams.put(ChromeSurveyController.MAX_NUMBER, "1");
         enableChromeSurveyNextFeatureWithParams(mFieldTrialParams, true);
 
-        SurveyController.setInstanceForTesting(mTestSurveyController);
+        ChromeSurveyController.setSurveyControllerForTesting(mTestSurveyController);
 
         ChromeSurveyController.forceIsUMAEnabledForTesting(true);
         mPrefKeyPromptShown =
@@ -634,7 +635,7 @@ public class ChromeSurveyControllerFlowTest {
         FeatureList.setTestValues(testValues);
     }
 
-    private static class TestSurveyController extends SurveyController {
+    private static class TestSurveyController implements SurveyController {
         public final CallbackHelper downloadIfApplicableCallback = new CallbackHelper();
         public final CallbackHelper showSurveyIfAvailableCallback = new CallbackHelper();
         public boolean isSurveyExpired;
@@ -654,9 +655,9 @@ public class ChromeSurveyControllerFlowTest {
         }
 
         @Override
-        public void showSurveyIfAvailable(Activity activity, String siteId,
-                boolean showAsBottomSheet, int displayLogoResId,
-                @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {
+        public void showSurveyIfAvailable(Activity activity, String triggerId, int displayLogoResId,
+                @Nullable ActivityLifecycleDispatcher lifecycleDispatcher,
+                @Nullable Map<String, String> psd) {
             showSurveyIfAvailableCallback.notifyCalled();
         }
 

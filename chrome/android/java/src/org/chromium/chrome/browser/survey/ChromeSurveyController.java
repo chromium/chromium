@@ -35,6 +35,8 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.ui.hats.SurveyController;
+import org.chromium.chrome.browser.ui.hats.SurveyControllerProvider;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -63,6 +65,8 @@ public class ChromeSurveyController {
     static final String MAX_NUMBER = "max-number";
     @VisibleForTesting
     static final String SITE_ID_PARAM_NAME = "site-id";
+
+    private static @Nullable SurveyController sControllerForTesting;
     private static boolean sForceUmaEnabledForTesting;
     private static boolean sMessageShown;
 
@@ -147,7 +151,8 @@ public class ChromeSurveyController {
         mLoggingHandler = new Handler();
         mTabModelSelector = tabModelSelector;
 
-        mSurveyController = SurveyController.create();
+        mSurveyController = sControllerForTesting != null ? sControllerForTesting
+                                                          : SurveyControllerProvider.create();
         Runnable onSuccessRunnable = () -> onSurveyAvailable(mTriggerId);
         Runnable onFailureRunnable = () -> Log.w(TAG, "Survey does not exists or download failed.");
         mSurveyController.downloadSurvey(context, mTriggerId, onSuccessRunnable, onFailureRunnable);
@@ -285,7 +290,7 @@ public class ChromeSurveyController {
      */
     private void showSurvey(String siteId) {
         mSurveyController.showSurveyIfAvailable(
-                mActivity, siteId, true, R.drawable.chrome_sync_logo, mLifecycleDispatcher);
+                mActivity, siteId, R.drawable.chrome_sync_logo, mLifecycleDispatcher, null);
     }
 
     /**
@@ -500,5 +505,13 @@ public class ChromeSurveyController {
     /** Reset the tracker whether HaTS messages has shown during tests. */
     public static void resetMessageShownForTesting() {
         sMessageShown = false;
+    }
+
+    /**
+     * Set the test only survey controller to use instead of creating new SurveyController.
+     */
+    public static void setSurveyControllerForTesting(SurveyController surveyController) {
+        sControllerForTesting = surveyController;
+        ResettersForTesting.register(() -> sControllerForTesting = null);
     }
 }

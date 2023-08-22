@@ -10,7 +10,6 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 import java.util.Map;
@@ -30,7 +29,7 @@ public class SurveyController {
         if (sTestInstance != null) {
             return sTestInstance;
         }
-        return AppHooks.get().createSurveyController();
+        return new SurveyController();
     }
 
     /** Set the instance to use for survey related tests. Reset back to null after tests. */
