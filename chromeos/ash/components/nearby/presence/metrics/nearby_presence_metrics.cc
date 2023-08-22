@@ -42,4 +42,25 @@ void RecordSharedCredentialDownloadResult(bool success) {
                             success);
 }
 
+void RecordFirstTimeRegistrationFlowResult(FirstTimeRegistrationResult result) {
+  base::UmaHistogramEnumeration(
+      "Nearby.Presence.Credentials.FirstTimeRegistration.Result", result);
+}
+
+void RecordFirstTimeServerRegistrationFailureReason(
+    ash::nearby::NearbyHttpResult failure_reason) {
+  base::UmaHistogramEnumeration(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
+      failure_reason);
+}
+
+void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
+    int attempt_count) {
+  base::UmaHistogramExactLinear(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "AttemptsNeededCount",
+      attempt_count,
+      /*exclusive_max=*/10);
+}
+
 }  // namespace ash::nearby::presence::metrics

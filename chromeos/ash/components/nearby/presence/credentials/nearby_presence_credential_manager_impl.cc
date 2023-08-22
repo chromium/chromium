@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client.h"
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_server_client_impl.h"
 #include "chromeos/ash/components/nearby/presence/credentials/prefs.h"
-#include "chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h"
 #include "chromeos/ash/components/nearby/presence/proto/list_public_certificates_rpc.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/rpc_resources.pb.h"
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
@@ -261,6 +260,8 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
   //      4. Download other devices' credentials.
   //      5. Save other devices' credentials.
 
+  first_time_server_registration_attempts_needed_count_++;
+
   // Construct a request for first time registration to let the server know
   // to return the user's name and image url.
   ash::nearby::proto::UpdateDeviceRequest request;
@@ -289,14 +290,25 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationTimeout() {
-  // TODO(b/276307539): Add metrics to record the timeout.
-  HandleFirstTimeRegistrationFailure();
+void NearbyPresenceCredentialManagerImpl::OnFirstTimeRegistrationComplete(
+    metrics::FirstTimeRegistrationResult result) {
+  // TODO(b/288443930): Log the result when CD_LOG is implemented.
+  metrics::RecordFirstTimeRegistrationFlowResult(result);
+  CHECK(on_registered_callback_);
+  std::move(on_registered_callback_)
+      .Run(/*success=*/(result ==
+                        metrics::FirstTimeRegistrationResult::kSuccess));
 }
 
-void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure() {
-  // TODO(b/276307539): Add metrics to record failures.
+void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationTimeout() {
+  HandleFirstTimeRegistrationFailure(
+      /*result=*/ash::nearby::NearbyHttpResult::kTimeout);
+}
+
+void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure(
+    ash::nearby::NearbyHttpResult result) {
   server_client_.reset();
+  metrics::RecordFirstTimeServerRegistrationFailureReason(result);
 
   // Allow the scheduler to exponentially attempt first time registration
   // until the max. Once it reaches the max attempts, notify consumers of
@@ -311,14 +323,19 @@ void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure() {
   // We've exceeded the max attempts; registration has failed.
   first_time_registration_on_demand_scheduler_->Stop();
   first_time_registration_on_demand_scheduler_.reset();
-  CHECK(on_registered_callback_);
-  std::move(on_registered_callback_).Run(/*success=*/false);
+  first_time_server_registration_attempts_needed_count_ = 0;
+  OnFirstTimeRegistrationComplete(
+      metrics::FirstTimeRegistrationResult::kRegistrationWithServerFailure);
 }
 
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
     const ash::nearby::proto::UpdateDeviceResponse& response) {
   server_response_timer_.Stop();
   first_time_registration_on_demand_scheduler_->HandleResult(/*success=*/true);
+  metrics::RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
+      /*attempt_count=*/
+      first_time_server_registration_attempts_needed_count_);
+  first_time_server_registration_attempts_needed_count_ = 0;
   server_client_.reset();
 
   // Persist responses to be used to generate credentials.
@@ -342,18 +359,17 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
 
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure(
     ash::nearby::NearbyHttpError error) {
-  // TODO(b/276307539): Add metrics to record the type of NearbyHttpError.
   server_response_timer_.Stop();
-  HandleFirstTimeRegistrationFailure();
+  HandleFirstTimeRegistrationFailure(
+      /*result=*/ash::nearby::NearbyHttpErrorToResult(error));
 }
 
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
     std::vector<mojom::SharedCredentialPtr> shared_credentials,
     mojom::StatusCode status) {
   if (status != mojom::StatusCode::kOk) {
-    // TODO(b/276307539): Add metrics to record failures.
-    CHECK(on_registered_callback_);
-    std::move(on_registered_callback_).Run(/*success=*/false);
+    OnFirstTimeRegistrationComplete(metrics::FirstTimeRegistrationResult::
+                                        kLocalCredentialGenerationFailure);
     return;
   }
 
@@ -386,7 +402,8 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsUpload(
     bool success) {
   if (!success) {
-    std::move(on_registered_callback_).Run(/*success=*/false);
+    OnFirstTimeRegistrationComplete(
+        metrics::FirstTimeRegistrationResult::kUploadLocalCredentialsFailure);
     return;
   }
 
@@ -406,7 +423,8 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
     std::vector<::nearby::internal::SharedCredential> credentials,
     bool success) {
   if (!success) {
-    std::move(on_registered_callback_).Run(/*success=*/false);
+    OnFirstTimeRegistrationComplete(metrics::FirstTimeRegistrationResult::
+                                        kDownloadRemoteCredentialsFailure);
     return;
   }
 
@@ -434,15 +452,14 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
     mojom::StatusCode status) {
   if (status != mojom::StatusCode::kOk) {
-    // TODO(b/276307539): Add metrics to record failures.
-    CHECK(on_registered_callback_);
-    std::move(on_registered_callback_).Run(/*success=*/false);
+    OnFirstTimeRegistrationComplete(
+        metrics::FirstTimeRegistrationResult::kSaveRemoteCredentialsFailure);
     return;
   }
 
   local_device_data_provider_->SetRegistrationComplete(/*complete=*/true);
-  CHECK(on_registered_callback_);
-  std::move(on_registered_callback_).Run(/*success=*/true);
+  OnFirstTimeRegistrationComplete(
+      metrics::FirstTimeRegistrationResult::kSuccess);
 }
 
 void NearbyPresenceCredentialManagerImpl::StartDailySync() {
@@ -710,7 +727,6 @@ void NearbyPresenceCredentialManagerImpl::HandleUploadCredentialsResult(
 
 void NearbyPresenceCredentialManagerImpl::OnUploadCredentialsTimeout(
     base::RepeatingCallback<void(bool)> upload_credentials_callback) {
-  // TODO(b/276307539): Add metrics to record timeout.
   HandleUploadCredentialsResult(
       upload_credentials_callback,
       /*result=*/ash::nearby::NearbyHttpResult::kTimeout);
@@ -818,7 +834,6 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsTimeout(
     base::RepeatingCallback<
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback) {
-  // TODO(b/276307539): Add metrics to record timeout.
   HandleDownloadCredentialsResult(
       download_credentials_result_callback,
       /*result=*/ash::nearby::NearbyHttpResult::kTimeout, /*credentials=*/{});
@@ -848,7 +863,6 @@ void NearbyPresenceCredentialManagerImpl::OnDownloadCredentialsFailure(
         void(std::vector<::nearby::internal::SharedCredential>, bool)>
         download_credentials_result_callback,
     ash::nearby::NearbyHttpError error) {
-  // TODO(b/276307539): Add metrics to record the type of NearbyHttpError.
   server_response_timer_.Stop();
   HandleDownloadCredentialsResult(
       download_credentials_result_callback,

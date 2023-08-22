@@ -13,10 +13,29 @@ void RecordSharedCredentialUploadAttemptFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordSharedCredentialUploadTotalAttemptsNeededCount(int attempt_count);
 void RecordSharedCredentialUploadResult(bool success);
+
 void RecordSharedCredentialDownloadFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordSharedCredentialDownloadTotalAttemptsNeededCount(int attempt_count);
 void RecordSharedCredentialDownloadResult(bool success);
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync with
+// the FastPairPairFailure enum in src/tools/metrics/histograms/enums.xml.
+enum class FirstTimeRegistrationResult {
+  kSuccess = 0,
+  kRegistrationWithServerFailure = 1,
+  kLocalCredentialGenerationFailure = 2,
+  kUploadLocalCredentialsFailure = 3,
+  kDownloadRemoteCredentialsFailure = 4,
+  kSaveRemoteCredentialsFailure = 5,
+  kMaxValue = kSaveRemoteCredentialsFailure,
+};
+void RecordFirstTimeRegistrationFlowResult(FirstTimeRegistrationResult result);
+void RecordFirstTimeServerRegistrationFailureReason(
+    ash::nearby::NearbyHttpResult failure_reason);
+void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
+    int attempt_count);
 
 }  // namespace ash::nearby::presence::metrics
 

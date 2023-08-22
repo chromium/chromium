@@ -73761,6 +73761,15 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="Unknown"/>
 </enum>
 
+<enum name="NearbyPresenceFirstTimeRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Registration With Server Failure"/>
+  <int value="2" label="Credential Generation Failure"/>
+  <int value="3" label="Upload Local Credentials Failure"/>
+  <int value="4" label="Download Remote Credentials Failure"/>
+  <int value="5" label="Save Remote Credentials Failure"/>
+</enum>
+
 <enum name="NearbyShareArcBridgeFailResult">
   <int value="0" label="Instance is null."/>
   <int value="1" label="Instance already exists."/>

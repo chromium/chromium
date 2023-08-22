@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/nearby/common/client/nearby_http_result.h"
+#include "chromeos/ash/components/nearby/presence/metrics/nearby_presence_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 
@@ -142,11 +143,13 @@ class NearbyPresenceCredentialManagerImpl
 
  private:
   void StartFirstTimeRegistration();
+  void OnFirstTimeRegistrationComplete(
+      metrics::FirstTimeRegistrationResult result);
 
   // Callbacks for server registration UpdateDevice RPC via
   // |RegisterPresence|.
   void HandleFirstTimeRegistrationTimeout();
-  void HandleFirstTimeRegistrationFailure();
+  void HandleFirstTimeRegistrationFailure(ash::nearby::NearbyHttpResult result);
   void OnRegistrationRpcSuccess(
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void OnRegistrationRpcFailure(ash::nearby::NearbyHttpError error);
@@ -277,6 +280,12 @@ class NearbyPresenceCredentialManagerImpl
   // 0 once the download request is completed (either resulting in final
   // success or failure).
   int download_credentials_attempts_needed_count_ = 0;
+
+  // Stores the number of current attempts for registered the local device with
+  // the Nearby Presence server. Increments on each attempt, and is reset to 0
+  // once the registration request is completed (either resulting in final
+  // success or failure).
+  int first_time_server_registration_attempts_needed_count_ = 0;
 
   // Initialized during the first time registration flow kicked off in
   // `RegisterPresence()`. Not expected to be a valid pointer unless used during

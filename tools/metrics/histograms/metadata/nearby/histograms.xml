@@ -353,6 +353,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Presence.Credentials.FirstTimeRegistration.Result"
+    enum="NearbyPresenceFirstTimeRegistrationResult" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the result (success or failure reason) of the first time server
+    registration flow for Nearby Presence. The first time server registration
+    flow occurs only once per user per device. Emitted on failure or success of
+    the overall flow.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.FirstTimeServerRegistration.AttemptsNeededCount"
+    units="attempts" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total number of attempts of registering the local device with
+    the Nearby Presence Web Server during the first time registration flow. The
+    first time server registration flow occurs only once per user per device.
+    Emitted on success to reflect the final count of attempts required to
+    register with the server. No metric is emitted on failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason"
+    enum="NearbyHttpResult" expires_after="2024-01-05">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the failure reason of a single attempt to register the local device
+    with the Nearby Presence Web Server. The first time server registration flow
+    occurs only once per user per device. Emitted after every unsuccessful
+    attempt to register with the server. No metric is emitted on success.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Presence.Credentials.Upload.AttemptsNeededCount"
     units="attempts" expires_after="2024-01-05">
   <owner>julietlevesque@google.com</owner>

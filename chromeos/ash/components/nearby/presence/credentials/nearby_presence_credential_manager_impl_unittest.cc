@@ -389,6 +389,16 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
   EXPECT_TRUE(credential_manager_);
   EXPECT_TRUE(credential_manager_->IsLocalDeviceRegistered());
   histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeRegistration.Result",
+      /*bucket: kSuccess=*/0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
+      0);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "AttemptsNeededCount",
+      /*bucket: attempt_count=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
       "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/true, 1);
   histogram_tester_.ExpectTotalCount(
       "Nearby.Presence.Credentials.Upload.FailureReason", 0);
@@ -423,6 +433,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeRegistration.Result",
+      /*bucket: kRegistrationWithServerFailure=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
+      /*bucket: NearbyHttpResult::kTimeout*/
+      ash::nearby::NearbyHttpResult::kTimeout, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
@@ -444,6 +461,13 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeRegistration.Result",
+      /*bucket: kRegistrationWithServerFailure=*/1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
+      /*bucket: NearbyHttpResult::kHttpErrorInternalServerError*/
+      ash::nearby::NearbyHttpResult::kHttpErrorInternalServerError, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
@@ -458,6 +482,9 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
 
   create_credential_manager_run_loop.Run();
   EXPECT_FALSE(credential_manager_);
+  histogram_tester_.ExpectBucketCount(
+      "Nearby.Presence.Credentials.FirstTimeRegistration.Result",
+      /*bucket: kLocalCredentialGenerationFailure=*/2, 1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,
