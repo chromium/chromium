@@ -21,7 +21,7 @@ struct FeatureNames {
 FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
-      return {"WebSocket", "WebSocket live connection"};
+      return {"websocket", "WebSocket live connection"};
     case WebSchedulerTrackedFeature::kWebSocketSticky:
       return {"WebSocketSticky", "WebSocket used"};
     case WebSchedulerTrackedFeature::kWebTransport:
@@ -54,8 +54,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kSharedWorker:
       return {"SharedWorker", "Shared worker present"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestFetch:
-      return {"OutstandingNetworkRequestFetch",
-              "outstanding network request (fetch)"};
+      return {"fetch", "outstanding network request (fetch)"};
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestXHR:
       return {"OutstandingNetworkRequestXHR",
               "outstanding network request (XHR)"};
@@ -81,7 +80,7 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kWebXR:
       return {"WebXR", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:
-      return {"WebLocks", "WebLocks"};
+      return {"lock", "WebLocks"};
     case WebSchedulerTrackedFeature::kWebHID:
       return {"WebHID", "WebHID"};
     case WebSchedulerTrackedFeature::kWebShare:

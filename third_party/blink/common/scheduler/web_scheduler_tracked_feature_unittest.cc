@@ -11,7 +11,7 @@ namespace scheduler {
 
 TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
   ASSERT_EQ(WebSchedulerTrackedFeature::kWebSocket,
-            StringToFeature("WebSocket"));
+            StringToFeature("websocket"));
   ASSERT_EQ(WebSchedulerTrackedFeature::kDocumentLoaded,
             StringToFeature("DocumentLoaded"));
   ASSERT_EQ(absl::nullopt, StringToFeature("FeatureThatNeverExists"));

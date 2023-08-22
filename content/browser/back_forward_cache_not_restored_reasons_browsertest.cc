@@ -316,13 +316,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithNotRestoredReasons,
           BlockListedFeatures()));
 
   // Both reasons are recorded and sent to the renderer.
-  // BrowsingInstanceNotSwapped is masked as internal error.
+  // TODO(crbug.com/1462827): BrowsingInstanceNotSwapped should not be reported
+  // as internal-error.
   auto rfh_a_result = MatchesNotRestoredReasons(
       blink::mojom::BFCacheBlocked::kYes, /*id=*/absl::nullopt,
       /*name=*/absl::nullopt, /*src=*/absl::nullopt,
       MatchesSameOriginDetails(
           /*url=*/rfh_a_url,
-          /*reasons=*/{"Related active contents", "Internal error"},
+          /*reasons=*/{"Related active contents", "internal-error"},
           /*children=*/{}));
   EXPECT_THAT(current_frame_host()->NotRestoredReasonsForTesting(),
               rfh_a_result);

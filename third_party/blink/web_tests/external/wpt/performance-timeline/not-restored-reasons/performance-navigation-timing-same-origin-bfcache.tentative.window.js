@@ -50,7 +50,7 @@ promise_test(async t => {
         'src': rc1_child_url,
         'id': 'test-id',
         'name': '',
-        'reasons': ['WebSocket'],
+        'reasons': ['websocket'],
         'children': [{
           'preventedBackForwardCache': "no",
           'url': rc1_grand_child_url,

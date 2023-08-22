@@ -530,7 +530,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kNoResponseHead:
       return "No response head";
     case Reason::kErrorDocument:
-      return "Error document";
+      return "navigation-failure";
     case Reason::kFencedFramesEmbedder:
       return "Fenced frames embedder";
     case Reason::kBackForwardCacheDisabled:
@@ -566,7 +566,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kRendererProcessCrashed:
     case Reason::kTimeoutPuttingInCache:
     case Reason::kUnknown:
-      return "Internal error";
+      return "internal-error";
   }
 }
 

@@ -43,7 +43,7 @@ promise_test(async t => {
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/['WebSocket'],
+      /*reasons=*/['websocket'],
       /*children=*/[{
         'preventedBackForwardCache': "no",
         'url': null,

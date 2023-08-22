@@ -31,7 +31,7 @@ promise_test(async t => {
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/['WebSocket'],
+      /*reasons=*/['websocket'],
       /*children=*/[]);
 
   // This time no blocking feature is used, so the page is restored
@@ -44,6 +44,6 @@ promise_test(async t => {
       /*src=*/ null,
       /*id=*/ null,
       /*name=*/ null,
-      /*reasons=*/['WebSocket'],
+      /*reasons=*/['websocket'],
       /*children=*/[]);
 });
