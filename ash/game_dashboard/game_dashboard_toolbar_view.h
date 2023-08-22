@@ -6,6 +6,7 @@
 #define ASH_GAME_DASHBOARD_GAME_DASHBOARD_TOOLBAR_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -14,6 +15,7 @@ namespace ash {
 
 class GameDashboardContext;
 class IconButton;
+class ToolbarDragHandler;
 
 // GameDashboardToolbarView is the movable toolbar that's attached to the game
 // window. It contains various quick action tiles for users to access without
@@ -38,11 +40,13 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
   // `CaptureModeController` has ended a recording session or was aborted.
   void OnRecordingEnded();
 
+  // Handles repositioning the toolbar view within the game window.
+  void RepositionToolbar(const gfx::PointF& toolbar_location);
+
+  // Handles completion of the toolbar movement.
+  void EndDraggingToolbar(const gfx::PointF& toolbar_location);
+
   // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  bool OnMouseDragged(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
 
@@ -84,12 +88,6 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
                                const void* key,
                                intptr_t old) override;
 
-  // Handles repositioning the toolbar view within the game window.
-  void RepositionToolbar(const gfx::PointF& toolbar_location);
-
-  // Handles completion of the toolbar movement.
-  void EndDraggingToolbar(const gfx::PointF& toolbar_location);
-
   // The topmost `IconButton` in the toolbar's collection, which stays visible
   // in both the expanded and collapsed toolbar states.
   raw_ptr<IconButton, ExperimentalAsh> gamepad_button_ = nullptr;
@@ -106,8 +104,8 @@ class ASH_EXPORT GameDashboardToolbarView : public views::BoxLayoutView,
 
   const raw_ptr<GameDashboardContext, ExperimentalAsh> context_;
 
-  // If the toolbar view is in the dragging state.
-  bool is_dragging_ = false;
+  // Handles all dragging logic for the toolbar.
+  std::unique_ptr<ToolbarDragHandler> drag_handler_;
 };
 
 }  // namespace ash

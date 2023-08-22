@@ -325,10 +325,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
     gfx::Rect toolbar_bounds =
         test_api_->GetToolbarWidget()->GetWindowBoundsInScreen();
     ui::test::EventGenerator* event_generator = GetEventGenerator();
-    // TODO (b/290696780): Update entry point to use center of toolbar once
-    // mouse supports dragging on buttons.
-    event_generator->set_current_screen_location(
-        gfx::Point(toolbar_bounds.x() + 1, toolbar_bounds.y() + 1));
+    event_generator->set_current_screen_location(toolbar_bounds.CenterPoint());
 
     switch (move_type) {
       case Movement::kMouse:
