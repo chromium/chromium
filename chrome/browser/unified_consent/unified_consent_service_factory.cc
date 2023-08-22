@@ -80,7 +80,8 @@ void UnifiedConsentServiceFactory::RegisterProfilePrefs(
   UnifiedConsentService::RegisterPrefs(registry);
 }
 
-KeyedService* UnifiedConsentServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UnifiedConsentServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   sync_preferences::PrefServiceSyncable* pref_service =
@@ -93,7 +94,7 @@ KeyedService* UnifiedConsentServiceFactory::BuildServiceInstanceFor(
   if (!sync_service)
     return nullptr;
 
-  return new UnifiedConsentService(
+  return std::make_unique<UnifiedConsentService>(
       pref_service, IdentityManagerFactory::GetForProfile(profile),
       sync_service, GetSyncedServicePrefNames());
 }

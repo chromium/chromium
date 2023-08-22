@@ -36,7 +36,7 @@ class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactory {
   ~UnifiedConsentServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
