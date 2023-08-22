@@ -35,6 +35,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
@@ -990,6 +991,56 @@ TEST_P(AshMessagePopupCollectionTest, AdjustBaselineForTrayBubbleMultiDisplay) {
     EXPECT_EQ(secondary_popup->GetBoundsInScreen().bottom(),
               secondary_popup_collection.GetBaseline());
   }
+}
+
+TEST_P(AshMessagePopupCollectionTest, AdjustBaselineHistogramRecorded) {
+  base::HistogramTester histogram_tester;
+  auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
+  unified_system_tray->ShowBubble();
+
+  AddNotification();
+  auto* popup = GetLastPopUpAdded();
+
+  const std::string histogram_name = "Ash.NotificationPopup.OnTopOfBubbleCount";
+
+  if (!IsQsRevampEnabled()) {
+    EXPECT_FALSE(popup);
+    histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
+    return;
+  }
+
+  ASSERT_TRUE(popup);
+
+  auto* bubble_view = unified_system_tray->bubble()->GetBubbleView();
+  auto* popup_collection = GetPrimaryPopupCollection();
+
+  if (IsNotifierCollisionEnabled()) {
+    // The added popup should appears on top of the tray bubble and histogram is
+    // recorded.
+    EXPECT_EQ(bubble_view->height() + message_center::kMarginBetweenPopups,
+              popup_collection->baseline_offset_for_test());
+    histogram_tester.ExpectBucketCount(histogram_name, 1, 1);
+  } else {
+    // The popup stays the same if the feature is disabled.
+    EXPECT_EQ(0, popup_collection->baseline_offset_for_test());
+    histogram_tester.ExpectBucketCount(histogram_name, 1, 0);
+  }
+
+  // Add another notification. Histogram should also be recorded with the
+  // correct bucket for 2 notifications.
+  AddNotification();
+  AnimateUntilIdle();
+
+  histogram_tester.ExpectBucketCount(histogram_name, 2,
+                                     IsNotifierCollisionEnabled() ? 1 : 0);
+
+  // Close and re-open the bubble. Histogram should be recorded again.
+  auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
+  bubble_widget->CloseNow();
+  unified_system_tray->ShowBubble();
+
+  histogram_tester.ExpectBucketCount(histogram_name, 2,
+                                     IsNotifierCollisionEnabled() ? 2 : 0);
 }
 
 TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {

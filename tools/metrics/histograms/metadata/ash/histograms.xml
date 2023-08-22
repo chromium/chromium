@@ -4464,6 +4464,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NotificationPopup.OnTopOfBubbleCount" units="popups"
+    expires_after="2024-08-22">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Record the number of popups that show up on top of a tray bubble. Emitted
+    when a tray bubble is shown or change height, and when there's a new
+    notification popup added when a tray bubble is open.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.NotificationView.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
     units="%" expires_after="2024-05-14">

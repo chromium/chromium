@@ -117,6 +117,8 @@ void AshMessagePopupCollection::SetBaselineOffset(int baseline_offset) {
   DCHECK_GE(baseline_offset_, 0);
   if (baseline_offset_ != 0) {
     baseline_offset_ += message_center::kMarginBetweenPopups;
+
+    RecordPopupOnTopOfBubbleCount();
   }
 
   if (old_baseline_offset != baseline_offset_) {
@@ -515,6 +517,17 @@ void AshMessagePopupCollection::UpdateExpandCollapseEnabledForPopups(
             : available_space_above_popups >
                   kMinimumHeightToEnableExpandCollapse);
   }
+}
+
+void AshMessagePopupCollection::RecordPopupOnTopOfBubbleCount() {
+  int popup_items_count = popup_items().size();
+  if (!features::IsNotifierCollisionEnabled() || popup_items_count == 0) {
+    return;
+  }
+
+  // Record the number of popups that are moved up.
+  base::UmaHistogramCounts100("Ash.NotificationPopup.OnTopOfBubbleCount",
+                              popup_items_count);
 }
 
 }  // namespace ash

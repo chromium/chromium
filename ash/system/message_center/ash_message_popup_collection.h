@@ -170,6 +170,9 @@ class ASH_EXPORT AshMessagePopupCollection
   void UpdateExpandCollapseEnabledForPopups(bool shelf_bubble_open,
                                             int available_space_above_popups);
 
+  // Records the metric for the count of popups that are on top of a bubble.
+  void RecordPopupOnTopOfBubbleCount();
+
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   raw_ptr<display::Screen, ExperimentalAsh> screen_;
