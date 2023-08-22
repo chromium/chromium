@@ -84861,6 +84861,11 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="23" label="Hangup ongoing call response"/>
   <int value="24" label="Feature setup request"/>
   <int value="25" label="Feature setup response"/>
+  <int value="26" label="Ping request"/>
+  <int value="27" label="Ping response"/>
+  <int value="28" label="App stream update"/>
+  <int value="29" label="App list update"/>
+  <int value="30" label="App list incremental update"/>
 </enum>
 
 <enum name="PhoneHubNotificationAccessSetupStatus">
