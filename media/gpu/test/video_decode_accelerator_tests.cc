@@ -245,10 +245,14 @@ class VideoDecoderTest : public ::testing::Test {
     static const base::NoDestructor<base::CPU> cpuid;
     constexpr int kPentiumAndLaterFamily = 0x06;
     constexpr int kGeminiLakeModelId = 0x7A;
+    constexpr int kApolloLakeModelId = 0x5c;
     static const bool is_glk_device =
         cpuid->family() == kPentiumAndLaterFamily &&
         cpuid->model() == kGeminiLakeModelId;
-    return is_glk_device;
+    static const bool is_apl_device =
+        cpuid->family() == kPentiumAndLaterFamily &&
+        cpuid->model() == kApolloLakeModelId;
+    return is_glk_device || is_apl_device;
   }
 
   // TODO(hiroh): Move this to Video class or video_frame_helpers.h.
