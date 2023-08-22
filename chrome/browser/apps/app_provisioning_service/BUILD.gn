@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+# App Provisioning Service is Ash-only.
+assert(is_chromeos_ash)
+
+source_set("app_provisioning_service") {
+  sources = [
+    "app_provisioning_data_manager.cc",
+    "app_provisioning_data_manager.h",
+  ]
+
+  public_deps = [ "//chrome/browser/apps/app_provisioning_service/proto" ]
+
+  deps = [ "//base" ]
+}

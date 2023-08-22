@@ -6,10 +6,8 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_provisioning_service/proto/app_data.pb.h"
-#include "chrome/common/chrome_features.h"
 
 namespace apps {
 
