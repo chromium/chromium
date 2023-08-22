@@ -30,6 +30,9 @@
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
 // Label displaying the subtitle, underneath the title.
 @property(nonatomic, readonly, strong) UILabel* subtitleLabel;
+// Container of the button that will be displayed under the subtitle. Used to
+// provide additional margin for the cell in its parent UIStackView.
+@property(nonatomic, readonly, strong) UIView* buttonContainer;
 // Button that will be displayed under the subtitle.
 @property(nonatomic, readonly, strong) UIButton* button;
 @end

@@ -25,6 +25,8 @@ const CGFloat kButtonTitleHorizontalContentInset = 40.0;
 const CGFloat kButtonTitleVerticalContentInset = 8.0;
 // Button corner radius.
 const CGFloat kButtonCornerRadius = 8.0;
+// Button top padding in addition of the stackview spacing.
+constexpr CGFloat kButtonTopPadding = 14.0;
 }  // namespace
 
 #pragma mark - TableViewIllustratedItem
@@ -77,13 +79,14 @@ const CGFloat kButtonCornerRadius = 8.0;
       [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
     }
   } else {
-    cell.button.hidden = YES;
+    cell.buttonContainer.hidden = YES;
   }
   // Disable animations when setting the background color to prevent flash on
   // rotation.
+  const BOOL animationsWereEnabled = [UIView areAnimationsEnabled];
   [UIView setAnimationsEnabled:NO];
   cell.backgroundColor = nil;
-  [UIView setAnimationsEnabled:YES];
+  [UIView setAnimationsEnabled:animationsWereEnabled];
 
   if (styler.cellTitleColor) {
     cell.titleLabel.textColor = styler.cellTitleColor;
@@ -145,8 +148,12 @@ const CGFloat kButtonCornerRadius = 8.0;
       SetContentEdgeInsets(_button, contentInsets);
     }
 
+    _buttonContainer = [[UIView alloc] init];
+    _buttonContainer.translatesAutoresizingMaskIntoConstraints = NO;
+    [_buttonContainer addSubview:_button];
+
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _illustratedImageView, _titleLabel, _subtitleLabel, _button
+      _illustratedImageView, _titleLabel, _subtitleLabel, _buttonContainer
     ]];
     stackView.axis = UILayoutConstraintAxisVertical;
     stackView.alignment = UIStackViewAlignmentCenter;
@@ -176,6 +183,14 @@ const CGFloat kButtonCornerRadius = 8.0;
       [_subtitleLabel.trailingAnchor
           constraintEqualToAnchor:stackView.trailingAnchor
                          constant:-kItemMargin],
+      [_button.leadingAnchor
+          constraintEqualToAnchor:_buttonContainer.leadingAnchor],
+      [_button.trailingAnchor
+          constraintEqualToAnchor:_buttonContainer.trailingAnchor],
+      [_button.topAnchor constraintEqualToAnchor:_buttonContainer.topAnchor
+                                        constant:kButtonTopPadding],
+      [_button.bottomAnchor
+          constraintEqualToAnchor:_buttonContainer.bottomAnchor],
 
       [stackView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
@@ -197,7 +212,7 @@ const CGFloat kButtonCornerRadius = 8.0;
   self.illustratedImageView.hidden = NO;
   self.titleLabel.hidden = NO;
   self.subtitleLabel.hidden = NO;
-  self.button.hidden = NO;
+  self.buttonContainer.hidden = NO;
 
   [self.button removeTarget:nil
                      action:nil
