@@ -197,6 +197,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   VLOG(1) << "Input accessibility tree:\n" << initial_state.ToString();
 
   ui::AXTree tree;
+  tree.DisallowFailFastForFuzzing();
   if (tree.Unserialize(initial_state))
     TestTableAPIs(tree.root());
 
