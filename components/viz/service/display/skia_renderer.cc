@@ -1629,34 +1629,6 @@ void SkiaRenderer::PrepareColorOrCanvasForRPDQ(
   }
 }
 
-bool SkiaRenderer::NeedsFlipY(const DrawQuad* quad) const {
-  // TODO(crbug.com/1449764): remove this workaround when bottom left origin
-  // image is supported by graphite.
-  if (!skia_output_surface_->IsUsingGraphite()) {
-    return false;
-  }
-  switch (quad->material) {
-    case DrawQuad::Material::kTextureContent:
-      return TextureDrawQuad::MaterialCast(quad)->y_flipped;
-    case DrawQuad::Material::kAggregatedRenderPass: {
-      auto* render_pass_quad = AggregatedRenderPassDrawQuad::MaterialCast(quad);
-      auto bypass =
-          render_pass_bypass_quads_.find(render_pass_quad->render_pass_id);
-      if (bypass == render_pass_bypass_quads_.end()) {
-        return false;
-      }
-      const DrawQuad* bypass_quad = bypass->second;
-      if (RenderPassRemainsTransparent(
-              bypass_quad->shared_quad_state->blend_mode)) {
-        return false;
-      }
-      return NeedsFlipY(bypass_quad);
-    }
-    default:
-      return false;
-  }
-}
-
 SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
     const gfx::AxisTransform2d& target_to_device,
     const absl::optional<gfx::Rect>& scissor_rect,
@@ -1669,11 +1641,6 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
       GetSampling(quad), draw_region);
 
   params.content_device_transform.PostConcat(target_to_device);
-  if (NeedsFlipY(quad)) {
-    float height = quad->visible_rect.height();
-    params.content_device_transform.Scale(1, -1);
-    params.content_device_transform.Translate(0, -height);
-  }
   params.content_device_transform.Flatten();
 
   // Respect per-quad setting overrides as highest priority setting
