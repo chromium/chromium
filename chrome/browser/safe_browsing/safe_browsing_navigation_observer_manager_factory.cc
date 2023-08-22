@@ -39,11 +39,12 @@ SafeBrowsingNavigationObserverManagerFactory::
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-KeyedService*
-SafeBrowsingNavigationObserverManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> SafeBrowsingNavigationObserverManagerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new SafeBrowsingNavigationObserverManager(profile->GetPrefs());
+  return std::make_unique<SafeBrowsingNavigationObserverManager>(
+      profile->GetPrefs());
 }
 
 }  // namespace safe_browsing
