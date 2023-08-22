@@ -600,7 +600,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'OsAppsPageAppNotificationsPageAppNotificationsSubpage',
    'os_apps_page/app_notifications_page/app_notifications_subpage_test.js'
  ],
- ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_tests.js'],
+ ['OsBluetoothPage', 'os_bluetooth_page/os_bluetooth_page_test.js'],
  [
    'OsBluetoothPageOsBluetoothChangeDeviceNameDialog',
    'os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.js',

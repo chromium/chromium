@@ -32,7 +32,8 @@ import {getTemplate} from './os_bluetooth_page.html.js';
 
 const SettingsBluetoothPageElementBase = PrefsMixin(I18nMixin(PolymerElement));
 
-class SettingsBluetoothPageElement extends SettingsBluetoothPageElementBase {
+export class SettingsBluetoothPageElement extends
+    SettingsBluetoothPageElementBase {
   static get is() {
     return 'os-settings-bluetooth-page' as const;
   }
