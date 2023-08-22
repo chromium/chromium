@@ -161,6 +161,11 @@ const std::vector<TouchpadDevice>& DeviceDataManager::GetTouchpadDevices()
   return touchpad_devices_;
 }
 
+const std::vector<InputDevice>& DeviceDataManager::GetGraphicsTabletDevices()
+    const {
+  return graphics_tablet_devices_;
+}
+
 const std::vector<InputDevice>& DeviceDataManager::GetUncategorizedDevices()
     const {
   return uncategorized_devices_;
