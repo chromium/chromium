@@ -27298,7 +27298,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="72"
       label="Breakpoints in file enabled or disabled form context menu"/>
   <int value="73" label="Breakpoint condition edited from sidebar"/>
-  <int value="74" label="Add Filesystem to Workspace"/>
+  <int value="74" label="Add Workspace folder via button in sidebar"/>
   <int value="75" label="Remove Filesystem from Workspace"/>
   <int value="76" label="Add Folder for Overrides"/>
   <int value="77" label="Remove Folder for Overrides"/>
@@ -27333,6 +27333,8 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="105" label="Sources - Override Tab - Delete Folder Context Menu"/>
   <int value="106"
       label="Sources - Override Tab - Delete Overrides Context Menu"/>
+  <int value="107" label="Add Workspace folder via drag-drop"/>
+  <int value="108" label="Add Workspace folder via select in placeholder"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
