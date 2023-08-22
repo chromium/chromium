@@ -133,6 +133,8 @@ function mergeSingleChildren(map) {
 }
 
 export function generateHtml(map) {
+  const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -151,7 +153,7 @@ export function generateHtml(map) {
       .fail { background: #F2D7D5; }
     </style>
     <div class="top">
-      <h1>WPT test results</h1>
+      <h1>WPT test results (${date})</h1>
       <h2>${map.stat.pass} / ${map.stat.all} (${
         map.stat.all - map.stat.pass
       } remaining)</h2>
