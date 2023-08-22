@@ -17,6 +17,8 @@ build_webui("build") {
     "images/checkup_result_banner_running_dark.svg",
     "images/password_manager_logo.svg",
     "images/password_sharing_family_banner.svg",
+    "images/password_sharing_secure_shield.svg",
+    "images/password_sharing_progress_bar.svg",
     "password_manager.html",
   ]
   if (is_chrome_branded) {

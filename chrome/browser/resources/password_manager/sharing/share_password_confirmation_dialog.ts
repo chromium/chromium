@@ -12,6 +12,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PasswordManagerImpl, PasswordManagerProxy} from '../password_manager_proxy.js';
+import {UserUtilMixin} from '../user_utils_mixin.js';
 
 import {getTemplate} from './share_password_confirmation_dialog.html.js';
 
@@ -32,8 +33,11 @@ enum ConfirmationDialogStage {
   SUCCESS,
 }
 
-export class SharePasswordConfirmationDialogElement extends I18nMixin
-(PolymerElement) {
+const SharePasswordConfirmationDialogElementBase =
+    UserUtilMixin(I18nMixin(PolymerElement));
+
+export class SharePasswordConfirmationDialogElement extends
+    SharePasswordConfirmationDialogElementBase {
   static get is() {
     return 'share-password-confirmation-dialog';
   }
