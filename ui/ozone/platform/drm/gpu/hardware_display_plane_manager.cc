@@ -267,7 +267,7 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
   base::flat_set<uint32_t> valid_ids;
 
   for (int i = 0; i < resources->count_connectors; ++i) {
-    uint32_t connector_id = resources->connectors[i];
+    const uint32_t connector_id = resources->connectors[i];
 
     ScopedDrmObjectPropertyPtr props(
         drm_->GetObjectProperties(connector_id, DRM_MODE_OBJECT_CONNECTOR));
@@ -276,9 +276,15 @@ HardwareDisplayPlaneManager::ResetConnectorsCacheAndGetValidIds(
                   << connector_id;
       continue;
     }
+    // Getting the connector is guaranteed if we survived getting the
+    // connector's properties.
+    ScopedDrmConnectorPtr connector = drm_->GetConnector(connector_id);
+    DCHECK(connector);
 
     ConnectorProperties state_props;
     state_props.id = connector_id;
+    state_props.connection = connector->connection;
+    state_props.count_modes = connector->count_modes;
     GetDrmPropertyForName(drm_, props.get(), "CRTC_ID", &state_props.crtc_id);
     DCHECK(!drm_->is_atomic() || state_props.crtc_id.id);
     GetDrmPropertyForName(drm_, props.get(), "link-status",

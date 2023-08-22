@@ -223,6 +223,8 @@ class HardwareDisplayPlaneManager {
  protected:
   struct ConnectorProperties {
     uint32_t id;
+    drmModeConnection connection;
+    int count_modes;
     DrmWrapper::Property crtc_id;
     DrmWrapper::Property link_status;
   };
