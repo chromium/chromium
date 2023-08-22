@@ -105,6 +105,7 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.AppHooks;
@@ -115,6 +116,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -161,6 +163,7 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.prefs.PrefService;
@@ -2522,6 +2525,11 @@ public class CustomTabActivityTest {
         });
         CriteriaHelper.pollUiThread(() -> dialogManager.isShowing(), "Dialog should be displayed");
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.BackPress.Intercept",
+                        BackPressManager.getHistogramValueForTesting(
+                                BackPressHandler.Type.TAB_MODAL_HANDLER));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCustomTabActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
         });
@@ -2534,6 +2542,7 @@ public class CustomTabActivityTest {
                     is(mTestPage2));
         });
 
+        histogramWatcher.assertExpected("Dialog should be dismissed by back press");
         CriteriaHelper.pollUiThread(
                 () -> !dialogManager.isShowing(), "Dialog should be dismissed by back press");
     }
