@@ -31,25 +31,23 @@
           'gtest_tests': 'chromeos_device_no_gtests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chrome.tests',
-              # Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
-              # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves
-              # to be too many layers of virtualization for the tests. However,
-              # we can use KVM-enable baremetal machines in the lab, which
-              # avoids the GCE VM layer and makes the tests happier. Use the
-              # device hosts in the CrOS device pool for this purpose since
-              # they're all running CrOS tests anyway.
-              'os': 'ChromeOS',
-              # The eve-arc-r and kevin pools aren't very busy, use those. Note
-              # that the devices themselves will be unused for the duration of
-              # these tests.
-              # FIXME: Allocate dedicated baremetal machines for these tests
-              # rather than using CrOS device bots.
-              'device_type': 'eve-arc-r|kevin',
-            },
-          ],
+          'dimensions': {
+            'pool': 'chrome.tests',
+            # Due to the nature of the ARC VM inside CrOS, betty-arc-r tests
+            # can't run on GCE images. GCE VM -> CrOS VM -> Android VM proves
+            # to be too many layers of virtualization for the tests. However,
+            # we can use KVM-enable baremetal machines in the lab, which
+            # avoids the GCE VM layer and makes the tests happier. Use the
+            # device hosts in the CrOS device pool for this purpose since
+            # they're all running CrOS tests anyway.
+            'os': 'ChromeOS',
+            # The eve-arc-r and kevin pools aren't very busy, use those. Note
+            # that the devices themselves will be unused for the duration of
+            # these tests.
+            # FIXME: Allocate dedicated baremetal machines for these tests
+            # rather than using CrOS device bots.
+            'device_type': 'eve-arc-r|kevin',
+          },
         },
       },
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
@@ -83,13 +81,11 @@
           'gtest_tests': 'chromeos_device_gtests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'eve-arc-r',
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'eve-arc-r',
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -101,13 +97,11 @@
           'gtest_tests': 'chromeos_device_gtests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'eve',
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'eve',
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -120,13 +114,11 @@
         #  'gtest_tests': 'chromeos_device_gtests',
         #},
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'jacuzzi',
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'jacuzzi',
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -139,13 +131,11 @@
           'isolated_scripts': 'chromeos_remote_device_isolated_tests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'kevin',
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'kevin',
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -158,13 +148,11 @@
         #   'gtest_tests': 'chromeos_device_gtests',
         # },
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'ChromeOS',
-              'device_type': 'octopus',
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'os': 'ChromeOS',
+            'device_type': 'octopus',
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -288,11 +276,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'ssd': '0',
-            },
-          ],
+          'dimensions': {
+            'ssd': '0',
+          },
         },
         'test_suites': {
           'gtest_tests': 'linux_chromeos_gtests',
@@ -546,11 +532,9 @@
           'gtest_tests': 'fuchsia_accessibility_browsertests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
       },
       'linux-blink-web-tests-force-accessibility-rel': {
@@ -663,14 +647,12 @@
           'has_native_resultdb_integration'
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'android_devices': '1',
-              'device_os': 'NMF26U',
-              'device_type': 'marlin',
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'android_devices': '1',
+            'device_os': 'NMF26U',
+            'device_type': 'marlin',
+            'os': 'Android',
+          },
         },
         'skip_output_links': True,
         'os_type': 'android',
@@ -688,14 +670,12 @@
       },
       'android-10-arm64-rel': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'QP1A.190711.020',
-              'device_os_flavor': 'google',
-              'device_type': 'marlin',
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'device_os': 'QP1A.190711.020',
+            'device_os_flavor': 'google',
+            'device_type': 'marlin',
+            'os': 'Android',
+          },
         },
         'additional_compile_targets': [
           'monochrome_static_initializers',
@@ -1663,12 +1643,10 @@
       },
       'ToTAndroid x64': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'device_type': 'coho',
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'device_type': 'coho',
+            'os': 'Android',
+          },
         },
         'test_suites': {
           # TODO(crbug.com/807966): Re-enable tests once there are devices to run them on.
@@ -1699,13 +1677,11 @@
           'has_native_resultdb_integration'
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'device_os': 'MMB29Q',
-              'device_type': 'bullhead',
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'device_os': 'MMB29Q',
+            'device_type': 'bullhead',
+            'os': 'Android',
+          },
         },
         'os_type': 'android',
         'additional_compile_targets': [
@@ -1745,11 +1721,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
@@ -2039,11 +2013,9 @@
           'chrome_official_builder',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-10',
-            },
-          ],
+          'dimensions': {
+            'os': 'Windows-10',
+          },
         },
       },
       'ToTWinOfficial64': {
@@ -2059,11 +2031,9 @@
           'chrome_official_builder',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-10',
-            },
-          ],
+          'dimensions': {
+            'os': 'Windows-10',
+          },
         },
       },
       'ToTiOS': {
@@ -2650,11 +2620,9 @@
            'gtest_tests': 'chromium_dev_android_gtests',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'os': 'Android',
+          },
           'expiration': 10800,
         },
         'os_type': 'android',
@@ -2768,11 +2736,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
@@ -2795,11 +2761,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
@@ -2832,11 +2796,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
@@ -2851,11 +2813,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+          },
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_gtests',
@@ -2873,12 +2833,10 @@
           'linux-focal',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'pool': 'chromium.tests.fuchsia',
-            },
-          ],
+          'dimensions': {
+            'kvm': '1',
+            'pool': 'chromium.tests.fuchsia',
+          },
         },
         'test_suites': {
           'gtest_tests': 'fuchsia_facility_gtests',
@@ -3107,11 +3065,9 @@
           'content_unittests',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Android',
-            },
-          ],
+          'dimensions': {
+            'os': 'Android',
+          },
         },
         'test_suites': {
           'gtest_tests': 'site_isolation_android_fyi_gtests',
@@ -3585,11 +3541,9 @@
           'symupload'
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'ssd': '0',
-            },
-          ],
+          'dimensions': {
+            'ssd': '0',
+          },
         },
         'test_suites': {
           'gtest_tests': 'linux_lacros_gtests',
@@ -3605,11 +3559,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'ssd': '0',
-            },
-          ],
+          'dimensions': {
+            'ssd': '0',
+          },
         },
         'test_suites': {
           'gtest_tests': 'linux_lacros_gtests',
@@ -3649,11 +3601,9 @@
           'linux-bionic',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chromium.tests.no-external-ip',
-            }
-          ],
+          'dimensions': {
+            'pool': 'chromium.tests.no-external-ip',
+          },
           'expiration': 43200,
         },
         'test_suites': {
@@ -3908,11 +3858,9 @@
           'isolate_profile_data',
         ],
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chromium.tests.no-external-ip',
-            }
-          ],
+          'dimensions': {
+            'pool': 'chromium.tests.no-external-ip',
+          },
           'expiration': 43200,
         },
         'test_suites': {
@@ -4098,14 +4046,12 @@
         'test_suites': {
           'gtest_tests': 'goma_mac_gtests',
         },
-	'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'arm-64',
-              'os': 'Mac-11',
-            }
-          ]
-	},
+	      'swarming': {
+          'dimensions': {
+            'cpu': 'arm-64',
+            'os': 'Mac-11',
+          },
+	      },
       },
       'android-archive-dbg-goma-rbe-ats-canary': {
         'additional_compile_targets': [
@@ -6160,11 +6106,9 @@
       },
       'WebRTC Chromium Win10 Tester': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'os': 'Windows-10',
-            },
-          ]
+          'dimensions': {
+            'os': 'Windows-10',
+          },
         },
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
@@ -6533,12 +6477,10 @@
       },
       'V8 Blink Mac': {
         'swarming': {
-          'dimension_sets': [
-            {
-              'cpu': 'x86-64',
-              'os': 'Mac-10.13',
-            },
-          ],
+          'dimensions': {
+            'cpu': 'x86-64',
+            'os': 'Mac-10.13',
+          },
         },
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
@@ -6804,11 +6746,9 @@
           'skylab_tests': 'lacros_skylab_tests_amd64_generic_fyi',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -6820,11 +6760,9 @@
           'skylab_tests': 'lacros_skylab_arm_fyi',
         },
         'swarming': {
-          'dimension_sets': [
-            {
-              'pool': 'chrome.tests',
-            },
-          ],
+          'dimensions': {
+            'pool': 'chrome.tests',
+          },
         },
         'os_type': 'chromeos'
       },
@@ -6845,16 +6783,14 @@
       },
       'mac10.13-blink-rel': {
         'swarming': {
-          'dimension_sets': [
-            {
-              # This matches the dimensions for "Chromium Mac10.13" in
-              # chromium_fyi.py.
-              'cpu': 'x86-64',
-              'gpu': '8086:0a2e',
-              'hidpi': '0',
-              'os': 'Mac-10.13.6',
-            },
-          ],
+          # This matches the dimensions for "Chromium Mac10.13" in
+          # chromium_fyi.py.
+          'dimensions': {
+            'cpu': 'x86-64',
+            'gpu': '8086:0a2e',
+            'hidpi': '0',
+            'os': 'Mac-10.13.6',
+          },
           'hard_timeout': 900,
         },
         'test_suites': {
@@ -6874,16 +6810,14 @@
       },
       'mac10.15-blink-rel': {
         'swarming': {
-          'dimension_sets': [
-            {
-              # This matches the dimensions for "Chromium Mac10.15" in
-              # chromium_fyi.py.
-              'cpu': 'x86-64',
-              'gpu': '8086:0a2e',
-              'hidpi': '0',
-              'os': 'Mac-10.15',
-            },
-          ],
+          'dimensions': {
+            # This matches the dimensions for "Chromium Mac10.15" in
+            # chromium_fyi.py.
+            'cpu': 'x86-64',
+            'gpu': '8086:0a2e',
+            'hidpi': '0',
+            'os': 'Mac-10.15',
+          },
           'hard_timeout': 900,
         },
         'test_suites': {

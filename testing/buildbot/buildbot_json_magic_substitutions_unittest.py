@@ -12,15 +12,13 @@ def CreateConfigWithPool(pool, device_type=None):
   dims = {
       'name': 'test_name',
       'swarming': {
-          'dimension_sets': [
-              {
-                  'pool': pool,
-              },
-          ],
+          'dimensions': {
+              'pool': pool,
+          },
       },
   }
   if device_type:
-    dims['swarming']['dimension_sets'][0]['device_type'] = device_type
+    dims['swarming']['dimensions']['device_type'] = device_type
   return dims
 
 
@@ -96,13 +94,12 @@ class ChromeOSGtestFilterFileTest(unittest.TestCase):
       magic_substitutions.ChromeOSGtestFilterFile(test_config, None, {})
 
 
-def CreateConfigWithGpus(gpus):
-  dimension_sets = []
-  for g in gpus:
-    dimension_sets.append({'gpu': g})
+def CreateConfigWithGpu(gpu):
   return {
       'swarming': {
-          'dimension_sets': dimension_sets,
+          'dimensions': {
+              'gpu': gpu,
+          },
       },
   }
 
@@ -116,39 +113,23 @@ class GPUExpectedDeviceId(unittest.TestCase):
       self.assertIn(d, retval)
 
   def testSingleGpuSingleDimension(self):
-    test_config = CreateConfigWithGpus(['vendor:device1-driver'])
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
     self.assertDeviceIdCorrectness(
         magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
         ['device1'])
 
-  def testSingleGpuDoubleDimension(self):
-    test_config = CreateConfigWithGpus(
-        ['vendor:device1-driver', 'vendor:device2-driver'])
-    self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
-        ['device1', 'device2'])
-
   def testDoubleGpuSingleDimension(self):
-    test_config = CreateConfigWithGpus(
-        ['vendor:device1-driver|vendor:device2-driver'])
+    test_config = CreateConfigWithGpu(
+        'vendor:device1-driver|vendor:device2-driver')
     self.assertDeviceIdCorrectness(
         magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
         ['device1', 'device2'])
-
-  def testDoubleGpuDoubleDimension(self):
-    test_config = CreateConfigWithGpus([
-        'vendor:device1-driver|vendor:device2-driver',
-        'vendor:device1-driver|vendor:device3-driver'
-    ])
-    self.assertDeviceIdCorrectness(
-        magic_substitutions.GPUExpectedDeviceId(test_config, None, {}),
-        ['device1', 'device2', 'device3'])
 
   def testNoGpu(self):
     self.assertDeviceIdCorrectness(
         magic_substitutions.GPUExpectedDeviceId(
             {'swarming': {
-                'dimension_sets': [{}]
+                'dimensions': {}
             }}, None, {}), ['0'])
 
   def testNoDimensions(self):
@@ -158,27 +139,27 @@ class GPUExpectedDeviceId(unittest.TestCase):
 
 class GPUParallelJobs(unittest.TestCase):
   def testNoOsType(self):
-    test_config = CreateConfigWithGpus(['vendor:device1-driver'])
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUParallelJobs(test_config, None, {})
 
   def testParallelJobs(self):
-    test_config = CreateConfigWithGpus(['vendor:device1-driver'])
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
     for os_type in ['lacros', 'linux', 'mac', 'win']:
       retval = magic_substitutions.GPUParallelJobs(test_config, None,
                                                    {'os_type': os_type})
       self.assertEqual(retval, ['--jobs=4'])
 
   def testSerialJobs(self):
-    test_config = CreateConfigWithGpus(['vendor:device1-driver'])
+    test_config = CreateConfigWithGpu('vendor:device1-driver')
     for os_type in ['android', 'chromeos', 'fuchsia']:
       retval = magic_substitutions.GPUParallelJobs(test_config, None,
                                                    {'os_type': os_type})
       self.assertEqual(retval, ['--jobs=1'])
 
   def testWebGPUCTSWindowsIntelSerialJobs(self):
-    intel_config = CreateConfigWithGpus(['8086:device1-driver'])
-    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
+    intel_config = CreateConfigWithGpu('8086:device1-driver')
+    amd_config = CreateConfigWithGpu('1002:device1-driver')
 
     for gpu_config in [intel_config, amd_config]:
       for name, telemetry_test_name in [('webgpu_cts', None),
@@ -198,8 +179,8 @@ class GPUParallelJobs(unittest.TestCase):
             self.assertEqual(retval, ['--jobs=4'])
 
   def testWebGLWindowsIntelParallelJobs(self):
-    intel_config = CreateConfigWithGpus(['8086:device1-driver'])
-    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
+    intel_config = CreateConfigWithGpu('8086:device1-driver')
+    amd_config = CreateConfigWithGpu('1002:device1-driver')
     for gpu_config in [intel_config, amd_config]:
       for name, telemetry_test_name in [('webgl_conformance', None),
                                         ('webgl1_conformance', None),
@@ -221,8 +202,8 @@ class GPUParallelJobs(unittest.TestCase):
             self.assertEqual(retval, ['--jobs=4'])
 
   def testWebGLMacNvidiaParallelJobs(self):
-    amd_config = CreateConfigWithGpus(['1002:device1-driver'])
-    nvidia_config = CreateConfigWithGpus(['10de:device1-driver'])
+    amd_config = CreateConfigWithGpu('1002:device1-driver')
+    nvidia_config = CreateConfigWithGpu('10de:device1-driver')
 
     for gpu_config in [nvidia_config, amd_config]:
       for name, telemetry_test_name in [('webgl_conformance', None),
@@ -242,20 +223,19 @@ class GPUParallelJobs(unittest.TestCase):
             self.assertEqual(retval, ['--jobs=4'])
 
 
-def CreateConfigWithDeviceTypes(device_types):
-  dimension_sets = []
-  for d in device_types:
-    dimension_sets.append({'device_type': d})
+def CreateConfigWithDeviceType(device_type):
   return {
       'swarming': {
-          'dimension_sets': dimension_sets,
+          'dimensions': {
+              'device_type': device_type,
+          },
       },
   }
 
 
 class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
   def testNoOsType(self):
-    test_config = CreateConfigWithDeviceTypes(['a13'])
+    test_config = CreateConfigWithDeviceType('a13')
     with self.assertRaises(AssertionError):
       magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
           test_config, None, {})
@@ -268,20 +248,14 @@ class GPUTelemetryNoRootForUnrootedDevices(unittest.TestCase):
   def testUnrootedDevices(self):
     devices = ('a13', 'a23')
     for d in devices:
-      test_config = CreateConfigWithDeviceTypes([d])
+      test_config = CreateConfigWithDeviceType(d)
       retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
           test_config, None, {'os_type': 'android'})
       self.assertEqual(retval,
                        ['--compatibility-mode=dont-require-rooted-device'])
 
-  def testMixedDevices(self):
-    test_config = CreateConfigWithDeviceTypes(['hammerhead', 'a13'])
-    with self.assertRaises(RuntimeError):
-      magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
-          test_config, None, {'os_type': 'android'})
-
   def testRootedDevices(self):
-    test_config = CreateConfigWithDeviceTypes(['hammerhead'])
+    test_config = CreateConfigWithDeviceType('hammerhead')
     retval = magic_substitutions.GPUTelemetryNoRootForUnrootedDevices(
         test_config, None, {'os_type': 'android'})
     self.assertEqual(retval, [])

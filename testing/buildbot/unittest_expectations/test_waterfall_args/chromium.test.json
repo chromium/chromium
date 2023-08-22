@@ -12,11 +12,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ]
+          "dimensions": {
+            "os": "Linux"
+          }
         },
         "test": "bar_test"
       },
@@ -29,11 +27,9 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "os": "Linux"
-            }
-          ]
+          "dimensions": {
+            "os": "Linux"
+          }
         },
         "test": "foo_test"
       }

@@ -21,12 +21,10 @@
         "should_retry_with_patch": false,
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "device_type": "bullhead",
-              "os": "Linux"
-            }
-          ],
+          "dimensions": {
+            "device_type": "bullhead",
+            "os": "Linux"
+          },
           "idempotent": false
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_webview/"
