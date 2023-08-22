@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -130,6 +131,7 @@ void LayoutView::Trace(Visitor* visitor) const {
   visitor->Trace(fragmentation_context_);
   visitor->Trace(svg_text_descendants_);
   visitor->Trace(hit_test_cache_);
+  visitor->Trace(initial_containing_block_resize_handled_list_);
   LayoutBlockFlow::Trace(visitor);
 }
 
@@ -889,6 +891,20 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   if (frame.OwnerLayoutObject() && frame.IsCrossOriginToParentOrOuterDocument())
     return CompositingReason::kIFrame;
   return CompositingReason::kNone;
+}
+
+bool LayoutView::AffectedByResizedInitialContainingBlock(
+    const NGLayoutResult& layout_result) {
+  NOT_DESTROYED();
+  if (!initial_containing_block_resize_handled_list_) {
+    return false;
+  }
+  const LayoutObject* layout_object =
+      layout_result.PhysicalFragment().GetLayoutObject();
+  DCHECK(layout_object);
+  auto add_result =
+      initial_containing_block_resize_handled_list_->insert(layout_object);
+  return add_result.is_new_entry;
 }
 
 void LayoutView::UpdateMarkersAndCountersAfterStyleChange(

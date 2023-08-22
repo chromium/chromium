@@ -170,7 +170,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     return nullptr;
 
   if (cached_layout_result->HasOrthogonalFallbackSizeDescendant() &&
-      View()->IsResizingInitialContainingBlock()) {
+      View()->AffectedByResizedInitialContainingBlock(*cached_layout_result)) {
     // There's an orthogonal writing-mode root somewhere inside that depends on
     // the size of the initial containing block, and the initial containing
     // block size is changing.

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -268,11 +269,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     needs_marker_counter_update_ = true;
   }
 
-  // Return true if laying out with a new initial containing block size.
-  bool IsResizingInitialContainingBlock() const {
-    NOT_DESTROYED();
-    return is_resizing_initial_containing_block_;
-  }
+  // Return true if laying out with a new initial containing block size. lala.
+  bool AffectedByResizedInitialContainingBlock(const NGLayoutResult&);
 
   // Update generated markers and counters after style and layout tree update.
   // container - The container for container queries, otherwise nullptr.
@@ -367,9 +365,10 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     return ViewLogicalHeight(kIncludeScrollbars);
   }
 
-  // Set to true if laying out with a new initial containing block size. Always
-  // set back to false after layout.
-  bool is_resizing_initial_containing_block_ = false;
+  // Set if laying out with a new initial containing block size, and populated
+  // as we handle nodes that may have been affected by that.
+  Member<HeapHashSet<Member<const LayoutObject>>>
+      initial_containing_block_resize_handled_list_;
 
  private:
   bool CanHaveChildren() const override;
