@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.MountError.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2024-04-01">
+    expires_after="2024-02-18">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -124,7 +124,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.PrematureTermination.{Daemon}" enum="DaemonError"
-    expires_after="2024-04-01">
+    expires_after="2024-02-18">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -156,7 +156,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CrosDisks.UnmountError.{FileSystem}" enum="PopularOSErrno"
-    expires_after="2024-04-01">
+    expires_after="2024-02-18">
   <owner>fdegros@chromium.org</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

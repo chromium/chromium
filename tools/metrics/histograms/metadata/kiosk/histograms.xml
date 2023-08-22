@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Kiosk.ChromeApp.ExtensionUpdateDuration.{Result}" units="ms"
-    expires_after="2024-08-01">
+    expires_after="2024-02-18">
   <owner>yixie@chromium.org</owner>
   <owner>chromeos-kiosk-eng@google.com</owner>
   <summary>

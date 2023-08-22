@@ -899,7 +899,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.LaunchContainer" enum="AppLaunchContainer"
-    expires_after="2023-12-17">
+    expires_after="2024-02-18">
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1243,7 +1243,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Preinstalled.WindowExperiment.{UserGroup}.{DisplayModeChange}"
-    enum="DefaultAppName" expires_after="2023-12-30">
+    enum="DefaultAppName" expires_after="2024-02-18">
   <owner>glenrob@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1264,7 +1264,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Preinstalled.WindowExperiment.{UserGroup}.{LinkCapturingChange}"
-    enum="DefaultAppName" expires_after="2023-12-30">
+    enum="DefaultAppName" expires_after="2024-02-18">
   <owner>glenrob@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Delete.Result" enum="BooleanSuccess"
-    expires_after="2023-12-16">
+    expires_after="2024-02-18">
   <owner>dmurph@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
