@@ -15,7 +15,7 @@ import org.chromium.base.ApplicationStatus;
 public class DrivingRestrictionsManager {
     private static DrivingRestrictionsManager sInstance;
 
-    private DrivingRestrictionsDelegateImpl mDelegate;
+    private DrivingRestrictionsDelegate mDelegate;
     private boolean mMonitoring;
 
     /**
@@ -26,8 +26,7 @@ public class DrivingRestrictionsManager {
     }
 
     DrivingRestrictionsManager() {
-        mDelegate =
-                new DrivingRestrictionsDelegateImpl(this::onRequiresDistractionOptimizationChanged);
+        mDelegate = new DrivingRestrictionsDelegate(this::onRequiresDistractionOptimizationChanged);
 
         updateMonitoring(ApplicationStatus.getStateForApplication());
         ApplicationStatus.registerApplicationStateListener(newState -> updateMonitoring(newState));
@@ -51,15 +50,11 @@ public class DrivingRestrictionsManager {
         }
     }
 
-    void setDelegateForTesting(DrivingRestrictionsDelegateImpl delegate) {
+    void setDelegateForTesting(DrivingRestrictionsDelegate delegate) {
         mDelegate = delegate;
     }
 
-    DrivingRestrictionsDelegateImpl getDelegateForTesting() {
+    DrivingRestrictionsDelegate getDelegateForTesting() {
         return mDelegate;
-    }
-
-    static DrivingRestrictionsManager getInstanceForTesting() {
-        return sInstance;
     }
 }
