@@ -121,7 +121,8 @@ bool DeviceTrustServiceFactory::ServiceIsNULLWhileTesting() const {
 
 DeviceTrustServiceFactory::~DeviceTrustServiceFactory() = default;
 
-KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DeviceTrustServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   auto* profile = Profile::FromBrowserContext(context);
 
@@ -202,9 +203,9 @@ KeyedService* DeviceTrustServiceFactory::BuildServiceInstanceFor(
 
   // Only return an actual instance if all of the service's dependencies can be
   // resolved (meaning that the current management configuration is supported).
-  return new DeviceTrustService(std::move(attestation_service),
-                                std::move(signals_service),
-                                dt_connector_service);
+  return std::make_unique<DeviceTrustService>(std::move(attestation_service),
+                                              std::move(signals_service),
+                                              dt_connector_service);
 }
 
 }  // namespace enterprise_connectors
