@@ -683,6 +683,10 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
               bug: crbug.com/123
             """)
         self.write_contents(
+            'wpt_internal/dir/__dir__.ini', """\
+            bug: crbug.com/321
+            """)
+        self.write_contents(
             'TestExpectations', """\
             # tags: [ Linux Mac Win ]
             # results: [ Failure Pass ]
@@ -694,12 +698,13 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             #   Comment 2
             crbug.com/456 [ Linux ] external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 3
             crbug.com/789 [ Mac ] virtual/virtual_wpt/external/wpt/variant.html?foo=bar/abc [ Failure ]  # Comment 4
-            # Not transferred
+            # Not transferred (`?foo=baz` variant has no section)
             external/wpt/variant.html?foo=baz [ Failure ]
 
             # Group of tests that fail for the same reason.
             non/wpt/test.html [ Failure ]  # Not transferred
             wpt_internal/dir/multiglob.https.any.worker.html [ Failure ] #Comment 5
+            crbug.com/654 wpt_internal/dir/* [ Failure ]    # Comment 6
             """)
         self.update(
             {
@@ -726,6 +731,12 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             # Comment 4
             [variant.html?foo=bar/abc]
               bug: [crbug.com/123, crbug.com/456, crbug.com/789]
+            """)
+        self.assert_contents(
+            'wpt_internal/dir/__dir__.ini', """\
+            # Group of tests that fail for the same reason.
+            # Comment 6
+            bug: [crbug.com/321, crbug.com/654]
             """)
         self.assert_contents(
             'wpt_internal/dir/multiglob.https.any.js.ini', """\
@@ -1199,6 +1210,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             [variant.html?foo=bar/abc]
               bug: crbug.com/123
 
+            # Keep this comment, even as the bug is updated.
             [variant.html?foo=baz]
               bug: crbug.com/456
               expected: FAIL
@@ -1216,6 +1228,7 @@ class UpdateMetadataASTSerializationTest(BaseUpdateMetadataTest):
             [variant.html?foo=bar/abc]
               bug: crbug.com/123
 
+            # Keep this comment, even as the bug is updated.
             [variant.html?foo=baz]
               bug: crbug.com/789
               expected: FAIL

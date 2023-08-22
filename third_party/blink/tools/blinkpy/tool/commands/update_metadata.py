@@ -692,9 +692,7 @@ class MetadataUpdater:
                     test_id = _exp_test_to_wpt_url(base_test)
                     if not test_id:
                         continue
-                    test_info = test_infos.get(test_id)
-                    if not test_info:
-                        continue
+                    test_info = test_infos[test_id]
                     # Ensure that `comment_buffers` is only added once for a
                     # block listing the same test multiple times.
                     if not set(comments_buffer) <= set(
@@ -710,8 +708,6 @@ class MetadataUpdater:
                         comments_buffer.clear()
                     if comment_or_empty:
                         comments_buffer.append(comment_or_empty)
-                # TODO(crbug.com/1464393):
-                #   * Handle glob lines for comments.
 
     @staticmethod
     def _load_disables_to_migrate(test_info: TestInfoMap,
@@ -953,8 +949,9 @@ class MetadataUpdater:
         if expected:
             self._remove_orphaned_tests(expected)
             self._mark_slow_timeouts_for_disabling(test_file, expected)
-            self._migrate_disables(expected, test_file.metadata_path)
-            self._migrate_comments(expected)
+            for section, test_info in self._sections_to_annotate(expected):
+                self._migrate_disables(section, test_info)
+                self._migrate_comments(section, test_info)
             if self._bug:
                 for test in expected.iterchildren():
                     if test.modified:
@@ -1000,43 +997,44 @@ class MetadataUpdater:
                 test.remove()
                 expected.modified = True
 
-    def _migrate_disables(self, expected: manifestupdate.ExpectedManifest,
-                          metadata_root: str):
-        nodes = []
+    def _migrate_disables(self, section: wptmanifest.ManifestItem,
+                          test_info: TestInfo):
+        if not test_info.disabled_configs:
+            return
+        update = DisabledUpdate(section)
+        for config in self._configs:
+            try:
+                # Attempt to preserve existing values for `disabled`.
+                reason = section.get('disabled', config)
+            except KeyError:
+                reason = test_info.disabled_configs.get(config)
+                reason = reason.value if reason else None
+            update.set(config, reason)
+        update.update(full_update=True, disable_intermittent=False)
+
+    def _migrate_comments(self, section: wptmanifest.ManifestItem,
+                          test_info: TestInfo):
+        if section.is_empty or not test_info.extra_comments:
+            return
+        # Clear existing comments so that `--migrate` is idempotent.
+        section.node.comments.clear()
+        section.node.comments.extend(
+            ('comment', comment) for comment in test_info.extra_comments)
+        self._add_bug_urls(section, test_info.extra_bugs, overwrite=False)
+        section.modified = True
+
+    def _sections_to_annotate(
+        self,
+        expected: manifestupdate.ExpectedManifest,
+    ) -> Iterator[Tuple[wptmanifest.ManifestItem, TestInfo]]:
         if expected.test_path.endswith('__dir__'):
             dir_id = urljoin(expected.url_base,
                              expected.test_path.replace(os.path.sep, '/'))
             # Updates the root section in `__dir__.ini`.
-            nodes.append((expected, self._test_info[dir_id]))
+            yield expected, self._test_info[dir_id]
         else:
-            nodes.extend((test, self._test_info[test.id])
-                         for test in expected.iterchildren())
-
-        for node, test_info in nodes:
-            if not test_info.disabled_configs:
-                continue
-            update = DisabledUpdate(node)
-            for config in self._configs:
-                try:
-                    # Attempt to preserve existing values for `disabled`.
-                    reason = node.get('disabled', config)
-                except KeyError:
-                    reason = test_info.disabled_configs.get(config)
-                    reason = reason.value if reason else None
-                update.set(config, reason)
-            update.update(full_update=True, disable_intermittent=False)
-
-    def _migrate_comments(self, expected: manifestupdate.ExpectedManifest):
-        for test in expected.iterchildren():
-            if test.is_empty:
-                continue
-            test_info = self._test_info[test.id]
-            # Clear existing comments so that `--migrate` is idempotent.
-            test.node.comments.clear()
-            test.node.comments.extend(
-                ('comment', comment) for comment in test_info.extra_comments)
-            self._add_bug_urls(test, test_info.extra_bugs, overwrite=False)
-            expected.modified = True
+            for test in expected.iterchildren():
+                yield test, self._test_info[test.id]
 
     def _add_bug_urls(self,
                       test: manifestupdate.TestNode,
