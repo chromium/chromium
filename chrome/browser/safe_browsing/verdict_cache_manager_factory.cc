@@ -42,10 +42,11 @@ VerdictCacheManagerFactory::VerdictCacheManagerFactory()
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
-KeyedService* VerdictCacheManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+VerdictCacheManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new VerdictCacheManager(
+  return std::make_unique<VerdictCacheManager>(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
       HostContentSettingsMapFactory::GetForProfile(profile),
