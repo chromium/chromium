@@ -549,18 +549,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionRemovedAge" units="ms"
-    expires_after="2022-09-11">
+    expires_after="2024-08-01">
   <owner>gangwu@chromium.org</owner>
-  <owner>fgorski@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
   <summary>
     Recorded every time the clipboard suggestion is removed from omnibox
     suggestion list and the system clipboard. The value indicates the estimated
     age of the clipboard.
+
+    Note: recording gap between 2022/09 and 2023/08.
   </summary>
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionShownAge" units="ms"
-    expires_after="2023-12-24">
+    expires_after="2024-08-01">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -578,7 +580,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionShownNumTimes" units="units"
-    expires_after="2023-12-24">
+    expires_after="2024-08-01">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -608,7 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Omnibox.ClipboardSuggestionShownWithCurrentURL"
-    enum="BooleanPresent" expires_after="2022-10-01">
+    enum="BooleanPresent" expires_after="2024-08-01">
   <owner>gangwu@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -629,6 +631,8 @@ chromium-metrics-reviews@google.com.
     compared with the count in the clipboard bucket of the
     Omnibox.SuggestionUsed.Provider histogram to determine the clickthrough rate
     on these suggestions.
+
+    Note: recording gap between 2022/10 and 2023/08.
   </summary>
 </histogram>
 
