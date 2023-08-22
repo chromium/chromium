@@ -54,8 +54,6 @@ using PathType = ChromeFileSystemAccessPermissionContext::PathType;
 using UserAction = ChromeFileSystemAccessPermissionContext::UserAction;
 using PermissionStatus =
     content::FileSystemAccessPermissionGrant::PermissionStatus;
-using PersistedPermissionOptions =
-    ChromeFileSystemAccessPermissionContext::PersistedPermissionOptions;
 using PermissionRequestOutcome =
     content::FileSystemAccessPermissionGrant::PermissionRequestOutcome;
 using SensitiveDirectoryResult =

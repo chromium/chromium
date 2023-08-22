@@ -150,11 +150,6 @@ class ChromeFileSystemAccessPermissionContext
 
   enum class GrantType { kRead, kWrite };
 
-  enum class PersistedPermissionOptions {
-    kDoNotUpdatePersistedPermission,
-    kUpdatePersistedPermission,
-  };
-
   // Converts permissions objects into a snapshot of grants categorized by
   // read/write and file/directory types. Currently, used in UI code.
   // Assumes that all objects are grants for the same origin.
@@ -235,6 +230,11 @@ class ChromeFileSystemAccessPermissionContext
     // origin via the Restore Prompt or by installing a PWA. Can be
     // used to auto-grant permission requests.
     kExtended,
+  };
+
+  enum class PersistedPermissionOptions {
+    kDoNotUpdatePersistedPermission,
+    kUpdatePersistedPermission,
   };
 
   // Retrieve the persisted grant state for all persisted grants for a given
