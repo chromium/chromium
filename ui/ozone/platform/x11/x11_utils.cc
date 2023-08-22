@@ -26,11 +26,6 @@ std::string X11Utils::GetWmWindowClass(const std::string& desktop_base_name) {
   return window_class;
 }
 
-std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
-X11Utils::DisableClientSideDecorationsForTest() {
-  return {};
-}
-
 void X11Utils::OnUnhandledKeyEvent(const KeyEvent& key_event) {
   // Do nothing.
 }

@@ -18,8 +18,6 @@ class X11Utils : public PlatformUtils {
 
   gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id) override;
   std::string GetWmWindowClass(const std::string& desktop_base_name) override;
-  std::unique_ptr<PlatformUtils::ScopedDisableClientSideDecorationsForTest>
-  DisableClientSideDecorationsForTest() override;
   void OnUnhandledKeyEvent(const KeyEvent& key_event) override;
 };
 

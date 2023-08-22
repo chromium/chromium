@@ -27,18 +27,6 @@ namespace views::corewm {
 enum class TooltipTrigger;
 }  // namespace views::corewm
 
-namespace wl {
-
-// Client-side decorations on Wayland take some portion of the window surface,
-// and when they are turned on or off, the window geometry is changed.  That
-// happens only once at the moment of switching the decoration mode, and has
-// no further impact on the user experience, but the initial geometry of a
-// top-level window is different on Wayland if compared to other platforms,
-// which affects certain tests.
-void AllowClientSideDecorationsForTesting(bool allow);
-
-}  // namespace wl
-
 namespace ui {
 
 class GtkSurface1;

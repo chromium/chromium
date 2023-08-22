@@ -24,12 +24,6 @@ class KeyEvent;
 // Ozone.
 class COMPONENT_EXPORT(OZONE_BASE) PlatformUtils {
  public:
-  class ScopedDisableClientSideDecorationsForTest {
-   public:
-    ScopedDisableClientSideDecorationsForTest() = default;
-    virtual ~ScopedDisableClientSideDecorationsForTest() = default;
-  };
-
   virtual ~PlatformUtils() = default;
 
   // Returns an icon for a native window referred by |target_window_id|. Can be
@@ -42,12 +36,6 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformUtils {
   // in its turn, depends on the channel.
   virtual std::string GetWmWindowClass(
       const std::string& desktop_base_name) = 0;
-
-  // Disables client-side decorations for the lifetime of the returned object.
-  // Client-side decorations are implemented platform-specific way, which may
-  // affect tests.
-  virtual std::unique_ptr<ScopedDisableClientSideDecorationsForTest>
-  DisableClientSideDecorationsForTest() = 0;
 
   // Called when it is found that a KeyEvent is not consumed.
   virtual void OnUnhandledKeyEvent(const KeyEvent& key_event) = 0;
