@@ -16,6 +16,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
   const sanitizedAccelerator: Accelerator = {
     keyCode: layoutProperties.standardAccelerator.accelerator.keyCode,
     modifiers: layoutProperties.standardAccelerator.accelerator.modifiers,
+    keyState: layoutProperties.standardAccelerator.accelerator.keyState,
   };
   const originalAccelerator =
       layoutProperties.standardAccelerator?.originalAccelerator;
@@ -24,6 +25,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
     sanitizedOriginalAccelerator = {
       keyCode: originalAccelerator.keyCode,
       modifiers: originalAccelerator.modifiers,
+      keyState: layoutProperties.standardAccelerator.accelerator.keyState,
     };
   }
 

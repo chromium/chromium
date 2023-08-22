@@ -41,6 +41,7 @@ constexpr char kAcceleratorModifiersKey[] = "modifiers";
 constexpr char kAcceleratorKeyCodeKey[] = "key";
 constexpr char kAcceleratorTypeKey[] = "type";
 constexpr char kAcceleratorStateKey[] = "state";
+constexpr char kAcceleratorKeyStateKey[] = "key_state";
 constexpr char kAcceleratorModificationActionKey[] = "action";
 
 PrefService* GetActiveUserPrefService() {
@@ -74,6 +75,8 @@ base::Value AcceleratorModificationDataToValue(
   accelerator_values.Set(
       kAcceleratorStateKey,
       static_cast<int>(ash::mojom::AcceleratorState::kEnabled));
+  accelerator_values.Set(kAcceleratorKeyStateKey,
+                         static_cast<int>(accelerator.key_state()));
   accelerator_values.Set(kAcceleratorModificationActionKey,
                          static_cast<int>(action));
   return base::Value(std::move(accelerator_values));
@@ -85,11 +88,16 @@ AcceleratorModificationData ValueToAcceleratorModificationData(
   absl::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
   absl::optional<int> modification_action =
       value.FindInt(kAcceleratorModificationActionKey);
+  absl::optional<int> key_state = value.FindInt(kAcceleratorKeyStateKey);
   CHECK(keycode.has_value());
   CHECK(modifier.has_value());
   CHECK(modification_action.has_value());
   ui::Accelerator accelerator(static_cast<ui::KeyboardCode>(*keycode),
                               static_cast<int>(*modifier));
+  if (key_state.has_value()) {
+    accelerator.set_key_state(
+        static_cast<ui::Accelerator::KeyState>(key_state.value()));
+  }
   return {accelerator,
           static_cast<AcceleratorModificationAction>(*modification_action)};
 }

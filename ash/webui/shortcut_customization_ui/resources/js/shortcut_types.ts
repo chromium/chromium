@@ -59,6 +59,9 @@ export const AcceleratorType = AcceleratorInfoTypes.AcceleratorType;
 export type AcceleratorState = AcceleratorInfoTypes.AcceleratorState;
 export const AcceleratorState = AcceleratorInfoTypes.AcceleratorState;
 
+export type AcceleratorKeyState = AcceleratorTypes.AcceleratorKeyState;
+export const AcceleratorKeyState = AcceleratorTypes.AcceleratorKeyState;
+
 /**
  * Enumeration of accelerator config results from adding/replacing/removing an
  * accelerator.
@@ -71,11 +74,11 @@ export const AcceleratorConfigResult =
 /**
  * Type alias for Accelerator.
  *
- * The Pick utility type is used here because only `keyCode` and `modifiers`
- * are necessary for this app.
+ * The Pick utility type is used here because only `keyCode`, `modifiers`, and
+ * `keyState` are necessary for this app.
  */
 export type Accelerator =
-    Pick<AcceleratorTypes.Accelerator, 'keyCode'|'modifiers'>;
+    Pick<AcceleratorTypes.Accelerator, 'keyCode'|'modifiers'|'keyState'>;
 
 export type MojoAccelerator = AcceleratorTypes.Accelerator;
 

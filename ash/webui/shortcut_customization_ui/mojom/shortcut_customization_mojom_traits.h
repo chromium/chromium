@@ -18,6 +18,8 @@ struct StructTraits<
     ui::Accelerator> {
   static ui::KeyboardCode key_code(const ui::Accelerator& accelerator);
   static int modifiers(const ui::Accelerator& accelerator);
+  static ui::Accelerator::KeyState key_state(
+      const ui::Accelerator& accelerator);
 
   static bool Read(
       ash::shortcut_customization::mojom::SimpleAcceleratorDataView data,

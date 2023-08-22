@@ -7,7 +7,7 @@ import '../strings.m.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorInfo, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorSubcategory, AcceleratorType, Modifier, MojoAcceleratorInfo, MojoSearchResult, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
 
 // TODO(jimmyxgong): ChromeOS currently supports up to F24 but can be updated to
 // F32. Update here when F32 is available.
@@ -54,10 +54,16 @@ export const areAcceleratorsEqual =
       // of MojoAccelerators, and MojoAccelerators have properties that error
       // when they're stringified. Due to TypeScript's structural typing, we
       // can't prevent MojoAccelerators from being passed to this function.
-      const accelAComparable:
-          Accelerator = {keyCode: accelA.keyCode, modifiers: accelA.modifiers};
-      const accelBComparable:
-          Accelerator = {keyCode: accelB.keyCode, modifiers: accelB.modifiers};
+      const accelAComparable: Accelerator = {
+        keyCode: accelA.keyCode,
+        modifiers: accelA.modifiers,
+        keyState: accelA.keyState,
+      };
+      const accelBComparable: Accelerator = {
+        keyCode: accelB.keyCode,
+        modifiers: accelB.modifiers,
+        keyState: accelB.keyState,
+      };
       return JSON.stringify(accelAComparable) ===
           JSON.stringify(accelBComparable);
     };
@@ -88,7 +94,8 @@ export const createEmptyAccelInfoFromAccel =
     };
 
 export const createEmptyAcceleratorInfo = (): StandardAcceleratorInfo => {
-  return createEmptyAccelInfoFromAccel({modifiers: 0, keyCode: 0});
+  return createEmptyAccelInfoFromAccel(
+      {modifiers: 0, keyCode: 0, keyState: AcceleratorKeyState.PRESSED});
 };
 
 export const getAcceleratorId =

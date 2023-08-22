@@ -20,7 +20,7 @@ import {getTemplate} from './accelerator_view.html.js';
 import {keyToIconNameMap} from './input_key.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {createEmptyAcceleratorInfo, getAccelerator, getModifiersForAcceleratorInfo, isCustomizationDisabled, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 
 export interface AcceleratorViewElement {
@@ -427,7 +427,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
    * Converts a keystroke event to an Accelerator Object.
    */
   private keystrokeToAccelerator(e: KeyboardEvent): Accelerator {
-    const output: Accelerator = {modifiers: 0, keyCode: 0};
+    const output: Accelerator = {
+      modifiers: 0,
+      keyCode: 0,
+      keyState: AcceleratorKeyState.PRESSED,
+    };
     if (e.metaKey) {
       output.modifiers = output.modifiers | Modifier.COMMAND;
     }

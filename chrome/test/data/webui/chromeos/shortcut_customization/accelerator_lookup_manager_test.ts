@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeAmbientConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {Accelerator, AcceleratorCategory, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo, StandardAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, MojoAccelerator, MojoAcceleratorInfo, StandardAcceleratorInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, createEmptyAccelInfoFromAccel} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -134,6 +134,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         keyCode: 79,
+        keyState: AcceleratorKeyState.PRESSED,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -159,6 +160,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewDefaultAccel: Accelerator = {
         modifiers: Modifier.ALT,
         keyCode: 221,
+        keyState: AcceleratorKeyState.PRESSED,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -238,6 +240,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         keyCode: 79,
+        keyState: AcceleratorKeyState.PRESSED,
       };
 
       // Sanity check that new accel is not in the reverse lookup.
@@ -351,6 +354,7 @@ suite('acceleratorLookupManagerTest', function() {
       const expectedNewAccel: Accelerator = {
         modifiers: Modifier.CONTROL,
         keyCode: 79,
+        keyState: AcceleratorKeyState.PRESSED,
       };
 
       // Sanity check that new accel is not in the reverse lookup.

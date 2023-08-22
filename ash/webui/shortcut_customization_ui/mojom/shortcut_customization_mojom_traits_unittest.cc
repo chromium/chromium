@@ -22,7 +22,8 @@ class ShortcutCustomizationStructTraitsTest : public testing::Test {
 
 TEST_F(ShortcutCustomizationStructTraitsTest,
        SerializeAndDeserializeValidModifiers) {
-  ui::Accelerator accelerator(ui::KeyboardCode::VKEY_TAB, ui::EF_CONTROL_DOWN);
+  ui::Accelerator accelerator(ui::KeyboardCode::VKEY_TAB, ui::EF_CONTROL_DOWN,
+                              ui::Accelerator::KeyState::RELEASED);
   ui::Accelerator deserialized;
   ASSERT_TRUE(SimpleAccelerator::Deserialize(
       SimpleAccelerator::Serialize(&accelerator), &deserialized));

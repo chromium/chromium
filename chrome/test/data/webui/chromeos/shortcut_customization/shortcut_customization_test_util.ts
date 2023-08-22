@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Accelerator, AcceleratorState, AcceleratorType, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorKeyState, AcceleratorState, AcceleratorType, StandardAcceleratorInfo, TextAcceleratorInfo, TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
 
 
 export function createStandardAcceleratorInfo(
@@ -15,6 +15,7 @@ export function createStandardAcceleratorInfo(
         accelerator: {
           modifiers: modifier,
           keyCode: keycode,
+          keyState: AcceleratorKeyState.PRESSED,
         },
       },
     },
@@ -48,6 +49,7 @@ export function createUserAcceleratorInfo(
         accelerator: {
           modifiers: modifier,
           keyCode: keycode,
+          keyState: AcceleratorKeyState.PRESSED,
         },
       },
     },
@@ -67,6 +69,7 @@ export function createCustomStandardAcceleratorInfo(
         accelerator: {
           modifiers: modifier,
           keyCode: keycode,
+          keyState: AcceleratorKeyState.PRESSED,
         },
       },
     },
@@ -87,6 +90,7 @@ export function createAliasedStandardAcceleratorInfo(
         accelerator: {
           modifiers: modifier,
           keyCode: keyCode,
+          keyState: AcceleratorKeyState.PRESSED,
         },
         originalAccelerator: originalAccelerator,
       },

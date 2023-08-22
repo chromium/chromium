@@ -16,7 +16,7 @@ import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accel
 import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorInfo, AcceleratorKeyState, AcceleratorState, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -310,6 +310,7 @@ suite('acceleratorEditDialogTest', function() {
     const defaultAccelerators: Accelerator[] = [{
       modifiers: Modifier.CONTROL | Modifier.SHIFT,
       keyCode: 71,
+      keyState: AcceleratorKeyState.PRESSED,
     }];
     provider.setFakeGetDefaultAcceleratorsForId(defaultAccelerators);
 
@@ -678,6 +679,7 @@ suite('acceleratorEditDialogTest', function() {
     const defaultAccelerators: Accelerator[] = [{
       modifiers: Modifier.CONTROL | Modifier.SHIFT,
       keyCode: 71,
+      keyState: AcceleratorKeyState.PRESSED,
     }];
     provider.setFakeGetDefaultAcceleratorsForId(defaultAccelerators);
 
@@ -790,7 +792,11 @@ suite('acceleratorEditDialogTest', function() {
     const acceleratorInfo5: AcceleratorInfo =
         createAliasedStandardAcceleratorInfo(
             Modifier.CONTROL, /*key=*/ 67, /*keyDisplay=*/ 'c',
-            AcceleratorState.kEnabled, {modifiers: Modifier.ALT, keyCode: 67});
+            AcceleratorState.kEnabled, {
+              modifiers: Modifier.ALT,
+              keyCode: 67,
+              keyState: AcceleratorKeyState.PRESSED,
+            });
 
     // Initialize with max accelerators.
     const accelerators = [

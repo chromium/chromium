@@ -7,7 +7,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
-import {Accelerator, AcceleratorCategory, Modifier, MojoAccelerator, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, MojoAccelerator, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -60,6 +60,7 @@ suite('shortcutUtilsTest', function() {
     const accelShiftC: Accelerator = {
       modifiers: Modifier.SHIFT,
       keyCode: 67,  // c
+      keyState: AcceleratorKeyState.PRESSED,
     };
     const accelShiftCCopy: Accelerator = {
       ...accelShiftC,
@@ -67,10 +68,12 @@ suite('shortcutUtilsTest', function() {
     const accelAltC: Accelerator = {
       modifiers: Modifier.ALT,
       keyCode: 67,  // c
+      keyState: AcceleratorKeyState.PRESSED,
     };
     const accelShiftD: Accelerator = {
       modifiers: Modifier.SHIFT,
       keyCode: 68,  // d
+      keyState: AcceleratorKeyState.PRESSED,
     };
 
     // Compare the same accelerator.
@@ -90,6 +93,7 @@ suite('shortcutUtilsTest', function() {
     const accelShiftC: Accelerator = {
       modifiers: Modifier.SHIFT,
       keyCode: 67,  // c
+      keyState: AcceleratorKeyState.PRESSED,
     };
     const accelShiftCMojo: MojoAccelerator = {
       modifiers: Modifier.SHIFT,
@@ -133,6 +137,7 @@ suite('shortcutUtilsTest', function() {
     const expectedAccelerator: Accelerator = {
       modifiers: Modifier.ALT,
       keyCode: 221,  // c
+      keyState: AcceleratorKeyState.PRESSED,
     };
     const actualAccelerator = getAccelerator(acceleratorInfo);
     assertDeepEquals(expectedAccelerator, actualAccelerator);
