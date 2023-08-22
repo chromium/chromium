@@ -29,7 +29,7 @@ class DocumentSuggestionsServiceFactory : public ProfileKeyedServiceFactory {
   ~DocumentSuggestionsServiceFactory() override;
 
   // Overrides from BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
