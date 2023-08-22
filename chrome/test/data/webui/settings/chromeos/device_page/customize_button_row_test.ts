@@ -62,10 +62,10 @@ suite('<customize-button-row>', () => {
         expectedRemapping!.remappingAction?.action!.toString());
 
     // Change buttonRemapping data to display.
+    customizeButtonRow.set('remappingIndex', 1);
     customizeButtonRow.set(
         'buttonRemappingList',
         fakeGraphicsTablets[1]!.settings.tabletButtonRemappings);
-    customizeButtonRow.set('remappingIndex', 1);
     await flushTasks();
     expectedRemapping =
         fakeGraphicsTablets[1]!.settings.tabletButtonRemappings[1];
@@ -76,5 +76,27 @@ suite('<customize-button-row>', () => {
     assertEquals(
         getSelectedValue(),
         expectedRemapping!.remappingAction?.action!.toString());
+  });
+
+  test('Initialize key combination string', async () => {
+    await initializeCustomizeButtonRow();
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings.penButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 0);
+    await flushTasks();
+
+    assertEquals(getSelectedValue(), 'key combination');
+    assertEquals(customizeButtonRow.get('keyCombinationLabel_'), 'ctrl + z');
+
+    // Switch to another button remapping.
+    customizeButtonRow.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[1]!.settings.penButtonRemappings);
+    customizeButtonRow.set('remappingIndex', 1);
+    await flushTasks();
+
+    assertEquals(getSelectedValue(), 'key combination');
+    assertEquals(customizeButtonRow.get('keyCombinationLabel_'), 'ctrl + v');
   });
 });
