@@ -44,11 +44,13 @@ class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
       const std::string& user_action_id,
       const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
+      ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
       FilesRequestHandler::CompletionCallback callback) {
     return base::WrapUnique(new UnresponsiveFilesRequestHandler(
         upload_service, profile, analysis_settings, url, source, destination,
-        user_action_id, tab_title, access_point, paths, std::move(callback)));
+        user_action_id, tab_title, access_point, reason, paths,
+        std::move(callback)));
   }
 
  private:

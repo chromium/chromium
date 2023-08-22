@@ -120,6 +120,12 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     ContentMetaData::PrintMetadata::PrinterType printer_type =
         ContentMetaData::PrintMetadata::UNKNOWN;
 
+    // The reason the scanning should happen. This should be populated at the
+    // same time as fields like `text`, `paths`, `page`, etc. so that caller
+    // code can let enterprise code know the user action triggering content
+    // analysis.
+    ContentAnalysisRequest::Reason reason = ContentAnalysisRequest::UNKNOWN;
+
     // The settings to use for the analysis of the data in this struct.
     AnalysisSettings settings;
   };

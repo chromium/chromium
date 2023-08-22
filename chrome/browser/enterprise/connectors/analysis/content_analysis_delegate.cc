@@ -587,7 +587,7 @@ bool ContentAnalysisDelegate::UploadData() {
     // MultiFileRequestHandler is owned by this class.
     files_request_handler_ = FilesRequestHandler::Create(
         GetBinaryUploadService(), profile_, data_.settings, url_, "", "",
-        user_action_id_, title_, access_point_, data_.paths,
+        user_action_id_, title_, access_point_, data_.reason, data_.paths,
         base::BindOnce(&ContentAnalysisDelegate::FilesRequestCallback,
                        GetWeakPtr()));
     files_request_complete_ = !files_request_handler_->UploadData();
@@ -710,10 +710,18 @@ void ContentAnalysisDelegate::PrepareRequest(
   request->set_url(data_.url.spec());
   request->set_tab_url(data_.url);
   request->set_per_profile_request(data_.settings.per_profile);
-  for (const auto& tag : data_.settings.tags)
+
+  for (const auto& tag : data_.settings.tags) {
     request->add_tag(tag.first);
-  if (data_.settings.client_metadata)
+  }
+
+  if (data_.settings.client_metadata) {
     request->set_client_metadata(*data_.settings.client_metadata);
+  }
+
+  if (data_.reason != ContentAnalysisRequest::UNKNOWN) {
+    request->set_reason(data_.reason);
+  }
 }
 
 void ContentAnalysisDelegate::FillAllResultsWith(bool status) {

@@ -216,6 +216,7 @@
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/enterprise/content/pref_names.h"
 #include "components/error_page/common/error.h"
@@ -7383,6 +7384,9 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
+
+  dialog_data.reason =
+      enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
 
   if (is_files) {
     auto string_paths = std::move(clipboard_paste_data.file_paths);

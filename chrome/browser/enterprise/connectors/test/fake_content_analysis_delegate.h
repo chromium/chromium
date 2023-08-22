@@ -90,7 +90,7 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static bool WasDialogCanceled();
   static int GetTotalAnalysisRequestsCount();
 
- private:
+ protected:
   // Simulates a response from the binary upload service.  the |path|
   // argument is used to call |status_callback_| to determine if the path
   // should succeed or fail.

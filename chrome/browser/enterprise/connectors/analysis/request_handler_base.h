@@ -41,7 +41,8 @@ class RequestHandlerBase {
       const std::string& user_action_id,
       const std::string& tab_title,
       uint64_t user_action_requests_count,
-      safe_browsing::DeepScanAccessPoint access_point);
+      safe_browsing::DeepScanAccessPoint access_point,
+      ContentAnalysisRequest::Reason reason);
 
   virtual ~RequestHandlerBase();
 
@@ -95,6 +96,7 @@ class RequestHandlerBase {
   std::string tab_title_;
   uint64_t user_action_requests_count_;
   safe_browsing::DeepScanAccessPoint access_point_;
+  ContentAnalysisRequest::Reason reason_;
 
   // A mapping of request tokens (corresponding to one user action) to their Ack
   // final action.

@@ -690,6 +690,78 @@ IN_PROC_BROWSER_TEST_F(KeepaliveDurationOnShutdownTest, DynamicUpdate) {
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
+class ClipboardTestContentAnalysisDelegate
+    : public enterprise_connectors::test::FakeContentAnalysisDelegate {
+ public:
+  ClipboardTestContentAnalysisDelegate(base::RepeatingClosure delete_closure,
+                                       StatusCallback status_callback,
+                                       std::string dm_token,
+                                       content::WebContents* web_contents,
+                                       Data data,
+                                       CompletionCallback callback)
+      : enterprise_connectors::test::FakeContentAnalysisDelegate(
+            delete_closure,
+            std::move(status_callback),
+            std::move(dm_token),
+            web_contents,
+            std::move(data),
+            std::move(callback)) {}
+
+  static std::unique_ptr<ContentAnalysisDelegate> Create(
+      base::RepeatingClosure delete_closure,
+      StatusCallback status_callback,
+      std::string dm_token,
+      content::WebContents* web_contents,
+      Data data,
+      CompletionCallback callback) {
+    auto ret = std::make_unique<ClipboardTestContentAnalysisDelegate>(
+        delete_closure, std::move(status_callback), std::move(dm_token),
+        web_contents, std::move(data), std::move(callback));
+    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::test::FakeFilesRequestHandler::Create,
+            base::BindRepeating(&ClipboardTestContentAnalysisDelegate::
+                                    FakeUploadFileForDeepScanning,
+                                base::Unretained(ret.get()))));
+    return ret;
+  }
+
+ private:
+  void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadTextForDeepScanning(std::move(request));
+  }
+
+  void UploadImageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadImageForDeepScanning(std::move(request));
+  }
+
+  void FakeUploadFileForDeepScanning(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      enterprise_connectors::test::FakeFilesRequestHandler::
+          FakeFileRequestCallback callback) override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        FakeUploadFileForDeepScanning(result, path, std::move(request),
+                                      std::move(callback));
+  }
+};
+
 class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
  public:
   IsClipboardPasteContentAllowedTest() {
@@ -709,8 +781,7 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
 
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
-            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-            base::DoNothing(),
+            &ClipboardTestContentAnalysisDelegate::Create, base::DoNothing(),
             base::BindRepeating([](const std::string& contents,
                                    const base::FilePath& path) {
               bool success = false;

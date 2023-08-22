@@ -33,6 +33,78 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+class DragDropTestContentAnalysisDelegate
+    : public enterprise_connectors::test::FakeContentAnalysisDelegate {
+ public:
+  DragDropTestContentAnalysisDelegate(base::RepeatingClosure delete_closure,
+                                      StatusCallback status_callback,
+                                      std::string dm_token,
+                                      content::WebContents* web_contents,
+                                      Data data,
+                                      CompletionCallback callback)
+      : enterprise_connectors::test::FakeContentAnalysisDelegate(
+            delete_closure,
+            std::move(status_callback),
+            std::move(dm_token),
+            web_contents,
+            std::move(data),
+            std::move(callback)) {}
+
+  static std::unique_ptr<ContentAnalysisDelegate> Create(
+      base::RepeatingClosure delete_closure,
+      StatusCallback status_callback,
+      std::string dm_token,
+      content::WebContents* web_contents,
+      Data data,
+      CompletionCallback callback) {
+    auto ret = std::make_unique<DragDropTestContentAnalysisDelegate>(
+        delete_closure, std::move(status_callback), std::move(dm_token),
+        web_contents, std::move(data), std::move(callback));
+    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+        base::BindRepeating(
+            &enterprise_connectors::test::FakeFilesRequestHandler::Create,
+            base::BindRepeating(&DragDropTestContentAnalysisDelegate::
+                                    FakeUploadFileForDeepScanning,
+                                base::Unretained(ret.get()))));
+    return ret;
+  }
+
+ private:
+  void UploadTextForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadTextForDeepScanning(std::move(request));
+  }
+
+  void UploadImageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        UploadImageForDeepScanning(std::move(request));
+  }
+
+  void FakeUploadFileForDeepScanning(
+      safe_browsing::BinaryUploadService::Result result,
+      const base::FilePath& path,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
+      enterprise_connectors::test::FakeFilesRequestHandler::
+          FakeFileRequestCallback callback) override {
+    ASSERT_EQ(request->reason(),
+              enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP);
+
+    enterprise_connectors::test::FakeContentAnalysisDelegate::
+        FakeUploadFileForDeepScanning(result, path, std::move(request),
+                                      std::move(callback));
+  }
+};
+
 class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
  public:
   ChromeWebContentsViewDelegateHandleOnPerformDrop() {
@@ -118,9 +190,8 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
           return response;
         });
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-        base::BindRepeating(
-            &enterprise_connectors::test::FakeContentAnalysisDelegate::Create,
-            run_loop_->QuitClosure(), callback, "dm_token"));
+        base::BindRepeating(&DragDropTestContentAnalysisDelegate::Create,
+                            run_loop_->QuitClosure(), callback, "dm_token"));
     enterprise_connectors::ContentAnalysisDelegate::DisableUIForTesting();
     enterprise_connectors::ContentAnalysisDelegate::
         SetOnAckAllRequestsCallbackForTesting(base::BindOnce(

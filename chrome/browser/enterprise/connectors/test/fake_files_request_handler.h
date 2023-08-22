@@ -34,6 +34,7 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
                           const std::string& user_action_id,
                           const std::string& tab_title,
                           safe_browsing::DeepScanAccessPoint access_point,
+                          ContentAnalysisRequest::Reason reason,
                           const std::vector<base::FilePath>& paths,
                           CompletionCallback callback);
 
@@ -50,6 +51,7 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
       const std::string& user_action_id,
       const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
+      ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
       FilesRequestHandler::CompletionCallback callback);
 
