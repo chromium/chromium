@@ -50,10 +50,10 @@ FederatedIdentityPermissionContextFactory::
 FederatedIdentityPermissionContextFactory::
     ~FederatedIdentityPermissionContextFactory() = default;
 
-KeyedService*
-FederatedIdentityPermissionContextFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new FederatedIdentityPermissionContext(profile);
+std::unique_ptr<KeyedService> FederatedIdentityPermissionContextFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* profile) const {
+  return std::make_unique<FederatedIdentityPermissionContext>(profile);
 }
 
 void FederatedIdentityPermissionContextFactory::BrowserContextShutdown(
