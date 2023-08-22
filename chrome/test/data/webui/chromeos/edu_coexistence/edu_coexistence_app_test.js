@@ -90,6 +90,15 @@ suite(edu_coexistence_app_tests.suiteName, function() {
   test(assert(edu_coexistence_app_tests.TestNames.InitOffline), function() {
     appComponent.setInitialScreen_(false /** online **/);
     assertEquals(appComponent.currentScreen_, Screens.OFFLINE);
+
+    const offlineScreen =
+        appComponent.shadowRoot.querySelector('edu-coexistence-offline');
+    const nextButton =
+        offlineScreen.shadowRoot.querySelector('edu-coexistence-button')
+            .shadowRoot.querySelector('cr-button');
+    nextButton.click();
+
+    assertEquals(testBrowserProxy.getCallCount('dialogClose'), 1);
   });
 
   test(assert(edu_coexistence_app_tests.TestNames.ShowOffline), function() {
@@ -114,6 +123,15 @@ suite(edu_coexistence_app_tests.suiteName, function() {
 
     appComponent.fire('go-error');
     assertEquals(appComponent.currentScreen_, Screens.ERROR);
+
+    const errorScreen =
+        appComponent.shadowRoot.querySelector('edu-coexistence-error');
+    const nextButton =
+        errorScreen.shadowRoot.querySelector('edu-coexistence-button')
+            .shadowRoot.querySelector('cr-button');
+    nextButton.click();
+
+    assertEquals(testBrowserProxy.getCallCount('dialogClose'), 1);
   });
 
   test(
