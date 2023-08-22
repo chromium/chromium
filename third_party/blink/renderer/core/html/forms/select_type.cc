@@ -236,7 +236,8 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
             ->FiresTouchEvents(mouse_event->FromTouch());
     select_->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                                mojom::blink::FocusType::kMouse,
-                               source_capabilities));
+                               source_capabilities, FocusOptions::Create(),
+                               FocusTrigger::kUserGesture));
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
         !select_->IsDisabledFormControl()) {
       if (PopupIsVisible()) {
@@ -283,7 +284,7 @@ bool MenuListSelectType::ShouldOpenPopupForKeyPressEvent(
 }
 
 bool MenuListSelectType::HandlePopupOpenKeyboardEvent() {
-  select_->Focus();
+  select_->Focus(FocusParams(FocusTrigger::kUserGesture));
   // Calling focus() may cause us to lose our LayoutObject. Return true so
   // that our caller doesn't process the event further, but don't set
   // the event as handled.
@@ -718,7 +719,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   const auto* gesture_event = DynamicTo<GestureEvent>(event);
   if (event.type() == event_type_names::kGesturetap && gesture_event) {
-    select_->Focus();
+    select_->Focus(FocusParams(FocusTrigger::kUserGesture));
     // Calling focus() may cause us to lose our layoutObject or change the
     // layoutObject type, in which case do not want to handle the event.
     if (!select_->GetLayoutObject() || will_be_destroyed_)
@@ -740,7 +741,7 @@ bool ListBoxSelectType::DefaultEventHandler(const Event& event) {
   if (event.type() == event_type_names::kMousedown && mouse_event &&
       mouse_event->button() ==
           static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-    select_->Focus();
+    select_->Focus(FocusParams(FocusTrigger::kUserGesture));
     // Calling focus() may cause us to lose our layoutObject, in which case
     // do not want to handle the event.
     if (!select_->GetLayoutObject() || will_be_destroyed_ ||

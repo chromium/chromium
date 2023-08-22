@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
 
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -369,7 +370,7 @@ bool AXSelection::Select(const AXSelectionBehavior selection_behavior) {
     // TextControl::SetSelectionRange deliberately does not set focus. But if
     // we're updating the selection, the text control should be focused.
     ScheduleSelectEvent(text_control);
-    text_control.Focus();
+    text_control.Focus(FocusParams(FocusTrigger::kUserGesture));
     return true;
   }
 

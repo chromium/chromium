@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/ignore_opens_during_unload_count_incrementer.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -727,7 +728,7 @@ void LocalFrameMojoHandler::AdvanceFocusForIME(
     return;
 
   next_element->scrollIntoViewIfNeeded(true /*centerIfNeeded*/);
-  next_element->Focus();
+  next_element->Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 
 void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(

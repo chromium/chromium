@@ -207,9 +207,9 @@ void HTMLLabelElement::DefaultEventHandler(Event& evt) {
       // In case of double click or triple click, selection will be there,
       // so do not focus the control element.
       if (!is_label_text_selected) {
-        element->Focus(FocusParams(
-            SelectionBehaviorOnFocus::kRestore, mojom::blink::FocusType::kMouse,
-            nullptr, FocusOptions::Create(), /*gate_on_user_activation=*/true));
+        element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                                   mojom::blink::FocusType::kMouse, nullptr,
+                                   FocusOptions::Create()));
       }
     }
 
@@ -249,7 +249,8 @@ void HTMLLabelElement::Focus(const FocusParams& params) {
   // To match other browsers, always restore previous selection.
   if (HTMLElement* element = control()) {
     element->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore, params.type,
-                               params.source_capabilities, params.options));
+                               params.source_capabilities, params.options,
+                               params.focus_trigger));
   }
 }
 

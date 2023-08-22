@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -5123,7 +5124,7 @@ bool AXNodeObject::OnNativeFocusAction() {
     }
   }
 
-  element->Focus();
+  element->Focus(FocusParams(FocusTrigger::kUserGesture));
 
   // Calling NotifyUserActivation here allows the browser to activate features
   // that need user activation, such as showing an autofill suggestion.

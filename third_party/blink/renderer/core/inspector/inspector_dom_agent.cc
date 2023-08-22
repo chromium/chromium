@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
@@ -1448,7 +1449,7 @@ protocol::Response InspectorDOMAgent::focus(Maybe<int> node_id,
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInspector);
   if (!element->IsFocusable())
     return protocol::Response::ServerError("Element is not focusable");
-  element->Focus();
+  element->Focus(FocusParams(FocusTrigger::kUserGesture));
   return protocol::Response::Success();
 }
 

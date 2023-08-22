@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -605,10 +606,10 @@ void WebFrameWidgetImpl::OnStartStylusWriting(
   }
 
   if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
-    text_control->Focus();
+    text_control->Focus(FocusParams(FocusTrigger::kUserGesture));
   } else if (auto* html_element =
                  DynamicTo<HTMLElement>(stylus_writable_element)) {
-    html_element->Focus();
+    html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
   Element* focused_element = FocusedElement();
   // Since the element can change after it gets focused, we just verify if

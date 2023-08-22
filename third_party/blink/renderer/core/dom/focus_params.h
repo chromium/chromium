@@ -12,24 +12,34 @@
 
 namespace blink {
 
+// Focus changes that cross a fenced frame boundary are observable by both
+// frames involved in the focus change. Because of that, focus calls that
+// originate from a JavaScript call can be used as a communication channel
+// between a fenced frame and its embedder. For those focus calls, we gate focus
+// on user activation to ensure that a user has recently interacted with a frame
+// before allowing focus to happen. By default, we assume focus can be used as a
+// communication channel. However, if a focus call can only be triggered
+// directly through user interaction and can't be triggered via script, it is
+// safe to not gate the focus call on user activation.
+enum class FocusTrigger { kScript, kUserGesture };
+
 struct FocusParams {
   STACK_ALLOCATED();
 
  public:
   FocusParams() : options(FocusOptions::Create()) {}
-  explicit FocusParams(bool gate_on_user_activation)
-      : options(FocusOptions::Create()),
-        gate_on_user_activation(gate_on_user_activation) {}
+  explicit FocusParams(FocusTrigger focus_trigger)
+      : options(FocusOptions::Create()), focus_trigger(focus_trigger) {}
   FocusParams(SelectionBehaviorOnFocus selection,
               mojom::blink::FocusType focus_type,
               InputDeviceCapabilities* capabilities,
               const FocusOptions* focus_options = FocusOptions::Create(),
-              bool gate_on_user_activation = false)
+              FocusTrigger focus_trigger = FocusTrigger::kScript)
       : selection_behavior(selection),
         type(focus_type),
         source_capabilities(capabilities),
         options(focus_options),
-        gate_on_user_activation(gate_on_user_activation) {}
+        focus_trigger(focus_trigger) {}
 
   SelectionBehaviorOnFocus selection_behavior =
       SelectionBehaviorOnFocus::kRestore;
@@ -37,7 +47,7 @@ struct FocusParams {
   InputDeviceCapabilities* source_capabilities = nullptr;
   const FocusOptions* options = nullptr;
   bool omit_blur_events = false;
-  bool gate_on_user_activation = false;
+  FocusTrigger focus_trigger = FocusTrigger::kScript;
 };
 
 }  // namespace blink

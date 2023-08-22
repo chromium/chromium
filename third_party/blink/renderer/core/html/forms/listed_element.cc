@@ -521,9 +521,9 @@ void ListedElement::ShowValidationMessage() {
   Element& element = ValidationAnchor();
   element.scrollIntoViewIfNeeded(false);
   if (element.IsFocusable())
-    element.Focus(FocusParams(/*gate_on_user_activation=*/true));
+    element.Focus();
   else
-    ToHTMLElement().Focus(FocusParams(/*gate_on_user_activation=*/true));
+    ToHTMLElement().Focus();
   UpdateVisibleValidationMessage();
 }
 

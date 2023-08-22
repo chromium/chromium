@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -438,7 +439,7 @@ void MultipleFieldsTemporalInputTypeView::DestroyShadowSubtree() {
   // If a field element has focus, set focus back to the <input> itself before
   // deleting the field. This prevents unnecessary focusout/blur events.
   if (ContainsFocusedShadowElement())
-    GetElement().Focus();
+    GetElement().Focus(FocusParams(FocusTrigger::kUserGesture));
 
   InputTypeView::DestroyShadowSubtree();
   is_destroying_shadow_subtree_ = false;
@@ -668,7 +669,7 @@ void MultipleFieldsTemporalInputTypeView::ShowPickerIndicator() {
 }
 
 void MultipleFieldsTemporalInputTypeView::FocusAndSelectClearButtonOwner() {
-  GetElement().Focus();
+  GetElement().Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 
 bool MultipleFieldsTemporalInputTypeView::

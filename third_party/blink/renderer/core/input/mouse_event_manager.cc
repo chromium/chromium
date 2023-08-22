@@ -584,9 +584,9 @@ bool MouseEventManager::SlideFocusOnShadowHostIfNecessary(
   if (Element* delegated_target = element.GetFocusableArea()) {
     // Use FocusType::kMouse instead of FocusType::kForward
     // in order to prevent :focus-visible from being set
-    delegated_target->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
-                                        mojom::blink::FocusType::kMouse,
-                                        nullptr));
+    delegated_target->Focus(FocusParams(
+        SelectionBehaviorOnFocus::kReset, mojom::blink::FocusType::kMouse,
+        nullptr, FocusOptions::Create(), FocusTrigger::kUserGesture));
     return true;
   }
   return false;

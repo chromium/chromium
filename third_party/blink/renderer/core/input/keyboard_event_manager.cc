@@ -197,7 +197,8 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
   if (!elem)
     return false;
   elem->Focus(FocusParams(SelectionBehaviorOnFocus::kReset,
-                          mojom::blink::FocusType::kAccessKey, nullptr));
+                          mojom::blink::FocusType::kAccessKey, nullptr,
+                          FocusOptions::Create(), FocusTrigger::kUserGesture));
   elem->AccessKeyAction(SimulatedClickCreationScope::kFromUserAgent);
   return true;
 }

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -533,7 +534,7 @@ void HTMLSelectListElement::OpenListbox() {
     PseudoStateChanged(CSSSelector::kPseudoClosed);
     PseudoStateChanged(CSSSelector::kPseudoOpen);
     if (selectedOption()) {
-      selectedOption()->Focus();
+      selectedOption()->Focus(FocusParams(FocusTrigger::kUserGesture));
     }
     selected_option_when_listbox_opened_ = selectedOption();
   }
@@ -566,7 +567,7 @@ bool HTMLSelectListElement::TypeAheadFind(const KeyboardEvent& event,
 
   SetSelectedOption(OptionAtListIndex(index), /*send_events=*/true);
   if (open() && selectedOption()) {
-    selectedOption()->Focus();
+    selectedOption()->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
 
   selected_option_->SetDirty(true);
@@ -577,7 +578,7 @@ void HTMLSelectListElement::ListboxWasClosed() {
   PseudoStateChanged(CSSSelector::kPseudoClosed);
   PseudoStateChanged(CSSSelector::kPseudoOpen);
   if (button_part_) {
-    button_part_->Focus();
+    button_part_->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
   if (selectedOption() != selected_option_when_listbox_opened_) {
     DispatchChangeEvent();
@@ -1076,7 +1077,7 @@ void HTMLSelectListElement::SelectNextOption() {
       if (element->IsDisabledFormControl())
         continue;
       SetSelectedOption(element);
-      element->Focus();
+      element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
     }
@@ -1091,7 +1092,7 @@ void HTMLSelectListElement::SelectPreviousOption() {
       if (element->IsDisabledFormControl())
         continue;
       SetSelectedOption(element);
-      element->Focus();
+      element->Focus(FocusParams(FocusTrigger::kUserGesture));
       DispatchInputAndChangeEventsIfNeeded();
       return;
     }

@@ -246,7 +246,7 @@ void TextControlElement::select() {
   // the selection.
   Focus(FocusParams(SelectionBehaviorOnFocus::kNone,
                     mojom::blink::FocusType::kScript, nullptr,
-                    FocusOptions::Create(), /*gate_on_user_activation=*/true));
+                    FocusOptions::Create()));
   RestoreCachedSelection();
 }
 

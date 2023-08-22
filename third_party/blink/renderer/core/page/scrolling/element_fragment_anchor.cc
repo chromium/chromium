@@ -210,7 +210,7 @@ void ElementFragmentAnchor::ApplyFocusIfNeeded() {
   // clear focus, which matches the behavior of other browsers.
   auto* element = DynamicTo<Element>(anchor_node_.Get());
   if (element && element->IsFocusable()) {
-    element->Focus(FocusParams(/*gate_on_user_activation=*/true));
+    element->Focus();
   } else {
     frame_->GetDocument()->SetSequentialFocusNavigationStartingPoint(
         anchor_node_);

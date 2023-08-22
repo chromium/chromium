@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -400,7 +401,7 @@ void NavigateEvent::PotentiallyResetTheFocus() {
   }
 
   if (Element* focus_delegate = document->GetAutofocusDelegate()) {
-    focus_delegate->Focus();
+    focus_delegate->Focus(FocusParams(FocusTrigger::kUserGesture));
   } else {
     document->ClearFocusedElement();
     document->SetSequentialFocusNavigationStartingPoint(nullptr);

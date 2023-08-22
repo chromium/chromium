@@ -81,7 +81,7 @@ void HTMLDialogElement::SetFocusForDialogLegacy(HTMLDialogElement* dialog) {
 
   // 3. Run the focusing steps for control.
   if (control->IsFocusable())
-    control->Focus(FocusParams(/*gate_on_user_activation=*/true));
+    control->Focus();
   else
     document.ClearFocusedElement();
 
@@ -178,7 +178,7 @@ void HTMLDialogElement::close(const String& return_value) {
     if (previously_focused_element && (was_modal || descendant_is_focused)) {
       previously_focused_element->Focus(FocusParams(
           SelectionBehaviorOnFocus::kNone, mojom::blink::FocusType::kScript,
-          nullptr, focus_options, /*gate_on_user_activation=*/true));
+          nullptr, focus_options));
     }
   }
 

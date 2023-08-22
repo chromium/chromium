@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
@@ -656,7 +657,7 @@ void DateTimeEditElement::FocusByOwner(Element* old_focused_element) {
     GetDocument().UpdateStyleAndLayoutTreeForNode(old_focused_field,
                                                   DocumentUpdateReason::kFocus);
     if (index != kInvalidFieldIndex && old_focused_field->IsFocusable()) {
-      old_focused_field->Focus();
+      old_focused_field->Focus(FocusParams(FocusTrigger::kUserGesture));
       return;
     }
   }
@@ -687,7 +688,7 @@ bool DateTimeEditElement::FocusOnNextFocusableField(wtf_size_t start_index) {
   for (wtf_size_t field_index = start_index; field_index < fields_.size();
        ++field_index) {
     if (fields_[field_index]->IsFocusable()) {
-      fields_[field_index]->Focus();
+      fields_[field_index]->Focus(FocusParams(FocusTrigger::kUserGesture));
       return true;
     }
   }
@@ -711,7 +712,7 @@ bool DateTimeEditElement::FocusOnPreviousField(
   while (field_index > 0) {
     --field_index;
     if (fields_[field_index]->IsFocusable()) {
-      fields_[field_index]->Focus();
+      fields_[field_index]->Focus(FocusParams(FocusTrigger::kUserGesture));
       return true;
     }
   }
@@ -794,7 +795,7 @@ void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
     }
     if (DateTimeFieldElement* field =
             FieldAt(std::min(focused_field_index, fields_.size() - 1)))
-      field->Focus();
+      field->Focus(FocusParams(FocusTrigger::kUserGesture));
   }
 
   if (last_child_to_be_removed) {

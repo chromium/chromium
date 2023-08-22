@@ -5152,8 +5152,7 @@ Element* Element::GetFocusDelegate(bool in_descendant_traversal) const {
 void Element::focusForBindings(const FocusOptions* options) {
   Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
                     mojom::blink::FocusType::kScript,
-                    /*capabilities=*/nullptr, options,
-                    /*gate_on_user_activation=*/true));
+                    /*capabilities=*/nullptr, options));
 }
 
 void Element::Focus() {
@@ -5191,7 +5190,7 @@ void Element::Focus(const FocusParams& params) {
 
   FocusOptions* focus_options = nullptr;
   bool should_consume_user_activation = false;
-  if (params.gate_on_user_activation) {
+  if (params.focus_trigger == FocusTrigger::kScript) {
     LocalFrame& frame = *GetDocument().GetFrame();
     if (!frame.AllowFocusWithoutUserActivation() &&
         !LocalFrame::HasTransientUserActivation(&frame)) {
@@ -5213,8 +5212,7 @@ void Element::Focus(const FocusParams& params) {
 
   FocusParams params_to_use = FocusParams(
       params.selection_behavior, params.type, params.source_capabilities,
-      focus_options ? focus_options : params.options,
-      params.gate_on_user_activation);
+      focus_options ? focus_options : params.options, params.focus_trigger);
 
   // Ensure we have clean style (including forced display locks).
   GetDocument().UpdateStyleAndLayoutTreeForNode(this,

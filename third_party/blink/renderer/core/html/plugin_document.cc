@@ -150,7 +150,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
   frame->View()->FlushAnyPendingPostLayoutTasks();
   // Focus the plugin here, as the line above is where the plugin is created.
   if (frame->IsMainFrame()) {
-    embed_element_->Focus(FocusParams(/*gate_on_user_activation=*/true));
+    embed_element_->Focus();
     if (IsStopped()) {
       // Possibly detached by a mutation event listener installed in
       // runScriptsAtDocumentElementAvailable.

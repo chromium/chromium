@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_scrollintoviewoptions.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -251,7 +252,7 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
   auto* arg =
       MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
   checked_item_->scrollIntoView(arg);
-  checked_item_->Focus();
+  checked_item_->Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 
 void MediaControlPlaybackSpeedListElement::Trace(Visitor* visitor) const {
