@@ -622,6 +622,15 @@ absl::optional<std::string> AuthorityView::PortToString(const GURL& url) {
 }
 
 // static
+absl::optional<std::string> AuthorityView::PortToString(
+    const url::Origin& origin) {
+  if (origin.port() == 0) {
+    return absl::nullopt;
+  }
+  return base::ToString(origin.port());
+}
+
+// static
 AuthorityView AuthorityView::Decode(std::string_view encoded_string) {
   size_t i = encoded_string.find_last_of(kAuthorityHostPortSeparator);
   if (i == std::string_view::npos) {
@@ -635,6 +644,13 @@ AuthorityView AuthorityView::Decode(std::string_view encoded_string) {
 std::string AuthorityView::Encode(const GURL& url) {
   CHECK(url.is_valid());
   return AuthorityView{.host = url.host(), .port = PortToString(url)}.Encode();
+}
+
+// static
+std::string AuthorityView::Encode(const url::Origin& origin) {
+  CHECK(!origin.opaque());
+  return AuthorityView{.host = origin.host(), .port = PortToString(origin)}
+      .Encode();
 }
 
 std::string AuthorityView::Encode() {

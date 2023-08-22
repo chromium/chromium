@@ -298,8 +298,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Returns whether |url| is in the scope of |app_id|.
   bool IsUrlInAppScope(const GURL& url, const AppId& app_id) const;
 
-  // Returns the strength of matching |url| to the extended & regular scope of
-  // |app_id|. Returns 0 if not in extended scope.
+  // Returns whether |url| is in scope or scope_extensions of |app_id|.
+  // Only checks scope if scope_extensions is disabled.
+  bool IsUrlInAppExtendedScope(const GURL& url, const AppId& app_id) const;
+
+  // Returns the strength of matching |url| to the scope and scope_extensions of
+  // |app_id|. Returns 0 if not in either.
+  // Only checks scope if scope_extensions is disabled.
   size_t GetAppExtendedScopeScore(const GURL& url, const AppId& app_id) const;
 
   // Returns the strength of matching |url_spec| to the scope of |app_id|,

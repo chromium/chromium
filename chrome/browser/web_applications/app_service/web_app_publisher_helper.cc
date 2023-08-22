@@ -344,6 +344,33 @@ apps::IntentFilterPtr CreateMimeTypeShareFilter(
   return intent_filter;
 }
 
+apps::IntentFilterPtr CreateIntentFilterFromScopeExtensionInfo(
+    const web_app::ScopeExtensionInfo& scope_extension_info) {
+  CHECK(!scope_extension_info.origin.opaque());
+
+  auto intent_filter = std::make_unique<apps::IntentFilter>();
+
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kAction,
+                                         apps_util::kIntentActionView,
+                                         apps::PatternMatchType::kLiteral);
+
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kScheme,
+                                         scope_extension_info.origin.scheme(),
+                                         apps::PatternMatchType::kLiteral);
+
+  intent_filter->AddSingleValueCondition(
+      apps::ConditionType::kAuthority,
+      apps_util::AuthorityView::Encode(scope_extension_info.origin),
+      scope_extension_info.has_origin_wildcard
+          ? apps::PatternMatchType::kSuffix
+          : apps::PatternMatchType::kLiteral);
+
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "",
+                                         apps::PatternMatchType::kPrefix);
+
+  return intent_filter;
+}
+
 apps::IntentFilters CreateShareIntentFiltersFromShareTarget(
     const apps::ShareTarget& share_target) {
   apps::IntentFilters filters;
@@ -609,6 +636,12 @@ apps::IntentFilters WebAppPublisherHelper::CreateIntentFiltersForWebApp(
   GURL app_scope = provider.registrar_unsafe().GetAppScope(app.app_id());
   if (!app_scope.is_empty()) {
     filters.push_back(apps_util::MakeIntentFilterForUrlScope(app_scope));
+  }
+
+  for (const ScopeExtensionInfo& scope_extension_info :
+       app.validated_scope_extensions()) {
+    filters.push_back(
+        CreateIntentFilterFromScopeExtensionInfo(scope_extension_info));
   }
 
 #if BUILDFLAG(IS_CHROMEOS)

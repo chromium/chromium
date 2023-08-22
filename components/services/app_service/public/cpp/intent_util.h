@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace apps_util {
 
@@ -165,6 +166,7 @@ struct AuthorityView {
   // Stringifies the effective port of `url` if there is one. Not all URL
   // schemes have ports.
   static absl::optional<std::string> PortToString(const GURL& url);
+  static absl::optional<std::string> PortToString(const url::Origin& url);
 
   // Decodes strings of the form:
   // "www.example.com:1234" into {.host="www.example.com", .port="1234"}
@@ -173,6 +175,7 @@ struct AuthorityView {
 
   // Delegates to Encode().
   static std::string Encode(const GURL& url);
+  static std::string Encode(const url::Origin& origin);
 
   // Encodes into the form:
   // "www.example.com:1234" if port is set

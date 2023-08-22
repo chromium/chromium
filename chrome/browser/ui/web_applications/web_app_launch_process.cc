@@ -126,12 +126,12 @@ content::WebContents* WebAppLaunchProcess::Run() {
           ->GetSystemApp(
               *ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id))
           ->IsUrlInSystemAppScope(launch_url);
-  DCHECK(registrar_->IsUrlInAppScope(launch_url, params_->app_id) ||
-         is_url_in_system_web_app_sccope)
+  CHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id) ||
+        is_url_in_system_web_app_sccope)
       << "Url " << launch_url.spec() << " not in scope for app "
       << params_->app_id;
 #else
-  DCHECK(registrar_->IsUrlInAppScope(launch_url, params_->app_id));
+  CHECK(registrar_->IsUrlInAppExtendedScope(launch_url, params_->app_id));
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -360,8 +360,8 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
       return {.web_contents = existing_tab, .did_navigate = false};
     }
 
-    if (registrar_->IsUrlInAppScope(existing_tab->GetLastCommittedURL(),
-                                    params_->app_id)) {
+    if (registrar_->IsUrlInAppExtendedScope(existing_tab->GetLastCommittedURL(),
+                                            params_->app_id)) {
       // If the web contents is currently navigating then interrupt it. The
       // current page is now being used for this app launch.
       existing_tab->Stop();

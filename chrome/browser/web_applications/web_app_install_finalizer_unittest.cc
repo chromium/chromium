@@ -505,8 +505,9 @@ TEST_P(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsApproved) {
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("htps://foo.example")),
+      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
                          /*has_origin_wildcard=*/true);
+  CHECK(!scope_extension.origin.opaque());
   info->scope_extensions = {scope_extension};
 
   // Set data such that scope_extension will be returned in validated data.
@@ -533,7 +534,7 @@ TEST_P(WebAppInstallFinalizerUnitTest, ValidateOriginAssociationsDenied) {
       webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   ScopeExtensionInfo scope_extension =
-      ScopeExtensionInfo(url::Origin::Create(GURL("htps://foo.example")),
+      ScopeExtensionInfo(url::Origin::Create(GURL("https://foo.example")),
                          /*has_origin_wildcard=*/true);
   info->scope_extensions = {scope_extension};
 

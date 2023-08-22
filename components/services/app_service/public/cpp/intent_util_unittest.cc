@@ -285,16 +285,22 @@ TEST_F(IntentUtilTest, AuthorityMatch) {
                                           GURL(url_spec));
   };
 
-  auto explicit_port = MakeAuthorityFilter(
-      apps_util::AuthorityView::Encode(GURL("https://example.com:1234")));
-  EXPECT_TRUE(
-      MakeViewIntent("https://example.com:1234")->MatchFilter(explicit_port));
-  EXPECT_FALSE(
-      MakeViewIntent("https://example.com")->MatchFilter(explicit_port));
-  EXPECT_FALSE(
-      MakeViewIntent("https://example.com:5678")->MatchFilter(explicit_port));
-  EXPECT_FALSE(
-      MakeViewIntent("https://example.org:1234")->MatchFilter(explicit_port));
+  std::vector<std::string> explicit_ports{
+      apps_util::AuthorityView::Encode(GURL("https://example.com:1234")),
+      apps_util::AuthorityView::Encode(
+          url::Origin::CreateFromNormalizedTuple("https", "example.com", 1234)),
+  };
+  for (const auto& explicit_port : explicit_ports) {
+    auto authority_filter = MakeAuthorityFilter(explicit_port);
+    EXPECT_TRUE(MakeViewIntent("https://example.com:1234")
+                    ->MatchFilter(authority_filter));
+    EXPECT_FALSE(
+        MakeViewIntent("https://example.com")->MatchFilter(authority_filter));
+    EXPECT_FALSE(MakeViewIntent("https://example.com:5678")
+                     ->MatchFilter(authority_filter));
+    EXPECT_FALSE(MakeViewIntent("https://example.org:1234")
+                     ->MatchFilter(authority_filter));
+  }
 
   auto implicit_port = MakeAuthorityFilter(
       apps_util::AuthorityView::Encode(GURL("https://example.com")));
@@ -316,12 +322,22 @@ TEST_F(IntentUtilTest, AuthorityMatch) {
       MakeViewIntent("file://test:1234")->MatchFilter(portless_scheme));
   EXPECT_FALSE(MakeViewIntent("file://other")->MatchFilter(portless_scheme));
 
-  auto host_only = MakeAuthorityFilter("example.com");
-  EXPECT_TRUE(MakeViewIntent("https://example.com")->MatchFilter(host_only));
-  EXPECT_TRUE(MakeViewIntent("https://example.com:80")->MatchFilter(host_only));
-  EXPECT_TRUE(
-      MakeViewIntent("https://example.com:1234")->MatchFilter(host_only));
-  EXPECT_FALSE(MakeViewIntent("https://example.org")->MatchFilter(host_only));
+  std::vector<std::string> host_onlys{
+      "example.com",
+      apps_util::AuthorityView::Encode(
+          url::Origin::CreateFromNormalizedTuple("https", "example.com", 0)),
+  };
+  for (const auto& host_only : host_onlys) {
+    auto authority_filter = MakeAuthorityFilter(host_only);
+    EXPECT_TRUE(
+        MakeViewIntent("https://example.com")->MatchFilter(authority_filter));
+    EXPECT_TRUE(MakeViewIntent("https://example.com:80")
+                    ->MatchFilter(authority_filter));
+    EXPECT_TRUE(MakeViewIntent("https://example.com:1234")
+                    ->MatchFilter(authority_filter));
+    EXPECT_FALSE(
+        MakeViewIntent("https://example.org")->MatchFilter(authority_filter));
+  }
 
   auto host_suffix = MakeAuthorityFilter(
       apps_util::AuthorityView::Encode(GURL("https://example.com:1234")),

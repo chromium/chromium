@@ -58,19 +58,6 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
 
   void SetPublisherForTesting(crosapi::mojom::AppPublisher* publisher);
 
- private:
-  void OnReady();
-  void ExecuteContextMenuCommandInternal(
-      const std::string& app_id,
-      const std::string& id,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          launch_finished_callback);
-  void LaunchInternal(
-      const std::string& app_id,
-      apps::AppLaunchParams params,
-      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
-          launch_finished_callback);
-
   // crosapi::mojom::AppController:
   void Uninstall(const std::string& app_id,
                  apps::UninstallSource uninstall_source,
@@ -101,6 +88,19 @@ class LacrosWebAppsController : public crosapi::mojom::AppController,
   void StopApp(const std::string& app_id) override;
   void SetPermission(const std::string& app_id,
                      apps::PermissionPtr permission) override;
+
+ private:
+  void OnReady();
+  void ExecuteContextMenuCommandInternal(
+      const std::string& app_id,
+      const std::string& id,
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          launch_finished_callback);
+  void LaunchInternal(
+      const std::string& app_id,
+      apps::AppLaunchParams params,
+      base::OnceCallback<void(const std::vector<content::WebContents*>&)>
+          launch_finished_callback);
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::AppPtr> apps) override;

@@ -320,11 +320,6 @@ GURL WebAppRegistrar::GetAppScope(const AppId& app_id) const {
 
 size_t WebAppRegistrar::GetAppExtendedScopeScore(const GURL& url,
                                                  const AppId& app_id) const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensions)) {
-    return 0;
-  }
-
   if (!url.is_valid()) {
     return 0;
   }
@@ -332,6 +327,16 @@ size_t WebAppRegistrar::GetAppExtendedScopeScore(const GURL& url,
   size_t app_scope = GetUrlInAppScopeScore(url.spec(), app_id);
   if (app_scope > 0) {
     return app_scope;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableScopeExtensions)) {
+    return 0;
+  }
+
+  const WebApp* app = GetAppById(app_id);
+  if (!app || app->validated_scope_extensions().empty()) {
+    return 0;
   }
 
   url::Origin origin = url::Origin::Create(url);
@@ -368,6 +373,11 @@ size_t WebAppRegistrar::GetAppExtendedScopeScore(const GURL& url,
 bool WebAppRegistrar::IsUrlInAppScope(const GURL& url,
                                       const AppId& app_id) const {
   return GetUrlInAppScopeScore(url.spec(), app_id) > 0;
+}
+
+bool WebAppRegistrar::IsUrlInAppExtendedScope(const GURL& url,
+                                              const AppId& app_id) const {
+  return GetAppExtendedScopeScore(url, app_id) > 0;
 }
 
 size_t WebAppRegistrar::GetUrlInAppScopeScore(const std::string& url_spec,

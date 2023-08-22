@@ -56,6 +56,16 @@ class WebAppNavigationBrowserTest : public WebAppControllerBrowserTest {
   // respectively, adds it to the DOM, and clicks on it with |modifiers|.
   // Returns once |target_url| has loaded. |modifiers| should be based on
   // blink::WebInputEvent::Modifiers.
+  static void ClickLink(
+      content::WebContents* web_contents,
+      const GURL& link_url,
+      const GURL& target_url,
+      LinkTarget target = LinkTarget::SELF,
+      const std::string& rel = "",
+      int modifiers = blink::WebInputEvent::Modifiers::kNoModifiers,
+      blink::WebMouseEvent::Button button =
+          blink::WebMouseEvent::Button::kLeft);
+
   static void ClickLinkWithModifiersAndWaitForURL(
       content::WebContents* web_contents,
       const GURL& link_url,

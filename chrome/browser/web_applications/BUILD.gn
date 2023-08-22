@@ -863,6 +863,7 @@ source_set("web_applications_browser_tests") {
     "web_app_internals_browsertest.cc",
     "web_app_origin_association_manager_browsertest.cc",
     "web_app_pref_migration_browsertest.cc",
+    "web_app_scope_extensions_browsertest.cc",
     "web_contents/web_app_url_loader_browsertest.cc",
   ]
 
@@ -925,6 +926,7 @@ source_set("web_applications_browser_tests") {
 
   if (is_chromeos_lacros) {
     deps += [
+      "//chrome/browser/web_applications/app_service:test_support",
       "//chromeos/constants",
       "//chromeos/startup",
     ]

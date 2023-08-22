@@ -67,15 +67,15 @@ void LoopbackCrosapiAppServiceProxy::RegisterAppServiceSubscriber(
 }
 void LoopbackCrosapiAppServiceProxy::Launch(
     crosapi::mojom::LaunchParamsPtr launch_params) {
-  // Implement this if needed.
-  NOTIMPLEMENTED();
+  app_service_->LacrosWebAppsControllerForTesting()->Launch(
+      std::move(launch_params), base::DoNothing());
 }
 
 void LoopbackCrosapiAppServiceProxy::LaunchWithResult(
     crosapi::mojom::LaunchParamsPtr launch_params,
     LaunchWithResultCallback callback) {
-  // Implement this if needed.
-  NOTIMPLEMENTED();
+  app_service_->LacrosWebAppsControllerForTesting()->Launch(
+      std::move(launch_params), std::move(callback));
 }
 
 void LoopbackCrosapiAppServiceProxy::LoadIcon(const std::string& app_id,

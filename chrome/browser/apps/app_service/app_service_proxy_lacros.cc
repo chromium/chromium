@@ -327,45 +327,42 @@ std::vector<IntentLaunchInfo> AppServiceProxyLacros::GetAppsForIntent(
     return intent_launch_info;
   }
 
-  if (crosapi_receiver_.is_bound()) {
-    app_registry_cache_.ForEachApp(
-        [&intent_launch_info, &intent, &exclude_browsers,
-         &exclude_browser_tab_apps](const apps::AppUpdate& update) {
-          if (!apps_util::IsInstalled(update.Readiness()) ||
-              !update.ShowInLauncher().value_or(false)) {
-            return;
-          }
-          if (exclude_browser_tab_apps &&
-              update.WindowMode() == WindowMode::kBrowser) {
-            return;
-          }
-          std::set<std::string> existing_activities;
-          for (const auto& filter : update.IntentFilters()) {
-            DCHECK(filter);
-            if (exclude_browsers && filter->IsBrowserFilter()) {
-              continue;
-            }
-            if (intent->MatchFilter(filter)) {
-              IntentLaunchInfo entry;
-              entry.app_id = update.AppId();
-              std::string activity_label;
-              if (filter->activity_label &&
-                  !filter->activity_label.value().empty()) {
-                activity_label = filter->activity_label.value();
-              } else {
-                activity_label = update.Name();
-              }
-              if (base::Contains(existing_activities, activity_label)) {
-                continue;
-              }
-              existing_activities.insert(activity_label);
-              entry.activity_label = activity_label;
-              entry.activity_name = filter->activity_name.value_or("");
-              intent_launch_info.push_back(entry);
-            }
-          }
-        });
-  }
+  app_registry_cache_.ForEachApp([&intent_launch_info, &intent,
+                                  &exclude_browsers, &exclude_browser_tab_apps](
+                                     const apps::AppUpdate& update) {
+    if (!apps_util::IsInstalled(update.Readiness()) ||
+        !update.ShowInLauncher().value_or(false)) {
+      return;
+    }
+    if (exclude_browser_tab_apps &&
+        update.WindowMode() == WindowMode::kBrowser) {
+      return;
+    }
+    std::set<std::string> existing_activities;
+    for (const auto& filter : update.IntentFilters()) {
+      DCHECK(filter);
+      if (exclude_browsers && filter->IsBrowserFilter()) {
+        continue;
+      }
+      if (intent->MatchFilter(filter)) {
+        IntentLaunchInfo entry;
+        entry.app_id = update.AppId();
+        std::string activity_label;
+        if (filter->activity_label && !filter->activity_label.value().empty()) {
+          activity_label = filter->activity_label.value();
+        } else {
+          activity_label = update.Name();
+        }
+        if (base::Contains(existing_activities, activity_label)) {
+          continue;
+        }
+        existing_activities.insert(activity_label);
+        entry.activity_label = activity_label;
+        entry.activity_name = filter->activity_name.value_or("");
+        intent_launch_info.push_back(entry);
+      }
+    }
+  });
   return intent_launch_info;
 }
 
