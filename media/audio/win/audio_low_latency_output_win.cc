@@ -741,7 +741,16 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         // only says that the device frequency reported by successive calls to
         // GetFrequency never changes during the lifetime of a stream "in
         // Windows Vista".
-        CHECK_GE(position, last_position_);
+        if (position < last_position_) {
+          // http://crbug.com/1473580: according to MS documentation |position|
+          // is monotonic, but in practice it's not always so.
+          TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("audio"),
+                               "position decrease", TRACE_EVENT_SCOPE_THREAD);
+        }
+        // If |position_time_increase| is negative, it means we are likely to
+        // have a larger |gap_duration| and to register a glitch. In reality,
+        // it's unclear if there's a glitch in such "it should never happen"
+        // case or not.
         base::TimeDelta position_time_increase =
             media::AudioTimestampHelper::FramesToTime(position - last_position_,
                                                       device_frequency);
