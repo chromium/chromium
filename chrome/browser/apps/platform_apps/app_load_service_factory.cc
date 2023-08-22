@@ -46,9 +46,10 @@ AppLoadServiceFactory::AppLoadServiceFactory()
 
 AppLoadServiceFactory::~AppLoadServiceFactory() = default;
 
-KeyedService* AppLoadServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AppLoadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AppLoadService(context);
+  return std::make_unique<AppLoadService>(context);
 }
 
 bool AppLoadServiceFactory::ServiceIsCreatedWithBrowserContext() const {
