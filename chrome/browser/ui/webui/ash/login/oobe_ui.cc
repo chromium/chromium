@@ -26,6 +26,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/boot_times_recorder_tab_helper.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_check_screen_view.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen_view.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
@@ -324,7 +325,7 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
                      features::IsOobeTouchpadScrollEnabled());
 
   source->AddBoolean("isDrivePinningEnabled",
-                     features::IsOobeDrivePinningEnabled());
+                     drive::util::IsOobeDrivePinningEnabled(profile));
 
   // Whether the timings in oobe_trace.js will be output to the console.
   source->AddBoolean(
@@ -548,7 +549,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<AddChildScreenHandler>());
 
-  if (features::IsOobeDrivePinningEnabled()) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  if (drive::util::IsOobeDrivePinningEnabled(profile)) {
     AddScreenHandler(std::make_unique<DrivePinningScreenHandler>());
   }
 
@@ -556,7 +558,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
 
-  Profile* profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 

@@ -20,10 +20,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
-
 namespace {
 
 // clang-format off
@@ -111,7 +111,7 @@ bool IsDriveFsBulkPinningEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->IsDriveFsBulkPinningEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::features::IsDriveFsBulkPinningEnabled();
+  return drive::util::IsDriveFsBulkPinningEnabled();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

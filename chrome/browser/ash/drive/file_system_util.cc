@@ -119,8 +119,6 @@ bool IsDriveEnabledForProfile(const Profile* const profile) {
 }
 
 bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
-  DCHECK(profile);
-
   // Check the "DriveFsBulkPinning" Chrome feature. If this feature is disabled,
   // then it probably means that the kill switch has been activated, and the
   // bulk-pinning feature should not be available.
@@ -131,12 +129,13 @@ bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   // Check the "drivefs.bulk_pinning.visible" boolean pref. If this pref is
   // false, then it probably means that it has been turned down by an enterprise
   // policy, and the bulk-pinning feature should not be available.
-  if (!profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningVisible)) {
+  if (profile &&
+      !profile->GetPrefs()->GetBoolean(prefs::kDriveFsBulkPinningVisible)) {
     return false;
   }
 
   // Does the user profile belong to a managed user or not?
-  if (!profile->GetProfilePolicyConnector()->IsManaged()) {
+  if (!profile || !profile->GetProfilePolicyConnector()->IsManaged()) {
     // Not a managed user. The bulk-pinning feature is available on suitable
     // devices, as controlled by the "FeatureManagementDriveFsBulkPinning"
     // Chrome feature.
@@ -158,6 +157,12 @@ bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
   const User* const user = UserManager::Get()->GetActiveUser();
   return user && gaia::IsGoogleInternalAccountEmail(
                      user->GetAccountId().GetUserEmail());
+}
+
+bool IsOobeDrivePinningEnabled(const Profile* const profile) {
+  return base::FeatureList::IsEnabled(ash::features::kOobeDrivePinning) &&
+         ash::features::IsOobeChoobeEnabled() &&
+         IsDriveFsBulkPinningEnabled(profile);
 }
 
 ConnectionStatusType GetDriveConnectionStatus(Profile* profile) {

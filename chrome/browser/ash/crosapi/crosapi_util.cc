@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -657,7 +658,7 @@ void InjectBrowserInitParams(
   params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
 
   params->is_drivefs_bulk_pinning_enabled =
-      ash::features::IsDriveFsBulkPinningEnabled();
+      drive::util::IsDriveFsBulkPinningEnabled();
 
   params->is_sys_ui_downloads_integration_v2_enabled =
       ash::features::IsSysUiDownloadsIntegrationV2Enabled();
