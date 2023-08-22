@@ -1016,6 +1016,18 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
            .Empty()) {
     banned_features.Put(
         WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
+
+    // "Check that `rfh` is not in back/forward cache (since it has sticky
+    // banned features). This means
+    // `OnBackForwardCacheDisablingStickyFeatureUsed()` won't accidentally
+    // trigger eviction of rfh, which would otherwise be a confusing side effect
+    // of this function.
+    CHECK(!rfh->IsInBackForwardCache());
+    // Record the feature usage in `rfh`. This is needed because all
+    // `banned_features` have to be recorded in `rfh` so that the blocking
+    // details are also recorded.
+    rfh->OnBackForwardCacheDisablingStickyFeatureUsed(
+        WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
   }
   if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
