@@ -2519,13 +2519,16 @@ Style notes:
         Last desk can't be removed.
       </message>
       <message name="IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted active desk mini_view.">
-        Active desk.
+        active desk
       </message>
       <message name="IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a highlighted inactive desk mini_view.">
-        Inactive desk.
+        inactive desk
       </message>
       <message name="IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME" desc="The full accessible desk name">
         Desk: <ph name="DESK_NAME">$1</ph>
+      </message>
+      <message name="IDS_ASH_DESKS_DESK_PREVIEW_A11Y_NAME" desc="The full accessible desk name">
+        Go to <ph name="ACTIVE_STATE">$1</ph> <ph name="DESK_NAME">$2</ph> button.
       </message>
       <message name="IDS_ASH_DESKS_DESK_NAME_COMMIT" desc="Alert when the desk name is committed">
         Desk name was changed to <ph name="DESK_NAME">$1</ph>

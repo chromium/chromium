@@ -138,7 +138,6 @@ class ASH_EXPORT DeskMiniView : public views::View,
   const char* GetClassName() const override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // Desk::Observer:
