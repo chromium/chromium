@@ -6,8 +6,10 @@ bad_raw_ptr_cast_kinds.cpp:56:9: error: no matching conversion for static_cast f
         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ./base/allocator/partition_allocator/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit copy constructor) not viable: no known conversion from 'RawPtrWrapper' to 'const raw_ptr<int>' for 1st argument
 class raw_ptr {
-      ^
+      ^~~~~~~
 ./base/allocator/partition_allocator/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit move constructor) not viable: no known conversion from 'RawPtrWrapper' to 'raw_ptr<int>' for 1st argument
+class raw_ptr {
+      ^~~~~~~
 ./base/allocator/partition_allocator/pointers/raw_ptr.h:11:7: note: candidate constructor (the implicit default constructor) not viable: requires 0 arguments, but 1 was provided
 bad_raw_ptr_cast_kinds.cpp:57:9: error: cannot cast from type 'RawPtrWrapper' to pointer type 'int *'
   (void)static_cast<int*>(wrapped);
