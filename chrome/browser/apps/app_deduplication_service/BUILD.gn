@@ -1,0 +1,73 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+# App Deduplication Service is Ash-only.
+assert(is_chromeos_ash)
+
+source_set("app_deduplication_service") {
+  sources = [
+    "app_deduplication_cache.cc",
+    "app_deduplication_cache.h",
+    "app_deduplication_mapper.cc",
+    "app_deduplication_mapper.h",
+    "app_deduplication_server_connector.cc",
+    "app_deduplication_server_connector.h",
+    "app_deduplication_service.cc",
+    "app_deduplication_service.h",
+    "app_deduplication_service_factory.cc",
+    "app_deduplication_service_factory.h",
+    "duplicate_group.cc",
+    "duplicate_group.h",
+    "entry_types.cc",
+    "entry_types.h",
+  ]
+
+  public_deps = [ "//chrome/browser/apps/app_deduplication_service/proto" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_provisioning_service",
+    "//chrome/browser/apps/app_service",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/keyed_service/content",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/services/app_service",
+    "//google_apis:google_apis",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "app_deduplication_cache_unittest.cc",
+    "app_deduplication_mapper_unittest.cc",
+    "app_deduplication_server_connector_unittest.cc",
+    "app_deduplication_service_unittest.cc",
+  ]
+
+  deps = [
+    ":app_deduplication_service",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/browser/apps/app_provisioning_service",
+    "//chrome/browser/apps/app_service",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/version_info:channel",
+    "//content/test:test_support",
+    "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+  ]
+}

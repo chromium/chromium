@@ -23,7 +23,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
-#include "third_party/crashpad/crashpad/util/string/split_string.h"
 
 namespace {
 // Folder path to where the deduplication data will be stored on disk.
