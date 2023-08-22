@@ -42,8 +42,10 @@ FederatedIdentityAutoReauthnPermissionContextFactory::
 FederatedIdentityAutoReauthnPermissionContextFactory::
     ~FederatedIdentityAutoReauthnPermissionContextFactory() = default;
 
-KeyedService*
-FederatedIdentityAutoReauthnPermissionContextFactory::BuildServiceInstanceFor(
-    content::BrowserContext* profile) const {
-  return new FederatedIdentityAutoReauthnPermissionContext(profile);
+std::unique_ptr<KeyedService>
+FederatedIdentityAutoReauthnPermissionContextFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* profile) const {
+  return std::make_unique<FederatedIdentityAutoReauthnPermissionContext>(
+      profile);
 }
