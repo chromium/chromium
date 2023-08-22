@@ -88,6 +88,12 @@ class CookieControlsBubbleViewPixelTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         content_settings::features::kUserBypassUI,
         {{"expiration", std::get<1>(GetParam())}});
+
+    // Overriding `base::Time::Now()` to obtain a consistent X days until
+    // exception expiration calculation regardless of the time the test runs.
+    base::subtle::ScopedTimeClockOverrides time_override(
+        &CookieControlsBubbleViewPixelTest::GetReferenceTime,
+        /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   }
 
   void TearDownOnMainThread() override {
@@ -150,6 +156,12 @@ class CookieControlsBubbleViewPixelTest
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
     run_loop.Run();
+  }
+
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    return time;
   }
 
   void NavigateToUrlWithThirdPartyCookies() {
