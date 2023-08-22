@@ -33,9 +33,11 @@ IdleManagerFactory::IdleManagerFactory()
 IdleManagerFactory::~IdleManagerFactory() {
 }
 
-KeyedService* IdleManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IdleManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  IdleManager* idle_manager = new IdleManager(context);
+  std::unique_ptr<IdleManager> idle_manager =
+      std::make_unique<IdleManager>(context);
   idle_manager->Init();
   return idle_manager;
 }
