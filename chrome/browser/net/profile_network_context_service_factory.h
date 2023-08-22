@@ -37,7 +37,7 @@ class ProfileNetworkContextServiceFactory : public ProfileKeyedServiceFactory {
   ~ProfileNetworkContextServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   bool ServiceIsNULLWhileTesting() const override;
 };

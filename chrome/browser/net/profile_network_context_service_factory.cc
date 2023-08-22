@@ -61,9 +61,11 @@ ProfileNetworkContextServiceFactory::ProfileNetworkContextServiceFactory()
 ProfileNetworkContextServiceFactory::~ProfileNetworkContextServiceFactory() =
     default;
 
-KeyedService* ProfileNetworkContextServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProfileNetworkContextServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new ProfileNetworkContextService(Profile::FromBrowserContext(profile));
+  return std::make_unique<ProfileNetworkContextService>(
+      Profile::FromBrowserContext(profile));
 }
 
 bool ProfileNetworkContextServiceFactory::ServiceIsNULLWhileTesting() const {
