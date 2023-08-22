@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.Process;
 import android.text.TextUtils;
 
 import androidx.annotation.OptIn;
@@ -36,11 +37,22 @@ public class BuildInfo {
     private static ApplicationInfo sBrowserApplicationInfo;
     private static boolean sInitialized;
 
+    /**
+     * The package name of the host app loading the process. Retrieved from the application context.
+     *
+     * Note: In the context of the SDK Runtime, this value will be qualified with the SDK Runtime
+     * package name. For this reason, do not assume that this package name will be an actual package
+     * in the OS.
+     */
+    public final String hostPackageName;
     /** The application name (e.g. "Chrome"). For WebView, this is name of the embedding app. */
     public final String hostPackageLabel;
     /** By default: same as versionCode. For WebView: versionCode of the embedding app. */
     public final long hostVersionCode;
-    /** The packageName of Chrome/WebView. Use application context for host app packageName. */
+    /**
+     * The packageName of Chrome/WebView. Use application context for host app packageName.
+     * Same as the host information within any child process.
+     */
     public final String packageName;
     /** The versionCode of the apk. */
     public final long versionCode;
@@ -79,7 +91,6 @@ public class BuildInfo {
     /** Returns a serialized string array of all properties of this class. */
     @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     private String[] getAllProperties() {
-        String hostPackageName = ContextUtils.getApplicationContext().getPackageName();
         // This implementation needs to be kept in sync with the native BuildInfo constructor.
         return new String[] {
                 Build.BRAND,
@@ -160,10 +171,63 @@ public class BuildInfo {
     private BuildInfo() {
         sInitialized = true;
         Context appContext = ContextUtils.getApplicationContext();
-        String hostPackageName = appContext.getPackageName();
+        String appContextPackageName = appContext.getPackageName();
+
         PackageManager pm = appContext.getPackageManager();
-        PackageInfo pi = PackageUtils.getPackageInfo(hostPackageName, 0);
-        hostVersionCode = packageVersionCode(pi);
+        PackageInfo pi = PackageUtils.getPackageInfo(appContextPackageName, 0);
+
+        String providedHostPackageName = null;
+        String providedHostPackageLabel = null;
+        String providedHostVersionCode = null;
+
+        if (CommandLine.isInitialized()) {
+            CommandLine commandLine = CommandLine.getInstance();
+            providedHostPackageName = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_NAME);
+            providedHostPackageLabel = commandLine.getSwitchValue(BaseSwitches.HOST_PACKAGE_LABEL);
+            providedHostVersionCode = commandLine.getSwitchValue(BaseSwitches.HOST_VERSION_CODE);
+        }
+
+        // We have a work around to retrieve the package information within the SDK Runtime (in the
+        // else check below), but it doesn't work for the render process.
+        // This is because the render process uses an isolated process. To get around this, we feed
+        // the package information to the render process from the browser process.
+        if (providedHostPackageName != null && providedHostPackageLabel != null
+                && providedHostVersionCode != null) {
+            hostPackageName = providedHostPackageName;
+            hostPackageLabel = providedHostPackageLabel;
+            hostVersionCode = Long.parseLong(providedHostVersionCode);
+        } else {
+            String sdkQualifiedName = appContextPackageName;
+
+            if (ContextUtils.isSdkSandboxProcess()) {
+                // TODO(bewise): There isn't currently an official API to grab the host package name
+                // with the SDK Runtime. We can work around this because SDKs loaded in the SDK
+                // Runtime have the host UID + 10000. This should be updated if a public API comes
+                // along that we can use.
+                // You can see more about this in the Android source:
+                // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/os/Process.java;l=292;drc=47fffdd53115a9af1820e3f89d8108745be4b55d
+                final int hostId = Process.myUid() - 10000;
+                final String[] packageNames = pm.getPackagesForUid(hostId);
+
+                if (packageNames.length > 0) {
+                    // We could end up with more than one package name if the app used a
+                    // sharedUserId but these are deprecated so this is a safe bet to rely on the
+                    // first package name.
+                    try {
+                        sdkQualifiedName += ":" + packageNames[0];
+                        pi = pm.getPackageInfo(packageNames[0], 0);
+                    } catch (PackageManager.NameNotFoundException e) {
+                        // This means our work around was not effective
+                        Log.w(TAG, "Unable to query for host app information", e);
+                    }
+                }
+            }
+
+            hostPackageName = sdkQualifiedName;
+            hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
+            hostVersionCode = packageVersionCode(pi);
+        }
+
         if (sBrowserPackageInfo != null) {
             packageName = sBrowserPackageInfo.packageName;
             versionCode = packageVersionCode(sBrowserPackageInfo);
@@ -177,7 +241,6 @@ public class BuildInfo {
             sBrowserApplicationInfo = appContext.getApplicationInfo();
         }
 
-        hostPackageLabel = nullToEmpty(pm.getApplicationLabel(pi.applicationInfo));
         installerPackageName = nullToEmpty(pm.getInstallerPackageName(packageName));
 
         PackageInfo gmsPackageInfo = PackageUtils.getPackageInfo("com.google.android.gms", 0);
