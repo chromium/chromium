@@ -1990,7 +1990,7 @@
     },
     {
       name: "HTMLSearchElement",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "HTMLSelectListElement",
