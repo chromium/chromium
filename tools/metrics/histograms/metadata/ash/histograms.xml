@@ -5321,6 +5321,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.PhantomWindowController.Show.PresentationTime" units="ms"
+    expires_after="2024-08-14">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>chromeos-wm-corexp@google.com</owner>
+  <summary>
+    Records the presentation time, which is the time in milliseconds it takes
+    from when show phantom window was received and successfully processed to
+    when the next frame is shown to the user. The phantom window is shown to
+    give users an indication of the window bounds of the next state. For
+    example, when dragging a window to the left side of the display, the phantom
+    window will take up roughly the left half of the work area to indicate the
+    bounds of the window, if the drag is completed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
     expires_after="2024-01-06">
   <owner>takise@chromium.org</owner>

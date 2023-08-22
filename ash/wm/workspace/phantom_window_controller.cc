@@ -16,6 +16,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
@@ -75,6 +76,9 @@ constexpr base::TimeDelta kMaximizeCueExitAnimationDurationMs =
 constexpr base::TimeDelta kMaximizeCueAnimationDelayMs =
     base::Milliseconds(100);
 
+constexpr char kShowPresentationHistogramName[] =
+    "Ash.PhantomWindowController.Show.PresentationTime";
+
 }  // namespace
 
 // PhantomWindowController ----------------------------------------------------
@@ -105,11 +109,15 @@ void PhantomWindowController::Show(const gfx::Rect& window_bounds_in_screen) {
       floor((start_bounds_in_screen.height() - start_height) / 2.0f),
       floor((start_bounds_in_screen.width() - start_width) / 2.0f)));
 
+  aura::Window* root =
+      window_util::GetRootWindowMatching(target_bounds_in_screen_);
+  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+      root->layer()->GetCompositor(), kShowPresentationHistogramName);
+  presentation_time_recorder->RequestNext();
+
   // Create a phantom widget with starting size so `ShowPhantomWidget()` can
   // animate from that current size to |target_bounds_in_screen|.
-  phantom_widget_ = CreatePhantomWidget(
-      window_util::GetRootWindowMatching(target_bounds_in_screen_),
-      start_bounds_in_screen);
+  phantom_widget_ = CreatePhantomWidget(root, start_bounds_in_screen);
   ShowPhantomWidget();
 }
 
