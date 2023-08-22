@@ -45,6 +45,7 @@ found in the LICENSE file.
     <button id="fill_invalid_cvc" type="button">Fill the CVC field with an invalid value</button>
     <button id="fill_card_only" type="button">Fill the credit card number and expiration fields only</button>
     <button id="fill_expired_expiration_date" type="button">Fill an expired expiration date</button>
+    <button id="fill_conflicting_name" type="button">Fill conflicting names</button>
     <button id="clear_cvc" type="button">Clear the CVC field</button>
     <button id="clear_name" type="button">Clear the name fields</button>
     <button id="clear_month" type="button">Clear the month field</button>
@@ -112,6 +113,13 @@ found in the LICENSE file.
       function() {
         document.getElementsByName("cc_month_exp")[0].value = "01";
         document.getElementsByName("cc_year_exp")[0].value = "2000";
+      });
+
+  document.getElementById("fill_conflicting_name").addEventListener(
+      "click",
+      function() {
+        document.getElementsByName("name_address")[0].value = "John Smith";
+        document.getElementsByName("name_cc")[0].value = "Moe Szyslak";
       });
 
   document.getElementById("clear_cvc").addEventListener(
