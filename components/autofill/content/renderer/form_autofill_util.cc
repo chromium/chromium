@@ -1151,7 +1151,7 @@ void FillFormField(const FormFieldData& data,
 }
 
 // Sets the |field|'s "suggested" (non JS visible) value to the value in |data|.
-// Also sets the "autofilled" attribute, causing the background to be yellow.
+// Also sets the "autofilled" attribute, causing the background to be blue.
 void PreviewFormField(const FormFieldData& data,
                       bool is_initiating_node,
                       blink::WebFormControlElement* field) {
