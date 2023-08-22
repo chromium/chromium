@@ -17,9 +17,9 @@ namespace {
 
 // Constants -------------------------------------------------------------------
 
-constexpr char kTimeOfFirstInteractionPrefPrefix[] =
+static constexpr char kTimeOfFirstInteractionPrefPrefix[] =
     "ash.welcome_tour.interaction_time.";
-constexpr char kTimeOfFirstTourCompletion[] =
+static constexpr char kTimeOfFirstTourCompletion[] =
     "ash.welcome_tour.completed.first_time";
 static constexpr char kTimeOfFirstTourPrevention[] =
     "ash.welcome_tour.prevented.first_time";
