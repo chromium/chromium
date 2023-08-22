@@ -53,9 +53,10 @@ KeystoreServiceFactoryAsh::KeystoreServiceFactoryAsh()
   DependsOn(ash::platform_keys::KeyPermissionsServiceFactory::GetInstance());
 }
 
-KeyedService* KeystoreServiceFactoryAsh::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+KeystoreServiceFactoryAsh::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new KeystoreServiceAsh(context);
+  return std::make_unique<KeystoreServiceAsh>(context);
 }
 
 }  // namespace crosapi
