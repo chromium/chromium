@@ -128,8 +128,11 @@
     // Password check
     if (_state.passwordState != PasswordSafetyCheckState::kSafe) {
       SafetyCheckItemView* passwordView = [[SafetyCheckItemView alloc]
-          initWithItemType:SafetyCheckItemType::kPassword
-                layoutType:SafetyCheckItemLayoutType::kCompact];
+                   initWithItemType:SafetyCheckItemType::kPassword
+                         layoutType:SafetyCheckItemLayoutType::kCompact
+                 weakPasswordsCount:_state.weakPasswordsCount
+               reusedPasswordsCount:_state.reusedPasswordsCount
+          compromisedPasswordsCount:_state.compromisedPasswordsCount];
 
       passwordView.tapDelegate = self;
 
@@ -174,8 +177,11 @@
 
   if (_state.passwordState != PasswordSafetyCheckState::kSafe) {
     view = [[SafetyCheckItemView alloc]
-        initWithItemType:SafetyCheckItemType::kPassword
-              layoutType:SafetyCheckItemLayoutType::kHero];
+                 initWithItemType:SafetyCheckItemType::kPassword
+                       layoutType:SafetyCheckItemLayoutType::kHero
+               weakPasswordsCount:_state.weakPasswordsCount
+             reusedPasswordsCount:_state.reusedPasswordsCount
+        compromisedPasswordsCount:_state.compromisedPasswordsCount];
   }
 
   if (_state.safeBrowsingState != SafeBrowsingSafetyCheckState::kSafe) {

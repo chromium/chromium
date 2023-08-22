@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 
+#import <vector>
+
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <MaterialComponents/MaterialSnackbar.h>
 
@@ -21,6 +23,7 @@
 #import "components/ntp_tiles/metrics.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/ntp_tile.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -43,6 +46,7 @@
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
 #import "ios/chrome/browser/ntp/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp_tiles/most_visited_sites_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
@@ -320,6 +324,17 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                       passwordState:initialPasswordState
                   safeBrowsingState:initialSafeBrowsingState
                        runningState:initialRunningState];
+
+      std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+          safetyCheckManager->GetInsecureCredentials();
+
+      password_manager::InsecurePasswordCounts counts =
+          password_manager::CountInsecurePasswordsPerInsecureType(
+              insecureCredentials);
+
+      _safetyCheckState.weakPasswordsCount = counts.weak_count;
+      _safetyCheckState.reusedPasswordsCount = counts.reused_count;
+      _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
 
       _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
           self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
@@ -1122,6 +1137,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)passwordCheckStateChanged:(PasswordSafetyCheckState)state {
   _safetyCheckState.passwordState = state;
+
+  IOSChromeSafetyCheckManager* safetyCheckManager =
+      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+      safetyCheckManager->GetInsecureCredentials();
+
+  password_manager::InsecurePasswordCounts counts =
+      password_manager::CountInsecurePasswordsPerInsecureType(
+          insecureCredentials);
+
+  _safetyCheckState.weakPasswordsCount = counts.weak_count;
+  _safetyCheckState.reusedPasswordsCount = counts.reused_count;
+  _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
 }
 
 - (void)safeBrowsingCheckStateChanged:(SafeBrowsingSafetyCheckState)state {

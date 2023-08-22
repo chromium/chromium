@@ -35,6 +35,15 @@ enum class RunningSafetyCheckState;
 // The Safety Check running state.
 @property(nonatomic, readwrite) RunningSafetyCheckState runningState;
 
+// The number of weak passwords found by the Password check.
+@property(nonatomic, assign) NSInteger weakPasswordsCount;
+
+// The number of reused passwords found by the Password check.
+@property(nonatomic, assign) NSInteger reusedPasswordsCount;
+
+// The number of compromised passwords found by the Password check.
+@property(nonatomic, assign) NSInteger compromisedPasswordsCount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
