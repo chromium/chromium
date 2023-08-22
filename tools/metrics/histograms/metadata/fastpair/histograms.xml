@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{FastPairPairingProtocol}.Pairing"
-    enum="FastPairProtocolPairingSteps" expires_after="2024-02-18">
+    enum="FastPairProtocolPairingSteps" expires_after="2023-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{PairingScenario}.Initialization"
-    enum="FastPairInitializePairingProcessEvent" expires_after="2024-02-18">
+    enum="FastPairInitializePairingProcessEvent" expires_after="2023-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>
@@ -241,7 +241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FastPair.{PairingScenario}.Initialization.FailureReason"
-    enum="FastPairPairFailure" expires_after="2024-02-18">
+    enum="FastPairPairFailure" expires_after="2023-12-31">
   <owner>jackshira@google.com</owner>
   <owner>dclasson@google.com</owner>
   <owner>brandosocarras@google.com</owner>

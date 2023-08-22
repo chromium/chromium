@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseMigration{VersionUpgrades}"
-    enum="BooleanSuccess" expires_after="2024-02-18">
+    enum="BooleanSuccess" expires_after="2024-05-24">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.DatabaseSpecificError.{Statement}"
-    enum="SqliteLoggedResultCode" expires_after="2024-02-18">
+    enum="SqliteLoggedResultCode" expires_after="2024-01-01">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.EvictedBytesPerRound" units="MB"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

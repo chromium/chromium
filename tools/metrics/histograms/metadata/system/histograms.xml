@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="System.Pressure.{resource}" units="%"
-    expires_after="2024-02-18">
+    expires_after="2023-09-01">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

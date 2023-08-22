@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>dtrainor@chromium.org</owner>
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-07">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -209,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-07">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Bubble.{DownloadBubbleViewType}ViewSize"
-    units="items" expires_after="2024-02-18">
+    units="items" expires_after="2024-03-07">
   <owner>chlily@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -1152,7 +1152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Download.Session.IsDownloadBubbleShowingWhenSession{Status}"
-    enum="BooleanShowing" expires_after="2024-02-18">
+    enum="BooleanShowing" expires_after="2023-10-18">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

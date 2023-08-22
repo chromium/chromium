@@ -143,7 +143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.ActivateEvent.Time" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-11-12">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.EvaluateTopLevelScript.{ResultStatus}.Time"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-10-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ServiceWorker.FetchEvent.{Resource}.RaceNetworkRequest.DataTransfer.{Action}"
     enum="ServiceWorkerRaceNetworkRequestDataTransferMojoResult"
-    expires_after="2024-02-18">
+    expires_after="2024-02-02">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -607,7 +607,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.InstallEvent.{type}.Time" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-10-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerEndToFallbackNetwork{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -648,7 +648,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FetchHandlerEndToResponseReceived{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -709,7 +709,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToCompleted{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -729,7 +729,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToFallbackNetwork{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.FindRegistrationToRequestStart{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -805,7 +805,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.ResponseReceivedToCompleted2{ServiceWorkerResponseSource}{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -828,7 +828,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.StartToCompleted{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.StartToFallbackNetwork{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -868,7 +868,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.StartToForwardServiceWorker{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -888,7 +888,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTiming.MainFrame.MainResource.WorkerReadyToFetchHandlerStart{EmbeddedWorkerInitialStatus}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -993,7 +993,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.LoadTopLevelScript.{ResultStatus}.{WhetherAlreadyInstalledOrNot}.Time"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-10-01">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.MaybeStartWorker.RunningStatusByPurpose_{ServiceWorkerEventType}"
-    enum="EmbeddedWorkerStatus" expires_after="2024-02-18">
+    enum="EmbeddedWorkerStatus" expires_after="2024-06-01">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1623,7 +1623,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.Cache.{ServiceWorkerCacheProcessType}.Match.{MatchType}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1649,7 +1649,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.Cache.{ServiceWorkerCacheProcessType}.{ProcessOps}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1693,7 +1693,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.CacheStorage.{ServiceWorkerCacheProcessType}.{ProcessOps}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1804,7 +1804,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.OperationDuration2.{ServiceWorkerSchedulerOp}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1818,7 +1818,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.QueueDuration2.{ServiceWorkerSchedulerOp}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -1832,7 +1832,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorkerCache.{ServiceWorkerCacheSchedulerOpClientType}.Scheduler.QueueLength.{ServiceWorkerSchedulerOp}"
-    units="operations" expires_after="2024-02-18">
+    units="operations" expires_after="2024-03-23">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

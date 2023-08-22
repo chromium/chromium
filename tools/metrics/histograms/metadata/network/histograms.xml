@@ -264,7 +264,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.Cellular.ConnectionResult.{CustomApnsStatus}.All"
-    enum="ShillConnectResult" expires_after="2024-02-18">
+    enum="ShillConnectResult" expires_after="2023-12-31">
   <owner>gordonseto@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -502,7 +502,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.Hotspot.Upstream.Cellular.{Operation}.OperationResult"
-    enum="HotspotSetEnabledResult" expires_after="2024-02-18">
+    enum="HotspotSetEnabledResult" expires_after="2023-10-01">
   <owner>jiajunz@google.com</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -516,7 +516,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.VPN.{VPNProviderType}.ConfigurationSource"
-    enum="VPNConfigurationSource" expires_after="2024-02-18">
+    enum="VPNConfigurationSource" expires_after="2023-12-31">
   <owner>chadduffin@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -615,7 +615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{NetworkType}.DisconnectionsWithoutUserAction"
-    enum="NetworkConnectionState" expires_after="2024-02-18">
+    enum="NetworkConnectionState" expires_after="2023-12-31">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.{NetworkType}.DisconnectionsWithoutUserAction.ShillError"
-    enum="ShillConnectResult" expires_after="2024-02-18">
+    enum="ShillConnectResult" expires_after="2023-12-31">
   <owner>chadduffin@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -638,7 +638,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Ash.{TechnologyType}.EnabledState.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2024-02-18">
+    enum="BooleanSuccess" expires_after="2023-12-31">
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Network.Ash.{TechnologyType}.EnabledState.{Operation}.ResultCode"
-    enum="ShillConnectResult" expires_after="2024-02-18">
+    enum="ShillConnectResult" expires_after="2023-12-31">
   <owner>nikhilcn@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
@@ -1316,7 +1316,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimPinOperation}.SimPINLockPolicy"
-    enum="BooleanEnabled" expires_after="2024-02-18">
+    enum="BooleanEnabled" expires_after="2023-12-31">
   <owner>nikhilcn@chromium.org</owner>
   <owner>hsuregan@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -1352,7 +1352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.ConnectionResult.All"
-    enum="ShillCellularConnectResult" expires_after="2024-02-18">
+    enum="ShillCellularConnectResult" expires_after="2023-12-31">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -1372,7 +1372,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.ConnectionResult.UserInitiated"
-    enum="UserInitiatedCellularConnectResult" expires_after="2024-02-18">
+    enum="UserInitiatedCellularConnectResult" expires_after="2023-12-31">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -1433,7 +1433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.Usage.Duration" units="seconds"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>hsuregan@chromium.org</owner>
@@ -1478,7 +1478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Errors"
-    enum="DnsProxy.QueryResult" expires_after="2024-02-18">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1493,7 +1493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.FailedRetries"
-    units="count" expires_after="2024-02-18">
+    units="count" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.Results"
-    enum="DnsProxy.QueryResult" expires_after="2024-02-18">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1523,7 +1523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.ResultsWithRetries"
-    enum="DnsProxy.QueryResult" expires_after="2024-02-18">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1539,7 +1539,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.PlainTextProbe.{Family}.RetriesUntilSuccess"
-    units="count" expires_after="2024-02-18">
+    units="count" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1554,7 +1554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.Query.Failed{Stage}Duration" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1590,7 +1590,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.Query.{Stage}Duration" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1626,7 +1626,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Family}Nameservers" units="units"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{ProcessType}.Event"
-    enum="DnsProxy.ProcessEvent" expires_after="2024-02-18">
+    enum="DnsProxy.ProcessEvent" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1659,7 +1659,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.Errors"
-    enum="DnsProxy.QueryError" expires_after="2024-02-18">
+    enum="DnsProxy.QueryError" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1674,7 +1674,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.FailedResolveDuration" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1695,7 +1695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.ResolveDuration" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1716,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.Results"
-    enum="DnsProxy.QueryResult" expires_after="2024-02-18">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1731,7 +1731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.DnsProxy.{Type}Query.ResultsWithRetries"
-    enum="DnsProxy.QueryResult" expires_after="2024-02-18">
+    enum="DnsProxy.QueryResult" expires_after="2023-12-31">
   <owner>garrick@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1771,7 +1771,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.ARC.WiFi.{Protocol}.ActiveCount"
-    units="packets" expires_after="2024-02-18">
+    units="packets" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1814,7 +1814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.{Technology}.ConnectedCount" units="packets"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1831,7 +1831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Multicast.{Technology}.{Protocol}.ConnectedCount"
-    units="packets" expires_after="2024-02-18">
+    units="packets" expires_after="2023-12-31">
   <owner>jasongustaman@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2059,7 +2059,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.ConnectResult.{ApnType}"
-    enum="PlatformCellularConnectResult" expires_after="2024-02-18">
+    enum="PlatformCellularConnectResult" expires_after="2023-12-31">
   <owner>danielwinkler@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2238,7 +2238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Cellular.TimeToRedirectFound" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-10">
   <owner>matthewmwang@chromium.org</owner>
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2343,7 +2343,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Ethernet.TimeToConfig" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>hugobenichi@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2680,7 +2680,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.RemoteAuthenticationType"
-    enum="VPNRemoteAuthenticationType" expires_after="2024-02-18">
+    enum="VPNRemoteAuthenticationType" expires_after="2023-12-17">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2690,7 +2690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.TimeOnline" units="seconds"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2704,7 +2704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.TimeToConfig" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2724,7 +2724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.UserAuthenticationType"
-    enum="VPNUserAuthenticationType" expires_after="2024-02-18">
+    enum="VPNUserAuthenticationType" expires_after="2023-12-17">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2764,7 +2764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.EspEncryptionAlgorithm"
-    enum="VPNIPsecEncryptionAlgorithm" expires_after="2024-02-18">
+    enum="VPNIPsecEncryptionAlgorithm" expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2777,7 +2777,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.EspIntegrityAlgorithm"
-    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2024-02-18">
+    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2790,7 +2790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.IkeDHGroup" enum="VPNIPsecDHGroup"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2803,7 +2803,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.IkeEncryptionAlgorithm"
-    enum="VPNIPsecEncryptionAlgorithm" expires_after="2024-02-18">
+    enum="VPNIPsecEncryptionAlgorithm" expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2816,7 +2816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.IkeIntegrityAlgorithm"
-    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2024-02-18">
+    enum="VPNIPsecIntegrirtyAlgorithm" expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2829,7 +2829,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.Vpn.{VPNType}.IPType" enum="NetworkIPType"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3137,7 +3137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.EverConnected"
-    enum="BooleanConnected" expires_after="2024-02-18">
+    enum="BooleanConnected" expires_after="2023-12-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3152,7 +3152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.Hidden.LastConnected" units="days"
-    expires_after="2024-02-18">
+    expires_after="2023-12-01">
   <owner>jonmann@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3588,7 +3588,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.WiFi.SessionTagState.{Event}"
-    enum="WiFiSessionTagState" expires_after="2024-02-18">
+    enum="WiFiSessionTagState" expires_after="2023-12-01">
   <owner>norvez@chromium.org</owner>
   <owner>druth@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -3854,7 +3854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.Shill.{Technology}.IPType" enum="NetworkIPType"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -4183,7 +4183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.NetworkLoaderCompletionTime.{Source}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-05-30">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

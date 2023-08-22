@@ -155,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.{Report}.Resolution"
-    enum="DisplayResolution" expires_after="2024-02-18">
+    enum="DisplayResolution" expires_after="2024-04-01">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>{Connection} {Report}</summary>
@@ -285,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.MetalShader.CacheHitCount" units="count"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.MetalShader.CacheMissCount" units="count"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -306,7 +306,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.MetalShaderInBlobCache" enum="Boolean"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -711,7 +711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.EstablishGpuChannelSyncTime" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.GPUInitializationTime.V4" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -839,7 +839,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -895,7 +895,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.IntelVpSuperResolution.{State}.{Call}" enum="Hresult"
-    expires_after="2024-02-18">
+    expires_after="2023-06-30">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.MetalShaderCache.NumEntriesInCache" units="count"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1042,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Gpu.MetalShaderCache.WaitTime" units="microseconds"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -1082,7 +1082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.Nvidia{Extension}.{State}.SetStreamExt" enum="Hresult"
-    expires_after="2024-02-18">
+    expires_after="2023-12-31">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1223,7 +1223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.RasterDecoder.TimeToFlush" units="microseconds"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>sky@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1244,7 +1244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ReportOnlyModeStatusAtHang" enum="BooleanEnabled"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>spvw@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -1547,7 +1547,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Event{ThreadType}"
-    enum="GpuWatchdogThreadEvent" expires_after="2024-02-18">
+    enum="GpuWatchdogThreadEvent" expires_after="2024-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1562,7 +1562,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WatchdogThread.Timeout{WatchdogStage}{ThreadType}"
-    enum="GpuWatchdogTimeoutEvent" expires_after="2024-02-18">
+    enum="GpuWatchdogTimeoutEvent" expires_after="2023-10-01">
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1604,7 +1604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGPU.Create{Module}Success" enum="Boolean"
-    expires_after="2024-02-18">
+    expires_after="2023-10-20">
   <owner>enga@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1615,7 +1615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGPU.Create{Module}US" units="microseconds"
-    expires_after="2024-02-18">
+    expires_after="2023-10-20">
   <owner>enga@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1644,7 +1644,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGPU.{Cacheable}.CacheHit" units="microseconds"
-    expires_after="2024-02-18">
+    expires_after="2024-01-25">
   <owner>lokokung@google.com</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1657,7 +1657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.WebGPU.{Cacheable}.CacheMiss" units="microseconds"
-    expires_after="2024-02-18">
+    expires_after="2024-01-25">
   <owner>lokokung@google.com</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>
@@ -1885,7 +1885,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.FileDescriptorTracking.{FdStat}" units="units"
-    expires_after="2024-02-18">
+    expires_after="2024-06-09">
   <owner>petermcneeley@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

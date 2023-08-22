@@ -244,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Session.TotalDuration3{WebApkDistributorType}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-04-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.ShellApkVersion2{WebApkDistributorType}" units="units"
-    expires_after="2024-02-18">
+    expires_after="2023-12-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Uninstall{WebApkDistributorType}" enum="BooleanHit"
-    expires_after="2024-02-18">
+    expires_after="2023-12-01">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.GooglePlayUpdateResult"
-    enum="WebApkGooglePlayInstallResult" expires_after="2024-02-18">
+    enum="WebApkGooglePlayInstallResult" expires_after="2023-12-17">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -351,7 +351,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.RequestSent" enum="WebApkUpdateRequestSent"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -361,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApk.Update.UniqueId{SameOrEmpty}.{LegacyIdentifierType}"
-    enum="Boolean" expires_after="2024-02-18">
+    enum="Boolean" expires_after="2023-12-01">
   <owner>eirage@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>

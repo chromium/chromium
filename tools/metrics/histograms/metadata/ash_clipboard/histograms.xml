@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
-    enum="BooleanHit" expires_after="2024-02-18">
+    enum="BooleanHit" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>
@@ -249,7 +249,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}TimeV2"
-    units="seconds" expires_after="2024-02-18">
+    units="seconds" expires_after="2024-01-14">
   <owner>ckincaid@chromium.org</owner>
   <owner>multipaste@google.com</owner>
   <summary>

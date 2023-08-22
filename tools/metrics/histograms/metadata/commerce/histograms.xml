@@ -222,7 +222,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
-    expires_after="2024-02-18">
+    expires_after="2023-11-15">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -240,7 +240,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
-    enum="ShoppingFeatureIneligibilityReason" expires_after="2024-02-18">
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2023-11-15">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -358,7 +358,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -394,7 +394,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
-    units="notifications" expires_after="2024-02-18">
+    units="notifications" expires_after="2023-04-25">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -439,7 +439,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPriceDrop"
-    enum="BooleanContainsPriceDrop" expires_after="2024-02-18">
+    enum="BooleanContainsPriceDrop" expires_after="2024-04-15">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -456,7 +456,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
-    enum="BooleanIsProductDetailPage" expires_after="2024-02-18">
+    enum="BooleanIsProductDetailPage" expires_after="2024-04-15">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>

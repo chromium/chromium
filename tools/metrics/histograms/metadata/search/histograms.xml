@@ -1358,7 +1358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.DefaultSearchProviderType2{Population}"
-    enum="OmniboxSearchEngineType" expires_after="2024-02-18">
+    enum="OmniboxSearchEngineType" expires_after="2024-07-18">
   <owner>mpearson@chromium.org</owner>
   <owner>ftirelo@chromium.org</owner>
   <summary>

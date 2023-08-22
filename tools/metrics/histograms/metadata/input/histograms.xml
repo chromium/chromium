@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.Latency.ExitField"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-12-17">
   <owner>mehrab@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -451,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.AutocorrectV2.SuggestionProvider.Pk"
-    enum="IMEAutocorrectSuggestionProvider" expires_after="2024-02-18">
+    enum="IMEAutocorrectSuggestionProvider" expires_after="2023-12-17">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -475,7 +475,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.Assistive.AutocorrectV2.UserPrefChange.{Language}.{Type}"
-    enum="IMEAutocorrectPrefStateTransition" expires_after="2024-02-18">
+    enum="IMEAutocorrectPrefStateTransition" expires_after="2023-12-01">
   <owner>curtismcmullan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -915,7 +915,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2024-02-18">
+    units="characters" expires_after="2023-05-01">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1239,7 +1239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.PhysicalKeyboard.LongpressDiacritics.Action"
-    enum="IMEPKLongpressDiacriticAction" expires_after="2024-02-18">
+    enum="IMEPKLongpressDiacriticAction" expires_after="2023-12-17">
   <owner>jhtin@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1498,7 +1498,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerMinute{InputModality}"
-    units="charactersPerMinute" expires_after="2024-02-18">
+    units="charactersPerMinute" expires_after="2023-05-01">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1518,7 +1518,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.CharactersPerSession{InputModality}"
-    units="characters" expires_after="2024-02-18">
+    units="characters" expires_after="2023-05-01">
   <owner>keithlee@chromium.org</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -1609,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
-    enum="Boolean" expires_after="2024-02-18">
+    enum="Boolean" expires_after="2023-12-17">
   <owner>alexmitra@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>

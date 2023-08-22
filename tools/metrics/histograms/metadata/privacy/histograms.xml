@@ -343,7 +343,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
-    enum="DIPSDeletionAction" expires_after="2024-02-18">
+    enum="DIPSDeletionAction" expires_after="2023-11-01">
   <owner>njeunje@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -731,7 +731,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
-    units="counts" expires_after="2024-02-18">
+    units="counts" expires_after="2023-11-22">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -746,7 +746,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2"
     enum="PrivacySandboxPrivateAggregationBudgeterRequestResult2"
-    expires_after="2024-02-18">
+    expires_after="2023-11-24">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -758,7 +758,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
-    units="units" expires_after="2024-02-18">
+    units="units" expires_after="2023-11-12">
   <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <summary>
@@ -816,7 +816,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
-    expires_after="2024-02-18">
+    expires_after="M122">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>sauski@chromium.org</owner>

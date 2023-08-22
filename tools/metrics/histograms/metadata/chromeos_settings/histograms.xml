@@ -129,7 +129,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardAutoRepeat{Setting}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-11-01">
   <owner>ckincaid@chromium.org</owner>
   <owner>dmblack@google.com</owner>
   <owner>cros-settings@google.com</owner>
@@ -165,7 +165,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.TouchpadSpeedValue"
-    enum="TouchpadSensitivity" expires_after="2024-02-18">
+    enum="TouchpadSensitivity" expires_after="2023-11-12">
   <owner>xiaohuic@chromium.org</owner>
   <owner>cros-settings@google.com</owner>
   <summary>
@@ -200,7 +200,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Changed"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-02-18">
+    enum="KeyboardModifierRemappingKeys" expires_after="2024-01-23">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -222,7 +222,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Keyboard.Modifiers.{Modifier}RemappedTo.Started"
-    enum="KeyboardModifierRemappingKeys" expires_after="2024-02-18">
+    enum="KeyboardModifierRemappingKeys" expires_after="2024-01-23">
   <owner>dpad@google.com</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

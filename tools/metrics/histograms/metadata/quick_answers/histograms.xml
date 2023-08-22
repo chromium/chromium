@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="QuickAnswers.ActiveImpression.Duration{QuickAnswersClickResultType}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-12-01">
   <owner>angelaxiao@chromium.org</owner>
   <owner>yawano@google.com</owner>
   <owner>llin@google.com</owner>

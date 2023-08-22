@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.BlockUntilHeadDuration.{WasServed}.{SpeculationEagerness}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.AfterClick.WasBlockedUntilHeadWhenServing.{SpeculationEagerness}"
-    enum="Boolean" expires_after="2024-02-18">
+    enum="Boolean" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -192,7 +192,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheEntryAge.{PrefetchProxyCanaryCheckerClient}"
-    units="hours" expires_after="2024-02-18">
+    units="hours" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.CacheLookupResult.{PrefetchProxyCanaryCheckerClient}"
-    enum="CanaryCheckLookupResult" expires_after="2024-02-18">
+    enum="CanaryCheckLookupResult" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.FinalState.{PrefetchProxyCanaryCheckerClient}"
-    enum="BooleanSuccess" expires_after="2024-02-18">
+    enum="BooleanSuccess" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.NetError.{PrefetchProxyCanaryCheckerClient}"
-    enum="NetErrorCodes" expires_after="2024-02-18">
+    enum="NetErrorCodes" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -284,7 +284,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilFailure.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PrefetchProxy.CanaryChecker.TimeUntilSuccess.{PrefetchProxyCanaryCheckerClient}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-04-25">
   <owner>liviutinta@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
   <owner>curranmax@chromium.org</owner>

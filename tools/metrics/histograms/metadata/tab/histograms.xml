@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discarding.DailyReloads{TabDiscardReason}" units="tabs"
-    expires_after="2024-02-18">
+    expires_after="2024-02-22">
   <owner>vovoy@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
-    expires_after="2024-02-18">
+    expires_after="2023-12-18">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1091,7 +1091,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabRestore.{RestoreType}.TimeBetweenClosedAndRestored"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2023-12-10">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
   <summary>
@@ -1710,7 +1710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
-    expires_after="2024-02-18">
+    expires_after="2024-01-08">
   <owner>davidjm@chromium.org</owner>
   <owner>nyquist@chromium.org</owner>
   <summary>Records the number of {TabType} Tabs loaded on startup.</summary>
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabStrip.Tab.{Framework}.ActivationAction"
-    enum="TabActivationTypes" expires_after="2024-02-18">
+    enum="TabActivationTypes" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>romanarora@chromium.org</owner>

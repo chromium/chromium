@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.CryptohomeRecoveryDuration.{Result}" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2024-02-16">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.Flow.{UserVisibility}.{UserCount}"
-    enum="LoginFlowUserLoginType" expires_after="2024-02-18">
+    enum="LoginFlowUserLoginType" expires_after="2023-12-01">
   <owner>anastasiian@chromium.org</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -297,7 +297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Login.ReauthToken.FetchDuration.{Result}" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2024-02-16">
   <owner>yunkez@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>

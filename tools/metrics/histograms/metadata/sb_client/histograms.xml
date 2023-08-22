@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentCheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-18">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2023-12-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DocumentContainsMacros"
-    enum="BooleanContainsMacros" expires_after="2024-02-18">
+    enum="BooleanContainsMacros" expires_after="2023-12-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -174,7 +174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration.{Analysis}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -196,7 +196,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDurationMedium.{Analysis}"
-    units="ms" expires_after="2024-02-18">
+    units="ms" expires_after="2024-03-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.FileAnalysisDuration{Analysis}" units="ms"
-    expires_after="2024-02-18">
+    expires_after="2024-06-08">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.MalwareDeepScanResult.{trigger}"
-    enum="SBClientDownloadCheckResult" expires_after="2024-02-18">
+    enum="SBClientDownloadCheckResult" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -457,7 +457,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SBClientDownload.Warning.DownloadHasUserGesture.{DangerType}.{Action}"
-    enum="BooleanHasUserGesture" expires_after="2024-02-18">
+    enum="BooleanHasUserGesture" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -494,7 +494,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.Warning.FileType.{DangerType}.{Action}"
-    enum="SBClientDownloadExtensions" expires_after="2024-02-18">
+    enum="SBClientDownloadExtensions" expires_after="2024-03-02">
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -551,7 +551,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.CancelClassificationReason"
     enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2024-02-18">
+    expires_after="2023-12-17">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
