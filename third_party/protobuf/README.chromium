@@ -140,3 +140,7 @@ Description of the patches:
   Imports (rebased):
   https://github.com/protocolbuffers/protobuf/commit/def602dd07b7eae1cac6823705975317b5607fc3
 
+- 0035-fix-shared-library-constants
+
+  Fixes for component build when building with MediaPipe. AnyMetadata::PackFrom
+  is called which require string constants to be exported.
