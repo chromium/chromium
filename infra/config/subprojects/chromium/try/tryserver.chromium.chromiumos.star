@@ -78,10 +78,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# chromeos-amd64-generic-rel to Siso.
 try_.orchestrator_builder(
     name = "chromeos-amd64-generic-siso-rel",
+    description_html = """\
+This builder shadows chromeos-amd64-generic-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating chromeos-amd64-generic-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -292,10 +294,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# linux-chromeos-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-chromeos-siso-rel",
+    description_html = """\
+This builder shadows linux-chromeos-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux-chromeos-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -352,10 +356,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# linux-lacros-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-lacros-siso-rel",
+    description_html = """\
+This builder shadows linux-lacros-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux-lacros-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux-lacros-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,

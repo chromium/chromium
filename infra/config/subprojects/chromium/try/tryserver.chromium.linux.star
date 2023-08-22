@@ -266,10 +266,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate linux-rel
-# to Siso.
 try_.orchestrator_builder(
     name = "linux-siso-rel",
+    description_html = """\
+This builder shadows linux-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -337,10 +339,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# linux-wayland-rel to Siso.
 try_.orchestrator_builder(
     name = "linux-wayland-siso-rel",
+    description_html = """\
+This builder shadows linux-wayland-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux-wayland-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux-wayland-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -493,10 +497,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# linux_chromium_asan_rel_ng to Siso.
 try_.orchestrator_builder(
     name = "linux_chromium_asan_siso_rel_ng",
+    description_html = """\
+This builder shadows linux_chromium_asan_rel_ng builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux_chromium_asan_rel_ng from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux_chromium_asan_rel_ng"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -678,10 +684,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# linux_chromium_tsan_rel_ng to Siso.
 try_.orchestrator_builder(
     name = "linux_chromium_tsan_siso_rel_ng",
+    description_html = """\
+This builder shadows linux_chromium_tsan_rel_ng builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating linux_chromium_tsan_rel_ng from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/linux_chromium_tsan_rel_ng"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,

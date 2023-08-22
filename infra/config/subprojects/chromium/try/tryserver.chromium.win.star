@@ -106,10 +106,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# win-rel to Siso.
 try_.orchestrator_builder(
     name = "win-siso-rel",
+    description_html = """\
+This builder shadows win-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating win-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/win-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,

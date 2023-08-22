@@ -87,10 +87,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# android-12-x64-rel to Siso.
 try_.orchestrator_builder(
     name = "android-12-x64-siso-rel",
+    description_html = """\
+This builder shadows android-12-x64-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating android-12-x64-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/android-12-x64-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -165,11 +167,12 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# android-arm64-rel to Siso.
 try_.orchestrator_builder(
     name = "android-arm64-siso-rel",
-    description_html = "This builder may trigger tests on multiple Android versions.",
+    description_html = """\
+This builder shadows android-arm64-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating android-arm64-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/android-arm64-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
@@ -421,10 +424,12 @@ try_.builder(
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )
 
-# TODO(b/277863839): remove Siso experimental builders after migrate
-# android-nougat-x86-rel to Siso.
 try_.orchestrator_builder(
     name = "android-nougat-x86-siso-rel",
+    description_html = """\
+This builder shadows android-nougat-x86-rel builder to compare between Siso builds and Ninja builds.<br/>
+This builder should be removed after migrating android-nougat-x86-rel from Ninja to Siso. b/277863839
+""",
     mirrors = builder_config.copy_from("try/android-nougat-x86-rel"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
