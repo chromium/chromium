@@ -244,6 +244,10 @@ AuthenticatorRequestDialogModel::Mechanism::CredentialInfo CredentialInfoFrom(
 
 }  // namespace
 
+#if BUILDFLAG(IS_MAC)
+#define NEW_UI
+#endif
+
 class AuthenticatorRequestDialogModelTest
     : public ChromeRenderViewHostTestHarness {
  public:
