@@ -23,6 +23,8 @@ source_set("views") {
   sources = [
     "editor_menu_chip_view.cc",
     "editor_menu_chip_view.h",
+    "editor_menu_promo_card_view.cc",
+    "editor_menu_promo_card_view.h",
     "editor_menu_textfield_view.cc",
     "editor_menu_textfield_view.h",
     "editor_menu_view.cc",

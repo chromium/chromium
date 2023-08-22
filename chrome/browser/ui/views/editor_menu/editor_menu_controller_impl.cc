@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 
+#include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -32,7 +33,8 @@ void EditorMenuControllerImpl::MaybeShowEditorMenu(
   }
 
   if (status == ConsentStatus::kPending) {
-    // TODO(b/295061567): Implement the consent view.
+    editor_menu_widget_ = EditorMenuPromoCardView::CreateWidget(anchor_bounds);
+    editor_menu_widget_->ShowInactive();
     return;
   }
 
