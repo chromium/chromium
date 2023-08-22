@@ -104,7 +104,8 @@ void FetchDiscountWorker::FetchOauthToken() {
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           kOauthName, identity_manager_, signin::ScopeSet{kOauthScopes},
           std::move(token_callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          signin::ConsentLevel::kSync);
 }
 
 void FetchDiscountWorker::OnAuthTokenFetched(

@@ -1194,7 +1194,8 @@ void ExtensionDownloader::CreateExtensionLoader() {
               kTokenServiceConsumerId, identity_manager_, webstore_scopes,
               base::BindOnce(&ExtensionDownloader::OnAccessTokenFetchComplete,
                              base::Unretained(this)),
-              signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+              signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+              signin::ConsentLevel::kSync);
       return;
     }
     extension_loader_resource_request_->headers.SetHeader(

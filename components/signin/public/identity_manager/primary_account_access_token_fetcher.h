@@ -122,7 +122,7 @@ struct AccessTokenInfo;
 //     // Make the primary account available, which should result in an access
 //     // token fetch being made on behalf of |my_class|.
 //     identity_test_env.
-//         MakePrimaryAccountAvailable("test_email", ConsentLevel::kSync);
+//         MakePrimaryAccountAvailable("test_email", ConsentLevel::kSignin);
 //
 //     identity_test_env.
 //         WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
@@ -182,13 +182,12 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
 
   // Instantiates an OAuth2 access token fetcher for the given |scopes|. Once
   // the fetcher is created, the caller initiates its token request using
-  // |Start()|. |consent| defaults to |kSync| because historically having an
-  // "authenticated" account was tied to browser sync. See ./README.md.
+  // |Start()|. See ./README.md.
   PrimaryAccountAccessTokenFetcher(const std::string& oauth_consumer_name,
                                    IdentityManager* identity_manager,
                                    const ScopeSet& scopes,
                                    Mode mode,
-                                   ConsentLevel consent = ConsentLevel::kSync);
+                                   ConsentLevel consent);
 
   // Convenience constructor that immediately issues the access token request.
   PrimaryAccountAccessTokenFetcher(const std::string& oauth_consumer_name,
@@ -196,7 +195,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
                                    const ScopeSet& scopes,
                                    AccessTokenFetcher::TokenCallback callback,
                                    Mode mode,
-                                   ConsentLevel consent = ConsentLevel::kSync);
+                                   ConsentLevel consent);
 
   PrimaryAccountAccessTokenFetcher(const PrimaryAccountAccessTokenFetcher&) =
       delete;

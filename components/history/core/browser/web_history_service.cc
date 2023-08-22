@@ -167,7 +167,8 @@ class RequestImpl : public WebHistoryService::Request {
             "web_history", identity_manager_, oauth_scopes,
             base::BindOnce(&RequestImpl::OnAccessTokenFetchComplete,
                            base::Unretained(this)),
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+            signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+            signin::ConsentLevel::kSync);
     is_pending_ = true;
   }
 

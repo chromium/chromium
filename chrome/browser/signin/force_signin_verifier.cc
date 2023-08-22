@@ -136,7 +136,8 @@ void ForceSigninVerifier::SendRequestIfNetworkAvailable(
           "force_signin_verifier", identity_manager_, oauth2_scopes,
           base::BindOnce(&ForceSigninVerifier::OnAccessTokenFetchComplete,
                          weak_factory_.GetWeakPtr()),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          signin::ConsentLevel::kSync);
 }
 
 bool ForceSigninVerifier::ShouldSendRequest() {
