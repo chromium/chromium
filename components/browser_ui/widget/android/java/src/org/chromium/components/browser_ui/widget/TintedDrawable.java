@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -15,14 +16,19 @@ import android.graphics.drawable.VectorDrawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
+
+import org.chromium.base.Log;
 
 /**
  * Implementation of BitmapDrawable that allows to tint the color of the drawable for all
  * bitmap drawable states.
  */
 public class TintedDrawable extends BitmapDrawable {
+    private static final String TAG = "TD";
+
     /**
      * The set of colors that just be used for tinting this bitmap drawable.
      */
@@ -43,6 +49,16 @@ public class TintedDrawable extends BitmapDrawable {
     @Override
     public boolean isStateful() {
         return true;
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        // Add extra method to stack and logging for https://crbug.com/1457791.
+        final @Nullable Bitmap bitmap = getBitmap();
+        if (bitmap != null && bitmap.isRecycled()) {
+            Log.e(TAG, "Trying to draw with recycled BitmapDrawable.");
+        }
+        super.draw(canvas);
     }
 
     /**
