@@ -33,8 +33,10 @@ source_set("views") {
 
   deps = [
     "//base",
+    "//chromeos/strings:strings_grit",
     "//components/vector_icons",
     "//ui/aura",
+    "//ui/base",
     "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     "//ui/gfx",
     "//ui/views",

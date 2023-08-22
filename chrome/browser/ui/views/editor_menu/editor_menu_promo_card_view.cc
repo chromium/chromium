@@ -4,12 +4,19 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 
+#include "chromeos/strings/grit/chromeos_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -83,9 +90,30 @@ void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void EditorMenuPromoCardView::InitLayout() {
-  SetLayoutManager(std::make_unique<views::FlexLayout>());
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
   AddChildView(std::make_unique<views::Label>(
       kTitleTextPlaceholder, views::style::CONTEXT_DIALOG_TITLE));
+  InitButtonBar();
+}
+
+void EditorMenuPromoCardView::InitButtonBar() {
+  // Button bar layout.
+  auto* button_bar = AddChildView(std::make_unique<views::FlexLayoutView>());
+  button_bar->SetOrientation(views::LayoutOrientation::kHorizontal);
+  button_bar->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
+
+  // Dismiss button.
+  button_bar->AddChildView(std::make_unique<views::LabelButton>(
+      views::Button::PressedCallback(),
+      l10n_util::GetStringUTF16(
+          IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
+
+  // Tell me more button.
+  button_bar->AddChildView(std::make_unique<views::LabelButton>(
+      views::Button::PressedCallback(),
+      l10n_util::GetStringUTF16(
+          IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON)));
 }
 
 BEGIN_METADATA(EditorMenuPromoCardView, views::View)

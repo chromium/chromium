@@ -32,6 +32,7 @@ class EditorMenuPromoCardView : public views::View {
 
  private:
   void InitLayout();
+  void InitButtonBar();
 };
 
 }  // namespace chromeos::editor_menu

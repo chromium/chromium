@@ -313,6 +313,14 @@
         Open in Google Search
       </message>
 
+      <!-- Editor Menu -->
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON" desc="Label on the dismiss button in the dialog that is shown to introduce the Editor Menu feature.">
+        Dismiss
+      </message>
+      <message name="IDS_EDITOR_MENU_PROMO_CARD_VIEW_TELL_ME_MORE_BUTTON" desc="Label on the tell me more button in the dialog that is shown to introduce the Editor Menu feature.">
+        Tell me more
+      </message>
+
       <!-- Multitask Menu -->
       <message name="IDS_MULTITASK_MENU_HALF_BUTTON_NAME" desc="Title of the half button on the multitask menu." meaning="Splits the associated window into half snapped state.">
         Split
