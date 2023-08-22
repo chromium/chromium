@@ -68,6 +68,7 @@ shared_library("libcontent_native") {
     ":content_native_lib",
     ":jni_headers",
     "//components/crash/content/browser",
+    "//device/vr:vr_util",
     "//media",
     "//skia",
   ]
@@ -224,8 +225,8 @@ android_library("wolvic_java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
-    "//url:gurl_java",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:gurl_java",
   ]
 }
 
@@ -256,6 +257,7 @@ dist_aar("content_aar") {
   native_libraries = [
     "$root_build_dir/libcontent_native.so",
     "$root_build_dir/libtest_trace_processor.so",
+
     # TODO: Replace with shared library
     # "$root_build_dir/obj/device/vr/libdevice_vr.a",
   ]
