@@ -307,7 +307,7 @@ class IOSChromeSafetyCheckManager
   std::string next_version_;
 
   // Observers to listen to Safety Check changes.
-  base::ObserverList<IOSChromeSafetyCheckManagerObserver> observers_;
+  base::ObserverList<IOSChromeSafetyCheckManagerObserver, true> observers_;
 
   // Weak pointer to the pref service, which checks the user's Enhanced Safe
   // Browsing state.
