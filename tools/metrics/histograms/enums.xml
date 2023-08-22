@@ -65185,6 +65185,7 @@ from previous Chrome versions.
   <int value="380372760" label="V8Orinoco:disabled"/>
   <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="381195146" label="LacrosResourcesFileSharing:disabled"/>
+  <int value="381316164" label="IndexedDBCompressValuesWithSnappy:disabled"/>
   <int value="382131467"
       label="GridTabSwitcherLandscapeAspectRatioPhones:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
@@ -67175,6 +67176,7 @@ from previous Chrome versions.
   <int value="1398049903" label="WebUIDarkMode:disabled"/>
   <int value="1398333721" label="ForceEnableDevicesPage:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
+  <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
   <int value="1399950951" label="AutofillTokenPrefixMatching:disabled"/>
   <int value="1402940985" label="kScrollableTabStripWithDragging:disabled"/>
   <int value="1403195370" label="ArcCupsApi:enabled"/>

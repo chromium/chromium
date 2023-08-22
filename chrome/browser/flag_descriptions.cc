@@ -1981,6 +1981,10 @@ const char kIncognitoScreenshotDescription[] =
     "thumbnails visible. This flag will be ignored when the "
     "ImprovedIncognitoScreenshot flag is enabled.";
 
+const char kIndexedDBCompressValuesWithSnappy[] = "Compress IndexedDB values";
+const char kIndexedDBCompressValuesWithSnappyDescription[] =
+    "Compress IndexedDB values in the renderer process using Snappy.";
+
 const char kInfobarScrollOptimizationName[] = "Infobar scroll optimiaztion";
 const char kInfobarScrollOptimizationDescription[] =
     "Optimize Infobar scroll on Android.";

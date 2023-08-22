@@ -1134,6 +1134,9 @@ extern const char kInstallIsolatedWebAppFromUrlDescription[];
 extern const char kInstantHotspotRebrandName[];
 extern const char kInstantHotspotRebrandDescription[];
 
+extern const char kIndexedDBCompressValuesWithSnappy[];
+extern const char kIndexedDBCompressValuesWithSnappyDescription[];
+
 extern const char kJavascriptHarmonyName[];
 extern const char kJavascriptHarmonyDescription[];
 
