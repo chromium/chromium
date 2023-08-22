@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -112,20 +113,65 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
 }
 
 + (void)signOutWithConfirmationChoice:(SignOutConfirmationChoice)confirmation {
-  int confirmationLabelID = 0;
-  switch (confirmation) {
-    case SignOutConfirmationChoiceClearData:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON;
-      break;
-    case SignOutConfirmationChoiceKeepData:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON;
-      break;
-    case SignOutConfirmationChoiceNotSyncing:
-      confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON;
-      break;
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // With ReplaceSyncWithSignin, we're now in the "manage sync" view, and
+    // the signout button is at the very bottom. Scroll there.
+    id<GREYMatcher> scrollViewMatcher =
+        grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+    [[EarlGrey selectElementWithMatcher:scrollViewMatcher]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+    // Tap the "Sign out" button.
+    [[EarlGrey selectElementWithMatcher:
+                   grey_text(l10n_util::GetNSString(
+                       IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM))]
+        performAction:grey_tap()];
+    // Note that there's no confirmation of signout, so the `confirmation`
+    // param is ignored. However, there is a snackbar - close it, so that it
+    // can't obstruct other UI items.
+    NSString* snackbarLabel = l10n_util::GetNSString(
+        IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE);
+    // The tap checks the existence of the snackbar and also closes it.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(snackbarLabel)]
+        performAction:grey_tap()];
+  } else {
+    // Without ReplaceSyncWithSignin, we're now in the "accounts" view.
+    // Tap the "Sign out" button.
+    [ChromeEarlGreyUI tapAccountsMenuButton:SignOutAccountsButton()];
+    // Tap the appropriate confirmation button.
+    int confirmationLabelID = 0;
+    switch (confirmation) {
+      case SignOutConfirmationChoiceClearData:
+        confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_CLEAR_DATA_BUTTON;
+        break;
+      case SignOutConfirmationChoiceKeepData:
+        confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_KEEP_DATA_BUTTON;
+        break;
+      case SignOutConfirmationChoiceNotSyncing:
+        confirmationLabelID = IDS_IOS_SIGNOUT_DIALOG_SIGN_OUT_BUTTON;
+        break;
+    }
+    id<GREYMatcher> confirmationButtonMatcher = [ChromeMatchersAppInterface
+        buttonWithAccessibilityLabelID:confirmationLabelID];
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
+                                            grey_not(SignOutAccountsButton()),
+                                            nil)] performAction:grey_tap()];
   }
-  [self signOutWithButton:SignOutAccountsButton()
-      confirmationLabelID:confirmationLabelID];
+
+  // Wait until the user is signed out. Use a longer timeout for cases where
+  // sign out also triggers a clear browsing data.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
+                                  timeout:base::test::ios::
+                                              kWaitForClearBrowsingDataTimeout];
+
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+  [SigninEarlGrey verifySignedOut];
 }
 
 + (void)tapSigninConfirmationDialog {
@@ -343,31 +389,6 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // grey_replaceText triggers textFieldDidEndEditing, which the
   // SyncEncryptionPassphraseTableViewController will treat as a signInPressed,
   // so there's no reason to tap the 'enter' button.
-}
-#pragma mark - Private
-
-+ (void)signOutWithButton:(id<GREYMatcher>)buttonMatcher
-      confirmationLabelID:(int)confirmationLabelID {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  [ChromeEarlGreyUI tapAccountsMenuButton:buttonMatcher];
-  id<GREYMatcher> confirmationButtonMatcher = [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:confirmationLabelID];
-  [[EarlGrey selectElementWithMatcher:grey_allOf(confirmationButtonMatcher,
-                                                 grey_not(buttonMatcher), nil)]
-      performAction:grey_tap()];
-
-  // Wait until the user is signed out. Use a longer timeout for cases where
-  // sign out also triggers a clear browsing data.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SettingsDoneButton()
-                                  timeout:base::test::ios::
-                                              kWaitForClearBrowsingDataTimeout];
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-  [SigninEarlGrey verifySignedOut];
 }
 
 @end
