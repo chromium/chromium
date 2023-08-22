@@ -41,7 +41,7 @@ class UserNoteServiceFactory : public ProfileKeyedServiceFactory {
   ~UserNoteServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   raw_ptr<UserNoteService> service_for_testing_;

@@ -56,10 +56,11 @@ UserNoteServiceFactory::UserNoteServiceFactory()
 
 UserNoteServiceFactory::~UserNoteServiceFactory() = default;
 
-KeyedService* UserNoteServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UserNoteServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(IsUserNotesEnabled());
-  return new UserNoteService(
+  return std::make_unique<UserNoteService>(
       std::make_unique<UserNoteServiceDelegateImpl>(
           Profile::FromBrowserContext(context)),
       std::make_unique<UserNoteStorageImpl>(context->GetPath()));
