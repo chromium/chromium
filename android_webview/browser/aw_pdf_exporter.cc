@@ -96,6 +96,14 @@ std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
     const printing::PageRanges& page_ranges) {
   auto settings = std::make_unique<printing::PrintSettings>();
   int dpi = Java_AwPdfExporter_getDpi(env, obj);
+  printing::PageMargins margins;
+  margins.left = MilsToDots(Java_AwPdfExporter_getLeftMargin(env, obj), dpi);
+  margins.right = MilsToDots(Java_AwPdfExporter_getRightMargin(env, obj), dpi);
+  margins.top = MilsToDots(Java_AwPdfExporter_getTopMargin(env, obj), dpi);
+  margins.bottom =
+      MilsToDots(Java_AwPdfExporter_getBottomMargin(env, obj), dpi);
+  settings->SetCustomMargins(margins);
+
   int width = Java_AwPdfExporter_getPageWidth(env, obj);
   int height = Java_AwPdfExporter_getPageHeight(env, obj);
   gfx::Size physical_size_device_units;
@@ -116,13 +124,6 @@ std::unique_ptr<printing::PrintSettings> AwPdfExporter::CreatePdfSettings(
   settings->SetPrinterPrintableArea(physical_size_device_units,
                                     printable_area_device_units, true);
 
-  printing::PageMargins margins;
-  margins.left = MilsToDots(Java_AwPdfExporter_getLeftMargin(env, obj), dpi);
-  margins.right = MilsToDots(Java_AwPdfExporter_getRightMargin(env, obj), dpi);
-  margins.top = MilsToDots(Java_AwPdfExporter_getTopMargin(env, obj), dpi);
-  margins.bottom =
-      MilsToDots(Java_AwPdfExporter_getBottomMargin(env, obj), dpi);
-  settings->SetCustomMargins(margins);
   settings->set_should_print_backgrounds(true);
   return settings;
 }
