@@ -37,7 +37,8 @@ AffiliationsPrefetcherFactory::GetForProfile(Profile* profile) {
           profile, /*create=*/!profile->ShutdownStarted()));
 }
 
-KeyedService* AffiliationsPrefetcherFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AffiliationsPrefetcherFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   // Since Password Manager doesn't work for non-standard profiles,
@@ -48,5 +49,6 @@ KeyedService* AffiliationsPrefetcherFactory::BuildServiceInstanceFor(
   password_manager::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
 
-  return new password_manager::AffiliationsPrefetcher(affiliation_service);
+  return std::make_unique<password_manager::AffiliationsPrefetcher>(
+      affiliation_service);
 }
