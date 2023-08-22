@@ -96202,6 +96202,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="SqlBindValuesError"/>
   <int value="5" label="SqlQueryRunError"/>
   <int value="6" label="ResultTensorError"/>
+  <int value="7" label="Success"/>
 </enum>
 
 <enum name="SegmentationPlatformModelExecutionStatus">
