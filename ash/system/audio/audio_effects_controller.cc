@@ -139,6 +139,14 @@ void AudioEffectsController::OnActiveUserPrefServiceChanged(
 }
 
 void AudioEffectsController::OnActiveInputNodeChanged() {
+  RefreshNoiseCancellationSupported();
+}
+
+void AudioEffectsController::OnAudioNodesChanged() {
+  RefreshNoiseCancellationSupported();
+}
+
+void AudioEffectsController::RefreshNoiseCancellationSupported() {
   const bool noise_cancellation_supported = IsNoiseCancellationSupported();
 
   if (noise_cancellation_supported_ == noise_cancellation_supported) {
