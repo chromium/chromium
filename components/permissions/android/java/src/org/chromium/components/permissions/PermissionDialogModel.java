@@ -36,6 +36,7 @@ class PermissionDialogModel {
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
+                .with(ModalDialogProperties.FOCUS_DIALOG, true)
                 .with(ModalDialogProperties.CUSTOM_VIEW, customView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, delegate.getPrimaryButtonText())
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, delegate.getSecondaryButtonText())
