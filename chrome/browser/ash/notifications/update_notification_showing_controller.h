@@ -45,7 +45,7 @@ class UpdateNotificationShowingController {
   void SetFakeCurrentMilestoneForTesting(int fake_milestone);
 
   int current_milestone_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<UpdateNotification> update_notification_;
 };
 

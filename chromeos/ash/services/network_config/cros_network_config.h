@@ -215,20 +215,21 @@ class CrosNetworkConfig
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<NetworkDeviceHandler, ExperimentalAsh>
-      network_device_handler_;                                      // Unowned
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_;  // Unowned
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
+  raw_ptr<NetworkDeviceHandler, LeakedDanglingUntriaged | ExperimentalAsh>
+      network_device_handler_;  // Unowned
+  raw_ptr<CellularInhibitor, LeakedDanglingUntriaged | ExperimentalAsh>
+      cellular_inhibitor_;  // Unowned
+  raw_ptr<CellularESimProfileHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       cellular_esim_profile_handler_;  // Unowned
   raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
       network_configuration_handler_;  // Unowned
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
+  raw_ptr<NetworkConnectionHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       network_connection_handler_;  // Unowned
-  raw_ptr<NetworkCertificateHandler, ExperimentalAsh>
+  raw_ptr<NetworkCertificateHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       network_certificate_handler_;  // Unowned
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh>
+  raw_ptr<NetworkProfileHandler, LeakedDanglingUntriaged | ExperimentalAsh>
       network_profile_handler_;  // Unowned
-  raw_ptr<TechnologyStateController, ExperimentalAsh>
+  raw_ptr<TechnologyStateController, LeakedDanglingUntriaged | ExperimentalAsh>
       technology_state_controller_;  // Unowned
 
   mojo::RemoteSet<chromeos::network_config::mojom::CrosNetworkConfigObserver>

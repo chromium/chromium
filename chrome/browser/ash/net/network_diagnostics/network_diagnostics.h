@@ -73,7 +73,8 @@ class NetworkDiagnostics
       RoutineResultCallback callback,
       chromeos::network_diagnostics::mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
-  raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
+  raw_ptr<DebugDaemonClient, LeakedDanglingUntriaged | ExperimentalAsh>
+      debug_daemon_client_;
   // Receiver for mojo service manager service provider.
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_receiver_{this};

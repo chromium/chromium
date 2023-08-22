@@ -52,7 +52,7 @@ class FileChooserChromeOs::Core : public ui::SelectFileDialog::Listener {
   void Cleanup();
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  const raw_ref<AshProxy, ExperimentalAsh> ash_;
+  const raw_ref<AshProxy, LeakedDanglingUntriaged | ExperimentalAsh> ash_;
   FileChooser::ResultCallback callback_;
 };
 

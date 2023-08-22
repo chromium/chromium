@@ -137,7 +137,8 @@ class ASH_EXPORT DeskPreviewView : public views::Button,
  private:
   friend class DesksTestApi;
 
-  const raw_ptr<DeskMiniView, ExperimentalAsh> mini_view_;
+  const raw_ptr<DeskMiniView, LeakedDanglingUntriaged | ExperimentalAsh>
+      mini_view_;
 
   // A view that paints the wallpaper in the mini_view. It avoids the dimming
   // and blur overview mode adds to the original wallpaper. Owned by the views

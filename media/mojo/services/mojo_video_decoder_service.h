@@ -101,10 +101,11 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   std::string codec_string_;
 
   // Decoder factory.
-  raw_ptr<MojoMediaClient> mojo_media_client_;
+  raw_ptr<MojoMediaClient, LeakedDanglingUntriaged> mojo_media_client_;
 
   // A helper object required to get the CDM from a CDM ID.
-  raw_ptr<MojoCdmServiceContext> mojo_cdm_service_context_ = nullptr;
+  raw_ptr<MojoCdmServiceContext, LeakedDanglingUntriaged>
+      mojo_cdm_service_context_ = nullptr;
 
   // Channel for sending async messages to the client.
   mojo::AssociatedRemote<mojom::VideoDecoderClient> client_;

@@ -33,7 +33,8 @@ class TokenFetcher {
       GoogleServiceAuthError error,
       signin::AccessTokenInfo access_token_info);
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager, LeakedDanglingUntriaged | ExperimentalAsh>
+      identity_manager_;
   std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
 
   base::WeakPtrFactory<TokenFetcher> weak_ptr_factory_{this};

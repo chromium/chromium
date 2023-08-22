@@ -87,7 +87,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridge {
   base::ObserverList<IMEBridgeObserver> observers_;
   TextInputMethod::InputContext current_input_context_;
 
-  raw_ptr<IMECandidateWindowHandlerInterface, ExperimentalAsh>
+  raw_ptr<IMECandidateWindowHandlerInterface,
+          LeakedDanglingUntriaged | ExperimentalAsh>
       candidate_window_handler_ = nullptr;
   raw_ptr<IMEAssistiveWindowHandlerInterface,
           DanglingUntriaged | ExperimentalAsh>
