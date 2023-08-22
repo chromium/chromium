@@ -4,9 +4,16 @@
 
 #include "content/browser/renderer_host/cursor_manager.h"
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
+#include "base/check.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace content {
 
@@ -50,25 +57,21 @@ bool CursorManager::IsViewUnderCursor(RenderWidgetHostViewBase* view) const {
   return view == view_under_cursor_;
 }
 
-base::ScopedClosureRunner CursorManager::CreateDisallowCustomCursorScope() {
-  bool should_update_cursor = false;
+base::ScopedClosureRunner CursorManager::CreateDisallowCustomCursorScope(
+    int max_dimension_dips) {
+  const ui::Cursor& target_cursor = cursor_map_[view_under_cursor_];
+  const bool cursor_allowed_before = IsCursorAllowed(target_cursor);
+  dimension_restrictions_.push_back(max_dimension_dips);
 
-  // If custom cursors are about to be disallowed and the current view uses a
-  // custom cursor, the cursor needs to be updated to replace the custom cursor.
-  if (AreCustomCursorsAllowed() && cursor_map_[view_under_cursor_].type() ==
-                                       ui::mojom::CursorType::kCustom) {
-    should_update_cursor = true;
-  }
-
-  ++disallow_custom_cursor_scope_count_;
-
-  if (should_update_cursor) {
+  // If the new restriction eliminates the cursor under the current view, update
+  // it.
+  if (cursor_allowed_before && !IsCursorAllowed(target_cursor)) {
     UpdateCursor();
   }
 
   return base::ScopedClosureRunner(
       base::BindOnce(&CursorManager::DisallowCustomCursorScopeExpired,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), max_dimension_dips));
 }
 
 bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
@@ -81,17 +84,30 @@ bool CursorManager::GetCursorForTesting(RenderWidgetHostViewBase* view,
   return true;
 }
 
-bool CursorManager::AreCustomCursorsAllowed() const {
-  return disallow_custom_cursor_scope_count_ == 0;
+bool CursorManager::IsCursorAllowed(const ui::Cursor& cursor) const {
+  if (cursor.type() != ui::mojom::CursorType::kCustom ||
+      dimension_restrictions_.empty()) {
+    return true;
+  }
+
+  const int max_dimension_dips = base::ranges::min(dimension_restrictions_);
+  const gfx::Size size_in_dip = gfx::ScaleToCeiledSize(
+      gfx::SkISizeToSize(cursor.custom_bitmap().dimensions()),
+      1 / cursor.image_scale_factor());
+
+  return std::max(size_in_dip.width(), size_in_dip.height()) <
+         max_dimension_dips;
 }
 
-void CursorManager::DisallowCustomCursorScopeExpired() {
-  --disallow_custom_cursor_scope_count_;
+void CursorManager::DisallowCustomCursorScopeExpired(int max_dimension_dips) {
+  const ui::Cursor& target_cursor = cursor_map_[view_under_cursor_];
+  const bool cursor_allowed_before = IsCursorAllowed(target_cursor);
 
-  // If custom cursors started being allowed and the current view has a custom
-  // cursor, update the cursor to ensure the custom cursor is now displayed.
-  if (AreCustomCursorsAllowed() && cursor_map_[view_under_cursor_].type() ==
-                                       ui::mojom::CursorType::kCustom) {
+  auto it = base::ranges::find(dimension_restrictions_, max_dimension_dips);
+  CHECK(it != dimension_restrictions_.end());
+  dimension_restrictions_.erase(it);
+
+  if (!cursor_allowed_before && IsCursorAllowed((target_cursor))) {
     UpdateCursor();
   }
 }
@@ -100,9 +116,7 @@ void CursorManager::UpdateCursor() {
   ui::Cursor cursor(ui::mojom::CursorType::kPointer);
 
   auto it = cursor_map_.find(view_under_cursor_);
-  if (it != cursor_map_.end() &&
-      (AreCustomCursorsAllowed() ||
-       it->second.type() != ui::mojom::CursorType::kCustom)) {
+  if (it != cursor_map_.end() && IsCursorAllowed(it->second)) {
     cursor = it->second;
   }
 

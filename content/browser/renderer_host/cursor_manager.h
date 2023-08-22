@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_CURSOR_MANAGER_H_
 
 #include <map>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -45,7 +46,10 @@ class CONTENT_EXPORT CursorManager {
   // cursor. This is only used for cursor triggered tooltips.
   bool IsViewUnderCursor(RenderWidgetHostViewBase*) const;
 
-  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope();
+  // Disallows custom cursors whose height or width are larger or equal to
+  // `max_dimension` DIPs.
+  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope(
+      int max_dimension_dips);
 
   // Accessor for browser tests, enabling verification of the cursor_map_.
   // Returns false if the provided View is not in the map, and outputs
@@ -57,8 +61,8 @@ class CONTENT_EXPORT CursorManager {
   }
 
  private:
-  bool AreCustomCursorsAllowed() const;
-  void DisallowCustomCursorScopeExpired();
+  bool IsCursorAllowed(const ui::Cursor&) const;
+  void DisallowCustomCursorScopeExpired(int max_dimension_dips);
   void UpdateCursor();
 
   // Stores the last received cursor from each RenderWidgetHostView.
@@ -71,9 +75,12 @@ class CONTENT_EXPORT CursorManager {
 
   // The root view is the target for DisplayCursor calls whenever the active
   // cursor needs to change.
-  raw_ptr<RenderWidgetHostViewBase> root_view_;
+  const raw_ptr<RenderWidgetHostViewBase> root_view_;
 
-  int disallow_custom_cursor_scope_count_ = 0;
+  // Restrictions on the maximum dimension (either width or height) imposed
+  // on custom cursors.
+  // Restrictions can be created by `CreateDisallowCustomCursorScope`.
+  std::vector<int> dimension_restrictions_;
 
   ui::mojom::CursorType last_set_cursor_type_for_testing_;
 

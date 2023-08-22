@@ -9952,7 +9952,8 @@ void WebContentsImpl::AboutToBeDiscarded(WebContents* new_contents) {
                              new_contents);
 }
 
-base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope() {
+base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope(
+    int max_dimension_dips) {
   auto* render_widget_host_base = GetPrimaryMainFrame()
                                       ->GetRenderWidgetHost()
                                       ->GetRenderWidgetHostViewBase();
@@ -9965,7 +9966,7 @@ base::ScopedClosureRunner WebContentsImpl::CreateDisallowCustomCursorScope() {
   }
 
   auto* cursor_manager = render_widget_host_base->GetCursorManager();
-  return cursor_manager->CreateDisallowCustomCursorScope();
+  return cursor_manager->CreateDisallowCustomCursorScope(max_dimension_dips);
 }
 
 bool WebContentsImpl::CancelPrerendering(FrameTreeNode* frame_tree_node,

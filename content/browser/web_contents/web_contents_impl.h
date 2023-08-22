@@ -589,8 +589,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   void AboutToBeDiscarded(WebContents* new_contents) override;
 
-  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope()
-      override;
+  [[nodiscard]] base::ScopedClosureRunner CreateDisallowCustomCursorScope(
+      int max_dimension_dips) override;
 
   void SetOverscrollNavigationEnabled(bool enabled) override;
 
