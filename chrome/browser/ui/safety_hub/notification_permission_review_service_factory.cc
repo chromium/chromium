@@ -39,9 +39,9 @@ NotificationPermissionsReviewServiceFactory::
 NotificationPermissionsReviewServiceFactory::
     ~NotificationPermissionsReviewServiceFactory() = default;
 
-KeyedService*
-NotificationPermissionsReviewServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new NotificationPermissionsReviewService(
+std::unique_ptr<KeyedService> NotificationPermissionsReviewServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<NotificationPermissionsReviewService>(
       HostContentSettingsMapFactory::GetForProfile(context));
 }
