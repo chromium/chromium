@@ -2370,6 +2370,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebRTC.Video.GenericDecoder.CaptureToEncodeDelay" units="ms"
+    expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The time it took between a video frame was captured until it started being
+    encoded. Recorded on the receiving side when a video frame has been decoded
+    using timestamps generated on the sending side if the VideoSendTiming flag
+    is set.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.GenericDecoder.DecodeDelay" units="ms"
+    expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The time it took to decode a video frame. Recorded on the receiving side
+    when a video frame has been decoded using locally generated timestamps.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.GenericDecoder.EncodeDelay" units="ms"
+    expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The time it took to encode a video frame. Recorded on the receiving side
+    when a video frame has been decoded using timestamps generated on the
+    sending side if the VideoSendTiming flag is set.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.GenericDecoder.JitterBufferDelay" units="ms"
+    expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Total time it took to compensate for network jitter of a video frame.
+    Recorded on the receiving side when a video frame has been decoded using
+    locally generated timestamps.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.GenericDecoder.PacerAndPacketizationDelay"
+    units="ms" expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The time a video frame spent in the pacer and packetizer before being
+    transmitted. Recorded on the receiving side when a video frame has been
+    decoded using timestamps generated on the sending side if the
+    VideoSendTiming flag is set.
+  </summary>
+</histogram>
+
+<histogram name="WebRTC.Video.GenericDecoder.PacketReceiveDelay" units="ms"
+    expires_after="2023-08-22">
+  <owner>henrika@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The time it took to receive a full video frame. Recorded on the receiving
+    side when a video frame has been decoded using locally generated timestamps.
+  </summary>
+</histogram>
+
 <histogram name="WebRTC.Video.H264DecoderImpl.Event"
     enum="WebRtcH264DecoderImplEvent" expires_after="never">
 <!-- expires-never: WebRTC health metric. -->
