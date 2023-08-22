@@ -32,7 +32,7 @@ class CursorWindowDelegate;
 // When cursor compositing is disabled, draw nothing as the native cursor is
 // shown.
 // When cursor compositing is enabled, just draw the cursor as-is.
-class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
+class ASH_EXPORT CursorWindowController {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -47,7 +47,7 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   CursorWindowController(const CursorWindowController&) = delete;
   CursorWindowController& operator=(const CursorWindowController&) = delete;
 
-  ~CursorWindowController() override;
+  ~CursorWindowController();
 
   bool is_cursor_compositing_enabled() const {
     return is_cursor_compositing_enabled_;
@@ -87,12 +87,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   void SetCursorSize(ui::CursorSize cursor_size);
   void SetVisibility(bool visible);
 
-  // aura::WindowObserver:
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override;
-
   // Gets the cursor container for testing purposes.
   const aura::Window* GetContainerForTest() const;
   SkColor GetCursorColorForTest() const;
@@ -120,8 +114,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   void UpdateCursorView();
 
   const gfx::ImageSkia& GetCursorImageForTest() const;
-
-  bool CanEnableMotionBlur() const;
 
   base::ObserverList<Observer> observers_;
 
@@ -158,9 +150,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   views::UniqueWidgetPtr cursor_view_widget_;
 
   const bool is_cursor_motion_blur_enabled_;
-  base::TimeTicks start_time_;
-  base::ScopedObservation<aura::Window, aura::WindowObserver>
-      scoped_container_observer_{this};
 };
 
 }  // namespace ash
