@@ -43,11 +43,12 @@ PrivacySandboxSettingsFactory::PrivacySandboxSettingsFactory()
   // the services can be explicitly depended on.
 }
 
-KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrivacySandboxSettingsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new privacy_sandbox::PrivacySandboxSettingsImpl(
+  return std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
       std::make_unique<PrivacySandboxSettingsDelegate>(profile),
       HostContentSettingsMapFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs());
