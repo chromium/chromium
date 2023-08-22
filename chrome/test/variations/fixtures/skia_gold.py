@@ -7,7 +7,6 @@ import base64
 import functools
 import os
 import shutil
-import subprocess
 import sys
 
 import attr
@@ -40,6 +39,7 @@ class VariationsSkiaGoldUtil:
   skia_gold_session: SkiaGoldSession = attr.attrib()
   test_name: str = attr.attrib()
   use_luci: bool = attr.attrib()
+  request: pytest.FixtureRequest = attr.attrib()
 
   def _png_file_for_name(self, name: str) -> str:
     """Returns a file name that should be used for diff comparison."""
@@ -64,10 +64,14 @@ class VariationsSkiaGoldUtil:
     image_name = f'{self.test_name}:{name}'
     status, error_msg = self.skia_gold_session.RunComparison(
       name=image_name, png_file=png_file, use_luci=self.use_luci)
-    return status, (
-      f'{error_msg}'
-      f'{self.skia_gold_session.GetTriageLinks(image_name)}'
-    )
+
+    # Screenshots for variations are in chrome-gold.skia.org
+    triage_link = self.skia_gold_session.GetTriageLinks(image_name)[1]
+    if triage_link:
+      self.request.node.user_properties.append(
+        ('tag', (f'skiagold_link/{name}', triage_link)))
+
+    return status, f'{error_msg} \n{triage_link}'
 
 @pytest.fixture
 def skia_gold_util(
@@ -99,6 +103,7 @@ def skia_gold_util(
 
   try:
     util = VariationsSkiaGoldUtil(
+      request=request,
       img_dir=skia_img_dir,
       skia_gold_session=session,
       test_name=f'{test_file}:{request.node.name}',
