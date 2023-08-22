@@ -185,11 +185,11 @@ BrowsingDataHistoryObserverService::Factory::Factory()
 #endif
 }
 
-KeyedService*
-BrowsingDataHistoryObserverService::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> BrowsingDataHistoryObserverService::Factory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new BrowsingDataHistoryObserverService(profile);
+  return std::make_unique<BrowsingDataHistoryObserverService>(profile);
 }
 
 bool BrowsingDataHistoryObserverService::Factory::
