@@ -28,7 +28,6 @@ source_set("metrics") {
     "//ios/chrome/browser/ntp:features",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:metrics",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/ntp",
