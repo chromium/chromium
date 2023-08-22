@@ -545,6 +545,38 @@ public class CastWebContentsActivityTest {
     }
 
     @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testEntersPipWhenAllowPipIsTrueOnUserPresent() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityLifecycle.create().start().resume();
+
+        CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(
+                CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, true));
+        RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
+
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        Shadows.shadowOf(getMainLooper()).idle();
+
+        assertTrue(shadowActivity.getInPictureInPictureMode());
+    }
+
+    @Test
+    @Config(shadows = {ExtendedShadowActivity.class})
+    public void testDoesNotenterPipWhenAllowPipIsFalseOnUserPresent() {
+        mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE, true);
+        mActivityLifecycle.create().start().resume();
+
+        CastWebContentsIntentUtils.getLocalBroadcastManager().sendBroadcastSync(
+                CastWebContentsIntentUtils.allowPictureInPicture(mSessionId, false));
+        RuntimeEnvironment.application.sendBroadcast(new Intent(Intent.ACTION_USER_PRESENT));
+
+        ExtendedShadowActivity shadowActivity = (ExtendedShadowActivity) Shadow.extract(mActivity);
+        Shadows.shadowOf(getMainLooper()).idle();
+
+        assertFalse(shadowActivity.getInPictureInPictureMode());
+    }
+
+    @Test
     public void testSurfaceAvailable() {
         Observer<Unit> observer = mock(Observer.class);
         Scope scope = mock(Scope.class);

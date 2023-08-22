@@ -182,6 +182,20 @@ public class CastWebContentsActivity extends Activity {
             });
         });
 
+        mCreatedState.subscribe(x -> {
+            IntentFilter filter = new IntentFilter(Intent.ACTION_USER_PRESENT);
+            return new BroadcastReceiverScope(filter, (Intent intent) -> {
+                if (DEBUG) {
+                    Log.d(TAG, "ACTION_USER_PRESENT received. canUsePictureInPicture: "
+                            + canUsePictureInPicture() + " mAllowPictureInPicture: "
+                            + mAllowPictureInPicture);
+                }
+                if (canUsePictureInPicture() && mAllowPictureInPicture) {
+                    enterPictureInPictureMode(new PictureInPictureParams.Builder().build());
+                }
+            });
+        });
+
         Observable<Unit> shouldKeepScreenOn =
                 mGotIntentState
                         .filter(intent
