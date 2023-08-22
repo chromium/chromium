@@ -34,9 +34,11 @@ MediaGalleriesPreferencesFactory::MediaGalleriesPreferencesFactory()
 
 MediaGalleriesPreferencesFactory::~MediaGalleriesPreferencesFactory() = default;
 
-KeyedService* MediaGalleriesPreferencesFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MediaGalleriesPreferencesFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new MediaGalleriesPreferences(static_cast<Profile*>(profile));
+  return std::make_unique<MediaGalleriesPreferences>(
+      static_cast<Profile*>(profile));
 }
 
 void MediaGalleriesPreferencesFactory::RegisterProfilePrefs(
