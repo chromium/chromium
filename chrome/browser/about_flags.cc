@@ -10832,6 +10832,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kFloatingWorkspaceV2)},
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+    {"draw-immediately-when-interactive",
+     flag_descriptions::kDrawImmediatelyWhenInteractiveName,
+     flag_descriptions::kDrawImmediatelyWhenInteractiveDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kDrawImmediatelyWhenInteractive)},
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"almanac-game-migration", flag_descriptions::kAlmanacGameMigrationName,
      flag_descriptions::kAlmanacGameMigrationDescription, kOsCrOS,

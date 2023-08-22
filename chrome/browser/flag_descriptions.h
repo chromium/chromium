@@ -963,6 +963,9 @@ extern const char kFileHandlingIconsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kFillingAcrossAffiliatedWebsitesName[];
 extern const char kFillingAcrossAffiliatedWebsitesDescription[];
+
+extern const char kDrawImmediatelyWhenInteractiveName[];
+extern const char kDrawImmediatelyWhenInteractiveDescription[];
 #endif
 
 extern const char kFillingAcrossGroupedSitesName[];
