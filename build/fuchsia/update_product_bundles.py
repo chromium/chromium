@@ -95,76 +95,6 @@ def get_repositories():
   return repos
 
 
-def remove_product_bundle(product_bundle):
-  """Removes product-bundle given."""
-  common.run_ffx_command(cmd=('product-bundle', 'remove', '-f', product_bundle))
-
-
-def get_product_bundle_urls():
-  """Retrieves URLs of available product-bundles.
-
-  Returns:
-    List of dictionaries of structure, indicating whether the product-bundle
-    has been downloaded.
-    {
-      'url': <GCS path of product-bundle>,
-      'downloaded': <True|False>
-    }
-  """
-  # TODO(fxb/115328): Replaces with JSON API when available.
-  bundles = common.run_ffx_command(cmd=('product-bundle', 'list'),
-                                   capture_output=True).stdout.strip()
-  urls = [
-      line.strip() for line in bundles.splitlines() if 'gs://fuchsia' in line
-  ]
-  structured_urls = []
-  for url in urls:
-    downloaded = False
-    if '*' in url:
-      downloaded = True
-      url = url.split(' ')[1]
-    structured_urls.append({'downloaded': downloaded, 'url': url.strip()})
-  return structured_urls
-
-
-def get_product_bundles():
-  """Lists all downloaded product-bundles for the given SDK.
-
-  Cross-references the repositories with downloaded packages and the stated
-  downloaded product-bundles to validate whether or not a product-bundle is
-  present. Prunes invalid product-bundles with each call as well.
-
-  Returns:
-    List of strings of product-bundle names downloaded and that FFX is aware
-    of.
-  """
-  downloaded_bundles = []
-
-  for url in get_product_bundle_urls():
-    if url['downloaded']:
-      # The product is separated by a #
-      product = url['url'].split('#')
-      downloaded_bundles.append(product[1])
-
-  repos = get_repositories()
-
-  # Some repo names do not match product-bundle names due to underscores.
-  # Normalize them both.
-  repo_names = set([repo['name'].replace('-', '_') for repo in repos])
-
-  def bundle_is_active(name):
-    # Returns True if the product-bundle named `name` is present in a package
-    # repository (assuming it is downloaded already); otherwise, removes the
-    # product-bundle and returns False.
-    if name.replace('-', '_') in repo_names:
-      return True
-
-    remove_product_bundle(name)
-    return False
-
-  return list(filter(bundle_is_active, downloaded_bundles))
-
-
 def get_current_signature(image_dir):
   """Determines the current version of the image, if it exists.
 
@@ -202,11 +132,6 @@ def main():
 
   logging.debug('Getting new SDK hash')
   new_sdk_hash = common.get_hash_from_sdk()
-
-  # Remove any product bundles that remain.
-  legacy_bundles = get_product_bundles()
-  for bundle in legacy_bundles:
-    remove_product_bundle(bundle)
 
   for product in new_products:
     prod, board = product.split('.', 1)
