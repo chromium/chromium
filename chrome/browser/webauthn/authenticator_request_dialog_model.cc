@@ -1754,6 +1754,24 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     if (!multiple_distinct_creds && best_cred.has_value()) {
       return best_cred->first;
     }
+
+    // If it's caBLEv1, or server-linked caBLEv2, jump to that.
+    if (cable_ui_type_) {
+      switch (*cable_ui_type_) {
+        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
+        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
+          for (size_t i = 0; i < mechanisms_.size(); ++i) {
+            if (mechanisms_[i].type == Mechanism::Type(Mechanism::Transport(
+                                           AuthenticatorTransport::kHybrid))) {
+              return i;
+            }
+          }
+          break;
+        case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
+          break;
+      }
+    }
+
     // TODO(crbug.com/1459273): implement skipping to the relevant authenticator
     // for certain Windows requests.
     // For all other cases, go to the multi source passkey picker.
