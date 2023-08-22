@@ -44,10 +44,6 @@ const int kModuleMaxHeight = 150;
 
 const CGFloat kSeparatorHeight = 0.5;
 
-// The margin spacing between the top horizontal StackView (containing the title
-// and "See More" button) and the module's overall vertical container StackView.
-const CGFloat kTitleStackViewTrailingMargin = 16.0f;
-
 }  // namespace
 
 @interface MagicStackModuleContainer () <UIContextMenuInteractionDelegate>
@@ -124,6 +120,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       showMoreButton.titleLabel.numberOfLines = 2;
       showMoreButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
       showMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+      showMoreButton.contentHorizontalAlignment =
+          UIControlContentHorizontalAlignmentTrailing;
       [showMoreButton
           setContentCompressionResistancePriority:UILayoutPriorityRequired
                                           forAxis:
@@ -131,6 +129,9 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       [showMoreButton addTarget:self
                          action:@selector(seeMoreButtonWasTapped:)
                forControlEvents:UIControlEventTouchUpInside];
+      [showMoreButton
+          setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                            forAxis:UILayoutConstraintAxisHorizontal];
       [titleStackView addArrangedSubview:showMoreButton];
     }
 
@@ -147,8 +148,7 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
       // content view when dynamic type is set very large.
       [NSLayoutConstraint activateConstraints:@[
         [titleStackView.widthAnchor
-            constraintEqualToAnchor:contentView.widthAnchor
-                           constant:-kTitleStackViewTrailingMargin],
+            constraintEqualToConstant:[self contentViewWidth]],
       ]];
     }
     if ([self shouldShowSeparator]) {
