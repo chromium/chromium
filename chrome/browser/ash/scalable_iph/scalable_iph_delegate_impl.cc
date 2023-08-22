@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -95,7 +96,6 @@ const base::flat_map<ActionType, std::string>& GetActionTypeURLs() {
   static const base::NoDestructor<base::flat_map<ActionType, std::string>>
       action_type_urls(
           {{ActionType::kOpenChrome, "chrome://new-tab-page/"},
-           {ActionType::kOpenPersonalizationApp, "chrome://personalization/"},
            {ActionType::kOpenPlayStore,
             "https://play.google.com/store/games?device=chromebook"},
            {ActionType::kOpenGoogleDocs,
@@ -173,20 +173,6 @@ void OpenUrlForProfile(Profile* profile, const GURL& url) {
     if (ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(
             sanitized_url)) {
       crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
-      return;
-    }
-
-    // TODO(b/291771298): Opening personalization hub links doesn't work in
-    // the lacros browser so we need to handle it separately.
-    if (url.spec() ==
-        GetActionTypeURLs().at(ActionType::kOpenPersonalizationApp)) {
-      NavigateParams navigate_params(
-          profile, url,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
-                                    ui::PAGE_TRANSITION_FROM_API));
-      navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-      navigate_params.window_action = NavigateParams::SHOW_WINDOW;
-      Navigate(&navigate_params);
       return;
     }
   }
@@ -435,9 +421,8 @@ void ScalableIphDelegateImpl::PerformActionForScalableIph(
       break;
     }
     case ActionType::kOpenPersonalizationApp: {
-      OpenUrlForProfile(
-          profile_,
-          GURL(GetActionTypeURLs().at(ActionType::kOpenPersonalizationApp)));
+      ash::LaunchSystemWebAppAsync(profile_,
+                                   ash::SystemWebAppType::PERSONALIZATION);
       break;
     }
     case ActionType::kOpenPlayStore: {
