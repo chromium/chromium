@@ -1272,7 +1272,13 @@ class TimeOverride {
 // static
 Time TimeOverride::now_time_;
 
-TEST_F(TimeTest, NowOverride) {
+// Disabled on Android due to flakes; see https://crbug.com/1474884.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_NowOverride DISABLED_NowOverride
+#else
+#define MAYBE_NowOverride NowOverride
+#endif
+TEST_F(TimeTest, MAYBE_NowOverride) {
   TimeOverride::now_time_ = Time::UnixEpoch();
 
   // Choose a reference time that we know to be in the past but close to now.

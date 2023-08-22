@@ -13,7 +13,13 @@ namespace base {
 
 namespace {
 
-TEST(ScopedMockClockOverrideTest, Time) {
+// Disabled on Android due to flakes; see https://crbug.com/1474884.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_Time DISABLED_Time
+#else
+#define MAYBE_Time Time
+#endif
+TEST(ScopedMockClockOverrideTest, MAYBE_Time) {
   // Choose a reference time that we know to be in the past but close to now.
   Time build_time = GetBuildTime();
 

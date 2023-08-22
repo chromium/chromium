@@ -21,7 +21,13 @@ TEST(BuildTime, DateLooksValid) {
 #endif
 }
 
-TEST(BuildTime, InThePast) {
+// Disabled on Android due to flakes; see https://crbug.com/1474884.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_InThePast DISABLED_InThePast
+#else
+#define MAYBE_InThePast InThePast
+#endif
+TEST(BuildTime, MAYBE_InThePast) {
   EXPECT_LT(base::GetBuildTime(), base::Time::Now());
   EXPECT_LT(base::GetBuildTime(), base::Time::NowFromSystemTime());
 }
