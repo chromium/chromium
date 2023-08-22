@@ -64,7 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorage {
                                               const AuthProofToken& token) = 0;
   // Allows to inspect stored UserContext. The reference is only valid within
   // same UI event, and should not be stored by caller.
-  virtual const UserContext* Peek(const AuthProofToken& token) = 0;
+  virtual UserContext* Peek(const AuthProofToken& token) = 0;
   // Return context back to Storage.
   virtual void Return(const AuthProofToken& token,
                       std::unique_ptr<UserContext> context) = 0;

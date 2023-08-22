@@ -74,7 +74,7 @@ void AuthFactorConfig::NotifyFactorObserversAfterFailure(
 void AuthFactorConfig::IsSupported(const std::string& auth_token,
                                    mojom::AuthFactor factor,
                                    base::OnceCallback<void(bool)> callback) {
-  const UserContext* user_context;
+  UserContext* user_context;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
       LOG(ERROR) << "Invalid or expired auth token";
@@ -127,7 +127,7 @@ void AuthFactorConfig::IsSupported(const std::string& auth_token,
 void AuthFactorConfig::IsConfigured(const std::string& auth_token,
                                     mojom::AuthFactor factor,
                                     base::OnceCallback<void(bool)> callback) {
-  const UserContext* user_context;
+  UserContext* user_context;
   const auto* user = ::user_manager::UserManager::Get()->GetPrimaryUser();
 
   if (ash::features::ShouldUseAuthSessionStorage()) {
@@ -263,7 +263,7 @@ void AuthFactorConfig::IsEditable(const std::string& auth_token,
         return;
       }
 
-      const UserContext* user_context;
+      UserContext* user_context;
       if (ash::features::ShouldUseAuthSessionStorage()) {
         if (!ash::AuthSessionStorage::Get()->IsValid(auth_token)) {
           LOG(ERROR) << "Invalid or expired auth token";

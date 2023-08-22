@@ -67,7 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
     void SetSessionAuthFactors(SessionAuthFactors keys);
 
     // May only be called if AuthFactorsConfiguration has been set.
-    const AuthFactorsConfiguration& GetAuthFactorsConfiguration() const;
+    const AuthFactorsConfiguration& GetAuthFactorsConfiguration();
     bool HasAuthFactorsConfiguration() const;
     void SetAuthFactorsConfiguration(AuthFactorsConfiguration auth_factors);
     void ClearAuthFactorsConfiguration();
@@ -126,7 +126,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
   // TODO(b/241259026): rename this method.
   const SessionAuthFactors& GetAuthFactorsData() const;
   // May only be called if AuthFactorsConfiguration has been set.
-  const AuthFactorsConfiguration& GetAuthFactorsConfiguration() const;
+  const AuthFactorsConfiguration& GetAuthFactorsConfiguration();
   bool HasAuthFactorsConfiguration() const;
 
   const std::string& GetAuthCode() const;

@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchSuccess) {
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
 
-  const UserContext* user_context = nullptr;
+  UserContext* user_context = nullptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     CHECK(LoginDisplayHost::default_host()
               ->GetWizardContext()
@@ -988,7 +988,7 @@ IN_PROC_BROWSER_TEST_F(ReauthTokenWebviewLoginTest, FetchFailure) {
   test::OobeJS().ClickOnPath(kPrimaryButton);
   OobeScreenExitWaiter(GaiaView::kScreenId).Wait();
 
-  const UserContext* user_context = nullptr;
+  UserContext* user_context = nullptr;
   if (ash::features::ShouldUseAuthSessionStorage()) {
     CHECK(LoginDisplayHost::default_host()
               ->GetWizardContext()

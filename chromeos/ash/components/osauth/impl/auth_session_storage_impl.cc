@@ -73,7 +73,7 @@ std::unique_ptr<UserContext> AuthSessionStorageImpl::Borrow(
   return std::move(data_it->second->context);
 }
 
-const UserContext* AuthSessionStorageImpl::Peek(const AuthProofToken& token) {
+UserContext* AuthSessionStorageImpl::Peek(const AuthProofToken& token) {
   auto data_it = tokens_.find(token);
   CHECK(data_it != std::end(tokens_));
   if (data_it->second->state == TokenState::kBorrowed) {
