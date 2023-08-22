@@ -399,11 +399,8 @@ CursorView::CursorView(const gfx::Point& initial_location,
                        bool is_motion_blur_enabled)
     : painter_(std::make_unique<Painter>(this,
                                          initial_location,
-                                         is_motion_blur_enabled)),
-      ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
+                                         is_motion_blur_enabled)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
-
-  ui::CursorController::GetInstance()->AddCursorObserver(this);
 }
 
 CursorView::~CursorView() {
@@ -419,10 +416,17 @@ CursorView::~CursorView() {
 views::UniqueWidgetPtr CursorView::Create(const gfx::Point& initial_location,
                                           bool is_motion_blur_enabled,
                                           aura::Window* container) {
-  return FastInkView::CreateWidgetWithContents(
-      base::WrapUnique(
-          new CursorView(initial_location, is_motion_blur_enabled)),
-      container);
+  CursorView* cursor_view =
+      new CursorView(initial_location, is_motion_blur_enabled);
+  auto widget = FastInkView::CreateWidgetWithContents(
+      base::WrapUnique(cursor_view), container);
+
+  // Initialize after FaskInkHost is set on `cursor_view` and it is attached to
+  // a widget. So that it could get `buffer_to_screen_transform_` and be able to
+  // initialize `painter_`.
+  cursor_view->Init();
+
+  return widget;
 }
 
 void CursorView::SetCursorImage(const gfx::ImageSkia& cursor_image,
@@ -437,20 +441,7 @@ void CursorView::SetCursorImage(const gfx::ImageSkia& cursor_image,
 // ui::CursorController::CursorObserver overrides:
 
 void CursorView::OnCursorLocationChanged(const gfx::PointF& location) {
-  if (!buffer_to_screen_transform_) {
-    if (!ui_task_runner_->BelongsToCurrentThread()) {
-      // If it is not called from ui thread, post it to ui thread.
-      ui_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&CursorView::OnCursorLocationChanged,
-                                    weak_ptr_factory_.GetWeakPtr(), location));
-      return;
-    }
-    // Create transform used to convert cursor controller coordinates to screen
-    // coordinates.
-    buffer_to_screen_transform_ =
-        this->host()->window_to_buffer_transform().GetCheckedInverse();
-  }
-  gfx::PointF new_location_f = buffer_to_screen_transform_->MapPoint(location);
+  gfx::PointF new_location_f = buffer_to_screen_transform_.MapPoint(location);
   gfx::Point new_location = gfx::ToRoundedPoint(new_location_f);
 
   painter_->SetCursorLocation(new_location);
@@ -465,15 +456,17 @@ FastInkHost::PresentationCallback CursorView::GetPresentationCallback() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// views::View overrides:
+// CursorView, private:
 
-void CursorView::AddedToWidget() {
+void CursorView::Init() {
+  buffer_to_screen_transform_ =
+      host()->window_to_buffer_transform().GetCheckedInverse();
+
   painter_->Init(base::BindRepeating(&CursorView::UpdateSurface,
                                      weak_ptr_factory_.GetWeakPtr()));
-}
 
-////////////////////////////////////////////////////////////////////////////////
-// CursorView, private:
+  ui::CursorController::GetInstance()->AddCursorObserver(this);
+}
 
 void CursorView::DidPresentCompositorFrame(
     const gfx::PresentationFeedback& feedback) {

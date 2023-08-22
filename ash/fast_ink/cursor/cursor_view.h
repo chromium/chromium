@@ -47,26 +47,26 @@ class CursorView : public FastInkView,
   // ash::FastInkView overrides:
   FastInkHost::PresentationCallback GetPresentationCallback() override;
 
-  // views::View overrides:
-  void AddedToWidget() override;
-
  private:
   // Paints cursor on the paint thread.
   class Painter;
 
   CursorView(const gfx::Point& initial_location, bool is_motion_blur_enabled);
 
+  // Initialize CursorView after FaskInkHost is setup.
+  void Init();
+
+  // Invoked when a frame is presented.
   void DidPresentCompositorFrame(const gfx::PresentationFeedback& feedback);
 
   // Constants that can be used on any thread.
-  absl::optional<gfx::Transform> buffer_to_screen_transform_;
+  gfx::Transform buffer_to_screen_transform_;
 
   std::unique_ptr<Painter> painter_;
 
   // UI thread state.
   raw_ptr<ui::Compositor, ExperimentalAsh> compositor_ = nullptr;
   SEQUENCE_CHECKER(ui_sequence_checker_);
-  const scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   base::WeakPtrFactory<CursorView> weak_ptr_factory_{this};
 };
 
