@@ -6966,6 +6966,13 @@
        {}
       ]
      ],
+     "chrome-bug-1474157.html": [
+      "c852b0aa018571a988e39af8be0d0b742d71038d",
+      [
+       null,
+       {}
+      ]
+     ],
      "firefox-bug-1688293.html": [
       "9ab1a88312683a66798cb52693c2ba4389222ff4",
       [
@@ -95509,6 +95516,19 @@
        {}
       ]
      ],
+     "soft-break-before-margin-001.html": [
+      "6907c33586af3fa6e058fb95560d95d3799bb690",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-with-transform.html": [
       "3aa7facf2d6a08e18a792b8739341b9bcc5014e5",
       [
@@ -108689,7 +108709,7 @@
       ]
      },
      "counter-scoping-001.html": [
-      "f7d40dc5a0850919f1b86ca31e9ebd44ec96b72d",
+      "ab948e19081e1383fdc68ef8b27f2b6db0e30e95",
       [
        null,
        [
@@ -279168,16 +279188,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "8255d56e28ea8016caa9878ae2ff41ec27918276",
-     []
-    ],
-    "mtime.json": [
-     "525d90ac737a92d22edaed8a2618bd68a7662c2f",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -366550,7 +366560,7 @@
        []
       ],
       "scroll_support.js": [
-       "52c2f58723a2a39e9d652036d82d59475497c76e",
+       "e8792cc6ca06979b399f8ab1973ed3d5bcc11597",
        []
       ],
       "scrollend-event-fired-after-sequence-of-scrolls.tentative.html.ini": [
@@ -366594,7 +366604,7 @@
        []
       ],
       "scrollend-user-scroll-common.js": [
-       "34af4ce921e72386491149f0f47f754481a3cf3e",
+       "5c278784d83916beda046e9c6b760429c3dc9804",
        []
       ]
      },
@@ -507603,7 +507613,7 @@
        ]
       ],
       "scrollend-event-fires-to-iframe-window.html": [
-       "1a20751bd53b1d4e838fd13d8eed09bf9b3f6dfb",
+       "4e53158087018884a82e5086ca6bdaf2d12661be",
        [
         null,
         {
