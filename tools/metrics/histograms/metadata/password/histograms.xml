@@ -626,8 +626,8 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed"
-    enum="Boolean" expires_after="2023-09-10">
+<histogram name="PasswordManager.AddCredentialFromSettings.AccountStoreUsed2"
+    enum="Boolean" expires_after="M120">
   <owner>mamir@google.com</owner>
   <summary>
     Tracks which store is used when the user adds a new credential from

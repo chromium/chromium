@@ -339,6 +339,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         AddCredentialFromSettingsUserInteractions.CREDENTIAL_ADDED);
     const useAccountStore = this.isAccountStoreUser &&
         (this.$.storePicker.value === this.storeOptionAccountValue_);
+    if (!this.$.storePicker.hidden) {
+      chrome.metricsPrivate.recordBoolean(
+          'PasswordManager.AddCredentialFromSettings.AccountStoreUsed2',
+          useAccountStore);
+    }
 
     PasswordManagerImpl.getInstance()
         .addPassword({
