@@ -248,7 +248,7 @@
             var pointerInteractablePaintTree = getPointerInteractablePaintTree(element, frame);
             if (pointerInteractablePaintTree.length === 0 ||
                 !element.contains(pointerInteractablePaintTree[0])) {
-              return Promise.reject(new Error("element click intercepted error"));
+              return Promise.reject(new Error("element event-dispatch intercepted error"));
             }
 
             var rect = element.getClientRects()[0];
