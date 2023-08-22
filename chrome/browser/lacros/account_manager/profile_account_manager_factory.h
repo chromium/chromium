@@ -33,7 +33,7 @@ class ProfileAccountManagerFactory : public ProfileKeyedServiceFactory {
   ~ProfileAccountManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
