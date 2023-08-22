@@ -146,11 +146,22 @@ message_center::NotificationType GetNotificationType(
 }
 
 bool IsAppValidForProfile(Profile* profile, const std::string& app_id) {
-  if (app_id == arc::kPlayStoreAppId) {
-    return arc::IsArcPlayStoreEnabledForProfile(profile);
+  if (app_id == arc::kPlayStoreAppId &&
+      !arc::IsArcPlayStoreEnabledForProfile(profile)) {
+    return false;
   }
 
-  return arc::IsArcAllowedForProfile(profile);
+  if (!arc::IsArcAllowedForProfile(profile)) {
+    return false;
+  }
+
+  ArcAppListPrefs* const prefs = ArcAppListPrefs::Get(profile);
+  std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
+  if (!app_info || !app_info->ready) {
+    return false;
+  }
+
+  return true;
 }
 
 void OpenUrlForProfile(Profile* profile, const GURL& url) {
