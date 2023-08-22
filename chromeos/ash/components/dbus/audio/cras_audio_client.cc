@@ -378,6 +378,28 @@ class CrasAudioClientImpl : public CrasAudioClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void SetHfpMicSrEnabled(bool hfp_mic_sr_on) override {
+    VLOG(1) << "cras_audio_client: Setting hfp_mic_sr state: " << hfp_mic_sr_on;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kSetHfpMicSrEnabled);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(hfp_mic_sr_on);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
+  void GetHfpMicSrSupported(
+      chromeos::DBusMethodCallback<bool> callback) override {
+    VLOG(1) << "cras_audio_client: Requesting hfp_mic_sr support.";
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kIsHfpMicSrSupported);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetHfpMicSrSupported,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   void SetActiveOutputNode(uint64_t node_id) override {
     dbus::MethodCall method_call(cras::kCrasControlInterface,
                                  cras::kSetActiveOutputNode);
@@ -1190,6 +1212,27 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(is_noise_cancellation_supported);
     VLOG(1) << "cras_audio_client: Retrieved noise cancellation support: "
             << is_noise_cancellation_supported;
+  }
+
+  void OnGetHfpMicSrSupported(chromeos::DBusMethodCallback<bool> callback,
+                              dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling "
+                 << "IsHfpMicSrSupported";
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    bool is_hfp_mic_sr_supported = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopBool(&is_hfp_mic_sr_supported)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(is_hfp_mic_sr_supported);
+    VLOG(1) << "cras_audio_client: Retrieved hfp_mic_sr support: "
+            << is_hfp_mic_sr_supported;
   }
 
   bool GetAudioNode(dbus::Response* response,

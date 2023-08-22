@@ -282,6 +282,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   virtual void GetNumStreamIgnoreUiGains(
       chromeos::DBusMethodCallback<int> callback) = 0;
 
+  // Sets hfp_mic_sr state to |hfp_mic_sr_on| value.
+  virtual void SetHfpMicSrEnabled(bool hfp_mic_sr_on) = 0;
+
+  // Gets if hfp_mic_sr is supported.
+  virtual void GetHfpMicSrSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
+
  protected:
   friend class CrasAudioClientTest;
 

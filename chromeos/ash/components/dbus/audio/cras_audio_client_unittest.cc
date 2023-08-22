@@ -19,6 +19,7 @@
 #include "dbus/object_path.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/audio/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 using ::testing::_;
@@ -32,11 +33,13 @@ namespace {
 // Audio nodes for GetNodes unit test.
 const uint64_t kInternalSpeakerId = 10001;
 const uint64_t kInternalMicId = 20001;
+const uint64_t kNbsMicId = 30001;
 
 const uint32_t kInputMaxSupportedChannels = 1;
 const uint32_t kOutputMaxSupportedChannels = 2;
 
 const uint32_t kInputAudioEffect = cras::EFFECT_TYPE_NOISE_CANCELLATION;
+const uint32_t kNbsMicAudioEffect = cras::EFFECT_TYPE_HFP_MIC_SR;
 const uint32_t kOutputAudioEffect = 0;
 
 const int32_t kInputNumberOfVolumeSteps = 0;
@@ -102,6 +105,20 @@ const AudioNode kInternalMicV2(true,
                                kInputMaxSupportedChannels,
                                kInputAudioEffect,
                                kInputNumberOfVolumeSteps);
+
+const AudioNode kNbsMic(true,
+                        kNbsMicId,
+                        false /* has_v2_stable_device_id */,
+                        kNbsMicId /* stable_device_id_v1*/,
+                        0 /* stable_device_id_v2 */,
+                        "Fake Nbs Mic",
+                        "BLUETOOTH_NB_MIC",
+                        "Bluetooth Nb Mic",
+                        false,
+                        0,
+                        kInputMaxSupportedChannels,
+                        kNbsMicAudioEffect,
+                        kInputNumberOfVolumeSteps);
 
 // A mock CrasAudioClient Observer.
 class MockObserver : public CrasAudioClient::Observer {
@@ -1454,6 +1471,21 @@ TEST_F(CrasAudioClientTest, SetNoiseCancellationEnabled) {
       response.get());
   // Call method.
   client()->SetNoiseCancellationEnabled(kNoiseCancellationOn);
+  // Run the message loop.
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(CrasAudioClientTest, SetHfpMicSrEnabled) {
+  const bool kHfpMicSrOn = true;
+  // Create response.
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+
+  // Set expectations.
+  PrepareForMethodCall(cras::kSetHfpMicSrEnabled,
+                       base::BindRepeating(&ExpectBoolArgument, kHfpMicSrOn),
+                       response.get());
+  // Call method.
+  client()->SetHfpMicSrEnabled(kHfpMicSrOn);
   // Run the message loop.
   base::RunLoop().RunUntilIdle();
 }
