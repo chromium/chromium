@@ -4,6 +4,9 @@
 
 #include "chrome/browser/policy/messaging_layer/util/manual_test_heartbeat_event.h"
 
+#include <memory>
+
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -12,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
-#include "components/keyed_service/core/keyed_service.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
@@ -26,14 +28,15 @@ BASE_FEATURE(kEncryptedReportingManualTestHeartbeatEvent,
              "EncryptedReportingManualTestHeartbeatEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// User heartbeat event.
-BASE_FEATURE(kEncryptedReportingManualTestUserHeartbeatEvent,
-             "EncryptedReportingManualTestUserHeartbeatEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace
 
 ManualTestHeartbeatEvent::ManualTestHeartbeatEvent() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  managed_session_service_ = std::make_unique<policy::ManagedSessionService>();
+  CHECK(managed_session_service_);
+  managed_session_observation_.Observe(managed_session_service_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   StartHeartbeatEvent();
 }
 
@@ -58,8 +61,22 @@ void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
   }
+}
 
-  // User heartbeat
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace {
+// User heartbeat event.
+BASE_FEATURE(kEncryptedReportingManualTestUserHeartbeatEvent,
+             "EncryptedReportingManualTestUserHeartbeatEvent",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // namespace
+
+// Enqueues a 10 heartbeat events with `EventType::kUser` upon login.
+void ManualTestHeartbeatEvent::OnLogin(Profile* profile) {
+  managed_session_observation_.Reset();
+  CHECK_NE(profile, nullptr);
+
   if (base::FeatureList::IsEnabled(
           kEncryptedReportingManualTestUserHeartbeatEvent)) {
     Start<ReportQueueManualTestContext>(
@@ -74,5 +91,6 @@ void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
             {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace reporting
