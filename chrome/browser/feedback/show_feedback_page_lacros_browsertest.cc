@@ -20,16 +20,13 @@ class ShowFeedbackPageBrowserTest : public InProcessBrowserTest {
 
  protected:
   void SetUp() override {
-    // TODO(crbug.com/1473375): Check against the exact ash version with ash
-    // browser window API support in crosapi::mojom::TestController once the
-    // implementation cl has landed.
-    if (IsRunningAgainstOlderAsh()) {
+    if (GetAshChromeVersion() < base::Version({118, 0, 5962})) {
       // For the older ash version without the ash browser window API
       // support in crosapi::mojom::TestController, we can't verify and close
       // feedback SWA in ash. Therefore, it still needs to run against the
       // unique ash.
-      // TODO(crbug/1446083): Remove the unique ash code once ash browser window
-      // API is supported in stable ash.
+      // TODO(crbug/1446083): Remove the unique ash code once ash stable
+      // version >= 118.0.5962.0.
       StartUniqueAshChrome(
           {}, {}, {}, "crbug.com/1446083 The test leaves Ash windows behind");
     }
