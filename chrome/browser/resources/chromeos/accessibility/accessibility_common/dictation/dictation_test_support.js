@@ -20,9 +20,9 @@ class DictationTestSupport {
     domAutomationController.send('ready');
   }
 
-  /** Increases Dictation timeouts for test stability. */
-  increaseNoFocusedImeTimeout() {
-    this.dictation_.increaseNoFocusedImeTimeoutForTesting();
+  /** Sets Dictation timeouts for test stability. */
+  setNoFocusedImeTimeout(duration) {
+    this.dictation_.setNoFocusedImeTimeoutForTesting(duration);
     this.notifyCcTests_();
   }
 

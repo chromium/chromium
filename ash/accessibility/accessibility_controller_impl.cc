@@ -12,6 +12,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
+#include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
@@ -969,10 +970,14 @@ AccessibilityControllerImpl::AccessibilityControllerImpl()
   Shell::Get()->session_controller()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   CreateAccessibilityFeatures();
+
+  accessibility_notification_controller_ =
+      std::make_unique<AccessibilityNotificationController>();
 }
 
 AccessibilityControllerImpl::~AccessibilityControllerImpl() {
   floating_menu_controller_.reset();
+  accessibility_notification_controller_.reset();
 }
 
 void AccessibilityControllerImpl::CreateAccessibilityFeatures() {
@@ -1938,6 +1943,8 @@ void AccessibilityControllerImpl::OnDictationKeyboardDialogDismissed() {
 void AccessibilityControllerImpl::ShowDictationLanguageUpgradedNudge(
     const std::string& dictation_locale,
     const std::string& application_locale) {
+  // TODO(b:259352600): Move dictation_nudge_controller_ into
+  // accessibility_notification_controller.
   dictation_nudge_controller_ = std::make_unique<DictationNudgeController>(
       dictation_locale, application_locale);
   dictation_nudge_controller_->ShowNudge();
@@ -2923,6 +2930,16 @@ AccessibilityControllerImpl::GetDictationBubbleControllerForTest() {
   }
 
   return dictation_bubble_controller_.get();
+}
+
+void AccessibilityControllerImpl::ShowToast(AccessibilityToastType type) {
+  accessibility_notification_controller_->ShowToast(type);
+}
+
+void AccessibilityControllerImpl::AddShowToastCallbackForTesting(
+    base::RepeatingClosure callback) {
+  accessibility_notification_controller_->AddShowToastCallbackForTesting(
+      std::move(callback));
 }
 
 }  // namespace ash

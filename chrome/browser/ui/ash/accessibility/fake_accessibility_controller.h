@@ -77,6 +77,7 @@ class FakeAccessibilityController : ash::AccessibilityController {
       const absl::optional<std::vector<ash::DictationBubbleHintType>>& hints)
       override;
   void SilenceSpokenFeedback() override;
+  void ShowToast(ash::AccessibilityToastType type) override;
 
  private:
   bool was_client_set_ = false;

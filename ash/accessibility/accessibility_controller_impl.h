@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/accessibility/a11y_feature_type.h"
+#include "ash/accessibility/accessibility_notification_controller.h"
 #include "ash/ash_export.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/accessibility_controller.h"
@@ -471,6 +472,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
       const absl::optional<std::vector<DictationBubbleHintType>>& hints)
       override;
   void SilenceSpokenFeedback() override;
+  void ShowToast(AccessibilityToastType type) override;
 
   // A confirmation dialog will be shown the first time an accessibility feature
   // is enabled using the specified accelerator key sequence. Only one dialog
@@ -533,6 +535,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void DismissDictationKeyboardDialogForTesting() {
     OnDictationKeyboardDialogDismissed();
   }
+
+  void AddShowToastCallbackForTesting(base::RepeatingClosure callback);
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -646,6 +650,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // Used to control the Dictation bubble UI.
   std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
+
+  // Used to control accessibility-related notifications.
+  std::unique_ptr<AccessibilityNotificationController>
+      accessibility_notification_controller_;
 
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;

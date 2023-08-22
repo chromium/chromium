@@ -202,7 +202,7 @@ export class Dictation {
     }
     this.setStopTimeout_(
         Dictation.Timeouts.NO_FOCUSED_IME_MS,
-        'Dictation stopped automatically: No focused IME');
+        Dictation.StopReason.NO_FOCUSED_IME);
     this.inputController_.connect(() => this.maybeStartSpeechRecognition_());
   }
 
@@ -262,18 +262,21 @@ export class Dictation {
   /**
    * Sets the timeout to stop Dictation.
    * @param {number} durationMs
-   * @param {string=} debugInfo Optional debugging information for why Dictation
+   * @param {Dictation.StopReason=} reason Optional reason for why Dictation
    *     stopped automatically.
    * @private
    */
-  setStopTimeout_(durationMs, debugInfo) {
+  setStopTimeout_(durationMs, reason) {
     if (this.stopTimeoutId_ !== null) {
       clearTimeout(this.stopTimeoutId_);
     }
     this.stopTimeoutId_ = setTimeout(() => {
       this.stopDictation_(/*notify=*/ true);
-      if (debugInfo) {
-        console.log(debugInfo);
+
+      if (reason === Dictation.StopReason.NO_FOCUSED_IME) {
+        chrome.accessibilityPrivate.showToast(
+            chrome.accessibilityPrivate.ToastType
+                .DICTATION_NO_FOCUSED_TEXT_FIELD);
       }
     }, durationMs);
   }
@@ -540,12 +543,9 @@ export class Dictation {
         InputController.IME_ENGINE_ID);
   }
 
-  /**
-   * Used to increase the NO_FOCUSED_IME_MS timeout to reduce the flakiness of
-   * Dictation tests on slower builds. For testing purposes only.
-   */
-  increaseNoFocusedImeTimeoutForTesting() {
-    Dictation.Timeouts.NO_FOCUSED_IME_MS = 20 * 1000;
+  /** Used to set the NO_FOCUSED_IME_MS timeout for testing purposes only. */
+  setNoFocusedImeTimeoutForTesting(duration) {
+    Dictation.Timeouts.NO_FOCUSED_IME_MS = duration;
   }
 
   /**
@@ -627,4 +627,9 @@ Dictation.Timeouts = {
   NO_SPEECH_ONDEVICE_MS: 20 * 1000,
   NO_NEW_SPEECH_MS: 5 * 1000,
   NO_FOCUSED_IME_MS: 1000,
+};
+
+/** @enum {string} */
+Dictation.StopReason = {
+  NO_FOCUSED_IME: 'Dictation stopped automatically: No focused IME',
 };

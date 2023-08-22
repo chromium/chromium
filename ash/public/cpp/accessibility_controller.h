@@ -210,6 +210,9 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   // Cancels all of spoken feedback's current and queued speech immediately.
   virtual void SilenceSpokenFeedback() = 0;
 
+  // Shows an accessibility-related toast.
+  virtual void ShowToast(AccessibilityToastType type) = 0;
+
  protected:
   AccessibilityController();
   virtual ~AccessibilityController();
