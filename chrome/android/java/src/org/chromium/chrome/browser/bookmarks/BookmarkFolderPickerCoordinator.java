@@ -55,8 +55,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
 
     public BookmarkFolderPickerCoordinator(Context context, BookmarkModel bookmarkModel,
             BookmarkImageFetcher bookmarkImageFetcher, List<BookmarkId> bookmarkIds,
-            BookmarkId initialParentId, Runnable finishRunnable,
-            BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
+            Runnable finishRunnable, BookmarkAddNewFolderCoordinator addNewFolderCoordinator,
             BookmarkUiPrefs bookmarkUiPrefs,
             ImprovedBookmarkRowCoordinator improvedBookmarkRowCoordinator) {
         mContext = context;
@@ -74,7 +73,7 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         PropertyModelChangeProcessor.create(model, mView, BookmarkFolderPickerViewBinder::bind);
 
         mMediator = new BookmarkFolderPickerMediator(context, bookmarkModel, bookmarkImageFetcher,
-                bookmarkIds, initialParentId, finishRunnable,
+                bookmarkIds, finishRunnable,
                 new BookmarkUiPrefs(SharedPreferencesManager.getInstance()), model, mModelList,
                 addNewFolderCoordinator, improvedBookmarkRowCoordinator);
 

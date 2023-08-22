@@ -50,7 +50,6 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     private List<BookmarkId> mBookmarkIds;
     private BookmarkImageFetcher mBookmarkImageFetcher;
     private BookmarkFolderPickerCoordinator mCoordinator;
-    private BookmarkId mInitialParentId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,12 +80,11 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                         mBookmarkModel);
         BookmarkUiPrefs bookmarkUiPrefs =
                 new BookmarkUiPrefs(SharedPreferencesManager.getInstance());
-        mInitialParentId = mBookmarkModel.getBookmarkById(mBookmarkIds.get(0)).getParentId();
         // TODO(crbug.com/1472832): Consider initializing this in #onCreateOptionsMenu to avoid the
         // possibility that the menu is null when the first parent is set.
         mCoordinator = new BookmarkFolderPickerCoordinator(this, mBookmarkModel,
-                mBookmarkImageFetcher, mBookmarkIds, mInitialParentId, this::finish,
-                addNewFolderCoordinator, bookmarkUiPrefs,
+                mBookmarkImageFetcher, mBookmarkIds, this::finish, addNewFolderCoordinator,
+                bookmarkUiPrefs,
                 new ImprovedBookmarkRowCoordinator(this, mBookmarkImageFetcher, mBookmarkModel,
                         bookmarkUiPrefs, ShoppingServiceFactory.getForProfile(profile)));
 
