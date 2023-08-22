@@ -36,6 +36,7 @@ BASE_DECLARE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet);
 
 BASE_DECLARE_FEATURE(kAutofillEnablePaymentsMandatoryReauth);
 BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
+BASE_DECLARE_FEATURE(kAutofillEnableServerIban);
 BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
 BASE_DECLARE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCard);

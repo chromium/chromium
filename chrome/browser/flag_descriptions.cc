@@ -519,6 +519,12 @@ const char kAutofillEnableRemadeDownstreamMetricsDescription[] =
     "When enabled, some extra metrics logging for Autofill Downstream will "
     "start.";
 
+const char kAutofillEnableServerIbanName[] =
+    "Enable server-based IBAN uploading and autofilling";
+const char kAutofillEnableServerIbanDescription[] =
+    "When enabled, Autofill will attempt to offer upload save for IBANs "
+    "(International Bank Account Numbers) and autofill server-based IBANs.";
+
 const char kAutofillEnableStickyManualFallbackForCardsName[] =
     "Make manual fallback sticky for credit cards";
 const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
