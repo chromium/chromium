@@ -45,7 +45,7 @@ class MultiDeviceSetupClientFactory : public ProfileKeyedServiceFactory {
   }
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
   bool service_is_null_while_testing_ = true;
