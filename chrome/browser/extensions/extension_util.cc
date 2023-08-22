@@ -71,6 +71,7 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
   return ReloadExtension(extension_id, context);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if the extension ID is found in the InstallForceList policy. Is
 // checked by HasIsolatedStorage() when the extension is not found in the
 // registry.
@@ -91,6 +92,7 @@ bool IsForceInstalledExtension(const ExtensionId& extension_id,
   }
   return false;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns true if the profile is a sign-in profile and the extension is policy
 // installed. `is_policy_installed` can be passed to the method if its value is
