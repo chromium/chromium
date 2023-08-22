@@ -30,9 +30,10 @@ IdleServiceFactory::IdleServiceFactory()
           ProfileSelections::BuildForRegularProfile()) {}
 
 // BrowserContextKeyedServiceFactory:
-KeyedService* IdleServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IdleServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new IdleService(Profile::FromBrowserContext(context));
+  return std::make_unique<IdleService>(Profile::FromBrowserContext(context));
 }
 
 void IdleServiceFactory::RegisterProfilePrefs(
