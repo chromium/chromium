@@ -28,6 +28,10 @@ ShellFederatedPermissionContext::GetApiPermissionStatus(
     return PermissionStatus::BLOCKED_EMBARGO;
   }
 
+  if (third_party_cookies_blocked_) {
+    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
+  }
+
   return PermissionStatus::GRANTED;
 }
 

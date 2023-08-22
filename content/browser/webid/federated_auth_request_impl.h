@@ -19,6 +19,7 @@
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -104,6 +105,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
+
+  // This wrapper around FederatedIdentityApiPermissionContextDelegate ensures
+  // that we handle BLOCKED_THIRD_PARTY_COOKIES_BLOCKED correctly.
+  FederatedIdentityApiPermissionContextDelegate::PermissionStatus
+  GetApiPermissionStatus();
 
   struct IdentityProviderGetInfo {
     IdentityProviderGetInfo(blink::mojom::IdentityProviderConfigPtr,

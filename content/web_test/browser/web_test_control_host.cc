@@ -71,6 +71,7 @@
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_content_index_provider.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
+#include "content/shell/browser/shell_federated_permission_context.h"
 #include "content/test/mock_platform_notification_service.h"
 #include "content/test/storage_partition_test_helpers.h"
 #include "content/web_test/browser/devtools_protocol_test_bindings.h"
@@ -2018,6 +2019,9 @@ void WebTestControlHost::BlockThirdPartyCookies(bool block) {
       browser_context->GetDefaultStoragePartition();
   storage_partition->GetCookieManagerForBrowserProcess()
       ->BlockThirdPartyCookies(block);
+  ShellFederatedPermissionContext* federated_context =
+      browser_context->GetShellFederatedPermissionContext();
+  federated_context->SetThirdPartyCookiesBlocked(block);
 }
 
 void WebTestControlHost::BindWebTestControlHostForRenderer(

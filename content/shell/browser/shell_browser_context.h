@@ -74,6 +74,8 @@ class ShellBrowserContext : public BrowserContext {
   GetReduceAcceptLanguageControllerDelegate() override;
   OriginTrialsControllerDelegate* GetOriginTrialsControllerDelegate() override;
 
+  ShellFederatedPermissionContext* GetShellFederatedPermissionContext();
+
  protected:
   // Contains URLRequestContextGetter required for resource loading.
   class ShellResourceContext : public ResourceContext {
