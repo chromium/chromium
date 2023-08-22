@@ -57,15 +57,15 @@ bool CertProvisioningSchedulerUserServiceFactory::
   return true;
 }
 
-KeyedService*
-CertProvisioningSchedulerUserServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> CertProvisioningSchedulerUserServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile || !profile->GetProfilePolicyConnector()->IsManaged()) {
     return nullptr;
   }
 
-  return new CertProvisioningSchedulerUserService(profile);
+  return std::make_unique<CertProvisioningSchedulerUserService>(profile);
 }
 
 }  // namespace cert_provisioning
