@@ -710,10 +710,16 @@ class CONTENT_EXPORT InterestGroupAuction
       const blink::AuctionConfig& config,
       const url::Origin& buyer);
 
-  // Gets the buyer DirectFromSellerSignals auction-signals in `config` for
-  // buyer.  Public so that InterestGroupAuctionReporter can use it.
+  // Gets the DirectFromSellerSignals auction-signals. Public so that
+  // InterestGroupAuctionReporter can use it.
   static absl::optional<GURL> GetDirectFromSellerAuctionSignals(
       const SubresourceUrlBuilder* subresource_url_builder);
+
+  // Gets the DirectFromSellerSignalsHeaderAdSlot auction-signals. Public so
+  // that InterestGroupAuctionReporter can use it.
+  static absl::optional<std::string>
+  GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+      const HeaderDirectFromSellerSignals& signals);
 
   // Gets the buyer DirectFromSellerSignals per-buyer-signals in `config` for
   // buyer. Public so that InterestGroupAuctionReporter can use it.
@@ -721,10 +727,23 @@ class CONTENT_EXPORT InterestGroupAuction
       const SubresourceUrlBuilder* subresource_url_builder,
       const url::Origin& owner);
 
-  // Gets the buyer DirectFromSellerSignals seller-signals in `config` for
-  // buyer. Public so that InterestGroupAuctionReporter can use it.
+  // Gets the buyer DirectFromSellerSignalsHeaderAdSlot per-buyer-signals
+  // for `owner`. Public so that InterestGroupAuctionReporter can use it.
+  static absl::optional<std::string>
+  GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
+      const HeaderDirectFromSellerSignals& signals,
+      const url::Origin& owner);
+
+  // Gets DirectFromSellerSignals seller-signals. Public so that
+  // InterestGroupAuctionReporter can use it.
   static absl::optional<GURL> GetDirectFromSellerSellerSignals(
       const SubresourceUrlBuilder* subresource_url_builder);
+
+  // Gets DirectFromSellerSignalsHeaderAdSlot seller-signals. Public so that
+  // InterestGroupAuctionReporter can use it.
+  static absl::optional<std::string>
+  GetDirectFromSellerSellerSignalsHeaderAdSlot(
+      const HeaderDirectFromSellerSignals& signals);
 
   // Replaces `${}` placeholders in a debug report URL's query string for post
   // auction signals if exist. Only replaces unescaped placeholder ${}, but
@@ -821,7 +840,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // True if all async prerequisites for calling ScoreBid on the SellerWorklet
   // are done.
   bool ReadyToScoreBids() const {
-    return seller_worklet_received_ && config_promises_resolved_;
+    return seller_worklet_received_ && config_promises_resolved_ &&
+           !direct_from_seller_signals_header_ad_slot_pending_;
   }
 
   // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
@@ -842,6 +862,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // True if all bids have been generated (or decoded from additional_bids) and
   // scored and all config promises resolved.
   bool IsBiddingAndScoringPhaseComplete() const {
+    CHECK(started_bidding_and_scoring_phase_);
     return num_scoring_dependencies_ == 0 && bids_being_scored_ == 0 &&
            unscored_bids_.empty();
   }
@@ -1007,6 +1028,11 @@ class CONTENT_EXPORT InterestGroupAuction
   // creating it if needed.
   SubresourceUrlBuilder* SubresourceUrlBuilderIfReady();
 
+  const HeaderDirectFromSellerSignals*
+  direct_from_seller_signals_header_ad_slot() const {
+    return direct_from_seller_signals_header_ad_slot_.get();
+  }
+
   void OnDecompressedServerResponse(
       std::unique_ptr<data_decoder::DataDecoder> decoder,
       AdAuctionRequestContext* request_context,
@@ -1110,7 +1136,8 @@ class CONTENT_EXPORT InterestGroupAuction
   // This includes bidders that are still attempting to generate bids ---
   // both BuyerHelpers and component auctions. BuyerHelpers may generate
   // multiple bids (or no bids). It also includes waiting for promises in
-  // configuration to resolve.
+  // configuration to resolve, and waiting for
+  // directFromSellerSignalsHeaderAdSlot to parse.
   // TODO(morlovich): And will wait for additional_bids.
   //
   // When this reaches 0, the SellerWorklet's SendPendingSignalsRequests()
@@ -1161,7 +1188,7 @@ class CONTENT_EXPORT InterestGroupAuction
   std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder_;
 
   // Stores the loaded HeaderDirectFromSellerSignals, if there were any. Should
-  // never be null.
+  // never be null until moved to the reporter.
   //
   // After `direct_from_seller_signals_header_ad_slot_` has been
   // set to true, the default constructed value gets replaced with the found

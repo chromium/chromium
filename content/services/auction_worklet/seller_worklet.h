@@ -100,7 +100,11 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_seller_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
       const url::Origin& browser_signal_interest_group_owner,
@@ -116,7 +120,11 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
       const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       const absl::optional<GURL>& direct_from_seller_seller_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_seller_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
       const absl::optional<std::string>&
@@ -196,6 +204,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         direct_from_seller_result_auction_signals;
     // DirectFromSellerSignals errors are fatal, so no error information is
     // stored here.
+
+    // Header-based DirectFromSellerSignals.
+    absl::optional<std::string>
+        direct_from_seller_seller_signals_header_ad_slot;
+    absl::optional<std::string>
+        direct_from_seller_auction_signals_header_ad_slot;
   };
 
   using ScoreAdTaskList = std::list<ScoreAdTask>;
@@ -243,6 +257,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
         direct_from_seller_result_auction_signals;
     // DirectFromSellerSignals errors are fatal, so no error information is
     // stored here.
+
+    // Header-based DirectFromSellerSignals.
+    absl::optional<std::string>
+        direct_from_seller_seller_signals_header_ad_slot;
+    absl::optional<std::string>
+        direct_from_seller_auction_signals_header_ad_slot;
 
     ReportResultCallback callback;
   };
@@ -299,8 +319,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             auction_ad_config_non_shared_params,
         DirectFromSellerSignalsRequester::Result
             direct_from_seller_result_seller_signals,
+        const absl::optional<std::string>&
+            direct_from_seller_seller_signals_header_ad_slot,
         DirectFromSellerSignalsRequester::Result
             direct_from_seller_result_auction_signals,
+        const absl::optional<std::string>&
+            direct_from_seller_auction_signals_header_ad_slot,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const absl::optional<blink::AdCurrency>& component_expect_bid_currency,
@@ -318,8 +342,12 @@ class CONTENT_EXPORT SellerWorklet : public mojom::SellerWorklet {
             auction_ad_config_non_shared_params,
         DirectFromSellerSignalsRequester::Result
             direct_from_seller_result_seller_signals,
+        const absl::optional<std::string>&
+            direct_from_seller_seller_signals_header_ad_slot,
         DirectFromSellerSignalsRequester::Result
             direct_from_seller_result_auction_signals,
+        const absl::optional<std::string>&
+            direct_from_seller_auction_signals_header_ad_slot,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const url::Origin& browser_signal_interest_group_owner,
         const absl::optional<std::string>&

@@ -322,15 +322,27 @@ interface GenerateBidFinalizer {
   //  page. Null will be passed to the worklet in that case.
   //
   // See BeginGenerateBid for description of
-  //  `direct_from_seller_per_buyer_signals`, `
+  //  `direct_from_seller_per_buyer_signals`,
   //  `direct_from_seller_auction_signals`
+  //
+  //  `direct_from_seller_per_buyer_signals_header_ad_slot` A JSON string of the
+  //   DirectFromSellerSignals for this specific buyer. Must not be passed if
+  //   `direct_from_seller_per_buyer_signals` or
+  //   `direct_from_seller_auction_signals` is passed.
+  //
+  //  `direct_from_seller_auction_signals_header_ad_slot` A JSON string of the
+  //   DirectFromSellerSignals for the seller and all buyers. Must not be passed
+  //   if `direct_from_seller_auction_signals` or
+  //   `direct_from_seller_per_buyer_signals` is passed.
   FinishGenerateBid(
       string? auction_signals_json,
       string? per_buyer_signals_json,
       mojo_base.mojom.TimeDelta? per_buyer_timeout,
       blink.mojom.AdCurrency? expected_buyer_currency,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
-      url.mojom.Url? direct_from_seller_auction_signals);
+      string? direct_from_seller_per_buyer_signals_header_ad_slot,
+      url.mojom.Url? direct_from_seller_auction_signals,
+      string? direct_from_seller_auction_signals_header_ad_slot);
 };
 
 // Manages the auction workflow for one loaded FLEDGE bidder worklet.
@@ -369,19 +381,19 @@ interface BidderWorklet {
   //  was joined; can affect context reuse in certain execution modes.
   //
   // `direct_from_seller_per_buyer_signals` The subresource URL of the
-  // DirectFromSellerSignals for the specific owner of this interest group, as
-  // produced by concatenating the `directFromSellerSignals` URL prefix field
-  // passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
-  // URL-encoded buyer origin for this buyer. Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the specific owner of this interest group, as
+  //  produced by concatenating the `directFromSellerSignals` URL prefix field
+  //  passed from runAdAuction() with "?perBuyerSignals=[buyer]" for the
+  //  URL-encoded buyer origin for this buyer. Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // `direct_from_seller_auction_signals` The subresource URL of the
-  // DirectFromSellerSignals for the seller and all buyers, as produced by
-  // concatenating the `directFromSellerSignals` URL prefix field passed from
-  // runAdAuction() with "?auctionSignals". Since this is fetched from a
-  // subresource bundle, it may only be fetched using the URLLoaderFactory
-  // passed in when creating the worklet.
+  //  DirectFromSellerSignals for the seller and all buyers, as produced by
+  //  concatenating the `directFromSellerSignals` URL prefix field passed from
+  //  runAdAuction() with "?auctionSignals". Since this is fetched from a
+  //  subresource bundle, it may only be fetched using the URLLoaderFactory
+  //  passed in when creating the worklet.
   //
   // Both `direct_from_seller_auction_signals` and
   // `direct_from_seller_per_buyer_signals` can alternatively be passed as
@@ -472,12 +484,22 @@ interface BidderWorklet {
   //  subresource bundle, it may only be fetched using the URLLoaderFactory
   //  passed in when creating the worklet.
   //
+  // `direct_from_seller_per_buyer_signals_header_ad_slot` A JSON string of the
+  //  DirectFromSellerSignals for this specific buyer. Must not be passed if
+  //  `direct_from_seller_per_buyer_signals` or
+  //  `direct_from_seller_auction_signals` is passed.
+  //
   // `direct_from_seller_auction_signals` The subresource URL of the
   //  DirectFromSellerSignals for the seller and all buyers, as produced by
   //  concatenating the `directFromSellerSignals` URL prefix field passed from
   //  runAdAuction() with "?auctionSignals". Since this is fetched from a
   //  subresource bundle, it may only be fetched using the URLLoaderFactory
   //  passed in when creating the worklet.
+  //
+  // `direct_from_seller_auction_signals_header_ad_slot` A JSON string of the
+  //   DirectFromSellerSignals for the seller and all buyers. Must not be passed
+  //   if `direct_from_seller_auction_signals` or
+  //   `direct_from_seller_per_buyer_signals` is passed.
   //
   // `seller_signals_json` is a JSON representation of the object returned by
   //  the seller worklet's ReportResult method.
@@ -571,7 +593,9 @@ interface BidderWorklet {
       string? auction_signals_json,
       string? per_buyer_signals_json,
       url.mojom.Url? direct_from_seller_per_buyer_signals,
+      string? direct_from_seller_per_buyer_signals_header_ad_slot,
       url.mojom.Url? direct_from_seller_auction_signals,
+      string? direct_from_seller_auction_signals_header_ad_slot,
       string seller_signals_json,
       KAnonymityBidMode kanon_mode,
       bool bid_is_kanon,

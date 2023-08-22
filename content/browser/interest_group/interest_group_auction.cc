@@ -1333,7 +1333,12 @@ class InterestGroupAuction::BuyerHelper
         PerBuyerCurrency(owner_, *auction_->config_),
         GetDirectFromSellerPerBuyerSignals(
             url_builder, bid_state->bidder->interest_group.owner),
-        GetDirectFromSellerAuctionSignals(url_builder));
+        GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
+            *auction_->direct_from_seller_signals_header_ad_slot(),
+            bid_state->bidder->interest_group.owner),
+        GetDirectFromSellerAuctionSignals(url_builder),
+        GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+            *auction_->direct_from_seller_signals_header_ad_slot()));
     bid_state->bid_finalizer.reset();
   }
 
@@ -2105,11 +2110,17 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
   bidding_and_scoring_phase_start_time_ = base::TimeTicks::Now();
 
+  CHECK_EQ(num_scoring_dependencies_, 0);
   num_scoring_dependencies_ =
       buyer_helpers_.size() + component_auctions_.size();
 
   // Also wait for config to resolve.
   if (!config_promises_resolved_) {
+    ++num_scoring_dependencies_;
+  }
+
+  // Also wait for directFromSellerSignalsHeaderAdSlot to finish JSON parsing.
+  if (direct_from_seller_signals_header_ad_slot_pending_) {
     ++num_scoring_dependencies_;
   }
 
@@ -2301,8 +2312,11 @@ InterestGroupAuction::CreateReporter(
       top_level_seller_winning_bid_info;
   top_level_seller_winning_bid_info.auction_config = config_;
   DCHECK(subresource_url_builder_);  // Must have been created by scoring.
+  CHECK(direct_from_seller_signals_header_ad_slot_);  // Should never be null.
   top_level_seller_winning_bid_info.subresource_url_builder =
       std::move(subresource_url_builder_);
+  top_level_seller_winning_bid_info.direct_from_seller_signals_header_ad_slot =
+      std::move(direct_from_seller_signals_header_ad_slot_);
   top_level_seller_winning_bid_info.bid = winner->bid->bid;
 
   if (winner->bid->auction == this) {
@@ -2353,8 +2367,13 @@ InterestGroupAuction::CreateReporter(
     component_seller_winning_bid_info->auction_config =
         component_auction->config_;
     DCHECK(component_auction->subresource_url_builder_);
+    // Should never be null.
+    CHECK(component_auction->direct_from_seller_signals_header_ad_slot_);
     component_seller_winning_bid_info->subresource_url_builder =
         std::move(component_auction->subresource_url_builder_);
+    component_seller_winning_bid_info
+        ->direct_from_seller_signals_header_ad_slot = std::move(
+        component_auction->direct_from_seller_signals_header_ad_slot_);
     const LeaderInfo& component_leader = component_auction->leader_info();
     component_seller_winning_bid_info->bid = component_leader.top_bid->bid->bid;
     // The bidder in this auction was the actual bidder, so the currency comes
@@ -2500,10 +2519,13 @@ void InterestGroupAuction::NotifyDirectFromSellerSignalsHeaderAdSlotConfig(
     AdAuctionPageData* auction_page_data,
     const absl::optional<std::string>&
         direct_from_seller_signals_header_ad_slot) {
+  CHECK(!direct_from_seller_signals_header_ad_slot_pending_);
   if (!direct_from_seller_signals_header_ad_slot) {
     return;
   }
-
+  if (started_bidding_and_scoring_phase_) {
+    ++num_scoring_dependencies_;
+  }
   direct_from_seller_signals_header_ad_slot_pending_ = true;
   HeaderDirectFromSellerSignals::ParseAndFind(
       auction_page_data->GetAuctionSignalsForOrigin(config_->seller),
@@ -3098,6 +3120,12 @@ absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerAuctionSignals(
   return absl::nullopt;
 }
 
+absl::optional<std::string>
+InterestGroupAuction::GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+    const HeaderDirectFromSellerSignals& signals) {
+  return signals.auction_signals();
+}
+
 absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
     const SubresourceUrlBuilder* subresource_url_builder,
     const url::Origin& owner) {
@@ -3112,12 +3140,29 @@ absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerPerBuyerSignals(
   return it->second.subresource_url;
 }
 
+absl::optional<std::string>
+InterestGroupAuction::GetDirectFromSellerPerBuyerSignalsHeaderAdSlot(
+    const HeaderDirectFromSellerSignals& signals,
+    const url::Origin& owner) {
+  auto it = signals.per_buyer_signals().find(owner);
+  if (it == signals.per_buyer_signals().end()) {
+    return absl::nullopt;
+  }
+  return it->second;
+}
+
 absl::optional<GURL> InterestGroupAuction::GetDirectFromSellerSellerSignals(
     const SubresourceUrlBuilder* subresource_url_builder) {
   if (subresource_url_builder && subresource_url_builder->seller_signals()) {
     return subresource_url_builder->seller_signals()->subresource_url;
   }
   return absl::nullopt;
+}
+
+absl::optional<std::string>
+InterestGroupAuction::GetDirectFromSellerSellerSignalsHeaderAdSlot(
+    const HeaderDirectFromSellerSignals& signals) {
+  return signals.seller_signals();
 }
 
 InterestGroupAuction::LeaderInfo::LeaderInfo() = default;
@@ -3527,7 +3572,11 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
       bid_raw->ad_metadata, bid_raw->bid, bid_raw->bid_currency,
       config_->non_shared_params, GetDirectFromSellerSellerSignals(url_builder),
+      GetDirectFromSellerSellerSignalsHeaderAdSlot(
+          *direct_from_seller_signals_header_ad_slot_),
       GetDirectFromSellerAuctionSignals(url_builder),
+      GetDirectFromSellerAuctionSignalsHeaderAdSlot(
+          *direct_from_seller_signals_header_ad_slot_),
       GetOtherSellerParam(*bid_raw),
       parent_ ? PerBuyerCurrency(config_->seller, *parent_->config_)
               : absl::nullopt,
@@ -4133,12 +4182,19 @@ void InterestGroupAuction::OnLoadedWinningGroup(
 void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     std::unique_ptr<HeaderDirectFromSellerSignals> signals,
     std::vector<std::string> errors) {
+  CHECK(direct_from_seller_signals_header_ad_slot_pending_);
+  CHECK(direct_from_seller_signals_header_ad_slot_);
   direct_from_seller_signals_header_ad_slot_ = std::move(signals);
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
   direct_from_seller_signals_header_ad_slot_pending_ = false;
-  for (const auto& buyer_helper : buyer_helpers_) {
-    buyer_helper->NotifyConfigDependencyResolved();
+
+  if (started_bidding_and_scoring_phase_) {
+    for (const auto& buyer_helper : buyer_helpers_) {
+      buyer_helper->NotifyConfigDependencyResolved();
+    }
+    OnScoringDependencyDone();
+    ScoreQueuedBidsIfReady();
   }
 }
 

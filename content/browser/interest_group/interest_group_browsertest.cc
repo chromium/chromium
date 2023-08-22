@@ -5270,6 +5270,60 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                 JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionRejectPromiseDirectFromSellerSignalsHeaderAdSlot) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignalsHeaderAdSlot: new Promise((resolve, reject) => {
+        setTimeout(() => { reject('boo'); }, 10) }),
+      interestGroupBuyers: []
+  })";
+
+  EXPECT_EQ("Promise argument rejected or resolved to invalid value.",
+            RunAuctionAndWait(
+                JsReplace(kAuctionConfigTemplate, test_origin, decision_url)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    RunAdAuctionMissingDirectFromSellerSignalsHeaderAdSlotLogged) {
+  GURL test_url = https_server_->GetURL("a.test", "/echo");
+  url::Origin test_origin = url::Origin::Create(test_url);
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  GURL decision_url =
+      https_server_->GetURL("a.test", "/interest_group/decision_logic.js");
+
+  // Fetch a URL with adAuctionHeaders: true. The response has no
+  // Ad-Auction-Signals header, so signals aren't found. An error should be
+  // logged to devtools.
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", test_url)));
+
+  const char kAuctionConfigTemplate[] = R"({
+      seller: $1,
+      decisionLogicUrl: $2,
+      directFromSellerSignalsHeaderAdSlot: "notFound",
+      interestGroupBuyers: []
+  })";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "Worklet error: When looking for directFromSellerSignalsHeaderAdSlot "
+      "notFound, failed to find a matching response.");
+  EXPECT_EQ(nullptr, RunAuctionAndWait(JsReplace(kAuctionConfigTemplate,
+                                                 test_origin, decision_url)));
+  EXPECT_TRUE(console_observer.Wait());
+}
+
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        RunAdAuctionPromiseInvalidDirectFromSellerSignals) {
   GURL test_url = https_server_->GetURL("a.test", "/echo");
@@ -5766,6 +5820,164 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         &observer);
     EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
   }
+}
+
+// Create a cross origin iframe, and load header-based directFromSellerSignals
+// in that frame. Then, in the main frame, run an auction using the loaded
+// signals.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    DirectFromSellerSignalsHeaderAdSlotFromCrossOriginIframe) {
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kSellerHost[] = "b.test";
+  constexpr char kIframeHost[] = "d.test";
+  url::Origin seller_origin =
+      url::Origin::Create(https_server_->GetURL(kSellerHost, "/echo"));
+  url::Origin iframe_origin =
+      url::Origin::Create(https_server_->GetURL(kIframeHost, "/echo"));
+
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/bidder_origin, /*name=*/"cars", /*priority=*/0.0,
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                https_server_->GetURL(kBidderHost,
+                                      "/interest_group/bidding_logic.js"),
+                /*ads=*/
+                {{{GURL("https://example.com/render"),
+                   /*metadata=*/absl::nullopt}}}));
+
+  GURL top_frame_url = https_server_->GetURL(
+      kTopFrameHost,
+      base::StringPrintf(
+          "/cross_site_iframe_factory.html?%s(%s)", kTopFrameHost,
+          https_server_->GetURL(kIframeHost, "/echo").spec().c_str()));
+
+  ASSERT_TRUE(NavigateToURL(shell(), top_frame_url));
+  RenderFrameHost* const iframe_host =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), /*index=*/0);
+
+  const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
+  // The actual body of the request is just an empty JSON dict for the test,
+  // but it could be any arbitrary payload that the server wants to deliver
+  // with the header signals.
+  const char kHeaderSignalsBodyResponse[] = "{}";
+  const char kHeaderSignalsResponse[] = R"([{
+      "adSlot": "adSlot1",
+      "sellerSignals": {"json": "for", "the": ["seller"]}
+    }])";
+  network_responder_->RegisterNetworkResponse(
+      kHeaderSignalsPath, kHeaderSignalsBodyResponse, "application/json",
+      /*extra_response_headers=*/
+      {{"Access-Control-Allow-Origin", iframe_origin.Serialize()},
+       {"Ad-Auction-Signals", kHeaderSignalsResponse}});
+  EXPECT_TRUE(ExecJs(iframe_host,
+                     content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                        https_server_->GetURL(
+                                            kSellerHost, kHeaderSignalsPath))));
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(EvalJs(web_contents()->GetPrimaryMainFrame(),
+                  JsReplace(
+                      R"(
+(async function() {
+  return await navigator.runAdAuction({
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$3],
+      directFromSellerSignalsHeaderAdSlot: "adSlot1"
+  });
+})())",
+                      seller_origin.Serialize().c_str(),
+                      https_server_->GetURL(kSellerHost,
+                                            "/interest_group/"
+                                            "decision_simple_direct_from_"
+                                            "seller_signals_validator.js"),
+                      bidder_origin.Serialize().c_str()))
+               .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+}
+
+// Start an auction using directFromSellerSignalsHeaderAdSlot, but navigate away
+// immediately after starting the auction.
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupBrowserTest,
+    DirectFromSellerSignalsHeaderAdSlotNavigateAwayDuringAuction) {
+  constexpr char kBidderHost[] = "a.test";
+  constexpr char kTopFrameHost[] = "c.test";
+  constexpr char kSellerHost[] = "b.test";
+  constexpr char kNewTopFrameHost[] = "d.test";
+  url::Origin seller_origin =
+      url::Origin::Create(https_server_->GetURL(kSellerHost, "/echo"));
+  const url::Origin top_frame_origin =
+      url::Origin::Create(https_server_->GetURL(kTopFrameHost, "/echo"));
+
+  GURL bidder_url = https_server_->GetURL(kBidderHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), bidder_url));
+  url::Origin bidder_origin = url::Origin::Create(bidder_url);
+
+  ASSERT_EQ(kSuccess,
+            JoinInterestGroupAndVerify(
+                /*owner=*/bidder_origin, /*name=*/"cars", /*priority=*/0.0,
+                blink::InterestGroup::ExecutionMode::kCompatibilityMode,
+                /*bidding_url=*/
+                https_server_->GetURL(kBidderHost,
+                                      "/interest_group/bidding_logic.js"),
+                /*ads=*/
+                {{{GURL("https://example.com/render"),
+                   /*metadata=*/absl::nullopt}}}));
+
+  GURL top_frame_url = https_server_->GetURL(kTopFrameHost, "/echo");
+  ASSERT_TRUE(NavigateToURL(shell(), top_frame_url));
+
+  const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
+  // The actual body of the request is just an empty JSON dict for the test,
+  // but it could be any arbitrary payload that the server wants to deliver
+  // with the header signals.
+  const char kHeaderSignalsBodyResponse[] = "{}";
+  const char kHeaderSignalsResponse[] = R"([{
+      "adSlot": "adSlot1",
+      "sellerSignals": {"json": "for", "the": ["seller"]}
+    }])";
+  network_responder_->RegisterNetworkResponse(
+      kHeaderSignalsPath, kHeaderSignalsBodyResponse, "application/json",
+      /*extra_response_headers=*/
+      {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+       {"Ad-Auction-Signals", kHeaderSignalsResponse}});
+  EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                     content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                        https_server_->GetURL(
+                                            kSellerHost, kHeaderSignalsPath))));
+
+  ExecuteScriptAsync(web_contents()->GetPrimaryMainFrame(),
+                     JsReplace(
+                         R"(
+(async function() {
+  return await navigator.runAdAuction({
+      seller: $1,
+      decisionLogicUrl: $2,
+      interestGroupBuyers: [$3],
+      directFromSellerSignalsHeaderAdSlot: "adSlot1"
+  });
+})())",
+                         seller_origin.Serialize().c_str(),
+                         https_server_->GetURL(kSellerHost,
+                                               "/interest_group/"
+                                               "decision_simple_direct_from_"
+                                               "seller_signals_validator.js"),
+                         bidder_origin.Serialize().c_str()));
+
+  // Navigate away without waiting for the auction to complete. Nothing should
+  // crash.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), https_server_->GetURL(kNewTopFrameHost, "/echo")));
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -9951,9 +10163,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
 }
 
+class InterestGroupWorkletValidationBrowserTest
+    : public InterestGroupBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool UseHeaderDirectFromSellerSignals() const { return GetParam(); }
+};
+
 // Use bidder and seller worklet files that validate their arguments all have
 // the expected values.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
+IN_PROC_BROWSER_TEST_P(InterestGroupWorkletValidationBrowserTest,
+                       ValidateWorkletParameters) {
   // Use different hostnames for each participant, since
   // `trusted_bidding_signals` only checks the hostname of certain parameters.
   constexpr char kBidderHost[] = "a.test";
@@ -10022,44 +10242,82 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
           /*ad_sizes=*/{},
           /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
-  // For `directFromSellerSignals` to work, we need to navigate to a page that
-  // declares the subresource bundle resources we pass to those fields.
   GURL seller_script_url = https_server_->GetURL(
       kSellerHost, "/interest_group/decision_argument_validator.js");
   url::Origin seller_origin = url::Origin::Create(seller_script_url);
-  std::vector<NetworkResponder::SubresourceResponse> subresource_responses = {
-      NetworkResponder::SubresourceResponse(
-          /*subresource_url=*/
-          "/direct_from_seller_signals?sellerSignals",
-          /*payload=*/
-          R"({"json": "for", "the": ["seller"]})"),
-      NetworkResponder::SubresourceResponse(
-          /*subresource_url=*/"/direct_from_seller_signals?auctionSignals",
-          /*payload=*/
-          R"({"json": "for", "all": ["parties"]})"),
-      NetworkResponder::DirectFromSellerPerBuyerSignals(
-          bidder_origin, /*payload=*/
-          R"({"json": "for", "buyer": [1]})"),
-      NetworkResponder::DirectFromSellerPerBuyerSignals(
-          second_bidder_origin, /*payload=*/
-          R"({"json": "for", "buyer": [2]})"),
-  };
-  std::vector<NetworkResponder::SubresourceBundle> bundles = {
-      NetworkResponder::SubresourceBundle(
-          /*bundle_url=*/https_server_->GetURL(kSellerHost,
-                                               "/generated_bundle.wbn"),
-          /*subresources=*/subresource_responses)};
 
-  network_responder_->RegisterDirectFromSellerSignalsResponse(
-      /*bundles=*/bundles,
-      /*allow_origin=*/top_frame_origin.Serialize());
-  constexpr char kPagePath[] = "/page-with-bundles.html";
-  network_responder_->RegisterHtmlWithSubresourceBundles(
-      /*bundles=*/bundles,
-      /*page_url=*/kPagePath);
+  if (UseHeaderDirectFromSellerSignals()) {
+    // For `directFromSellerSignalsHeaderAdSlot`, we need to make a network
+    // request to a resource that has signals in the Ad-Auction-Signals header
+    // value.
+    ASSERT_TRUE(
+        NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, "/echo")));
+    const char kHeaderSignalsPath[] = "/header_direct_from_seller_signals.json";
+    // The actual body of the request is just an empty JSON dict for the test,
+    // but it could be any arbitrary payload that the server wants to deliver
+    // with the header signals.
+    const char kHeaderSignalsBodyResponse[] = "{}";
+    const std::string kHeaderSignalsResponse =
+        base::StringPrintf(R"([{
+      "adSlot": "adSlot1",
+      "sellerSignals": {"json": "for", "the": ["seller"]},
+      "auctionSignals": {"json": "for", "all": ["parties"]},
+      "perBuyerSignals": {
+        "%s": {"json": "for", "buyer": [1]},
+        "%s": {"json": "for", "buyer": [2]}
+      }
+    }])",
+                           bidder_origin.Serialize().c_str(),
+                           second_bidder_origin.Serialize().c_str());
+    network_responder_->RegisterNetworkResponse(
+        kHeaderSignalsPath, kHeaderSignalsBodyResponse, "application/json",
+        /*extra_response_headers=*/
+        {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+         {"Ad-Auction-Signals", kHeaderSignalsResponse}});
+    EXPECT_TRUE(
+        ExecJs(web_contents()->GetPrimaryMainFrame(),
+               content::JsReplace(
+                   "fetch($1, {adAuctionHeaders: true})",
+                   https_server_->GetURL(kSellerHost, kHeaderSignalsPath))));
+  } else {
+    // For subresource bundle `directFromSellerSignals` to work, we need to
+    // navigate to a page that declares the subresource bundle resources we pass
+    // to those fields.
+    std::vector<NetworkResponder::SubresourceResponse> subresource_responses = {
+        NetworkResponder::SubresourceResponse(
+            /*subresource_url=*/
+            "/direct_from_seller_signals?sellerSignals",
+            /*payload=*/
+            R"({"json": "for", "the": ["seller"]})"),
+        NetworkResponder::SubresourceResponse(
+            /*subresource_url=*/"/direct_from_seller_signals?auctionSignals",
+            /*payload=*/
+            R"({"json": "for", "all": ["parties"]})"),
+        NetworkResponder::DirectFromSellerPerBuyerSignals(
+            bidder_origin, /*payload=*/
+            R"({"json": "for", "buyer": [1]})"),
+        NetworkResponder::DirectFromSellerPerBuyerSignals(
+            second_bidder_origin, /*payload=*/
+            R"({"json": "for", "buyer": [2]})"),
+    };
+    std::vector<NetworkResponder::SubresourceBundle> bundles = {
+        NetworkResponder::SubresourceBundle(
+            /*bundle_url=*/https_server_->GetURL(kSellerHost,
+                                                 "/generated_bundle.wbn"),
+            /*subresources=*/subresource_responses)};
 
-  ASSERT_TRUE(
-      NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, kPagePath)));
+    network_responder_->RegisterDirectFromSellerSignalsResponse(
+        /*bundles=*/bundles,
+        /*allow_origin=*/top_frame_origin.Serialize());
+    constexpr char kPagePath[] = "/page-with-bundles.html";
+    network_responder_->RegisterHtmlWithSubresourceBundles(
+        /*bundles=*/bundles,
+        /*page_url=*/kPagePath);
+
+    ASSERT_TRUE(NavigateToURL(shell(),
+                              https_server_->GetURL(kTopFrameHost, kPagePath)));
+  }
+
   TestFencedFrameURLMappingResultObserver observer;
   ConvertFencedFrameURNToURL(
       GURL(EvalJs(shell(),
@@ -10073,7 +10331,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     interestGroupBuyers: [$4, $5],
     auctionSignals: {so: 'I', hear: ['you', 'like', 'json']},
     sellerSignals: {signals: 'from', the: ['seller']},
-    directFromSellerSignals: $6,
+    $6: $7,
     sellerTimeout: 200,
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}},
     perBuyerTimeouts: {$4: 110, $5: 120, '*': 150},
@@ -10089,8 +10347,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
                           kSellerHost,
                           "/interest_group/trusted_scoring_signals.json"),
                       bidder_origin, second_bidder_origin,
-                      https_server_->GetURL(kSellerHost,
-                                            "/direct_from_seller_signals")))
+                      UseHeaderDirectFromSellerSignals()
+                          ? "directFromSellerSignalsHeaderAdSlot"
+                          : "directFromSellerSignals",
+                      UseHeaderDirectFromSellerSignals()
+                          ? "adSlot1"
+                          : https_server_
+                                ->GetURL(kSellerHost,
+                                         "/direct_from_seller_signals")
+                                .spec()))
                .ExtractString()),
       &observer);
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
@@ -10104,6 +10369,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
   WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_seller"));
   WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_bidder"));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InterestGroupWorkletValidationBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return base::StringPrintf(
+          "%s", info.param ? "header_direct_from_seller_signals"
+                           : "subresource_bundle_direct_from_seller_signals");
+    });
 
 // Same as above test, but leaves out the extra bidder and uses the older
 // version 1 bidding signals format.
@@ -10240,9 +10515,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForUrl(https_server_->GetURL(kSellerHost, "/echo?report_bidder"));
 }
 
+class InterestGroupComponentWorkletValidationBrowserTest
+    : public InterestGroupBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  bool TopLevelUseHeaderDirectFromSellerSignals() const {
+    return std::get<0>(GetParam());
+  }
+
+  bool ComponentUseHeaderDirectFromSellerSignals() const {
+    return std::get<1>(GetParam());
+  }
+};
+
 // Use bidder and seller worklet files that validate their arguments all have
 // the expected values, in the case of an auction with one component auction.
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+IN_PROC_BROWSER_TEST_P(InterestGroupComponentWorkletValidationBrowserTest,
                        ComponentAuctionValidateWorkletParameters) {
   // Use different hostnames for each participant.
   //
@@ -10308,8 +10596,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
             /*ad_sizes=*/{},
             /*size_groups=*/{}, /*auction_server_request_flags=*/{})));
 
-    // For `directFromSellerSignals` to work, we need to navigate to a page that
-    // declares the subresource bundle resources we pass to those fields.
     GURL top_level_seller_script_url = https_server_->GetURL(
         kTopLevelSellerHost,
         "/interest_group/"
@@ -10322,6 +10608,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         url::Origin::Create(top_level_seller_script_url);
     const url::Origin component_seller_origin =
         url::Origin::Create(component_seller_script_url);
+
+    // For subresource bundle `directFromSellerSignals` to work, we need to
+    // navigate to a page that declares the subresource bundle resources we pass
+    // to those fields.
     std::vector<NetworkResponder::SubresourceResponse>
         top_level_subresource_responses = {
             NetworkResponder::SubresourceResponse(
@@ -10372,6 +10662,58 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     ASSERT_TRUE(NavigateToURL(shell(),
                               https_server_->GetURL(kTopFrameHost, kPagePath)));
 
+    // For `directFromSellerSignalsHeaderAdSlot`, we need to make a network
+    // request to a resource that has signals in the Ad-Auction-Signals header
+    // value. We do this for both the top-level seller and the component seller.
+    const char kTopLevelHeaderSignalsPath[] =
+        "/top_level_header_direct_from_seller_signals.json";
+    const char kComponentHeaderSignalsPath[] =
+        "/component_header_direct_from_seller_signals.json";
+    // The actual body of both requests is just an empty JSON dict for the test,
+    // but it could be any arbitrary payload that the server wants to deliver
+    // with the header signals.
+    const char kHeaderSignalsBodyResponse[] = "{}";
+    // Intentionally use the same adSlot name for both responses -- responses
+    // from different sellers shouldn't conflict.
+    const char kTopLevelHeaderSignalsResponse[] = R"([{
+      "adSlot": "adSlot1",
+      "sellerSignals": {"json": "for", "the": ["seller"]},
+      "auctionSignals": {"json": "for", "all": ["parties"]}
+    }])";
+    const std::string kComponentHeaderSignalsResponse =
+        base::StringPrintf(R"([{
+      "adSlot": "adSlot1",
+      "sellerSignals": {"from": "component", "json": "for", "the": ["seller"]},
+      "auctionSignals": {
+        "from": "component", "json": "for", "all": ["parties"]},
+      "perBuyerSignals": {
+        "%s": {"from": "component", "json": "for", "buyer": [1]}
+      }
+    }])",
+                           bidder_origin.Serialize().c_str());
+    network_responder_->RegisterNetworkResponse(
+        kTopLevelHeaderSignalsPath, kHeaderSignalsBodyResponse,
+        "application/json",
+        /*extra_response_headers=*/
+        {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+         {"Ad-Auction-Signals", kTopLevelHeaderSignalsResponse}});
+    network_responder_->RegisterNetworkResponse(
+        kComponentHeaderSignalsPath, kHeaderSignalsBodyResponse,
+        "application/json",
+        /*extra_response_headers=*/
+        {{"Access-Control-Allow-Origin", top_frame_origin.Serialize()},
+         {"Ad-Auction-Signals", kComponentHeaderSignalsResponse}});
+    EXPECT_TRUE(ExecJs(
+        web_contents()->GetPrimaryMainFrame(),
+        content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                           https_server_->GetURL(kTopLevelSellerHost,
+                                                 kTopLevelHeaderSignalsPath))));
+    EXPECT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("fetch($1, {adAuctionHeaders: true})",
+                                          https_server_->GetURL(
+                                              kComponentSellerHost,
+                                              kComponentHeaderSignalsPath))));
+
     // TODO(caraitto): Instead of StringPrintf(), we can pass a single large
     // base::Value to JsReplace().
     TestFencedFrameURLMappingResultObserver observer;
@@ -10391,7 +10733,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     trustedScoringSignalsURL: "%s",
     auctionSignals: maybePromise(["top-level auction signals"]),
     sellerSignals: maybePromise(["top-level seller signals"]),
-    directFromSellerSignals: maybePromise("%s"),
+    %s: maybePromise("%s"),
     sellerTimeout: 300,
     perBuyerSignals: maybePromise(
         {[componentBuyer]: ["top-level buyer signals"]}),
@@ -10407,7 +10749,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       interestGroupBuyers: [componentBuyer],
       auctionSignals: maybePromise(["component auction signals"]),
       sellerSignals: maybePromise(["component seller signals"]),
-      directFromSellerSignals: maybePromise("%s"),
+      %s: maybePromise("%s"),
       sellerTimeout: 200,
       perBuyerSignals: maybePromise(
           {[componentBuyer]: ["component buyer signals"]}),
@@ -10432,11 +10774,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                 "/interest_group/trusted_scoring_signals.json")
                             .spec()
                             .c_str(),
-                        https_server_
-                            ->GetURL(kTopLevelSellerHost,
-                                     "/direct_from_seller_signals")
-                            .spec()
-                            .c_str(),
+                        TopLevelUseHeaderDirectFromSellerSignals()
+                            ? "directFromSellerSignalsHeaderAdSlot"
+                            : "directFromSellerSignals",
+                        TopLevelUseHeaderDirectFromSellerSignals()
+                            ? "adSlot1"
+                            : https_server_
+                                  ->GetURL(kTopLevelSellerHost,
+                                           "/direct_from_seller_signals")
+                                  .spec()
+                                  .c_str(),
                         component_seller_script_url.spec().c_str(),
                         https_server_
                             ->GetURL(
@@ -10444,11 +10791,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                 "/interest_group/trusted_scoring_signals2.json")
                             .spec()
                             .c_str(),
-                        https_server_
-                            ->GetURL(kComponentSellerHost,
-                                     "/direct_from_seller_signals")
-                            .spec()
-                            .c_str()))
+                        ComponentUseHeaderDirectFromSellerSignals()
+                            ? "directFromSellerSignalsHeaderAdSlot"
+                            : "directFromSellerSignals",
+                        ComponentUseHeaderDirectFromSellerSignals()
+                            ? "adSlot1"
+                            : https_server_
+                                  ->GetURL(kComponentSellerHost,
+                                           "/direct_from_seller_signals")
+                                  .spec()
+                                  .c_str()))
                 .ExtractString()),
         &observer);
     EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
@@ -10466,6 +10818,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     WaitForUrl(https_server_->GetURL(kBidderHost, "/echo?report_bidder"));
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InterestGroupComponentWorkletValidationBrowserTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StringPrintf(
+          "%s_%s",
+          std::get<0>(info.param)
+              ? "top_level_header_direct_from_seller_signals"
+              : "top_level_subresource_bundle_direct_from_seller_signals",
+          std::get<1>(info.param)
+              ? "component_header_direct_from_seller_signals"
+              : "component_subresource_bundle_direct_from_seller_signals");
+    });
 
 // TODO(crbug.com/1441988): Remove this test once old names are no longer
 // supported.
@@ -11311,6 +11678,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, PromiseSignalsNothing) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   url::Origin test_origin = url::Origin::Create(test_url);
 
+  // Need to fetch a URL with adAuctionHeaders: true for the auction to succeed
+  // when using directFromSellerSignalsHeaderAdSlot -- it doesn't matter which
+  // resource is fetched.
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {adAuctionHeaders: true})", test_url)));
+
   constexpr char kBiddingLogicScript[] = R"(
 function generateBid(
     interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
@@ -11408,11 +11782,13 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
                           test_origin,
                           https_server_->GetURL("a.test", kBiddingLogicPath))));
 
-  TestFencedFrameURLMappingResultObserver observer;
-  ConvertFencedFrameURNToURL(
-      GURL(EvalJs(shell(),
-                  JsReplace(
-                      R"(
+  for (bool header_direct_from_seller_signals : {false, true}) {
+    SCOPED_TRACE(header_direct_from_seller_signals);
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(
+        GURL(EvalJs(shell(),
+                    JsReplace(
+                        R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
@@ -11430,18 +11806,22 @@ function validateDirectFromSellerSignals(directFromSellerSignals) {
       setTimeout(
           () => { resolve(undefined); }, 1)
     }),
-    directFromSellerSignals: new Promise((resolve, reject) => {
+    $3: new Promise((resolve, reject) => {
       setTimeout(
-          () => { resolve("null"); }, 1)
+          () => { resolve(null); }, 1)
     }),
   });
 })())",
-                      test_origin,
-                      https_server_->GetURL("a.test", kDecisionLogicPath)))
-               .ExtractString()),
-      &observer);
+                        test_origin,
+                        https_server_->GetURL("a.test", kDecisionLogicPath),
+                        header_direct_from_seller_signals
+                            ? "directFromSellerSignalsHeaderAdSlot"
+                            : "directFromSellerSignals"))
+                 .ExtractString()),
+        &observer);
 
-  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+    EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
+  }
 }
 
 // Test for perBuyerTimeouts and perBuyerCumulativeTimeouts being passed to
