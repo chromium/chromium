@@ -2674,6 +2674,17 @@ function shiftRect(rect, offset) {
   };
 }
 
+/** ###########################################################################
+ * Export internal methods via `__RECORD_REPLAY_ARGUMENTS__`.
+ * This is to be used for internal debugging purposes.
+ * ##########################################################################*/
+__RECORD_REPLAY_ARGUMENTS__.internal = {
+  getBlinkNodeIdByRrpId,
+  getCdpObjectByRrpId,
+  getBlinkNodeIdByCdpId,
+  getPlainObjectByRrpId,
+};
+
 } catch (e) {
   log(`Error: Initialization exception ${e}`);
 }
