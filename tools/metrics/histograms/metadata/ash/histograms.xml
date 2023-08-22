@@ -2259,7 +2259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AssignToAllDesksSource"
-    enum="DesksAssignToAllDesksSource" expires_after="2023-09-03">
+    enum="DesksAssignToAllDesksSource" expires_after="2024-08-21">
   <owner>zxdan@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -6214,7 +6214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.EntryPoint.DeviceUIMode" enum="DeviceMode"
-    expires_after="2023-07-31">
+    expires_after="2024-08-21">
   <owner>xdai@chromium.org</owner>
   <owner>zxdan@chromium.org</owner>
   <owner>nupurjain@chromium.org</owner>
