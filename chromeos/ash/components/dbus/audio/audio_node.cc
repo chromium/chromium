@@ -42,7 +42,8 @@ AudioNode::AudioNode(bool is_input,
       max_supported_channels(max_supported_channels),
       audio_effect(audio_effect),
       number_of_volume_steps(number_of_volume_steps) {
-  DCHECK(!(audio_effect & ~cras::EFFECT_TYPE_NOISE_CANCELLATION));
+  DCHECK(!(audio_effect & (~(cras::EFFECT_TYPE_NOISE_CANCELLATION |
+                             cras::EFFECT_TYPE_HFP_MIC_SR))));
   if (!is_input && number_of_volume_steps <= 0) {
     this->number_of_volume_steps = NUMBER_OF_VOLUME_STEPS_DEFAULT;
   }
