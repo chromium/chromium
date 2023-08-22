@@ -74,6 +74,10 @@
         {
           "builder": "linux_chromium_tsan_rel_ng",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux_chromium_tsan_siso_rel_ng",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }

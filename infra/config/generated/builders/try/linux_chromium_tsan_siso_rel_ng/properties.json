@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "linux_chromium_tsan_siso_rel_ng-compilator",
+    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -59,27 +63,26 @@
       "builder_ids": [
         {
           "bucket": "ci",
+          "builder": "Linux TSan Builder",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
           "builder": "Linux TSan Tests",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux_chromium_tsan_rel_ng",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux_chromium_tsan_siso_rel_ng",
-          "group": "tryserver.chromium.linux"
-        }
-      ]
+      "is_compile_only": true,
+      "rts_config": {
+        "condition": "QUICK_RUN_ONLY"
+      }
     }
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "jobs": 80,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -88,9 +91,7 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.memory",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "cq": "required",
+  "recipe": "chromium/orchestrator"
 }
