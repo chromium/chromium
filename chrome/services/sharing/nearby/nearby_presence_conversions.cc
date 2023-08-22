@@ -150,8 +150,8 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
           shared_credential.encrypted_metadata_bytes_v0().begin(),
           shared_credential.encrypted_metadata_bytes_v0().end()),
       std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_unsigned_adv_tag().begin(),
-          shared_credential.metadata_encryption_key_unsigned_adv_tag().end()),
+          shared_credential.metadata_encryption_key_tag_v0().begin(),
+          shared_credential.metadata_encryption_key_tag_v0().end()),
       std::vector<uint8_t>(
           shared_credential.connection_signature_verification_key().begin(),
           shared_credential.connection_signature_verification_key().end()),
@@ -175,7 +175,7 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
   proto.set_encrypted_metadata_bytes_v0(
       std::string(shared_credential->encrypted_metadata_bytes.begin(),
                   shared_credential->encrypted_metadata_bytes.end()));
-  proto.set_metadata_encryption_key_unsigned_adv_tag(
+  proto.set_metadata_encryption_key_tag_v0(
       std::string(shared_credential->metadata_encryption_key_tag.begin(),
                   shared_credential->metadata_encryption_key_tag.end()));
   proto.set_connection_signature_verification_key(std::string(

@@ -139,7 +139,7 @@ TEST_F(ProtoConversionsTest, SharedCredentialFromMojom) {
             proto_cred.encrypted_metadata_bytes_v0());
   EXPECT_EQ(
       std::string(kMetadataEncryptionTag.begin(), kMetadataEncryptionTag.end()),
-      proto_cred.metadata_encryption_key_unsigned_adv_tag());
+      proto_cred.metadata_encryption_key_tag_v0());
   EXPECT_EQ(std::string(kConnectionSignatureVerificationKey.begin(),
                         kConnectionSignatureVerificationKey.end()),
             proto_cred.connection_signature_verification_key());
@@ -161,7 +161,7 @@ TEST_F(ProtoConversionsTest, PublicCertificateFromSharedCredential) {
   shared_credential.set_end_time_millis(kEndTimeMillis_BeforeConversion);
   shared_credential.set_encrypted_metadata_bytes_v0(std::string(
       kEncryptedMetadataBytes.begin(), kEncryptedMetadataBytes.end()));
-  shared_credential.set_metadata_encryption_key_unsigned_adv_tag(std::string(
+  shared_credential.set_metadata_encryption_key_tag_v0(std::string(
       kMetadataEncryptionTag.begin(), kMetadataEncryptionTag.end()));
   shared_credential.set_connection_signature_verification_key(
       std::string(kConnectionSignatureVerificationKey.begin(),
@@ -228,7 +228,7 @@ TEST_F(ProtoConversionsTest, PublicCertificateToSharedCredential) {
             proto_cred.encrypted_metadata_bytes_v0());
   EXPECT_EQ(
       std::string(kMetadataEncryptionTag.begin(), kMetadataEncryptionTag.end()),
-      proto_cred.metadata_encryption_key_unsigned_adv_tag());
+      proto_cred.metadata_encryption_key_tag_v0());
   EXPECT_EQ(::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE,
             proto_cred.identity_type());
 }

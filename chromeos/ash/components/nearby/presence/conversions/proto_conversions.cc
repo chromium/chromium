@@ -104,7 +104,7 @@ mojom::MetadataPtr MetadataToMojom(::nearby::internal::Metadata metadata) {
   proto.set_encrypted_metadata_bytes_v0(
       std::string(shared_credential->encrypted_metadata_bytes.begin(),
                   shared_credential->encrypted_metadata_bytes.end()));
-  proto.set_metadata_encryption_key_unsigned_adv_tag(
+  proto.set_metadata_encryption_key_tag_v0(
       std::string(shared_credential->metadata_encryption_key_tag.begin(),
                   shared_credential->metadata_encryption_key_tag.end()));
   proto.set_connection_signature_verification_key(std::string(
@@ -189,8 +189,8 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
           shared_credential.encrypted_metadata_bytes_v0().begin(),
           shared_credential.encrypted_metadata_bytes_v0().end()),
       std::vector<uint8_t>(
-          shared_credential.metadata_encryption_key_unsigned_adv_tag().begin(),
-          shared_credential.metadata_encryption_key_unsigned_adv_tag().end()),
+          shared_credential.metadata_encryption_key_tag_v0().begin(),
+          shared_credential.metadata_encryption_key_tag_v0().end()),
       std::vector<uint8_t>(
           shared_credential.connection_signature_verification_key().begin(),
           shared_credential.connection_signature_verification_key().end()),
@@ -239,7 +239,7 @@ ash::nearby::proto::PublicCertificate PublicCertificateFromSharedCredential(
   certificate.set_encrypted_metadata_bytes(
       shared_credential.encrypted_metadata_bytes_v0());
   certificate.set_metadata_encryption_key_tag(
-      shared_credential.metadata_encryption_key_unsigned_adv_tag());
+      shared_credential.metadata_encryption_key_tag_v0());
   certificate.set_trust_type(
       TrustTypeFromIdentityType(shared_credential.identity_type()));
   return certificate;
@@ -276,7 +276,7 @@ int64_t MillisecondsToSeconds(int64_t milliseconds) {
       SecondsToMilliseconds(certificate.end_time().seconds()));
   shared_credential.set_encrypted_metadata_bytes_v0(
       certificate.encrypted_metadata_bytes());
-  shared_credential.set_metadata_encryption_key_unsigned_adv_tag(
+  shared_credential.set_metadata_encryption_key_tag_v0(
       certificate.metadata_encryption_key_tag());
   shared_credential.set_identity_type(
       TrustTypeToIdentityType(certificate.trust_type()));
