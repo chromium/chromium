@@ -31,7 +31,8 @@ UserEducationServiceFactory::UserEducationServiceFactory()
 
 UserEducationServiceFactory::~UserEducationServiceFactory() = default;
 
-KeyedService* UserEducationServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UserEducationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new UserEducationService();
+  return std::make_unique<UserEducationService>();
 }
