@@ -171,6 +171,7 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  base::Value::Dict debug_log_;
   std::unique_ptr<AppLockDescription> lock_description_;
   std::unique_ptr<AppLock> lock_;
 

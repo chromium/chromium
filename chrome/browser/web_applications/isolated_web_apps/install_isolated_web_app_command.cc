@@ -90,6 +90,18 @@ InstallIsolatedWebAppCommand::InstallIsolatedWebAppCommand(
             return result;
           })
           .Then(std::move(callback));
+
+  debug_log_ =
+      base::Value::Dict()
+          .Set("app_id", url_info_.app_id())
+          .Set("origin", url_info_.origin().Serialize())
+          .Set("bundle_id", url_info_.web_bundle_id().id())
+          .Set("bundle_type",
+               static_cast<int>(url_info_.web_bundle_id().type()))
+          .Set("location", IsolatedWebAppLocationAsDebugValue(location_))
+          .Set("expected_version", expected_version_.has_value()
+                                       ? expected_version_->GetString()
+                                       : "unknown");
 }
 
 InstallIsolatedWebAppCommand::~InstallIsolatedWebAppCommand() = default;
@@ -99,17 +111,7 @@ const LockDescription& InstallIsolatedWebAppCommand::lock_description() const {
 }
 
 base::Value InstallIsolatedWebAppCommand::ToDebugValue() const {
-  base::Value::Dict debug_value;
-  debug_value.Set("app_id", url_info_.app_id());
-  debug_value.Set("origin", url_info_.origin().Serialize());
-  debug_value.Set("bundle_id", url_info_.web_bundle_id().id());
-  debug_value.Set("bundle_type",
-                  static_cast<int>(url_info_.web_bundle_id().type()));
-  debug_value.Set("location", IsolatedWebAppLocationAsDebugValue(location_));
-  debug_value.Set("expected_version", expected_version_.has_value()
-                                          ? expected_version_->GetString()
-                                          : "unknown");
-  return base::Value(std::move(debug_value));
+  return base::Value(debug_log_.Clone());
 }
 
 void InstallIsolatedWebAppCommand::StartWithLock(
@@ -228,6 +230,7 @@ void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
+  debug_log_.Set("result", base::StrCat({"error: ", message}));
   SignalCompletionAndSelfDestruct(
       CommandResult::kFailure,
       base::BindOnce(std::move(callback_),
@@ -239,6 +242,7 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
+  debug_log_.Set("result", "success");
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
       base::BindOnce(std::move(callback_),
