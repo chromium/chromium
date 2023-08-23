@@ -140,9 +140,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // Callback invoked when the partial view is closed.
   void OnPartialViewClosed();
 
-  // Creates a timer to track the auto-close task. Does not start the timer.
-  void CreateAutoCloseTimer();
-
   // Called to automatically close the partial view, if such closing has not
   // been deactivated.
   void AutoClosePartialView();
@@ -177,9 +174,9 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // Tracks the task to automatically close the partial view after some amount
   // of time open, to minimize disruption to the user.
-  std::unique_ptr<base::RetainingOneShotTimer> auto_close_bubble_timer_;
-  // Whether we are allowed to create the above timer, may be false in tests.
-  bool create_auto_close_timer_ = true;
+  base::RetainingOneShotTimer auto_close_bubble_timer_;
+  // Whether the above timer does anything, which may be false in tests.
+  bool use_auto_close_bubble_timer_ = true;
 
   base::TimeTicks button_click_time_;
 

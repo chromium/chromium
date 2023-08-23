@@ -144,7 +144,12 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
     : ToolbarButton(
           base::BindRepeating(&DownloadToolbarButtonView::ButtonPressed,
                               base::Unretained(this))),
-      browser_(browser_view->browser()) {
+      browser_(browser_view->browser()),
+      auto_close_bubble_timer_(
+          FROM_HERE,
+          kAutoClosePartialViewDelay,
+          base::BindRepeating(&DownloadToolbarButtonView::AutoClosePartialView,
+                              base::Unretained(this))) {
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetVectorIcons(features::IsChromeRefresh2023()
@@ -347,16 +352,14 @@ void DownloadToolbarButtonView::ShowDetails() {
         browser_view->immersive_mode_controller()->GetRevealedLock(
             ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
-  if (!bubble_delegate_) {
-    is_primary_partial_view_ = true;
-    if (create_auto_close_timer_ && !auto_close_bubble_timer_) {
-      CreateAutoCloseTimer();
-    }
-    CreateBubbleDialogDelegate();
+  if (bubble_delegate_) {
+    return;
   }
-  if (auto_close_bubble_timer_) {
-    auto_close_bubble_timer_->Reset();
+  is_primary_partial_view_ = true;
+  if (use_auto_close_bubble_timer_) {
+    auto_close_bubble_timer_.Reset();
   }
+  CreateBubbleDialogDelegate();
 }
 
 void DownloadToolbarButtonView::HideDetails() {
@@ -600,18 +603,8 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
       feature_engagement::kIPHDownloadToolbarButtonFeature);
 }
 
-void DownloadToolbarButtonView::CreateAutoCloseTimer() {
-  CHECK(create_auto_close_timer_);
-  auto_close_bubble_timer_ = std::make_unique<base::RetainingOneShotTimer>(
-      FROM_HERE, kAutoClosePartialViewDelay,
-      base::BindRepeating(&DownloadToolbarButtonView::AutoClosePartialView,
-                          // This is safe because `this` owns
-                          // `auto_close_bubble_timer_`.
-                          base::Unretained(this)));
-}
-
 void DownloadToolbarButtonView::DeactivateAutoClose() {
-  auto_close_bubble_timer_.reset();
+  auto_close_bubble_timer_.Stop();
 }
 
 void DownloadToolbarButtonView::AutoClosePartialView() {
@@ -624,7 +617,7 @@ void DownloadToolbarButtonView::AutoClosePartialView() {
       DownloadBubbleContentsView::Page::kSecurity) {
     return;
   }
-  if (!is_primary_partial_view_ || !auto_close_bubble_timer_) {
+  if (!is_primary_partial_view_ || !use_auto_close_bubble_timer_) {
     return;
   }
   // Don't close if the user is hovering over the bubble.
@@ -704,7 +697,8 @@ SkColor DownloadToolbarButtonView::GetProgressColor(bool is_disabled,
 }
 
 void DownloadToolbarButtonView::DisableAutoCloseTimerForTesting() {
-  create_auto_close_timer_ = false;
+  use_auto_close_bubble_timer_ = false;
+  DeactivateAutoClose();
 }
 
 void DownloadToolbarButtonView::DisableDownloadStartedAnimationForTesting() {
