@@ -16,7 +16,7 @@
   --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
 
-  --shortcuts-lock-icon-color: var(--cros-icon-color-secondary);
+  --shortcuts-lock-icon-color: var(--cros-text-color-disabled);
 }
 
 :host-context(body.jelly-enabled) {
@@ -26,6 +26,7 @@
   --shortcuts-font-family-default: var(--cros-body-2-font-family);
   --shortcuts-font-size-default: var(--cros-body-2-font-size);
 
+  --shortcuts-lock-icon-color: var(--cros-sys-disabled);
   font: var(--cros-body-2-font);
 }
 

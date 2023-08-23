@@ -1,4 +1,14 @@
 <style include="shortcut-customization-shared">
+  :host {
+    --error-info-text-color: var(--cros-color-alert);
+    --edit-border-error-color: var(--cros-color-alert);
+  }
+
+  :host-context(body.jelly-enabled) {
+    --error-info-text-color: var(--cros-sys-error);
+    --edit-border-error-color: var(--cros-sys-error);
+  }
+
   :host(:not([is-add-view_])) #container {
     border-bottom: var(--cr-separator-line);
   }
@@ -56,7 +66,7 @@
   }
 
   :host([has-error]) #acceleratorInfoText {
-    color: var(--cros-color-alert);
+    color: var(--error-info-text-color);
   }
 
   #editButton {
@@ -80,7 +90,7 @@
   }
 
   :host([is-edit-view][has-error]) #acceleratorView {
-    border-color: var(--cros-sys-error);
+    border-color: var(--edit-border-error-color);
   }
 </style>
 
