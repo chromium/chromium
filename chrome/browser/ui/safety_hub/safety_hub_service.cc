@@ -7,11 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 
 SafetyHubService::Result::Result(base::TimeTicks timestamp)
     : timestamp_(timestamp) {}
-SafetyHubService::Result::~Result() = default;
 
 base::TimeTicks SafetyHubService::Result::timestamp() const {
   return timestamp_;
@@ -26,7 +26,11 @@ void SafetyHubService::Shutdown() {
 
 void SafetyHubService::StartRepeatedUpdates() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  UpdateAsync();
+  // TODO(crbug.com/1443466): the 10 minute delay is a workaround of the task
+  // being posted to a different thread. This should be removed.
+  delay_timer_.Start(
+      FROM_HERE, base::Minutes(10),
+      base::BindOnce(&SafetyHubService::UpdateAsync, GetAsWeakRef()));
   update_timer_.Start(FROM_HERE, GetRepeatedUpdateInterval(),
                       base::BindRepeating(&SafetyHubService::UpdateAsync,
                                           base::Unretained(this)));
@@ -38,7 +42,7 @@ void SafetyHubService::UpdateAsync() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&SafetyHubService::UpdateOnBackgroundThread,
                      base::Unretained(this)),
-      base::BindOnce(&SafetyHubService::OnUpdateFinished, AsWeakPtr()));
+      base::BindOnce(&SafetyHubService::OnUpdateFinished, GetAsWeakRef()));
 }
 
 void SafetyHubService::OnUpdateFinished(std::unique_ptr<Result> result) {
@@ -58,4 +62,9 @@ void SafetyHubService::NotifyObservers(Result* result) {
   for (auto& observer : observers_) {
     observer.OnResultAvailable(result);
   }
+}
+
+std::unique_ptr<SafetyHubService::Result>
+SafetyHubService::UpdateOnBackgroundThreadForTesting() {
+  return UpdateOnBackgroundThread();
 }

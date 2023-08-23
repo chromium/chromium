@@ -17,6 +17,11 @@
 namespace {
 constexpr base::TimeDelta kUpdateIntervalForTest = base::Days(7);
 
+class MockSafetyHubResult : public SafetyHubService::Result {
+ public:
+  ~MockSafetyHubResult() override = default;
+};
+
 class MockSafetyHubService : public SafetyHubService {
  public:
   // Returns the number of times that the UpdateOnBackgroundThread function was
@@ -32,11 +37,17 @@ class MockSafetyHubService : public SafetyHubService {
 
   std::unique_ptr<Result> UpdateOnBackgroundThread() override {
     ++num_updates_;
-    return std::make_unique<Result>();
+    return std::make_unique<MockSafetyHubResult>();
+  }
+
+  base::WeakPtr<SafetyHubService> GetAsWeakRef() override {
+    return weak_factory_.GetWeakPtr();
   }
 
  private:
   int num_updates_ = 0;
+
+  base::WeakPtrFactory<MockSafetyHubService> weak_factory_{this};
 };
 
 class MockObserver : public SafetyHubService::Observer {
@@ -88,7 +99,7 @@ TEST_F(SafetyHubServiceTest, ManageObservers) {
   // observers, but should not be called yet.
   EXPECT_TRUE(service()->observers_.HasObserver(observer.get()));
   EXPECT_EQ(observer->GetNumCalls(), 0);
-  auto result = std::make_unique<SafetyHubService::Result>();
+  auto result = std::make_unique<MockSafetyHubResult>();
   // Notify all observers.
   service()->NotifyObservers(result.get());
   // Ensure that the observer was called just once.
@@ -113,6 +124,9 @@ TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
   // The update will be run asynchronously as soon as StartRepeatedUpdates() is
   // called.
   service()->StartRepeatedUpdates();
+  // TODO(tov): When we remove the delay for running the repeated updates, this
+  // should be removed.
+  FastForwardBy(base::Minutes(15));
   RunUntilIdle();
   EXPECT_EQ(service()->GetNumUpdates(), 1);
   // Move forward a full update interval, which will trigger another update.

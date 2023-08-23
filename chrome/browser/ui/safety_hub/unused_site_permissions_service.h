@@ -7,6 +7,7 @@
 
 #include <list>
 #include <map>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,6 +16,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -33,13 +35,50 @@ namespace content {
 class Page;
 }  // namespace content
 
-// This task keeps track of unused permissions, updates their last_visit date
+// This class keeps track of unused permissions, updates their last_visit date
 // on navigations and clears them periodically.
-class UnusedSitePermissionsService
-    : public KeyedService,
-      public base::SupportsWeakPtr<UnusedSitePermissionsService>,
-      public content_settings::Observer {
+class UnusedSitePermissionsService : public SafetyHubService,
+                                     public content_settings::Observer {
  public:
+  struct RevokedPermission {
+   public:
+    RevokedPermission(ContentSettingsPattern origin,
+                      std::set<ContentSettingsType> permission_types,
+                      base::Time expiration);
+
+    RevokedPermission(const RevokedPermission&);
+    RevokedPermission& operator=(const RevokedPermission&) = delete;
+
+    ~RevokedPermission();
+
+    ContentSettingsPattern origin;
+    std::set<ContentSettingsType> permission_types;
+    base::Time expiration;
+  };
+
+  // The result of the periodic update of unused site permissions contains
+  // the permissions that have been revoked. These revoked permissions will be
+  // stored until the clean-up threshold has been reached.
+  class UnusedSitePermissionsResult : public SafetyHubService::Result {
+   public:
+    UnusedSitePermissionsResult();
+
+    UnusedSitePermissionsResult(const UnusedSitePermissionsResult&) = delete;
+    UnusedSitePermissionsResult& operator=(const UnusedSitePermissionsResult&) =
+        delete;
+
+    ~UnusedSitePermissionsResult() override;
+
+    void AddRevokedPermission(ContentSettingsPattern origin,
+                              std::set<ContentSettingsType> permission_types,
+                              base::Time expiration);
+
+    std::list<RevokedPermission> GetRevokedPermissions();
+
+   private:
+    std::list<RevokedPermission> revoked_permissions_;
+  };
+
   struct ContentSettingEntry {
     ContentSettingsType type;
     ContentSettingPatternSource source;
@@ -87,10 +126,6 @@ class UnusedSitePermissionsService
   // permissions for that site should not be auto-revoked again by the service.
   void IgnoreOriginForAutoRevocation(const url::Origin& origin);
 
-  // Triggers an update of the unused permission map. Automatically registers
-  // a delayed task for another update after 24h.
-  void StartRepeatedUpdates();
-
   // Re-grants permissions that are auto-revoked ones and removes the origin
   // from revoked permissions list.
   void RegrantPermissionsForOrigin(const url::Origin& origin);
@@ -114,27 +149,21 @@ class UnusedSitePermissionsService
           constraint,
       const url::Origin origin);
 
+  // Returns the list of all permissions that have been revoked.
+  std::unique_ptr<UnusedSitePermissionsService::Result> GetRevokedPermissions();
+
   // Test support:
   void SetClockForTesting(base::Clock* clock);
   std::vector<ContentSettingEntry> GetTrackedUnusedPermissionsForTesting();
-  void UpdateUnusedPermissionsForTesting();
 
   using UnusedPermissionMap =
       std::map<std::string, std::list<ContentSettingEntry>>;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(UnusedSitePermissionsServiceTest,
-                           UpdateUnusedPermissionsAsync);
+  base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 
+ private:
   // Called by TabHelper when a URL was visited.
   void OnPageVisited(const url::Origin& origin);
-
-  // Called on UI thread
-  void UpdateUnusedPermissionsAsync(const base::RepeatingClosure& callback);
-
-  // Called on UI thread.
-  void OnUnusedPermissionsMapRetrieved(const base::RepeatingClosure& callback,
-                                       UnusedPermissionMap map);
 
   // Removes a pattern from the list of revoked permissions so that the entry is
   // no longer shown to the user. Does not affect permissions themselves.
@@ -154,6 +183,17 @@ class UnusedSitePermissionsService
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // Safety Hub overrides
+
+  // Returns the interval at which the repeated updates will be run.
+  base::TimeDelta GetRepeatedUpdateInterval() override;
+
+  // This function is called periodically (every 24h and on browser start), and
+  // computes the permissions that need to be revoked. It returns an
+  // UnusedSitePermissionsResult with all permissions that have been revoked.
+  std::unique_ptr<UnusedSitePermissionsService::Result>
+  UpdateOnBackgroundThread() override;
+
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;
   // Repeating timer that updates the recently_unused_permissions_ map.
@@ -166,6 +206,8 @@ class UnusedSitePermissionsService
       content_settings_observation_{this};
 
   raw_ptr<base::Clock> clock_;
+
+  base::WeakPtrFactory<UnusedSitePermissionsService> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_SERVICE_H_

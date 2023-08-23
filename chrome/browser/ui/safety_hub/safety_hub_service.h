@@ -31,7 +31,7 @@ class SafetyHubService : public KeyedService,
 
     Result(const Result&) = delete;
     Result& operator=(const Result&) = delete;
-    ~Result();
+    virtual ~Result() = default;
 
     base::TimeTicks timestamp() const;
 
@@ -52,13 +52,6 @@ class SafetyHubService : public KeyedService,
 
   ~SafetyHubService() override;
 
-  // KeyedService implementation.
-  void Shutdown() override;
-
-  // Triggers the repeated update task that updates the state of the Safety Hub
-  // service.
-  void StartRepeatedUpdates();
-
   // Makes an asynchronous call to the Update function, and will call the
   // callback function upon completion.
   void UpdateAsync();
@@ -69,11 +62,19 @@ class SafetyHubService : public KeyedService,
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  void SetClockForTesting(std::unique_ptr<base::Clock> clock) {
-    clock_for_testing_ = std::move(clock);
-  }
+  // KeyedService implementation.
+  void Shutdown() override;
+
+  // Public version of UpdateOnBackgroundThread for testing purposes.
+  std::unique_ptr<Result> UpdateOnBackgroundThreadForTesting();
 
  protected:
+  // Triggers the repeated update task that updates the state of the Safety Hub
+  // service.
+  void StartRepeatedUpdates();
+
+  // SafetyHubService overrides.
+
   // The value returned by this function determines the interval of how often
   // the Update function will be called.
   virtual base::TimeDelta GetRepeatedUpdateInterval() = 0;
@@ -82,13 +83,11 @@ class SafetyHubService : public KeyedService,
   // service.
   virtual std::unique_ptr<Result> UpdateOnBackgroundThread() = 0;
 
-  base::Clock* GetClock() {
-    return clock_for_testing_ ? clock_for_testing_.get()
-                              : base::DefaultClock::GetInstance();
-  }
+  virtual base::WeakPtr<SafetyHubService> GetAsWeakRef() = 0;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, ManageObservers);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubServiceTest, UpdateOnBackgroundThread);
 
   // Called as soon as the update has been finished.
   void OnUpdateFinished(std::unique_ptr<Result> result);
@@ -99,11 +98,11 @@ class SafetyHubService : public KeyedService,
   // Repeating timer that runs the recurring tasks.
   base::RepeatingTimer update_timer_;
 
+  // Timer used to delay the execution of the initial task with several minutes.
+  base::OneShotTimer delay_timer_;
+
   // List of observers that have to be notified when a new result is available.
   base::ObserverList<Observer> observers_;
-
-  // Clock used in testing.
-  std::unique_ptr<base::Clock> clock_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_

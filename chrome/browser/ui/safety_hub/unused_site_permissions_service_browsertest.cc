@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
                                      CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
-  service->UpdateUnusedPermissionsForTesting();
+  service->UpdateOnBackgroundThreadForTesting();
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
 
   // Check that the timestamp is initially in the past.
@@ -89,6 +89,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   EXPECT_LE(info.metadata.last_visited(), now);
 
   map->SetClockForTesting(base::DefaultClock::GetInstance());
+  service->SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
 // Test that navigations work fine in incognito mode.
@@ -123,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.SetNow(now);
 
   // Check if the content setting is still ALLOW, before auto-revocation.
-  service->UpdateUnusedPermissionsForTesting();
+  service->UpdateOnBackgroundThreadForTesting();
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -133,11 +134,14 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.Advance(base::Days(40));
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
-  service->UpdateUnusedPermissionsForTesting();
+  service->UpdateOnBackgroundThreadForTesting();
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
+
+  map->SetClockForTesting(base::DefaultClock::GetInstance());
+  service->SetClockForTesting(base::DefaultClock::GetInstance());
 }
 
 // Test that revocation happens correctly for all content setting types.
@@ -181,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 
   // Travel through time for 70 days to make permissions be revoked.
   clock.Advance(base::Days(70));
-  service->UpdateUnusedPermissionsForTesting();
+  service->UpdateOnBackgroundThreadForTesting();
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
 
   // Navigate to content settings page.

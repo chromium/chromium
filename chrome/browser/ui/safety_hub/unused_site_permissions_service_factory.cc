@@ -42,6 +42,5 @@ KeyedService* UnusedSitePermissionsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   auto* service = new UnusedSitePermissionsService(
       HostContentSettingsMapFactory::GetForProfile(context));
-  service->StartRepeatedUpdates();
   return service;
 }
