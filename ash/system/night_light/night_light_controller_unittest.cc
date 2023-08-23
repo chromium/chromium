@@ -20,6 +20,7 @@
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/time_of_day_test_util.h"
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -154,9 +155,9 @@ class TestDelegate : public NightLightControllerImpl::Delegate {
   ~TestDelegate() override = default;
 
   void SetFakeNow(base::Time time) { fake_now_ = time; }
-  void SetFakeNow(TimeOfDay time) { fake_now_ = time.ToTimeToday(); }
-  void SetFakeSunset(TimeOfDay time) { fake_sunset_ = time.ToTimeToday(); }
-  void SetFakeSunrise(TimeOfDay time) { fake_sunrise_ = time.ToTimeToday(); }
+  void SetFakeNow(TimeOfDay time) { fake_now_ = ToTimeToday(time); }
+  void SetFakeSunset(TimeOfDay time) { fake_sunset_ = ToTimeToday(time); }
+  void SetFakeSunrise(TimeOfDay time) { fake_sunrise_ = ToTimeToday(time); }
 
   // ash::NightLightControllerImpl::Delegate
   base::Time GetNow() const override { return fake_now_; }
@@ -814,8 +815,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   EXPECT_TRUE(controller->is_current_geoposition_from_cache());
   const TimeOfDay kSunset2{kFakePosition2_SunsetOffset};
   const TimeOfDay kSunrise2{kFakePosition2_SunriseOffset};
-  EXPECT_EQ(delegate()->GetSunsetTime(), kSunset2.ToTimeToday());
-  EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise2.ToTimeToday());
+  EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset2));
+  EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise2));
 
   // Store fake geoposition 1 in user 1's prefs.
   user1_pref_service()->SetDouble(prefs::kNightLightCachedLatitude,
@@ -831,16 +832,16 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   EXPECT_TRUE(controller->is_current_geoposition_from_cache());
   const TimeOfDay kSunset1{kFakePosition1_SunsetOffset};
   const TimeOfDay kSunrise1{kFakePosition1_SunriseOffset};
-  EXPECT_EQ(delegate()->GetSunsetTime(), kSunset1.ToTimeToday());
-  EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise1.ToTimeToday());
+  EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset1));
+  EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise1));
 
   // Now simulate receiving a geoposition update of fake geoposition 2.
   controller->SetCurrentGeoposition(NightLightController::SimpleGeoposition{
       kFakePosition2_Latitude, kFakePosition2_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
-  EXPECT_EQ(delegate()->GetSunsetTime(), kSunset2.ToTimeToday());
-  EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise2.ToTimeToday());
+  EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset2));
+  EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise2));
 
   // Update user 2's prefs with fake geoposition 1.
   user2_pref_service()->SetDouble(prefs::kNightLightCachedLatitude,
@@ -853,8 +854,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
   SwitchActiveUser(kUser2Email);
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
-  EXPECT_EQ(delegate()->GetSunsetTime(), kSunset2.ToTimeToday());
-  EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise2.ToTimeToday());
+  EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset2));
+  EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise2));
 
   // Clear all cached geoposition prefs for all users, just to make sure getting
   // a new geoposition with persist it for all users not just the active one.
@@ -868,8 +869,8 @@ TEST_F(NightLightTest, AbsentValidGeoposition) {
       kFakePosition1_Latitude, kFakePosition1_Longitude});
   EXPECT_TRUE(delegate()->HasGeoposition());
   EXPECT_FALSE(controller->is_current_geoposition_from_cache());
-  EXPECT_EQ(delegate()->GetSunsetTime(), kSunset1.ToTimeToday());
-  EXPECT_EQ(delegate()->GetSunriseTime(), kSunrise1.ToTimeToday());
+  EXPECT_EQ(delegate()->GetSunsetTime(), ToTimeToday(kSunset1));
+  EXPECT_EQ(delegate()->GetSunriseTime(), ToTimeToday(kSunrise1));
   EXPECT_EQ(kFakePosition1_Latitude,
             user1_pref_service()->GetDouble(prefs::kNightLightCachedLatitude));
   EXPECT_EQ(kFakePosition1_Longitude,
@@ -1101,12 +1102,11 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
     bool user_1_expected_status;
     bool user_2_expected_status;
   } kTestCases[] = {
-      {MakeTimeOfDay(2, kPM).ToTimeToday(), false, false},
-      {MakeTimeOfDay(4, kPM).ToTimeToday(), true, false},
-      {MakeTimeOfDay(7, kPM).ToTimeToday(), true, true},
-      {MakeTimeOfDay(10, kPM).ToTimeToday(), false, true},
-      {MakeTimeOfDay(9, kAM).ToTimeToday() +
-           base::Days(1),  // 9:00 AM tomorrow.
+      {ToTimeToday(MakeTimeOfDay(2, kPM)), false, false},
+      {ToTimeToday(MakeTimeOfDay(4, kPM)), true, false},
+      {ToTimeToday(MakeTimeOfDay(7, kPM)), true, true},
+      {ToTimeToday(MakeTimeOfDay(10, kPM)), false, true},
+      {ToTimeToday(MakeTimeOfDay(9, kAM)) + base::Days(1),  // 9:00 AM tomorrow.
        false, false},
   };
 

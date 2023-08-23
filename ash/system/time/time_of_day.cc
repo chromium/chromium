@@ -44,7 +44,7 @@ TimeOfDay& TimeOfDay::SetLocalTimeConverter(
   return *this;
 }
 
-base::Time TimeOfDay::ToTimeToday() const {
+absl::optional<base::Time> TimeOfDay::ToTimeToday() const {
   base::Time::Exploded now;
   GetLocalTimeConverter().LocalExplode(GetNow(), &now);
   // Per the `LocalExplode()` API:
@@ -52,7 +52,7 @@ base::Time TimeOfDay::ToTimeToday() const {
   // assigned invalid values. Use Exploded::HasValidValues() to confirm a
   // successful conversion."
   if (!now.HasValidValues()) {
-    return base::Time();
+    return absl::nullopt;
   }
   now.hour = (offset_minutes_from_zero_hour_ / 60) % 24;
   now.minute = offset_minutes_from_zero_hour_ % 60;
@@ -63,15 +63,19 @@ base::Time TimeOfDay::ToTimeToday() const {
     return result;
   }
 
-  // Daylight saving time can cause FromLocalExploded() to fail on the
+  // Known failure cases:
+  // 1) Daylight saving time can cause FromLocalExploded() to fail on the
   // transition day in the spring when TimeOfDay == 2:30 AM, and the time goes
   // instantaneously from 1:59 AM 3:00 AM. In this very rare case, it's OK for
   // this function to fail.
-  return base::Time();
+  // 2) crbug.com/1307913.
+  return absl::nullopt;
 }
 
 std::string TimeOfDay::ToString() const {
-  return base::UTF16ToUTF8(base::TimeFormatTimeOfDay(ToTimeToday()));
+  const absl::optional<base::Time> time_today = ToTimeToday();
+  return time_today ? base::UTF16ToUTF8(base::TimeFormatTimeOfDay(*time_today))
+                    : "unknown";
 }
 
 base::Time TimeOfDay::GetNow() const {

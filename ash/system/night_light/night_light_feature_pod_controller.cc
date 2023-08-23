@@ -146,11 +146,16 @@ const std::u16string NightLightFeaturePodController::GetPodSubLabel() {
               ? IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_ON_STATE_SUNSET_TO_SUNRISE_SCHEDULED
               : IDS_ASH_STATUS_TRAY_NIGHT_LIGHT_OFF_STATE_SUNSET_TO_SUNRISE_SCHEDULED);
     case NightLightController::ScheduleType::kCustom:
-      const TimeOfDay time = is_enabled ? controller->GetCustomEndTime()
+      const TimeOfDay time_of_day = is_enabled
+                                        ? controller->GetCustomEndTime()
                                         : controller->GetCustomStartTime();
+      const absl::optional<base::Time> time = time_of_day.ToTimeToday();
+      if (!time) {
+        return std::u16string();
+      }
       const std::u16string time_str =
           base::TimeFormatTimeOfDayWithHourClockType(
-              time.ToTimeToday(),
+              *time,
               Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
               base::kKeepAmPm);
       return is_enabled

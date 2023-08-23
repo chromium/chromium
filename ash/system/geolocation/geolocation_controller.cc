@@ -295,11 +295,15 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   if (!geoposition_) {
     VLOG(1) << "Invalid geoposition. Using default time for "
             << (sunrise ? "sunrise." : "sunset.");
-    return TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
-                             : kDefaultSunsetTimeOffsetMinutes)
-        .SetClock(clock_)
-        .SetLocalTimeConverter(local_time_converter_)
-        .ToTimeToday();
+    const absl::optional<base::Time> default_value =
+        TimeOfDay(sunrise ? kDefaultSunriseTimeOffsetMinutes
+                          : kDefaultSunsetTimeOffsetMinutes)
+            .SetClock(clock_)
+            .SetLocalTimeConverter(local_time_converter_)
+            .ToTimeToday();
+    // TODO(b/294437057): Change this method's return value to return a type
+    // that makes this failure more obvious to the caller.
+    return default_value.value_or(base::Time());
   }
 
   icu::CalendarAstronomer astro(geoposition_->longitude,
@@ -310,13 +314,18 @@ base::Time GeolocationController::GetSunRiseSet(bool sunrise) const {
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
   // Note that the icu calendar works with milliseconds since epoch, and
   // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
-  const double midday_today_sec =
+  const absl::optional<base::Time> midday_today =
       TimeOfDay(12 * 60)
           .SetClock(clock_)
           .SetLocalTimeConverter(local_time_converter_)
-          .ToTimeToday()
-          .ToDoubleT();
-  astro.setTime(midday_today_sec * 1000.0);
+          .ToTimeToday();
+  if (!midday_today) {
+    // TODO(b/294437057): Change this method's return value to return a type
+    // that makes this failure more obvious to the caller.
+    return base::Time();
+  }
+
+  astro.setTime(midday_today->ToDoubleT() * 1000.0);
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
   // a very large negative value. Any timestamp before or at the epoch

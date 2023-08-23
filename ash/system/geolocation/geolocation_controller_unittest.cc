@@ -12,6 +12,7 @@
 #include "ash/system/geolocation/test_geolocation_url_loader_factory.h"
 #include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/time_of_day_test_util.h"
 #include "ash/test_shell_delegate.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -392,9 +393,9 @@ TEST_F(GeolocationControllerTest, SunsetSunriseDefault) {
   // If geoposition is unset, the controller should return the default sunset
   // and sunrise time .
   EXPECT_EQ(controller()->GetSunsetTime(),
-            TimeOfDay(kDefaultSunsetTimeOffsetMinutes).ToTimeToday());
+            ToTimeToday(TimeOfDay(kDefaultSunsetTimeOffsetMinutes)));
   EXPECT_EQ(controller()->GetSunriseTime(),
-            TimeOfDay(kDefaultSunriseTimeOffsetMinutes).ToTimeToday());
+            ToTimeToday(TimeOfDay(kDefaultSunriseTimeOffsetMinutes)));
 }
 
 // Tests the behavior when there is a valid geoposition, sunrise and sunset
@@ -531,14 +532,14 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
   // Switching to user 1 should ignore the current geoposition since it's
   // a cached value from user 2's prefs rather than a newly-updated value.
   SwitchActiveUser(kUser1Email);
-  EXPECT_EQ(controller()->GetSunsetTime(),
-            TimeOfDay(kDefaultSunsetTimeOffsetMinutes)
-                .SetClock(test_clock())
-                .ToTimeToday());
-  EXPECT_EQ(controller()->GetSunriseTime(),
-            TimeOfDay(kDefaultSunriseTimeOffsetMinutes)
-                .SetClock(test_clock())
-                .ToTimeToday());
+  EXPECT_EQ(
+      controller()->GetSunsetTime(),
+      ToTimeToday(
+          TimeOfDay(kDefaultSunsetTimeOffsetMinutes).SetClock(test_clock())));
+  EXPECT_EQ(
+      controller()->GetSunriseTime(),
+      ToTimeToday(
+          TimeOfDay(kDefaultSunriseTimeOffsetMinutes).SetClock(test_clock())));
 
   // Now simulate receiving a live geoposition update.
   Geoposition position;

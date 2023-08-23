@@ -138,8 +138,15 @@ class NightLightControllerDelegateImpl
     if (!HasGeoposition()) {
       LOG(ERROR) << "Invalid geoposition. Using default time for "
                  << (sunrise ? "sunrise." : "sunset.");
-      return sunrise ? TimeOfDay(kDefaultEndTimeOffsetMinutes).ToTimeToday()
-                     : TimeOfDay(kDefaultStartTimeOffsetMinutes).ToTimeToday();
+      return sunrise ? TimeOfDay(kDefaultEndTimeOffsetMinutes)
+                           .ToTimeToday()
+                           // TODO(b/289276024): `ToTimeToday()` failures will
+                           // be handled properly when night light has migrated
+                           // to use `GeolocationController`.
+                           .value_or(base::Time())
+                     : TimeOfDay(kDefaultStartTimeOffsetMinutes)
+                           .ToTimeToday()
+                           .value_or(base::Time());
     }
 
     icu::CalendarAstronomer astro(geoposition_->longitude,
@@ -151,7 +158,7 @@ class NightLightControllerDelegateImpl
     // Note that the icu calendar works with milliseconds since epoch, and
     // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
     const double midday_today_sec =
-        TimeOfDay(12 * 60).ToTimeToday().ToDoubleT();
+        TimeOfDay(12 * 60).ToTimeToday().value_or(base::Time()).ToDoubleT();
     astro.setTime(midday_today_sec * 1000.0);
     const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
     return base::Time::FromDoubleT(sun_rise_set_ms / 1000.0);
@@ -1064,7 +1071,8 @@ void NightLightControllerImpl::Refresh(
 
     case ScheduleType::kCustom:
       RefreshScheduleTimer(
-          GetCustomStartTime().ToTimeToday(), GetCustomEndTime().ToTimeToday(),
+          GetCustomStartTime().ToTimeToday().value_or(base::Time()),
+          GetCustomEndTime().ToTimeToday().value_or(base::Time()),
           did_schedule_change, keep_manual_toggles_during_schedules);
       return;
   }

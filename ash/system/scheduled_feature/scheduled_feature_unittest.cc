@@ -27,6 +27,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/failing_local_time_converter.h"
+#include "ash/test/time_of_day_test_util.h"
 #include "ash/test_shell_delegate.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -350,7 +351,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
   // 1) now = 2 PM time_of_day = 5 PM, advances 3 hours
   // 2) now = 7 PM time_of_day = 5 PM, advances 22 hours (the next day)
   void FastForwardTo(TimeOfDay time_of_day) {
-    base::Time target_time = time_of_day.SetClock(this).ToTimeToday();
+    base::Time target_time = ToTimeToday(time_of_day.SetClock(this));
     const base::Time now = Now();
     if (target_time < now) {
       target_time += base::Days(1);

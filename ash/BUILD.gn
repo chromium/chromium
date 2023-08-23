@@ -4311,6 +4311,8 @@ static_library("test_support") {
     "test/test_widget_builder.h",
     "test/test_window_builder.cc",
     "test/test_window_builder.h",
+    "test/time_of_day_test_util.cc",
+    "test/time_of_day_test_util.h",
     "test/toplevel_window.cc",
     "test/toplevel_window.h",
     "test/ui_controls_ash.cc",

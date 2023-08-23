@@ -95,7 +95,7 @@ TEST(TimeOfDayTest, ReturnsNullTimeWhenLocalTimeFails) {
   FailingLocalTimeConverter failing_local_time_converter;
   TimeOfDay time_of_day =
       TimeOfDay(12 * 60).SetLocalTimeConverter(&failing_local_time_converter);
-  EXPECT_TRUE(time_of_day.ToTimeToday().is_null());
+  EXPECT_FALSE(time_of_day.ToTimeToday());
 }
 
 }  // namespace
