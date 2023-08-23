@@ -36,10 +36,11 @@ WebAppMetricsFactory::WebAppMetricsFactory()
 
 WebAppMetricsFactory::~WebAppMetricsFactory() = default;
 
-KeyedService* WebAppMetricsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebAppMetricsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new WebAppMetrics(profile);
+  return std::make_unique<WebAppMetrics>(profile);
 }
 
 content::BrowserContext* WebAppMetricsFactory::GetBrowserContextToUse(
