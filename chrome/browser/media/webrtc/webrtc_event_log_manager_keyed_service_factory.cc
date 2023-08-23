@@ -36,10 +36,11 @@ bool WebRtcEventLogManagerKeyedServiceFactory::
   return true;
 }
 
-KeyedService* WebRtcEventLogManagerKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+  WebRtcEventLogManagerKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(!context->IsOffTheRecord());
-  return new WebRtcEventLogManagerKeyedService(context);
+  return std::make_unique<WebRtcEventLogManagerKeyedService>(context);
 }
 
 }  // namespace webrtc_event_logging
