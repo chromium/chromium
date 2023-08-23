@@ -38,9 +38,10 @@ EventRouterFactory::EventRouterFactory()
 EventRouterFactory::~EventRouterFactory() {
 }
 
-KeyedService* EventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+EventRouterFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new EventRouter(context, ExtensionPrefs::Get(context));
+  return std::make_unique<EventRouter>(context, ExtensionPrefs::Get(context));
 }
 
 BrowserContext* EventRouterFactory::GetBrowserContextToUse(
