@@ -107,6 +107,47 @@ FormSignature CalculateFormSignature(const FormData& form_data) {
   return FormSignature(StrToHash64Bit(form_string));
 }
 
+FormSignature CalculateAlternativeFormSignature(const FormData& form_data) {
+  base::StringPiece scheme = form_data.action.scheme_piece();
+  base::StringPiece host = form_data.action.host_piece();
+
+  // If target host or scheme is empty, set scheme and host of source url.
+  // This is done to match the Toolbar's behavior.
+  if (scheme.empty() || host.empty()) {
+    scheme = form_data.url.scheme_piece();
+    host = form_data.url.host_piece();
+  }
+
+  std::string form_signature_field_types;
+  for (const FormFieldData& field : form_data.fields) {
+    if (!IsCheckable(field.check_status)) {
+      // Add all supported form fields' form control types to the signature.
+      base::StrAppend(&form_signature_field_types,
+                      {"&", field.form_control_type});
+    }
+  }
+
+  std::string form_string =
+      base::StrCat({scheme, "://", host, form_signature_field_types});
+
+  // Add more non-empty elements (one of path, reference, or query ordered by
+  // preference) for small forms with 1-2 fields in order to prevent signature
+  // collisions.
+  if (form_data.fields.size() <= 2) {
+    // Path piece includes the slash "/", so a non-empty path must have length
+    // longer than 1.
+    if (form_data.url.path_piece().length() > 1) {
+      base::StrAppend(&form_string, {form_data.url.path_piece()});
+    } else if (form_data.url.has_ref()) {
+      base::StrAppend(&form_string, {"#", form_data.url.ref_piece()});
+    } else if (form_data.url.has_query()) {
+      base::StrAppend(&form_string, {"?", form_data.url.query_piece()});
+    }
+  }
+
+  return FormSignature(StrToHash64Bit(form_string));
+}
+
 FieldSignature CalculateFieldSignatureByNameAndType(
     base::StringPiece16 field_name,
     base::StringPiece field_type) {
