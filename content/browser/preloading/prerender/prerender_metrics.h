@@ -179,8 +179,9 @@ enum class PrerenderBackNavigationEligibility {
   kNoHttpCacheEntry = 7,
   kTargetingOtherWindow = 8,
   kTargetIsNonHttp = 9,
+  kRelatedActiveContents = 10,
 
-  kMaxValue = kTargetIsNonHttp,
+  kMaxValue = kRelatedActiveContents,
 };
 
 // Maps `eligibility` onto a content internal range of PreloadingEligibility.

@@ -1248,6 +1248,26 @@ void PrerenderHostRegistry::BackNavigationLikely(
     return;
   }
 
+  // Session history prerendering will reuse the back navigation entry's
+  // existing SiteInstance. We can't have a prerendered document share a
+  // SiteInstance with related active content (i.e. an active document with the
+  // same BrowsingInstance) as that would risk having scripting connections to
+  // prerendered documents. So this case is not eligible for prerendering.
+  SiteInstanceImpl* entry_site_instance = back_entry->site_instance();
+  // `entry_site_instance` could be null in cases such as session restore.
+  if (entry_site_instance) {
+    const bool current_and_target_related =
+        contents->GetSiteInstance()->IsRelatedSiteInstance(entry_site_instance);
+    const size_t allowable_related_count = current_and_target_related ? 1u : 0u;
+    if (entry_site_instance->GetRelatedActiveContentsCount() >
+        allowable_related_count) {
+      RecordPrerenderBackNavigationEligibility(
+          predictor, PrerenderBackNavigationEligibility::kRelatedActiveContents,
+          attempt);
+      return;
+    }
+  }
+
   // To determine whether the resource for the target entry is in the HTTP
   // cache, we send a "fake" ResourceRequest which only loads from the cache.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
