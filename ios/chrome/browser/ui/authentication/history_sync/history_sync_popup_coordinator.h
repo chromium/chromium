@@ -7,6 +7,10 @@
 
 #import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
+namespace signin_metrics {
+enum class AccessPoint : int;
+}  // namespace signin_metrics
+
 @class HistorySyncPopupCoordinator;
 
 // Delegate for the history sync coordinator.
@@ -32,6 +36,8 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                        dedicatedSignInDone:(BOOL)dedicatedSignInDone
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 @end

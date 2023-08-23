@@ -162,7 +162,8 @@ using base::UserMetricsAction;
                                    browser:self.browser
                                   delegate:self
                                   firstRun:NO
-                             showUserEmail:NO];
+                             showUserEmail:NO
+                               accessPoint:_accessPoint];
     case kDefaultBrowserPromo:
     case kChoice:
     case kStepsCompleted:

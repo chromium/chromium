@@ -136,7 +136,9 @@
                                    browser:self.browser
                                   delegate:self
                                   firstRun:YES
-                             showUserEmail:NO];
+                             showUserEmail:NO
+                               accessPoint:signin_metrics::AccessPoint::
+                                               ACCESS_POINT_START_PAGE];
     case kTangibleSync:
       return [[TangibleSyncScreenCoordinator alloc]
           initWithBaseNavigationController:self.navigationController

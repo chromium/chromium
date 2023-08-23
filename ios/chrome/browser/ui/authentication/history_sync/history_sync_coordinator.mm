@@ -4,14 +4,19 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_coordinator.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/first_run/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_mediator.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
@@ -31,20 +36,80 @@
   BOOL _firstRun;
   // `YES` if the user's email should be shown in the footer text.
   BOOL _showUserEmail;
+  // `YES` if the opt-in aborted metric should be recorded when the
+  // coordinator stops.
+  BOOL _recordOptInEndAtStop;
   // Delegate for the history sync coordinator.
   __weak id<HistorySyncCoordinatorDelegate> _delegate;
+  // Access point associated with the history opt-in screen.
+  signin_metrics::AccessPoint _accessPoint;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                        delegate:
-                                            (id<HistorySyncCoordinatorDelegate>)
-                                                delegate
-                                        firstRun:(BOOL)firstRun
-                                   showUserEmail:(BOOL)showUserEmail {
++ (HistorySyncSkipReason)
+    getHistorySyncOptInSkipReason:(syncer::SyncService*)syncService
+            authenticationService:
+                (AuthenticationService*)authenticationService {
+  if (!authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // Don't show history sync opt-in screen if no signed-in user account.
+    return HistorySyncSkipReason::kNotSignedIn;
+  }
+  if (syncService->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+      syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kTabs) ||
+      syncService->GetUserSettings()->IsTypeManagedByPolicy(
+          syncer::UserSelectableType::kHistory)) {
+    // Skip History Sync Opt-in if sync is disabled, or if history or
+    // tabs sync is disabled by policy.
+    return HistorySyncSkipReason::kSyncForbiddenByPolicies;
+  }
+  syncer::SyncUserSettings* userSettings = syncService->GetUserSettings();
+
+  if (userSettings->GetSelectedTypes().HasAll(
+          {syncer::UserSelectableType::kHistory,
+           syncer::UserSelectableType::kTabs})) {
+    // History opt-in is already set. This value is kept between signout/signin.
+    // In this case the UI can be skipped.
+    return HistorySyncSkipReason::kAlreadyOptedIn;
+  }
+  return HistorySyncSkipReason::kNone;
+}
+
++ (void)recordHistorySyncSkipMetric:(HistorySyncSkipReason)reason
+                        accessPoint:(signin_metrics::AccessPoint)accessPoint {
+  switch (reason) {
+    case HistorySyncSkipReason::kNotSignedIn:
+    case HistorySyncSkipReason::kSyncForbiddenByPolicies:
+      base::UmaHistogramEnumeration(
+          "Signin.HistorySyncOptIn.Skipped", accessPoint,
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      break;
+    case HistorySyncSkipReason::kAlreadyOptedIn:
+      base::UmaHistogramEnumeration(
+          "Signin.HistorySyncOptIn.AlreadyOptedIn", accessPoint,
+          signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+      break;
+    case HistorySyncSkipReason::kNone:
+      // This method should not be called if the screen should be shown.
+      // If a metric should be recorded in this case, it should be handled in
+      // HistorySyncCoordinator instance methods instead of this class method
+      // to avoid duplicated recording.
+      NOTREACHED_NORETURN();
+  }
+}
+
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                            delegate:
+                                (id<HistorySyncCoordinatorDelegate>)delegate
+                            firstRun:(BOOL)firstRun
+                       showUserEmail:(BOOL)showUserEmail
+                         accessPoint:(signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
@@ -52,6 +117,7 @@
     _firstRun = firstRun;
     _showUserEmail = showUserEmail;
     _delegate = delegate;
+    _accessPoint = accessPoint;
   }
   return self;
 }
@@ -64,7 +130,13 @@
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  if (!CanHistorySyncOptInBePresented(authenticationService, syncService)) {
+  // Check if History Sync Opt-In should be skipped.
+  HistorySyncSkipReason skipReason = [HistorySyncCoordinator
+      getHistorySyncOptInSkipReason:syncService
+              authenticationService:authenticationService];
+  if (skipReason != HistorySyncSkipReason::kNone) {
+    [HistorySyncCoordinator recordHistorySyncSkipMetric:skipReason
+                                            accessPoint:_accessPoint];
     [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
     return;
   }
@@ -85,8 +157,12 @@
   _mediator.delegate = self;
   if (_firstRun) {
     _viewController.modalInPresentation = YES;
+    base::UmaHistogramEnumeration("FirstRun.Stage",
+                                  first_run::kHistorySyncScreenStart);
   }
-
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Started", _accessPoint,
+                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  _recordOptInEndAtStop = YES;
   BOOL animated = self.baseNavigationController.topViewController != nil;
   [self.baseNavigationController setViewControllers:@[ _viewController ]
                                            animated:animated];
@@ -95,6 +171,18 @@
 - (void)stop {
   [super stop];
   _delegate = nil;
+  if (_recordOptInEndAtStop) {
+    // Tracks the case where the opt-in flow ends without being accepted or
+    // declined by the user. (eg. identity disappeared, popup swiped down by the
+    // user, Chrome shutdown)
+    //
+    // This can also occur during the FRE, for instance if Chrome shuts down
+    // when the screen is shown, or if FRE is dismissed due to policies change.
+    base::UmaHistogramEnumeration(
+        "Signin.HistorySyncOptIn.Aborted", _accessPoint,
+        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    _recordOptInEndAtStop = NO;
+  }
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator.delegate = nil;
@@ -118,10 +206,26 @@
 
 - (void)didTapPrimaryActionButton {
   [_mediator enableHistorySyncOptin];
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithSync);
+  }
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Completed",
+                                _accessPoint,
+                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  _recordOptInEndAtStop = NO;
   [_delegate closeHistorySyncCoordinator:self declinedByUser:NO];
 }
 
 - (void)didTapSecondaryActionButton {
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        "FirstRun.Stage", first_run::kHistorySyncScreenCompletionWithoutSync);
+  }
+  base::UmaHistogramEnumeration("Signin.HistorySyncOptIn.Declined",
+                                _accessPoint,
+                                signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+  _recordOptInEndAtStop = NO;
   [_delegate closeHistorySyncCoordinator:self declinedByUser:YES];
 }
 

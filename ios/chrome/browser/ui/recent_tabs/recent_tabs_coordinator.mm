@@ -213,7 +213,9 @@
   _historySyncPopupCoordinator = [[HistorySyncPopupCoordinator alloc]
       initWithBaseViewController:self.recentTabsTableViewController
                          browser:self.browser
-             dedicatedSignInDone:dedicatedSignInDone];
+             dedicatedSignInDone:dedicatedSignInDone
+                     accessPoint:signin_metrics::AccessPoint::
+                                     ACCESS_POINT_RECENT_TABS];
   _historySyncPopupCoordinator.delegate = self;
   [_historySyncPopupCoordinator start];
 }

@@ -8,7 +8,26 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/first_run/interruptible_chrome_coordinator.h"
 
+class AuthenticationService;
 @class HistorySyncCoordinator;
+
+namespace signin_metrics {
+enum class AccessPoint : int;
+}  // namespace signin_metrics
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+// The reasons why the History Sync Opt-In screen should be skipped instead of
+// being shown to the user. `kNone` indicates that the screen should not be
+// skipped.
+enum class HistorySyncSkipReason {
+  kNone,
+  kNotSignedIn,
+  kSyncForbiddenByPolicies,
+  kAlreadyOptedIn,
+};
 
 // Delegate for the history sync coordinator.
 @protocol HistorySyncCoordinatorDelegate <NSObject>
@@ -24,19 +43,32 @@
 // showing the view in a navigation controller.
 @interface HistorySyncCoordinator : InterruptibleChromeCoordinator
 
+// Checks if the History Sync Opt-In screen should be skipped, and returns the
+// corresponding reason. HistorySyncSkipReason::kNone means that the screen
+// should not be skipped.
++ (HistorySyncSkipReason)
+    getHistorySyncOptInSkipReason:(syncer::SyncService*)syncService
+            authenticationService:(AuthenticationService*)authenticationService;
+
+// Records metric if the History Sync Opt-In screen is skipped for the given
+// reason, for the given access point.
++ (void)recordHistorySyncSkipMetric:(HistorySyncSkipReason)reason
+                        accessPoint:(signin_metrics::AccessPoint)accessPoint;
+
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Initiates a HistorySyncCoordinator with `navigationController`,
 // `browser` and `delegate`.
-- (instancetype)initWithBaseNavigationController:
-                    (UINavigationController*)navigationController
-                                         browser:(Browser*)browser
-                                        delegate:
-                                            (id<HistorySyncCoordinatorDelegate>)
-                                                delegate
-                                        firstRun:(BOOL)firstRun
-                                   showUserEmail:(BOOL)showUserEmail
+- (instancetype)
+    initWithBaseNavigationController:
+        (UINavigationController*)navigationController
+                             browser:(Browser*)browser
+                            delegate:
+                                (id<HistorySyncCoordinatorDelegate>)delegate
+                            firstRun:(BOOL)firstRun
+                       showUserEmail:(BOOL)showUserEmail
+                         accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 @end
