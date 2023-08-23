@@ -33,8 +33,10 @@ PermissionActionsHistoryFactory::PermissionActionsHistoryFactory()
 
 PermissionActionsHistoryFactory::~PermissionActionsHistoryFactory() = default;
 
-KeyedService* PermissionActionsHistoryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PermissionActionsHistoryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new permissions::PermissionActionsHistory(profile->GetPrefs());
+  return std::make_unique<permissions::PermissionActionsHistory>(
+      profile->GetPrefs());
 }
