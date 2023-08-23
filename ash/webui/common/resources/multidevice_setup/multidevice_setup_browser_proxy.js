@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {sendWithPromise} from 'chrome://resources/ash/common/cr.m.js';
-import {addSingletonGetter} from 'chrome://resources/ash/common/cr_deprecated.js';
 
 /** @interface */
 export class BrowserProxy {
@@ -32,6 +31,17 @@ export class BrowserProxyImpl {
   openMultiDeviceSettings() {
     chrome.send('openMultiDeviceSettings');
   }
+
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxyImpl());
+  }
+
+  /** @param {!BrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(BrowserProxyImpl);
+/** @type {?BrowserProxy} */
+let instance = null;
