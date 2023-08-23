@@ -19,8 +19,9 @@ class ComboboxModel;
 }
 
 namespace views {
+class ImageView;
 class Label;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -98,6 +99,7 @@ class ASH_EXPORT Combobox : public views::Button,
   raw_ptr<ui::ComboboxModel> model_;
 
   const raw_ptr<views::Label> title_ = nullptr;
+  const raw_ptr<views::ImageView> drop_down_arrow_ = nullptr;
 
   // Callback notified when the selected index changes.
   base::RepeatingClosure callback_;

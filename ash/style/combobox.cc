@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/blurred_background_shield.h"
 #include "ash/style/radio_button.h"
 #include "ash/style/radio_button_group.h"
 #include "ash/style/style_util.h"
@@ -41,8 +43,12 @@ namespace ash {
 namespace {
 
 // The color constants.
-constexpr ui::ColorId kTextAndIconColorId = cros_tokens::kCrosSysOnSurface;
-constexpr ui::ColorId kMenuBackgroudnColorId =
+constexpr ui::ColorId kActiveTitleAndIconColorId =
+    cros_tokens::kCrosSysSystemOnPrimaryContainer;
+constexpr ui::ColorId kInactiveTitleAndIconColorId =
+    cros_tokens::kCrosSysOnSurface;
+constexpr ui::ColorId kMenuTextColorId = cros_tokens::kCrosSysOnSurface;
+constexpr ui::ColorId kMenuBackgroundColorId =
     cros_tokens::kCrosSysSystemBaseElevated;
 constexpr ui::ColorId kComboboxActiveColorId =
     cros_tokens::kCrosSysSystemPrimaryContainer;
@@ -72,7 +78,11 @@ class Combobox::ComboboxMenuView : public views::View {
  public:
   METADATA_HEADER(ComboboxMenuView);
   explicit ComboboxMenuView(base::WeakPtr<Combobox> combobox)
-      : combobox_(combobox) {
+      : combobox_(combobox),
+        background_shield_(this,
+                           kMenuBackgroundColorId,
+                           ColorProvider::kBackgroundBlurSigma,
+                           kMenuRoundedCorners) {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     // Create a radio buttons group for item list.
@@ -82,10 +92,7 @@ class Combobox::ComboboxMenuView : public views::View {
         kMenuItemInnerPadding, kCheckmarkLabelSpacing));
     UpdateMenuContent();
 
-    // Set background and border.
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        kMenuBackgroudnColorId, kMenuRoundedCorners,
-        /*for_border_thickness=*/0));
+    // Set border.
     SetBorder(std::make_unique<views::HighlightBorder>(
         kMenuRoundedCorners,
         views::HighlightBorder::Type::kHighlightBorderOnShadow));
@@ -105,13 +112,14 @@ class Combobox::ComboboxMenuView : public views::View {
           base::BindRepeating(&Combobox::MenuSelectionAt, combobox_, i),
           combobox_->model_->GetDropDownTextAt(i));
       item->SetLabelStyle(TypographyToken::kCrosButton2);
-      item->SetLabelColorId(kTextAndIconColorId);
+      item->SetLabelColorId(kMenuTextColorId);
       item->SetSelected(combobox_->selected_index_.value() == i);
     }
   }
 
  private:
   const base::WeakPtr<Combobox> combobox_;
+  const BlurredBackgroundShield background_shield_;
 
   // Owned by this.
   raw_ptr<RadioButtonGroup> menu_item_group_;
@@ -178,7 +186,11 @@ Combobox::Combobox(ui::ComboboxModel* model)
     : views::Button(base::BindRepeating(&Combobox::OnComboboxPressed,
                                         base::Unretained(this))),
       model_(model),
-      title_(AddChildView(std::make_unique<views::Label>())) {
+      title_(AddChildView(std::make_unique<views::Label>())),
+      drop_down_arrow_(AddChildView(std::make_unique<views::ImageView>(
+          ui::ImageModel::FromVectorIcon(kDropDownArrowIcon,
+                                         kInactiveTitleAndIconColorId,
+                                         kArrowIconSize)))) {
   // Initialize the combobox with given model.
   CHECK(model_);
   observation_.Observe(model_.get());
@@ -193,12 +205,8 @@ Combobox::Combobox(ui::ComboboxModel* model)
   // Stylize the title.
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
                                         *title_.get());
-  title_->SetEnabledColorId(kTextAndIconColorId);
-
-  // Add the following drop down arrow icon.
-  AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kDropDownArrowIcon, kTextAndIconColorId, kArrowIconSize)));
+  title_->SetAutoColorReadabilityEnabled(false);
+  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
 
@@ -327,6 +335,9 @@ void Combobox::ShowDropDownMenu() {
   SetBackground(views::CreateThemedRoundedRectBackground(
       kComboboxActiveColorId, kComboboxRoundedCorners,
       /*for_border_thickness=*/0));
+  title_->SetEnabledColorId(kActiveTitleAndIconColorId);
+  drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
+      kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
   RequestFocus();
 }
 
@@ -335,6 +346,9 @@ void Combobox::CloseDropDownMenu() {
   menu_.reset();
   closed_time_ = base::TimeTicks::Now();
   SetBackground(nullptr);
+  title_->SetEnabledColorId(kInactiveTitleAndIconColorId);
+  drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
+      kDropDownArrowIcon, kInactiveTitleAndIconColorId, kArrowIconSize));
 }
 
 void Combobox::OnPerformAction() {
