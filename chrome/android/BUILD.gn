@@ -867,10 +867,6 @@ if (current_toolchain == default_toolchain) {
   robolectric_binary("chrome_junit_tests") {
     # Needed by androidx.test.core.app.ActivityScenario
     android_manifest = "//chrome/android/junit/AndroidManifest.xml"
-
-    # TODO(crbug.com/1383650): Remove once memory leak is fixed.
-    max_heap_size = "1800M"
-
     package_name = chrome_public_manifest_package
 
     # From java_sources.gni.
