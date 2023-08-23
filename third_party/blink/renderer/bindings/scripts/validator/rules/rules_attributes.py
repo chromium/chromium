@@ -8,8 +8,8 @@ described in Web IDL https://webidl.spec.whatwg.org/.
 Each rule class must inherit RuleBase.
 """
 
-from validator.framework import target
 from validator.framework import RuleBase
+from validator.framework import target
 
 
 class ForbiddenSequenceTypeForAttributes(RuleBase):

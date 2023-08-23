@@ -7,6 +7,7 @@ from . import rules_constants
 from . import rules_dictionaries
 from . import rules_extended_attributes
 from . import rules_function_like
+from . import rules_idl_types
 
 
 def register_all_rules(rule_store):
@@ -15,3 +16,4 @@ def register_all_rules(rule_store):
     rules_dictionaries.register_rules(rule_store)
     rules_extended_attributes.register_rules(rule_store)
     rules_function_like.register_rules(rule_store)
+    rules_idl_types.register_rules(rule_store)

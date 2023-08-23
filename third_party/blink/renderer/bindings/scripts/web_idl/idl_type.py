@@ -232,7 +232,7 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
 
         In case of x.apply_to_all_composing_elements(callback), |callback| will
         be recursively called back on x, x.inner_type, x.element_type,
-        x.result_type.original_type, etc. if any.
+        x.result_type, x.original_type, etc. if any.
 
         If |callback| raises a StopIteration, then this function stops
         traversing deeper than this type (inner type, etc.), however, siblings

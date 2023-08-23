@@ -15,9 +15,12 @@ typedef ArrayBufferView MLBufferView;
 // TODO(crbug.com/1309261): This is different from the specification of WebNN
 // because in the first version we do not involve any hardware acceleration. We
 // should update it when WebNN is implemented.
-typedef MLBufferView MLResource;
+//
+// typedef MLBufferView MLResource;
 
 dictionary MLTensor {
-  required MLResource data;
+  // TODO(crbug.com/1309261): `data` must be of type MLResource, but it's not
+  // allowed to define a typedef to another typedef in Web IDL.
+  required MLBufferView data;
   required sequence<unsigned long> dimensions;
 };

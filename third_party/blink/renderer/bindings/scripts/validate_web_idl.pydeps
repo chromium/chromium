@@ -22,6 +22,7 @@ validator/rules/rules_constants.py
 validator/rules/rules_dictionaries.py
 validator/rules/rules_extended_attributes.py
 validator/rules/rules_function_like.py
+validator/rules/rules_idl_types.py
 validator/rules/supported_extended_attributes.py
 web_idl/__init__.py
 web_idl/argument.py
