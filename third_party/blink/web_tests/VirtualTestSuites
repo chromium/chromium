@@ -3394,7 +3394,6 @@
       "http/tests/devtools/bindings/suspendtarget-navigator.js",
       "http/tests/devtools/cache-storage/cache-data.js",
       "http/tests/devtools/cache-storage/cache-deletion.js",
-      "http/tests/devtools/components/chunked-file-reader.js",
       "http/tests/devtools/components/segmented-range.js",
       "http/tests/devtools/console-sidebar/console-filter-sidebar.js",
       "http/tests/devtools/console/console-Object-overwritten.js",
