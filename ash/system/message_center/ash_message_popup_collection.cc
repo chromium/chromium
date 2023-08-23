@@ -9,7 +9,6 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -24,7 +23,6 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -36,7 +34,6 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
@@ -50,31 +47,9 @@ namespace {
 
 const int kPopupMarginX = 8;
 
-// If available space is below this limit, we will disable expand/collapse
-// behavior on each popup. We choose this value because this is roughly the
-// height of the largest expanded (non grouped) notification.
-const int kMinimumHeightToEnableExpandCollapse = 327;
-
 void ReportPopupAnimationSmoothness(int smoothness) {
   base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
                                smoothness);
-}
-
-// Checks if `message_view` is associated with a parent notification.
-bool IsParentNotification(message_center::MessageView* message_view) {
-  if (!message_view) {
-    return false;
-  }
-
-  auto* notification =
-      message_center::MessageCenter::Get()->FindNotificationById(
-          message_view->notification_id());
-
-  if (!notification) {
-    return false;
-  }
-
-  return notification->group_parent();
 }
 
 }  // namespace
@@ -380,49 +355,40 @@ void AshMessagePopupCollection::AdjustBaselineBasedOnShelfPodBubble(
   CHECK(features::IsNotifierCollisionEnabled());
 
   auto* status_area = StatusAreaWidget::ForWindow(shelf_->GetWindow());
-  auto* shelf_pod_bubble =
+  auto* shelf_pod_anchored_bubble =
       status_area ? status_area->open_shelf_pod_bubble() : nullptr;
 
   // The tray bubble might already be closed/deleted. We also only put the popup
   // on top of tray bubble that is anchored to the shelf corner.
-  if (!shelf_pod_bubble || !shelf_pod_bubble->IsAnchoredToShelfCorner()) {
+  if (!shelf_pod_anchored_bubble ||
+      !shelf_pod_anchored_bubble->IsAnchoredToShelfCorner()) {
     SetBaselineOffset(0);
-
-    // Note that `available_space_above_popups` is not used when
-    // `shelf_bubble_open` is false.
-    UpdateExpandCollapseEnabledForPopups(/*shelf_bubble_open=*/false,
-                                         /*available_space_above_popups=*/0);
     return;
   }
 
-  // The space left on the screen above the popups. If the popups collection
-  // cannot fit into the top of the bubble, this value will be negative.
-  int available_space_above_popups = shelf_pod_bubble->GetBoundsInScreen().y() -
-                                     message_center::kMarginBetweenPopups -
-                                     popup_collection_bounds().height();
-
-  UpdateExpandCollapseEnabledForPopups(/*shelf_bubble_open=*/true,
-                                       available_space_above_popups);
-
   // If there's not enough space above the tray bubble to display the entire
-  // popup collection, we will close the popups if possible. Otherwise, we will
-  // just display the popup on top of the tray bubble (adjust the baseline back
-  // to zero and move down the popups).
-  if (available_space_above_popups < 0) {
-    // We want to avoid showing tray bubble and popups overlapping with each
-    // other. Thus, when this function is triggered by a change that happens in
-    // the bubble (bubble size or visibility changed), we will close the popup.
+  // popup collection, we will close the popups or the bubble since we want to
+  // avoid showing tray bubble and popups overlapping with each other.
+  if (shelf_pod_anchored_bubble->GetBoundsInScreen().y() -
+          message_center::kMarginBetweenPopups <
+      popup_collection_bounds().height()) {
+    // When this function is triggered by a change that happens in the bubble
+    // (bubble size or visibility changed), we will close the popup. Otherwise,
+    // we will close the bubble.
     if (triggered_by_bubble_change) {
       CloseAllPopupsNow();
       ResetBounds();
     } else {
+      shelf_pod_anchored_bubble->CloseBubbleView();
+
+      // Reset and move down popups if tray bubble is closed.
       SetBaselineOffset(0);
       MoveDownPopups();
     }
     return;
   }
 
-  SetBaselineOffset(shelf_pod_bubble->height());
+  SetBaselineOffset(shelf_pod_anchored_bubble->height());
 }
 
 void AshMessagePopupCollection::AdjustBaselineBasedOnSecondaryBubble(
@@ -492,31 +458,6 @@ void AshMessagePopupCollection::OnWidgetActivationChanged(views::Widget* widget,
   // FocusCycler.
   if (active && Shell::Get()->focus_cycler()->widget_activating() == widget)
     widget->GetFocusManager()->SetFocusedView(widget->GetContentsView());
-}
-
-void AshMessagePopupCollection::UpdateExpandCollapseEnabledForPopups(
-    bool shelf_bubble_open,
-    int available_space_above_popups) {
-  for (const auto& item : popup_items()) {
-    auto* message_view = item.popup->message_view();
-    if (!message_view) {
-      continue;
-    }
-
-    if (!shelf_bubble_open) {
-      message_view->SetExpandCollapseEnabled(true);
-      continue;
-    }
-
-    // If the space left on the screen above the popups is less than the
-    // threshold, we will disable expand/collapse on all the popups. Also we
-    // disable expand/collapse for all group notifications.
-    message_view->SetExpandCollapseEnabled(
-        IsParentNotification(message_view)
-            ? false
-            : available_space_above_popups >
-                  kMinimumHeightToEnableExpandCollapse);
-  }
 }
 
 void AshMessagePopupCollection::RecordPopupOnTopOfBubbleCount() {

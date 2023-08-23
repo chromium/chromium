@@ -49,6 +49,7 @@ class ASH_EXPORT DateTray : public TrayBackgroundView,
   void ShowBubble() override;
   void CloseBubble() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
+  void HideBubble(const TrayBubbleView* bubble_view) override;
   void ClickedOutsideBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
 

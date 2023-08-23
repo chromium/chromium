@@ -268,6 +268,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // this method.
   void NotifyTrayBubbleClosed();
 
+  void CloseBubbleView();
+
  protected:
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
@@ -299,8 +301,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
     raw_ptr<TrayBubbleView, ExperimentalAsh> tray_bubble_view_;
   };
-
-  void CloseBubbleView();
 
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged | ExperimentalAsh> layout_;

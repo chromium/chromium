@@ -103,6 +103,10 @@ void DateTray::CloseBubble() {
   }
 }
 
+void DateTray::HideBubble(const TrayBubbleView* bubble_view) {
+  CloseBubble();
+}
+
 void DateTray::ClickedOutsideBubble() {
   if (bubble_) {
     HideGlanceableBubble();
