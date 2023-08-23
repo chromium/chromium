@@ -746,6 +746,10 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureFloatingWorkspaceTemplate) {
       MakeTestFloatingWorkspaceDeskTemplate(template_name, creation_time);
   test_floating_workspace_service_v2.GetMockDesksClient()
       ->SetCapturedDeskTemplate(std::move(floating_workspace_template));
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
   task_environment().FastForwardBy(
       ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
       base::Seconds(1));
@@ -766,7 +770,10 @@ TEST_F(FloatingWorkspaceServiceTest, CaptureSameFloatingWorkspaceTemplate) {
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
           kFloatingWorkspaceV2Enabled);
-
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
   const std::string template_name = "floating_workspace_captured_template";
   const base::Time first_captured_template_creation_time = base::Time::Now();
   std::unique_ptr<DeskTemplate> first_captured_floating_workspace_template =
@@ -813,7 +820,10 @@ TEST_F(FloatingWorkspaceServiceTest,
       profile(), fake_desk_sync_service(), test_sync_service(),
       floating_workspace_util::FloatingWorkspaceVersion::
           kFloatingWorkspaceV2Enabled);
-
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
   const std::string template_name = "floating_workspace_captured_template";
   const base::Time first_captured_template_creation_time = base::Time::Now();
   std::unique_ptr<DeskTemplate> first_captured_floating_workspace_template =
@@ -1126,6 +1136,98 @@ TEST_F(FloatingWorkspaceServiceTest,
   test_sync_service()->FireStateChanged();
   EXPECT_FALSE(HasNotificationFor(kNotificationForProgressStatus));
   EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       FloatingWorkspaceTemplateRestoreAfterTimeOutWithNewCapture) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2MaxTimeAvailableForRestoreAfterLogin
+          .Get() +
+      base::Seconds(1));
+  EXPECT_TRUE(HasNotificationFor(kNotificationForSyncErrorOrTimeOut));
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_TRUE(HasNotificationFor(kNotificationForRestoreAfterError));
+
+  // Capture a new desk before user restores.
+  const std::string captured_template_name =
+      "floating_workspace_captured_template";
+  const base::Time captured_creation_time = base::Time::Now();
+  std::unique_ptr<DeskTemplate> captured_floating_workspace_template =
+      MakeTestFloatingWorkspaceDeskTemplate(captured_template_name,
+                                            captured_creation_time);
+
+  test_floating_workspace_service_v2.GetMockDesksClient()
+      ->SetCapturedDeskTemplate(
+          std::move(captured_floating_workspace_template));
+
+  task_environment().FastForwardBy(
+      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get() +
+      base::Seconds(1));
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetUploadedFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetUploadedFloatingWorkspaceTemplate()
+          ->created_time(),
+      captured_creation_time);
+
+  // User clicks restore button on the notification and we should the entry
+  // prior to the capture.
+  display_service()->SimulateClick(
+      NotificationHandler::Type::TRANSIENT, kNotificationForRestoreAfterError,
+      static_cast<int>(RestoreFromErrorNotificationButtonIndex::kRestore),
+      absl::nullopt);
+  EXPECT_TRUE(test_floating_workspace_service_v2
+                  .GetRestoredFloatingWorkspaceTemplate());
+  EXPECT_EQ(
+      test_floating_workspace_service_v2.GetRestoredFloatingWorkspaceTemplate()
+          ->template_name(),
+      base::UTF8ToUTF16(template_name));
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest,
+       RestoreWhenNoFloatingWorkspaceTemplateIsAvailable) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetRestoredFloatingWorkspaceTemplate());
   scoped_feature_list().Reset();
 }
 

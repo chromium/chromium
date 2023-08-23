@@ -269,7 +269,10 @@ void FloatingWorkspaceService::Click(
               static_cast<int>(
                   RestoreFromErrorNotificationButtonIndex::kRestore)) {
         VLOG(1) << "Restore button clicked for floating workspace after error";
-        LaunchFloatingWorkspaceTemplate(GetLatestFloatingWorkspaceTemplate());
+        if (floating_workspace_template_to_restore_ != nullptr) {
+          LaunchFloatingWorkspaceTemplate(
+              floating_workspace_template_to_restore_.get());
+        }
       }
       break;
   }
@@ -307,7 +310,6 @@ void FloatingWorkspaceService::InitForV2(
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
   }
-  StartCaptureAndUploadActiveDesk();
   if (!floating_workspace_util::IsInternetConnected()) {
     SendNotification(kNotificationForNoNetworkConnection);
   } else {
@@ -371,10 +373,12 @@ FloatingWorkspaceService::GetOpenTabsUIDelegate() {
 }
 
 void FloatingWorkspaceService::StartCaptureAndUploadActiveDesk() {
-  timer_.Start(
-      FROM_HERE,
-      ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get(),
-      this, &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
+  if (!timer_.IsRunning()) {
+    timer_.Start(
+        FROM_HERE,
+        ash::features::kFloatingWorkspaceV2PeriodicJobIntervalInSeconds.Get(),
+        this, &FloatingWorkspaceService::CaptureAndUploadActiveDesk);
+  }
 }
 
 void FloatingWorkspaceService::StopCaptureAndUploadActiveDesk() {
@@ -463,6 +467,7 @@ void FloatingWorkspaceService::CaptureAndUploadActiveDeskForTest(
 
 void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     const DeskTemplate* desk_template) {
+  StartCaptureAndUploadActiveDesk();
   if (desk_template == nullptr) {
     LOG(WARNING) << "No floating workspace entry found. Won't "
                     "restore. This is only possible if this is the first time "
@@ -484,8 +489,10 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
     // Template arrives late, asking user to restore or not.
     StopProgressBarNotification();
     SendNotification(kNotificationForRestoreAfterError);
-    // Set this flag false after sending restore notification to user
-    // since user will control the restoration behavior from then on.
+    // Save the workspace template in memory so we can restore the correct one.
+    floating_workspace_template_to_restore_ = desk_template->Clone();
+    // Set this flag to false after sending restore notification to user
+    // since the user will control the restoration behavior from here on.
     should_run_restore_ = false;
     return;
   }

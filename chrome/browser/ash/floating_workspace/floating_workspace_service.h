@@ -239,6 +239,12 @@ class FloatingWorkspaceService : public KeyedService,
   std::unique_ptr<message_center::Notification> notification_;
   std::string progress_notification_id_;
 
+  // The in memory cache of the floating workspace that should be restored after
+  // downloading latest updates. Saved in case the user delays resuming the
+  // session and a captured template was uploaded.
+  std::unique_ptr<DeskTemplate> floating_workspace_template_to_restore_ =
+      nullptr;
+
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};
 };
