@@ -29,7 +29,7 @@ class KEYED_SERVICE_EXPORT BrowserContextKeyedServiceShutdownNotifierFactory
   ~BrowserContextKeyedServiceShutdownNotifierFactory() override;
 
  private:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
