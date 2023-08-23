@@ -15,4 +15,5 @@ enum ServiceWorkerFetchHandlerBypassOption {
   kBypassOnlyIfServiceWorkerNotStarted,
   kRaceNetworkRequest,
   kRaceNetworkRequestHoldback,
+  kAutoPreload,
 };

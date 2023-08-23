@@ -35,7 +35,16 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
     // to be updated to either |kServiceWorker| or |kWithoutServiceWorker| after
     // receiving the final response.
     kSubresourceLoaderIsHandlingRedirect = 3,
-    kMaxValue = kSubresourceLoaderIsHandlingRedirect,
+    // When ServiceWorkerAutoPreload is enabled, in most cases the response from
+    // |kServiceWorker| is expected. However, when the fetch handler result is
+    // fallback, the browser tries to use the response from the network request.
+    // In this case |commit_responsibility_| is transitioned from
+    // |kServiceWorker| to |kWithoutServiceWorker|, but we don't want to permit
+    // that transition in normal cases. This state is a special intermediate
+    // state to bridge those states, which is used only to handle fallback with
+    // ServiceWorkerAutoPreload.
+    kAutoPreloadHandlingFallback = 4,
+    kMaxValue = kAutoPreloadHandlingFallback,
   };
 
   ServiceWorkerResourceLoader();

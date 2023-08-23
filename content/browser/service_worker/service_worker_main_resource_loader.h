@@ -126,10 +126,14 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   //    the corresponding request from the ServiceWorker.
   // kNavigationPreload:
   //    Enabled when Navigation Preload is triggered.
+  // kAutoPreload:
+  //    AutoPreload is triggered. This is consumed in the fetch handler or
+  //    the fallback request.
   enum class DispatchedPreloadType {
     kNone,
     kRaceNetworkRequest,
-    kNavigationPreload
+    kNavigationPreload,
+    kAutoPreload,
   };
 
   void DidPrepareFetchEvent(scoped_refptr<ServiceWorkerVersion> version,
@@ -236,6 +240,14 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // Returns false if fails to start the race network request.
   // The caller should run the regular path instead.
   bool StartRaceNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
+  // If the feature is enabled, invoke the preload network request.
+  // See this doc for the high-level code flow in
+  // ServiceWorkerMainResourceLoader.
+  // https://docs.google.com/presentation/d/13A54OUqaBPrgkIQZE3a3CnhT3pe3C70j07HCisjNZlI/edit#slide=id.g2753dd0eed3_0_0
+  bool MaybeStartAutoPreload(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       scoped_refptr<ServiceWorkerVersion> version);
 

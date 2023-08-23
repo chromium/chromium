@@ -343,6 +343,16 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     } else if (race_network_request_mode != kSkipped &&
                MaybeStartRaceNetworkRequest(context, active_worker)) {
       dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
+    } else if (MaybeStartAutoPreload(context, active_worker)) {
+      // When the AutoPreload is triggered, set the commit responsibility
+      // because the response is always committed by the fetch handler
+      // regardless of the race result, except for the case when the fetch
+      // handler result is fallback. The fallback case is handled after
+      // receiving the fetch handler result.
+      SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
+      dispatched_preload_type_ = DispatchedPreloadType::kAutoPreload;
+      active_worker->set_fetch_handler_bypass_option(
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {
       dispatched_preload_type_ = DispatchedPreloadType::kNavigationPreload;
@@ -354,6 +364,16 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   response_head_->load_timing.service_worker_start_time =
       base::TimeTicks::Now();
   fetch_dispatcher_->Run();
+}
+
+bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
+    scoped_refptr<ServiceWorkerContextWrapper> context,
+    scoped_refptr<ServiceWorkerVersion> version) {
+  if (!base::FeatureList::IsEnabled(kServiceWorkerAutoPreload)) {
+    return false;
+  }
+
+  return StartRaceNetworkRequest(context, version);
 }
 
 bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
@@ -504,6 +524,7 @@ void ServiceWorkerMainResourceLoader::CommitCompleted(int error_code,
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+      case FetchResponseFrom::kAutoPreloadHandlingFallback:
         NOTREACHED();
         break;
       case FetchResponseFrom::kServiceWorker:
@@ -549,20 +570,49 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       blink::ServiceWorkerStatusToString(status), "result",
       ComposeFetchEventResultString(fetch_result, *response));
 
+  // Transition the state if the fetch result is fallback. This is a special
+  // treatment for RaceNetworkRequest and AutoPreload.
+  if (fetch_result ==
+      ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
+    switch (commit_responsibility()) {
+      case FetchResponseFrom::kNoResponseYet:
+        // If the RaceNetworkRequest or AutoPreload is triggered but the
+        // response is not handled yet, ask RaceNetworkRequestURLLoaderClient to
+        // handle the response regardless of the response status not to dispatch
+        // additional network request for fallback.
+        switch (dispatched_preload_type_) {
+          case DispatchedPreloadType::kRaceNetworkRequest:
+          case DispatchedPreloadType::kAutoPreload:
+            SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+            break;
+          default:
+            break;
+        }
+        break;
+      case FetchResponseFrom::kServiceWorker:
+        switch (dispatched_preload_type_) {
+          case DispatchedPreloadType::kAutoPreload:
+            // If the AutoPreload is triggered and the response is already
+            // received, but the fetch result is fallback, set the intermediate
+            // state to let RaceNetworkRequestURLLoaderClient to commit the
+            // response.
+            SetCommitResponsibility(
+                FetchResponseFrom::kAutoPreloadHandlingFallback);
+            break;
+          default:
+            break;
+        }
+        break;
+      case FetchResponseFrom::kWithoutServiceWorker:
+        break;
+      case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+      case FetchResponseFrom::kAutoPreloadHandlingFallback:
+        NOTREACHED_NORETURN();
+    }
+  }
+
   switch (commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
-      // If the RaceNetworkRequest is triggered but the response is not handled
-      // yet, and the fetch handler result is FetchEventResult::kShouldFallback,
-      // ask RaceNetworkRequestURLLoaderClient to handle the response regardless
-      // of the response status not to dispatch additional network request for
-      // fallback.
-      if (dispatched_preload_type_ ==
-              DispatchedPreloadType::kRaceNetworkRequest &&
-          fetch_result ==
-              ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
-        SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
-        return;
-      }
       SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:
@@ -576,6 +626,20 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
         race_network_request_url_loader_client_->DrainData(
             std::move(body_as_stream->stream));
       }
+      return;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      // |kAutoPreloadHandlingFallback| is the intermediate state to transfer
+      // the commit responsibility from the fetch handler to the network
+      // request (kServiceWorker). If the fetch handler result is fallback,
+      // manually set the network request (kWithoutServiceWorker).
+      SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
+      // If the network request is faster than the fetch handler, the response
+      // from the network is processed but not committed. We have to explicitly
+      // commit and complete the response. Otherwise
+      // |ServiceWorkerRaceNetworkRequestURLLoaderClient::CommitResponse()| will
+      // be called.
+      race_network_request_url_loader_client_
+          ->CommitAndCompleteResponseIfDataTransferFinished();
       return;
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       NOTREACHED_NORETURN();

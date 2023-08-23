@@ -134,6 +134,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   // pipe may be stacked. So this method provides a way to just consume data.
   void DrainData(mojo::ScopedDataPipeConsumerHandle source);
 
+  // Commit and complete the response. Those can be called from |owner_|.
+  void CommitAndCompleteResponseIfDataTransferFinished();
+
  private:
   struct DataPipeInfo {
     mojo::ScopedDataPipeProducerHandle producer;

@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
+
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "content/common/features.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -156,6 +159,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // fallback request.
       owner_->HandleRedirect(redirect_info, head);
       break;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      NOTREACHED_NORETURN();
   }
   redirected_ = true;
 }
@@ -216,6 +221,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       // instead because it may have a response from the cache.
       // TODO(crbug.com/1420517): More comprehensive error handling may be
       // needed, especially the case when HTTP cache hit or redirect happened.
+      //
+      // When the AutoPreload is enabled, RaceNetworkRequest works just for the
+      // dedupe purpose. The fetch handler should always commit the response.
       if (head_->headers->response_code() != net::HttpStatusCode::HTTP_OK) {
         owner_->SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       } else {
@@ -226,8 +234,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       break;
     case FetchResponseFrom::kServiceWorker:
       // If commit responsibility is FetchResponseFrom::kServiceWorker, that
-      // means the response was already received from the fetch handler. The
-      // response from RaceNetworkRequest is simply discarded in that case.
+      // means the response was already received from the fetch handler, or the
+      // AutoPreload is enabled. The response from RaceNetworkRequest is
+      // consumed only for the dedupe purpose.
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
       // kWithoutServiceWorker is set When the fetch handler response comes
@@ -235,6 +244,8 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::MaybeCommitResponse() {
       // response.
       CommitResponse();
       break;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      NOTREACHED_NORETURN();
   }
 
   forwarding_client_->OnReceiveResponse(
@@ -260,7 +271,6 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   if (!owner_) {
     return;
   }
-  TransitionState(State::kCompleted);
   switch (owner_->commit_responsibility()) {
     case FetchResponseFrom::kNoResponseYet:
     case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
@@ -274,9 +284,12 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
       // RaceNetworkRequest, do nothing. Defer the handling to the owner.
       break;
     case FetchResponseFrom::kWithoutServiceWorker:
+      TransitionState(State::kCompleted);
       owner_->CommitCompleted(completion_status_->error_code,
                               "RaceNetworkRequest has completed.");
       break;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      NOTREACHED_NORETURN();
   }
   data_pipe_for_race_network_request_.producer.reset();
   forwarding_client_->OnComplete(completion_status_.value());
@@ -286,6 +299,14 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::CompleteResponse() {
   data_pipe_for_race_network_request_.watcher.Cancel();
   data_pipe_for_fetch_handler_.watcher.Cancel();
   body_consumer_watcher_.Cancel();
+}
+
+void ServiceWorkerRaceNetworkRequestURLLoaderClient::
+    CommitAndCompleteResponseIfDataTransferFinished() {
+  if (state_ == State::kDataTransferFinished) {
+    CommitResponse();
+    CompleteResponse();
+  }
 }
 
 void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnDataTransferComplete() {

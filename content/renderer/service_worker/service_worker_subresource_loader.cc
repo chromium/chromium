@@ -531,6 +531,8 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
         // If the fetch request is already handled by RaceNetworkRequest, no
         // need to call CommitCompleted here.
         return;
+      case FetchResponseFrom::kAutoPreloadHandlingFallback:
+        NOTREACHED_NORETURN();
     }
   }
   fetch_request_restarted_ = true;
@@ -630,6 +632,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // fallback. The response from RaceNetworkRequest is currently handled by
       // the code path for the non-fallback case.
       return;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      NOTREACHED_NORETURN();
   }
 
   // Hand over to the network loader.
@@ -697,6 +701,8 @@ void ServiceWorkerSubresourceLoader::StartResponse(
             std::move(body_as_stream->stream));
       }
       return;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      NOTREACHED_NORETURN();
   }
   RecordFetchResponseFrom();
 
@@ -842,6 +848,7 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
     switch (commit_responsibility()) {
       case FetchResponseFrom::kNoResponseYet:
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
+      case FetchResponseFrom::kAutoPreloadHandlingFallback:
         NOTREACHED();
         break;
       case FetchResponseFrom::kServiceWorker:

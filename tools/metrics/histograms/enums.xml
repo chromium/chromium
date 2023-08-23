@@ -96665,6 +96665,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="ServiceWorker"/>
   <int value="2" label="Without ServiceWorker"/>
   <int value="3" label="SubresourceLoader is handling redirect"/>
+  <int value="4" label="AutoPreload is handling fallback"/>
 </enum>
 
 <enum name="ServiceWorkerInstalledScriptsManager.FinishedReason">

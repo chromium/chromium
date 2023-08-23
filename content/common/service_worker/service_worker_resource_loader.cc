@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/common/service_worker/service_worker_resource_loader.h"
+
 #include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
+#include "content/common/features.h"
 
 namespace content {
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
@@ -11,6 +15,11 @@ ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
+  TRACE_EVENT_WITH_FLOW2(
+      "ServiceWorker", "ServiceWorkerResourceLoader::SetCommitResponsibility",
+      this, TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
+      "commit_responsibility_", commit_responsibility_, "fetch_response_from",
+      fetch_response_from);
   switch (fetch_response_from) {
     case FetchResponseFrom::kNoResponseYet:
       NOTREACHED_NORETURN();
@@ -19,10 +28,12 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
       CHECK(!IsMainResourceLoader());
       CHECK(commit_responsibility_ == FetchResponseFrom::kServiceWorker ||
             commit_responsibility_ == FetchResponseFrom::kWithoutServiceWorker);
-      commit_responsibility_ = fetch_response_from;
+      break;
+    case FetchResponseFrom::kAutoPreloadHandlingFallback:
+      CHECK(base::FeatureList::IsEnabled(kServiceWorkerAutoPreload));
+      CHECK_EQ(commit_responsibility_, FetchResponseFrom::kServiceWorker);
       break;
     case FetchResponseFrom::kServiceWorker:
-    case FetchResponseFrom::kWithoutServiceWorker:
       if (IsMainResourceLoader()) {
         CHECK_EQ(commit_responsibility_, FetchResponseFrom::kNoResponseYet);
       } else {
@@ -30,9 +41,20 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
               commit_responsibility_ ==
                   FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
       }
-      commit_responsibility_ = fetch_response_from;
+      break;
+    case FetchResponseFrom::kWithoutServiceWorker:
+      if (IsMainResourceLoader()) {
+        CHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet ||
+              commit_responsibility_ ==
+                  FetchResponseFrom::kAutoPreloadHandlingFallback);
+      } else {
+        CHECK(commit_responsibility_ == FetchResponseFrom::kNoResponseYet ||
+              commit_responsibility_ ==
+                  FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect);
+      }
       break;
   }
+  commit_responsibility_ = fetch_response_from;
 }
 
 void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
