@@ -138,7 +138,6 @@ class ASH_EXPORT AshNotificationView
   int GetLargeImageViewMaxWidth() const override;
   void ToggleInlineSettings(const ui::Event& event) override;
   void OnInlineReplyUpdated() override;
-  void SetExpandCollapseEnabled(bool enabled) override;
 
   void set_is_animating(bool is_animating) { is_animating_ = is_animating; }
   bool is_animating() { return is_animating_; }
@@ -146,8 +145,6 @@ class ASH_EXPORT AshNotificationView
   AshNotificationExpandButton* expand_button_for_test() {
     return expand_button_;
   }
-
-  bool disable_expand_collapse_for_test() { return disable_expand_collapse_; }
 
   message_center::NotificationControlButtonsView*
   control_buttons_view_for_test() {
@@ -367,10 +364,6 @@ class ASH_EXPORT AshNotificationView
 
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
-
-  // We will not do anything when `ToggleExpand()` if `disable_expand_collapse_`
-  // is true.
-  bool disable_expand_collapse_ = false;
 
   base::ScopedObservation<message_center::MessageCenter, MessageCenterObserver>
       message_center_observer_{this};

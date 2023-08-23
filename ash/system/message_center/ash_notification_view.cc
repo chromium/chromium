@@ -838,10 +838,6 @@ void AshNotificationView::AnimateSingleToGroup(
 }
 
 void AshNotificationView::ToggleExpand() {
-  if (disable_expand_collapse_) {
-    return;
-  }
-
   const bool target_expanded_state = !IsExpanded();
 
   SetManuallyExpandedOrCollapsed(
@@ -1567,25 +1563,6 @@ void AshNotificationView::OnInlineReplyUpdated() {
       inline_reply(), kActionButtonsFadeOutAnimationDurationMs,
       kInlineReplyFadeInAnimationDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.InlineReply.FadeIn.AnimationSmoothness");
-}
-
-void AshNotificationView::SetExpandCollapseEnabled(bool enabled) {
-  if (disable_expand_collapse_ == !enabled) {
-    return;
-  }
-
-  disable_expand_collapse_ = !enabled;
-
-  expand_button_->SetExpandCollapseEnabled(enabled);
-
-  for (auto* child_notification :
-       grouped_notifications_container_->children()) {
-    auto* notification_view =
-        static_cast<AshNotificationView*>(child_notification);
-    if (notification_view) {
-      notification_view->SetExpandCollapseEnabled(enabled);
-    }
-  }
 }
 
 views::View* AshNotificationView::FindGroupNotificationView(

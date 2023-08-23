@@ -153,29 +153,6 @@ TEST_P(AshNotificationViewPixelTest, CloseButtonFocused) {
       "close_button_focused", /*revision_number=*/3, notification_view));
 }
 
-TEST_P(AshNotificationViewPixelTest, ExpandButtonDisabledState) {
-  // Create a notification and open the notification center bubble to view it.
-  const auto id = test_api()->AddNotification();
-  test_api()->ToggleBubble();
-
-  auto* notification_view = static_cast<AshNotificationView*>(
-      test_api()->GetNotificationViewForId(id));
-
-  notification_view->SetExpandCollapseEnabled(/*enabled=*/false);
-  ASSERT_TRUE(notification_view->disable_expand_collapse_for_test());
-
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expand_button_disabled", /*revision_number=*/0,
-      notification_view->expand_button_for_test()));
-
-  notification_view->SetExpandCollapseEnabled(/*enabled=*/true);
-  ASSERT_FALSE(notification_view->disable_expand_collapse_for_test());
-
-  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "expand_button_enabled", /*revision_number=*/0,
-      notification_view->expand_button_for_test()));
-}
-
 class AshNotificationViewTitlePixelTest
     : public AshNotificationViewPixelTestBase,
       public testing::WithParamInterface<
