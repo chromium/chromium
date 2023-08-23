@@ -91,6 +91,7 @@ build_webui_tests("build") {
     "app_management/test_util.js",
     "app_management/toggle_row_test.ts",
 
+    "date_time_page/date_time_card_test.ts",
     "date_time_page/date_time_page_test.ts",
     "date_time_page/test_timezone_browser_proxy.ts",
     "date_time_page/timezone_selector_test.ts",
