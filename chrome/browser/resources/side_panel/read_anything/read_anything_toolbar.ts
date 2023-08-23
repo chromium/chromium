@@ -309,9 +309,15 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     if (this.isPaused) {
       button.setAttribute('iron-icon', 'read-anything:pause');
       this.isPaused = false;
+      if (this.contentPage) {
+        this.contentPage.playSpeech();
+      }
     } else {
       button.setAttribute('iron-icon', 'read-anything:play');
       this.isPaused = true;
+      if (this.contentPage) {
+        this.contentPage.stopSpeech();
+      }
     }
   }
 }

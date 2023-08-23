@@ -356,6 +356,85 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     startElement.scrollIntoViewIfNeeded();
   }
 
+  synth = window.speechSynthesis;
+
+  stopSpeech() {
+    // TODO(crbug.com/1474951): Instead of cancelling, this should pause audio.
+    this.synth.cancel();
+  }
+
+  playSpeech() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const container = shadowRoot.getElementById('container');
+    assert(container);
+    if (container.textContent) {
+      this.playMessage(container.textContent);
+    }
+  }
+
+  playMessage(text: string) {
+    // TODO(crbug.com/1474951): 200 characters is set to avoid the issue on
+    // Linux where we don't get too-long text errors. We should investigate a
+    // more robust solution.
+    let maxTextLength = 200;
+    if (text.length < maxTextLength) {
+      maxTextLength = text.length;
+    }
+    let smallerText = text.substring(0, maxTextLength);
+    // TODO(crbug.com/1474951): Instead of splitting sentences by character
+    // search, which is brittle, use the accessibility APIs to get sentence
+    // boundaries, which will be more robust for internationalization and other
+    // types of sentences.
+    const textArray = smallerText.split('.');
+    if (textArray.length > 1) {
+      // TODO(crbug.com/1474951): Use a more efficient way of traversing through
+      // the text.
+      const splice = textArray[textArray.length - 1];
+      const index = smallerText.lastIndexOf(splice);
+      smallerText = text.substring(0, index);
+      maxTextLength = index;
+    }
+
+    const message = new SpeechSynthesisUtterance(smallerText);
+    message.lang = 'en-US';
+
+    // TODO(crbug.com/1474951): Add callbacks for onboundary and onpause.
+    message.onerror = function() {
+      // TODO(crbug.com/1474951): Add more sophisticated error handling.
+      window.speechSynthesis.cancel();
+    };
+
+    message.onend = function() {
+      const readAnythingApp = document.querySelector('read-anything-app');
+      assert(readAnythingApp);
+      if (text.length > maxTextLength) {
+        // Continue speaking with the next block of text.
+        readAnythingApp.playMessage(text.substring(maxTextLength, text.length));
+      } else {
+        // TODO(crbug.com/1474951): Ensure the play button resets when we run
+        // out of text to speak.
+      }
+    };
+
+    // TODO(crbug.com/1474951): Allow voice selection.
+    // This just selects the default English voice. If no voice is available,
+    // nothing happens.
+    const voices =
+        this.synth.getVoices().filter(voice => voice.lang === 'en-US');
+    message.voice = voices[0];
+
+    // TODO(crbug.com/1474951): Ensure the correct default values are used.
+    message.volume = 1;
+    message.pitch = 1;
+
+    // TODO(crbug.com/1474951): Allow rate to be customized.
+    message.rate = 1;
+
+    this.synth.cancel();
+    this.synth.speak(message);
+  }
+
   // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
   // this should be renamed to just validatedFontName_ and the current
   // validatedFontName_ method can be removed.
