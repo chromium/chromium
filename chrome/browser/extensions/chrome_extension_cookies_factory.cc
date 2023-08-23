@@ -37,9 +37,11 @@ ChromeExtensionCookiesFactory::ChromeExtensionCookiesFactory()
 
 ChromeExtensionCookiesFactory::~ChromeExtensionCookiesFactory() = default;
 
-KeyedService* ChromeExtensionCookiesFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ChromeExtensionCookiesFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new ChromeExtensionCookies(static_cast<Profile*>(context));
+  return std::make_unique<ChromeExtensionCookies>(
+      static_cast<Profile*>(context));
 }
 
 }  // namespace extensions

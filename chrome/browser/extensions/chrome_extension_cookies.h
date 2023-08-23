@@ -47,6 +47,8 @@ class ChromeExtensionCookies
       public content_settings::Observer,
       public content_settings::CookieSettings::Observer {
  public:
+  explicit ChromeExtensionCookies(Profile* profile);
+  ~ChromeExtensionCookies() override;
   ChromeExtensionCookies(const ChromeExtensionCookies&) = delete;
   ChromeExtensionCookies& operator=(const ChromeExtensionCookies&) = delete;
 
@@ -132,9 +134,6 @@ class ChromeExtensionCookies
 
     base::WeakPtrFactory<IOData> weak_factory_{this};
   };
-
-  explicit ChromeExtensionCookies(Profile* profile);
-  ~ChromeExtensionCookies() override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(
