@@ -35,7 +35,7 @@ BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
 // TODO(crbug.com/1423319): Remove once launched.
 BASE_FEATURE(kAutofillAccountProfileStorage,
              "AutofillAccountProfileStorage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Determines if users located in an unsupported country (based on GeoIP) are
 // eligible to write to the account storage.

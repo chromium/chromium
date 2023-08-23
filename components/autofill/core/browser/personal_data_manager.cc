@@ -1250,6 +1250,8 @@ void PersonalDataManager::ClearAllLocalData() {
   // Even though `account_profiles_` are not "local", the local/server
   // distinction in the PersonalDataManager only exists for historical reasons
   // and all AutofillProfiles fall in the local category.
+  // TODO(crbug.com/1475277): This call needs to be removed since account
+  // profiles are not cleared in the database.
   account_profiles_.clear();
 }
 

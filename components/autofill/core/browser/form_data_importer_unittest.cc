@@ -1582,14 +1582,13 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   // the page language is not set. This results in an import of the default
   // profile.
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
-  // Remove the imported profile again, so it doesn't affect the expectation
-  // below.
-  personal_data_manager_->ClearAllLocalData();
 
   // Set the page language to match the localized country value and try again.
   autofill_client_->GetLanguageState()->SetSourceLanguage("de");
+  // Note that the default profile is still available in the PDM.
   ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructDefaultProfileWithOverriddenCountry("AM")});
+      *form_structure, {ConstructDefaultProfile(),
+                        ConstructDefaultProfileWithOverriddenCountry("AM")});
 }
 
 // Tests that a profile is created for countries with composed names.
