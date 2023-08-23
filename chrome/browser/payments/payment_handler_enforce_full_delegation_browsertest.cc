@@ -82,8 +82,8 @@ IN_PROC_BROWSER_TEST_P(PaymentHandlerEnforceFullDelegationTest,
 }
 
 // crbug.com/1468262: Flaky test on Android.
-// crbug.com/1473404: Flaky test on ChromeOS.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+// crbug.com/1473404: Flaky test on ChromeOS and Windows.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject \
   DISABLED_WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject
 #else
