@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_SYSTEM_PREFERENCES_SECTION_H_
 
 #include "base/values.h"
+#include "chrome/browser/ui/webui/settings/ash/date_time_section.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
@@ -19,7 +20,7 @@ namespace ash::settings {
 class SearchTagRegistry;
 
 // Provides UI strings and search tags for System Preferences settings.
-// Includes the Reset and Search sections.
+// Includes the Date & Time, Reset, and Search sections.
 class SystemPreferencesSection : public OsSettingsSection {
  public:
   SystemPreferencesSection(Profile* profile,
@@ -38,6 +39,7 @@ class SystemPreferencesSection : public OsSettingsSection {
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
+  DateTimeSection date_time_subsection_;
   ResetSection reset_subsection_;
   SearchSection search_subsection_;
 };

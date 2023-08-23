@@ -86,9 +86,6 @@ OsSettingsSections::OsSettingsSections(
       mojom::Section::kCrostini,
       std::make_unique<CrostiniSection>(profile, search_tag_registry, prefs));
 
-  AddSection(mojom::Section::kDateAndTime,
-             std::make_unique<DateTimeSection>(profile, search_tag_registry));
-
   AddSection(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(profile, search_tag_registry, prefs));
@@ -125,6 +122,9 @@ OsSettingsSections::OsSettingsSections(
                std::make_unique<SystemPreferencesSection>(profile,
                                                           search_tag_registry));
   } else {
+    AddSection(mojom::Section::kDateAndTime,
+               std::make_unique<DateTimeSection>(profile, search_tag_registry));
+
     AddSection(mojom::Section::kReset,
                std::make_unique<ResetSection>(profile, search_tag_registry));
 

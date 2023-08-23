@@ -26,6 +26,7 @@ namespace ash::settings {
 
 namespace mojom {
 using ::chromeos::settings::mojom::kDateAndTimeSectionPath;
+using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::kTimeZoneSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -34,16 +35,18 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDateTimeSearchConcepts() {
+const std::vector<SearchConcept>& GetDateTimeSearchConcepts(
+    mojom::Section section,
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_DATE_TIME,
-       mojom::kDateAndTimeSectionPath,
+       section_path,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = mojom::Section::kDateAndTime}},
+       {.section = section}},
       {IDS_OS_SETTINGS_TAG_DATE_TIME_MILITARY_CLOCK,
-       mojom::kDateAndTimeSectionPath,
+       section_path,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -66,10 +69,11 @@ const std::vector<SearchConcept>& GetFineGrainedTimeZoneSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetNoFineGrainedTimeZoneSearchConcepts() {
+const std::vector<SearchConcept>& GetNoFineGrainedTimeZoneSearchConcepts(
+    const char* section_path) {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE,
-       mojom::kDateAndTimeSectionPath,
+       section_path,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -89,12 +93,15 @@ DateTimeSection::DateTimeSection(Profile* profile,
                                  SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(GetDateTimeSearchConcepts());
 
-  if (IsFineGrainedTimeZoneEnabled())
+  const char* section_path = GetSectionPath();
+  updater.AddSearchTags(GetDateTimeSearchConcepts(GetSection(), section_path));
+
+  if (IsFineGrainedTimeZoneEnabled()) {
     updater.AddSearchTags(GetFineGrainedTimeZoneSearchConcepts());
-  else
-    updater.AddSearchTags(GetNoFineGrainedTimeZoneSearchConcepts());
+  } else {
+    updater.AddSearchTags(GetNoFineGrainedTimeZoneSearchConcepts(section_path));
+  }
 }
 
 DateTimeSection::~DateTimeSection() = default;
@@ -164,7 +171,9 @@ int DateTimeSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section DateTimeSection::GetSection() const {
-  return mojom::Section::kDateAndTime;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::Section::kSystemPreferences
+             : mojom::Section::kDateAndTime;
 }
 
 mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
@@ -172,7 +181,9 @@ mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
 }
 
 const char* DateTimeSection::GetSectionPath() const {
-  return mojom::kDateAndTimeSectionPath;
+  return ash::features::IsOsSettingsRevampWayfindingEnabled()
+             ? mojom::kSystemPreferencesSectionPath
+             : mojom::kDateAndTimeSectionPath;
 }
 
 bool DateTimeSection::LogMetric(mojom::Setting setting,

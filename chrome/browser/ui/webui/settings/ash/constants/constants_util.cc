@@ -41,7 +41,8 @@ void IncludeRevampSectionsOnly(std::vector<mojom::Section>& sections) {
     // TODO(b/292678609) Gradually add checks here to filter out old Sections
     // from the set of available Sections. An old Section can be filtered out
     // once it has been fully incorporated into the new revamp Section.
-    return section == mojom::Section::kReset ||
+    return section == mojom::Section::kDateAndTime ||
+           section == mojom::Section::kReset ||
            section == mojom::Section::kSearchAndAssistant;
   };
   sections.erase(std::remove_if(sections.begin(), sections.end(), isOldSection),

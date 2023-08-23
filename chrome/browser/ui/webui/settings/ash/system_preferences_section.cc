@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/ash/system_preferences_section.h"
 
+#include "chrome/browser/ui/webui/settings/ash/date_time_section.h"
 #include "chrome/browser/ui/webui/settings/ash/reset_section.h"
 #include "chrome/browser/ui/webui/settings/ash/search_section.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,6 +24,7 @@ SystemPreferencesSection::SystemPreferencesSection(
     Profile* profile,
     SearchTagRegistry* search_tag_registry)
     : OsSettingsSection(profile, search_tag_registry),
+      date_time_subsection_(DateTimeSection(profile, search_tag_registry)),
       reset_subsection_(ResetSection(profile, search_tag_registry)),
       search_subsection_(SearchSection(profile, search_tag_registry)) {}
 
@@ -30,6 +32,7 @@ SystemPreferencesSection::~SystemPreferencesSection() = default;
 
 void SystemPreferencesSection::AddLoadTimeData(
     content::WebUIDataSource* html_source) {
+  date_time_subsection_.AddLoadTimeData(html_source);
   reset_subsection_.AddLoadTimeData(html_source);
   search_subsection_.AddLoadTimeData(html_source);
 
@@ -40,6 +43,7 @@ void SystemPreferencesSection::AddLoadTimeData(
 }
 
 void SystemPreferencesSection::AddHandlers(content::WebUI* web_ui) {
+  date_time_subsection_.AddHandlers(web_ui);
   reset_subsection_.AddHandlers(web_ui);
   search_subsection_.AddHandlers(web_ui);
 }
@@ -62,12 +66,14 @@ const char* SystemPreferencesSection::GetSectionPath() const {
 
 bool SystemPreferencesSection::LogMetric(mojom::Setting setting,
                                          base::Value& value) const {
-  return reset_subsection_.LogMetric(setting, value) ||
+  return date_time_subsection_.LogMetric(setting, value) ||
+         reset_subsection_.LogMetric(setting, value) ||
          search_subsection_.LogMetric(setting, value);
 }
 
 void SystemPreferencesSection::RegisterHierarchy(
     HierarchyGenerator* generator) const {
+  date_time_subsection_.RegisterHierarchy(generator);
   reset_subsection_.RegisterHierarchy(generator);
   search_subsection_.RegisterHierarchy(generator);
 }
