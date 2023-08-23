@@ -161,6 +161,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ks_media_play_pause.icon",
     "ks_media_track_next.icon",
     "ks_media_track_previous.icon",
+    "ks_microphone.icon",
     "ks_search.icon",
     "ks_settings.icon",
     "ksv_arrow_down.icon",

@@ -449,6 +449,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsCalculatorIcon;
     case kKeyboardShortcutInputModeChange:
       return &kKsInputModeChangeIcon;
+    case kKeyboardShortcutMicrophone:
+      return &kKsMicrophoneIcon;
     default:
       return nullptr;
   }

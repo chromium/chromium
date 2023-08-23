@@ -618,6 +618,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutMediaPlayPause,
     kKeyboardShortcutMediaTrackNext,
     kKeyboardShortcutMediaTrackPrevious,
+    kKeyboardShortcutMicrophone,
     kKeyboardShortcutBrightnessDown,
     kKeyboardShortcutBrightnessUp,
     kKeyboardShortcutVolumeMute,

@@ -138,6 +138,8 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutAssistant;
     case (KeyboardCode::VKEY_MODECHANGE):
       return IconCode::kKeyboardShortcutInputModeChange;
+    case (KeyboardCode::VKEY_MICROPHONE_MUTE_TOGGLE):
+      return IconCode::kKeyboardShortcutMicrophone;
     default:
       return absl::nullopt;
   }
