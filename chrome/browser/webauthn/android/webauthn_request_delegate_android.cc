@@ -86,6 +86,9 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
         ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
             content::WebContents::FromRenderFrameHost(frame_host))
             ->GetDelegateForFrame(frame_host);
+    if (!credentials_delegate) {
+      return;
+    }
     credentials_delegate->SetAndroidHybridAvailable(
         ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(
             !hybrid_callback_.is_null()));
@@ -119,9 +122,12 @@ void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
         ChromeWebAuthnCredentialsDelegateFactory::GetFactory(
             content::WebContents::FromRenderFrameHost(frame_host))
             ->GetDelegateForFrame(frame_host);
-    credentials_delegate->NotifyWebAuthnRequestAborted();
-    credentials_delegate->SetAndroidHybridAvailable(
-        ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(false));
+
+    if (credentials_delegate) {
+      credentials_delegate->NotifyWebAuthnRequestAborted();
+      credentials_delegate->SetAndroidHybridAvailable(
+          ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(false));
+    }
   } else {
     touch_to_fill_controller_->Close();
   }
