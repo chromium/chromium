@@ -87,7 +87,7 @@ void SpeculationHostImpl::EnableNoVarySearchSupport() {
 }
 
 void SpeculationHostImpl::InitiatePreview(const GURL& url) {
-  if (base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
+  if (!base::FeatureList::IsEnabled(blink::features::kLinkPreview)) {
     mojo::ReportBadMessage("SH_PREVIEW");
     return;
   }
