@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/signin/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
@@ -186,7 +187,8 @@ void DismissDefaultBrowserPromo() {
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
 
-  if ([self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
+  if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
+      [self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
       [self isRunningTest:@selector
             (testSignInSubtitleIfHistorySyncOptInEnabled)] ||
@@ -915,7 +917,48 @@ void DismissDefaultBrowserPromo() {
   [SigninEarlGrey verifySyncUIEnabled:YES];
 }
 
-#pragma mark - History Sync Opt-in
+#pragma mark - Sync UI Disabled
+
+// Tests sign-in with FRE when there's no account on the device.
+// See https://crbug.com/1471972.
+- (void)testSignInWithNoAccount {
+  // Add account.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Verify that the primary button text is correct.
+  NSString* continueAsText = l10n_util::GetNSStringF(
+      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
+      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   PromoStylePrimaryActionButtonMatcher(),
+                                   grey_descendant(grey_text(continueAsText)),
+                                   nil)] assertWithMatcher:grey_notNil()];
+  // Sign-in.
+  [[self
+      elementInteractionWithGreyMatcher:PromoStylePrimaryActionButtonMatcher()
+                   scrollViewIdentifier:
+                       kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that the History Sync Opt-In screen is shown.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kHistorySyncViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
 
 // Tests if the user skip the Sign-in step, the History Sync Opt-in screen is
 // skipped and the default browser screen is shown.

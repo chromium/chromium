@@ -143,6 +143,10 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   _signinCompletion = completion;
   _authActivityViewController =
       [[FakeAuthActivityViewController alloc] initWithManager:self];
+  BOOL isIPad =
+      UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad;
+  _authActivityViewController.modalPresentationStyle =
+      isIPad ? UIModalPresentationFormSheet : UIModalPresentationFullScreen;
 
   __weak FakeSystemIdentityInteractionManager* weakSelf = self;
   [viewController presentViewController:_authActivityViewController

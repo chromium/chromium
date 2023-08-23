@@ -492,15 +492,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Reset `didReachBottom` to make sure that its value is correctly updated
-  // to reflect the scrolling state when the view reappears and is refreshed
-  // (e.g., when getting back from a full screen view that was hidding this
-  // view controller underneath).
-  //
   // Set `didReachBottom` to YES when `scrollToEndMandatory` is NO, since the
   // screen can already be considered as fully scrolled when scrolling to the
   // end isn't mandatory.
-  self.didReachBottom = !self.scrollToEndMandatory;
+  if (!self.scrollToEndMandatory) {
+    self.didReachBottom = YES;
+  }
 
   // Only add the scroll view delegate after all the view layouts are fully
   // done.
