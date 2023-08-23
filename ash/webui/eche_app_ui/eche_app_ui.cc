@@ -145,13 +145,6 @@ void EcheAppUI::BindInterface(
   }
 }
 
-void EcheAppUI::BindInterface(
-    mojo::PendingReceiver<mojom::KeyboardLayoutHandler> receiver) {
-  if (manager_) {
-    manager_->BindKeyboardLayoutHandlerInterface(std::move(receiver));
-  }
-}
-
 WEB_UI_CONTROLLER_TYPE_IMPL(EcheAppUI)
 
 }  // namespace ash::eche_app

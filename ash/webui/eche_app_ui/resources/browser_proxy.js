@@ -62,21 +62,11 @@ const streamOrientationObserver =
 const connectionStatusObserver =
     ash.echeApp.mojom.ConnectionStatusObserver.getRemote();
 
-const keyboardLayoutHandler =
-    ash.echeApp.mojom.KeyboardLayoutHandler.getRemote();
-
 const streamActionObserverRouter =
     new ash.echeApp.mojom.StreamActionObserverCallbackRouter();
 // Set up a message pipe to the browser process to monitor stream action.
 displayStreamHandler.setStreamActionObserver(
     streamActionObserverRouter.$.bindNewPipeAndPassRemote());
-
-const keyboardLayoutObserverRouter =
-    new ash.echeApp.mojom.KeyboardLayoutObserverCallbackRouter();
-// Set up a message pipe to the browser process to monitor keyboard layout
-// changes.
-keyboardLayoutHandler.setKeyboardLayoutObserver(
-    keyboardLayoutObserverRouter.$.bindNewPipeAndPassRemote());
 
 /**
  * A pipe through which we can send messages to the guest frame.
@@ -177,18 +167,6 @@ streamActionObserverRouter.onStreamAction.addListener((action) => {
   });
 });
 
-// Add keyboard listener and send result via pipes.
-keyboardLayoutObserverRouter.onKeyboardLayoutChanged.addListener(
-    (id, longName, shortName, layoutTag) => {
-      console.log('echeapi browser_proxy.js onKeyboardLayoutChanged');
-      guestMessagePipe.sendMessage(Message.KEYBOARD_LAYOUT_INFO, {
-        /** @type {string} */ id,
-        /** @type {string} */ longName,
-        /** @type {string} */ shortName,
-        /** @type {string} */ layoutTag,
-      });
-    });
-
 guestMessagePipe.registerHandler(Message.SHOW_NOTIFICATION, async (message) => {
   // The C++ layer uses std::u16string, which use 16 bit characters. JS
   // strings support either 8 or 16 bit characters, and must be converted
@@ -254,12 +232,6 @@ guestMessagePipe.registerHandler(
       connectionStatusObserver.onConnectionStatusChanged(
           message.connectionStatus);
     });
-
-// Register KEYBOARD_LAYOUT_REQUEST pipes.
-guestMessagePipe.registerHandler(Message.KEYBOARD_LAYOUT_REQUEST, async () => {
-  console.log('echeapi browser_proxy.js requestCurrentKeyboardLayout');
-  keyboardLayoutHandler.requestCurrentKeyboardLayout();
-});
 
 // We can't access hash change event inside iframe so parse the notification
 // info from the anchor part of the url when hash is changed and send them to

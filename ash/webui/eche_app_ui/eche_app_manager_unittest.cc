@@ -4,10 +4,9 @@
 
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 
-#include "ash/test/ash_test_base.h"
-#include "ash/test/test_ash_web_view_factory.h"
+#include <vector>
+
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
-#include "ash/webui/eche_app_ui/eche_keyboard_layout_handler.h"
 #include "ash/webui/eche_app_ui/eche_stream_orientation_observer.h"
 #include "ash/webui/eche_app_ui/eche_stream_status_change_handler.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
@@ -20,7 +19,6 @@
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
-#include "chromeos/ash/components/test/ash_test_suite.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_secure_channel_client.h"
@@ -31,7 +29,6 @@
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash::eche_app {
@@ -79,7 +76,7 @@ const char kFakeGaiaId[] = "123";
 const size_t kNumTestDevices = 3;
 const char kFakeDeviceType[] = "Chromebook";
 
-class EcheAppManagerTest : public AshTestBase {
+class EcheAppManagerTest : public testing::Test {
  public:
   EcheAppManagerTest(const EcheAppManagerTest&) = delete;
   EcheAppManagerTest& operator=(const EcheAppManagerTest&) = delete;
@@ -90,7 +87,7 @@ class EcheAppManagerTest : public AshTestBase {
             multidevice::CreateRemoteDeviceRefListForTest(kNumTestDevices)) {}
   ~EcheAppManagerTest() override = default;
 
-  // AshTestBase:
+  // testing::Test:
   void SetUp() override {
     std::unique_ptr<bluez::BluezDBusManagerSetter> dbus_setter =
         bluez::BluezDBusManager::GetSetterForTesting();
@@ -103,11 +100,6 @@ class EcheAppManagerTest : public AshTestBase {
     dbus_setter->SetBluetoothDebugManagerClient(
         std::unique_ptr<bluez::BluetoothDebugManagerClient>(
             std::move(fake_bluetooth_debug_manager_client)));
-
-    DCHECK(test_web_view_factory_.get());
-    ui::ResourceBundle::CleanupSharedInstance();
-    AshTestSuite::LoadTestResources();
-    AshTestBase::SetUp();
 
     fake_phone_hub_manager_ = std::make_unique<phonehub::FakePhoneHubManager>();
     fake_device_sync_client_ =
@@ -136,15 +128,6 @@ class EcheAppManagerTest : public AshTestBase {
         base::BindRepeating(&LaunchEcheAppFunction),
         base::BindRepeating(&LaunchNotificationFunction),
         base::BindRepeating(&CloseNotificationFunction));
-  }
-
-  void TearDown() override {
-    manager_.reset();
-    fake_secure_channel_client_.reset();
-    fake_multidevice_setup_client_.reset();
-    fake_device_sync_client_.reset();
-    fake_phone_hub_manager_.reset();
-    AshTestBase::TearDown();
   }
 
   mojo::Remote<mojom::SignalingMessageExchanger>&
@@ -178,10 +161,6 @@ class EcheAppManagerTest : public AshTestBase {
     return connection_status_observer_remote_;
   }
 
-  mojo::Remote<mojom::KeyboardLayoutHandler>& keyboard_layout_handler_remote() {
-    return keyboard_layout_handler_remote_;
-  }
-
   void Bind() {
     manager_->BindSignalingMessageExchangerInterface(
         signaling_message_exchanger_remote_.BindNewPipeAndPassReceiver());
@@ -197,11 +176,10 @@ class EcheAppManagerTest : public AshTestBase {
         stream_orientation_observer_remote_.BindNewPipeAndPassReceiver());
     manager_->BindConnectionStatusObserverInterface(
         connection_status_observer_remote_.BindNewPipeAndPassReceiver());
-    manager_->BindKeyboardLayoutHandlerInterface(
-        keyboard_layout_handler_remote_.BindNewPipeAndPassReceiver());
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   const multidevice::RemoteDeviceRefList test_devices_;
 
   TestingPrefServiceSimple test_pref_service_;
@@ -212,8 +190,6 @@ class EcheAppManagerTest : public AshTestBase {
   std::unique_ptr<secure_channel::FakeSecureChannelClient>
       fake_secure_channel_client_;
   std::unique_ptr<EcheAppManager> manager_;
-  std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
-      std::make_unique<TestAshWebViewFactory>();
 
   mojo::Remote<mojom::SignalingMessageExchanger>
       signaling_message_exchanger_remote_;
@@ -225,7 +201,6 @@ class EcheAppManagerTest : public AshTestBase {
       stream_orientation_observer_remote_;
   mojo::Remote<mojom::ConnectionStatusObserver>
       connection_status_observer_remote_;
-  mojo::Remote<mojom::KeyboardLayoutHandler> keyboard_layout_handler_remote_;
 };
 
 TEST_F(EcheAppManagerTest, BindCheck) {
@@ -236,7 +211,6 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_FALSE(display_stream_handler_remote());
   EXPECT_FALSE(stream_orientation_observer_remote());
   EXPECT_FALSE(connection_status_observer_remote());
-  EXPECT_FALSE(keyboard_layout_handler_remote());
 
   Bind();
 
@@ -247,7 +221,6 @@ TEST_F(EcheAppManagerTest, BindCheck) {
   EXPECT_TRUE(display_stream_handler_remote());
   EXPECT_TRUE(stream_orientation_observer_remote());
   EXPECT_TRUE(connection_status_observer_remote());
-  EXPECT_TRUE(keyboard_layout_handler_remote());
 }
 
 }  // namespace ash::eche_app
