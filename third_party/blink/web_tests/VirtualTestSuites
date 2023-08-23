@@ -3955,6 +3955,7 @@
       "inspector-protocol/input/imeSetComposition-01.js",
       "inspector-protocol/input/imeSetComposition-02.js",
       "inspector-protocol/layers/paint-profiler.js",
+      "inspector-protocol/layers/layer-sticky.js",
       "inspector-protocol/layout-fonts/unicode-range-order.js",
       "inspector-protocol/memory/sampling-native-snapshot.js",
       "inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js",

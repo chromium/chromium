@@ -168,16 +168,20 @@ BuildStickyInfoForLayer(const cc::Layer* root, const cc::Layer* layer) {
               .setContainingBlockRect(std::move(containing_block_rect))
               .build();
   if (constraints.nearest_element_shifting_sticky_box) {
-    constraints_obj->setNearestLayerShiftingStickyBox(String::Number(
-        FindLayerByElementId(root,
-                             constraints.nearest_element_shifting_sticky_box)
-            ->id()));
+    const cc::Layer* constraint_layer = FindLayerByElementId(
+        root, constraints.nearest_element_shifting_sticky_box);
+    if (!constraint_layer)
+      return nullptr;
+    constraints_obj->setNearestLayerShiftingStickyBox(
+        String::Number(constraint_layer->id()));
   }
   if (constraints.nearest_element_shifting_containing_block) {
-    constraints_obj->setNearestLayerShiftingContainingBlock(String::Number(
-        FindLayerByElementId(
-            root, constraints.nearest_element_shifting_containing_block)
-            ->id()));
+    const cc::Layer* constraint_layer = FindLayerByElementId(
+        root, constraints.nearest_element_shifting_containing_block);
+    if (!constraint_layer)
+      return nullptr;
+    constraints_obj->setNearestLayerShiftingContainingBlock(
+        String::Number(constraint_layer->id()));
   }
 
   return constraints_obj;
