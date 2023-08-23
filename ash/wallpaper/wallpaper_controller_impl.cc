@@ -1624,8 +1624,13 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     // 23 hours (roughly a day) have elapsed since `info.date`.
     if (info.type == WallpaperType::kDaily ||
         info.type == WallpaperType::kDailyGooglePhotos) {
+      // When `features::IsWallpaperFastRefreshEnabled()` is enabled, the
+      // wallpaper may swap quickly back to back due to how ScheduledFeature
+      // stabilizes its schedule state.
       bool should_fetch_wallpaper =
-          info.date + base::Hours(23) <= base::Time::Now();
+          features::IsWallpaperFastRefreshEnabled()
+              ? true
+              : info.date + base::Hours(23) <= base::Time::Now();
       if (should_fetch_wallpaper) {
         UpdateDailyRefreshWallpaper();
       }
@@ -2726,6 +2731,10 @@ void WallpaperControllerImpl::OnDailyRefreshWallpaperUpdated(
     auto first_check_time =
         base::Time::Now() + base::Minutes(base::RandInt(1, 30));
     auto second_check_time = first_check_time + base::Hours(1);
+    if (features::IsWallpaperFastRefreshEnabled()) {
+      first_check_time = base::Time::Now() + base::Minutes(1);
+      second_check_time = first_check_time + base::Minutes(1);
+    }
     DVLOG(1) << __func__
              << " updating check times - first_check_time=" << first_check_time
              << " - second_check_time=" << second_check_time;
