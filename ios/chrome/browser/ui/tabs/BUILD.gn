@@ -37,7 +37,7 @@ source_set("tabs") {
     "//components/feature_engagement/public",
     "//components/prefs",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/ntp:util",

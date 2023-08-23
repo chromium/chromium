@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
@@ -20,13 +20,15 @@ namespace {
 std::string GetManagedBookmarksDomain(ChromeBrowserState* browser_state) {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  if (!auth_service)
+  if (!auth_service) {
     return std::string();
+  }
 
   id<SystemIdentity> identity =
       auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (!identity)
+  if (!identity) {
     return std::string();
+  }
 
   return base::SysNSStringToUTF8(
       GetApplicationContext()

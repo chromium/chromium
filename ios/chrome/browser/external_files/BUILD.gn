@@ -16,7 +16,7 @@ source_set("external_files") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/sessions",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

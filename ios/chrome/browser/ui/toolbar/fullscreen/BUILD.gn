@@ -37,7 +37,7 @@ source_set("unit_tests") {
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/omnibox/browser:test_support",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

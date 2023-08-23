@@ -61,7 +61,7 @@ source_set("sync") {
     "//components/variations/service",
     "//components/version_info",
     "//google_apis",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/complex_tasks",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/dom_distiller",

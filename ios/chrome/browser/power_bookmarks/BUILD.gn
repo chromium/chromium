@@ -12,7 +12,7 @@ static_library("power_bookmarks") {
     "//base",
     "//components/keyed_service/ios",
     "//components/power_bookmarks/core",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/web",
   ]

@@ -13,7 +13,7 @@ include_rules = [
   "+ios/chrome/browser/power_bookmarks",
   "+ios/chrome/browser/passwords",
   "+ios/chrome/browser/invalidation",
-  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/consent_auditor",
   "+ios/chrome/browser/metrics",
   "+ios/chrome/browser/sessions",

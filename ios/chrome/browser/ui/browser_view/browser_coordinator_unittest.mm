@@ -6,7 +6,7 @@
 
 #import "base/files/file_util.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
-#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"

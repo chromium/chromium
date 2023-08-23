@@ -7,7 +7,7 @@
 #import "base/task/thread_pool.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/power_bookmarks/core/power_bookmark_service.h"
-#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/thread/web_task_traits.h"

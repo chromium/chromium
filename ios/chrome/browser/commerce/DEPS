@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/sync",
   "+ios/chrome/browser/optimization_guide",
-  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/feature_engagement",
   "+ios/chrome/browser/push_notification",
   "+ios/chrome/browser/url_loading",

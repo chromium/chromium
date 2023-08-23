@@ -6,7 +6,7 @@ include_rules = [
   "+ios/chrome/browser/webdata_services",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/autofill",
-  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/crash_report",
   "+ios/chrome/browser/external_files",
   "+ios/chrome/browser/https_upgrades",

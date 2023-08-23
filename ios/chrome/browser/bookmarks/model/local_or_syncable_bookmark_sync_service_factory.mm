@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 
 #import "base/feature_list.h"
 #import "base/no_destructor.h"
@@ -11,7 +11,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "components/sync_bookmarks/bookmark_sync_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/signin_util.h"

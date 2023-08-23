@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_model_bridge_observer.h"
 
 #import <memory>
 
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 
 @class TestBookmarkModelBridgeObserver;
 

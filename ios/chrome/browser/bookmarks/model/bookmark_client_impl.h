@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_CLIENT_IMPL_H_
-#define IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_CLIENT_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
+#define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_
 
 #include <set>
 #include <string>
@@ -88,4 +88,4 @@ class BookmarkClientImpl : public bookmarks::BookmarkClient {
   raw_ptr<bookmarks::BookmarkModel> model_ = nullptr;
 };
 
-#endif  // IOS_CHROME_BROWSER_BOOKMARKS_BOOKMARK_CLIENT_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_CLIENT_IMPL_H_

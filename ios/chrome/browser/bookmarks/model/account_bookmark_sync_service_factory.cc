@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/bookmarks/common/bookmark_features.h"
@@ -10,7 +10,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

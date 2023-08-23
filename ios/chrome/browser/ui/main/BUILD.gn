@@ -153,7 +153,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/startup",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/default_browser:test_support",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/favicon",

@@ -81,7 +81,7 @@ source_set("signin") {
     "//components/sync",
     "//google_apis",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/bookmarks:bookmarks_utils",
+    "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/policy:policy_util",

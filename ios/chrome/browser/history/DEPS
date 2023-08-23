@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/complex_tasks",
   "+ios/chrome/browser/sessions",
   "+ios/chrome/browser/translate",

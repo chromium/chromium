@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
 
 #include <utility>
 
@@ -35,8 +35,9 @@ BookmarkClientImpl::BookmarkClientImpl(
 BookmarkClientImpl::~BookmarkClientImpl() {}
 
 void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     managed_bookmark_service_->BookmarkModelCreated(model);
+  }
   model_ = model;
 }
 
@@ -69,8 +70,9 @@ void BookmarkClientImpl::GetTypedCountForUrls(
     int typed_count = 0;
     history::URLRow url_row;
     const GURL* url = url_typed_count_pair.first;
-    if (url_db && url && url_db->GetRowForURL(*url, &url_row))
+    if (url_db && url && url_db->GetRowForURL(*url, &url_row)) {
       typed_count = url_row.typed_count();
+    }
 
     url_typed_count_pair.second = typed_count;
   }
@@ -83,8 +85,9 @@ bool BookmarkClientImpl::IsPermanentNodeVisibleWhenEmpty(
 
 bookmarks::LoadManagedNodeCallback
 BookmarkClientImpl::GetLoadManagedNodeCallback() {
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     return managed_bookmark_service_->GetLoadManagedNodeCallback();
+  }
   return bookmarks::LoadManagedNodeCallback();
 }
 
@@ -103,21 +106,24 @@ BookmarkClientImpl::GetStorageStateForUma() {
 
 bool BookmarkClientImpl::CanSetPermanentNodeTitle(
     const bookmarks::BookmarkNode* permanent_node) {
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     return managed_bookmark_service_->CanSetPermanentNodeTitle(permanent_node);
+  }
   return true;
 }
 
 bool BookmarkClientImpl::CanSyncNode(const bookmarks::BookmarkNode* node) {
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     return managed_bookmark_service_->CanSyncNode(node);
+  }
   return true;
 }
 
 bool BookmarkClientImpl::CanBeEditedByUser(
     const bookmarks::BookmarkNode* node) {
-  if (managed_bookmark_service_)
+  if (managed_bookmark_service_) {
     return managed_bookmark_service_->CanBeEditedByUser(node);
+  }
   return true;
 }
 

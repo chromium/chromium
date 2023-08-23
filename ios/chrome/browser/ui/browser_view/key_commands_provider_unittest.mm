@@ -12,7 +12,7 @@
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/java_script_find_tab_helper.h"
 #import "ios/chrome/browser/find_in_page/util.h"

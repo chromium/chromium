@@ -38,7 +38,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "components/url_formatter/url_fixer.h"
-#import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
+#import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"

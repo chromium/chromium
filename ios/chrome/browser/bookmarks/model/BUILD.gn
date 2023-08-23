@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bookmarks") {
+source_set("model") {
   sources = [
     "account_bookmark_model_factory.cc",
     "account_bookmark_model_factory.h",
@@ -42,14 +42,14 @@ source_set("bookmarks") {
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/web",
   ]
-  public_deps = [ ":bookmarks_utils" ]
+  public_deps = [ ":model_utils" ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/history",
-    ":bookmarks_utils",
+    ":model_utils",
   ]
 }
 
-source_set("bookmarks_utils") {
+source_set("model_utils") {
   sources = [
     "bookmark_remover_helper.cc",
     "bookmark_remover_helper.h",
@@ -76,7 +76,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/signin",
@@ -93,7 +93,7 @@ source_set("unit_tests") {
     "bookmarks_utils_unittest.mm",
   ]
   deps = [
-    ":bookmarks",
+    ":model",
     ":test_support",
     "//base",
     "//base/test:test_support",

@@ -6,7 +6,7 @@ include_rules = [
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
   "+components/trusted_vault",
   "+ios/chrome/browser/content_settings",
-  "+ios/chrome/browser/bookmarks",
+  "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/crash_report",
   "+ios/chrome/browser/policy",
   "+ios/chrome/browser/sync",

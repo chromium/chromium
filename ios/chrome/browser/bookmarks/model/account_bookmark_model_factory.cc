@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 
 #include <utility>
 #include "base/files/file_path.h"
@@ -15,11 +15,11 @@
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/features.h"
 #include "components/undo/bookmark_undo_service.h"
-#include "ios/chrome/browser/bookmarks/account_bookmark_sync_service_factory.h"
-#include "ios/chrome/browser/bookmarks/bookmark_client_impl.h"
-#include "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
-#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_sync_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_client_impl.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

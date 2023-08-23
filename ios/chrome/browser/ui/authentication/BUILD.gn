@@ -187,7 +187,7 @@ source_set("eg_app_support+eg2") {
     "//components/signin/public/identity_manager:test_support",
     "//components/supervised_user/core/browser:supervised_user_preferences",
     "//components/sync",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

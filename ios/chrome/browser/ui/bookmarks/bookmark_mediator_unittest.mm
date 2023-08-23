@@ -11,7 +11,7 @@
 #import "components/bookmarks/common/storage_type.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

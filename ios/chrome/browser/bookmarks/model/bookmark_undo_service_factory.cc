@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_undo_service_factory.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"

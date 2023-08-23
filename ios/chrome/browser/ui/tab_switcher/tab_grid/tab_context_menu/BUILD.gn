@@ -15,7 +15,7 @@ source_set("tab_context_menu") {
     "//components/bookmarks/browser",
     "//components/bookmarks/common",
     "//components/prefs",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",

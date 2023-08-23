@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
+#include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -10,8 +10,8 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/prefs/pref_service.h"
-#include "ios/chrome/browser/bookmarks/account_bookmark_model_factory.h"
-#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -42,16 +42,19 @@ const int64_t kLastUsedBookmarkFolderNone = -1;
 // bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.
 bool RemoveAllUserBookmarksIOS(BookmarkModel* bookmark_model) {
-  if (!bookmark_model->loaded())
+  if (!bookmark_model->loaded()) {
     return false;
+  }
 
   bookmark_model->RemoveAllUserBookmarks();
 
   for (const auto& child : bookmark_model->root_node()->children()) {
-    if (!bookmark_model->client()->CanBeEditedByUser(child.get()))
+    if (!bookmark_model->client()->CanBeEditedByUser(child.get())) {
       continue;
-    if (!child->children().empty())
+    }
+    if (!child->children().empty()) {
       return false;
+    }
   }
   return true;
 }

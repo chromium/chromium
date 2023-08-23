@@ -53,7 +53,7 @@ source_set("browsing_data") {
     "//components/signin/ios/browser",
     "//components/translate/core/browser:browser",
     "//ios/chrome/browser/autofill",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_state:ios_thread",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/external_files",

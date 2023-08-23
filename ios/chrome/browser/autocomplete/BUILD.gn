@@ -38,7 +38,7 @@ source_set("autocomplete") {
     "//components/strings",
     "//components/sync",
     "//components/unified_consent",
-    "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/model/application_context",

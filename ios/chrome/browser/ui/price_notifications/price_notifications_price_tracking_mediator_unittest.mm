@@ -15,7 +15,7 @@
 #import "components/image_fetcher/core/cached_image_fetcher.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/power_bookmarks/core/power_bookmark_utils.h"
-#import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"

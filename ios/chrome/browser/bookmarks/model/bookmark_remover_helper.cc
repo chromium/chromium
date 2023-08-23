@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/bookmarks/bookmark_remover_helper.h"
+#include "ios/chrome/browser/bookmarks/model/bookmark_remover_helper.h"
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/bookmarks/browser/bookmark_model.h"
-#include "ios/chrome/browser/bookmarks/bookmarks_utils.h"
-#include "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#include "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
+#include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 BookmarkRemoverHelper::BookmarkRemoverHelper(ChromeBrowserState* browser_state)
