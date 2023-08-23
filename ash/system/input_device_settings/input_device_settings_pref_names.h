@@ -48,6 +48,13 @@ constexpr char kTouchpadDeviceSettingsDictPref[] = "settings.touchpad.devices";
 constexpr char kKeyboardDeviceImpostersListPref[] =
     "settings.keyboard.imposter_false_positives";
 
+// Prefs which contain dictionaries of button remappings for each connected
+// device.
+constexpr char kGraphicsTabletTabletButtonRemappingsDictPref[] =
+    "settings.graphics_tablet.tablet_button_remappings";
+constexpr char kGraphicsTabletPenButtonRemappingsDictPref[] =
+    "settings.graphics_tablet.pen_button_remappings";
+
 // Keyboard settings dictionary keys.
 constexpr char kKeyboardSettingAutoRepeatDelay[] = "auto_repeat_delay";
 constexpr char kKeyboardSettingAutoRepeatEnabled[] = "auto_repeat_enabled";

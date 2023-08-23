@@ -4,9 +4,35 @@
 
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 
+#include <vector>
+
+#include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/test/ash_test_base.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 
 namespace ash {
+
+namespace {
+const std::string kGraphicsTabletKey1 = "device_key1";
+const std::string kGraphicsTabletKey2 = "device_key2";
+
+const mojom::ButtonRemapping button_remapping1(
+    /*name=*/"test1",
+    /*button=*/
+    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+    /*remapping_action=*/
+    mojom::RemappingAction::NewAction(ash::AcceleratorAction::kBrightnessDown));
+const mojom::ButtonRemapping button_remapping2(
+    /*name=*/"test2",
+    /*button=*/
+    mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+    /*remapping_action=*/
+    mojom::RemappingAction::NewKeyEvent(
+        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3)));
+}  // namespace
 
 class GraphicsTabletPrefHandlerTest : public AshTestBase {
  public:
@@ -19,6 +45,7 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
   // testing::Test:
   void SetUp() override {
     AshTestBase::SetUp();
+    InitializePrefService();
     pref_handler_ = std::make_unique<GraphicsTabletPrefHandlerImpl>();
   }
 
@@ -27,12 +54,129 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void InitializePrefService() {
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+    pref_service_->registry()->RegisterDictionaryPref(
+        prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+  }
+
+  void CallUpdateGraphicsTabletSettings(
+      const std::string& device_key,
+      const mojom::GraphicsTabletSettings& settings) {
+    mojom::GraphicsTabletPtr graphics_tablet = mojom::GraphicsTablet::New();
+    graphics_tablet->settings = settings.Clone();
+    graphics_tablet->device_key = device_key;
+
+    pref_handler_->UpdateGraphicsTabletSettings(pref_service_.get(),
+                                                *graphics_tablet);
+  }
+
  protected:
   std::unique_ptr<GraphicsTabletPrefHandlerImpl> pref_handler_;
+  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 };
 
-TEST_F(GraphicsTabletPrefHandlerTest, InitializationTest) {
-  EXPECT_NE(pref_handler_.get(), nullptr);
+TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings1;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings1;
+  tablet_button_remappings1.push_back(button_remapping1.Clone());
+  tablet_button_remappings1.push_back(button_remapping2.Clone());
+  pen_button_remappings1.push_back(button_remapping2.Clone());
+
+  const mojom::GraphicsTabletSettings kGraphicsTabletSettings1(
+      /*tablet_button_remappings=*/mojo::Clone(tablet_button_remappings1),
+      /*pen_button_remappings=*/mojo::Clone(pen_button_remappings1));
+
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings2;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings2;
+  tablet_button_remappings2.push_back(button_remapping2.Clone());
+  pen_button_remappings2.push_back(button_remapping2.Clone());
+
+  const mojom::GraphicsTabletSettings kGraphicsTabletSettings2(
+      /*tablet_button_remappings=*/mojo::Clone(tablet_button_remappings2),
+      /*pen_button_remappings=*/mojo::Clone(pen_button_remappings2));
+
+  CallUpdateGraphicsTabletSettings(kGraphicsTabletKey1,
+                                   kGraphicsTabletSettings1);
+  CallUpdateGraphicsTabletSettings(kGraphicsTabletKey2,
+                                   kGraphicsTabletSettings2);
+
+  // Verify tablet button remapping pref dicts.
+  const auto& tablet_button_remappings_dict = pref_service_->GetDict(
+      prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+  ASSERT_EQ(2u, tablet_button_remappings_dict.size());
+  auto* graphics_tablet1_tablet_button_remappings =
+      tablet_button_remappings_dict.FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, graphics_tablet1_tablet_button_remappings);
+  ASSERT_EQ(2u, graphics_tablet1_tablet_button_remappings->size());
+  auto* graphics_tablet2_tablet_button_remappings =
+      tablet_button_remappings_dict.FindList(kGraphicsTabletKey2);
+  ASSERT_NE(nullptr, graphics_tablet2_tablet_button_remappings);
+  ASSERT_EQ(1u, graphics_tablet2_tablet_button_remappings->size());
+
+  // Verify pen button remapping pref dicts.
+  const auto& pen_button_remappings_dict =
+      pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+  ASSERT_EQ(2u, pen_button_remappings_dict.size());
+  auto* graphics_tablet1_pen_button_remappings =
+      pen_button_remappings_dict.FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, graphics_tablet1_pen_button_remappings);
+  ASSERT_EQ(1u, graphics_tablet1_pen_button_remappings->size());
+  auto* graphics_tablet2_pen_button_remappings =
+      pen_button_remappings_dict.FindList(kGraphicsTabletKey2);
+  ASSERT_NE(nullptr, graphics_tablet2_pen_button_remappings);
+  ASSERT_EQ(1u, graphics_tablet2_pen_button_remappings->size());
+
+  // Update button remapping1 and graphics tablet settings1.
+  auto updated_button_remapping1 = button_remapping1.Clone();
+  updated_button_remapping1->name = "new test name";
+  updated_button_remapping1->button =
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra);
+  updated_button_remapping1->remapping_action =
+      mojom::RemappingAction::NewAction(
+          ash::AcceleratorAction::kCycleBackwardMru);
+  std::vector<mojom::ButtonRemappingPtr> updated_tablet_button_remappings1;
+  std::vector<mojom::ButtonRemappingPtr> updated_pen_button_remappings1;
+  updated_tablet_button_remappings1.push_back(
+      updated_button_remapping1.Clone());
+  const mojom::GraphicsTabletSettings kUpdatedGraphicsTabletSettings1(
+      /*tablet_button_remappings=*/mojo::Clone(
+          updated_tablet_button_remappings1),
+      /*pen_button_remappings=*/mojo::Clone(updated_pen_button_remappings1));
+
+  // Update graphics tablet1 settings1.
+  CallUpdateGraphicsTabletSettings(kGraphicsTabletKey1,
+                                   kUpdatedGraphicsTabletSettings1);
+
+  // Verify if the graphics tablet1 tablet button remappings are updated.
+  auto* updated_graphics_tablet1_tablet_button_remappings =
+      pref_service_
+          ->GetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref)
+          .FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, updated_graphics_tablet1_tablet_button_remappings);
+  ASSERT_EQ(1u, updated_graphics_tablet1_tablet_button_remappings->size());
+  ASSERT_TRUE(
+      (*updated_graphics_tablet1_tablet_button_remappings)[0].is_dict());
+  const auto& updated_dict =
+      (*updated_graphics_tablet1_tablet_button_remappings)[0].GetDict();
+  EXPECT_EQ(updated_button_remapping1->name,
+            *updated_dict.FindString(prefs::kButtonRemappingName));
+  EXPECT_EQ(static_cast<int>(
+                updated_button_remapping1->button->get_customizable_button()),
+            *updated_dict.FindInt(prefs::kButtonRemappingCustomizableButton));
+  EXPECT_EQ(static_cast<int>(
+                updated_button_remapping1->remapping_action->get_action()),
+            *updated_dict.FindInt(prefs::kButtonRemappingAction));
+
+  // Verify if the graphics tablet1 pen button remappings are updated.
+  auto* updated_graphics_tablet1_pen_button_remappings =
+      pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref)
+          .FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, updated_graphics_tablet1_pen_button_remappings);
+  ASSERT_EQ(0u, updated_graphics_tablet1_pen_button_remappings->size());
 }
 
 }  // namespace ash
