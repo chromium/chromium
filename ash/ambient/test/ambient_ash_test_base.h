@@ -47,7 +47,7 @@ namespace {
 
 // The default factor to multiply ambient timeouts by. Slightly greater than 1
 // to reduce flakiness by making sure the timeouts have expired.
-inline constexpr float kDefaultFastForwardFactor = 1.001;
+inline constexpr float kDefaultFastForwardFactor = 1.01;
 
 }  // namespace
 
