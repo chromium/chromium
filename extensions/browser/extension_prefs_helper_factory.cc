@@ -34,9 +34,10 @@ ExtensionPrefsHelperFactory::ExtensionPrefsHelperFactory()
 
 ExtensionPrefsHelperFactory::~ExtensionPrefsHelperFactory() = default;
 
-KeyedService* ExtensionPrefsHelperFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionPrefsHelperFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionPrefsHelper(
+  return std::make_unique<ExtensionPrefsHelper>(
       ExtensionPrefsFactory::GetForBrowserContext(context),
       ExtensionPrefValueMapFactory::GetForBrowserContext(context));
 }
