@@ -64,6 +64,8 @@ class ManifestDemuxerTest : public ::testing::Test {
   ~ManifestDemuxerTest() override {
     manifest_demuxer_->GetChunkDemuxerForTesting()->MarkEndOfStream(
         PIPELINE_OK);
+    // Reset pointer so that it does not dangle.
+    mock_engine_ = nullptr;
     manifest_demuxer_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -74,7 +76,7 @@ class ManifestDemuxerTest : public ::testing::Test {
 
   void CreateIdAndAppendInitSegment(const std::string& id) {
     auto* demuxer = manifest_demuxer_->GetChunkDemuxerForTesting();
-    DCHECK_EQ(demuxer->AddId(id, "video/webm", "vorbis,vp8"),
+    ASSERT_EQ(demuxer->AddId(id, "video/webm", "vorbis,vp8"),
               ChunkDemuxer::Status::kOk);
 
     demuxer->SetTracksWatcher(
@@ -83,12 +85,13 @@ class ManifestDemuxerTest : public ::testing::Test {
         id, base::BindRepeating([](SourceBufferParseWarning) {}));
 
     scoped_refptr<DecoderBuffer> bear1 = ReadTestDataFile("bear-320x240.webm");
-    DCHECK(demuxer->AppendToParseBuffer(id, bear1->data(), bear1->data_size()));
+    ASSERT_TRUE(
+        demuxer->AppendToParseBuffer(id, bear1->data(), bear1->data_size()));
     for (;;) {
       base::TimeDelta start = base::Seconds(0), end = base::Seconds(10), offset;
       auto result = demuxer->RunSegmentParserLoop(id, start, end, &offset);
       if (result != StreamParser::ParseStatus::kSuccessHasMoreData) {
-        DCHECK_EQ(result, StreamParser::ParseStatus::kSuccess);
+        ASSERT_EQ(result, StreamParser::ParseStatus::kSuccess);
         return;
       }
     }
