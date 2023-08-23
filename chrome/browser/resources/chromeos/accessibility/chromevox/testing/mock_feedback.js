@@ -121,7 +121,7 @@ MockFeedback = class {
     const MockTts = function() {};
     MockTts.prototype = {
       __proto__: TtsInterface.prototype,
-      speak: this.addUtterance_.bind(this),
+      speak: (...args) => this.addUtterance_(...args),
     };
 
     ChromeVox.tts = new MockTts();
@@ -129,7 +129,7 @@ MockFeedback = class {
     const MockBraille = function() {};
     MockBraille.prototype = {
       __proto__: BrailleInterface.prototype,
-      write: this.addBraille_.bind(this),
+      write: (...args) => this.addBraille_(...args),
     };
 
     ChromeVox.braille = new MockBraille();
@@ -137,7 +137,7 @@ MockFeedback = class {
     const MockEarcons = function() {};
     MockEarcons.prototype = {
       __proto__: AbstractEarcons.prototype,
-      playEarcon: this.addEarcon_.bind(this),
+      playEarcon: (...args) => this.addEarcon_(...args),
     };
 
     // ChromeVox.earcons is a getter that switches between Classic and
@@ -302,14 +302,14 @@ MockFeedback = class {
         this.replaying_, 'expectBraille: Should not already be replaying.');
     const props = opt_props || {};
     this.pendingActions_.push({
-      perform: function() {
+      perform: () => {
         const match =
             MockFeedback.matchAndConsume_(text, props, this.pendingBraille_);
         if (match) {
           this.lastMatchedBraille_ = match;
         }
         return Boolean(match);
-      }.bind(this),
+      },
       toString() {
         return 'Braille \'' + text + '\' ' + JSON.stringify(props);
       },
@@ -326,11 +326,11 @@ MockFeedback = class {
     assertFalse(
         this.replaying_, 'expectEarcon: Should not already be replaying.');
     this.pendingActions_.push({
-      perform: function() {
+      perform: () => {
         const match =
             MockFeedback.matchAndConsume_(earconName, {}, this.pendingEarcons_);
         return Boolean(match);
-      }.bind(this),
+      },
       toString() {
         return 'Earcon \'' + earconName + '\'';
       },
@@ -365,11 +365,11 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   clearPendingOutput() {
-    this.call(function() {
+    this.call(() => {
       this.pendingUtterances_.length = 0;
       this.pendingBraille_.length = 0;
       this.pendingEarcons_.length = 0;
-    }.bind(this));
+    });
 
     return this;
   }
@@ -474,7 +474,7 @@ MockFeedback = class {
         // seconds, log the pending state to ease debugging.
         if (!this.logTimeoutId_) {
           this.logTimeoutId_ =
-              setTimeout(this.logPendingState_.bind(this), 2000);
+              setTimeout((...args) => this.logPendingState_(...args), 2000);
         }
       }
     } catch (e) {
