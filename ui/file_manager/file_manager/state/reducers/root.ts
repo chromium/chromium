@@ -4,13 +4,13 @@
 
 import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
+import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
 import {searchReducersMap} from '../ducks/search.js';
 import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
-import {addAndroidApps} from './android_apps.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
@@ -22,6 +22,7 @@ const rootReducersMap = new Map([
   ...volumesReducersMap,
   ...bulkPinningReducersMap,
   ...uiEntriesReducersMap,
+  ...androidAppsReducersMap,
 ]);
 
 /**
@@ -66,8 +67,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return addFolderShortcut(currentState, action);
     case ActionType.REMOVE_FOLDER_SHORTCUT:
       return removeFolderShortcut(currentState, action);
-    case ActionType.ADD_ANDROID_APPS:
-      return addAndroidApps(currentState, action);
     case ActionType.ADD_CHILD_ENTRIES:
       return addChildEntries(currentState, action);
     case ActionType.UPDATE_PREFERENCES:

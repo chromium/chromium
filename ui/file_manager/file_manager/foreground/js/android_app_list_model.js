@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import {addAndroidApps} from '../../state/actions/android_apps.js';
+import {addAndroidApps} from '../../state/ducks/android_apps.js';
 import {getStore} from '../../state/store.js';
 
 /**

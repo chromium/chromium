@@ -6,8 +6,9 @@
 import '../store.js';
 
 import {State} from '../../externs/ts/state.js';
-import {addAndroidApps} from '../actions/android_apps.js';
 import {setupStore, waitDeepEquals} from '../for_tests.js';
+
+import {addAndroidApps} from './android_apps.js';
 
 /** Tests that android apps can be added correctly to the store. */
 export async function testAddAndroidApps(done: () => void) {
