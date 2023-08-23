@@ -60,6 +60,7 @@ class AwBrowserContextTest : public testing::Test {
 // enforced for the NetworkContext, as it should behave like the Android system.
 TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
   AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
       base::FilePath(AwBrowserContextStore::kDefaultContextPath),
       /*is_default=*/true);
   network::mojom::NetworkContextParams network_context_params;
@@ -77,6 +78,7 @@ TEST_F(AwBrowserContextTest, SymantecPoliciesExempted) {
 // the Android system.
 TEST_F(AwBrowserContextTest, SHA1LocalAnchorsAllowed) {
   AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
       base::FilePath(AwBrowserContextStore::kDefaultContextPath),
       /*is_default=*/true);
   network::mojom::NetworkContextParams network_context_params;

@@ -55,10 +55,13 @@ class AwFormDatabaseService;
 class AwQuotaManagerBridge;
 class CookieManager;
 
+// Lifetime: Profile
 class AwBrowserContext : public content::BrowserContext,
                          public visitedlink::VisitedLinkDelegate {
  public:
-  explicit AwBrowserContext(base::FilePath relative_path, bool is_default);
+  explicit AwBrowserContext(std::string name,
+                            base::FilePath relative_path,
+                            bool is_default);
 
   AwBrowserContext(const AwBrowserContext&) = delete;
   AwBrowserContext& operator=(const AwBrowserContext&) = delete;
@@ -163,6 +166,7 @@ class AwBrowserContext : public content::BrowserContext,
   void CreateUserPrefService();
   void MigrateLocalStatePrefs();
 
+  const std::string name_;
   const base::FilePath relative_path_;
   const bool is_default_;
 

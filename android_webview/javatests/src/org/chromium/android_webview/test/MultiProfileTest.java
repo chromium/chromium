@@ -95,4 +95,26 @@ public class MultiProfileTest {
         mActivityTestRule.runOnUiThread(
                 () -> { Assert.assertFalse(AwBrowserContext.deleteNamedContext("DoesNotExist")); });
     }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testGetName() throws Throwable {
+        final AwBrowserContext defaultProfile = AwBrowserContext.getDefault();
+        final AwBrowserContext profile1 = getContextSync("AwesomeProfile", true);
+        Assert.assertEquals("Default", defaultProfile.getName());
+        Assert.assertEquals("AwesomeProfile", profile1.getName());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testGetRelativePath() throws Throwable {
+        final AwBrowserContext defaultProfile = AwBrowserContext.getDefault();
+        final AwBrowserContext myCoolProfile = getContextSync("MyCoolProfile", true);
+        final AwBrowserContext myOtherCoolProfile = getContextSync("MyOtherCoolProfile", true);
+        Assert.assertEquals("Default", defaultProfile.getRelativePathForTesting());
+        Assert.assertEquals("Profile 1", myCoolProfile.getRelativePathForTesting());
+        Assert.assertEquals("Profile 2", myOtherCoolProfile.getRelativePathForTesting());
+    }
 }

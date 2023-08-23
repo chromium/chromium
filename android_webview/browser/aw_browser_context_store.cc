@@ -99,7 +99,7 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
   if (!entry->instance) {
     const bool is_default = name == kDefaultContextName;
     entry->instance =
-        std::make_unique<AwBrowserContext>(entry->path, is_default);
+        std::make_unique<AwBrowserContext>(name, entry->path, is_default);
   }
   return entry->instance.get();
 }

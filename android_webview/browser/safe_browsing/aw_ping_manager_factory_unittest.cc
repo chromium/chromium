@@ -66,6 +66,7 @@ TEST_F(AwPingManagerFactoryTest, ReportThreatDetails) {
       ->SetURLLoaderFactoryForTesting(ref_counted_url_loader_factory);
 
   AwBrowserContext context(
+      AwBrowserContextStore::kDefaultContextName,
       base::FilePath(AwBrowserContextStore::kDefaultContextPath),
       /*is_default=*/true);
   EXPECT_EQ(safe_browsing::AwPingManagerFactory::GetForBrowserContext(&context)

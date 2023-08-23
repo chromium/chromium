@@ -7,6 +7,7 @@ package org.chromium.android_webview;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -35,9 +36,10 @@ import java.util.Set;
 @JNINamespace("android_webview")
 @Lifetime.Profile
 public class AwBrowserContext implements BrowserContextHandle {
-    private static final String CHROMIUM_PREFS_NAME = "WebViewProfilePrefsDefault";
 
     private static final String TAG = "AwBrowserContext";
+    private static final String CHROMIUM_PREFS_NAME = "WebViewProfilePrefsDefault";
+
     private final SharedPreferences mSharedPreferences;
 
     private AwGeolocationPermissions mGeolocationPermissions;
@@ -46,11 +48,23 @@ public class AwBrowserContext implements BrowserContextHandle {
 
     /** Pointer to the Native-side AwBrowserContext. */
     private long mNativeAwBrowserContext;
+    @NonNull
+    private final String mName;
+    @NonNull
+    private final String mRelativePath;
     private final boolean mIsDefault;
 
-    public AwBrowserContext(
-            SharedPreferences sharedPreferences, long nativeAwBrowserContext, boolean isDefault) {
+    public AwBrowserContext(SharedPreferences sharedPreferences, long nativeAwBrowserContext) {
+        this(sharedPreferences, nativeAwBrowserContext,
+                AwBrowserContextJni.get().getDefaultContextName(),
+                AwBrowserContextJni.get().getDefaultContextRelativePath(), true);
+    }
+
+    public AwBrowserContext(SharedPreferences sharedPreferences, long nativeAwBrowserContext,
+            @NonNull String name, @NonNull String relativePath, boolean isDefault) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
+        mName = name;
+        mRelativePath = relativePath;
         mSharedPreferences = sharedPreferences;
 
         mIsDefault = isDefault;
@@ -78,6 +92,16 @@ public class AwBrowserContext implements BrowserContextHandle {
     @VisibleForTesting
     public void setNativePointer(long nativeAwBrowserContext) {
         mNativeAwBrowserContext = nativeAwBrowserContext;
+    }
+
+    @NonNull
+    public String getName() {
+        return mName;
+    }
+
+    @NonNull
+    public String getRelativePathForTesting() {
+        return mRelativePath;
     }
 
     public AwGeolocationPermissions getGeolocationPermissions() {
@@ -228,7 +252,8 @@ public class AwBrowserContext implements BrowserContextHandle {
     }
 
     @CalledByNative
-    public static AwBrowserContext create(long nativeAwBrowserContext, boolean isDefault) {
+    public static AwBrowserContext create(
+            long nativeAwBrowserContext, String name, String relativePath, boolean isDefault) {
         SharedPreferences sharedPreferences;
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             // Prefs dir will be created if it doesn't exist, so must allow writes.
@@ -236,13 +261,16 @@ public class AwBrowserContext implements BrowserContextHandle {
                     CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
         }
 
-        return new AwBrowserContext(sharedPreferences, nativeAwBrowserContext, isDefault);
+        return new AwBrowserContext(
+                sharedPreferences, nativeAwBrowserContext, name, relativePath, isDefault);
     }
 
     @NativeMethods
     interface Natives {
         AwBrowserContext getDefaultJava();
         AwBrowserContext getNamedContextJava(String name, boolean createIfNeeded);
+        String getDefaultContextName();
+        String getDefaultContextRelativePath();
         String getNamedContextPathForTesting(String name); // IN-TEST
         boolean deleteNamedContext(String name);
         String[] listAllContexts();
