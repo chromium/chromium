@@ -203,7 +203,8 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
 }
 
 GrContextType ParseGrContextType(const base::CommandLine* command_line) {
-  if (base::FeatureList::IsEnabled(features::kSkiaGraphite)) {
+  if (base::FeatureList::IsEnabled(features::kSkiaGraphite) ||
+      command_line->HasSwitch(switches::kSkiaGraphiteBackend)) {
     [[maybe_unused]] auto value =
         command_line->GetSwitchValueASCII(switches::kSkiaGraphiteBackend);
 #if BUILDFLAG(SKIA_USE_DAWN)

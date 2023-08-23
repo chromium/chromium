@@ -51,12 +51,18 @@
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "third_party/dawn/include/dawn/dawn_proc.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#endif
 
 namespace cc {
 namespace {
@@ -718,11 +724,16 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
 
   // Check if the graphics backend needs to initialize Vulkan.
   bool init_vulkan = false;
+  bool init_dawn = false;
   if (renderer_type_ == viz::RendererType::kSkiaVk) {
     scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
     init_vulkan = true;
   } else if (renderer_type_ == viz::RendererType::kSkiaGraphite) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+    // Force the use of Graphite even if disallowed for other reasons e.g. ANGLE
+    // Metal is not enabled on Mac.
+    command_line->AppendSwitch(::switches::kSkiaGraphiteBackend);
+    init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
 #endif
@@ -734,6 +745,12 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type)
         ::switches::kUseVulkan,
         use_gpu ? ::switches::kVulkanImplementationNameNative
                 : ::switches::kVulkanImplementationNameSwiftshader);
+  }
+
+  if (init_dawn) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    dawnProcSetProcs(&dawn::native::GetProcs());
+#endif
   }
 }
 

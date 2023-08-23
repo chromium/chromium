@@ -75,6 +75,12 @@ PixelTest::PixelTest(GraphicsBackend backend)
     init_vulkan = true;
   } else if (backend == kSkiaGraphite) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaGraphite);
+
+    // Force the use of Graphite even if disallowed for other reasons e.g. ANGLE
+    // Metal is not enabled on Mac.
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    command_line->AppendSwitch(::switches::kSkiaGraphiteBackend);
+
     init_dawn = true;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
@@ -82,7 +88,8 @@ PixelTest::PixelTest(GraphicsBackend backend)
   } else {
     // Ensure that we don't accidentally have vulkan or graphite enabled.
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kVulkan, features::kSkiaGraphite});
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kVulkan, features::kSkiaGraphite});
   }
 
   if (init_vulkan) {

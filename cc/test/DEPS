@@ -25,5 +25,9 @@ specific_include_rules = {
   ],
   "pixel_test\.cc": [
     "+gpu/command_buffer/service/service_utils.h",
+    "+gpu/config/gpu_switches.h",
+  ],
+  "layer_tree_test\.cc": [
+    "+gpu/config/gpu_switches.h",
   ],
 }

@@ -35,6 +35,7 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -985,10 +986,12 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 #if BUILDFLAG(IS_APPLE)
   const bool want_graphite = gr_context_type == GrContextType::kGraphiteDawn ||
                              gr_context_type == GrContextType::kGraphiteMetal;
+  const bool force_graphite = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSkiaGraphiteBackend);
   const bool is_angle_metal =
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal;
   // Fallback from Graphite to Ganesh/GL if ANGLE is not using Metal too.
-  if (want_graphite && !is_angle_metal) {
+  if (want_graphite && !force_graphite && !is_angle_metal) {
     gr_context_type = GrContextType::kGL;
   }
 #endif

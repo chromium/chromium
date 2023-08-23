@@ -296,6 +296,7 @@ static const char* const kSwitchNames[] = {
     switches::kGpuWatchdogTimeoutSeconds,
     switches::kUseCmdDecoder,
     switches::kForceVideoOverlays,
+    switches::kSkiaGraphiteBackend,
 #if BUILDFLAG(IS_ANDROID)
     switches::kEnableReachedCodeProfiler,
     switches::kReachedCodeSamplingIntervalUs,
