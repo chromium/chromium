@@ -91,6 +91,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
           : mojom::RoundedWindowCompatStrategy::kDisabled;
   flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
   flags->xdg_mode = base::FeatureList::IsEnabled(kXdgMode);
+  flags->enable_pip_double_tap = ash::features::IsPipDoubleTapToResizeEnabled();
 
   chrome_feature_flags_instance->NotifyFeatureFlags(std::move(flags));
 }

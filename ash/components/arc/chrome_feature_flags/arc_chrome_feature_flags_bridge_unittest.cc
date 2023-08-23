@@ -184,5 +184,19 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyXdgMode_Disabled) {
   EXPECT_FALSE(instance()->flags_called_value()->xdg_mode);
 }
 
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Enabled) {
+  scoped_feature_list()->InitAndEnableFeature(
+      ash::features::kPipDoubleTapToResize);
+  Connect();
+  EXPECT_TRUE(instance()->flags_called_value()->enable_pip_double_tap);
+}
+
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyPipDoubleTapToResize_Disabled) {
+  scoped_feature_list()->InitAndDisableFeature(
+      ash::features::kPipDoubleTapToResize);
+  Connect();
+  EXPECT_FALSE(instance()->flags_called_value()->enable_pip_double_tap);
+}
+
 }  // namespace
 }  // namespace arc

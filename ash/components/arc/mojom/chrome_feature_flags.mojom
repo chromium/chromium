@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 5
+// Next MinVersion: 6
 
 module arc.mojom;
 
@@ -31,6 +31,8 @@ struct FeatureFlags {
   [MinVersion=3] int32 rounded_window_radius;
   // chrome://flags#arc-xdg-mode
   [MinVersion=4] bool xdg_mode;
+  // chrome://flags#enable-pip-double-tap-to-resize;
+  [MinVersion=5] bool enable_pip_double_tap;
 };
 
 // This interface provides methods to propagate the feature flag status to
