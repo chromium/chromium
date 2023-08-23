@@ -57,6 +57,12 @@ export class DriveModuleElement extends I18nMixin
     return [
       [
         {
+          action: 'dismiss',
+          icon: 'modules:visibility_off',
+          text: this.i18nRecursive(
+              '', 'modulesDismissButtonText', 'modulesDriveFilesLower'),
+        },
+        {
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
@@ -88,6 +94,20 @@ export class DriveModuleElement extends I18nMixin
       },
     });
     this.dispatchEvent(disableEvent);
+  }
+
+  private onDismissButtonClick_() {
+    DriveProxy.getHandler().dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: loadTimeData.getStringF(
+            'dismissModuleToastMessage',
+            loadTimeData.getString('modulesDriveFilesSentence')),
+        restoreCallback: () => DriveProxy.getHandler().restoreModule(),
+      },
+    }));
   }
 
   private onFileClick_(e: DomRepeatEvent<File>) {
