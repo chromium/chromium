@@ -555,6 +555,10 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 .setVisible(isCurrentTabNotNull && shouldShowReaderModePrefs(currentTab));
 
         updateManagedByMenuItem(menu, currentTab);
+
+        // Only display quick delete divider line on the page menu and if quick delete is enabled.
+        menu.findItem(R.id.quick_delete_divider_line_id)
+                .setVisible(isQuickDeleteEnabled(isIncognito));
     }
 
     /**
@@ -644,10 +648,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 item.setEnabled(hasIncognitoTabs);
             }
             if (item.getItemId() == R.id.quick_delete_menu_id) {
-                boolean isQuickDeleteEnabled =
-                        !isIncognito && QuickDeleteController.isQuickDeleteEnabled();
-                item.setVisible(isQuickDeleteEnabled);
-                item.setEnabled(isQuickDeleteEnabled);
+                item.setVisible(isQuickDeleteEnabled(isIncognito));
+                item.setEnabled(isQuickDeleteEnabled(isIncognito));
             }
 
             // This needs to be done after the visibility of the item is set.
@@ -665,6 +667,14 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                 hasItemBetweenDividers = true;
             }
         }
+    }
+
+    /**
+     * @param isIncognito Whether the currentTab is incognito.
+     * @return Whether the quick delete menu item should be enabled.
+     */
+    private boolean isQuickDeleteEnabled(boolean isIncognito) {
+        return !isIncognito && QuickDeleteController.isQuickDeleteEnabled();
     }
 
     /**

@@ -63,6 +63,8 @@ found in the LICENSE file.
         <item android:id="@+id/quick_delete_menu_id"
             android:title="@string/menu_quick_delete"
             android:icon="@drawable/quick_delete_trash_bin_icon_24dp"/>
+        <item android:id="@+id/quick_delete_divider_line_id"
+            android:title="@null" />
         <item android:id="@+id/downloads_menu_id"
             android:title="@string/menu_downloads"
             android:icon="@drawable/infobar_download_complete" />
