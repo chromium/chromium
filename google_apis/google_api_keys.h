@@ -83,6 +83,9 @@ COMPONENT_EXPORT(GOOGLE_APIS) std::string GetRemotingAPIKey();
 // Retrieves the Speech On-Device API (SODA) API Key.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSodaAPIKey();
 
+// Retrieves the HaTS API Key.
+COMPONENT_EXPORT(GOOGLE_APIS) std::string GetHatsAPIKey();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Retrieves the Sharing API Key.
 COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSharingAPIKey();
