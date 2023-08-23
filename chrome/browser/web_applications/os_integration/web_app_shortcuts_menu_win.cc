@@ -195,6 +195,9 @@ bool RegisterShortcutsMenuWithOsTask(
     scoped_refptr<ShellLinkItem> shortcut_link =
         base::MakeRefCounted<ShellLinkItem>();
 
+    shortcut_link->GetCommandLine()->CopySwitchesFrom(
+        *base::CommandLine::ForCurrentProcess(), {{switches::kUserDataDir}});
+
     // Set switches to launch shortcut items in the specified app.
     shortcut_link->GetCommandLine()->AppendSwitchASCII(switches::kAppId,
                                                        app_id);
