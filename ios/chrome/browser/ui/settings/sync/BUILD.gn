@@ -99,6 +99,7 @@ source_set("eg2_tests") {
   sources = [ "sync_encryption_passphrase_table_view_controller_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/feature_engagement/public",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
