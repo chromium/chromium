@@ -340,6 +340,7 @@ DeepScanningRequest::DeepScanningRequest(
       pending_scan_requests_(1),
       pre_scan_download_check_result_(pre_scan_download_check_result),
       password_(password),
+      reason_(enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::NORMAL);
@@ -361,6 +362,7 @@ DeepScanningRequest::DeepScanningRequest(
       save_package_files_(std::move(save_package_files)),
       pending_scan_requests_(save_package_files_.size()),
       pre_scan_download_check_result_(pre_scan_download_check_result),
+      reason_(enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD),
       weak_ptr_factory_(this) {
   base::UmaHistogramEnumeration("SBClientDownload.DeepScanType",
                                 DeepScanType::SAVE_PACKAGE);
@@ -483,8 +485,10 @@ void DeepScanningRequest::PopulateRequest(FileAnalysisRequest* request,
           analysis_settings_.cloud_or_local_settings.dm_token());
     }
     request->set_per_profile_request(analysis_settings_.per_profile);
-    if (analysis_settings_.client_metadata)
+    if (analysis_settings_.client_metadata) {
       request->set_client_metadata(*analysis_settings_.client_metadata);
+    }
+    request->set_reason(reason_);
   }
 
   request->set_analysis_connector(enterprise_connectors::FILE_DOWNLOADED);

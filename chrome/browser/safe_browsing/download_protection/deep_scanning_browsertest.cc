@@ -549,6 +549,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
 
   WaitForDeepScanRequest();
 
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
   // The malware scan finishes asynchronously, and doesn't find anything.
   enterprise_connectors::ContentAnalysisResponse async_response;
   async_response.set_request_token(last_request().request_token());
@@ -595,6 +598,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, FailedScanFailsOpen) {
 
   WaitForDeepScanRequest();
 
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
   // The malware scan finishes asynchronously, and fails
   enterprise_connectors::ContentAnalysisResponse async_response;
   async_response.set_request_token(last_request().request_token());
@@ -640,6 +646,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
   // The malware scan finishes asynchronously, and finds malware.
   enterprise_connectors::ContentAnalysisResponse async_response;
@@ -692,6 +701,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
   // The malware scan finishes asynchronously, and fails.
   enterprise_connectors::ContentAnalysisResponse async_response;
@@ -765,6 +777,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest, MultipleFCMResponses) {
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
   // The malware scan finishes asynchronously, and finds malware.
   enterprise_connectors::ContentAnalysisResponse async_response_1;
@@ -870,6 +885,9 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   ExpectContentAnalysisSynchronousResponse(sync_response, {"dlp", "malware"});
 
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
 
   // Both the DLP and malware violations generate an event.
   std::set<std::string> zip_types = {"application/zip",
@@ -1052,6 +1070,9 @@ IN_PROC_BROWSER_TEST_P(AllowlistedUrlDeepScanningBrowserTest,
 
   WaitForDeepScanRequest();
 
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
+
   WaitForDownloadToFinish();
 
   // The file should be blocked for sensitive content.
@@ -1195,6 +1216,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Allowed) {
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
+
   // The async scanning response indicates the file has no sensitive data.
   enterprise_connectors::ContentAnalysisResponse response;
   auto* result = response.add_results();
@@ -1242,6 +1266,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, Blocked) {
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
 
   // The async scanning response indicates the file should be blocked.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -1307,6 +1334,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, KeepAfterWarning) {
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
 
   // The async scanning response indicates the file should warn the user.
   enterprise_connectors::ContentAnalysisResponse response;
@@ -1411,6 +1441,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest,
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
 
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
+
   // The async scanning response indicates the file should warn the user.
   enterprise_connectors::ContentAnalysisResponse response;
   auto* result = response.add_results();
@@ -1490,6 +1523,9 @@ IN_PROC_BROWSER_TEST_F(SavePackageDeepScanningBrowserTest, OpenNow) {
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
       main_file, extra_files_dir, content::SAVE_PAGE_TYPE_AS_ONLY_HTML));
   WaitForDeepScanRequest();
+
+  EXPECT_EQ(last_request().reason(),
+            enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD);
 
   // Opening the save package before the async response is obtained will
   // generate a warning event once it does come back, complete the

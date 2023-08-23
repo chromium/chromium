@@ -258,6 +258,11 @@ class DeepScanningRequest : public download::DownloadItem::Observer {
   // consistency with the SafeArchiveAnalyzer mojo interface.
   std::string password_;
 
+  // Reason the scanning took place. Used to populate enterprise requests to
+  // give more context on what user action lead to a scan.
+  enterprise_connectors::ContentAnalysisRequest::Reason reason_ =
+      enterprise_connectors::ContentAnalysisRequest::UNKNOWN;
+
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
 

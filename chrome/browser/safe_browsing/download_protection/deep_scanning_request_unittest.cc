@@ -459,6 +459,10 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
                   .request_data()
                   .content_type(),
               "application/octet-stream");
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .reason(),
+              enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
   }
 
   {
@@ -486,6 +490,10 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
               download_protection_service_.GetFakeBinaryUploadService()
                   ->last_request()
                   .tags(0));
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .reason(),
+              enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
   }
 
   {
@@ -512,6 +520,10 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
     EXPECT_EQ("dlp", download_protection_service_.GetFakeBinaryUploadService()
                          ->last_request()
                          .tags(0));
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .reason(),
+              enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
   }
 
   {
@@ -540,6 +552,10 @@ TEST_F(DeepScanningRequestAllFeaturesEnabledTest,
                     ->last_request()
                     .tags()
                     .empty());
+    EXPECT_EQ(download_protection_service_.GetFakeBinaryUploadService()
+                  ->last_request()
+                  .reason(),
+              enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD);
   }
 }
 
