@@ -304,45 +304,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
               browser->GetBrowserState());
 
-      UpdateChromeSafetyCheckState initialUpdateChromeState =
-          safetyCheckManager->GetUpdateChromeCheckState();
-      PasswordSafetyCheckState initialPasswordState =
-          safetyCheckManager->GetPasswordCheckState();
-      SafeBrowsingSafetyCheckState initialSafeBrowsingState =
-          safetyCheckManager->GetSafeBrowsingCheckState();
-
-      base::Time lastRunTime = safetyCheckManager->GetLastSafetyCheckRunTime();
-
-      bool shouldRunSafetyCheck = CanRunSafetyCheck(lastRunTime);
-
-      RunningSafetyCheckState initialRunningState =
-          shouldRunSafetyCheck ? RunningSafetyCheckState::kRunning
-                               : RunningSafetyCheckState::kDefault;
-
-      _safetyCheckState = [[SafetyCheckState alloc]
-          initWithUpdateChromeState:initialUpdateChromeState
-                      passwordState:initialPasswordState
-                  safeBrowsingState:initialSafeBrowsingState
-                       runningState:initialRunningState];
-
-      _safetyCheckState.lastRunTime = lastRunTime;
-
-      std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-          safetyCheckManager->GetInsecureCredentials();
-
-      password_manager::InsecurePasswordCounts counts =
-          password_manager::CountInsecurePasswordsPerInsecureType(
-              insecureCredentials);
-
-      _safetyCheckState.weakPasswordsCount = counts.weak_count;
-      _safetyCheckState.reusedPasswordsCount = counts.reused_count;
-      _safetyCheckState.compromisedPasswordsCount = counts.compromised_count;
+      _safetyCheckState = [self initialSafetyCheckState];
 
       _safetyCheckManagerObserver = std::make_unique<SafetyCheckObserverBridge>(
           self, IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
                     browser->GetBrowserState()));
 
-      if (shouldRunSafetyCheck) {
+      if (_safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
         safetyCheckManager->StartSafetyCheck();
       }
     }
@@ -686,6 +654,69 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 }
 #pragma mark - Private
+
+- (SafetyCheckState*)initialSafetyCheckState {
+  SafetyCheckState* state = [[SafetyCheckState alloc]
+      initWithUpdateChromeState:UpdateChromeSafetyCheckState::kDefault
+                  passwordState:PasswordSafetyCheckState::kDefault
+              safeBrowsingState:SafeBrowsingSafetyCheckState::kDefault
+                   runningState:RunningSafetyCheckState::kDefault];
+
+  IOSChromeSafetyCheckManager* safetyCheckManager =
+      IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
+          _browser->GetBrowserState());
+
+  // Update Chrome check.
+  state.updateChromeState = safetyCheckManager->GetUpdateChromeCheckState();
+
+  absl::optional<UpdateChromeSafetyCheckState> overrideUpdateChromeState =
+      experimental_flags::GetUpdateChromeSafetyCheckState();
+
+  if (overrideUpdateChromeState.has_value()) {
+    state.updateChromeState = overrideUpdateChromeState.value();
+  }
+
+  // Password check.
+  state.passwordState = safetyCheckManager->GetPasswordCheckState();
+
+  absl::optional<PasswordSafetyCheckState> overridePasswordState =
+      experimental_flags::GetPasswordSafetyCheckState();
+
+  if (overridePasswordState.has_value()) {
+    state.passwordState = overridePasswordState.value();
+  }
+
+  // Safe Browsing check.
+  state.safeBrowsingState = safetyCheckManager->GetSafeBrowsingCheckState();
+
+  absl::optional<SafeBrowsingSafetyCheckState> overrideSafeBrowsingState =
+      experimental_flags::GetSafeBrowsingSafetyCheckState();
+
+  if (overrideSafeBrowsingState.has_value()) {
+    state.safeBrowsingState = overrideSafeBrowsingState.value();
+  }
+
+  // Insecure credentials.
+  std::vector<password_manager::CredentialUIEntry> insecureCredentials =
+      safetyCheckManager->GetInsecureCredentials();
+
+  password_manager::InsecurePasswordCounts counts =
+      password_manager::CountInsecurePasswordsPerInsecureType(
+          insecureCredentials);
+
+  state.weakPasswordsCount = counts.weak_count;
+  state.reusedPasswordsCount = counts.reused_count;
+  state.compromisedPasswordsCount = counts.compromised_count;
+
+  // Last run time.
+  state.lastRunTime = safetyCheckManager->GetLastSafetyCheckRunTime();
+
+  state.runningState = CanRunSafetyCheck(state.lastRunTime)
+                           ? RunningSafetyCheckState::kRunning
+                           : RunningSafetyCheckState::kDefault;
+
+  return state;
+}
 
 - (void)configureConsumer {
   if (!self.consumer) {

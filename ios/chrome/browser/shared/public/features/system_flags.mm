@@ -19,6 +19,7 @@
 #import "components/variations/variations_associated_data.h"
 #import "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
@@ -34,6 +35,12 @@ NSString* const kClearApplicationGroup = @"ClearApplicationGroup";
 NSString* const kNextPromoForDisplayOverride = @"NextPromoForDisplayOverride";
 NSString* const kForceExperienceForDeviceSwitcherExperimentalSettings =
     @"ForceExperienceForDeviceSwitcher";
+NSString* const kSafetyCheckUpdateChromeStateOverride =
+    @"SafetyCheckUpdateChromeStateOverride";
+NSString* const kSafetyCheckPasswordStateOverride =
+    @"SafetyCheckPasswordStateOverride";
+NSString* const kSafetyCheckSafeBrowsingStateOverride =
+    @"SafetyCheckSafeBrowsingStateOverride";
 NSString* const kSimulatePostDeviceRestore = @"SimulatePostDeviceRestore";
 BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              "EnableThirdPartyKeyboardWorkaround",
@@ -144,6 +151,30 @@ bool IsThirdPartyKeyboardWorkaroundEnabled() {
 NSString* GetForcedPromoToDisplay() {
   return [[NSUserDefaults standardUserDefaults]
       stringForKey:kNextPromoForDisplayOverride];
+}
+
+absl::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState() {
+  std::string state =
+      base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
+          stringForKey:kSafetyCheckUpdateChromeStateOverride]);
+
+  return UpdateChromeSafetyCheckStateForName(state);
+}
+
+absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState() {
+  std::string state =
+      base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
+          stringForKey:kSafetyCheckPasswordStateOverride]);
+
+  return PasswordSafetyCheckStateForName(state);
+}
+
+absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState() {
+  std::string state =
+      base::SysNSStringToUTF8([[NSUserDefaults standardUserDefaults]
+          stringForKey:kSafetyCheckSafeBrowsingStateOverride]);
+
+  return SafeBrowsingSafetyCheckStateForName(state);
 }
 
 std::string GetSegmentForForcedDeviceSwitcherExperience() {

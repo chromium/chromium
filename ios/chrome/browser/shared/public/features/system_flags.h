@@ -5,9 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_
 
+#import <string>
+
+#import "third_party/abseil-cpp/absl/types/optional.h"
+
 #import <Foundation/Foundation.h>
 
-#include <string>
+enum class UpdateChromeSafetyCheckState;
+enum class PasswordSafetyCheckState;
+enum class SafeBrowsingSafetyCheckState;
 
 // This file can be empty. Its purpose is to contain the flags living in the
 // System Settings, used for testing/debugging. No base::Feature (or check for
@@ -86,6 +92,18 @@ bool MustClearApplicationGroupSandbox();
 // launched or resumed. Returns empty string if no promo is to be forced
 // to display. Always returns nil for users in stable/beta.
 NSString* GetForcedPromoToDisplay();
+
+// Returns the forced state of the Update Chrome check in the Safety Check
+// (Magic Stack) module.
+absl::optional<UpdateChromeSafetyCheckState> GetUpdateChromeSafetyCheckState();
+
+// Returns the forced state of the Password check in the Safety Check (Magic
+// Stack) module.
+absl::optional<PasswordSafetyCheckState> GetPasswordSafetyCheckState();
+
+// Returns the forced state of the Safe Browsing check in the Safety Check
+// (Magic Stack) module.
+absl::optional<SafeBrowsingSafetyCheckState> GetSafeBrowsingSafetyCheckState();
 
 // Returns the selected device segment the user wants to simulate as a string;
 // the string should either be nil or one of the options from synthetic trial

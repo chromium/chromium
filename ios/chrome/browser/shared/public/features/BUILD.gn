@@ -16,6 +16,7 @@ source_set("system_flags") {
     "system_flags.h",
     "system_flags.mm",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
   deps = [
     "//base",
     "//build:branding_buildflags",
@@ -24,6 +25,7 @@ source_set("system_flags") {
     "//components/variations",
     "//ios/chrome/browser/browsing_data:feature_flags",
     "//ios/chrome/browser/flags:system_flags",
+    "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/public/features",
   ]
 }
