@@ -1,5 +1,5 @@
 # Autofill
-per-file AwAutofillTest.java=battre@chromium.org
+per-file AwAutofillTest.java=file://components/android_autofill/OWNERS
 
 # ContentCapture
 per-file AwContentCaptureTest.java=file://components/content_capture/OWNERS
