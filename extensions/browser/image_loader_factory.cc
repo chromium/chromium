@@ -30,9 +30,10 @@ ImageLoaderFactory::ImageLoaderFactory()
 ImageLoaderFactory::~ImageLoaderFactory() {
 }
 
-KeyedService* ImageLoaderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ImageLoaderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ImageLoader;
+  return std::make_unique<ImageLoader>();
 }
 
 content::BrowserContext* ImageLoaderFactory::GetBrowserContextToUse(
