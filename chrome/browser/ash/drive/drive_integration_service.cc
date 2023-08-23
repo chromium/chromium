@@ -106,10 +106,6 @@ const base::FilePath::CharType kMetadataDirectory[] = FILE_PATH_LITERAL("meta");
 const base::FilePath::CharType kCacheFileDirectory[] =
     FILE_PATH_LITERAL("files");
 
-// Name of the directory used to store temporary files.
-const base::FilePath::CharType kTemporaryFileDirectory[] =
-    FILE_PATH_LITERAL("tmp");
-
 void DeleteDirectoryContents(const base::FilePath& dir) {
   base::FileEnumerator content_enumerator(
       dir, false,
@@ -141,51 +137,55 @@ base::FilePath GetRecoveredFilesPath(
 // Must be run on the same task runner used by |cache| and |resource_metadata|.
 FileError InitializeMetadata(
     const base::FilePath& cache_root_directory,
-    internal::ResourceMetadataStorage* metadata_storage,
+    internal::ResourceMetadataStorage* const metadata_storage,
     const base::FilePath& downloads_directory) {
-  if (!base::DirectoryExists(
-          cache_root_directory.Append(kTemporaryFileDirectory))) {
-    if (base::SysInfo::IsRunningOnChromeOS()) {
-      LOG(ERROR) << "/tmp should have been created as clear.";
-    }
-    // Create /tmp directory as encrypted. Cryptohome will re-create /tmp
-    // direcotry at the next login.
-    if (!base::CreateDirectory(
-            cache_root_directory.Append(kTemporaryFileDirectory))) {
-      LOG(WARNING) << "Failed to create directories.";
+  const base::FilePath tmp_dir = cache_root_directory.Append("tmp");
+  const base::FilePath metadata_dir =
+      cache_root_directory.Append(kMetadataDirectory);
+  const base::FilePath cache_file_dir =
+      cache_root_directory.Append(kCacheFileDirectory);
+
+  // Create tmp directory as encrypted. Cryptohome will re-create tmp directory
+  // at the next login.
+  for (const base::FilePath& dir : {tmp_dir, metadata_dir, cache_file_dir}) {
+    if (!base::CreateDirectory(dir)) {
+      PLOG(ERROR) << "Cannot create dir " << dir;
       return FILE_ERROR_FAILED;
     }
   }
-  // Files in temporary directory need not persist across sessions. Clean up
-  // the directory content while initialization. The directory itself should not
-  // be deleted because it's created by cryptohome in clear and shouldn't be
+
+  // Files in tmp directory need not persist across sessions. Clean up the
+  // directory content while initialization. The directory itself should not be
+  // deleted because it's created by cryptohome in clear and shouldn't be
   // re-created as encrypted.
-  DeleteDirectoryContents(cache_root_directory.Append(kTemporaryFileDirectory));
-  if (!base::CreateDirectory(cache_root_directory.Append(kMetadataDirectory)) ||
-      !base::CreateDirectory(
-          cache_root_directory.Append(kCacheFileDirectory))) {
-    LOG(WARNING) << "Failed to create directories.";
-    return FILE_ERROR_FAILED;
-  }
+  DeleteDirectoryContents(tmp_dir);
 
   // Change permissions of cache file directory to u+rwx,og+x (711) in order to
   // allow archive files in that directory to be mounted by cros-disks.
-  base::SetPosixFilePermissions(
-      cache_root_directory.Append(kCacheFileDirectory),
-      base::FILE_PERMISSION_USER_MASK | base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-          base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+  if (!base::SetPosixFilePermissions(
+          cache_file_dir, base::FILE_PERMISSION_USER_MASK |
+                              base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                              base::FILE_PERMISSION_EXECUTE_BY_OTHERS)) {
+    PLOG(ERROR) << "Cannot set permissions on dir " << cache_file_dir;
+  }
 
   // If attempting to migrate to DriveFS without previous Drive sync data
   // present, skip the migration.
-  if (base::IsDirectoryEmpty(cache_root_directory.Append(kMetadataDirectory))) {
+  if (base::IsDirectoryEmpty(metadata_dir)) {
+    VLOG(1) << "Dir " << metadata_dir << " is empty";
     return FILE_ERROR_FAILED;
   }
 
-  internal::ResourceMetadataStorage::UpgradeOldDB(
-      metadata_storage->directory_path());
+  DCHECK(metadata_storage);
+  if (!internal::ResourceMetadataStorage::UpgradeOldDB(
+          metadata_storage->directory_path())) {
+    LOG(ERROR) << "Cannot upgrade the metadata storage "
+               << metadata_storage->directory_path();
+  }
 
   if (!metadata_storage->Initialize()) {
-    LOG(WARNING) << "Failed to initialize the metadata storage.";
+    LOG(ERROR) << "Cannot initialize the metadata storage "
+               << metadata_storage->directory_path();
     return FILE_ERROR_FAILED;
   }
 
