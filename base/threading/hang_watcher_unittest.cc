@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
@@ -56,6 +57,51 @@ constexpr uint64_t kAllOnes = 0xFFFFFFFFFFFFFFFFu;
 constexpr uint64_t kAllZeros = 0x0000000000000000u;
 constexpr uint64_t kOnesThenZeroes = 0xAAAAAAAAAAAAAAAAu;
 constexpr uint64_t kZeroesThenOnes = 0x5555555555555555u;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+class HangWatcherEnabledInZygoteChildTest
+    : public testing::TestWithParam<std::tuple<bool, bool>> {
+ public:
+  HangWatcherEnabledInZygoteChildTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        kFeatureAndParams;
+    std::vector<test::FeatureRef> disabled_features;
+    if (std::get<0>(GetParam())) {
+      enabled_features.push_back(test::FeatureRefAndParams(
+          base::kEnableHangWatcherInZygoteChildren, {}));
+    } else {
+      disabled_features.push_back(base::kEnableHangWatcherInZygoteChildren);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+    HangWatcher::InitializeOnMainThread(
+        HangWatcher::ProcessType::kUtilityProcess,
+        /*is_zygote_child=*/std::get<1>(GetParam()));
+  }
+
+  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
+
+  HangWatcherEnabledInZygoteChildTest(
+      const HangWatcherEnabledInZygoteChildTest& other) = delete;
+  HangWatcherEnabledInZygoteChildTest& operator=(
+      const HangWatcherEnabledInZygoteChildTest& other) = delete;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(HangWatcherEnabledInZygoteChildTest, IsEnabled) {
+  // If the kEnableHangWatcherInZygoteChildren feature is disabled and
+  // InitializeOnMainThread is called with is_zygote_child==true, IsEnabled()
+  // should return false. It should return true in all other situations.
+  ASSERT_EQ(std::get<0>(GetParam()) || !std::get<1>(GetParam()),
+            HangWatcher::IsEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(HangWatcherZygoteTest,
+                         HangWatcherEnabledInZygoteChildTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // Waits on provided WaitableEvent before executing and signals when done.
 class BlockingThread : public DelegateSimpleThread::Delegate {
@@ -117,8 +163,8 @@ class HangWatcherTest : public testing::Test {
 
   HangWatcherTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess);
+    HangWatcher::InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess, false);
 
     hang_watcher_.SetAfterMonitorClosureForTesting(base::BindRepeating(
         &WaitableEvent::Signal, base::Unretained(&monitor_event_)));
@@ -134,7 +180,7 @@ class HangWatcherTest : public testing::Test {
     hang_watcher_.Start();
   }
 
-  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
+  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
 
   HangWatcherTest(const HangWatcherTest& other) = delete;
   HangWatcherTest& operator=(const HangWatcherTest& other) = delete;
@@ -516,15 +562,15 @@ class HangWatcherSnapshotTest : public testing::Test {
  public:
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess);
+    HangWatcher::InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess, false);
 
     // The monitoring loop behavior is not verified in this test so we want to
     // trigger monitoring manually.
     hang_watcher_.SetMonitoringPeriodForTesting(kVeryLongDelta);
   }
 
-  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
+  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
 
   HangWatcherSnapshotTest() = default;
   HangWatcherSnapshotTest(const HangWatcherSnapshotTest& other) = delete;
@@ -779,7 +825,7 @@ class HangWatcherPeriodicMonitoringTest : public testing::Test {
  public:
   HangWatcherPeriodicMonitoringTest() {
     hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess);
+        HangWatcher::ProcessType::kBrowserProcess, false);
 
     hang_watcher_.SetMonitoringPeriodForTesting(kMonitoringPeriod);
     hang_watcher_.SetOnHangClosureForTesting(base::BindRepeating(
@@ -935,8 +981,8 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
  public:
   WatchHangsInScopeBlockingTest() {
     feature_list_.InitWithFeaturesAndParameters(kFeatureAndParams, {});
-    hang_watcher_.InitializeOnMainThread(
-        HangWatcher::ProcessType::kBrowserProcess);
+    HangWatcher::InitializeOnMainThread(
+        HangWatcher::ProcessType::kBrowserProcess, false);
 
     hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([&] {
       capture_started_.Signal();
@@ -964,7 +1010,7 @@ class WatchHangsInScopeBlockingTest : public testing::Test {
         HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kMainThread);
   }
 
-  void TearDown() override { hang_watcher_.UnitializeOnMainThreadForTesting(); }
+  void TearDown() override { HangWatcher::UnitializeOnMainThreadForTesting(); }
 
   WatchHangsInScopeBlockingTest(const WatchHangsInScopeBlockingTest& other) =
       delete;

@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
@@ -315,6 +316,20 @@ int RendererMain(MainFunctionParams parameters) {
       if (client) {
         client->PostSandboxInitialized();
       }
+    }
+
+    // Start the HangWatcher now that the sandbox is engaged, if it hasn't
+    // already been started.
+    if (base::HangWatcher::IsEnabled() &&
+        !base::HangWatcher::GetInstance()->IsStarted()) {
+      DCHECK(parameters.hang_watcher_not_started_time.has_value());
+      base::TimeDelta uncovered_hang_watcher_time =
+          base::TimeTicks::Now() -
+          parameters.hang_watcher_not_started_time.value();
+      base::UmaHistogramTimes(
+          "HangWatcher.RendererProcess.UncoveredStartupTime",
+          uncovered_hang_watcher_time);
+      base::HangWatcher::GetInstance()->Start();
     }
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)

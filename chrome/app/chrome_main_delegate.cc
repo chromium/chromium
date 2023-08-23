@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/overloaded.h"
 #include "base/i18n/rtl.h"
 #include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
@@ -674,7 +675,7 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   const auto* invoked_in_browser =
       absl::get_if<InvokedInBrowserProcess>(&invoked_in);
   if (!invoked_in_browser) {
-    CommonEarlyInitialization();
+    CommonEarlyInitialization(invoked_in);
     return absl::nullopt;
   }
 
@@ -839,7 +840,7 @@ absl::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  CommonEarlyInitialization();
+  CommonEarlyInitialization(invoked_in);
 
   // Initializes the resource bundle and determines the locale.
   std::string actual_locale = LoadLocalState(
@@ -896,7 +897,7 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
   return ShouldCreateFeatureList(invoked_in);
 }
 
-void ChromeMainDelegate::CommonEarlyInitialization() {
+void ChromeMainDelegate::CommonEarlyInitialization(InvokedIn invoked_in) {
   const base::CommandLine* const command_line =
       base::CommandLine::ForCurrentProcess();
   std::string process_type =
@@ -946,7 +947,16 @@ void ChromeMainDelegate::CommonEarlyInitialization() {
   } else {
     hang_watcher_process_type = base::HangWatcher::ProcessType::kUnknownProcess;
   }
-  base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type);
+  bool is_zygote_child = absl::visit(
+      base::Overloaded{[](const InvokedInBrowserProcess& invoked_in_browser) {
+                         return false;
+                       },
+                       [](const InvokedInChildProcess& invoked_in_child) {
+                         return invoked_in_child.is_zygote_child;
+                       }},
+      invoked_in);
+  base::HangWatcher::InitializeOnMainThread(
+      hang_watcher_process_type, /*is_zygote_child=*/is_zygote_child);
 
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();

@@ -42,6 +42,7 @@ chromium-metrics-reviews@google.com.
 <variants name="ProcessType">
   <variant name="BrowserProcess"/>
   <variant name="RendererProcess"/>
+  <variant name="UtilityProcess"/>
 </variants>
 
 <histogram name="HangWatcher.IsThreadHung.{ProcessAndThreadType}"
@@ -81,6 +82,24 @@ chromium-metrics-reviews@google.com.
     this histogram could hint at a larger problem and would prevent
     missinterpreting a reduced inflow of hang reports as a improvement when it
     is in fact caused by hindered capabilities.
+  </summary>
+  <token key="ProcessType" variants="ProcessType"/>
+</histogram>
+
+<histogram name="HangWatcher.{ProcessType}.UncoveredStartupTime" units="ms"
+    expires_after="2023-12-22">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Because HangWatcher start is delayed until the sandbox is initialized on
+    Linux and ChromeOS, this measures the delta between the time HangWatcher
+    would have started in an unsandboxed process and the time the HangWatcher
+    actually started. The metric is emitted in the process type's main function
+    (e.g. RendererMain, UtilityMain) right after the sandbox is engaged and
+    right before HangWatcher is started.
+
+    This will be used to evaluate whether hangs are missed during startup
+    because of this delay.
   </summary>
   <token key="ProcessType" variants="ProcessType"/>
 </histogram>

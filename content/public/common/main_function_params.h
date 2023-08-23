@@ -11,8 +11,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
 namespace sandbox {
@@ -59,6 +61,10 @@ struct CONTENT_EXPORT MainFunctionParams {
   // Set to true if this content process's main function should enable startup
   // tracing after initializing Mojo.
   bool needs_startup_tracing_after_mojo_init = false;
+
+  // If non-null, this is the time the HangWatcher would have started if not
+  // delayed until after sandbox initialization.
+  absl::optional<base::TimeTicks> hang_watcher_not_started_time;
 
   // Used by BrowserTestBase. If set, BrowserMainLoop runs this task instead of
   // the main message loop.
