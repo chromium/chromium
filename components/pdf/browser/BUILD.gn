@@ -9,9 +9,9 @@ assert(enable_pdf)
 
 source_set("browser") {
   sources = [
-    "pdf_web_contents_helper.cc",
-    "pdf_web_contents_helper.h",
-    "pdf_web_contents_helper_client.h",
+    "pdf_document_helper.cc",
+    "pdf_document_helper.h",
+    "pdf_document_helper_client.h",
   ]
 
   public_deps = [
@@ -24,6 +24,7 @@ source_set("browser") {
 
   deps = [
     "//content/public/common",
+    "//pdf:features",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

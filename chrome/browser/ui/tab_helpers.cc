@@ -89,7 +89,6 @@
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/focus_tab_after_navigation_helper.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
@@ -260,10 +259,6 @@
 #include "chrome/browser/offline_pages/android/auto_fetch_page_load_watcher.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
 #include "chrome/browser/offline_pages/recent_tab_helper.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/browser/pdf_web_contents_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -698,11 +693,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   offline_pages::OfflinePageTabHelper::CreateForWebContents(web_contents);
   offline_pages::RecentTabHelper::CreateForWebContents(web_contents);
   offline_pages::AutoFetchPageLoadWatcher::CreateForWebContents(web_contents);
-#endif
-
-#if BUILDFLAG(ENABLE_PDF)
-  pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
-      web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)

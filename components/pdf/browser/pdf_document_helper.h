@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_H_
-#define COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_H_
+#ifndef COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_H_
+#define COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_H_
 
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -22,32 +22,30 @@
 namespace content {
 class RenderWidgetHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace pdf {
 
-class PDFWebContentsHelperClient;
+class PDFDocumentHelperClient;
 
-// Per-WebContents class to handle PDF messages.
-class PDFWebContentsHelper
-    : public content::WebContentsUserData<PDFWebContentsHelper>,
+// Per-Document class to handle PDF messages.
+class PDFDocumentHelper
+    : public content::DocumentUserData<PDFDocumentHelper>,
       public content::RenderWidgetHostObserver,
       public mojom::PdfService,
       public ui::TouchSelectionControllerClient,
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
-  PDFWebContentsHelper(const PDFWebContentsHelper&) = delete;
-  PDFWebContentsHelper& operator=(const PDFWebContentsHelper&) = delete;
+  PDFDocumentHelper(const PDFDocumentHelper&) = delete;
+  PDFDocumentHelper& operator=(const PDFDocumentHelper&) = delete;
 
-  ~PDFWebContentsHelper() override;
+  ~PDFDocumentHelper() override;
 
-  static void CreateForWebContentsWithClient(
-      content::WebContents* contents,
-      std::unique_ptr<PDFWebContentsHelperClient> client);
   static void BindPdfService(
       mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* rfh,
+      std::unique_ptr<PDFDocumentHelperClient> client);
 
   // content::RenderWidgetHostObserver:
   void RenderWidgetHostDestroyed(
@@ -90,18 +88,19 @@ class PDFWebContentsHelper
   void SetPluginCanSave(bool can_save) override;
 
  private:
-  friend class content::WebContentsUserData<PDFWebContentsHelper>;
+  friend class content::DocumentUserData<PDFDocumentHelper>;
 
-  PDFWebContentsHelper(content::WebContents* web_contents,
-                       std::unique_ptr<PDFWebContentsHelperClient> client);
+  PDFDocumentHelper(content::RenderFrameHost* rfh,
+                    std::unique_ptr<PDFDocumentHelperClient> client);
 
+  content::WebContents& GetWebContents();
   void InitTouchSelectionClientManager();
   gfx::PointF ConvertFromRoot(const gfx::PointF& point_f);
   gfx::PointF ConvertToRoot(const gfx::PointF& point_f);
   gfx::PointF ConvertHelper(const gfx::PointF& point_f, float scale);
 
   content::RenderFrameHostReceiverSet<mojom::PdfService> pdf_service_receivers_;
-  std::unique_ptr<PDFWebContentsHelperClient> const client_;
+  std::unique_ptr<PDFDocumentHelperClient> const client_;
   raw_ptr<content::TouchSelectionControllerClientManager>
       touch_selection_controller_client_manager_ = nullptr;
 
@@ -119,9 +118,9 @@ class PDFWebContentsHelper
 
   mojo::Remote<mojom::PdfListener> remote_pdf_client_;
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  DOCUMENT_USER_DATA_KEY_DECL();
 };
 
 }  // namespace pdf
 
-#endif  // COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_H_
+#endif  // COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_H_

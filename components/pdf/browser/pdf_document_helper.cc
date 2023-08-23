@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/pdf/browser/pdf_web_contents_helper.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "components/pdf/browser/pdf_web_contents_helper_client.h"
+#include "components/pdf/browser/pdf_document_helper_client.h"
+#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer_type_converters.h"
+#include "pdf/pdf_features.h"
 #include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -20,74 +24,65 @@
 namespace pdf {
 
 // static
-void PDFWebContentsHelper::CreateForWebContentsWithClient(
-    content::WebContents* contents,
-    std::unique_ptr<PDFWebContentsHelperClient> client) {
-  if (FromWebContents(contents))
-    return;
-  contents->SetUserData(
-      UserDataKey(),
-      base::WrapUnique(new PDFWebContentsHelper(contents, std::move(client))));
-}
-
-// static
-void PDFWebContentsHelper::BindPdfService(
+void PDFDocumentHelper::BindPdfService(
     mojo::PendingAssociatedReceiver<mojom::PdfService> pdf_service,
-    content::RenderFrameHost* rfh) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return;
-  auto* pdf_helper = PDFWebContentsHelper::FromWebContents(web_contents);
-  if (!pdf_helper)
-    return;
+    content::RenderFrameHost* rfh,
+    std::unique_ptr<PDFDocumentHelperClient> client) {
+  auto* pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
+  if (!pdf_helper) {
+    PDFDocumentHelper::CreateForCurrentDocument(rfh, std::move(client));
+    pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
+  }
   pdf_helper->pdf_service_receivers_.Bind(rfh, std::move(pdf_service));
 }
 
-PDFWebContentsHelper::PDFWebContentsHelper(
-    content::WebContents* web_contents,
-    std::unique_ptr<PDFWebContentsHelperClient> client)
-    : content::WebContentsUserData<PDFWebContentsHelper>(*web_contents),
-      pdf_service_receivers_(web_contents, this),
+PDFDocumentHelper::PDFDocumentHelper(
+    content::RenderFrameHost* rfh,
+    std::unique_ptr<PDFDocumentHelperClient> client)
+    : content::DocumentUserData<PDFDocumentHelper>(rfh),
+      pdf_service_receivers_(content::WebContents::FromRenderFrameHost(rfh),
+                             this),
       client_(std::move(client)) {}
 
-PDFWebContentsHelper::~PDFWebContentsHelper() {
-  if (pdf_rwh_)
+PDFDocumentHelper::~PDFDocumentHelper() {
+  if (pdf_rwh_) {
     pdf_rwh_->RemoveObserver(this);
+  }
 
-  if (!touch_selection_controller_client_manager_)
+  if (!touch_selection_controller_client_manager_) {
     return;
+  }
 
-  // PDFWebContentsHelperTest overrides TouchSelectionControllerClientManager
-  // to mock it and GetTouchSelectionController() returns nullptr in that case.
-  // This check prevents the tests from failing in that condition.
   ui::TouchSelectionController* touch_selection_controller =
       touch_selection_controller_client_manager_->GetTouchSelectionController();
-  if (touch_selection_controller)
-    touch_selection_controller->HideAndDisallowShowingAutomatically();
+  touch_selection_controller->HideAndDisallowShowingAutomatically();
 
   touch_selection_controller_client_manager_->InvalidateClient(this);
   touch_selection_controller_client_manager_->RemoveObserver(this);
 }
 
-void PDFWebContentsHelper::SetListener(
+void PDFDocumentHelper::SetListener(
     mojo::PendingRemote<mojom::PdfListener> listener) {
   remote_pdf_client_.reset();
   remote_pdf_client_.Bind(std::move(listener));
 
-  if (pdf_rwh_)
+  if (pdf_rwh_) {
     pdf_rwh_->RemoveObserver(this);
+  }
   pdf_rwh_ = client_->FindPdfFrame(&GetWebContents())->GetRenderWidgetHost();
   pdf_rwh_->AddObserver(this);
 }
 
-gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
-                                                float scale) {
-  if (!pdf_rwh_)
+gfx::PointF PDFDocumentHelper::ConvertHelper(const gfx::PointF& point_f,
+                                             float scale) {
+  if (!pdf_rwh_) {
     return point_f;
+  }
 
   content::RenderWidgetHostView* view = pdf_rwh_->GetView();
-  if (!view)
+  if (!view) {
     return point_f;
+  }
 
   gfx::Vector2dF offset =
       view->TransformPointToRootCoordSpaceF(gfx::PointF()).OffsetFromOrigin();
@@ -96,18 +91,18 @@ gfx::PointF PDFWebContentsHelper::ConvertHelper(const gfx::PointF& point_f,
   return point_f + offset;
 }
 
-gfx::PointF PDFWebContentsHelper::ConvertFromRoot(const gfx::PointF& point_f) {
+gfx::PointF PDFDocumentHelper::ConvertFromRoot(const gfx::PointF& point_f) {
   return ConvertHelper(point_f, -1.f);
 }
 
-gfx::PointF PDFWebContentsHelper::ConvertToRoot(const gfx::PointF& point_f) {
+gfx::PointF PDFDocumentHelper::ConvertToRoot(const gfx::PointF& point_f) {
   return ConvertHelper(point_f, +1.f);
 }
 
-void PDFWebContentsHelper::SelectionChanged(const gfx::PointF& left,
-                                            int32_t left_height,
-                                            const gfx::PointF& right,
-                                            int32_t right_height) {
+void PDFDocumentHelper::SelectionChanged(const gfx::PointF& left,
+                                         int32_t left_height,
+                                         const gfx::PointF& right,
+                                         int32_t right_height) {
   selection_left_ = left;
   selection_left_height_ = left_height;
   selection_right_ = right;
@@ -116,14 +111,15 @@ void PDFWebContentsHelper::SelectionChanged(const gfx::PointF& left,
   DidScroll();
 }
 
-void PDFWebContentsHelper::SetPluginCanSave(bool can_save) {
+void PDFDocumentHelper::SetPluginCanSave(bool can_save) {
   client_->SetPluginCanSave(pdf_service_receivers_.GetCurrentTargetFrame(),
                             can_save);
 }
 
-void PDFWebContentsHelper::DidScroll() {
-  if (!touch_selection_controller_client_manager_)
+void PDFDocumentHelper::DidScroll() {
+  if (!touch_selection_controller_client_manager_) {
     InitTouchSelectionClientManager();
+  }
 
   if (!touch_selection_controller_client_manager_) {
     return;
@@ -160,62 +156,65 @@ void PDFWebContentsHelper::DidScroll() {
   client_->OnDidScroll(start, end);
 }
 
-void PDFWebContentsHelper::RenderWidgetHostDestroyed(
+void PDFDocumentHelper::RenderWidgetHostDestroyed(
     content::RenderWidgetHost* widget_host) {
-  if (pdf_rwh_ == widget_host)
+  if (pdf_rwh_ == widget_host) {
     pdf_rwh_ = nullptr;
+  }
 }
 
-bool PDFWebContentsHelper::SupportsAnimation() const {
+bool PDFDocumentHelper::SupportsAnimation() const {
   return false;
 }
 
-void PDFWebContentsHelper::MoveCaret(const gfx::PointF& position) {
-  if (!remote_pdf_client_)
+void PDFDocumentHelper::MoveCaret(const gfx::PointF& position) {
+  if (!remote_pdf_client_) {
     return;
+  }
   remote_pdf_client_->SetCaretPosition(ConvertFromRoot(position));
 }
 
-void PDFWebContentsHelper::MoveRangeSelectionExtent(const gfx::PointF& extent) {
-  if (!remote_pdf_client_)
+void PDFDocumentHelper::MoveRangeSelectionExtent(const gfx::PointF& extent) {
+  if (!remote_pdf_client_) {
     return;
+  }
   remote_pdf_client_->MoveRangeSelectionExtent(ConvertFromRoot(extent));
 }
 
-void PDFWebContentsHelper::SelectBetweenCoordinates(const gfx::PointF& base,
-                                                    const gfx::PointF& extent) {
-  if (!remote_pdf_client_)
+void PDFDocumentHelper::SelectBetweenCoordinates(const gfx::PointF& base,
+                                                 const gfx::PointF& extent) {
+  if (!remote_pdf_client_) {
     return;
+  }
   remote_pdf_client_->SetSelectionBounds(ConvertFromRoot(base),
                                          ConvertFromRoot(extent));
 }
 
-void PDFWebContentsHelper::OnSelectionEvent(ui::SelectionEventType event) {
+void PDFDocumentHelper::OnSelectionEvent(ui::SelectionEventType event) {
   // Should be handled by `TouchSelectionControllerClientAura`.
   NOTREACHED();
 }
 
-void PDFWebContentsHelper::OnDragUpdate(
+void PDFDocumentHelper::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   // Should be handled by `TouchSelectionControllerClientAura`.
   NOTREACHED();
 }
 
-std::unique_ptr<ui::TouchHandleDrawable>
-PDFWebContentsHelper::CreateDrawable() {
+std::unique_ptr<ui::TouchHandleDrawable> PDFDocumentHelper::CreateDrawable() {
   // We can return null here, as the manager will look after this.
   return nullptr;
 }
 
-void PDFWebContentsHelper::OnManagerWillDestroy(
+void PDFDocumentHelper::OnManagerWillDestroy(
     content::TouchSelectionControllerClientManager* manager) {
   DCHECK_EQ(touch_selection_controller_client_manager_, manager);
   manager->RemoveObserver(this);
   touch_selection_controller_client_manager_ = nullptr;
 }
 
-bool PDFWebContentsHelper::IsCommandIdEnabled(int command_id) const {
+bool PDFDocumentHelper::IsCommandIdEnabled(int command_id) const {
   // TODO(wjmaclean|dsinclair): Make PDFium send readability information in the
   // selection changed message?
   bool readable = true;
@@ -229,7 +228,7 @@ bool PDFWebContentsHelper::IsCommandIdEnabled(int command_id) const {
   return false;
 }
 
-void PDFWebContentsHelper::ExecuteCommand(int command_id, int event_flags) {
+void PDFDocumentHelper::ExecuteCommand(int command_id, int event_flags) {
   // TODO(wjmaclean, dsinclair): Need to communicate to PDFium to accept
   // cut/paste commands.
   switch (command_id) {
@@ -239,20 +238,29 @@ void PDFWebContentsHelper::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-void PDFWebContentsHelper::RunContextMenu() {
-  content::RenderFrameHost* focused_frame = GetWebContents().GetFocusedFrame();
-  if (!focused_frame)
-    return;
+void PDFDocumentHelper::RunContextMenu() {
+  content::RenderFrameHost* focused_frame;
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    focused_frame = &render_frame_host();
+  } else {
+    focused_frame = GetWebContents().GetFocusedFrame();
+    if (!focused_frame) {
+      return;
+    }
+  }
 
   content::RenderWidgetHost* widget = focused_frame->GetRenderWidgetHost();
-  if (!widget || !widget->GetView())
+  if (!widget || !widget->GetView()) {
     return;
+  }
 
-  if (!touch_selection_controller_client_manager_)
+  if (!touch_selection_controller_client_manager_) {
     InitTouchSelectionClientManager();
+  }
 
-  if (!touch_selection_controller_client_manager_)
+  if (!touch_selection_controller_client_manager_) {
     return;
+  }
 
   ui::TouchSelectionController* touch_selection_controller =
       touch_selection_controller_client_manager_->GetTouchSelectionController();
@@ -273,51 +281,63 @@ void PDFWebContentsHelper::RunContextMenu() {
   touch_selection_controller->HideAndDisallowShowingAutomatically();
 }
 
-bool PDFWebContentsHelper::ShouldShowQuickMenu() {
+bool PDFDocumentHelper::ShouldShowQuickMenu() {
   return false;
 }
 
-std::u16string PDFWebContentsHelper::GetSelectedText() {
+std::u16string PDFDocumentHelper::GetSelectedText() {
   return std::u16string();
 }
 
-void PDFWebContentsHelper::InitTouchSelectionClientManager() {
+content::WebContents& PDFDocumentHelper::GetWebContents() {
+  return *content::WebContents::FromRenderFrameHost(&render_frame_host());
+}
+
+void PDFDocumentHelper::InitTouchSelectionClientManager() {
   content::RenderWidgetHostView* view =
       GetWebContents().GetRenderWidgetHostView();
-  if (!view)
+  if (!view) {
     return;
+  }
 
   touch_selection_controller_client_manager_ =
       view->GetTouchSelectionControllerClientManager();
-  if (!touch_selection_controller_client_manager_)
+  if (!touch_selection_controller_client_manager_) {
     return;
+  }
 
   touch_selection_controller_client_manager_->AddObserver(this);
 }
 
-void PDFWebContentsHelper::HasUnsupportedFeature() {
+void PDFDocumentHelper::HasUnsupportedFeature() {
   client_->OnPDFHasUnsupportedFeature(&GetWebContents());
 }
 
-void PDFWebContentsHelper::SaveUrlAs(const GURL& url,
-                                     network::mojom::ReferrerPolicy policy) {
+void PDFDocumentHelper::SaveUrlAs(const GURL& url,
+                                  network::mojom::ReferrerPolicy policy) {
   client_->OnSaveURL(&GetWebContents());
 
-  content::RenderFrameHost* rfh = GetWebContents().GetOuterWebContentsFrame();
-  if (!rfh)
-    return;
+  content::RenderFrameHost* rfh;
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)) {
+    rfh = &render_frame_host();
+  } else {
+    rfh = GetWebContents().GetOuterWebContentsFrame();
+    if (!rfh) {
+      return;
+    }
+  }
 
   content::Referrer referrer(url, policy);
   referrer = content::Referrer::SanitizeForRequest(url, referrer);
   GetWebContents().SaveFrame(url, referrer, rfh);
 }
 
-void PDFWebContentsHelper::UpdateContentRestrictions(
+void PDFDocumentHelper::UpdateContentRestrictions(
     int32_t content_restrictions) {
   client_->UpdateContentRestrictions(
       pdf_service_receivers_.GetCurrentTargetFrame(), content_restrictions);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFWebContentsHelper);
+DOCUMENT_USER_DATA_KEY_IMPL(PDFDocumentHelper);
 
 }  // namespace pdf

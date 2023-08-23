@@ -91,11 +91,6 @@
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
-#include "components/pdf/browser/pdf_web_contents_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
 #endif
@@ -130,10 +125,6 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrintingForWebContents(web_contents);
-#endif
-#if BUILDFLAG(ENABLE_PDF)
-  pdf::PDFWebContentsHelper::CreateForWebContentsWithClient(
-      web_contents, std::make_unique<ChromePDFWebContentsHelperClient>());
 #endif
 }
 

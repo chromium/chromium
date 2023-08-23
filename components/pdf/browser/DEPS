@@ -6,6 +6,7 @@ include_rules = [
   "+net/base/net_errors.h",
   "+net/http/http_response_headers.h",
   "+pdf/mojom/pdf.mojom.h",
+  "+pdf/pdf_features.h",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
@@ -15,7 +16,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  'pdf_web_contents_helper_browsertest.cc': [
+  'pdf_document_helper_browsertest.cc': [
     "+content/shell",
   ],
 }

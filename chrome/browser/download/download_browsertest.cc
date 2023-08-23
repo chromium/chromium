@@ -171,7 +171,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/browser/pdf_web_contents_helper.h"
+#include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #endif
 
 using content::BrowserContext;
@@ -2341,11 +2342,15 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
       CreateWaiter(browser(), 1));
 
   // Simulate saving the PDF from the UI.
-  pdf::PDFWebContentsHelper* pdf_helper =
-      pdf::PDFWebContentsHelper::FromWebContents(inner_web_contents);
-  static_cast<pdf::mojom::PdfService*>(pdf_helper)
-      ->SaveUrlAs(subframe_url,
-                  network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
+  content::RenderFrameHost* extension_frame =
+      inner_web_contents->GetPrimaryMainFrame();
+  pdf::PDFDocumentHelper::CreateForCurrentDocument(
+      extension_frame, std::make_unique<ChromePDFDocumentHelperClient>());
+  pdf::PDFDocumentHelper* pdf_helper =
+      pdf::PDFDocumentHelper::GetForCurrentDocument(extension_frame);
+  pdf_helper->SaveUrlAs(
+      subframe_url,
+      network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin);
 
   request_waiter.Run();
 

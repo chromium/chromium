@@ -6238,8 +6238,8 @@ static_library("ui") {
 
   if (enable_pdf) {
     sources += [
-      "pdf/chrome_pdf_web_contents_helper_client.cc",
-      "pdf/chrome_pdf_web_contents_helper_client.h",
+      "pdf/chrome_pdf_document_helper_client.cc",
+      "pdf/chrome_pdf_document_helper_client.h",
     ]
     deps += [
       "//chrome/browser/pdf",

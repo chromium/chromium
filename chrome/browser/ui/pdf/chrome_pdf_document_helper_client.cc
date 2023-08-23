@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
+#include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
 
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
@@ -25,11 +25,11 @@ content::WebContents* GetWebContentsToUse(
 
 }  // namespace
 
-ChromePDFWebContentsHelperClient::ChromePDFWebContentsHelperClient() = default;
+ChromePDFDocumentHelperClient::ChromePDFDocumentHelperClient() = default;
 
-ChromePDFWebContentsHelperClient::~ChromePDFWebContentsHelperClient() = default;
+ChromePDFDocumentHelperClient::~ChromePDFDocumentHelperClient() = default;
 
-content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
+content::RenderFrameHost* ChromePDFDocumentHelperClient::FindPdfFrame(
     content::WebContents* contents) {
   content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
   content::RenderFrameHost* pdf_frame =
@@ -37,39 +37,41 @@ content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
   return pdf_frame ? pdf_frame : main_frame;
 }
 
-void ChromePDFWebContentsHelperClient::UpdateContentRestrictions(
+void ChromePDFDocumentHelperClient::UpdateContentRestrictions(
     content::RenderFrameHost* render_frame_host,
     int content_restrictions) {
   // Speculative short-term-fix while we get at the root of
   // https://crbug.com/752822 .
   content::WebContents* web_contents_to_use =
       GetWebContentsToUse(render_frame_host);
-  if (!web_contents_to_use)
+  if (!web_contents_to_use) {
     return;
+  }
 
   CoreTabHelper* core_tab_helper =
       CoreTabHelper::FromWebContents(web_contents_to_use);
   // |core_tab_helper| is null for WebViewGuest.
-  if (core_tab_helper)
+  if (core_tab_helper) {
     core_tab_helper->UpdateContentRestrictions(content_restrictions);
+  }
 }
 
-void ChromePDFWebContentsHelperClient::OnPDFHasUnsupportedFeature(
+void ChromePDFDocumentHelperClient::OnPDFHasUnsupportedFeature(
     content::WebContents* contents) {
   // There is no more Adobe plugin for PDF so there is not much we can do in
   // this case. Maybe simply download the file.
 }
 
-void ChromePDFWebContentsHelperClient::OnSaveURL(
-    content::WebContents* contents) {
+void ChromePDFDocumentHelperClient::OnSaveURL(content::WebContents* contents) {
   RecordDownloadSource(DOWNLOAD_INITIATED_BY_PDF_SAVE);
 }
 
-void ChromePDFWebContentsHelperClient::SetPluginCanSave(
+void ChromePDFDocumentHelperClient::SetPluginCanSave(
     content::RenderFrameHost* render_frame_host,
     bool can_save) {
   auto* guest_view =
       extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
-  if (guest_view)
+  if (guest_view) {
     guest_view->SetPluginCanSave(can_save);
+  }
 }

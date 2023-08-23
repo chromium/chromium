@@ -947,7 +947,7 @@ if (use_blink) {
 
     if (enable_pdf) {
       sources += [
-        "pdf/browser/pdf_web_contents_helper_browsertest.cc",
+        "pdf/browser/pdf_document_helper_browsertest.cc",
         "pdf/renderer/pdf_accessibility_tree_browsertest.cc",
       ]
       deps += [

@@ -107,7 +107,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "components/pdf/browser/pdf_web_contents_helper.h"  // nogncheck
+#include "chrome/browser/ui/pdf/chrome_pdf_document_helper_client.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -592,8 +593,9 @@ void ChromeContentBrowserClient::
   associated_registry.AddInterface<pdf::mojom::PdfService>(base::BindRepeating(
       [](content::RenderFrameHost* render_frame_host,
          mojo::PendingAssociatedReceiver<pdf::mojom::PdfService> receiver) {
-        pdf::PDFWebContentsHelper::BindPdfService(std::move(receiver),
-                                                  render_frame_host);
+        pdf::PDFDocumentHelper::BindPdfService(
+            std::move(receiver), render_frame_host,
+            std::make_unique<ChromePDFDocumentHelperClient>());
       },
       &render_frame_host));
 #endif  // BUILDFLAG(ENABLE_PDF)

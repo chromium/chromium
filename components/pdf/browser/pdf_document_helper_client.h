@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_CLIENT_H_
-#define COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_CLIENT_H_
+#ifndef COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_CLIENT_H_
+#define COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_CLIENT_H_
 
 namespace content {
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace gfx {
 class SelectionBound;
@@ -16,9 +16,9 @@ class SelectionBound;
 
 namespace pdf {
 
-class PDFWebContentsHelperClient {
+class PDFDocumentHelperClient {
  public:
-  virtual ~PDFWebContentsHelperClient() = default;
+  virtual ~PDFDocumentHelperClient() = default;
 
   virtual content::RenderFrameHost* FindPdfFrame(
       content::WebContents* contents) = 0;
@@ -42,4 +42,4 @@ class PDFWebContentsHelperClient {
 
 }  // namespace pdf
 
-#endif  // COMPONENTS_PDF_BROWSER_PDF_WEB_CONTENTS_HELPER_CLIENT_H_
+#endif  // COMPONENTS_PDF_BROWSER_PDF_DOCUMENT_HELPER_CLIENT_H_

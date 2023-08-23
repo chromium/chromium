@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/pdf/browser/pdf_web_contents_helper.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "components/pdf/browser/pdf_web_contents_helper_client.h"
+#include "components/pdf/browser/pdf_document_helper_client.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "content/public/test/browser_test.h"
@@ -41,20 +41,19 @@ class FakePdfListener : public pdf::mojom::PdfListener {
               (override));
 };
 
-class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
+class TestPDFDocumentHelperClient : public PDFDocumentHelperClient {
  public:
-  TestPDFWebContentsHelperClient() = default;
-  ~TestPDFWebContentsHelperClient() override = default;
-  TestPDFWebContentsHelperClient(const TestPDFWebContentsHelperClient&) =
+  TestPDFDocumentHelperClient() = default;
+  ~TestPDFDocumentHelperClient() override = default;
+  TestPDFDocumentHelperClient(const TestPDFDocumentHelperClient&) = delete;
+  TestPDFDocumentHelperClient& operator=(const TestPDFDocumentHelperClient&) =
       delete;
-  TestPDFWebContentsHelperClient& operator=(
-      const TestPDFWebContentsHelperClient&) = delete;
 
   const gfx::SelectionBound& GetSelectionBoundStart() const { return start_; }
   const gfx::SelectionBound& GetSelectionBoundEnd() const { return end_; }
 
  private:
-  // PDFWebContentsHelperClient:
+  // PDFDocumentHelperClient:
   content::RenderFrameHost* FindPdfFrame(
       content::WebContents* contents) override {
     return contents->GetPrimaryMainFrame();
@@ -73,73 +72,75 @@ class TestPDFWebContentsHelperClient : public PDFWebContentsHelperClient {
   }
 
  private:
-  // The last bounds reported by PDFWebContentsHelper.
+  // The last bounds reported by PDFDocumentHelper.
   gfx::SelectionBound start_;
   gfx::SelectionBound end_;
 };
 
 }  // namespace
 
-class PDFWebContentsHelperTest : public content::ContentBrowserTest {
+class PDFDocumentHelperTest : public content::ContentBrowserTest {
  public:
-  PDFWebContentsHelperTest() = default;
-  ~PDFWebContentsHelperTest() override = default;
+  PDFDocumentHelperTest() = default;
+  ~PDFDocumentHelperTest() override = default;
 
  protected:
   void SelectionChanged(const gfx::PointF& left,
                         int32_t left_height,
                         const gfx::PointF& right,
                         int32_t right_height) {
-    pdf_web_contents_helper()->SelectionChanged(left, left_height, right,
-                                                right_height);
+    pdf_document_helper()->SelectionChanged(left, left_height, right,
+                                            right_height);
   }
 
-  PDFWebContentsHelper* pdf_web_contents_helper() {
-    return PDFWebContentsHelper::FromWebContents(shell()->web_contents());
+  PDFDocumentHelper* pdf_document_helper() {
+    return PDFDocumentHelper::GetForCurrentDocument(
+        shell()->web_contents()->GetPrimaryMainFrame());
   }
 
   content::RenderWidgetHostView* GetRenderWidgetHostView() {
     return shell()->web_contents()->GetRenderWidgetHostView();
   }
 
-  TestPDFWebContentsHelperClient* client() { return client_; }
+  TestPDFDocumentHelperClient* client() { return client_; }
 
   // content::ContentBrowserTest:
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
 
     content::NavigateToURL(shell(), GURL("about:blank"));
-    auto client = std::make_unique<TestPDFWebContentsHelperClient>();
+    auto client = std::make_unique<TestPDFDocumentHelperClient>();
     client_ = client.get();
-    PDFWebContentsHelper::CreateForWebContentsWithClient(
-        shell()->web_contents(), std::move(client));
+    PDFDocumentHelper::CreateForCurrentDocument(
+        shell()->web_contents()->GetPrimaryMainFrame(), std::move(client));
   }
+
   void TearDownOnMainThread() override {
     client_ = nullptr;
     content::ContentBrowserTest::TearDownOnMainThread();
   }
 
  private:
-  raw_ptr<TestPDFWebContentsHelperClient> client_ = nullptr;
+  raw_ptr<TestPDFDocumentHelperClient> client_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SetListenerTwice) {
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, SetListenerTwice) {
   NiceMock<FakePdfListener> listener;
 
   {
     mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
-    pdf_web_contents_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
+    pdf_document_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
   }
 
   {
     mojo::Receiver<pdf::mojom::PdfListener> receiver(&listener);
-    pdf_web_contents_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
+    pdf_document_helper()->SetListener(receiver.BindNewPipeAndPassRemote());
   }
 }
 
 // Tests that select-changed on a pdf text brings up selection handles and the
 // quick menu in the reasonable position.
-IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, SelectionChanged) {
   gfx::SelectionBound initial_start = client()->GetSelectionBoundStart();
   gfx::SelectionBound initial_end = client()->GetSelectionBoundEnd();
 
@@ -211,12 +212,11 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, SelectionChanged) {
 }
 
 // When selecting something, only the copy command id should be enabled.
-IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
-                       IsCommandIdEnabledCopyEnabled) {
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, IsCommandIdEnabledCopyEnabled) {
   EXPECT_FALSE(
-      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
   EXPECT_FALSE(
-      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
 
   constexpr gfx::PointF kLeft(1.0f, 1.0f);
   constexpr gfx::PointF kRight(5.0f, 5.0f);
@@ -225,34 +225,34 @@ IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest,
   SelectionChanged(kLeft, kLeftHeight, kRight, kRightHeight);
 
   EXPECT_FALSE(
-      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
+      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCut));
 
 #if BUILDFLAG(IS_MAC)
   // Since macOS does not support Touch Selection Editing, the copy command is
   // not enabled.
   EXPECT_FALSE(
-      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
 #else
   EXPECT_TRUE(
-      pdf_web_contents_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
+      pdf_document_helper()->IsCommandIdEnabled(ui::TouchEditable::kCopy));
 #endif  // BUILDFLAG(IS_MAC)
 }
 
 // Test that the copy command executes.
-IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, ExecuteCommandCopy) {
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, ExecuteCommandCopy) {
   base::UserActionTester action_tester;
   EXPECT_EQ(0, action_tester.GetActionCount("Copy"));
 
-  pdf_web_contents_helper()->ExecuteCommand(ui::TouchEditable::kCopy, 0);
+  pdf_document_helper()->ExecuteCommand(ui::TouchEditable::kCopy, 0);
 
   EXPECT_EQ(1, action_tester.GetActionCount("Copy"));
 }
 
-IN_PROC_BROWSER_TEST_F(PDFWebContentsHelperTest, DefaultImplementation) {
-  EXPECT_FALSE(pdf_web_contents_helper()->SupportsAnimation());
-  EXPECT_FALSE(pdf_web_contents_helper()->CreateDrawable());
-  EXPECT_FALSE(pdf_web_contents_helper()->ShouldShowQuickMenu());
-  EXPECT_TRUE(pdf_web_contents_helper()->GetSelectedText().empty());
+IN_PROC_BROWSER_TEST_F(PDFDocumentHelperTest, DefaultImplementation) {
+  EXPECT_FALSE(pdf_document_helper()->SupportsAnimation());
+  EXPECT_FALSE(pdf_document_helper()->CreateDrawable());
+  EXPECT_FALSE(pdf_document_helper()->ShouldShowQuickMenu());
+  EXPECT_TRUE(pdf_document_helper()->GetSelectedText().empty());
 }
 
 }  // namespace pdf
