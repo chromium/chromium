@@ -173,6 +173,7 @@
 <translation id="23721837607121582">Λήψη προφίλ κινητού, Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Εναλλαγή σε προβολή λίστας</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> φάκελοι κοινόχρηστοι με Linux</translation>
+<translation id="2379576081295865700">Έλεγχος αποθηκευτικού χώρου… Βρέθηκε 1 στοιχείο</translation>
 <translation id="2383454254762599978">Μετακίνηση στον κάδο</translation>
 <translation id="2387458720915042159">Τύπος σύνδεσης διακομιστή μεσολάβησης</translation>
 <translation id="2389832672041313158">Βιρμανικά/Μιανμάρ</translation>
@@ -678,6 +679,7 @@
 <translation id="6164412158936057769">Πεταλούδες</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
 <translation id="6170470584681422115">Σάντουιτς</translation>
+<translation id="6177854567773392726">Έλεγχος αποθηκευτικού χώρου… Βρέθηκαν <ph name="ITEMS_FOUND" /> στοιχεία</translation>
 <translation id="6181912134988520389">Παραχωρήστε στο <ph name="VM_NAME" /> άδεια πρόσβασης στα αρχεία στο Google Drive. Οι αλλαγές θα συγχρονιστούν με τις άλλες συσκευές σας.</translation>
 <translation id="6187719147498869044">Ουγγρικά</translation>
 <translation id="6198252989419008588">Αλλαγή PIN</translation>
@@ -1070,6 +1072,7 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 προειδοποίηση.}other{<ph name="COUNT" /> προειδοποιήσεις.}}</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>

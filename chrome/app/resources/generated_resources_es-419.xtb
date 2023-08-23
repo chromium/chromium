@@ -69,6 +69,7 @@
 <translation id="1054048317165655285">Completa la configuración en tu teléfono</translation>
 <translation id="1054153489933238809">Abrir imagen original en una pestaña nueva</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de 1 semana}other{Actualiza el dispositivo <ph name="DEVICE_TYPE" /> en el transcurso de {NUM_WEEKS} semanas}}</translation>
+<translation id="1056398434290692818">Navega hacia atrás y adelante con el gesto de deslizar el dedo</translation>
 <translation id="1056898198331236512">Advertencia</translation>
 <translation id="1056980582064308040">Si cambias la configuración se reiniciará el hotspot. Se desconectarán los dispositivos que usen el hotspot.</translation>
 <translation id="1058262162121953039">PUK</translation>
@@ -512,6 +513,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1417428793154876133">{NUM_APPS,plural, =1{Quitar app}other{Quitar apps}}</translation>
 <translation id="1417497355604638350">Envía datos de uso y diagnóstico</translation>
 <translation id="1418552618736477642">Notificaciones y apps</translation>
+<translation id="1418559532423038045">Quita <ph name="VM_NAME" /> de tu <ph name="DEVICE_TYPE" />. Esta acción borrará todas las apps y los datos de la máquina virtual.</translation>
 <translation id="1418882096915998312">Inscripción en Enterprise en progreso</translation>
 <translation id="1418954524306642206">Explora para indicar la ubicación del PPD de tu impresora</translation>
 <translation id="1420834118113404499">Licencias de medios</translation>
@@ -2367,6 +2369,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="287205682142673348">Redirección de puertos</translation>
 <translation id="287286579981869940">Agregar <ph name="PROVIDER_NAME" />...</translation>
 <translation id="2872961005593481000">Apagar</translation>
+<translation id="2873744479411987024">Con una frecuencia de actualización más alta, tendrás una visualización más fluida con más detalles. Es posible que una mayor frecuencia de actualización afecte la duración de la batería.</translation>
 <translation id="2873995907777332853">Mostrar detalles sobre cómo bloquear todas las cookies</translation>
 <translation id="2874939134665556319">Pista anterior</translation>
 <translation id="2875698561019555027">(Páginas de error de Chrome)</translation>
@@ -2456,6 +2459,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2944060181911631861">Envía datos de uso y diagnóstico. Para ayudar a mejorar tu experiencia de Android, envía a Google datos de diagnóstico y uso de dispositivos y apps de forma automática. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. Si habilitaste la "Actividad de web y de aplicaciones adicional", es posible que se almacenen estos datos en tu Cuenta de Google. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="2946054015403765210">Ir a Archivos</translation>
 <translation id="2946119680249604491">Agregar conexión</translation>
+<translation id="2946190589196900944">Límites de visualización</translation>
 <translation id="2946640296642327832">Activar Bluetooth</translation>
 <translation id="2947605845283690091">La navegación en la Web debe ser rápida. Ahora, tómate un momento para <ph name="BEGIN_LINK" />revisar tus extensiones<ph name="END_LINK" />.</translation>
 <translation id="2948300991547862301">Ir a <ph name="PAGE_TITLE" /></translation>
@@ -2471,6 +2475,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2959127025785722291">Se produjo un error. No se completó el análisis. Vuelve a intentarlo.</translation>
 <translation id="2959842337402130152">No se puede restablecer porque el espacio de almacenamiento es insuficiente. Libera <ph name="SPACE_REQUIRED" /> del dispositivo y vuelve a intentarlo.</translation>
 <translation id="2960208947600937804">Se produjo un error al configurar Linux. Comunícate con el administrador.</translation>
+<translation id="2960942820860729477">Frecuencia de actualización</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (extensión proporcionada)</translation>
 <translation id="2961210776189273067">Cargo</translation>
 <translation id="2961695502793809356">Haz clic para ir adelante o mantén presionado para ver el historial</translation>
@@ -2749,7 +2754,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="32101887417650595">No es posible establecer conexión con la impresora</translation>
 <translation id="3210736980143419785">No se pudo completar la descarga.</translation>
 <translation id="321084946921799184">Amarillo y blanco</translation>
-<translation id="3211126692872351610">&amp;Buscar "<ph name="SEARCH_TERMS" />" en una nueva pestaña de <ph name="SEARCH_ENGINE" /></translation>
+<translation id="3211126692872351610">&amp;Buscar <ph name="SEARCH_TERMS" /> en <ph name="SEARCH_ENGINE" /> en una nueva pestaña</translation>
 <translation id="321356136776075234">UO del dispositivo (p. ej., OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Agrega un favorito a esta carpeta</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a los resultados personales de <ph name="SUPERVISED_USER_NAME" />.</translation>
@@ -3204,7 +3209,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="360180734785106144">Ofrecer funciones nuevas cuando estén disponibles</translation>
 <translation id="3602290021589620013">Vista previa</translation>
 <translation id="3602495161941872610">Solucionar un problema de &amp;sincronización</translation>
-<translation id="3602870520245633055">Impresión y escaneo</translation>
 <translation id="3602894439067790744">Leer números de la siguiente manera:</translation>
 <translation id="3603622770190368340">Obtener certificado de red</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} cuenta usa la misma contraseña}other{{COUNT} cuentas usan la misma contraseña}}</translation>
@@ -4191,6 +4195,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4404843640767531781">Tu padre o madre bloquearon <ph name="APP_NAME" />. Si quieres usar esa app, pídeles permiso.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Mover a…</translation>
+<translation id="4405781821077215583">Aumenta o reduce el tamaño de los elementos que se muestran en la pantalla, incluido el texto</translation>
 <translation id="4406883609789734330">Subtitulado instantáneo</translation>
 <translation id="4407039574263172582">Para continuar, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> compartirá tu nombre, dirección de correo electrónico y foto de perfil con este sitio. Consulta las <ph name="BEGIN_LINK" />condiciones del servicio<ph name="END_LINK" /> del sitio.</translation>
 <translation id="4408599188496843485">A&amp;yuda</translation>
@@ -5909,7 +5914,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5865508026715185451">Pronto se pausará <ph name="APP_NAME" /></translation>
 <translation id="586567932979200359">Estás ejecutando <ph name="PRODUCT_NAME" /> desde la imagen de disco. Instalarlo en tu computadora te permite ejecutarlo sin la imagen de disco y garantiza que se mantenga actualizado.</translation>
 <translation id="5865733239029070421">Envía automáticamente informes de fallos y estadísticas de uso a Google</translation>
-<translation id="5867841422488265304">Busca o escribe la dirección web</translation>
 <translation id="5867855474018538405">Sigue las instrucciones que se muestran en tu teléfono para escanear el código QR. Asegúrate de que las conexiones Bluetooth y Wi-Fi del teléfono estén activadas.
     <ph name="BR" />
     <ph name="BR" />
@@ -6304,6 +6308,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
 <translation id="6196854373336333322">La extensión "<ph name="EXTENSION_NAME" />" tomó el control de la configuración de proxy, lo que significa que puede modificar, dañar o espiar cualquier actividad que lleves a cabo en línea. Si no sabes con certeza por qué se produjo este cambio, probablemente no lo desees.</translation>
 <translation id="6197128521826316819">Crear un código QR para esta página</translation>
+<translation id="6198223452299275399">Deslizarse entre páginas</translation>
 <translation id="6198252989419008588">Cambiar PIN</translation>
 <translation id="6200047250927636406">Descartar archivo</translation>
 <translation id="6200151268994853226">Administrar extensión</translation>
@@ -6701,6 +6706,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6532527800157340614">No es posible completar el acceso porque no se pudo recuperar tu token de acceso. Comprueba la conexión de red y vuelve a intentarlo.</translation>
 <translation id="6532663472409656417">Inscripto en una empresa</translation>
 <translation id="6533315466883598769">Usar Google Traductor</translation>
+<translation id="65334502113648172">Presiona las teclas de flecha para reducir o expandir el área de visualización. Para mover el área de visualización, presiona Mayúsculas y +; luego, usa las teclas de flecha.</translation>
 <translation id="6533636340637966565">Activando…</translation>
 <translation id="6535331821390304775">Siempre permitir que <ph name="ORIGIN" /> abra este tipo de vínculos en la app asociada</translation>
 <translation id="653659894138286600">Escanear imágenes y documentos</translation>

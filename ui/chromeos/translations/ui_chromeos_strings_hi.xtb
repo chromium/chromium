@@ -1040,6 +1040,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम की फ़ाइल पहले से मौजूद है. कृपया कोई दूसरा नाम चुनें.</translation>
 <translation id="9046895021617826162">कनेक्ट करना विफल</translation>
 <translation id="9065512565307033593">अगर आप पुष्टि नहीं कर पाते, तो आपके नेटवर्क का ऐक्सेस बंद कर दिया जाएगा.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 चेतावनी}one{<ph name="COUNT" /> चेतावनी}other{<ph name="COUNT" /> चेतावनियां}}</translation>
 <translation id="908378762078012445">फ़ोनेटिक AATSEEL कीबोर्ड के साथ रशियन</translation>
 <translation id="9086302186042011942">समन्वयित हो रहा है</translation>
 <translation id="9099674669267916096">पेज संख्या</translation>

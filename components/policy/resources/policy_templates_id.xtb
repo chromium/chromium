@@ -7346,6 +7346,27 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
       Jika kebijakan ini tidak ditetapkan, tindakan defaultnya adalah tidak diizinkan untuk pengguna yang dikelola perusahaan dan diizinkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="7295019613773647480">Aktifkan pengguna yang dilindungi</translation>
 <translation id="7297476773981993405">Izinkan algoritme GREASE Agen Pengguna yang diperbarui dijalankan.</translation>
+<translation id="7297765841046240459">Jika kebijakan ini disetel ke aktif, <ph name="PRODUCT_NAME" />
+akan menjalankan verifikasi sertifikat server menggunakan pemverifikasi sertifikat bawaan
+dengan Chrome Root Store sebagai sumber tepercaya publik.
+
+Jika kebijakan ini disetel ke nonaktif, <ph name="PRODUCT_NAME" />
+akan menggunakan pemverifikasi sertifikat sistem dan root certificate sistem.
+
+Jika kebijakan ini tidak disetel, Chrome Root Store atau root yang disediakan sistem
+dapat digunakan.
+
+Kebijakan ini akan dihapus dari
+<ph name="PRODUCT_OS_NAME" /> versi 120,
+<ph name="PRODUCT_NAME" />
+untuk <ph name="LINUX_OS_NAME" /> versi 120, dan
+<ph name="PRODUCT_NAME" /> untuk
+<ph name="ANDROID_NAME" /> versi 121 dan saat ini terjadi,
+dukungan untuk penggunaan root yang disediakan platform akan dihapus.
+
+Kebijakan ini dihapus di <ph name="PRODUCT_NAME" />
+untuk <ph name="MS_WIN_NAME" /> dan <ph name="MAC_OS_NAME" /> versi 113
+dan saat ini terjadi, dukungan untuk penggunaan pemverifikasi sertifikat dan root yang disediakan platform akan dihapus.</translation>
 <translation id="7298197471363105063">Mengganti Set Pihak Pertama.</translation>
 <translation id="7302043767260300182">Penundaan kunci layar saat menggunakan daya AC</translation>
 <translation id="7303902834678570827">Pengguna Sesi Tamu Terkelola tidak dapat menyimpan setelan tampilan di seluruh perangkat</translation>
@@ -9068,6 +9089,24 @@ secara default mulai M119.
 <translation id="8854571659927427063">Jika kebijakan disetel ke Aktif, bookmark akan diimpor dari browser default sebelumnya saat pertama kali dijalankan. Jika kebijakan disetel ke Nonaktif atau tidak disetel, tidak ada bookmark yang akan diimpor saat pertama kali dijalankan.
 
       Pengguna dapat memicu dialog impor dan kotak centang bookmark akan dicentang atau dihapus centangnya agar cocok dengan nilai kebijakan ini.</translation>
+<translation id="8857793979935465678">Kebijakan ini mengontrol apakah mode perlindungan standar Safe Browsing diizinkan
+untuk mengirim hash sebagian dari URL ke Google melalui proxy via Oblivious HTTP
+untuk menentukan apakah URL aman untuk dibuka atau tidak.
+
+Proxy memungkinkan browser mengupload hash sebagian dari URL ke Google
+tanpa dikaitkan ke alamat IP pengguna. Kebijakan ini juga memungkinkan
+browser mengupload hash sebagian dari URL dengan frekuensi yang lebih tinggi untuk
+kualitas perlindungan Safe Browsing yang lebih baik.
+
+Kebijakan ini akan diabaikan jika Safe Browsing dinonaktifkan atau disetel ke mode
+perlindungan yang ditingkatkan.
+
+Jika kebijakan ini disetel ke Aktif atau tidak disetel, pemeriksaan
+lewat proxy dengan perlindungan yang lebih tinggi akan diizinkan.
+
+Jika kebijakan ini disetel ke Nonaktif, pemeriksaan lewat proxy dengan perlindungan yang lebih tinggi
+tidak akan diizinkan. Hash sebagian dari URL akan diupload ke Google secara langsung dengan frekuensi
+yang jauh lebih rendah, yang akan menurunkan perlindungan.</translation>
 <translation id="8858642179038618439">Memaksakan Mode Perlindungan YouTube</translation>
 <translation id="8860342862142842017">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar hash subjectPublicKeyInfo</translation>
 <translation id="8860474826929590628">Jika disetel ke Aktif atau tidak disetel, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> akan diizinkan di semua halaman web.

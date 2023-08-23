@@ -311,6 +311,7 @@
 <translation id="1594030484168838125">निवडा</translation>
 <translation id="1596296697375291157">रोमांचक, गुन्हेविषयक आणि गूढ चित्रपट</translation>
 <translation id="1597473228022844713">तुम्ही हे उत्पादन ट्रॅक करत आहात. हे पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले आहे</translation>
+<translation id="1598816256585174656">Windows Hello कडील पासकी</translation>
 <translation id="1599199147673445968">नवीन कार्ड हवे आहे? <ph name="BEGIN_LINK" />कार्ड तपशील एंटर करा<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome मध्ये Dino Run गेम खेळा</translation>
 <translation id="161042844686301425">निळसर</translation>
@@ -1350,6 +1351,7 @@
 <translation id="3827112369919217609">अ‍ॅब्सोल्यूट</translation>
 <translation id="3827666161959873541">कौटुंबिक चित्रपट</translation>
 <translation id="3828924085048779000">रिक्त सांकेतिक पासफ्रेझाची परवानगी नाही.</translation>
+<translation id="3830470485672984938">दुसरी पासकी वापरा</translation>
 <translation id="3831065134033923230">तुमचे सेव्ह केलेले पासवर्ड तपासा</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ने अतिरिक्त फंक्शनसाठी एक्स्टेंशन इंस्टॉल केले आहे. एक्स्टेंशनकडे तुमच्या काही डेटाचा अ‍ॅक्सेस आहे.</translation>
 <translation id="3832522519263485449">मल्टिपल पंच लेफ्ट</translation>
@@ -1406,6 +1408,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{काहीही नाही}=1{1 साइटकडून }other{# साइटकडून }}</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> ब्लॉक केले आहे</translation>
+<translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" कडील पासकी</translation>
 <translation id="3984581365661308170">एन्व्हलप #११</translation>
 <translation id="398470910934384994">पक्षी</translation>
 <translation id="3985750352229496475">पत्ते व्यवस्थापित करा…</translation>
@@ -1785,6 +1788,7 @@
 <translation id="4754461935447132332">सुरक्षित नसलेल्या साइटसाठी अनुमती नाही</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">तुमच्या Chrome प्रोफाइल मधील पासकी</translation>
 <translation id="4757993714154412917">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला. तुमची खाती सुरक्षित करण्यासाठी, Chromium तुमचे सेव्ह केलेले पासवर्ड तपासण्याची शिफारस करते.</translation>
 <translation id="4758311279753947758">संपर्क माहिती जोडा</translation>
 <translation id="4761104368405085019">तुमचा मायक्रोफोन वापरा</translation>
@@ -1941,6 +1945,7 @@
 <translation id="5070838744279127212">दहावा रोल</translation>
 <translation id="507130231501693183">मेलबॉक्स ४</translation>
 <translation id="5074134429918579056">पॅंट आणि शॉर्ट</translation>
+<translation id="5077767274537436092">दुसरी पासकी वापरा</translation>
 <translation id="5078060223219502807">तुम्ही नुकताच वापरलेला पासवर्ड डेटा भंगामध्ये आढळला होता. तुमची खाती सुरक्षित करण्यासाठी, पासवर्ड व्यवस्थापक तो आता बदलण्याची शिफारस करतो आणि त्यानंतर तुमचे सेव्ह केलेले पासवर्ड तपासतो.</translation>
 <translation id="5086225927071063542">डिस्ट्रिब्यूटेड आणि क्लाउड कॉंप्युटिंग</translation>
 <translation id="5087286274860437796">यावेळी सर्व्हरचे सर्टिफिकेट वैध नाही.</translation>
@@ -2110,6 +2115,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{No sites blocked}=1{एक साइट ब्लॉक केली आहे}other{# साइट ब्लॉक केल्या आहेत}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> ला तुम्हाला सूचना पाठवायची आहे</translation>
 <translation id="5430298929874300616">बुकमार्क काढून टाका</translation>
+<translation id="54430913453805768"><ph name="URL" /> ला तुमची MIDI डिव्‍हाइस (SysEx) नियंत्रित आणि रीप्रोग्राम करायची आहेत</translation>
 <translation id="5443468954631487277">उलट्या क्रमाने फेस अप</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> ला त्यांनी तुमच्याबद्दल सेव्ह केलेली माहिती वापरण्याची अनुमती द्या</translation>
 <translation id="5447765697759493033">या साइटचे भाषांतर होणार नाही</translation>
@@ -2612,6 +2618,7 @@
 <translation id="6480864723214312258">घरगुती बॅटरी</translation>
 <translation id="6486200200930923183">माहितीपट</translation>
 <translation id="6489534406876378309">क्रॅश अपलोड करणे सुरू करा</translation>
+<translation id="6491663123807473970"><ph name="URL" /> ला तुमची MIDI डिव्हाइस वापरायची आहेत</translation>
 <translation id="6493924760403974580">हे अ‍ॅप फक्त या आकाराला सपोर्ट करते.</translation>
 <translation id="6494750904506170417">पॉप-अप आणि रीडिरेक्ट</translation>
 <translation id="6497295192259406877">व्यवसायासंबंधित कामकाज</translation>
@@ -2897,6 +2904,7 @@
 <translation id="7102079138917191645">बांधकाम आणि देखभाल</translation>
 <translation id="7102554173784142865">Chrome Dino गेम खेळा</translation>
 <translation id="7102760431686146931">स्वयंपाकाच्या वस्तू आणि डायनिंगवेअर</translation>
+<translation id="7105998430540165694">iCloud Keychain कडील पासकी</translation>
 <translation id="7106762743910369165">तुमचा ब्राउझर तुमच्या संस्थेद्वारे व्यवस्थापित केला जातो</translation>
 <translation id="7108338896283013870">लपवा</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> ला तुमचा कॅमेरा वापरायचा आहे</translation>
@@ -3152,6 +3160,7 @@
 <translation id="7582602800368606489">Google Calendar मध्ये नवीन इव्‍हेंट झटपट तयार करा</translation>
 <translation id="7583969447617676942">कायद्याशी संबंधित सेवा</translation>
 <translation id="7586676035079382730">सूचनांना अनुमती नाही</translation>
+<translation id="7588460771338574392">"<ph name="PHONE_NAME" />" कडील पासकी</translation>
 <translation id="7588707273764747927">ट्रान्सफर</translation>
 <translation id="7591288787774558753">गोपनीय आशय शेअर करायचा आहे का?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> ला <ph name="TOP_LEVEL_URL" /> वरील कुकी आणि साइट डेटा वापरायचा आहे.</translation>

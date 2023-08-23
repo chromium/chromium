@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Filnavnet «<ph name="FILE_NAME" />» finnes allerede. Velg et annet navn.</translation>
 <translation id="9046895021617826162">Tilkoblingen mislyktes</translation>
 <translation id="9065512565307033593">Hvis du ikke verifiserer SIM-kortet, blir nettverkstilgangen din slått av.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 advarsel.}other{<ph name="COUNT" /> advarsler.}}</translation>
 <translation id="908378762078012445">Russisk med fonetisk AATSEEL-tastatur</translation>
 <translation id="9086302186042011942">Synkroniserer</translation>
 <translation id="9099674669267916096">Antall sider</translation>

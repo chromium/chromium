@@ -1039,6 +1039,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
 <translation id="9046895021617826162">Туташпай калды</translation>
 <translation id="9065512565307033593">Эгер текшерүүдөн өтпөсөңүз, тармакка кирүү мүмкүнчүлүгү өчүрүлөт.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 эскертүү.}other{<ph name="COUNT" /> эскертүү.}}</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>

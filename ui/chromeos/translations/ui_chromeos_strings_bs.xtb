@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Fajl s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv fajla.</translation>
 <translation id="9046895021617826162">Povezivanje nije uspjelo</translation>
 <translation id="9065512565307033593">Ako ne uspijete potvrditi, onemogućit će vam se pristup mreži.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 upozorenje.}one{<ph name="COUNT" /> upozorenje.}few{<ph name="COUNT" /> upozorenja.}other{<ph name="COUNT" /> upozorenja.}}</translation>
 <translation id="908378762078012445">ruski s fonetskom tastaturom AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Broj stranica</translation>

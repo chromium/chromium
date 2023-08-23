@@ -135,6 +135,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तपाईंले आफ्नो संगठनले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न, अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="1257553931232494454">जुमका स्तरहरू</translation>
+<translation id="1258942153897182536">OCR चलिरहेको छ ...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा आफूले तय गरेका सेटिङ मिलाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1264309058268477500">वैकल्पिक</translation>
 <translation id="1264974993859112054">खेलकुद</translation>
@@ -311,6 +312,7 @@
 <translation id="1594030484168838125">छनौट गर्नुहोस्</translation>
 <translation id="1596296697375291157">थ्रिलर, अपराध तथा रहस्यमयी कथा भएका चलचित्रहरू</translation>
 <translation id="1597473228022844713">तपाईं यो उत्पादन ट्र्याक गर्दै हुनुहुन्छ। यो पेज <ph name="LAST_BOOKMARKS_FOLDER" /> मा सेभ गरिएको छ</translation>
+<translation id="1598816256585174656">Windows Hello मा भएको पासकी</translation>
 <translation id="1599199147673445968">नयाँ कार्ड हो? <ph name="BEGIN_LINK" />कार्डसम्बन्धी विवरण हाल्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Chrome मा Dino Run गेम खेल्नुहोस्</translation>
 <translation id="161042844686301425">सायन</translation>
@@ -1332,6 +1334,7 @@
 <translation id="3827112369919217609">निरपेक्ष</translation>
 <translation id="3827666161959873541">पारिवारिक चल‍चित्रहरू</translation>
 <translation id="3828924085048779000">खाली पासफ्रेजको लागि अनुमति छैन।</translation>
+<translation id="3830470485672984938">कुनै अर्को पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="3831065134033923230">आफूले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्नुहोस्</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ले अतिरिक्त कारबाहीका लागि विस्तारहरू स्थापना गरेको छ। विस्तारहरूको तपाईंको केही डेटामाथि पहुँच छ।</translation>
 <translation id="3832522519263485449">बायाँपट्टि एकभन्दा बढी प्वाल</translation>
@@ -1387,6 +1390,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{कुनै पनि होइन}=1{१ साइटबाट }other{# साइटहरूबाट }}</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> लाई ब्लक गरिएको छ।</translation>
+<translation id="3983340834939868135">"<ph name="VENDOR_NAME" />" ले प्रदान गरेको पासकी</translation>
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">चराहरू</translation>
 <translation id="3985750352229496475">ठेगानाहरू व्यवस्थापन गर्नुहोस्...</translation>
@@ -1767,6 +1771,7 @@
 <translation id="4754461935447132332">असुरक्षित साइटका हकमा अनुमति दिइँदैन</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">तपाईंको Chrome प्रोफाइलमा भएको पासकी</translation>
 <translation id="4757993714154412917">तपाईंले भर्खरै कुनै असुरक्षित साइटमा आफ्नो पासवर्ड हाल्नुभएको छ। तपाईंका खाताहरूको सुरक्षार्थ Chromium तपाईंलाई तपाईंका सेभ गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
@@ -1923,6 +1928,7 @@
 <translation id="5070838744279127212">दशौँ रोल</translation>
 <translation id="507130231501693183">मेलबक्स ४</translation>
 <translation id="5074134429918579056">प्यान्ट तथा सर्टहरू</translation>
+<translation id="5077767274537436092">कुनै अर्को पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="5078060223219502807">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। तपाईंका खाताको सुरक्षार्थ पासवर्ड म्यानेजर अहिले नै यो पासवर्ड बदल्न र तपाईंले सेभ गरेका पासवर्डहरू सुरक्षित छन् कि छैनन् जाँच्न सिफारिस गर्छ।</translation>
 <translation id="5086225927071063542">डिस्ट्रिब्युटेड एन्ड क्लाउड कम्प्युटिङ</translation>
 <translation id="5087286274860437796">यो समयमा सर्भरको प्रमाणपत्र मान्य छैन।</translation>
@@ -2092,6 +2098,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{कुनै पनि साइट ब्लक गरिएको छैन}=1{एउटा साइट ब्लक गरिएको छ}other{# वटा साइट ब्लक गरिएका छन्}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> तपाईंलाई सूचनाहरू पठाउन चाहन्छ</translation>
 <translation id="5430298929874300616">पुस्तकचिनो हटाउनुहोस्</translation>
+<translation id="54430913453805768"><ph name="URL" /> ले तपाईंका MIDI डिभाइसहरू (SysEx) नियन्त्रण गर्ने र रिप्रोग्राम गर्ने अनुमति माग्दै छ</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5447765697759493033">यो साइटलाई अनुवाद गरिने छैन</translation>
@@ -2587,6 +2594,7 @@
 <translation id="6480864723214312258">घरायसी ब्याट्रीहरू</translation>
 <translation id="6486200200930923183">वृत्तचित्रात्मक चलचित्रहरू</translation>
 <translation id="6489534406876378309">क्रयासहरू अपलोड गर्न सुरु गर्नुहोस्</translation>
+<translation id="6491663123807473970"><ph name="URL" /> ले तपाईंका MIDI डिभाइसहरू प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="6493924760403974580">यो एप यो आकारमा मात्र चल्छ।</translation>
 <translation id="6494750904506170417">पप-अप तथा रिडिरेक्टहरू</translation>
 <translation id="6497295192259406877">व्यावसायिक क्रियाकलापहरू</translation>
@@ -2865,6 +2873,7 @@
 <translation id="7102079138917191645">निर्माण तथा मर्मतसम्भार</translation>
 <translation id="7102554173784142865">Chrome Dino गेम खेल्नुहोस्</translation>
 <translation id="7102760431686146931">कुकवेयर र डाइनिङवेयर</translation>
+<translation id="7105998430540165694">iCloud Keychain मा भएको पासकी</translation>
 <translation id="7106762743910369165">तपाईंको संगठनले तपाईंको ब्राउजर व्यवस्थापन गर्छ</translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> तपाईंको क्यामेरा प्रयोग गर्न चाहन्छ</translation>
@@ -3119,6 +3128,7 @@
 <translation id="7582602800368606489">Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउनुहोस्</translation>
 <translation id="7583969447617676942">कानुनी सेवाहरू</translation>
 <translation id="7586676035079382730">सूचना पठाउने अनुमति दिइएको छैन</translation>
+<translation id="7588460771338574392">"<ph name="PHONE_NAME" />" मा भएको पासकी</translation>
 <translation id="7588707273764747927">ट्रान्स्फर</translation>
 <translation id="7591288787774558753">गोप्य सामग्री सेयर गर्ने हो?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> मा कुकी र साइटको डेटा प्रयोग गर्न चाहन्छ</translation>

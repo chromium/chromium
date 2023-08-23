@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Sækja snjallprófíl, netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Skipta yfir í listayfirlit</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> möppum deilt með Linux</translation>
+<translation id="2379576081295865700">Athugar geymslurými… 1 atriði fannst</translation>
 <translation id="2383454254762599978">Færa í ruslið</translation>
 <translation id="2387458720915042159">Gerð tengingar staðgengilsþjóns</translation>
 <translation id="2389832672041313158">Búrmíska/Myanmar</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Fiðrildi</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6170470584681422115">Samloka</translation>
+<translation id="6177854567773392726">Athugar geymslurými… <ph name="ITEMS_FOUND" /> atriði fundust</translation>
 <translation id="6181912134988520389">Veittu <ph name="VM_NAME" /> aðgang að skrám á Google Drive. Breytingar samstillast við önnur tæki.</translation>
 <translation id="6187719147498869044">Ungverska</translation>
 <translation id="6198252989419008588">Breyta PIN-númeri</translation>

@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» የሚባለው ፋይል አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="9046895021617826162">ማገናኘት አልተሳካም</translation>
 <translation id="9065512565307033593">ማረጋገጥ ካልቻሉ የእርስዎ የአውታረ መረብ መዳረሻ ይሰናከላል።</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 ማስጠንቀቂያ።}one{<ph name="COUNT" /> ማስጠንቀቂያ።}other{<ph name="COUNT" /> ማስጠንቀቂያዎች።}}</translation>
 <translation id="908378762078012445">ሩሲያኛ በፎነቲክ በAATSEEL ቁልፍ ሰሌዳ</translation>
 <translation id="9086302186042011942">በማመሳሰል ላይ</translation>
 <translation id="9099674669267916096">የገጽ ብዛት</translation>

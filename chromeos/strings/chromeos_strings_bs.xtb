@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Idite na <ph name="BEGIN_LINK1" />stranicu Pravna pomoć<ph name="END_LINK1" /> da zatražite izmjenu sadržaja zbog zakona. Možda će se neke informacije o računu i sistemu poslati Googleu. Informacije koje navedete će nam pomoći da riješimo tehničke probleme i poboljšamo usluge, u skladu s našim <ph name="BEGIN_LINK2" />Pravilima privatnosti<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslovima korištenja usluge<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">premotavanje medija naprijed</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
+<translation id="1897672602657312171">Prečica bez tipke za pretraživanje možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke za pretraživanje.</translation>
 <translation id="1904932688895783618">Evo još nekih korisnih izvora:</translation>
 <translation id="1905710495812624430">Prekoračen je maksimalan broj dozvoljenih pokušaja.</translation>
 <translation id="1908234395526491708">Greške UDP zahtjeva</translation>
@@ -368,7 +369,7 @@
 <translation id="3941014780699102620">Rješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
 <translation id="3954678691475912818">Vrsta uređaja je nepoznata.</translation>
-<translation id="3959413315969265597">Taj se APN ne može omogućiti. Provjerite je li dodan zadani APN.</translation>
+<translation id="3959413315969265597">Nije moguće omogućiti ovaj APN. Vodite računa da je zadani APN dodan.</translation>
 <translation id="3966286471246132217">Da dobijete tačnije rezultate, zatvorite sve aplikacije dok se test ne završi.</translation>
 <translation id="3967822245660637423">Preuzimanje je završeno</translation>
 <translation id="3969602104473960991">Lozinka za ChromeOS je ažurirana</translation>

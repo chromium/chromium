@@ -135,6 +135,7 @@
 &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Въведохте паролата си на сайт, който не се управлява от организацията ви. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="1257553931232494454">нива на промяна на мащаба</translation>
+<translation id="1258942153897182536">Извършва се оптично разпознаване на знаци (OCR)...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате настройките си за Chrome</translation>
 <translation id="1264309058268477500">Алтернативна</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -311,6 +312,7 @@
 <translation id="1594030484168838125">Избор</translation>
 <translation id="1596296697375291157">Трилъри, криминални и детективски филми</translation>
 <translation id="1597473228022844713">Проследявате този продукт. Съответната страница е запазена в „<ph name="LAST_BOOKMARKS_FOLDER" />“</translation>
+<translation id="1598816256585174656">Ключ за достъп от Windows Hello</translation>
 <translation id="1599199147673445968">Нова карта? <ph name="BEGIN_LINK" />Въведете данните ѝ<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Играене на играта с динозавъра в Chrome</translation>
 <translation id="161042844686301425">синьозелено</translation>
@@ -1351,6 +1353,7 @@
 <translation id="3827112369919217609">Абсолютно</translation>
 <translation id="3827666161959873541">Семейни филми</translation>
 <translation id="3828924085048779000">Не може пропускът да не се попълни.</translation>
+<translation id="3830470485672984938">Използване на друг ключ за достъп</translation>
 <translation id="3831065134033923230">Проверка на запазените ви пароли</translation>
 <translation id="3831915413245941253">От <ph name="ENROLLMENT_DOMAIN" /> са инсталирани разширения за допълнителни функции. Разширенията имат достъп до част от данните ви.</translation>
 <translation id="3832522519263485449">Няколко перфорации отляво</translation>
@@ -1407,6 +1410,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Няма}=1{От 1 сайт }other{От # сайта }}</translation>
 <translation id="397105322502079400">Изчислява се...</translation>
 <translation id="3973234410852337861">Хостът <ph name="HOST_NAME" /> е блокиран</translation>
+<translation id="3983340834939868135">Ключ за достъп от <ph name="VENDOR_NAME" /></translation>
 <translation id="3984581365661308170">Плик №11</translation>
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управление на адресите…</translation>
@@ -1786,6 +1790,7 @@
 <translation id="4754461935447132332">Не е разрешено за незащитени сайтове</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Ключ за достъп от потребителския ви профил в Chrome</translation>
 <translation id="4757993714154412917">Току-що въведохте паролата си в измамнически сайт. За да защитите профилите си, Chromium препоръчва да проверите запазените си пароли.</translation>
 <translation id="4758311279753947758">Добавяне на информация за връзка</translation>
 <translation id="4761104368405085019">Използване на микрофона ви</translation>
@@ -1942,6 +1947,7 @@
 <translation id="5070838744279127212">Десета ролка</translation>
 <translation id="507130231501693183">Пощенска кутия 4</translation>
 <translation id="5074134429918579056">Панталони и къси панталони</translation>
+<translation id="5077767274537436092">Използване на друг ключ за достъп</translation>
 <translation id="5078060223219502807">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да я промените сега и след това да проверите запазените си пароли.</translation>
 <translation id="5086225927071063542">Разпределени изчисления и изчисления в облака</translation>
 <translation id="5087286274860437796">Понастоящем сертификатът на сървъра не е валиден.</translation>
@@ -2111,6 +2117,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Няма блокирани сайтове}=1{Блокиран е 1 сайт}other{Блокирани са # сайта}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> иска да ви изпраща известия</translation>
 <translation id="5430298929874300616">Премахване на отметката</translation>
+<translation id="54430913453805768"><ph name="URL" /> иска да контролира и препрограмира MIDI устройствата ви (SysEx)</translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5447765697759493033">Този сайт няма да се превежда</translation>
@@ -2612,6 +2619,7 @@
 <translation id="6480864723214312258">Батерии за домакинството</translation>
 <translation id="6486200200930923183">Документални филми</translation>
 <translation id="6489534406876378309">Стартиране на качването на сривове</translation>
+<translation id="6491663123807473970"><ph name="URL" /> иска да използва MIDI устройствата ви</translation>
 <translation id="6493924760403974580">Това приложение поддържа само този размер.</translation>
 <translation id="6494750904506170417">изскачащи прозорци и пренасочвания</translation>
 <translation id="6497295192259406877">Бизнес дейности</translation>
@@ -2897,6 +2905,7 @@
 <translation id="7102079138917191645">Строителство и поддръжка</translation>
 <translation id="7102554173784142865">Стартиране на играта с динозавъра в Chrome</translation>
 <translation id="7102760431686146931">Готварски принадлежности и прибори и съдове за хранене</translation>
+<translation id="7105998430540165694">Ключ за достъп от iCloud Keychain</translation>
 <translation id="7106762743910369165">Браузърът се управлява от организацията ви</translation>
 <translation id="7108338896283013870">Скриване</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> иска да използва камерата ви</translation>
@@ -3152,6 +3161,7 @@
 <translation id="7582602800368606489">Бързо създаване на събитие в Google Календар</translation>
 <translation id="7583969447617676942">Юридически и правни услуги</translation>
 <translation id="7586676035079382730">Достъпът до известията не е разрешен</translation>
+<translation id="7588460771338574392">Ключ за достъп от <ph name="PHONE_NAME" /></translation>
 <translation id="7588707273764747927">Трансферна хартия</translation>
 <translation id="7591288787774558753">Да се сподели ли поверително съдържание?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> иска да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" /></translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Преузмите профил за мобилне уређаје, <ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Пређи на приказ листе</translation>
 <translation id="2377590462528165447">Директоријуми (<ph name="NUMBER_OF_ITEMS" />) се деле са Linux-ом</translation>
+<translation id="2379576081295865700">Проверава се меморијски простор... пронађена је 1 ставка</translation>
 <translation id="2383454254762599978">Премести у отпад</translation>
 <translation id="2387458720915042159">Тип везе са проксијем</translation>
 <translation id="2389832672041313158">бурмански (Мијанмар)</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Лептири</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6170470584681422115">Сендвич</translation>
+<translation id="6177854567773392726">Проверава се меморијски простор... број пронађених ставки је <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Дозволите да <ph name="VM_NAME" /> приступа фајловима на Google диску. Промене ће се синхронизовати са другим уређајима.</translation>
 <translation id="6187719147498869044">мађарски</translation>
 <translation id="6198252989419008588">Промени PIN</translation>
@@ -1047,6 +1049,7 @@
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="9065512565307033593">Ако верификација не успе, приступ мрежи ће бити онемогућен.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 упозорење.}one{<ph name="COUNT" /> упозорење.}few{<ph name="COUNT" /> упозорења.}other{<ph name="COUNT" /> упозорења.}}</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизовање</translation>
 <translation id="9099674669267916096">Број страница</translation>

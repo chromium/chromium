@@ -7211,6 +7211,15 @@ Kaynakları eşleşen kalıplar, https://support.google.com/chrome/a?p=url_block
       Bu politika ayarlanmadan bırakılırsa, varsayılan olarak kuruluş tarafından yönetilen kullanıcılara izin verilmezken, yönetilmeyen kullanıcılara izin verilir.</translation>
 <translation id="7295019613773647480">Denetlenen kullanıcıları etkinleştir</translation>
 <translation id="7297476773981993405">Güncellenen kullanıcı aracısı GREASE algoritmasını çalıştırmaya izin ver.</translation>
+<translation id="7297765841046240459">Bu politika, Etkin olarak ayarlanırsa <ph name="PRODUCT_NAME" />, sunucu sertifikalarının doğrulamasını, herkese açık güven kaynağı Chrome Root Store olacak şekilde yerleşik sertifika doğrulayıcıyı kullanarak gerçekleştirir.
+
+Bu politika, Devre Dışı olarak ayarlanırsa <ph name="PRODUCT_NAME" />, sistem sertifikası doğrulayıcıyı ve sistem kök sertifikalarını kullanır.
+
+Bu politika ayarlanmadan bırakılırsa Chrome Root Store veya sistem tarafından sağlanan kökler kullanılabilir.
+
+Platform tarafından sağlanan kökleri kullanma desteğinin kaldırılması planlandığından bu politikanın <ph name="PRODUCT_OS_NAME" /> sürüm 120'den, <ph name="LINUX_OS_NAME" /> sürüm 120 için <ph name="PRODUCT_NAME" /> ürününden ve <ph name="ANDROID_NAME" /> sürüm 121 için <ph name="PRODUCT_NAME" /> ürününden kaldırılması planlanmıştır.
+
+Bu politika, platform tarafından sağlanan sertifika doğrulayıcıyı ve kökleri kullanma desteği kaldırıldığında <ph name="MS_WIN_NAME" /> ve <ph name="MAC_OS_NAME" /> sürüm 113 için <ph name="PRODUCT_NAME" /> ürününden kaldırılmıştır.</translation>
 <translation id="7298197471363105063">First-Party Sets özelliğini geçersiz kıl.</translation>
 <translation id="7302043767260300182">AC güçle çalışırken ekran kilidi gecikmesi</translation>
 <translation id="7303902834678570827">Yönetilen Misafir Oturumu kullanıcıları, cihaz genelindeki görüntü ayarlarını saklayamazlar.</translation>
@@ -8932,6 +8941,20 @@ Politika ayarlanmaz veya devre dışı bırakılırsa kullanıcının bu aramala
 <translation id="8854571659927427063">Politika Etkin değerine ayarlanırsa önceki varsayılan tarayıcıdan yer işaretleri ilk çalıştırmada içe aktarılır. Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa yer işaretleri ilk çalıştırmada içe aktarılmaz.
 
       Kullanıcılar içe aktarma iletişim kutusunu tetikleyebilir ve yer işaretleri onay kutusu, bu politikanın değerine uyacak şekilde işaretlenir veya işareti kaldırılır.</translation>
+<translation id="8857793979935465678">Bu politika, URL'nin ziyaret edilmesinin güvenli olup olmadığını belirlemek için
+Güvenli Tarama'nın standart koruma modunun, URL'nin kısmi karmalarını habersiz
+HTTP üzerinden proxy aracılığıyla Google'a göndermesine izin verilip verilmediğini kontrol eder.
+
+Proxy; tarayıcıların, kullanıcının IP adresine bağlanmadan URL'lerin kısmi karmalarını Google'a yüklemesine olanak tanır. Politika ayrıca Güvenli Tarama korumasının daha iyi olması için tarayıcıların URL'lerin kısmi karmalarını daha yüksek sıklıkta yüklemesine olanak tanır.
+
+Güvenli Tarama devre dışıysa veya gelişmiş koruma moduna ayarlanmışsa bu
+politika yoksayılır.
+
+Politika, Etkin olarak ayarlanır veya ayarlanmadan bırakılırsa daha yüksek
+korumalı proxy kullanan aramalara izin verilir.
+
+Politika, Devre Dışı olarak ayarlanırsa daha yüksek korumalı proxy kullanan aramalara izin
+verilmez. URL'lerin kısmi karmaları doğrudan Google'a çok daha düşük sıklıkta yüklenir. Bu da korumanın kalitesini düşürür.</translation>
 <translation id="8858642179038618439">YouTube Güvenlik Modunu zorla</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8860474826929590628">Etkin seçeneğine ayarlanır veya ayarlanmadan bırakılırsa tüm web sayfalarında <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> için izin verilir.

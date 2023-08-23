@@ -366,6 +366,7 @@
 <translation id="3941014780699102620">未能解析主机</translation>
 <translation id="3942420633017001071">诊断</translation>
 <translation id="3954678691475912818">设备类型未知。</translation>
+<translation id="3959413315969265597">无法启用此 APN。请确保添加了默认 APN。</translation>
 <translation id="3966286471246132217">为了获得更准确的结果，请关闭所有应用，直到测试完成为止。</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3969602104473960991">Chrome 操作系统密码已更新</translation>

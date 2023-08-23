@@ -135,6 +135,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Je hebt je wachtwoord ingevoerd op een site die niet door je organisatie wordt beheerd. Hergebruik je wachtwoord niet voor andere apps en sites om je account te beschermen.</translation>
 <translation id="1257553931232494454">zoomniveaus</translation>
+<translation id="1258942153897182536">OCR wordt uitgevoerd...</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om je Chrome-instellingen te beheren</translation>
 <translation id="1264309058268477500">Alternatief</translation>
 <translation id="1264974993859112054">Sport</translation>
@@ -311,6 +312,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1594030484168838125">Kiezen</translation>
 <translation id="1596296697375291157">Thrillers, misdaad- en mysteriefilms</translation>
 <translation id="1597473228022844713">Je volgt dit product. Deze pagina is opgeslagen in <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
+<translation id="1598816256585174656">Toegangssleutel uit Windows Hello</translation>
 <translation id="1599199147673445968">Nieuwe pas? <ph name="BEGIN_LINK" />Kaartgegevens invullen<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Speel de Dino Run-game in Chrome</translation>
 <translation id="161042844686301425">Cyaan</translation>
@@ -1346,6 +1348,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3827112369919217609">Absoluut</translation>
 <translation id="3827666161959873541">Familiefilms</translation>
 <translation id="3828924085048779000">Een lege wachtwoordzin is niet toegestaan.</translation>
+<translation id="3830470485672984938">Een andere toegangssleutel gebruiken</translation>
 <translation id="3831065134033923230">Je opgeslagen wachtwoorden checken</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> heeft extensies voor aanvullende functies geïnstalleerd. Extensies hebben toegang tot sommige van je gegevens.</translation>
 <translation id="3832522519263485449">Meerdere perforaties links</translation>
@@ -1402,6 +1405,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3964661563329879394">{COUNT,plural, =0{Geen}=1{Van één site }other{Van # sites }}</translation>
 <translation id="397105322502079400">Berekenen...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> wordt geblokkeerd</translation>
+<translation id="3983340834939868135">Toegangssleutel van <ph name="VENDOR_NAME" /></translation>
 <translation id="3984581365661308170">Envelop #11</translation>
 <translation id="398470910934384994">Vogels</translation>
 <translation id="3985750352229496475">Adressen beheren...</translation>
@@ -1781,6 +1785,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4754461935447132332">Niet toegestaan voor niet-beveiligde sites</translation>
 <translation id="4756388243121344051">Gesc&amp;hiedenis</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Toegangssleutel uit je Chrome-profiel</translation>
 <translation id="4757993714154412917">Je hebt zojuist je wachtwoord opgegeven op een misleidende site. Chromium raadt je aan je opgeslagen wachtwoorden te checken om je accounts te beveiligen.</translation>
 <translation id="4758311279753947758">Contactgegevens toevoegen</translation>
 <translation id="4761104368405085019">Je microfoon gebruiken</translation>
@@ -1937,6 +1942,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5070838744279127212">10e rol</translation>
 <translation id="507130231501693183">Mailbox 4</translation>
 <translation id="5074134429918579056">Broeken en shorts</translation>
+<translation id="5077767274537436092">Een andere toegangssleutel gebruiken</translation>
 <translation id="5078060223219502807">Het wachtwoord dat je net hebt gebruikt, is gevonden bij een gegevenslek. Wachtwoordmanager raadt je aan dit wachtwoord nu te wijzigen en je opgeslagen wachtwoorden te checken om je account te beveiligen.</translation>
 <translation id="5086225927071063542">Distributed en cloudcomputing</translation>
 <translation id="5087286274860437796">Het servercertificaat is momenteel niet geldig.</translation>
@@ -2106,6 +2112,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Geen sites geblokkeerd}=1{1 site geblokkeerd}other{# sites geblokkeerd}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> wil meldingen sturen</translation>
 <translation id="5430298929874300616">Bookmark verwijderen</translation>
+<translation id="54430913453805768"><ph name="URL" /> wil je MIDI-apparaten (SysEx) bedienen en opnieuw programmeren</translation>
 <translation id="5443468954631487277">Omgekeerde volgorde met de bedrukte zijde omhoog</translation>
 <translation id="5447235695608032700">Toestaan dat <ph name="SITE" /> informatie gebruikt die over jou is opgeslagen</translation>
 <translation id="5447765697759493033">Deze site wordt niet vertaald</translation>
@@ -2606,6 +2613,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6480864723214312258">Huishoudbatterijen</translation>
 <translation id="6486200200930923183">Documentaires</translation>
 <translation id="6489534406876378309">Uploaden van crashes starten</translation>
+<translation id="6491663123807473970"><ph name="URL" /> wil je MIDI-apparaten gebruiken</translation>
 <translation id="6493924760403974580">Deze app ondersteunt alleen dit formaat.</translation>
 <translation id="6494750904506170417">pop-ups en omleidingen</translation>
 <translation id="6497295192259406877">Bedrijfsvoering</translation>
@@ -2891,6 +2899,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="7102079138917191645">Bouw en onderhoud</translation>
 <translation id="7102554173784142865">Chrome Dino-game spelen</translation>
 <translation id="7102760431686146931">Kookgerei en servies</translation>
+<translation id="7105998430540165694">Toegangssleutel uit iCloud Sleutelhanger</translation>
 <translation id="7106762743910369165">Je browser wordt beheerd door je organisatie</translation>
 <translation id="7108338896283013870">Verbergen</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> wil gebruikmaken van je camera</translation>
@@ -3146,6 +3155,7 @@ Aanvullende informatie:
 <translation id="7582602800368606489">Snel een nieuwe afspraak in Google Agenda maken</translation>
 <translation id="7583969447617676942">Juridische dienstverlening</translation>
 <translation id="7586676035079382730">Meldingen niet toegestaan</translation>
+<translation id="7588460771338574392">Toegangssleutel van <ph name="PHONE_NAME" /></translation>
 <translation id="7588707273764747927">Transfer</translation>
 <translation id="7591288787774558753">Vertrouwelijke content delen?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> wil cookies en sitegegevens gebruiken op <ph name="TOP_LEVEL_URL" /></translation>

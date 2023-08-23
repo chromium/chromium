@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">Mae ffeil o'r enw "<ph name="FILE_NAME" />" eisoes yn bodoli. Dewiswch enw gwahanol.</translation>
 <translation id="9046895021617826162">Wedi methu cysylltu</translation>
 <translation id="9065512565307033593">Os byddwch yn methu â dilysu, bydd eich mynediad at y rhwydwaith yn cael ei ddiffodd.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 rhybudd.}zero{<ph name="COUNT" /> rhybuddion}two{<ph name="COUNT" /> rybudd}few{<ph name="COUNT" /> rhybudd}many{<ph name="COUNT" /> rhybudd}other{<ph name="COUNT" /> rhybudd}}</translation>
 <translation id="908378762078012445">Rwseg gyda bysellfwrdd Seinegol AATSEEL</translation>
 <translation id="9086302186042011942">Wrthi’n cysoni</translation>
 <translation id="9099674669267916096">Cyfrif tudalennau</translation>

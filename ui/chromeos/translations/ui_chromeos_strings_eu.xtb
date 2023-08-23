@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" izena duen fitxategia bazegoen lehendik ere. Aukeratu beste izen bat.</translation>
 <translation id="9046895021617826162">Ezin izan da konektatu</translation>
 <translation id="9065512565307033593">Egiaztapena gauzatzen ez baduzu, desgaitu egingo da sarerako sarbidea.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 abisu.}other{<ph name="COUNT" /> abisu.}}</translation>
 <translation id="908378762078012445">Errusiarra, AATSEEL teklatu fonetikoarekin</translation>
 <translation id="9086302186042011942">Sinkronizatzen</translation>
 <translation id="9099674669267916096">Orri kopurua</translation>

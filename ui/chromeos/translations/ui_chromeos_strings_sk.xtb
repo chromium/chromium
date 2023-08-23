@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Stiahnite si mobilný profil, sieť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prepnúť na zobrazenie zoznamu</translation>
 <translation id="2377590462528165447">Priečinky (<ph name="NUMBER_OF_ITEMS" />) zdieľané so systémom Linux</translation>
+<translation id="2379576081295865700">Kontroluje sa ukladací priestor… Našla sa jedna položka.</translation>
 <translation id="2383454254762599978">Presunúť do koša</translation>
 <translation id="2387458720915042159">Typ pripojenia proxy</translation>
 <translation id="2389832672041313158">Mjanmarská klávesnica</translation>
@@ -665,6 +666,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6164412158936057769">Motýle</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6177854567773392726">Kontroluje sa ukladací priestor… Našlo sa niekoľko (<ph name="ITEMS_FOUND" />) položiek.</translation>
 <translation id="6181912134988520389">Udeľte virtuálnemu počítaču <ph name="VM_NAME" /> povolenie získavať prístup k súborom na vašom Disku Google. Zmeny sa budú synchronizovať do vašich ostatných zariadení.</translation>
 <translation id="6187719147498869044">Maďarská klávesnica</translation>
 <translation id="6198252989419008588">Zmeniť PIN</translation>
@@ -1047,6 +1049,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="9038620279323455325">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Vyberte iný názov.</translation>
 <translation id="9046895021617826162">Zlyhanie pripojenia</translation>
 <translation id="9065512565307033593">Ak sa vám nepodarí overiť, váš prístup k sieti bude zakázaný.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 upozornenie.}few{<ph name="COUNT" /> upozornenia.}many{<ph name="COUNT" /> warnings.}other{<ph name="COUNT" /> upozornení.}}</translation>
 <translation id="908378762078012445">Ruská fonetická klávesnica (AATSEEL)</translation>
 <translation id="9086302186042011942">Prebieha synchronizácia</translation>
 <translation id="9099674669267916096">Počet strán</translation>

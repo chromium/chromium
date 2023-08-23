@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Buka <ph name="BEGIN_LINK1" />halaman Bantuan Hukum<ph name="END_LINK1" /> untuk meminta perubahan konten atas alasan hukum. Beberapa informasi akun dan sistem dapat dikirimkan ke Google. Kami akan menggunakan informasi yang Anda berikan untuk membantu mengatasi masalah teknis dan meningkatkan layanan kami, sesuai dengan <ph name="BEGIN_LINK2" />Kebijakan Privasi<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Persyaratan Layanan<ph name="END_LINK3" /> kami.</translation>
 <translation id="1885577615937958993">putar maju cepat media</translation>
 <translation id="1887850431809612466">Revisi hardware</translation>
+<translation id="1897672602657312171">Pintasan tanpa tombol penelusuran mungkin bertentangan dengan pintasan aplikasi tertentu. Tekan pintasan ini lagi untuk terus menggunakannya, atau tekan pintasan baru menggunakan tombol penelusuran.</translation>
 <translation id="1904932688895783618">Berikut beberapa referensi berguna lainnya:</translation>
 <translation id="1905710495812624430">Melebihi batas percobaan maksimum yang diizinkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
 <translation id="3954678691475912818">Jenis perangkat tidak diketahui.</translation>
+<translation id="3959413315969265597">Tidak dapat mengaktifkan APN ini. Pastikan APN default ditambahkan.</translation>
 <translation id="3966286471246132217">Untuk hasil yang lebih akurat, tutup semua aplikasi sampai pengujian selesai.</translation>
 <translation id="3967822245660637423">Download selesai</translation>
 <translation id="3969602104473960991">Sandi ChromeOS diperbarui</translation>

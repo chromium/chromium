@@ -368,6 +368,7 @@
 <translation id="3941014780699102620">Der kunne ikke identificeres en host</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3954678691475912818">Enhedstypen er ukendt.</translation>
+<translation id="3959413315969265597">Dette APN kan ikke aktiveres. Sørg for, at der er tilføjet et standard-APN.</translation>
 <translation id="3966286471246132217">Luk alle apps, indtil testen er fuldført, for at få mere nøjagtige resultater.</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
 <translation id="3969602104473960991">ChromeOS-adgangskoden er opdateret</translation>

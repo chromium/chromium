@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Atsisiųsti mobiliojo ryšio tinklo profilį; <ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“</translation>
 <translation id="2377319039870049694">Perjungti į sąrašo rodinį</translation>
 <translation id="2377590462528165447">Su „Linux“ bendrinamų aplankų: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2379576081295865700">Tikrinama saugyklos vieta… Rastas vienas elementas</translation>
 <translation id="2383454254762599978">Perkelti į šiukšliadėžę</translation>
 <translation id="2387458720915042159">Tarpinio serverio ryšio tipas</translation>
 <translation id="2389832672041313158">Birmiečių k. (Mianmaras)</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Drugeliai</translation>
 <translation id="6165508094623778733">Sužinokite daugiau</translation>
 <translation id="6170470584681422115">Sumuštinis</translation>
+<translation id="6177854567773392726">Tikrinama saugyklos vieta… Rasta elementų: <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Suteikite „<ph name="VM_NAME" />“ leidimą pasiekti failus „Google“ diske. Pakeitimai bus sinchronizuoti su kitais jūsų įrenginiais.</translation>
 <translation id="6187719147498869044">Vengrų k.</translation>
 <translation id="6198252989419008588">Keisti PIN kodą</translation>
@@ -1047,6 +1049,7 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
+<translation id="9083722265619106011">{0,plural, =1{Vienas perspėjimas.}one{<ph name="COUNT" /> perspėjimas.}few{<ph name="COUNT" /> perspėjimai.}many{<ph name="COUNT" /> perspėjimo.}other{<ph name="COUNT" /> perspėjimų.}}</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

@@ -584,7 +584,6 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ഷെൽഫ് സ്വയമേവ മറച്ചു</translation>
-<translation id="3503243067695520519">ഹായ്, അവിടെയുണ്ടോ. Chromebook-കൾ അൽപ്പം വ്യത്യസ്തമാണ്.</translation>
 <translation id="3505066820268455558">ബാറ്ററി ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="3509391053705095206">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
@@ -841,7 +840,6 @@
 <translation id="4477892968187500306">Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ലാത്ത ആപ്പുകൾ ഈ ഉപകരണത്തിൽ അടങ്ങിയിരിക്കാം.</translation>
 <translation id="4479639480957787382">എതെര്‍‌നെറ്റ്</translation>
 <translation id="4481530544597605423">ജോടി മാറ്റിയ ഉപകരണങ്ങൾ</translation>
-<translation id="4505050298327493054">സജീവ ഡെസ്‌ക്.</translation>
 <translation id="450584155212756404">Dev ചാനൽ</translation>
 <translation id="4513946894732546136">ഫീഡ്ബാക്ക്</translation>
 <translation id="4516212064498225455">നിലവിലെ ഡെസ്‌ക്: <ph name="CURRENT_DESK_NAME" />, എല്ലാ ഡെസ്‌ക്കുകളുടെ മെനു തുറക്കാൻ Search+Space ഉപയോഗിക്കുക.</translation>
@@ -1187,7 +1185,6 @@
 <translation id="589817443623831496">പോയിന്റ് സ്കാൻ ചെയ്യൽ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">മഞ്ഞ</translation>
-<translation id="5909862606227538307">നിഷ്ക്രിയ ഡെസ്‌ക്.</translation>
 <translation id="5911231045062997865">Lacros വിൻഡോകൾക്ക് നിലവിൽ പിന്തുണയില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ഓൺ ചെയ്യുക</translation>
@@ -1505,6 +1502,7 @@
 <translation id="7312210124139670355">നിങ്ങളുടെ അഡ്‌മിൻ eSIM റീസെറ്റ് ചെയ്യുകയാണ്. ഇതിന് കുറച്ച് സമയമെടുത്തേക്കാം.</translation>
 <translation id="7313193732017069507">ക്യാമറ വികസിപ്പിക്കുക</translation>
 <translation id="7316261577130609484">പുതിയ ടാസ്‌ക് ചേർക്കുക</translation>
+<translation id="7330397557116570022">കേട്ടെഴുത്ത് ഉപയോഗിക്കാൻ ഒരു ടെക്സ്റ്റ് ഫീൽഡിലേക്ക് പോകുക</translation>
 <translation id="7331646370422660166">alt + താഴേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="7340731148882810149">സ്വയമേവയുള്ള ക്ലിക്കുകളുടെ മെനു</translation>
 <translation id="7346909386216857016">മനസ്സിലായി</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8297006494302853456">ദുര്‍ബലം</translation>
 <translation id="8308637677604853869">മുൻ മെനു</translation>
 <translation id="830868413617744215">ബീറ്റ</translation>
-<translation id="8312557488404088015">സുഗമമായ തുടക്കം ലഭിക്കാൻ ഒരു ദ്രുത ടൂർ നടത്തുക. വെറും 6 ഘട്ടങ്ങൾ, ഇതിന് അൽപ്പസമയമെടുത്തേക്കാം.</translation>
 <translation id="8314772463905284467">Caps Lock ഓൺ ആണ്</translation>
 <translation id="8315514906653279104">ഓണാക്കുന്നു...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

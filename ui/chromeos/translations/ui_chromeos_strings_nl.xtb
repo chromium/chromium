@@ -1048,6 +1048,7 @@
 <translation id="9038620279323455325">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Kies een andere naam.</translation>
 <translation id="9046895021617826162">Verbinding mislukt</translation>
 <translation id="9065512565307033593">Als de verificatie mislukt, wordt je netwerktoegang ingetrokken.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 waarschuwing.}other{<ph name="COUNT" /> waarschuwingen.}}</translation>
 <translation id="908378762078012445">Russisch met fonetisch AATSEEL-toetsenbord</translation>
 <translation id="9086302186042011942">Synchroniseren</translation>
 <translation id="9099674669267916096">Aantal pagina's</translation>

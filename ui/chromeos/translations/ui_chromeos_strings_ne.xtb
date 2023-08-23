@@ -1039,6 +1039,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
+<translation id="9083722265619106011">{0,plural, =1{एउटा चेतावनी।}other{<ph name="COUNT" /> वटा चेतावनी।}}</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

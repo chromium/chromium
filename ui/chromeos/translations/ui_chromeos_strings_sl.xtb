@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Profil za prenos v mobilni napravi, omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Preklop na pogled seznama</translation>
 <translation id="2377590462528165447">Št. map, deljenih z Linuxom: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2379576081295865700">Preverjanje prostora za shranjevanje … najden je bil 1 element</translation>
 <translation id="2383454254762599978">Premakni v smetnjak</translation>
 <translation id="2387458720915042159">Vrsta povezave strežnika proxy</translation>
 <translation id="2389832672041313158">burmanščina/mjanmarščina</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Metulji</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6177854567773392726">Preverjanje prostora za shranjevanje … najdenih je bilo toliko elementov: <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Omogočite dostop do datotek v Googlu Drive temu: <ph name="VM_NAME" />. Spremembe bodo sinhronizirane z drugimi napravami.</translation>
 <translation id="6187719147498869044">madžarščina</translation>
 <translation id="6198252989419008588">Spremeni PIN</translation>
@@ -1047,6 +1049,7 @@
 <translation id="9038620279323455325">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Izberite drugo ime.</translation>
 <translation id="9046895021617826162">Vzpostavljanje povezave ni uspelo</translation>
 <translation id="9065512565307033593">Če ne preverite, bo dostop do omrežja onemogočen.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 opozorilo.}one{<ph name="COUNT" /> opozorilo.}two{<ph name="COUNT" /> opozorili.}few{<ph name="COUNT" /> opozorila.}other{<ph name="COUNT" /> opozoril.}}</translation>
 <translation id="908378762078012445">ruščina s fonetično tipkovnico AATSEEL</translation>
 <translation id="9086302186042011942">Sinhroniziranje</translation>
 <translation id="9099674669267916096">Število strani</translation>

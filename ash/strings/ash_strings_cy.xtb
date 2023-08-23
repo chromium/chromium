@@ -306,6 +306,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2298170939937364391">Mae'r Chwyddwr sgrîn lawn wedi'i alluogi. Pwyswch Ctrl+Search+M eto i'w doglo.</translation>
 <translation id="2302092602801625023">Mae'r cyfrif hwn wedi'i reoli gan Family Link</translation>
 <translation id="2303600792989757991">Toglo trosolwg ffenestr</translation>
+<translation id="2305738328104302723">Rhestr Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: sgrinliniau, lawrlwythiadau, a ffeiliau sydd wedi'u pinio diweddar</translation>
 <translation id="2318576281648121272">Heddiw <ph name="TODAY_DATE" /></translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" /> , categori canlyniad chwilio</translation>
@@ -494,6 +495,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3113492864356515707">Amlygu'r eitem flaenorol ar y silff</translation>
 <translation id="3120421559657122717">Diffodd y ddyfais?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Math o waith dosbarth</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Ailgychwynnwch i ddiweddaru</translation>
 <translation id="3139188263101386725">Defnyddiwch y llwybr byr wedi'i ddiweddaru</translation>
@@ -520,6 +522,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="324366796737464147">Dileu sŵn</translation>
 <translation id="3249513730522716925">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi symud o'r Ddesg <ph name="ACTIVE_DESK" /> i'r Ddesg <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Gosod</translation>
+<translation id="3253743281242075461">Math o waith dosbarth: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Beth allwch chi ei wneud?</translation>
 <translation id="3256109297135787951">Tynnwch yr amlygu o eitem ar eich silff</translation>
 <translation id="3260969790895726815">Mae lleferydd yn cael ei brosesu'n lleol ac mae arddweud yn gweithio all-lein, ond ni fydd rhai gorchmynion llais yn gweithio.</translation>
@@ -581,7 +584,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Mae'r silff wedi'i awtoguddio</translation>
-<translation id="3503243067695520519">Helo. Mae Chromebooks ychydig yn wahanol.</translation>
 <translation id="3505066820268455558">Mae'r Batri yn Gwefru</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
@@ -838,7 +840,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4477892968187500306">Gall y ddyfais hon gynnwys apiau nad ydynt wedi'u dilysu gan Google.</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4481530544597605423">Dyfeisiau heb eu paru</translation>
-<translation id="4505050298327493054">Desg weithredol.</translation>
 <translation id="450584155212756404">Sianel Datblygwr</translation>
 <translation id="4513946894732546136">Adborth</translation>
 <translation id="4516212064498225455">Desg Bresennol: <ph name="CURRENT_DESK_NAME" />, defnyddiwch Search+Space i agor y ddewislen pob desg.</translation>
@@ -1023,6 +1024,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5253783950165989294">Wedi'i gysylltu â dyfais o'r enw <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% batri</translation>
 <translation id="5258528442992323769">Nid oes unrhyw ddesgiau wedi'u cadw</translation>
 <translation id="5260676007519551770">Desg 4</translation>
+<translation id="5268819379131021772">Rhestr Google tasks</translation>
 <translation id="5278086053818066789">Troi ymlaen/diffodd ChromeVox (adborth ar lafar)</translation>
 <translation id="5283099933536931082">Mae angen eich sylw ar <ph name="APP_ITEM_TITLE" />.</translation>
 <translation id="5283198616748585639">Ychwanegwch 1 fun</translation>
@@ -1173,6 +1175,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5864748620896638071">Batri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5867217927013474703">Wrthi'n casglu gwybodaeth rhwydwaith</translation>
 <translation id="5867606971598166637">Mae gweinyddwr eich system yn monitro eich sgriniau</translation>
+<translation id="5876535466645959772">Mae'r rhestr a ddewiswyd yn wag, llywiwch i lawr er mwyn ychwanegu tasg newydd</translation>
 <translation id="5876666360658629066">Rhowch y cod rhiant</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
 <translation id="5881663018261910378">Diffodd</translation>
@@ -1182,7 +1185,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="589817443623831496">Sganio pwynt</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Melyn</translation>
-<translation id="5909862606227538307">Desg anweithredol.</translation>
 <translation id="5911231045062997865">Nid yw ffenestri Lacros yn cael eu cefnogi ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
@@ -1742,7 +1744,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8297006494302853456">Gwan</translation>
 <translation id="8308637677604853869">Dewislen flaenorol</translation>
 <translation id="830868413617744215">Beta</translation>
-<translation id="8312557488404088015">Ewch ar daith gyflym i ddechrau arni'n ddidrafferth. Gyda 6 cham, bydd yn cymryd ychydig funudau yn unig.</translation>
 <translation id="8314772463905284467">Mae Caps Lock wedi'i droi ymlaen</translation>
 <translation id="8315514906653279104">Wrthi'n troi ymlaen...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

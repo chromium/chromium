@@ -3197,7 +3197,6 @@
 <translation id="360180734785106144">新機能が利用可能になったときにメッセージを表示する</translation>
 <translation id="3602290021589620013">プレビュー</translation>
 <translation id="3602495161941872610">同期の問題を修正(&amp;S)</translation>
-<translation id="3602870520245633055">印刷とスキャン</translation>
 <translation id="3602894439067790744">数字の読み上げ</translation>
 <translation id="3603622770190368340">ネットワーク証明書を取得</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 個のアカウントで同じパスワードを使用しています}other{{COUNT} 個のアカウントで同じパスワードを使用しています}}</translation>
@@ -5898,7 +5897,6 @@
 <translation id="5865508026715185451"><ph name="APP_NAME" /> はまもなく一時的に利用できなくなります</translation>
 <translation id="586567932979200359"><ph name="PRODUCT_NAME" /> はディスク イメージから実行されています。パソコンにインストールすると、ディスク イメージなしで実行できるようになり、常に最新の状態に維持できます。</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
-<translation id="5867841422488265304">検索語句またはウェブアドレスを入力</translation>
 <translation id="5867855474018538405">スマートフォンの指示に沿って QR コードをスキャンします。スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。
     <ph name="BR" />
     <ph name="BR" />

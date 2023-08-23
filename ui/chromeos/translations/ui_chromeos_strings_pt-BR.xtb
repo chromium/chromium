@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">O arquivo chamado "<ph name="FILE_NAME" />" já existe. Escolha outro nome.</translation>
 <translation id="9046895021617826162">Falha na conexão</translation>
 <translation id="9065512565307033593">Se você não conseguir fazer a verificação, o acesso à rede será desativado.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 alerta.}one{<ph name="COUNT" /> alerta.}other{<ph name="COUNT" /> alertas.}}</translation>
 <translation id="908378762078012445">Russo com teclado fonético AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Contagem de páginas</translation>

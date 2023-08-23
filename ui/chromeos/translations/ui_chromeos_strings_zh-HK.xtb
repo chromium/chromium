@@ -171,6 +171,7 @@
 <translation id="23721837607121582">下載流動裝置設定檔，<ph name="NETWORK_COUNT" /> 個網絡之中嘅第 <ph name="NETWORK_INDEX" /> 個，<ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">切換至清單檢視</translation>
 <translation id="2377590462528165447">已與 Linux 共用 <ph name="NUMBER_OF_ITEMS" /> 個資料夾</translation>
+<translation id="2379576081295865700">正在檢查儲存空間… 目前找到 1 個項目</translation>
 <translation id="2383454254762599978">移至垃圾桶</translation>
 <translation id="2387458720915042159">Proxy 連接類型</translation>
 <translation id="2389832672041313158">緬甸文</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">蝴蝶</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
 <translation id="6170470584681422115">三文治</translation>
+<translation id="6177854567773392726">正在檢查儲存空間… 目前找到 <ph name="ITEMS_FOUND" /> 個項目</translation>
 <translation id="6181912134988520389">授權 <ph name="VM_NAME" /> 存取你的「Google 雲端硬碟」檔案。變更將會同步至你的其他裝置。</translation>
 <translation id="6187719147498869044">匈牙利文</translation>
 <translation id="6198252989419008588">變更 PIN</translation>
@@ -1047,7 +1049,7 @@
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，您將無法存取網絡。</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 則警告。}other{<ph name="COUNT" /> 則警告。}}</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 個警告。}other{<ph name="COUNT" /> 個警告。}}</translation>
 <translation id="908378762078012445">俄文 (注音 AATSEEL 鍵盤)</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>

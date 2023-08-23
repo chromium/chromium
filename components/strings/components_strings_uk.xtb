@@ -135,6 +135,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Ви ввели пароль на сайті, яким не керує ваша організація. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="1257553931232494454">рівні масштабування</translation>
+<translation id="1258942153897182536">Триває оптичне розпізнавання символів …</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати налаштуваннями Chrome</translation>
 <translation id="1264309058268477500">Альтернативний</translation>
 <translation id="1264974993859112054">Спорт</translation>
@@ -311,6 +312,7 @@
 <translation id="1594030484168838125">Вибрати</translation>
 <translation id="1596296697375291157">Трилери, детективи та кримінальні фільми</translation>
 <translation id="1597473228022844713">Ви відстежуєте цей товар. Цю сторінку збережено в папці "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
+<translation id="1598816256585174656">Ключ доступу з Windows Hello</translation>
 <translation id="1599199147673445968">Якщо це нова картка, введіть її дані <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="160851722280695521">Грайте в гру Dino Run у Chrome</translation>
 <translation id="161042844686301425">Бірюзовий</translation>
@@ -1351,6 +1353,7 @@
 <translation id="3827112369919217609">Абсолютна</translation>
 <translation id="3827666161959873541">Сімейні фільми</translation>
 <translation id="3828924085048779000">Порожня парольна фраза заборонена.</translation>
+<translation id="3830470485672984938">Використати інший ключ доступу</translation>
 <translation id="3831065134033923230">Перевірте збережені паролі</translation>
 <translation id="3831915413245941253">Адміністратор домену <ph name="ENROLLMENT_DOMAIN" /> установив розширення для додаткових функцій. Розширення мають доступ до деяких ваших даних.</translation>
 <translation id="3832522519263485449">Пробити кілька отворів ліворуч</translation>
@@ -1407,6 +1410,7 @@
 <translation id="3964661563329879394">{COUNT,plural, =0{Немає}=1{З 1 сайту }one{З # сайту }few{З # сайтів }many{З # сайтів }other{З # сайту }}</translation>
 <translation id="397105322502079400">Обчислення...</translation>
 <translation id="3973234410852337861">Хост <ph name="HOST_NAME" /> заблокований</translation>
+<translation id="3983340834939868135">Ключ доступу від постачальника "<ph name="VENDOR_NAME" />"</translation>
 <translation id="3984581365661308170">Конверт № 11</translation>
 <translation id="398470910934384994">Птахи</translation>
 <translation id="3985750352229496475">Керувати адресами…</translation>
@@ -1786,6 +1790,7 @@
 <translation id="4754461935447132332">Заборонено для незахищених сайтів</translation>
 <translation id="4756388243121344051">&amp;Історія</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Ключ доступу з вашого профілю Chrome</translation>
 <translation id="4757993714154412917">Щойно ви ввели пароль на оманливому сайті. Щоб захистити ваші облікові записи, Chromium радить перевірити збережені паролі.</translation>
 <translation id="4758311279753947758">Додати контактну інформацію</translation>
 <translation id="4761104368405085019">Використовувати ваш мікрофон</translation>
@@ -1942,6 +1947,7 @@
 <translation id="5070838744279127212">Десятий рулон</translation>
 <translation id="507130231501693183">Поштова скринька 4</translation>
 <translation id="5074134429918579056">Штани й шорти</translation>
+<translation id="5077767274537436092">Використати інший ключ доступу</translation>
 <translation id="5078060223219502807">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить негайно його змінити й перевірити збережені паролі.</translation>
 <translation id="5086225927071063542">Розподілені та хмарні обчислення</translation>
 <translation id="5087286274860437796">Сертифікат сервера зараз недійсний.</translation>
@@ -2111,6 +2117,7 @@
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Не заблоковано на жодному сайті}=1{Заблоковано на 1 сайті}one{Заблоковано на # сайті}few{Заблоковано на # сайтах}many{Заблоковано на # сайтах}other{Заблоковано на # сайту}}</translation>
 <translation id="5426179911063097041">Сайт <ph name="SITE" /> хоче надсилати вам сповіщення</translation>
 <translation id="5430298929874300616">Видалити закладку</translation>
+<translation id="54430913453805768">Сайт <ph name="URL" /> хоче керувати вашими пристроями MIDI (SysEx) і перепрограмовувати їх</translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447235695608032700">Дозволити сайту <ph name="SITE" /> використовувати збережену про вас інформацію</translation>
 <translation id="5447765697759493033">Цей сайт не буде перекладено</translation>
@@ -2612,6 +2619,7 @@
 <translation id="6480864723214312258">Побутові батарейки</translation>
 <translation id="6486200200930923183">Документальні фільми</translation>
 <translation id="6489534406876378309">Почати завантаження даних про аварійне завершення роботи</translation>
+<translation id="6491663123807473970">Сайт <ph name="URL" /> хоче використовувати ваші пристрої MIDI</translation>
 <translation id="6493924760403974580">У цьому додатку підтримується лише цей розмір.</translation>
 <translation id="6494750904506170417">спливаючі вікна й переспрямування</translation>
 <translation id="6497295192259406877">Комерційна діяльність</translation>
@@ -2897,6 +2905,7 @@
 <translation id="7102079138917191645">Будівництво й обслуговування</translation>
 <translation id="7102554173784142865">Грати в гру Chrome Dino</translation>
 <translation id="7102760431686146931">Кухонне й столове приладдя</translation>
+<translation id="7105998430540165694">Ключ доступу із сервісу В’язка iCloud</translation>
 <translation id="7106762743910369165">Ваша організація керує веб-переглядачем</translation>
 <translation id="7108338896283013870">Сховати</translation>
 <translation id="7108634116785509031">Сайт <ph name="HOST" /> хоче отримати доступ до вашої камери</translation>
@@ -3152,6 +3161,7 @@
 <translation id="7582602800368606489">Швидко створюйте нові події в Google Календарі</translation>
 <translation id="7583969447617676942">Юридичні послуги</translation>
 <translation id="7586676035079382730">Сповіщення заборонено</translation>
+<translation id="7588460771338574392">Ключ доступу з телефона "<ph name="PHONE_NAME" />"</translation>
 <translation id="7588707273764747927">Трансферний папір</translation>
 <translation id="7591288787774558753">Поділитися конфіденційним контентом?</translation>
 <translation id="7591636454931265313">Сайт <ph name="EMBEDDED_URL" /> хоче отримати доступ до файлів cookie й даних сайту <ph name="TOP_LEVEL_URL" /></translation>

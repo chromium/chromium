@@ -7112,6 +7112,15 @@ De <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> geeft de minimale hoevee
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="7295019613773647480">Gebruikers met beperkte rechten aanzetten</translation>
 <translation id="7297476773981993405">Toestaan dat het geüpdatete User-Agent GREASE-algoritme wordt uitgevoerd.</translation>
+<translation id="7297765841046240459">Als je dit beleid toepast, verifieert <ph name="PRODUCT_NAME" /> servercertificaten met de ingebouwde certificaatverificatie in de Chrome Root Store als bron van openbaar vertrouwen.
+
+Als je dit beleid niet toepast, gebruikt <ph name="PRODUCT_NAME" /> de systeemcertificaatverificatie en de rootcertificaten van het systeem.
+
+Als je dit beleid niet instelt, kunnen de Chrome Root Store of de door het systeem geleverde rootcertificaten worden gebruikt.
+
+Dit beleid wordt verwijderd in <ph name="PRODUCT_OS_NAME" /> versie 120, <ph name="PRODUCT_NAME" /> voor <ph name="LINUX_OS_NAME" /> versie 120 en <ph name="PRODUCT_NAME" /> voor <ph name="ANDROID_NAME" /> versie 121 wanneer het gebruik van de door het platform geleverde rootcertificaten niet meer wordt ondersteund.
+
+Dit beleid is verwijderd in <ph name="PRODUCT_NAME" /> voor <ph name="MS_WIN_NAME" /> en <ph name="MAC_OS_NAME" /> versie 113 wanneer de ondersteuning voor het gebruik van de door het platform geleverde certificaatverificatie en rootcertificaten werd verwijderd.</translation>
 <translation id="7298197471363105063">First-Party Sets overschrijven.</translation>
 <translation id="7302043767260300182">Vertraging van schermvergrendeling wanneer op netstroom wordt gewerkt</translation>
 <translation id="7303902834678570827">Gebruikers van beheerde gastsessies kunnen geen weergave-eigenschappen voor het hele apparaat opslaan</translation>
@@ -8808,6 +8817,15 @@ Als je het beleid niet instelt of niet toepast, worden de gegevens van deze zoek
 <translation id="8854571659927427063">Als je het beleid toepast, worden de bookmarks van de vorige standaardbrowser geïmporteerd bij de eerste uitvoering. Als je het beleid niet toepast of niet instelt, worden de bookmarks niet geïmporteerd bij de eerste uitvoering.
 
       Als gebruikers het dialoogvenster voor importeren openen, is het selectievakje voor bookmarks aan- of uitgevinkt in overeenstemming met de waarde van dit beleid.</translation>
+<translation id="8857793979935465678">Hiermee bepaal je of de standaard beveiligingsmodus van Safe Browsing toestemming heeft om gedeeltelijke hashes van URL's via een proxy naar Google te sturen via Oblivious HTTP om te bepalen of ze veilig kunnen worden bezocht.
+
+Met de proxy kunnen browsers gedeeltelijke hashes van URL's uploaden naar Google zonder dat ze worden gekoppeld aan het IP-adres van de gebruiker. Met dit beleid kunnen browsers de gedeeltelijke hashes van URL's ook met een hogere frequentie uploaden voor betere Safe Browsing-bescherming.
+
+Dit beleid wordt genegeerd als Safe Browsing uitstaat of is ingesteld op de modus voor geoptimaliseerde beveiliging.
+
+Als je het beleid toepast of niet instelt, zijn de lookups via proxy met een betere beveiliging mogelijk.
+
+Als je het beleid niet toepast, zijn lookups via proxy met een betere beveiliging niet toegestaan. Gedeeltelijke hashes van URL's worden rechtstreeks naar Google geüpload met een veel lagere frequentie, waardoor de bescherming afneemt.</translation>
 <translation id="8858642179038618439">Beperkte modus van YouTube afdwingen</translation>
 <translation id="8860342862142842017">Handhaving van Certificaattransparantie voor een lijst met subjectPublicKeyInfo-hashes</translation>
 <translation id="8860474826929590628">Als je dit beleid toepast of niet instelt, is <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> toegestaan op alle webpagina's.

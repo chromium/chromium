@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Besök sidan för <ph name="BEGIN_LINK1" />juridisk hjälp<ph name="END_LINK1" /> om du vill begära innehållsändringar av juridiska skäl. Vissa konto- och systemuppgifter kan skickas till Google. Vi använder informationen du ger oss till att lösa tekniska problem och förbättra våra tjänster, i enlighet med vår <ph name="BEGIN_LINK2" />integritetspolicy<ph name="END_LINK2" /> och våra <ph name="BEGIN_LINK3" />användarvillkor<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">spola framåt i media</translation>
 <translation id="1887850431809612466">Revision av maskinvara</translation>
+<translation id="1897672602657312171">Ett kortkommando utan söktangenten kan strida mot ett kortkommando för en viss app. Tryck på kortkommandot igen om du vill fortsätta använda det, eller tryck på ett nytt kortkommando med söktangenten.</translation>
 <translation id="1904932688895783618">Här är några andra användbara resurser:</translation>
 <translation id="1905710495812624430">Du har försökt för många gånger.</translation>
 <translation id="1908234395526491708">Misslyckade UDP-förfrågningar</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
 <translation id="3954678691475912818">Enhetstypen är okänd.</translation>
+<translation id="3959413315969265597">Det gick inte att aktivera detta APN. Kontrollera att du lägger till ett standard-APN.</translation>
 <translation id="3966286471246132217">Du får mer exakta resultat om du stänger alla appar tills testet är slutfört.</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
 <translation id="3969602104473960991">Lösenordet för Chrome OS har uppdaterats</translation>

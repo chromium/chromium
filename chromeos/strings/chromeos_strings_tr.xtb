@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Yasal nedenlerden dolayı içerik değişikliği talebinde bulunmak istiyorsanız <ph name="BEGIN_LINK1" />Yasal Yardım sayfasını<ph name="END_LINK1" /> ziyaret edin. Bazı hesap ve sistem bilgileri Google'a gönderilebilir. Bizimle paylaştığınız bilgileri, <ph name="BEGIN_LINK2" />Gizlilik Politikası<ph name="END_LINK2" /> ve <ph name="BEGIN_LINK3" />Hizmet Şartları<ph name="END_LINK3" />'na uygun şekilde teknik sorunları gidermek ve size daha iyi hizmet sunmak için kullanırız.</translation>
 <translation id="1885577615937958993">medyayı ileri sar</translation>
 <translation id="1887850431809612466">Donanım düzeltmesi</translation>
+<translation id="1897672602657312171">Arama anahtarı olmayan kısayol bazı uygulamaların kısayoluyla çakışabilir. Kullanmaya devam etmek için bu kısayola tekrar basın veya arama tuşunu kullanarak yeni bir kısayola basın.</translation>
 <translation id="1904932688895783618">İşinize yarayabilecek diğer kaynaklar:</translation>
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Ana makine çözümlenemedi</translation>
 <translation id="3942420633017001071">Teşhis</translation>
 <translation id="3954678691475912818">Cihazın türü bilinmiyor.</translation>
+<translation id="3959413315969265597">Bu APN etkinleştirilemiyor. Varsayılan bir APN'nin eklendiğinden emin olun.</translation>
 <translation id="3966286471246132217">Daha doğru sonuçlar için test tamamlanana kadar tüm uygulamaları kapatın.</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
 <translation id="3969602104473960991">ChromeOS şifresi güncellendi</translation>

@@ -1044,6 +1044,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı fayl artıq mövcuddur. Fərqli ad seçin.</translation>
 <translation id="9046895021617826162">Qoşulma uğursuz oldu</translation>
 <translation id="9065512565307033593">Doğrulamaq alınmasa, şəbəkəyə girişiniz deaktiv ediləcək.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 xəbərdarlıq.}other{<ph name="COUNT" /> xəbərdarlıq.}}</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klaviaturası ilə Rus dili</translation>
 <translation id="9086302186042011942">Sinxronizasiya edilir</translation>
 <translation id="9099674669267916096">Səhifə sayı</translation>

@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Ak chcete požiadať o zmenu obsahu z právnych dôvodov, prejdite na stránku <ph name="BEGIN_LINK1" />právnej pomoci<ph name="END_LINK1" />. Niektoré informácie o účte a systéme môžu byť odoslané Googlu. Pomocou informácií, ktoré nám poskytnete, odstránime technické problémy a zlepšíme svoje služby v súlade s <ph name="BEGIN_LINK2" />pravidlami ochrany súkromia<ph name="END_LINK2" /> a <ph name="BEGIN_LINK3" />zmluvnými podmienkami<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">pretočenie médií dopredu</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
+<translation id="1897672602657312171">Skratka bez klávesa vyhľadávania môže byť v konflikte so skratkou niektorej aplikácie. Ak chcete túto skratku naďalej používať, znova ju stlačte, prípadne stlačte novú skratku a využite pritom kláves vyhľadávania.</translation>
 <translation id="1904932688895783618">Tu je niekoľko ďalších užitočných zdrojov:</translation>
 <translation id="1905710495812624430">Maximálny počet povolených pokusov bol prekročený.</translation>
 <translation id="1908234395526491708">Neúspešné žiadosti UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
 <translation id="3954678691475912818">Typ zariadenia nie je známy.</translation>
+<translation id="3959413315969265597">Tento názov prístupového bodu (APN) sa nedá aktivovať. Skontrolujte, či je pridaný predvolený názov prístupového bodu (APN).</translation>
 <translation id="3966286471246132217">Ak chcete získať presnejšie výsledky, zavrite všetky aplikácie, dokým sa test nedokončí.</translation>
 <translation id="3967822245660637423">Sťahovanie dokončené</translation>
 <translation id="3969602104473960991">Heslo systému Chrome OS bolo aktualizované</translation>

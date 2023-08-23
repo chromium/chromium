@@ -572,7 +572,6 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">앱 표시줄 자동 숨김</translation>
-<translation id="3503243067695520519">안녕하세요. Chromebook은 조금 다릅니다.</translation>
 <translation id="3505066820268455558">배터리 충전 중</translation>
 <translation id="3509391053705095206">휴대전화를 찾을 수 없습니다. 휴대전화에서 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
@@ -822,7 +821,6 @@
 <translation id="4477892968187500306">이 기기에는 Google에서 확인하지 않은 앱이 설치되어 있을 수 있습니다.</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4481530544597605423">페어링 해제된 기기</translation>
-<translation id="4505050298327493054">활성 데스크입니다.</translation>
 <translation id="450584155212756404">개발자 채널</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="4516212064498225455">현재 데스크: <ph name="CURRENT_DESK_NAME" />, 검색 키 + 스페이스바를 사용하여 모든 데스크 메뉴를 엽니다</translation>
@@ -1162,7 +1160,6 @@
 <translation id="589817443623831496">지점 스캔</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">노란색</translation>
-<translation id="5909862606227538307">비활성 데스크입니다.</translation>
 <translation id="5911231045062997865">Lacros 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
@@ -1714,7 +1711,6 @@
 <translation id="8297006494302853456">약함</translation>
 <translation id="8308637677604853869">이전 메뉴</translation>
 <translation id="830868413617744215">베타</translation>
-<translation id="8312557488404088015">둘러보기를 통해 순조롭게 시작하세요. 6단계로 구성되어 있으며 몇 분 안에 완료할 수 있습니다.</translation>
 <translation id="8314772463905284467">Caps Lock이 켜져 있습니다.</translation>
 <translation id="8315514906653279104">켜는 중...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

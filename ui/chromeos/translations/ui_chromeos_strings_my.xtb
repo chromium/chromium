@@ -171,6 +171,7 @@
 <translation id="23721837607121582">မိုဘိုင်းပရိုဖိုင် ဒေါင်းလုဒ်လုပ်ရန်၊ ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">စာရင်းမြင်ကွင်းသို့ ပြောင်းရန်</translation>
 <translation id="2377590462528165447">Linux နှင့် ဖိုင်တွဲ <ph name="NUMBER_OF_ITEMS" /> ခု မျှဝေထားသည်</translation>
+<translation id="2379576081295865700">သိုလှောင်ခန်း နေရာ စစ်ဆေးနေသည်… ဖိုင် ၁ ဖိုင် တွေ့ထားသည်</translation>
 <translation id="2383454254762599978">အမှိုက်ပုံးသို့ ထည့်ရန်</translation>
 <translation id="2387458720915042159">ပရောက်စီ ချိတ်ဆက်မှု အမျိုးအစား</translation>
 <translation id="2389832672041313158">ဗမာ/မြန်မာ</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">လိပ်ပြာများ</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6170470584681422115">အသားညှပ်ပေါင်မုန့်</translation>
+<translation id="6177854567773392726">သိုလှောင်ခန်း နေရာ စစ်ဆေးနေသည်… ဖိုင် <ph name="ITEMS_FOUND" /> ဖိုင် တွေ့ထားသည်</translation>
 <translation id="6181912134988520389">သင်၏ Google Drive ရှိ ဖိုင်များကို <ph name="VM_NAME" /> အား သုံးခွင့်ပေးမည်။ ပြောင်းလဲမှုများကို သင်၏အခြားစက်များနှင့် စင့်ခ်လုပ်သွားမည်။</translation>
 <translation id="6187719147498869044">ဟန်ဂေရီ</translation>
 <translation id="6198252989419008588">ပင်နံပါတ် ပြောင်းလဲမည်</translation>

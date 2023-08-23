@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. لطفاً نام دیگری انتخاب کنید.</translation>
 <translation id="9046895021617826162">اتصال برقرار نشد</translation>
 <translation id="9065512565307033593">اگر نتوانید به‌تأیید برسانید، دسترسی شما به شبکه غیرفعال خواهد شد.</translation>
+<translation id="9083722265619106011">{0,plural, =1{۱ هشدار.}one{<ph name="COUNT" /> هشدار.}other{<ph name="COUNT" /> هشدار.}}</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
 <translation id="9086302186042011942">همگام‌سازی</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>

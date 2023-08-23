@@ -311,6 +311,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1594030484168838125">Zgjidh</translation>
 <translation id="1596296697375291157">Filmat melodramë, krim dhe mister</translation>
 <translation id="1597473228022844713">Po e monitoron këtë produkt. Kjo faqe është ruajtur te <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
+<translation id="1598816256585174656">Çelësi i kalimit nga Windows Hello</translation>
 <translation id="1599199147673445968">Kartë e re? <ph name="BEGIN_LINK" />Fut detajet e kartës<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Luaj lojën Dino Run në Chrome</translation>
 <translation id="161042844686301425">E bruztë</translation>
@@ -1335,6 +1336,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3827666161959873541">Filmat për familjen</translation>
 <translation id="3828924085048779000">Lënia bosh e frazës së kalimit nuk lejohet.</translation>
+<translation id="3830470485672984938">Përdor një çelës tjetër kalimi</translation>
 <translation id="3831065134033923230">Kontrollo fjalëkalimet e tua të ruajtura</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> ka instaluar shtesa për funksione shtesë. Shtesat kanë qasje te disa prej të dhënave të tua.</translation>
 <translation id="3832522519263485449">Shumë shpime majtas</translation>
@@ -1390,6 +1392,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3964661563329879394">{COUNT,plural, =0{Asnjë}=1{Nga 1 sajt }other{Nga # sajte }}</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> është bllokuar</translation>
+<translation id="3983340834939868135">Çelësi i kalimit nga "<ph name="VENDOR_NAME" />"</translation>
 <translation id="3984581365661308170">Zarf nr. 11</translation>
 <translation id="398470910934384994">Shpendët</translation>
 <translation id="3985750352229496475">Menaxho adresat...</translation>
@@ -1769,6 +1772,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4754461935447132332">Nuk lejohet për sajtet e pasigurta</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Çelësi i kalimit nga profili yt i Chrome</translation>
 <translation id="4757993714154412917">Sapo e fute fjalëkalimin tënd në një sajt mashtrues. Për të siguruar llogaritë e tua, Chromium rekomandon të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="4758311279753947758">Shto informacionet e kontaktit</translation>
 <translation id="4761104368405085019">Përdor mikrofonin</translation>
@@ -1925,6 +1929,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5070838744279127212">Ruli i dhjetë</translation>
 <translation id="507130231501693183">Kutia postare 4</translation>
 <translation id="5074134429918579056">Pantallona të gjata dhe të shkurtra</translation>
+<translation id="5077767274537436092">Përdor një çelës tjetër kalimi</translation>
 <translation id="5078060223219502807">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që ta ndryshosh atë tani dhe më pas të kontrollosh fjalëkalimet e ruajtura.</translation>
 <translation id="5086225927071063542">Shërbimet kompjuterike të shpërndara dhe në renë kompjuterike</translation>
 <translation id="5087286274860437796">Certifikata e serverit është e pavlefshme në këtë moment.</translation>
@@ -2094,6 +2099,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Nuk është bllokuar asnjë sajt}=1{1 sajti i bllokuar}other{# sajte të bllokuara}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> dëshiron të të dërgojë njoftime</translation>
 <translation id="5430298929874300616">Hiqe faqeshënuesin</translation>
+<translation id="54430913453805768"><ph name="URL" /> dëshiron të kontrollojë dhe të riprogramojë pajisjet e tua MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Renditja e kundërt e kthyer lart</translation>
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5447765697759493033">Ky sajt nuk do të përkthehet</translation>
@@ -2588,6 +2594,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6480864723214312258">Bateri për përdorim të përgjithshëm</translation>
 <translation id="6486200200930923183">Filmat dokumentarë</translation>
 <translation id="6489534406876378309">Nis ngarkimin e ndërprerjeve aksidentale</translation>
+<translation id="6491663123807473970"><ph name="URL" /> dëshiron të përdorë pajisjet e tua MIDI</translation>
 <translation id="6493924760403974580">Ky aplikacion mbështet vetëm këtë madhësi.</translation>
 <translation id="6494750904506170417">dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="6497295192259406877">Operacionet e biznesit</translation>
@@ -2866,6 +2873,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7102079138917191645">Ndërtimi dhe mirëmbajtja</translation>
 <translation id="7102554173784142865">Luaj lojën Chrome Dino</translation>
 <translation id="7102760431686146931">Enë gatimi dhe artikuj tavoline</translation>
+<translation id="7105998430540165694">Çelësi i kalimit nga iCloud Keychain</translation>
 <translation id="7106762743910369165">Shfletuesi yt menaxhohet nga organizata jote</translation>
 <translation id="7108338896283013870">Fshih</translation>
 <translation id="7108634116785509031"><ph name="HOST" /> kërkon të përdorë kamerën</translation>
@@ -3120,6 +3128,7 @@ Detaje shtesë:
 <translation id="7582602800368606489">Krijo shpejt një ngjarje të re në Google Calendar</translation>
 <translation id="7583969447617676942">Shërbimet ligjore</translation>
 <translation id="7586676035079382730">Njoftimet nuk lejohen</translation>
+<translation id="7588460771338574392">Çelësi i kalimit nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="7588707273764747927">Transferim</translation>
 <translation id="7591288787774558753">Të ndahet përmbajtja konfidenciale?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> dëshiron të përdorë kukit dhe të dhënat e sajtit në <ph name="TOP_LEVEL_URL" /></translation>

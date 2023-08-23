@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Pumunta sa <ph name="BEGIN_LINK1" />page na Legal na Tulong<ph name="END_LINK1" /> para humiling ng mga pagbabago sa content para sa mga legal na dahilan. Puwedeng ipadala sa Google ang ilang impormasyon ng account at system. Gagamitin namin ang impormasyong ibibigay mo sa amin para makatulong sa pagtugon sa mga teknikal na isyu at mapahusay ang aming mga serbisyo, na napapailalim sa aming <ph name="BEGIN_LINK2" />Patakaran sa Privacy<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">mag-fast forward ng media</translation>
 <translation id="1887850431809612466">Rebisyon ng hardware</translation>
+<translation id="1897672602657312171">Posibleng salungat sa shortcut ng ilang app ang shortcut na walang key sa paghahanap. Pindutin ulit ang shortcut na ito para patuloy itong magamit, o pumindot ng bagong shortcut gamit ang key sa paghahanap.</translation>
 <translation id="1904932688895783618">Narito ang ilang pang kapaki-pakinabang na resource:</translation>
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
 <translation id="3954678691475912818">Hindi alam ang uri ng device.</translation>
+<translation id="3959413315969265597">Hindi ma-enable ang APN na ito. Tiyaking nagdagdag ng default na APN.</translation>
 <translation id="3966286471246132217">Para sa mga tumpak na resulta, isara ang lahat ng app hanggang sa makumpleto ang pagsusuri.</translation>
 <translation id="3967822245660637423">Tapos na ang pag-download</translation>
 <translation id="3969602104473960991">Na-update ang password sa ChromeOS</translation>

@@ -368,6 +368,7 @@
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
 <translation id="3954678691475912818">Laitetyyppi on tuntematon.</translation>
+<translation id="3959413315969265597">APN:ää ei voi ottaa käyttöön. Varmista, että oletus-APN on lisätty.</translation>
 <translation id="3966286471246132217">Jos haluat tarkempia tuloksia, sulje kaikki sovellukset, kunnes testi on suoritettu.</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3969602104473960991">Chrome-käyttöjärjestelmän salasana vaihdettu</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Scarica il profilo per dispositivi mobili, rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Passa alla visualizzazione elenco</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> cartelle condivise con Linux</translation>
+<translation id="2379576081295865700">Controllo dello spazio di archiviazione in corso… 1 elemento trovato</translation>
 <translation id="2383454254762599978">Sposta nel cestino</translation>
 <translation id="2387458720915042159">Tipo di connessione proxy</translation>
 <translation id="2389832672041313158">Birmano/Myanmar</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Farfalle</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Controllo dello spazio di archiviazione in corso… <ph name="ITEMS_FOUND" /> elementi trovati</translation>
 <translation id="6181912134988520389">Autorizza <ph name="VM_NAME" /> ad accedere ai file memorizzati nel tuo account Google Drive. Le modifiche verranno sincronizzate con i tuoi altri dispositivi.</translation>
 <translation id="6187719147498869044">Ungherese</translation>
 <translation id="6198252989419008588">Modifica PIN</translation>

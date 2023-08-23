@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Ewch i'r <ph name="BEGIN_LINK1" />dudalen Cymorth Cyfreithiol<ph name="END_LINK1" /> i ofyn i ni wneud newidiadau i'r cynnwys am resymau cyfreithiol. Mae'n bosib y byddwn yn anfon peth gwybodaeth system a chyfrif i Google. Byddwn yn defnyddio'r wybodaeth rydych yn ei rhoi i ni i helpu i fynd i'r afael â phroblemau technegol ac i wella ein gwasanaethau, yn amodol ar ein <ph name="BEGIN_LINK2" />Polisi Preifatrwydd <ph name="END_LINK2" /> a'n <ph name="BEGIN_LINK3" />Telerau Gwasanaeth<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">cyflymu cyfryngau</translation>
 <translation id="1887850431809612466">Adolygu caledwedd</translation>
+<translation id="1897672602657312171">Gallai llwybr byr heb allwedd chwilio wrthdaro â llwybr byr rhai apiau. Pwyswch y llwybr byr hwn eto i barhau i'w ddefnyddio, neu pwyswch lwybr byr newydd gan ddefnyddio'r allwedd chwilio.</translation>
 <translation id="1904932688895783618">Dyma rai adnoddau defnyddiol eraill:</translation>
 <translation id="1905710495812624430">Wedi mynd y tu hwnt i'r ymgeisiau uchaf a ganiateir.</translation>
 <translation id="1908234395526491708">Methiannau ceisiadau UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Wedi methu â datrys y gwesteiwr</translation>
 <translation id="3942420633017001071">Diagnosteg</translation>
 <translation id="3954678691475912818">Mae math y ddyfais yn anhysbys.</translation>
+<translation id="3959413315969265597">Methu â galluogi'r APN hwn. Gwnewch yn siŵr bod APN diofyn wedi'i ychwanegu.</translation>
 <translation id="3966286471246132217">Am ganlyniadau mwy cywir, caewch bob tab nes bod y prawf wedi'i gwblhau.</translation>
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3969602104473960991">Cyfrinair ChromeOS wedi'i ddiweddaru</translation>

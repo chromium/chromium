@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Acesse a <ph name="BEGIN_LINK1" />página de Ajuda do Jurídico<ph name="END_LINK1" /> para pedir mudanças no conteúdo por questões legais. Talvez alguns dados sobre a conta e o sistema sejam enviados ao Google. As informações que você fornecer vão ser usadas para ajudar a resolver problemas técnicos e melhorar nossos serviços, conforme descrito na <ph name="BEGIN_LINK2" />Política de Privacidade<ph name="END_LINK2" /> e nos <ph name="BEGIN_LINK3" />Termos de Serviço<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">avançar mídia</translation>
 <translation id="1887850431809612466">Revisão do hardware</translation>
+<translation id="1897672602657312171">O atalho sem a tecla de pesquisa pode entrar em conflito com o atalho de algum app. Pressione este atalho novamente para continuar a usá-lo ou pressione um novo atalho usando a tecla de pesquisa.</translation>
 <translation id="1904932688895783618">Veja outros recursos úteis:</translation>
 <translation id="1905710495812624430">O número máximo de tentativas permitidas foi excedido.</translation>
 <translation id="1908234395526491708">Falhas de solicitações UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">Falha na resolução do host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
 <translation id="3954678691475912818">O tipo do dispositivo é desconhecido.</translation>
+<translation id="3959413315969265597">Não foi possível ativar esse APN. Verifique se um APN padrão foi adicionado.</translation>
 <translation id="3966286471246132217">Para resultados mais precisos, feche todos os apps até que o teste seja concluído.</translation>
 <translation id="3967822245660637423">Download concluído</translation>
 <translation id="3969602104473960991">Senha do ChromeOS atualizada</translation>

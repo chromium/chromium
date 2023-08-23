@@ -1040,6 +1040,7 @@
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>
+<translation id="9083722265619106011">{0,plural, =1{경고가 1개입니다.}other{경고 <ph name="COUNT" />개입니다.}}</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9099674669267916096">페이지 수</translation>

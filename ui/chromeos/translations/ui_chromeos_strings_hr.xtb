@@ -398,7 +398,7 @@
 <translation id="4290535918735525311">Jedna mapa podijeljena s Linuxom</translation>
 <translation id="4299729908419173967">brazilski</translation>
 <translation id="4302605047395093221">Svi koji koriste ovaj uređaj trebat će unijeti PIN da bi se povezali s tom mobilnom mrežom</translation>
-<translation id="4303531889494116116">Mreža je zauzeta. Pokušajte ponovo poslije.</translation>
+<translation id="4303531889494116116">Mreža je zauzeta. Pokušajte ponovo kasnije.</translation>
 <translation id="4309915981827077375">Opće informacije</translation>
 <translation id="432252891123397018">rumunjski sa standardnom tipkovnicom</translation>
 <translation id="4325128273762811722">slovenski</translation>
@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Datoteka s nazivom "<ph name="FILE_NAME" />" već postoji. Odaberite drugi naziv.</translation>
 <translation id="9046895021617826162">Neuspjelo povezivanje</translation>
 <translation id="9065512565307033593">Ako potvrda nije bila uspješna, nećete imati pristup mreži.</translation>
+<translation id="9083722265619106011">{0,plural, =1{Jedno upozorenje.}one{<ph name="COUNT" /> upozorenje.}few{<ph name="COUNT" /> upozorenja.}other{<ph name="COUNT" /> upozorenja.}}</translation>
 <translation id="908378762078012445">ruski s fonetskom tipkovnicom AATSEEL</translation>
 <translation id="9086302186042011942">Sinkronizacija</translation>
 <translation id="9099674669267916096">Broj stranica</translation>

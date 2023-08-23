@@ -3275,7 +3275,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="360180734785106144">Offer new features as they become available</translation>
 <translation id="3602290021589620013">Preview</translation>
 <translation id="3602495161941872610">Fix &amp;sync issue</translation>
-<translation id="3602870520245633055">Print and scan</translation>
 <translation id="3602894439067790744">Read numbers as</translation>
 <translation id="3603622770190368340">Obtain network certificate</translation>
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} account using same password}other{{COUNT} accounts using same password}}</translation>
@@ -6020,7 +6019,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5865508026715185451"><ph name="APP_NAME" /> will pause soon</translation>
 <translation id="586567932979200359">You're running <ph name="PRODUCT_NAME" /> from its disk image. Installing it on your computer lets you run it without the disk image and ensures that it will be kept up to date.</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
-<translation id="5867841422488265304">Search or type web address</translation>
 <translation id="5867855474018538405">Follow the instructions on your phone to scan the QR code. Make sure that your phone's Bluetooth and Wi-Fi are turned on.
     <ph name="BR" />
     <ph name="BR" />

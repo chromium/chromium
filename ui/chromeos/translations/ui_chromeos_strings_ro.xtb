@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Alege un alt nume.</translation>
 <translation id="9046895021617826162">Conectare nereușită</translation>
 <translation id="9065512565307033593">Dacă nu confirmi codul, accesul tău la rețea va fi oprit.</translation>
+<translation id="9083722265619106011">{0,plural, =1{O avertizare.}few{<ph name="COUNT" /> avertizări.}other{<ph name="COUNT" /> de avertizări.}}</translation>
 <translation id="908378762078012445">Tastatură rusă fonetică AATSEEL</translation>
 <translation id="9086302186042011942">Se sincronizează</translation>
 <translation id="9099674669267916096">Numărul de pagini</translation>

@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Файлът „<ph name="FILE_NAME" />“ вече съществува. Моля, изберете друго име.</translation>
 <translation id="9046895021617826162">Свързването не бе успешно</translation>
 <translation id="9065512565307033593">Ако не успеете да потвърдите самоличността си, достъпът ви до мрежата ще бъде прекратен.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 предупреждение.}other{<ph name="COUNT" /> предупреждения.}}</translation>
 <translation id="908378762078012445">Руски с фонетична клавиатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизира се</translation>
 <translation id="9099674669267916096">Брой страници</translation>

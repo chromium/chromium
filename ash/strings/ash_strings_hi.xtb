@@ -572,7 +572,6 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">शेल्फ़ के अपने आप छिपने की सुविधा चालू है</translation>
-<translation id="3503243067695520519">नमस्ते, Chromebook अन्य डिवाइसों से थोड़े अलग होते हैं.</translation>
 <translation id="3505066820268455558">बैटरी चार्ज हो रही है</translation>
 <translation id="3509391053705095206">आपका फ़ोन नहीं मिला. पक्का करें कि आपके फ़ोन का ब्लूटूथ चालू है.</translation>
 <translation id="3510164367642747937">माउस कर्सर को हाइलाइट करें</translation>
@@ -823,7 +822,6 @@
 <translation id="4477892968187500306">इस डिवाइस में ऐसे ऐप्लिकेशन हो सकते हैं जिनकी Google ने पुष्टि नहीं की है.</translation>
 <translation id="4479639480957787382">ईथरनेट</translation>
 <translation id="4481530544597605423">अयुग्मित किए गए डिवाइस</translation>
-<translation id="4505050298327493054">चालू डेस्क.</translation>
 <translation id="450584155212756404">डेव चैनल</translation>
 <translation id="4513946894732546136">सुझाव/राय दें</translation>
 <translation id="4516212064498225455">मौजूदा डेस्क: <ph name="CURRENT_DESK_NAME" />, सभी डेस्क मेन्यू खोलने के लिए, कीबोर्ड शॉर्टकट Search+Space का इस्तेमाल करें.</translation>
@@ -1163,7 +1161,6 @@
 <translation id="589817443623831496">पॉइंट स्कैनिंग</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">पीला</translation>
-<translation id="5909862606227538307">यह डेस्क इस्तेमाल में नहीं है.</translation>
 <translation id="5911231045062997865">फ़िलहाल, Lacros विंडो का इस्तेमाल नहीं किया जा सकता. अन्य ऐप्लिकेशन सेव हो जाएंगे.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
@@ -1715,7 +1712,6 @@
 <translation id="8297006494302853456">कमज़ोर</translation>
 <translation id="8308637677604853869">पिछला मेन्यू</translation>
 <translation id="830868413617744215">बीटा</translation>
-<translation id="8312557488404088015">आसानी से इसका इस्तेमाल करने के बारे में झटपट जानकारी पाएं. सिर्फ़ छह चरणों में यह जानकारी पाएं. इसमें बस कुछ मिनट लगेंगे.</translation>
 <translation id="8314772463905284467">Caps Lock चालू है</translation>
 <translation id="8315514906653279104">चालू किया जा रहा है...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

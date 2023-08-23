@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే ఉంది. దయచేసి వేరొక పేరును ఎంచుకోండి.</translation>
 <translation id="9046895021617826162">కనెక్ట్ విఫలమైంది</translation>
 <translation id="9065512565307033593">మీరు వెరిఫై చేయలేకపోతే, మీ నెట్‌వర్క్ యాక్సెస్ డిజేబుల్ చేయబడుతుంది.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 హెచ్చరిక.}other{<ph name="COUNT" /> హెచ్చరికలు.}}</translation>
 <translation id="908378762078012445">ఫోనెటిక్ AATSEEL కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9099674669267916096">పేజీ గణన</translation>

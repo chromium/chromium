@@ -95,6 +95,7 @@
 <translation id="174937106936716857">মোট ফাইল সংখ্যা</translation>
 <translation id="1755345808328621801">Windows সফ্টওয়্যার ব্যবহার করে এমন একটি কম্পিউটারের জন্য এই ফাইলটি ডিজাইন করা হয়েছে৷ ChromeOS দ্বারা চালিত আপনার ডিভাইসটির সাথে এটি সামঞ্জস্যপূর্ণ নয়৷ একটি উপযুক্ত প্রতিস্থাপনযোগ্য অ্যাপের জন্য অনুগ্রহ করে Chrome ওয়েব স্টোর-এ সার্চ করুন।</translation>
 <translation id="1757915090001272240">প্রশস্ত ল্যাটিন</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> দিয়ে শেয়ার করুন</translation>
 <translation id="1773212559869067373">স্থানীয়ভাবে যাচাইকরণ সার্টিফিকেট বাতিল করা হয়েছে</translation>
 <translation id="1775381402323441512">ভিডিওর তথ্য</translation>
 <translation id="180035236176489073">এই ফাইলগুলিতে অ্যাক্সেস পেতে আপনাকে অনলাইন হতে হবে৷</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Linux ব্যবহার করে অ্যাপ ইনস্টল করুন</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, বিবরণ</translation>
 <translation id="2724954091494693138">তুর্কি ভাষায় এফ (F) কীবোর্ড</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> শেয়ার করা ম্যানেজ করুন</translation>
 <translation id="2732839045120506979">ভিয়েতনামি ভিএনআই (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop-কে <ph name="FOLDER_NAME" /> ফোল্ডারে ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="2764206540577097904">আপনার সমস্ত ব্যক্তিগত Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, বিবরণ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" />টি আইটেম সিঙ্ক করার জন্য প্রস্তুত করা হচ্ছে...</translation>
 <translation id="3522708245912499433">পর্তুগিজ</translation>
+<translation id="3523225005467146490"><ph name="VM_NAME" /> দিয়ে ১টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="3524311639100184459">সতর্কতা: এই ফাইলগুলি অস্থায়ী এবং ডিস্কের জায়গা খালি করতে হয়ত অটোমেটিক মুছে ফেলা হবে।  <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">ফোল্ডার</translation>
 <translation id="3548125359243647069">একটি ভুল পিন অনেকবার লেখা হয়েছে।</translation>
@@ -661,6 +664,7 @@
 <translation id="6164412158936057769">প্রজাপতি</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6170470584681422115">স্যান্ডউইচ</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" />কে আপনার Google Drive-এ থাকা ফাইল অ্যাক্সেস করার অনুমতি দিন। আপনার অন্যান্য ডিভাইসে পরিবর্তনগুলি সিঙ্ক হয়ে যাবে।</translation>
 <translation id="6187719147498869044">হাঙ্গেরিয়ান</translation>
 <translation id="6198252989419008588">পিন পরিবর্তন করুন</translation>
 <translation id="6199801702437275229">স্থান তথ্যের জন্য অপেক্ষারত...</translation>
@@ -764,6 +768,7 @@
 <translation id="6989942356279143254">সুইডিশ</translation>
 <translation id="6990081529015358884">আপনার ডিভাইসে স্পেশ নেই৷</translation>
 <translation id="6993826899923627728">এই আইটেমগুলি আপনার ট্র্যাশে রয়েছে</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" /> ব্যবহার করে ফোল্ডার শেয়ার করুন</translation>
 <translation id="7008426324576352165">আপলোড সম্পূর্ণ করার জন্য আপনার প্রতিষ্ঠানের আরও স্টোরেজ প্রয়োজন।</translation>
 <translation id="7009985720488544166">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী <ph name="COUNT" />টি ফাইল সরিয়ে দেওয়ার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -950,6 +955,7 @@
 <translation id="8335837413233998004">বেলারুশীয়</translation>
 <translation id="8336153091935557858">গতলাক <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">একই নাম সহ ফাইল অথবা একটি নির্দেশিকা ইতিমধ্যেই বিদ্যমান আছে৷</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" />কে <ph name="FOLDER_NAME" /> ফোল্ডারে থাকা ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="8372369524088641025">খারাপ WEP কী</translation>
 <translation id="8372852072747894550">গ্রিক</translation>
 <translation id="8386903983509584791">স্ক্যান করা সম্পন্ন হয়েছে</translation>
@@ -959,6 +965,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা হচ্ছে</translation>
 <translation id="8425213833346101688">পরিবর্তন</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
+<translation id="8429998526804961548"><ph name="VM_NAME" /> দিয়ে <ph name="NUMBER_OF_ITEMS" />টি ফোল্ডার শেয়ার করা হয়েছে</translation>
 <translation id="8431909052837336408">সিম পিন পরিবর্তন করুন</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>
 <translation id="8452135315243592079">সিম কার্ড পাওয়া যাচ্ছে না</translation>

@@ -134,6 +134,7 @@
 <translation id="1881188606372070653">Vai alla <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" /> per richiedere modifiche ai contenuti per motivi legali. Alcuni dati dell'account e del sistema potrebbero essere inviati a Google. Utilizzeremo le informazioni fornite per risolvere problemi tecnici e migliorare i nostri servizi, in conformità con le nostre <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e i nostri <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />.</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
+<translation id="1897672602657312171">La scorciatoia senza tasto Ricerca potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto Ricerca.</translation>
 <translation id="1904932688895783618">Ecco alcune altre risorse utili:</translation>
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
@@ -368,6 +369,7 @@
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
 <translation id="3954678691475912818">Tipo di dispositivo sconosciuto.</translation>
+<translation id="3959413315969265597">Impossibile attivare questo APN. Assicurati che venga aggiunto un APN predefinito.</translation>
 <translation id="3966286471246132217">Per risultati più accurati, chiudi tutte le app fino al completamento del test.</translation>
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3969602104473960991">Password di ChromeOS aggiornata</translation>

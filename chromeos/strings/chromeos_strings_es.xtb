@@ -366,6 +366,7 @@
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
 <translation id="3954678691475912818">Se desconoce el tipo de dispositivo.</translation>
+<translation id="3959413315969265597">No se puede habilitar este APN. Asegúrate de añadir un APN predeterminado.</translation>
 <translation id="3966286471246132217">Para obtener resultados más precisos, cierra todas las aplicaciones hasta que se haya completado la prueba.</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969602104473960991">Contraseña de ChromeOS actualizada</translation>

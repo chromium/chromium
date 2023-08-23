@@ -170,6 +170,7 @@
 <translation id="23721837607121582">ດາວໂຫຼດໂປຣໄຟລ໌ມືຖື, ເຄືອຂ່າຍ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">ປ່ຽນເປັນມຸມມອງລາຍຊື່</translation>
 <translation id="2377590462528165447">ແບ່ງປັນ <ph name="NUMBER_OF_ITEMS" /> ໂຟນເດີກັບ Linux ແລ້ວ</translation>
+<translation id="2379576081295865700">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ… ພົບ 1 ລາຍການ</translation>
 <translation id="2383454254762599978">ຍ້າຍໄປໃສ່ຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="2387458720915042159">ປະເພດການເຊື່ອມຕໍ່ພຣັອກຊີ</translation>
 <translation id="2389832672041313158">ພາສາມຽນມາ/ພະມ້າ</translation>
@@ -661,6 +662,7 @@
 <translation id="6164412158936057769">ແມງກະເບື້ອ</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6170470584681422115">ແຊນວິດ</translation>
+<translation id="6177854567773392726">ກຳລັງກວດສອບພື້ນທີ່ຈັດເກັບຂໍ້ມູນ… ພົບ <ph name="ITEMS_FOUND" /> ລາຍການ</translation>
 <translation id="6187719147498869044">ພາສາຮັງກາຣຽນ</translation>
 <translation id="6198252989419008588">ປ່ຽນ PIN</translation>
 <translation id="6199801702437275229">ກໍາລັງລໍຖ້າຂໍ້ມູນກ່ຽວ​ກັບ​ບ່ອນວ່າງ...</translation>
@@ -1039,6 +1041,7 @@
 <translation id="9038620279323455325">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ກະລຸນາເລືອກຊື່ໄຟລ໌ອື່ນ.</translation>
 <translation id="9046895021617826162">ເຊື່ອມຕໍ່ບໍ່ສໍາເລັດ</translation>
 <translation id="9065512565307033593">ຖ້າທ່ານຢັ້ງຢືນບໍ່ສຳເລັດ, ລະບົບຈະປິດການນຳໃຊ້ສິດເຂົ້າເຖິງເຄືອຂ່າຍຂອງທ່ານ.</translation>
+<translation id="9083722265619106011">{0,plural, =1{ຄຳເຕືອນ 1 ລາຍການ.}other{ຄຳເຕືອນ <ph name="COUNT" /> ລາຍການ.}}</translation>
 <translation id="908378762078012445">ພາສາຣັດເຊຍທີ່ໃຊ້ແປ້ນພິມ AATSEEL ຕາມການອອກສຽງ</translation>
 <translation id="9086302186042011942">ກໍາລັງຊິງຄ໌</translation>
 <translation id="9099674669267916096">ຈຳນວນໜ້າ</translation>

@@ -306,6 +306,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2298170939937364391">Activouse a lupa de pantalla completa. Preme Ctrl+Buscar+M de novo para desactivala.</translation>
 <translation id="2302092602801625023">Esta conta está xestionada por Family Link</translation>
 <translation id="2303600792989757991">Alternar vista xeral da ventá</translation>
+<translation id="2305738328104302723">Lista de tarefas de Google: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: descargas, ficheiros fixados e capturas de pantalla recentes</translation>
 <translation id="2318576281648121272">Hoxe (<ph name="TODAY_DATE" />)</translation>
 <translation id="2322065293366551060"><ph name="CATEGORY" />, categoría de resultados de busca</translation>
@@ -494,6 +495,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3113492864356515707">Destaca o elemento anterior no andel</translation>
 <translation id="3120421559657122717">Queres apagar o dispositivo?</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3125690294288312932">Tipo de traballo de clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3126069444801937830">Reinicia para actualizar</translation>
 <translation id="3139188263101386725">Usa o atallo actualizado</translation>
@@ -520,6 +522,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3252573918265662711">Configuración</translation>
+<translation id="3253743281242075461">Tipo de traballo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3255483164551725916">Que podes facer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un elemento do estante</translation>
 <translation id="3260969790895726815">A voz procésase localmente e o ditado funciona sen conexión, pero algúns comandos de voz non funcionarán.</translation>
@@ -581,7 +584,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="3477079411857374384">Control-Maúsculas-Espazo</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">O estante ocúltase automaticamente</translation>
-<translation id="3503243067695520519">Ola! Os Chromebook son un pouco diferentes.</translation>
 <translation id="3505066820268455558">Cargando batería</translation>
 <translation id="3509391053705095206">Non puidemos atopar o teu teléfono. Asegúrate de que teña o Bluetooth activado.</translation>
 <translation id="3510164367642747937">Destacar o cursor do rato</translation>
@@ -839,7 +841,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicacións non verificadas por Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos desincronizados</translation>
-<translation id="4505050298327493054">Escritorio activo.</translation>
 <translation id="450584155212756404">Canle Dev</translation>
 <translation id="4513946894732546136">Dános a túa opinión</translation>
 <translation id="4516212064498225455">Escritorio actual: <ph name="CURRENT_DESK_NAME" />. Usa Buscar + Espazo para abrir o menú Todos os escritorios.</translation>
@@ -1024,6 +1025,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5253783950165989294">Conexión establecida cun dispositivo chamado "<ph name="DEVICE_NAME" />"; <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5258528442992323769">Non hai escritorios gardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
+<translation id="5268819379131021772">Lista de tarefas de Google</translation>
 <translation id="5278086053818066789">Activa ou desactiva ChromeVox (comentarios de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> require a túa atención.</translation>
 <translation id="5283198616748585639">Engadir 1 min</translation>
@@ -1174,6 +1176,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5864748620896638071">Batería: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="5867217927013474703">Recompilando información da rede</translation>
 <translation id="5867606971598166637">A persoa que administra o sistema está supervisando as túas pantallas</translation>
+<translation id="5876535466645959772">A lista seleccionada está baleira. Navega cara abaixo para engadir unha nova tarefa</translation>
 <translation id="5876666360658629066">Escribe o código parental</translation>
 <translation id="5881540930187678962">Configurar O meu teléfono máis tarde</translation>
 <translation id="5881663018261910378">Desactivada</translation>
@@ -1183,7 +1186,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="589817443623831496">Exploración por punto</translation>
 <translation id="5901316534475909376">Maiúsculas+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5909862606227538307">Escritorio inactivo.</translation>
 <translation id="5911231045062997865">Actualmente non se admiten ventás de Lacros. Gardaranse outras aplicacións.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Si</translation>
@@ -1743,7 +1745,6 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8297006494302853456">Feble</translation>
 <translation id="8308637677604853869">Menú anterior</translation>
 <translation id="830868413617744215">Beta</translation>
-<translation id="8312557488404088015">Fai unha visita rápida para ir colléndolle o xeito. Son só 6 pasos que che levarán uns minutos.</translation>
 <translation id="8314772463905284467">O bloqueo de maiúsculas está activado</translation>
 <translation id="8315514906653279104">Activando...</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" /> <ph name="GET_STARTED" /></translation>

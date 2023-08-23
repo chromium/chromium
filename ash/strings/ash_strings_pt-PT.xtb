@@ -584,7 +584,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3477079411857374384">Control-Shift-Espaço</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Ocultação automática da prateleira</translation>
-<translation id="3503243067695520519">Olá. Os Chromebooks são um pouco diferentes.</translation>
 <translation id="3505066820268455558">A carregar a bateria</translation>
 <translation id="3509391053705095206">Não é possível encontrar o telemóvel. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
@@ -841,7 +840,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4477892968187500306">Este dispositivo pode conter aplicações que não foram validadas pela Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Dispositivos não sincronizados</translation>
-<translation id="4505050298327493054">Espaço de trabalho ativo.</translation>
 <translation id="450584155212756404">Canal para programadores</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4516212064498225455">Espaço de trabalho atual: <ph name="CURRENT_DESK_NAME" />, use Pesquisar + Espaço para abrir o menu Todos os espaços de trabalho.</translation>
@@ -1187,7 +1185,6 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="589817443623831496">Análise de pontos</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Amarelo</translation>
-<translation id="5909862606227538307">Espaço de trabalho inativo.</translation>
 <translation id="5911231045062997865">De momento, as janelas do Lacros não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ativado</translation>
@@ -1505,6 +1502,7 @@ Nova instalação</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
 <translation id="7316261577130609484">Adicionar nova tarefa</translation>
+<translation id="7330397557116570022">Aceda a um campo de texto para usar o ditado</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
 <translation id="7340731148882810149">Menu de cliques automáticos</translation>
 <translation id="7346909386216857016">OK</translation>
@@ -1747,7 +1745,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8297006494302853456">Fraca</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
 <translation id="830868413617744215">Beta</translation>
-<translation id="8312557488404088015">Faça uma visita rápida para começar sem problemas. Com 6 passos, demora apenas alguns minutos.</translation>
 <translation id="8314772463905284467">Caps Lock está ativado</translation>
 <translation id="8315514906653279104">A ativar…</translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>

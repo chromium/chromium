@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı dosya zaten var. Lütfen farklı bir ad seçin.</translation>
 <translation id="9046895021617826162">Bağlantı başarısız oldu</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 uyarı.}other{<ph name="COUNT" /> uyarı.}}</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klavye ile Rusça</translation>
 <translation id="9086302186042011942">Senkronize ediliyor</translation>
 <translation id="9099674669267916096">Sayfa sayısı</translation>
