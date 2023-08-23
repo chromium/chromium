@@ -38,10 +38,10 @@ LorgnetteScannerManagerFactory::LorgnetteScannerManagerFactory()
 
 LorgnetteScannerManagerFactory::~LorgnetteScannerManagerFactory() = default;
 
-KeyedService* LorgnetteScannerManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LorgnetteScannerManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return LorgnetteScannerManager::Create(ZeroconfScannerDetector::Create())
-      .release();
+  return LorgnetteScannerManager::Create(ZeroconfScannerDetector::Create());
 }
 
 bool LorgnetteScannerManagerFactory::ServiceIsCreatedWithBrowserContext()
