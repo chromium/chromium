@@ -35,13 +35,6 @@ constexpr int kProgressBarHeight = 3;
 // Unique identifier within the CookieControlsBubbleView hierarchy.
 constexpr int kFaviconID = 1;
 
-int GetDaysToExpiration(base::Time expiration) {
-  // TODO(crbug.com/1446230): Apply DST corrections.
-  const base::Time midnight_today = base::Time::Now().LocalMidnight();
-  const base::Time midnight_expiration = expiration.LocalMidnight();
-  return (midnight_expiration - midnight_today).InDays();
-}
-
 // Expected URL types for `UrlIdentity::CreateFromUrl()`.
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
@@ -117,7 +110,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
                 IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
           : l10n_util::GetPluralStringFUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                GetDaysToExpiration(expiration)),
+                content_settings::CookieControlsUtil::GetDaysToExpiration(
+                    expiration)),
       l10n_util::GetStringUTF16(
           is_permanent_exception
               ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
