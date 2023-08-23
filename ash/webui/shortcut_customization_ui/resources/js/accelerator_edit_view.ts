@@ -19,7 +19,6 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './accelerator_edit_view.html.js';
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {AcceleratorViewElement, ViewState} from './accelerator_view.js';
-import {FakeShortcutProvider} from './fake_shortcut_provider.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, AcceleratorType, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {getAccelerator} from './shortcut_utils.js';
@@ -186,11 +185,6 @@ export class AcceleratorEditViewElement extends AcceleratorEditViewElementBase {
         this.source, this.action, originalAccelerator || accelerator);
 
     if (configResult.result.result === AcceleratorConfigResult.kSuccess) {
-      if (this.shortcutProvider instanceof FakeShortcutProvider) {
-        this.lookupManager.removeAccelerator(
-            this.source, this.action, getAccelerator(this.acceleratorInfo));
-      }
-
       this.dispatchEvent(new CustomEvent('request-update-accelerator', {
         bubbles: true,
         composed: true,

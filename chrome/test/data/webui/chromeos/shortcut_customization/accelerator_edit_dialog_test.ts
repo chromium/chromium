@@ -229,7 +229,7 @@ suite('acceleratorEditDialogTest', function() {
       shortcutName: undefined,
     };
 
-    provider.setRestoreDefault(fakeResult);
+    provider.setFakeRestoreDefaultResult(fakeResult);
 
     await flushTasks();
     const restoreDefaultButton =
@@ -267,7 +267,7 @@ suite('acceleratorEditDialogTest', function() {
       shortcutName: stringToMojoString16('TestDescription'),
     };
 
-    provider.setRestoreDefault(fakeResult);
+    provider.setFakeRestoreDefaultResult(fakeResult);
 
     await flushTasks();
     const restoreDefaultButton =
@@ -334,7 +334,7 @@ suite('acceleratorEditDialogTest', function() {
       shortcutName: stringToMojoString16('TestDescription'),
     };
 
-    provider.setRestoreDefault(fakeResult);
+    provider.setFakeRestoreDefaultResult(fakeResult);
 
     await flushTasks();
     let restoreDefaultButton =
@@ -413,7 +413,7 @@ suite('acceleratorEditDialogTest', function() {
       shortcutName: stringToMojoString16('TestDescription'),
     };
 
-    provider.setRestoreDefault(fakeResult);
+    provider.setFakeRestoreDefaultResult(fakeResult);
 
     await flushTasks();
     const restoreDefaultButton =
@@ -507,7 +507,7 @@ suite('acceleratorEditDialogTest', function() {
       shortcutName: stringToMojoString16('TestDescription'),
     };
 
-    provider.setRestoreDefault(fakeResult);
+    provider.setFakeRestoreDefaultResult(fakeResult);
     const restoreDefaultButton =
         dialog!.querySelector('#restoreDefault') as CrButtonElement;
     restoreDefaultButton.click();

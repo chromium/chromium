@@ -48,26 +48,6 @@ export const isSearchEnabled = (): boolean => {
   return loadTimeData.getBoolean('isSearchEnabled');
 };
 
-export const areAcceleratorsEqual =
-    (accelA: Accelerator, accelB: Accelerator): boolean => {
-      // This picking of types is necessary because Accelerators are a subset
-      // of MojoAccelerators, and MojoAccelerators have properties that error
-      // when they're stringified. Due to TypeScript's structural typing, we
-      // can't prevent MojoAccelerators from being passed to this function.
-      const accelAComparable: Accelerator = {
-        keyCode: accelA.keyCode,
-        modifiers: accelA.modifiers,
-        keyState: accelA.keyState,
-      };
-      const accelBComparable: Accelerator = {
-        keyCode: accelB.keyCode,
-        modifiers: accelB.modifiers,
-        keyState: accelB.keyState,
-      };
-      return JSON.stringify(accelAComparable) ===
-          JSON.stringify(accelBComparable);
-    };
-
 export const isTextAcceleratorInfo =
     (accelInfo: AcceleratorInfo|MojoAcceleratorInfo):
         accelInfo is TextAcceleratorInfo => {

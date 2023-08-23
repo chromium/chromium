@@ -29,6 +29,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
   private restoreDefaultCallCount: number = 0;
   private preventProcessingAcceleratorsCallCount: number = 0;
   private addAcceleratorCallCount: number = 0;
+  private removeAcceleratorCallCount: number = 0;
 
   constructor() {
     this.methods = new FakeMethodResolver();
@@ -59,6 +60,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.restoreDefaultCallCount = 0;
     this.preventProcessingAcceleratorsCallCount = 0;
     this.addAcceleratorCallCount = 0;
+    this.removeAcceleratorCallCount = 0;
     this.observables = new FakeObservables();
     this.registerObservables();
   }
@@ -122,9 +124,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   removeAccelerator(): Promise<{result: AcceleratorResultData}> {
     // Always return kSuccess in this fake.
-    const result:
-        AcceleratorResultData = {result: AcceleratorConfigResult.kSuccess};
-    this.methods.setResult('removeAccelerator', {result});
+    ++this.removeAcceleratorCallCount;
     return this.methods.resolveMethod('removeAccelerator');
   }
 
@@ -132,10 +132,6 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
       Promise<{result: AcceleratorResultData}> {
     ++this.restoreDefaultCallCount;
     return this.methods.resolveMethod('restoreDefault');
-  }
-
-  setRestoreDefault(result: AcceleratorResultData): void {
-    this.methods.setResult('restoreDefault', {result});
   }
 
   restoreAllDefaults(): Promise<{result: AcceleratorResultData}> {
@@ -208,6 +204,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     return this.addAcceleratorCallCount;
   }
 
+  getRemoveAcceleratorCallCount(): number {
+    return this.removeAcceleratorCallCount;
+  }
+
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {
     this.methods.setResult('hasLauncherButton', {hasLauncherButton});
   }
@@ -218,6 +218,14 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   setFakeReplaceAcceleratorResult(result: AcceleratorResultData): void {
     this.methods.setResult('replaceAccelerator', {result});
+  }
+
+  setFakeRestoreDefaultResult(result: AcceleratorResultData): void {
+    this.methods.setResult('restoreDefault', {result});
+  }
+
+  setFakeRemoveAcceleratorResult(result: AcceleratorResultData): void {
+    this.methods.setResult('removeAccelerator', {result});
   }
 
   // Sets up an observer for methodName.

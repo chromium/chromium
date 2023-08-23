@@ -18,7 +18,6 @@ import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/acc
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelerator_row.js';
 import {AcceleratorSubsectionElement} from 'chrome://shortcut-customization/js/accelerator_subsection.js';
-import {AcceleratorViewElement} from 'chrome://shortcut-customization/js/accelerator_view.js';
 import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo, fakeSearchResults} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting, setUseFakeProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
@@ -611,54 +610,40 @@ suite('shortcutCustomizationAppTest', function() {
   });
 
   test('DisableDefaultAccelerator', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    manager!.setAcceleratorLookup(fakeAcceleratorConfig);
-    manager!.setAcceleratorLayoutLookup(fakeLayoutInfo);
     page = initShortcutCustomizationAppElement();
     await flushTasks();
 
     // Open dialog for first accelerator in second subsection.
     await openDialogForAcceleratorInSubsection(1);
-    const editDialog = getDialog('#editDialog');
+    const editDialog = getPage().shadowRoot!.querySelector('#editDialog');
     assertTrue(!!editDialog);
 
     // Grab the first accelerator from second subsection.
-    let acceleratorList =
+    const dialogAccels =
         editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
             'accelerator-edit-view');
+    // Expect only 1 accelerator initially.
+    assertEquals(1, dialogAccels!.length);
 
-    // Get the accelerator info before removal.
-    const accelViewElement = strictQuery(
-        '#acceleratorItem', acceleratorList[0]!.shadowRoot,
-        AcceleratorViewElement);
-    const acceleratorInfo =
-        (accelViewElement as AcceleratorViewElement).acceleratorInfo;
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kSuccess,
+      shortcutName: strToMojoString16('TestConflictName'),
+    };
+    provider.setFakeRemoveAcceleratorResult(fakeResult);
 
-    // Before removal, there should be exactly one accelerator present in the
-    // dialog, and its state should be set to kEnabled.
-    assertEquals(1, acceleratorList!.length);
-    assertEquals(AcceleratorState.kEnabled, acceleratorInfo.state);
+    // Expect call count for `restoreDefault` to be 0.
+    assertEquals(0, provider.getRemoveAcceleratorCallCount());
 
     // Click on remove button.
-    const editView = acceleratorList[0] as AcceleratorEditViewElement;
+    const editView = dialogAccels[0] as AcceleratorEditViewElement;
     const deleteButton =
         editView!.shadowRoot!.querySelector('#deleteButton') as CrButtonElement;
     deleteButton.click();
 
     await flushTasks();
 
-    // Requery the accelerator elements.
-    acceleratorList =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-
-    // After removal, expect that the accelerator has now been disabled and
-    // removed.
-    acceleratorList =
-        editDialog!.shadowRoot!.querySelector('cr-dialog')!.querySelectorAll(
-            'accelerator-edit-view');
-    assertEquals(0, acceleratorList!.length);
-    assertEquals(AcceleratorState.kDisabledByUser, acceleratorInfo.state);
+    // Expect call count for `restoreDefault` to be 1.
+    assertEquals(1, provider.getRemoveAcceleratorCallCount());
   });
 
   test('RestoreAllButton', async () => {

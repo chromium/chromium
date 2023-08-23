@@ -7,8 +7,8 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {CycleTabsTextSearchResult, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
-import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, MojoAccelerator, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {areAcceleratorsEqual, compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
+import {Accelerator, AcceleratorCategory, AcceleratorKeyState, Modifier, StandardAcceleratorInfo, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {compareAcceleratorInfos, getAccelerator, getAcceleratorId, getModifiersForAcceleratorInfo, getModifierString, getSortedModifiers, getSourceAndActionFromAcceleratorId, getURLForSearchResult, isCustomizationDisabled, isSearchEnabled, isStandardAcceleratorInfo, isTextAcceleratorInfo, SHORTCUTS_APP_URL} from 'chrome://shortcut-customization/js/shortcut_utils.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createStandardAcceleratorInfo, createTextAcceleratorInfo} from './shortcut_customization_test_util.js';
@@ -54,57 +54,6 @@ suite('shortcutUtilsTest', function() {
   test('SearchEnabled', async () => {
     loadTimeData.overrideValues({isSearchEnabled: true});
     assertTrue(isSearchEnabled());
-  });
-
-  test('AreAcceleratorsEqual', async () => {
-    const accelShiftC: Accelerator = {
-      modifiers: Modifier.SHIFT,
-      keyCode: 67,  // c
-      keyState: AcceleratorKeyState.PRESSED,
-    };
-    const accelShiftCCopy: Accelerator = {
-      ...accelShiftC,
-    };
-    const accelAltC: Accelerator = {
-      modifiers: Modifier.ALT,
-      keyCode: 67,  // c
-      keyState: AcceleratorKeyState.PRESSED,
-    };
-    const accelShiftD: Accelerator = {
-      modifiers: Modifier.SHIFT,
-      keyCode: 68,  // d
-      keyState: AcceleratorKeyState.PRESSED,
-    };
-
-    // Compare the same accelerator.
-    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftC));
-
-    // Compare accelerators with the same properties.
-    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftCCopy));
-
-    // Compare accelerators with different modifiers.
-    assertFalse(areAcceleratorsEqual(accelShiftC, accelAltC));
-
-    // Compare accelerators with different key and keyDisplay.
-    assertFalse(areAcceleratorsEqual(accelShiftC, accelShiftD));
-  });
-
-  test('AreAcceleratorsEqualMojo', async () => {
-    const accelShiftC: Accelerator = {
-      modifiers: Modifier.SHIFT,
-      keyCode: 67,  // c
-      keyState: AcceleratorKeyState.PRESSED,
-    };
-    const accelShiftCMojo: MojoAccelerator = {
-      modifiers: Modifier.SHIFT,
-      keyCode: 67,  // c
-      keyState: 0,
-      timeStamp: {internalValue: BigInt(0)},
-    };
-
-    // Accelerators and MojoAccelerators are comparable,
-    // and shouldn't throw an error.
-    assertTrue(areAcceleratorsEqual(accelShiftC, accelShiftCMojo));
   });
 
   test('GetAcceleratorId', async () => {
