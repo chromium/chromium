@@ -39,7 +39,9 @@ ContentIndexProviderFactory::ContentIndexProviderFactory()
 
 ContentIndexProviderFactory::~ContentIndexProviderFactory() = default;
 
-KeyedService* ContentIndexProviderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ContentIndexProviderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ContentIndexProviderImpl(Profile::FromBrowserContext(context));
+  return std::make_unique<ContentIndexProviderImpl>(
+      Profile::FromBrowserContext(context));
 }
