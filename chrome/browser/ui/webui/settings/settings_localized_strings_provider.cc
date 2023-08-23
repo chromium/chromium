@@ -1601,7 +1601,6 @@ std::string BuildOSSettingsUrl(const std::string& sub_page) {
 
 void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-    {"passwordsCheckboxLabel", IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL},
     {"peopleSignInSyncPagePromptSecondaryWithAccount",
      IDS_SETTINGS_PEOPLE_SIGN_IN_PROMPT_SECONDARY_WITH_ACCOUNT},
     {"peopleSignInSyncPagePromptSecondaryWithNoAccount",
@@ -1625,6 +1624,12 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "activityControlsUrlInPrivacyGuide",
       chrome::kGoogleAccountActivityControlsURLInPrivacyGuide);
+
+  html_source->AddLocalizedString(
+      "passwordsCheckboxLabel",
+      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+          ? IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL
+          : IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL);
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(

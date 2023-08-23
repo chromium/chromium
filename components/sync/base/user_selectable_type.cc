@@ -58,8 +58,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
               {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES, SEARCH_ENGINES,
                SEGMENTATION}};
     case UserSelectableType::kPasswords:
-      // TODO(crbug.com/1223853): Revisit whether WEBAUTHN_CREDENTIAL should be
-      // its own UserSelectableType before launch.
       return {
           kPasswordsTypeName,
           PASSWORDS,

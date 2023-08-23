@@ -333,6 +333,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing passwords between multiple browser instances.">
     Passwords
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL" desc="Label for the checkbox which enables or disables syncing passwords and passkey metadata (i.e. their username and sites) between multiple browser instances. See the glossary for a definition of 'passkey', do not translate 'passkey' as 'password'.">
+    Passwords and passkeys
+  </message>
   <message name="IDS_SETTINGS_PASSPHRASE_PLACEHOLDER" desc="Placeholder for the passphrase field.">
     Passphrase
   </message>
