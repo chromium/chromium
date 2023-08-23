@@ -37,10 +37,11 @@ GuestOsSharePathFactory::GuestOsSharePathFactory()
 
 GuestOsSharePathFactory::~GuestOsSharePathFactory() = default;
 
-KeyedService* GuestOsSharePathFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GuestOsSharePathFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new GuestOsSharePath(profile);
+  return std::make_unique<GuestOsSharePath>(profile);
 }
 
 }  // namespace guest_os
