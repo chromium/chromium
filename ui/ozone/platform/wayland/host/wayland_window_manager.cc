@@ -202,16 +202,26 @@ void WaylandWindowManager::RemoveWindow(gfx::AcceleratedWidget widget) {
 
   window_map_.erase(widget);
 
-  for (WaylandWindowObserver& observer : observers_)
-    observer.OnWindowRemoved(window);
-
+  // Reset `pointer_focused_window_` and `keyboard_focused_window_` before
+  // notifying any observers to make sure GetCurrentPointerFocusedWindow() and
+  // GetCurrentKeyboardFocusedWindow() behave correctly. Especially the former
+  // can be problematic if notifying WaylandWindowDragController that a window
+  // has been removed before resetting `pointer_focused_window_`, because that
+  // leads to WaylandEventSource::OnPointerButtonEvent() being called, which
+  // then calls GetCurrentPointerFocusedWindow().
+  if (window == pointer_focused_window_) {
+    pointer_focused_window_ = nullptr;
+  }
   if (window == keyboard_focused_window_) {
     keyboard_focused_window_ = nullptr;
-    for (auto& observer : observers_)
+    for (auto& observer : observers_) {
       observer.OnKeyboardFocusedWindowChanged();
+    }
   }
-  if (window == pointer_focused_window_)
-    pointer_focused_window_ = nullptr;
+
+  for (WaylandWindowObserver& observer : observers_) {
+    observer.OnWindowRemoved(window);
+  }
 }
 
 void WaylandWindowManager::AddSubsurface(gfx::AcceleratedWidget widget,
