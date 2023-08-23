@@ -36,9 +36,10 @@ PaymentRequestDisplayManagerFactory::PaymentRequestDisplayManagerFactory()
 PaymentRequestDisplayManagerFactory::~PaymentRequestDisplayManagerFactory() =
     default;
 
-KeyedService* PaymentRequestDisplayManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PaymentRequestDisplayManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new PaymentRequestDisplayManager();
+  return std::make_unique<PaymentRequestDisplayManager>();
 }
 
 }  // namespace payments
