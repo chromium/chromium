@@ -139,7 +139,7 @@ class BluetoothDeviceListItemViewTest : public AshTestBase {
     return fake_bluetooth_detailed_view_->last_clicked_device_list_item();
   }
 
- private:
+ protected:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeBluetoothDetailedView> fake_bluetooth_detailed_view_;
   raw_ptr<BluetoothDeviceListItemView, DanglingUntriaged | ExperimentalAsh>
@@ -380,10 +380,6 @@ TEST_F(BluetoothDeviceListItemViewTest, HasCorrectIcon) {
 
 TEST_F(BluetoothDeviceListItemViewTest,
        HasEnterpriseIconWhenDeviceIsBlockedByPolicy) {
-  // TODO(b/289445902): Fix for Jelly then remove the ScopedFeatureList.
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitAndDisableFeature(chromeos::features::kJelly);
-
   PairedBluetoothDevicePropertiesPtr paired_device_properties =
       CreatePairedDeviceProperties();
 
@@ -398,8 +394,9 @@ TEST_F(BluetoothDeviceListItemViewTest,
   ASSERT_TRUE(bluetooth_device_list_item()->right_view());
   EXPECT_TRUE(bluetooth_device_list_item()->right_view()->GetVisible());
 
-  const gfx::Image expected_image(CreateVectorIcon(
-      chromeos::kEnterpriseIcon, /*dip_size=*/20, gfx::kGoogleGrey100));
+  const gfx::Image expected_image(gfx::CreateVectorIcon(
+      chromeos::kEnterpriseIcon, /*dip_size=*/20,
+      widget_->GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface)));
 
   ASSERT_TRUE(views::IsViewClass<views::ImageView>(
       bluetooth_device_list_item()->right_view()));
