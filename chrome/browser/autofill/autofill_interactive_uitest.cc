@@ -2975,7 +2975,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, SomeAutocomplete) {
 
 // Test that we do not fill formless non-checkout forms when we enable the
 // formless form restrictions.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
@@ -3258,7 +3257,6 @@ class AutofillInteractiveTestDynamicForm : public AutofillInteractiveTest {
 };
 
 // Test that we can Autofill dynamically generated forms.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill) {
   CreateTestProfile();
@@ -3281,7 +3279,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   EXPECT_EQ("15125551234", GetFieldValueById("phone_form1"));
 }
 
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        TwoDynamicChangingFormsFill) {
   CreateTestProfile();
@@ -3365,7 +3362,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 }
 
 // Test that only field of a type group that was filled initially get refilled.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_AddsNewFieldTypeGroups) {
   CreateTestProfile();
@@ -3421,7 +3417,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the visibility of a
 // field after it's autofilled.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_VisibilitySwitch) {
   CreateTestProfile();
@@ -3471,7 +3466,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though the form has no name.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicFormFill_FirstElementDisappearsNoNameForm) {
   CreateTestProfile();
@@ -3550,7 +3544,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with no name.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
     DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
@@ -3767,7 +3760,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 // Test that we can Autofill dynamically changing selects that have options
 // added and removed for forms with no names if the NameForAutofill of the first
 // field matches.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_FormWithoutName) {
   CreateTestProfile();
@@ -3793,7 +3785,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically generated synthetic forms if the
 // NameForAutofill of the first field matches.
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SyntheticForm) {
   CreateTestProfile();
@@ -3819,7 +3810,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 
 // Test that we can Autofill dynamically synthetic forms when the select options
 // change if the NameForAutofill of the first field matches
-// TODO(https://crbug.com/1297560): Check back if flakiness is fixed now.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated_SyntheticForm) {
   CreateTestProfile();
