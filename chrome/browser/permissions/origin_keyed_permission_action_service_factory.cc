@@ -36,8 +36,8 @@ OriginKeyedPermissionActionServiceFactory::
 OriginKeyedPermissionActionServiceFactory::
     ~OriginKeyedPermissionActionServiceFactory() = default;
 
-KeyedService*
-OriginKeyedPermissionActionServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new permissions::OriginKeyedPermissionActionService();
+std::unique_ptr<KeyedService> OriginKeyedPermissionActionServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<permissions::OriginKeyedPermissionActionService>();
 }

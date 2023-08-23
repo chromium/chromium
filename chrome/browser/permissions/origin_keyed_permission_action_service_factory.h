@@ -38,7 +38,7 @@ class OriginKeyedPermissionActionServiceFactory
       content::BrowserContext* browser_context);
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
