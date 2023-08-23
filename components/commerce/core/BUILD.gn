@@ -218,6 +218,7 @@ static_library("shopping_service") {
   ]
 
   public_deps = [
+    ":commerce_types",
     "//components/commerce/core/subscriptions:subscriptions",
     "//services/data_decoder/public/cpp",
   ]
@@ -380,4 +381,10 @@ source_set("commerce_constants") {
     "commerce_constants.cc",
     "commerce_constants.h",
   ]
+}
+
+source_set("commerce_types") {
+  sources = [ "commerce_types.h" ]
+
+  deps = [ "//url" ]
 }
