@@ -32,7 +32,8 @@ NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()
   DependsOn(weblayer::NoStatePrefetchManagerFactory::GetInstance());
 }
 
-KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NoStatePrefetchLinkManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   DCHECK(browser_context);
 
@@ -41,7 +42,8 @@ KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(
   if (!no_state_prefetch_manager)
     return nullptr;
 
-  return new prerender::NoStatePrefetchLinkManager(no_state_prefetch_manager);
+  return std::make_unique<prerender::NoStatePrefetchLinkManager>(
+      no_state_prefetch_manager);
 }
 
 content::BrowserContext*
