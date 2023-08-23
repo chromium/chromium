@@ -34,7 +34,7 @@ class BrowserSwitcherServiceFactory : public ProfileKeyedServiceFactory {
   ~BrowserSwitcherServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
