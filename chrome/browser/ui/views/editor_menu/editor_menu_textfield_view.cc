@@ -20,7 +20,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -81,8 +81,10 @@ void EditorMenuTextfieldView::InitLayout() {
   textfield_->SetPlaceholderText(kContainerTitle);
   layout->SetFlexForView(textfield_, 1, /*use_min_size=*/true);
 
-  auto* button_container = AddChildView(std::make_unique<views::View>());
-  button_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+  auto* button_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  button_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  button_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
   button_container->SetPreferredSize(gfx::Size(kButtonSizeDip, kButtonSizeDip));
 
   arrow_button_ =

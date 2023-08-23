@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 
 #include "base/containers/adapters.h"
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "ui/aura/env.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -16,7 +17,8 @@
 
 namespace chromeos::editor_menu {
 
-PreTargetHandler::PreTargetHandler(views::View* view) : view_(view) {
+PreTargetHandler::PreTargetHandler(views::View* view, const CardType& type)
+    : view_(view), card_type_(type) {
   Init();
 }
 
@@ -63,10 +65,18 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
   ui::Event::DispatcherApi(clone.get()).set_target(event->target());
   auto* to_dispatch = clone->AsLocatedEvent();
   auto location = to_dispatch->target()->GetScreenLocation(*to_dispatch);
+  bool contains_location = view_->GetBoundsInScreen().Contains(location);
+
+  // Click outside the Editor Menu will dismiss the widget and the context menu.
+  if (card_type_ == CardType::kEditorMenu &&
+      event->type() == ui::ET_MOUSE_PRESSED && !contains_location) {
+    view_->GetWidget()->Close();
+    return;
+  }
 
   // `ET_MOUSE_MOVED` events outside the top-view's bounds are also dispatched
   // to clear any set hover-state.
-  bool dispatch_event = (view_->GetBoundsInScreen().Contains(location) ||
+  bool dispatch_event = (contains_location ||
                          to_dispatch->type() == ui::EventType::ET_MOUSE_MOVED);
   if (dispatch_event) {
     // Convert to local coordinates and forward to the top-view.
@@ -151,10 +161,20 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
   // the last and the first menu items of the active menu by commandeering the
   // selection from these terminal items.
 
+  // VKEY_UP/VKEY_DOWN will move focus between Quick Answers (or Editor Menu)
+  // and context menu UIs. One difference is that When focus is moved to Editor
+  // Menu, it will get activated, and the context menu will be dismissed.
+  // VKEY_LEFT/VKEY_RIGHT will move focus inside Quick Answers UI.
   auto key_code = key_event->key_code();
   switch (key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN: {
+      auto* active_menu = views::MenuController::GetActiveInstance();
+      // When Editor Menu is active, the context menu could be dismissed.
+      if (!active_menu) {
+        return;
+      }
+
       if (view_has_pane_focus) {
         // Allow key-events to pass on as-usual to the context menu and restore
         // focus to wherever |view_| borrowed it from.
@@ -170,7 +190,6 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
       }
 
       // Get the selected item, if any, in the currently active menu.
-      auto* const active_menu = views::MenuController::GetActiveInstance();
       auto* const selected_item = active_menu->GetSelectedMenuItem();
       if (!selected_item) {
         return;
@@ -210,9 +229,16 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         view_->RequestFocus();
         key_event->StopPropagation();
 
+        // The context menu will be dismissed when the Editor Menu requests
+        // focus. The `active_menu` will be nullptr.
+        active_menu = views::MenuController::GetActiveInstance();
+        if (card_type_ == CardType::kEditorMenu) {
+          CHECK(!active_menu);
+        }
+
         // Reopen the sub-menu owned by |parent| to clear the currently selected
         // boundary menu-item.
-        if (parent) {
+        if (parent && active_menu) {
           active_menu->SelectItemAndOpenSubmenu(parent);
         }
       }

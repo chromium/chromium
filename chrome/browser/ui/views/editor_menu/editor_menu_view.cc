@@ -12,6 +12,8 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_chip_view.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_textfield_view.h"
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -25,6 +27,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -68,7 +71,9 @@ constexpr std::array<std::u16string_view, 6> kChipLables = {
 
 }  // namespace
 
-EditorMenuView::EditorMenuView(const gfx::Rect& anchor_view_bounds) {
+EditorMenuView::EditorMenuView(const gfx::Rect& anchor_view_bounds)
+    : pre_target_handler_(
+          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)) {
   InitLayout();
 }
 
@@ -94,6 +99,36 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
   return widget;
 }
 
+void EditorMenuView::AddedToWidget() {
+  widget_observation_.Observe(GetWidget());
+}
+
+void EditorMenuView::RequestFocus() {
+  views::View::RequestFocus();
+  settings_button_->RequestFocus();
+}
+
+void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetName(kContainerTitle);
+}
+
+void EditorMenuView::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+void EditorMenuView::OnWidgetActivationChanged(views::Widget* widget,
+                                               bool active) {
+  // When the widget is active, will use default focus behavior.
+  if (active) {
+    pre_target_handler_.reset();
+    return;
+  }
+
+  // Close widget When it is deactivated.
+  GetWidget()->Close();
+}
+
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   int height = GetHeightForWidth(anchor_view_bounds.width());
   int y = anchor_view_bounds.y() - kMarginDip - height;
@@ -110,11 +145,6 @@ void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   gfx::Rect bounds = {{anchor_view_bounds.x(), y},
                       {kContainerMinWidthDip, height}};
   GetWidget()->SetBounds(bounds);
-}
-
-void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kContainerTitle);
 }
 
 void EditorMenuView::InitLayout() {
@@ -168,8 +198,8 @@ void EditorMenuView::AddTitleContainer() {
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 
   int width = kContainerMinWidthDip - kTitleContainerInsets.width();
-  int height = std::max(title->GetPreferredSize().height(),
-                        settings_button_->GetPreferredSize().height());
+  int height =
+      std::max(title->GetPreferredSize().height(), kSettingsButtonSizeDip);
   title_container_->SetPreferredSize(gfx::Size(width, height));
 }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "ui/events/event_handler.h"
 
 namespace ui {
@@ -28,7 +29,8 @@ class UserConsentView;
 // TODO (siabhijeet): Migrate to using two-phased event dispatching.
 class PreTargetHandler : public ui::EventHandler {
  public:
-  PreTargetHandler(views::View* view);
+  explicit PreTargetHandler(views::View* view,
+                            const CardType& type = CardType::kQuickAnswers);
 
   // Disallow copy and assign.
   PreTargetHandler(const PreTargetHandler&) = delete;
@@ -58,6 +60,8 @@ class PreTargetHandler : public ui::EventHandler {
   bool dismiss_anchor_menu_on_view_closed_ = true;
 
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
+
+  const CardType card_type_ = CardType::kQuickAnswers;
 };
 
 }  // namespace chromeos::editor_menu
