@@ -62,7 +62,8 @@ bool ShouldPrepareForRecovery(const AccountId& account_id) {
          base::Contains(kPossibleReasons, reauth_reason.value());
 }
 
-bool ShouldUseReauthEndpoint(const AccountId& account_id) {
+bool ShouldUseReauthEndpoint(const AccountId& account_id,
+                             bool is_recovery_configured) {
   if (!account_id.is_valid()) {
     return false;
   }
@@ -79,6 +80,11 @@ bool ShouldUseReauthEndpoint(const AccountId& account_id) {
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) !=
       GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_DEFAULT) {
     return false;
+  }
+
+  // Use reauth endpoint in potential recovery flow.
+  if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
+    return true;
   }
 
   return features::IsGaiaReauthEndpointEnabled();
@@ -118,11 +124,8 @@ GaiaScreen::~GaiaScreen() {
 void GaiaScreen::LoadOnline(const AccountId& account) {
   if (!view_)
     return;
-  auto gaia_path = GaiaView::GaiaPath::kDefault;
-  if (ShouldUseReauthEndpoint(account)) {
-    gaia_path = GaiaView::GaiaPath::kReauth;
-  }
-  view_->SetGaiaPath(gaia_path);
+
+  view_->SetGaiaPath(GaiaView::GaiaPath::kDefault);
   view_->SetReauthRequestToken(std::string());
 
   // Always fetch Gaia reauth request token if the testing switch is set. It
@@ -131,11 +134,12 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
     DCHECK(features::IsCryptohomeRecoveryEnabled());
+    view_->SetGaiaPath(GaiaView::GaiaPath::kReauth);
     FetchGaiaReauthToken(account);
     return;
   }
 
-  if (ShouldPrepareForRecovery(account)) {
+  if (account.is_valid()) {
     auto user_context = std::make_unique<UserContext>();
     user_context->SetAccountId(account);
     auth_factor_editor_.GetAuthFactorsConfiguration(
@@ -297,21 +301,27 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
 void GaiaScreen::OnGetAuthFactorsConfiguration(
     std::unique_ptr<UserContext> user_context,
     absl::optional<AuthenticationError> error) {
+  bool is_recovery_configured;
   if (error.has_value()) {
     LOG(WARNING) << "Failed to get auth factors configuration, code "
                  << error->get_cryptohome_code()
                  << ", skip fetching reauth request token";
-    view_->LoadGaiaAsync(user_context->GetAccountId());
-    return;
+    is_recovery_configured = false;
+  } else {
+    const auto& config = user_context->GetAuthFactorsConfiguration();
+    is_recovery_configured =
+        config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
   }
 
-  const auto& config = user_context->GetAuthFactorsConfiguration();
-  bool is_configured =
-      config.HasConfiguredFactor(cryptohome::AuthFactorType::kRecovery);
-  if (is_configured) {
-    FetchGaiaReauthToken(user_context->GetAccountId());
+  const AccountId& account_id = user_context->GetAccountId();
+  if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
+    view_->SetGaiaPath(GaiaView::GaiaPath::kReauth);
+  }
+
+  if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {
+    FetchGaiaReauthToken(account_id);
   } else {
-    view_->LoadGaiaAsync(user_context->GetAccountId());
+    view_->LoadGaiaAsync(account_id);
   }
 }
 

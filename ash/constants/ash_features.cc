@@ -1267,7 +1267,9 @@ BASE_FEATURE(kGlanceablesV2ClassroomTeacherView,
              "GlanceablesV2ClassroomTeacherView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the Gaia reauth endpoint.
+// Enables the Gaia reauth endpoint for all online reauth flows on login screen.
+// Note that the reauth endpoint is used when the user is a child user or in
+// potential recovery flows, regardless of the flag value.
 BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
              base::FEATURE_DISABLED_BY_DEFAULT);

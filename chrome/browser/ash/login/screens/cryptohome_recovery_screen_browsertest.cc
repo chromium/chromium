@@ -36,6 +36,8 @@ const test::UIPath kManualRecoveryButton = {"cryptohome-recovery",
 const test::UIPath kRetryButton = {"cryptohome-recovery", "retryButton"};
 const test::UIPath kReauthButton = {"cryptohome-recovery", "reauthButton"};
 
+const char kOldPassword[] = "old user password";
+const char kNewPassword[] = "new user password";
 }  // namespace
 
 class CryptohomeRecoveryScreenTestBase : public OobeBaseTest {
@@ -150,12 +152,17 @@ class CryptohomeRecoveryScreenTest : public CryptohomeRecoveryScreenTestBase {
 
 // Successful recovery after password change is detected.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
 
   OpenGaiaDialog(test_user_.account_id);
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
@@ -171,11 +178,16 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, SuccessfulRecovery) {
 // Verifies that recovery is skipped and GaiaPasswordChangedScreen is shown when
 // recovery factor is not configured.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
 
   OpenGaiaDialog(test_user_.account_id);
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kDefault);
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
 
@@ -188,14 +200,14 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, NoRecoveryFactor) {
 // Verifies that we could fallback to the manual recovery when there is error
 // during recovery.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
   fake_recovery_service_.SetErrorResponse("/v1/rart",
                                           net::HTTP_SERVICE_UNAVAILABLE);
 
   OpenGaiaDialog(test_user_.account_id);
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kErrorStep)->Wait();
@@ -208,14 +220,14 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, ManualRecoveryAfterError) {
 
 // Verifies that we could retry when there is error during recovery.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
   fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery",
                                           net::HTTP_BAD_REQUEST);
 
   OpenGaiaDialog(test_user_.account_id);
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kErrorStep)->Wait();
@@ -227,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
   fake_recovery_service_.SetErrorResponse("/v1/cryptorecovery", net::HTTP_OK);
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
@@ -244,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest, RetryAfterError) {
 // when password change is detected.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
                        MissingReauthTokenDuringRecovery) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
 
   // Entering the add person flow with an existing account. Reauth token was not
@@ -255,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
   EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
 
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kReauthNotificationStep)->Wait();
@@ -265,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenTest,
   EXPECT_EQ(result_.value(), CryptohomeRecoveryScreen::Result::kGaiaLogin);
 
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
@@ -298,12 +310,17 @@ class CryptohomeRecoveryScreenChildTest
 
 // Successful recovery after password change is detected for child users.
 IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
-  AddFakeUser("old user password");
+  AddFakeUser(kOldPassword);
   cryptohome_.AddRecoveryFactor(test_user_.account_id);
 
   OpenGaiaDialog(test_user_.account_id);
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
   SetUpExitCallback();
-  SetGaiaScreenCredentials(test_user_.account_id, "new user password");
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
 
   OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
   test::OobeJS().CreateVisibilityWaiter(true, kSuccessStep)->Wait();
@@ -314,6 +331,28 @@ IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, SuccessfulRecovery) {
 
   OobeWindowVisibilityWaiter(false).Wait();
   login_manager_mixin_.WaitForActiveSession();
+}
+
+// Verifies that recovery is skipped for child users when recovery factor is not
+// configured.
+IN_PROC_BROWSER_TEST_F(CryptohomeRecoveryScreenChildTest, NoRecoveryFactor) {
+  AddFakeUser(kOldPassword);
+
+  OpenGaiaDialog(test_user_.account_id);
+  EXPECT_EQ(LoginDisplayHost::default_host()
+                ->GetOobeUI()
+                ->GetHandler<GaiaScreenHandler>()
+                ->GetGaiaPath(),
+            GaiaScreenHandler::GaiaPath::kReauth);
+  SetUpExitCallback();
+  SetGaiaScreenCredentials(test_user_.account_id, kNewPassword);
+
+  OobeScreenWaiter(CryptohomeRecoveryScreenView::kScreenId).Wait();
+
+  WaitForScreenExit();
+  EXPECT_EQ(result_.value(),
+            CryptohomeRecoveryScreen::Result::kNoRecoveryFactor);
+  OobeScreenWaiter(GaiaPasswordChangedView::kScreenId).Wait();
 }
 
 }  // namespace ash
