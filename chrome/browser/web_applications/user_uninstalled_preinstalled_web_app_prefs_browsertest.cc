@@ -26,13 +26,17 @@ namespace web_app {
 class UserUninstalledPreinstalledWebAppPrefsBrowserTest
     : public WebAppControllerBrowserTest {
  public:
-  UserUninstalledPreinstalledWebAppPrefsBrowserTest() = default;
+  UserUninstalledPreinstalledWebAppPrefsBrowserTest()
+      : skip_preinstalled_web_app_startup_(
+            PreinstalledWebAppManager::SkipStartupForTesting()) {}
   ~UserUninstalledPreinstalledWebAppPrefsBrowserTest() override = default;
 
   void SetUp() override {
-    PreinstalledWebAppManager::SkipStartupForTesting();
     WebAppControllerBrowserTest::SetUp();
   }
+
+ private:
+  base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 };
 
 IN_PROC_BROWSER_TEST_F(UserUninstalledPreinstalledWebAppPrefsBrowserTest,

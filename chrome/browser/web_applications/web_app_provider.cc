@@ -237,6 +237,11 @@ IsolatedWebAppUpdateManager& WebAppProvider::iwa_update_manager() {
   CheckIsConnected();
   return *iwa_update_manager_;
 }
+
+WebAppRunOnOsLoginManager& WebAppProvider::run_on_os_login_manager() {
+  CheckIsConnected();
+  return *web_app_run_on_os_login_manager_;
+}
 #endif
 
 WebAppUiManager& WebAppProvider::ui_manager() {

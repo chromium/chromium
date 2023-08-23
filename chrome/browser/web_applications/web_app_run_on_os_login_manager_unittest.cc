@@ -59,7 +59,10 @@ const char kWebAppSettings[] = R"([
 class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
  public:
   void SetUp() override {
-    BuildAndInitFeatureList();
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDesktopPWAsEnforceWebAppSettingsPolicy,
+                              features::kDesktopPWAsRunOnOsLogin},
+        /*disabled_features=*/{});
     WebAppTest::SetUp();
 
     provider_ = FakeWebAppProvider::Get(profile());
@@ -91,7 +94,8 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
     // WebAppRunOnOsLoginManager until all subsystems are ready and then
     // manually trigger the RunOnOsLogin, so that we can install a PWA before
     // that happens.
-    provider_->GetWebAppRunOnOsLoginManager().SetSkipStartupForTesting(true);
+    skip_run_on_os_login_startup_ = std::make_unique<base::AutoReset<bool>>(
+        WebAppRunOnOsLoginManager::SkipStartupForTesting());
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
@@ -101,15 +105,6 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   }
 
  protected:
-  void BuildAndInitFeatureList() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(
-        features::kDesktopPWAsEnforceWebAppSettingsPolicy);
-    enabled_features.push_back(features::kDesktopPWAsRunOnOsLogin);
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
   virtual void SetWebAppSettingsPref() = 0;
 
   void AwaitAllCommandsComplete() {
@@ -125,6 +120,7 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
   raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
+  std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -220,7 +216,7 @@ class WebAppRunOnOsLoginManagerSimpleSettingsTest
 
 TEST_F(WebAppRunOnOsLoginManagerSimpleSettingsTest, SimpleAppStarted) {
   InstallWebApp();
-  provider_->GetWebAppRunOnOsLoginManager().RunAppsOnOsLoginForTesting();
+  provider_->run_on_os_login_manager().RunAppsOnOsLoginForTesting();
 
   AwaitAllCommandsComplete();
 
@@ -232,7 +228,7 @@ TEST_F(WebAppRunOnOsLoginManagerSimpleSettingsTest, SimpleAppStarted) {
 TEST_F(WebAppRunOnOsLoginManagerSimpleSettingsTest, NoDuplicateAppStarted) {
   InstallWebApp();
   OpenWindowForTestApp();
-  provider_->GetWebAppRunOnOsLoginManager().RunAppsOnOsLoginForTesting();
+  provider_->run_on_os_login_manager().RunAppsOnOsLoginForTesting();
 
   AwaitAllCommandsComplete();
 
@@ -244,7 +240,7 @@ TEST_F(WebAppRunOnOsLoginManagerSimpleSettingsTest, NoDuplicateAppStarted) {
 TEST_P(WebAppRunOnOsLoginManagerParameterizedTest, WebAppRunOnOsLogin) {
   // Arrange: Install PWA, then perform ROOL
   InstallWebApp();
-  provider_->GetWebAppRunOnOsLoginManager().RunAppsOnOsLoginForTesting();
+  provider_->run_on_os_login_manager().RunAppsOnOsLoginForTesting();
 
   bool launch_by_policy = GetPolicyRunOnOsLoginValue() == "run_windowed";
   bool launch_by_user_mode =

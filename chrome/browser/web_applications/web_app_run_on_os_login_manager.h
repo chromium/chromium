@@ -31,7 +31,7 @@ class WebAppRunOnOsLoginManager {
 
   base::WeakPtr<WebAppRunOnOsLoginManager> GetWeakPtr();
 
-  void SetSkipStartupForTesting(bool skip_startup);
+  static base::AutoReset<bool> SkipStartupForTesting();
   void RunAppsOnOsLoginForTesting();
 
  private:
@@ -41,8 +41,6 @@ class WebAppRunOnOsLoginManager {
 
   raw_ptr<WebAppProvider> provider_ = nullptr;
   const raw_ptr<Profile> profile_;
-
-  bool skip_startup_for_testing_ = false;
 
   base::WeakPtrFactory<WebAppRunOnOsLoginManager> weak_ptr_factory_{this};
 };

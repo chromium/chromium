@@ -597,8 +597,8 @@ void PreinstalledWebAppManager::RegisterProfilePrefs(
 }
 
 // static
-void PreinstalledWebAppManager::SkipStartupForTesting() {
-  g_skip_startup_for_testing_ = true;
+base::AutoReset<bool> PreinstalledWebAppManager::SkipStartupForTesting() {
+  return {&g_skip_startup_for_testing_, true};
 }
 
 // static
@@ -608,26 +608,29 @@ PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting() {
 }
 
 // static
-void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
-  g_bypass_offline_manifest_requirement_for_testing_ = true;
+base::AutoReset<bool>
+PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
+  return {&g_bypass_offline_manifest_requirement_for_testing_, true};
 }
 
 // static
-void PreinstalledWebAppManager::
-    OverridePreviousUserUninstallConfigForTesting() {
-  g_override_previous_user_uninstall_for_testing_ = true;
+base::AutoReset<bool>
+PreinstalledWebAppManager::OverridePreviousUserUninstallConfigForTesting() {
+  return {&g_override_previous_user_uninstall_for_testing_, true};
 }
 
 // static
-void PreinstalledWebAppManager::SetConfigsForTesting(
+base::AutoReset<const base::Value::List*>
+PreinstalledWebAppManager::SetConfigsForTesting(
     const base::Value::List* configs) {
-  g_configs_for_testing = configs;
+  return {&g_configs_for_testing, configs, nullptr};
 }
 
 // static
-void PreinstalledWebAppManager::SetFileUtilsForTesting(
+base::AutoReset<FileUtilsWrapper*>
+PreinstalledWebAppManager::SetFileUtilsForTesting(
     FileUtilsWrapper* file_utils) {
-  g_file_utils_for_testing = file_utils;
+  return {&g_file_utils_for_testing, file_utils, nullptr};
 }
 
 PreinstalledWebAppManager::PreinstalledWebAppManager(Profile* profile)

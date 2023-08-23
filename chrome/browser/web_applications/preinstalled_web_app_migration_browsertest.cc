@@ -95,9 +95,12 @@ class PreinstalledWebAppMigrationBrowserTest
   PreinstalledWebAppMigrationBrowserTest()
       : enable_chrome_apps_(
             &extensions::testing::g_enable_chrome_apps_for_testing,
-            true) {
-    PreinstalledWebAppManager::SkipStartupForTesting();
-    PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+            true),
+        skip_preinstalled_web_app_startup_(
+            PreinstalledWebAppManager::SkipStartupForTesting()),
+        bypass_offline_manifest_requirement_(
+            PreinstalledWebAppManager::
+                BypassOfflineManifestRequirementForTesting()) {
     disable_external_extensions_scope_ =
         extensions::ExtensionService::DisableExternalUpdatesForTesting();
   }
@@ -256,15 +259,14 @@ class PreinstalledWebAppMigrationBrowserTest
           nullptr);
       app_configs.Append(*base::JSONReader::Read(app_config_string));
     }
-    PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
+    base::AutoReset<const base::Value::List*> configs_for_testing =
+        PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
 
     WebAppProvider::GetForTest(profile())
         ->preinstalled_web_app_manager()
         .LoadAndSynchronizeForTesting(std::move(callback));
 
     run_loop.Run();
-
-    PreinstalledWebAppManager::SetConfigsForTesting(nullptr);
   }
 
   bool IsWebAppInstalled() {
@@ -299,6 +301,8 @@ class PreinstalledWebAppMigrationBrowserTest
 
  private:
   base::AutoReset<bool> enable_chrome_apps_;
+  base::AutoReset<bool> skip_preinstalled_web_app_startup_;
+  base::AutoReset<bool> bypass_offline_manifest_requirement_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,

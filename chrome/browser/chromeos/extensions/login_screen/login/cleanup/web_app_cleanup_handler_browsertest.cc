@@ -4,8 +4,10 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler.h"
 
+#include <memory>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
@@ -47,13 +49,10 @@ constexpr char kApp4InstallURL[] = "https://example_url4.com/install";
 
 class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
  protected:
-  WebAppCleanupHandlerBrowserTest() = default;
+  WebAppCleanupHandlerBrowserTest()
+      : skip_preinstalled_web_app_startup_(
+            PreinstalledWebAppManager::SkipStartupForTesting()) {}
   ~WebAppCleanupHandlerBrowserTest() override = default;
-
-  void SetUp() override {
-    PreinstalledWebAppManager::SkipStartupForTesting();
-    WebAppControllerBrowserTest::SetUp();
-  }
 
   AppId InstallWebApp(std::u16string title,
                       GURL start_url,
@@ -83,6 +82,7 @@ class WebAppCleanupHandlerBrowserTest : public WebAppControllerBrowserTest {
 
   WebAppRegistrar& registrar_unsafe() { return provider().registrar_unsafe(); }
 
+  base::AutoReset<bool> skip_preinstalled_web_app_startup_;
   chromeos::WebAppCleanupHandler web_app_cleanup_handler_;
 };
 

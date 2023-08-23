@@ -9,6 +9,10 @@
 #include "chrome/browser/profiles/profile.h"
 
 namespace web_app {
+
+extern const char kRunOnOsLoginNotificationId[];
+extern const char kRunOnOsLoginNotifierId[];
+
 void DisplayRunOnOsLoginNotification(const std::vector<std::string>& app_names,
                                      base::WeakPtr<Profile> profile);
 }  // namespace web_app

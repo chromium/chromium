@@ -28,13 +28,16 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
  public:
   DedupeInstallUrlsCommandTest()
       : bypass_dependencies_(
-            PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting()) {
-  }
+            PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting()),
+        skip_preinstalled_web_app_startup_(
+            PreinstalledWebAppManager::SkipStartupForTesting()),
+        bypass_offline_manifest_requirement_(
+            PreinstalledWebAppManager::
+                BypassOfflineManifestRequirementForTesting()) {}
 
   void SetUp() override {
     WebAppTest::SetUp();
 
-    PreinstalledWebAppManager::SkipStartupForTesting();
     PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
 
     fake_web_contents_manager_ = static_cast<FakeWebContentsManager*>(
@@ -117,6 +120,8 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
   raw_ptr<FakeWebContentsManager, DisableDanglingPtrDetection>
       fake_web_contents_manager_;
   base::AutoReset<bool> bypass_dependencies_;
+  base::AutoReset<bool> skip_preinstalled_web_app_startup_;
+  base::AutoReset<bool> bypass_offline_manifest_requirement_;
 };
 
 TEST_F(DedupeInstallUrlsCommandTest,

@@ -179,9 +179,6 @@ class FakeWebAppProvider : public WebAppProvider {
   WebAppUiManager& GetUiManager() const;
   WebAppInstallManager& GetInstallManager() const;
   OsIntegrationManager& GetOsIntegrationManager() const;
-#if BUILDFLAG(IS_CHROMEOS)
-  WebAppRunOnOsLoginManager& GetWebAppRunOnOsLoginManager() const;
-#endif
 
   // Starts this WebAppProvider and its subsystems. It does not wait for systems
   // to be ready.

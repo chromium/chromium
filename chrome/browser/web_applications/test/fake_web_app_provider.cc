@@ -245,14 +245,6 @@ WebAppIconManager& FakeWebAppProvider::GetIconManager() const {
   return *icon_manager_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-WebAppRunOnOsLoginManager& FakeWebAppProvider::GetWebAppRunOnOsLoginManager()
-    const {
-  DCHECK(web_app_run_on_os_login_manager_);
-  return *web_app_run_on_os_login_manager_;
-}
-#endif
-
 WebAppCommandManager& FakeWebAppProvider::GetCommandManager() const {
   DCHECK(command_manager_);
   return *command_manager_;

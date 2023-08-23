@@ -155,6 +155,9 @@ class WebAppProvider : public KeyedService {
   // TODO(crbug.com/1458725): We currently only support automatic updates on
   // ChromeOS.
   IsolatedWebAppUpdateManager& iwa_update_manager();
+
+  // Runs web apps on OS login.
+  WebAppRunOnOsLoginManager& run_on_os_login_manager();
 #endif
 
   WebAppUiManager& ui_manager();

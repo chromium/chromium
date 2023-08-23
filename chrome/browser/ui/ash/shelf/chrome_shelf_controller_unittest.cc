@@ -504,7 +504,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
                                       public apps::AppRegistryCache::Observer {
  protected:
   ChromeShelfControllerTestBase()
-      : BrowserWithTestWindowTest(Browser::TYPE_NORMAL) {}
+      : BrowserWithTestWindowTest(Browser::TYPE_NORMAL),
+        skip_preinstalled_web_app_startup_(
+            web_app::PreinstalledWebAppManager::SkipStartupForTesting()) {}
 
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -514,8 +516,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     command_line->AppendSwitch(switches::kDisableDefaultApps);
 
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
-
-    web_app::PreinstalledWebAppManager::SkipStartupForTesting();
 
     app_list::AppListSyncableServiceFactory::SetUseInTesting(true);
 
@@ -1406,6 +1406,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
       app_list_syncable_service_ = nullptr;
 
   PinAssertionMap pin_assertions_;
+
+  base::AutoReset<bool> skip_preinstalled_web_app_startup_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

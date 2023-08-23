@@ -77,17 +77,14 @@ class PreinstalledWebAppManager {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // TODO(crbug.com/1434692): All these should return a base::AutoReset<bool> to
-  // avoid leaking override state beyond unit test execution.
-  static void SkipStartupForTesting();
+  static base::AutoReset<bool> SkipStartupForTesting();
   static base::AutoReset<bool> BypassAwaitingDependenciesForTesting();
-  static void BypassOfflineManifestRequirementForTesting();
-
-  static void OverridePreviousUserUninstallConfigForTesting();
-  static void SetConfigDirForTesting(const base::FilePath* config_dir);
-
-  static void SetConfigsForTesting(const base::Value::List* configs);
-  static void SetFileUtilsForTesting(FileUtilsWrapper* file_utils);
+  static base::AutoReset<bool> BypassOfflineManifestRequirementForTesting();
+  static base::AutoReset<bool> OverridePreviousUserUninstallConfigForTesting();
+  static base::AutoReset<const base::Value::List*> SetConfigsForTesting(
+      const base::Value::List* configs);
+  static base::AutoReset<FileUtilsWrapper*> SetFileUtilsForTesting(
+      FileUtilsWrapper* file_utils);
 
   explicit PreinstalledWebAppManager(Profile* profile);
   PreinstalledWebAppManager(const PreinstalledWebAppManager&) = delete;

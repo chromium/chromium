@@ -28,9 +28,6 @@
 
 namespace {
 
-const char kRunOnOsLoginNotificationId[] = "run_on_os_login";
-const char kRunOnOsLoginNotifierId[] = "run_on_os_login_notifier";
-
 message_center::Notification CreateNotification(
     const std::vector<std::string>& app_names,
     base::WeakPtr<Profile> profile) {
@@ -54,12 +51,14 @@ message_center::Notification CreateNotification(
       l10n_util::GetStringUTF16(IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE));
 
 #if (BUILDFLAG(IS_CHROMEOS_ASH))
-  message_center::NotifierId notifier_id = message_center::NotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kRunOnOsLoginNotifierId,
-      ash::NotificationCatalogName::kWebAppSettings);
+  message_center::NotifierId notifier_id =
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 web_app::kRunOnOsLoginNotifierId,
+                                 ash::NotificationCatalogName::kWebAppSettings);
 #else
-  message_center::NotifierId notifier_id = message_center::NotifierId(
-      message_center::NotifierType::SYSTEM_COMPONENT, kRunOnOsLoginNotifierId);
+  message_center::NotifierId notifier_id =
+      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
+                                 web_app::kRunOnOsLoginNotifierId);
 #endif  // (BUILDFLAG(IS_CHROMEOS_ASH))
 
   base::RepeatingClosure click_callback = base::BindRepeating(
@@ -78,7 +77,7 @@ message_center::Notification CreateNotification(
 
   message_center::Notification notification{
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      std::string(kRunOnOsLoginNotificationId),
+      std::string(web_app::kRunOnOsLoginNotificationId),
       title,
       message,
       ui::ImageModel(),
@@ -96,6 +95,10 @@ message_center::Notification CreateNotification(
 }  // namespace
 
 namespace web_app {
+
+const char kRunOnOsLoginNotificationId[] = "run_on_os_login";
+const char kRunOnOsLoginNotifierId[] = "run_on_os_login_notifier";
+
 void DisplayRunOnOsLoginNotification(const std::vector<std::string>& app_names,
                                      base::WeakPtr<Profile> profile) {
   if (!profile) {
