@@ -1668,12 +1668,20 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
       1);
 }
 
+// TODO(https://crbug.com/1475285): Flaky on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed \
+  DISABLED_Histograms_MultipleDangerousIframesInterstitial_DontProceed
+#else
+#define MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed \
+  Histograms_MultipleDangerousIframesInterstitial_DontProceed
+#endif
 // Test that ensures the SHOW and DONT_PROCEED buckets are logged correctly if
 // multiple subresources are flagged on the same page. Regression test for
 // https://crbug.com/1195411.
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageBrowserTest,
-    Histograms_MultipleDangerousIframesInterstitial_DontProceed) {
+    MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed) {
   base::HistogramTester histograms;
   SBThreatType threat_type = GetThreatType();
 
