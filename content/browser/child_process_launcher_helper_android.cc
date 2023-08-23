@@ -7,9 +7,7 @@
 
 #include "base/android/apk_assets.h"
 #include "base/android/application_status_listener.h"
-#include "base/android/build_info.h"
 #include "base/android/jni_array.h"
-#include "base/base_switches.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
@@ -93,14 +91,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   // Non-sandboxed utility or renderer process are currently not supported.
   DCHECK(process_type == switches::kGpuProcess ||
          !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
-
-  auto* build_info = base::android::BuildInfo::GetInstance();
-  command_line()->AppendSwitchASCII(switches::kHostPackageName,
-                                    build_info->host_package_name());
-  command_line()->AppendSwitchASCII(switches::kHostPackageLabel,
-                                    build_info->host_package_label());
-  command_line()->AppendSwitchASCII(switches::kHostVersionCode,
-                                    build_info->host_version_code());
 
   return true;
 }

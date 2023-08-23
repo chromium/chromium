@@ -87,9 +87,6 @@ class BASE_EXPORT BuildInfo {
     return gms_version_code_;
   }
 
-  // The package name of the host app loading the process. Retrieved from the
-  // application context. Note: In the context of the SDK Runtime, this value
-  // will be qualified with the SDK Runtime package name.
   const char* host_package_name() const { return host_package_name_; }
 
   const char* host_version_code() const { return host_version_code_; }
