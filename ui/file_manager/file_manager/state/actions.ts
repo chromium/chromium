@@ -8,9 +8,9 @@ import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, Upd
 import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './actions/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './actions/navigation.js';
 import {UpdatePreferencesAction} from './actions/preferences.js';
-import {AddUiEntryAction, RemoveUiEntryAction} from './actions/ui_entries.js';
 import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';
 import {SearchAction} from './ducks/search.js';
+import {AddUiEntryAction, RemoveUiEntryAction} from './ducks/ui_entries.js';
 import {AddVolumeAction, RemoveVolumeAction, UpdateIsInteractiveVolumeAction} from './ducks/volumes.js';
 
 /**

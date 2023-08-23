@@ -13,12 +13,12 @@ import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
-import {addUiEntry, removeUiEntry} from '../actions/ui_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
+import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
-import {convertEntryToFileData} from './all_entries.js';
-import {convertVolumeInfoAndMetadataToVolume} from '../ducks/volumes.js';
+import {addUiEntry, removeUiEntry} from './ui_entries.js';
+import {convertVolumeInfoAndMetadataToVolume} from './volumes.js';
 
 export function setUp() {
   // sortEntries() from addUiEntry() reducer requires volumeManager and

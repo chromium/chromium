@@ -352,7 +352,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerSearch) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerUiEntries) {
-  RunTestURL("state/reducers/ui_entries_unittest.js");
+  RunTestURL("state/ducks/ui_entries_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerVolumes) {

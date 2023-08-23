@@ -6,6 +6,7 @@ import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
 import {searchReducersMap} from '../ducks/search.js';
+import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
@@ -14,11 +15,14 @@ import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelectio
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {updatePreferences} from './preferences.js';
-import {addUiEntry, removeUiEntry} from './ui_entries.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
-const rootReducersMap = new Map(
-    [...searchReducersMap, ...volumesReducersMap, ...bulkPinningReducersMap]);
+const rootReducersMap = new Map([
+  ...searchReducersMap,
+  ...volumesReducersMap,
+  ...bulkPinningReducersMap,
+  ...uiEntriesReducersMap,
+]);
 
 /**
  * Root reducer for the State for Files app.
@@ -56,10 +60,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return refreshNavigationRoots(currentState, action);
     case ActionType.UPDATE_NAVIGATION_ENTRY:
       return updateNavigationEntry(currentState, action);
-    case ActionType.ADD_UI_ENTRY:
-      return addUiEntry(currentState, action);
-    case ActionType.REMOVE_UI_ENTRY:
-      return removeUiEntry(currentState, action);
     case ActionType.REFRESH_FOLDER_SHORTCUT:
       return refreshFolderShortcut(currentState, action);
     case ActionType.ADD_FOLDER_SHORTCUT:

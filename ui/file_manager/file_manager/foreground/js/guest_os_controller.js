@@ -7,7 +7,7 @@ import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
-import {addUiEntry, removeUiEntry} from '../../state/actions/ui_entries.js';
+import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {getEntry, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -69,23 +69,20 @@ export class GuestOsController {
       }
     }
 
-    const newGuestOsPlaceholders =
-        guests.map(guest => {
-          const guestOsEntry =
-              new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
-          const navigationModelItem = new NavigationModelFakeItem(
-              guest.displayName, NavigationModelItemType.GUEST_OS,
-              guestOsEntry);
-          const volumeType =
-              guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
-              VolumeManagerCommon.VolumeType.ANDROID_FILES :
-              VolumeManagerCommon.VolumeType.GUEST_OS;
+    const newGuestOsPlaceholders = guests.map(guest => {
+      const guestOsEntry =
+          new GuestOsPlaceholder(guest.displayName, guest.id, guest.vmType);
+      const navigationModelItem = new NavigationModelFakeItem(
+          guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
+      const volumeType =
+          guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
+          VolumeManagerCommon.VolumeType.ANDROID_FILES :
+          VolumeManagerCommon.VolumeType.GUEST_OS;
 
-          navigationModelItem.disabled =
-              this.volumeManager_.isDisabled(volumeType);
-          store.dispatch(addUiEntry({entry: guestOsEntry}));
-          return navigationModelItem;
-        });
+      navigationModelItem.disabled = this.volumeManager_.isDisabled(volumeType);
+      store.dispatch(addUiEntry({entry: guestOsEntry}));
+      return navigationModelItem;
+    });
 
     if (!util.isFilesAppExperimental()) {
       this.directoryTree_.dataModel.guestOsPlaceholders =
