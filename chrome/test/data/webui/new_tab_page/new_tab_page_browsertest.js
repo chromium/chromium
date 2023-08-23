@@ -8,6 +8,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "build/build_config.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "components/history_clusters/core/features.h"');
 GEN('#include "components/search/ntp_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -393,6 +394,9 @@ var NewTabPageModulesHistoryClustersModuleTest =
     return {
       enabled: [
         'ntp_features::kNtpHistoryClustersModule',
+      ],
+      disabled: [
+        'history_clusters::kRenameJourneys',
       ],
     };
   }

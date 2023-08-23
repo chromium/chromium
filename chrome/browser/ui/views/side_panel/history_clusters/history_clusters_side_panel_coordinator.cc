@@ -55,11 +55,16 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
 
 void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
+  const bool rename_journeys =
+      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kHistoryClusters,
-      l10n_util::GetStringUTF16(IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL),
-      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
-                                     /*icon_size=*/16),
+      l10n_util::GetStringUTF16(rename_journeys
+                                    ? IDS_HISTORY_TITLE
+                                    : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL),
+      ui::ImageModel::FromVectorIcon(
+          rename_journeys ? kHistoryIcon : kJourneysIcon, ui::kColorIcon,
+          /*icon_size=*/16),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
           base::Unretained(this)),
@@ -115,12 +120,9 @@ void HistoryClustersSidePanelCoordinator::OnHistoryClustersPreferenceChanged() {
   auto* browser = &GetBrowser();
   auto* global_registry =
       SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
-  if (browser->profile()->GetPrefs()->GetBoolean(
-          history_clusters::prefs::kVisible)) {
-    if (IsSupported(browser->profile())) {
-      HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
-          ->CreateAndRegisterEntry(global_registry);
-    }
+  if (IsSupported(browser->profile())) {
+    HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
   } else {
     global_registry->Deregister(
         SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
@@ -152,7 +154,7 @@ GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
   if (history_clusters_ui_)
     query = history_clusters_ui_->GetLastQueryIssued();
 
-  return query.empty() ? GURL(history_clusters::kChromeUIHistoryClustersURL)
+  return query.empty() ? GURL(history_clusters::GetChromeUIHistoryClustersURL())
                        : history_clusters::GetFullJourneysUrlForQuery(query);
 }
 

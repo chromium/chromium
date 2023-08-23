@@ -6742,6 +6742,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "rename-history-journeys",
+    "owners": [ "mahmadi", "chrome-journeys@google.com" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "render-arc-notifications-by-chrome",
     "owners": [ "shuminghao", "arc-framework@google.com" ],
     "expiry_milestone": 118

@@ -10,6 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "base/command_line.h"');
 GEN('#include "build/build_config.h"');
+GEN('#include "components/history_clusters/core/features.h"');
 GEN('#include "chrome/test/data/webui/history_ui_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -161,6 +162,15 @@ var HistoryMetricsTest = class extends HistoryBrowserTest {
   get browsePreload() {
     return 'chrome://history/test_loader.html?module=history/history_metrics_test.js';
   }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: [
+        'history_clusters::kRenameJourneys',
+      ],
+    };
+  }
 };
 
 TEST_F('HistoryMetricsTest', 'All', function() {
@@ -182,6 +192,15 @@ var HistoryRoutingTest = class extends HistoryBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://history/test_loader.html?module=history/history_routing_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      disabled: [
+        'history_clusters::kRenameJourneys',
+      ],
+    };
   }
 };
 

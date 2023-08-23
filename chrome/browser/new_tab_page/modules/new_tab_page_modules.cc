@@ -15,6 +15,7 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/history_clusters/core/features.h"
 #include "components/page_image_service/features.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -29,8 +30,11 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) &&
       base::FeatureList::IsEnabled(page_image_service::kImageService)) {
-    details.emplace_back("history_clusters",
-                         IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
+    details.emplace_back(
+        "history_clusters",
+        base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
+            ? IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT
+            : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
   }
 
   if (IsRecipeTasksModuleEnabled()) {

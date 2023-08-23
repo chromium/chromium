@@ -6199,6 +6199,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kJourneysVariations,
                                     "HistoryJourneys")},
 
+    {"rename-history-journeys", flag_descriptions::kRenameJourneysName,
+     flag_descriptions::kRenameJourneysDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(history_clusters::kRenameJourneys)},
+
     {"history-journeys-content-clustering",
      flag_descriptions::kJourneysContentClusteringName,
      flag_descriptions::kJourneysContentClusteringDescription,

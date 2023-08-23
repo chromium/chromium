@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/page_image_service/features.h"
@@ -33,11 +34,18 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       "isHistoryClustersEnabled",
       history_clusters_service &&
           history_clusters_service->is_journeys_feature_flag_enabled());
+  const bool rename_journeys =
+      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
+  source->AddBoolean(kRenameJourneysKey, rename_journeys);
+  const bool journeys_is_managed =
+      prefs->IsManagedPreference(history_clusters::prefs::kVisible);
+  // When history_clusters::kRenameJourneys is enabled, history clusters are
+  // always visible unless the visibility prefs is set to false by policy.
   source->AddBoolean(kIsHistoryClustersVisibleKey,
-                     prefs->GetBoolean(history_clusters::prefs::kVisible));
-  source->AddBoolean(
-      kIsHistoryClustersVisibleManagedByPolicyKey,
-      prefs->IsManagedPreference(history_clusters::prefs::kVisible));
+                     prefs->GetBoolean(history_clusters::prefs::kVisible) ||
+                         (rename_journeys && !journeys_is_managed));
+  source->AddBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
+                     journeys_is_managed);
   source->AddBoolean("isHistoryClustersDebug",
                      history_clusters::GetConfig().user_visible_debug);
   source->AddBoolean(
@@ -78,5 +86,15 @@ void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,
       {"toggleButtonLabelMore", IDS_HISTORY_CLUSTERS_SHOW_MORE_BUTTON_LABEL},
   };
   source->AddLocalizedStrings(kHistoryClustersStrings);
+
+  if (rename_journeys) {
+    source->AddLocalizedString("historyClustersSearchPrompt",
+                               IDS_HISTORY_SEARCH_PROMPT);
+    source->AddLocalizedString("historyClustersTabLabel",
+                               IDS_HISTORY_CLUSTERS_BY_GROUP_TAB_LABEL);
+    source->AddLocalizedString("historyListTabLabel",
+                               IDS_HISTORY_CLUSTERS_BY_DATE_TAB_LABEL);
+  }
+
   return;
 }
