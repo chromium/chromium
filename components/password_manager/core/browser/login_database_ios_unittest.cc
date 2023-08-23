@@ -77,7 +77,7 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   form.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
-  std::string keychain_identifier = changes[0].form().encrypted_password;
+  std::string keychain_identifier = changes[0].form().keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
@@ -99,7 +99,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   form.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
-  std::string old_keychain_identifier = changes[0].form().encrypted_password;
+  std::string old_keychain_identifier = changes[0].form().keychain_identifier;
 
   form.password_value = u"secret";
 
@@ -109,7 +109,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
 
   ASSERT_EQ(1U, forms.size());
-  std::string keychain_identifier = forms[0]->encrypted_password;
+  std::string keychain_identifier = forms[0]->keychain_identifier;
   ASSERT_FALSE(keychain_identifier.empty());
 
   std::u16string password_value;
@@ -134,7 +134,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
   form.password_value = u"example";
 
   password_manager::PasswordStoreChangeList changes = login_db_->AddLogin(form);
-  std::string keychain_identifier = changes[0].form().encrypted_password;
+  std::string keychain_identifier = changes[0].form().keychain_identifier;
   std::ignore = login_db_->RemoveLogin(form, /*changes=*/nullptr);
 
   // Verify that password is no longer available in the keychain.
@@ -178,7 +178,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   // Verify that for each password exist a keychain item with a password.
   for (const auto& login : logins) {
     std::u16string password_value;
-    EXPECT_TRUE(GetTextFromKeychainIdentifier(login->encrypted_password,
+    EXPECT_TRUE(GetTextFromKeychainIdentifier(login->keychain_identifier,
                                               &password_value));
     EXPECT_EQ(login->password_value, password_value);
   }
@@ -196,17 +196,17 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
 
   // Verify that keychain entry is removed.
   std::u16string password_value;
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[0]->encrypted_password,
+  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[0]->keychain_identifier,
                                             &password_value));
-  EXPECT_FALSE(GetTextFromKeychainIdentifier(logins[1]->encrypted_password,
+  EXPECT_FALSE(GetTextFromKeychainIdentifier(logins[1]->keychain_identifier,
                                              &password_value));
-  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[2]->encrypted_password,
+  EXPECT_TRUE(GetTextFromKeychainIdentifier(logins[2]->keychain_identifier,
                                             &password_value));
 
   // Clear item from the keychain to ensure this test doesn't affect other
   // tests.
-  DeleteEncryptedPasswordFromKeychain(logins[0]->encrypted_password);
-  DeleteEncryptedPasswordFromKeychain(logins[2]->encrypted_password);
+  DeleteEncryptedPasswordFromKeychain(logins[0]->keychain_identifier);
+  DeleteEncryptedPasswordFromKeychain(logins[2]->keychain_identifier);
 }
 
 class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
@@ -295,7 +295,7 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39) {
     EXPECT_EQ(db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
     // Verify that |encrypted_password| is still corresponding to keychain
     // identifier.
-    EXPECT_EQ(password_keychain_identifier, forms[0]->encrypted_password);
+    EXPECT_EQ(password_keychain_identifier, forms[0]->keychain_identifier);
     EXPECT_EQ(u"test1", forms[0]->password_value);
     // Verify that the password note is still readable.
     ASSERT_EQ(1u, forms[0]->notes.size());

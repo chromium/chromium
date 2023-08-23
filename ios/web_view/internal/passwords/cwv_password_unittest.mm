@@ -28,7 +28,7 @@ TEST_F(CWVPasswordTest, Blocked) {
   password_form.signon_realm = "http://www.example.com/";
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = true;
-  password_form.encrypted_password = "test-encrypted-password";
+  password_form.keychain_identifier = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
@@ -58,7 +58,7 @@ TEST_F(CWVPasswordTest, NonBlocked) {
   password_form.signon_realm = "http://www.example.com/";
   password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
   password_form.blocked_by_user = false;
-  password_form.encrypted_password = "test-encrypted-password";
+  password_form.keychain_identifier = "test-encrypted-password";
   auto name_and_link =
       password_manager::GetShownOriginAndLinkUrl(password_form);
 
