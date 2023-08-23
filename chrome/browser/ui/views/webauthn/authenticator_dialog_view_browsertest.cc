@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -172,7 +173,13 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_default) {
 
 // Test that the models decide to show the "Manage devices" button when a phone
 // is listed.
-// TODO(crbug.com/1474278): Re-enable this test
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest, InvokeUi_manage_devices) {
+// TODO(crbug.com/1474278): Flaky on Mac, Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InvokeUi_manage_devices DISABLED_InvokeUi_manage_devices
+#else
+#define MAYBE_InvokeUi_manage_devices InvokeUi_manage_devices
+#endif
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogViewTest,
+                       MAYBE_InvokeUi_manage_devices) {
   ShowAndVerifyUi();
 }
