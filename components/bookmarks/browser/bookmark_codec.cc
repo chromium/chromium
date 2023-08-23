@@ -331,19 +331,6 @@ bool BookmarkCodec::DecodeNode(const base::Value::Dict& value,
       uuids_reassigned_ = true;
     }
 
-    // kShoppingCollectionUuid represents a well-known UUID that may only,
-    // exclusively represent a folder in the bookmark model. This folder is
-    // created by the browser but is distinct from permanent nodes in that it
-    // is only created when it is required by the feature and may be modified
-    // by the user. If we find this UUID does not represent a folder (e.g.
-    // corrupted data), the existing bookmark is reassigned so this UUID may
-    // be used for the feature it is intended for.
-    if (uuid.AsLowercaseString() == kShoppingCollectionUuid &&
-        !node->is_folder()) {
-      uuid = base::Uuid::GenerateRandomV4();
-      uuids_reassigned_ = true;
-    }
-
     uuids_.insert(uuid);
   }
 
