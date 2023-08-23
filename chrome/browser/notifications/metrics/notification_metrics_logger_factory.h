@@ -29,7 +29,7 @@ class NotificationMetricsLoggerFactory : public ProfileKeyedServiceFactory {
   NotificationMetricsLoggerFactory();
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

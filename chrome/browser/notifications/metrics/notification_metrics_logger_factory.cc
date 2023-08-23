@@ -32,7 +32,8 @@ NotificationMetricsLoggerFactory::NotificationMetricsLoggerFactory()
               .WithGuest(ProfileSelection::kRedirectedToOriginal)
               .Build()) {}
 
-KeyedService* NotificationMetricsLoggerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NotificationMetricsLoggerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new NotificationMetricsLogger();
+  return std::make_unique<NotificationMetricsLogger>();
 }
