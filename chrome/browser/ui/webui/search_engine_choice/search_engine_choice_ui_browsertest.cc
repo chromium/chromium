@@ -19,6 +19,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 #if !BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 #error Platform not supported
@@ -71,7 +72,12 @@ class SearchEngineChoiceUIPixelTest
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
 
-    ShowSearchEngineChoiceDialog(*browser());
+    views::NamedWidgetShownWaiter widget_waiter(
+        views::test::AnyWidgetTestPasskey{}, "SearchEngineChoiceDialogView");
+
+    // Make the dialog smaller so that it can fit in the test window.
+    ShowSearchEngineChoiceDialog(*browser(), gfx::Size(840, 580));
+    widget_waiter.WaitIfNeededAndGet();
     observer.Wait();
   }
 

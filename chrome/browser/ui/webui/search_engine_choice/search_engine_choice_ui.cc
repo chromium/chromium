@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/search_engine_choice_resources.h"
 #include "chrome/grit/search_engine_choice_resources_map.h"
@@ -19,6 +20,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/strings/grit/components_chromium_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -65,6 +67,8 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE);
   source->AddLocalizedString("infoTitle",
                              IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE);
+  source->AddLocalizedString("productLogoAltText",
+                             IDS_SHORT_PRODUCT_LOGO_ALT_TEXT);
 
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
@@ -74,6 +78,10 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_SVG);
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
+  source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
+  source->AddResourcePath("tangible_sync_style_shared.css.js",
+                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
+  source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
   source->AddString("choiceList", GetChoiceListJSON(profile));
 

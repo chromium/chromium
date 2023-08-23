@@ -15915,7 +15915,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_SEARCH_ENGINE_CHOICE_BUTTON_TITLE" desc="The title of the button of the Search Engine Choice page."
         translateable="false">
-        Button
+        Lorem ipsum
       </message>
       <message name="IDS_SEARCH_ENGINE_CHOICE_INFO_DIALOG_TITLE" desc="The title of the info dialog of the Search Engine Choice page."
         translateable="false">

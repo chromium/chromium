@@ -21,7 +21,8 @@ class WebView;
 class SearchEngineChoiceDialogView : public views::View {
  public:
   METADATA_HEADER(SearchEngineChoiceDialogView);
-  explicit SearchEngineChoiceDialogView(Browser* browser);
+  SearchEngineChoiceDialogView(Browser* browser,
+                               absl::optional<gfx::Size> boundary_dimensions);
   ~SearchEngineChoiceDialogView() override;
 
   // Initialize SearchEngineChoiceDialogView's web_view_ element.
@@ -36,6 +37,7 @@ class SearchEngineChoiceDialogView : public views::View {
 
   raw_ptr<views::WebView> web_view_ = nullptr;
   const raw_ptr<Browser> browser_;
+  const absl::optional<gfx::Size> boundary_dimensions_;
   base::WeakPtrFactory<SearchEngineChoiceDialogView> weak_ptr_factory_{this};
 };
 

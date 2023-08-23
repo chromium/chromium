@@ -1,34 +1,25 @@
-<style>
+<style include="cr-icons tangible-sync-style-shared">
   :host {
     color: var(--cr-primary-text-color);
   }
 
-  .left-illustration,
-  .right-illustration {
-    position: absolute;
-    top: 0;
-    width: 20vw;
-  }
-
-  .left-illustration {
+  .tangible-sync-style-left-banner {
     content: url(images/left_illustration.svg);
-    left: 0;
   }
 
-  .right-illustration {
+  .tangible-sync-style-right-banner {
     content: url(images/right_illustration.svg);
-    right: 0;
   }
 
-  .button {
+  cr-button {
     bottom: 0;
     height: unset;
-    margin: 25px;
+    margin: 40px;
     /* The max-width is needed to stop the button from overlapping with
      the choice list. The exact value will be updated once the mocks
      are final. */
     max-width: 115px;
-    position: absolute;
+    position: fixed;
     right: 0;
   }
 
@@ -42,31 +33,35 @@
     display: flex;
     flex-direction: column;
     margin: auto;
-    max-width: 472px;
+    max-width: 522px;
     text-align: center;
   }
 
-  .title {
-    font-weight: 400;
-    margin-top: 68px;
+  .tangible-sync-style .title {
+    margin-bottom: 12px;
   }
 
-  .subtitle {
-    color: var(--cr-seconday-text-color);
-    font-size: 0.88rem;
-    line-height: 22px;
+  .tangible-sync-style .subtitle {
+    line-height: 30px;
+    margin: 12px 0 40px;
   }
 
-  .image-placeholder {
-    background-color: blue;
-    height: 70px;
-    width: 250px;
+  .omnibox {
+    --omnibox-height: 48px;
+    align-items: center;
+    border: 1px dashed var(--google-grey-300);
+    border-radius: calc(var(--omnibox-height) / 2);
+    display: flex;
+    flex-direction: row;
+    height: var(--omnibox-height);
+    width: 300px;
   }
 
-  .choice-list {
+  cr-radio-group {
     display: flex;
     flex-direction: column;
     gap: 1px;
+    width: 500px;
   }
 
   .choice {
@@ -77,21 +72,25 @@
   }
 
   .choice-icon {
+    --choice-icon-height: 24px;
     background-color: green;
-    height: 24px;
-    width: 24px;
+    border-radius: calc(var(--choice-icon-height) / 2);
+    height: var(--choice-icon-height);
+    width: var(--choice-icon-height);
   }
 
-  .choice-text {
-    font-size: 0.88rem;
+  .choice-title {
+    font-family: Roboto;
+    font-size: 0.875rem;
+    font-weight: 400;
     line-height: 20px;
   }
 
   cr-radio-button {
-    background-color: var(--google-grey-200);
-    height: 24px;
+    --cr-radio-button-size: 20px;
+    background-color: var(--google-grey-100);
+    border-radius: 2px;
     padding: 16px 24px;
-    width: 424px;
   }
 
   cr-radio-button:first-of-type {
@@ -104,38 +103,86 @@
     border-bottom-right-radius: 24px;
   }
 
+  .product-logo {
+    height: 48px;
+    margin-top: 132px;
+    width: 48px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-blue-700);
+    margin: 0 12px 0 15px;
+  }
+
+  .hint-placeholder {
+    background: var(--google-grey-100);
+    border-radius: 12px;
+    height: 12px;
+    width: 100px;
+  }
+
+  .info-link {
+    color: var(--google-blue-600);
+  }
+
   @media (prefers-color-scheme: dark) {
-    .left-illustration {
+    .tangible-sync-style-left-banner {
       content: url(images/left_illustration_dark.svg);
     }
 
-    .right-illustration {
+    .tangible-sync-style-right-banner {
       content: url(images/right_illustration_dark.svg);
     }
   }
+
+  /* We need to override the values from tangible-sync-style. The dialog
+   initially sizes itself to height=300 and width=1077 then resizes its
+   height based on the content height.
+   The media query is being called at the first resize (1077 x 300), changing
+   the content size and then making the dialog size itself based on that
+   content. We will handle this case when we implement the small size dialog
+   UI. */
+  @media screen and ((max-width: 780px) or (max-height: 600px)) {
+  .tangible-sync-style .title {
+    font-size: 2.25rem;
+    line-height: 44px;
+  }
+
+  .tangible-sync-style .subtitle {
+    font-size: 1.25rem;
+    line-height: 30px;
+  }
+}
 </style>
 
-<img class="left-illustration" alt="">
-<img class="right-illustration" alt="">
-<div class="content-container">
+<img class="tangible-sync-style-left-banner" alt="">
+<img class="tangible-sync-style-right-banner" alt="">
+<div class="content-container tangible-sync-style">
+  <img class="product-logo" src="images/product-logo.svg"
+      alt="$i18n{productLogoAltText}">
   <h1 class="title">$i18n{title}</h1>
-  <div class="image-placeholder"></div>
+  <div class="omnibox">
+    <iron-icon icon="cr:search"></iron-icon>
+    <div class="hint-placeholder"></div>
+  </div>
   <p class="subtitle">
     $i18n{subtitle}
-    <a href="" on-click="onLinkClicked_">$i18n{subtitleInfoLink}</a>
+    <a class="info-link" href="" on-click="onLinkClicked_">
+      $i18n{subtitleInfoLink}
+    </a>
   </p>
-  <cr-radio-group class="choice-list">
+  <cr-radio-group>
     <template is="dom-repeat" items="[[choiceList_]]">
       <cr-radio-button class="label-first" name="[[item.id]]">
         <div class="choice">
           <div class="choice-icon"></div>
-          <div class="choice-text">[[item.name]]</div>
+          <div class="choice-title">[[item.name]]</div>
         </div>
       </cr-radio-button>
     </template>
   </cr-radio-group>
 </div>
-<cr-button class="button action-button" disabled>
+<cr-button class="action-button" disabled>
   $i18n{buttonText}
 </cr-button>
 

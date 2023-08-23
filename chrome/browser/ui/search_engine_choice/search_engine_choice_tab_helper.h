@@ -40,6 +40,11 @@ class SearchEngineChoiceTabHelper
 // `chrome/browser/ui/views/search_engine_choice/search_engine_choice_dialog_view.cc`
 // because there isn't a dependency between `chrome/browser/ui/` and
 // `chrome/browser/ui/views/`.
-void ShowSearchEngineChoiceDialog(Browser& browser);
+// `boundary_dimensions` can be set to specify an upper bound for dialog's width
+// and height. Leaving it empty will make the dialog use the window size
+// as upper bound.
+void ShowSearchEngineChoiceDialog(
+    Browser& browser,
+    absl::optional<gfx::Size> boundary_dimensions = absl::nullopt);
 
 #endif  // CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_TAB_HELPER_H_
