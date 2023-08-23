@@ -106,7 +106,13 @@ StatusAreaOverflowButtonTray::StatusAreaOverflowButtonTray(Shelf* shelf)
       icon_(tray_container()->AddChildView(std::make_unique<IconView>())) {
   SetPressedCallback(base::BindRepeating(
       &StatusAreaOverflowButtonTray::OnButtonPressed, base::Unretained(this)));
+
   set_use_bounce_in_animation(false);
+  // https://b/293650341 `TrayBackgroundView` sets the layer opacity to 0.0 when
+  // they're not visible so it can animate the opacity when the visibility
+  // changes. Since this view bypasses that logic we need to work around this by
+  // setting the opacity ourselves.
+  layer()->SetOpacity(1.0);
 }
 
 StatusAreaOverflowButtonTray::~StatusAreaOverflowButtonTray() {}
