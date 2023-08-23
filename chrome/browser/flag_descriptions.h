@@ -2298,9 +2298,6 @@ extern const char
 extern const char kFeedBackToTopName[];
 extern const char kFeedBackToTopDescription[];
 
-extern const char kFeedBoCSigninInterstitialName[];
-extern const char kFeedBoCSigninInterstitialDescription[];
-
 extern const char kFeedHeaderStickToTopName[];
 extern const char kFeedHeaderStickToTopDescription[];
 

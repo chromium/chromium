@@ -3939,11 +3939,6 @@ const char kFeedBackToTopDescription[] =
     "Enables showing a callout to help users return to the top of the feeds "
     "quickly.";
 
-const char kFeedBoCSigninInterstitialName[] = "Show Signin Interstitial";
-const char kFeedBoCSigninInterstitialDescription[] =
-    "Enables the sign in interstitial to be"
-    " shown in a bottom sheet when triggered.";
-
 const char kFeedHeaderStickToTopName[] = "Feed header stick to top";
 const char kFeedHeaderStickToTopDescription[] =
     "Stick feed header to top on scroll.";

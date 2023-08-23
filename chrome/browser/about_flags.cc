@@ -5255,10 +5255,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTLS13KyberDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kPostQuantumKyber)},
 #if BUILDFLAG(IS_ANDROID)
-    {"feed-boc-signin-interstitial",
-     flag_descriptions::kFeedBoCSigninInterstitialName,
-     flag_descriptions::kFeedBoCSigninInterstitialDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(feed::kFeedBoCSigninInterstitial)},
     {"feed-back-to-top", flag_descriptions::kFeedBackToTopName,
      flag_descriptions::kFeedBackToTopDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kFeedBackToTop)},

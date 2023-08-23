@@ -81,9 +81,6 @@ BASE_FEATURE(kFeedBottomSyncStringRemoval,
              "FeedBottomSyncStringRemoval",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-BASE_FEATURE(kFeedBoCSigninInterstitial,
-             "FeedBoCSigninInterstitial",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedStamp, "FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
