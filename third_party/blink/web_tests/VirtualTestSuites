@@ -3644,7 +3644,6 @@
       "http/tests/devtools/tracing/timeline-misc/timeline-crypto.js",
       "http/tests/devtools/tracing/timeline-misc/timeline-flame-chart-automatically-size-window.js",
       "http/tests/devtools/tracing/timeline-misc/timeline-scheduler-posttask.js",
-      "http/tests/devtools/tracing/timeline-misc/timeline-window-filter.js",
       "http/tests/devtools/tracing/timeline-paint/layer-tree.js",
       "http/tests/devtools/unit/datagrid-editable-longtext.js",
       "http/tests/devtools/unit/list-control-equal-height.js",
