@@ -44,9 +44,10 @@ WebLayerBluetoothChooserContextFactory::WebLayerBluetoothChooserContextFactory()
 WebLayerBluetoothChooserContextFactory::
     ~WebLayerBluetoothChooserContextFactory() = default;
 
-KeyedService* WebLayerBluetoothChooserContextFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebLayerBluetoothChooserContextFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new permissions::BluetoothChooserContext(context);
+  return std::make_unique<permissions::BluetoothChooserContext>(context);
 }
 
 content::BrowserContext*
