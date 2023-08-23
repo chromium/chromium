@@ -35,9 +35,10 @@ WarningServiceFactory::WarningServiceFactory()
 WarningServiceFactory::~WarningServiceFactory() {
 }
 
-KeyedService* WarningServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WarningServiceFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new WarningService(context);
+  return std::make_unique<WarningService>(context);
 }
 
 BrowserContext* WarningServiceFactory::GetBrowserContextToUse(
