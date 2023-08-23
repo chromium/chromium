@@ -15,18 +15,10 @@ namespace ash::quick_pair {
 
 class FakeFastPairHandshake : public FastPairHandshake {
  public:
-  // TODO(b/265853116): Remove once old Handshake logic is removed and this
-  // constructor is no longer used for testing.
   FakeFastPairHandshake(
       scoped_refptr<device::BluetoothAdapter> adapter,
       scoped_refptr<Device> device,
       OnCompleteCallback on_complete,
-      std::unique_ptr<FastPairDataEncryptor> data_encryptor = nullptr,
-      std::unique_ptr<FastPairGattServiceClient> gatt_service_client = nullptr);
-
-  FakeFastPairHandshake(
-      scoped_refptr<device::BluetoothAdapter> adapter,
-      scoped_refptr<Device> device,
       std::unique_ptr<FastPairDataEncryptor> data_encryptor = nullptr,
       std::unique_ptr<FastPairGattServiceClient> gatt_service_client = nullptr);
 
