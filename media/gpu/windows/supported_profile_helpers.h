@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "ui/gfx/geometry/size.h"
@@ -115,7 +116,17 @@ DEFINE_GUID(DXVA_ModeHEVC_VLD_Main444_12_Intel,
             0xb2,
             0xc1,
             0x97);
+
+// Get the private GUID for HEVC range extension profile supported by Intel.
+MEDIA_GPU_EXPORT GUID
+GetHEVCRangeExtensionPrivateGUID(uint8_t bitdepth,
+                                 VideoChromaSampling chroma_sampling);
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+// Get the DXGI_FORMAT for the video decoder output texture, according to the
+// bit depth and chroma sampling format.
+MEDIA_GPU_EXPORT DXGI_FORMAT
+GetOutputDXGIFormat(uint8_t bitdepth, VideoChromaSampling chroma_sampling);
 
 struct SupportedResolutionRange {
   gfx::Size min_resolution;

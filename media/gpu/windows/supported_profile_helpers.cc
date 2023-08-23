@@ -97,6 +97,71 @@ media::SupportedResolutionRange GetResolutionsForGUID(
 
 namespace media {
 
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+GUID GetHEVCRangeExtensionPrivateGUID(uint8_t bitdepth,
+                                      VideoChromaSampling chroma_sampling) {
+  if (bitdepth == 8) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXVA_ModeHEVC_VLD_Main_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
+      // it is defined by Intel or DXVA spec(as part of Windows SDK).
+      return DXVA_ModeHEVC_VLD_Main422_10_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXVA_ModeHEVC_VLD_Main444_Intel;
+    }
+
+  } else if (bitdepth == 10) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXVA_ModeHEVC_VLD_Main10_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      return DXVA_ModeHEVC_VLD_Main422_10_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXVA_ModeHEVC_VLD_Main444_10_Intel;
+    }
+  } else if (bitdepth == 12) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXVA_ModeHEVC_VLD_Main12_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      return DXVA_ModeHEVC_VLD_Main422_12_Intel;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXVA_ModeHEVC_VLD_Main444_12_Intel;
+    }
+  }
+  return {};
+}
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+
+DXGI_FORMAT GetOutputDXGIFormat(uint8_t bitdepth,
+                                VideoChromaSampling chroma_sampling) {
+  if (bitdepth == 8) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXGI_FORMAT_NV12;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      return DXGI_FORMAT_YUY2;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXGI_FORMAT_AYUV;
+    }
+  } else if (bitdepth == 10) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXGI_FORMAT_P010;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      return DXGI_FORMAT_Y210;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXGI_FORMAT_Y410;
+    }
+  } else if (bitdepth == 12 || bitdepth == 16) {
+    if (chroma_sampling == VideoChromaSampling::k420) {
+      return DXGI_FORMAT_P016;
+    } else if (chroma_sampling == VideoChromaSampling::k422) {
+      return DXGI_FORMAT_Y216;
+    } else if (chroma_sampling == VideoChromaSampling::k444) {
+      return DXGI_FORMAT_Y416;
+    }
+  }
+  return {};
+}
+
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
