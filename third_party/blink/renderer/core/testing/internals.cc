@@ -4046,4 +4046,9 @@ void Internals::setBackForwardCacheRestorationBufferSize(unsigned int maxSize) {
   perf.setBackForwardCacheRestorationBufferSizeForTest(maxSize);
 }
 
+Vector<String> Internals::getCreatorScripts(HTMLImageElement* img) {
+  DCHECK(img);
+  return Vector<String>(img->creator_scripts());
+}
+
 }  // namespace blink

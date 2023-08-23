@@ -452,4 +452,6 @@ interface Internals {
     void setAllowPerChunkTransferring(ReadableStream stream);
 
     void setBackForwardCacheRestorationBufferSize(long maxSize);
+
+    sequence<DOMString> getCreatorScripts(HTMLImageElement img);
 };
