@@ -41,7 +41,8 @@ QuickStartConnectivityServiceFactory::QuickStartConnectivityServiceFactory()
 QuickStartConnectivityServiceFactory::~QuickStartConnectivityServiceFactory() =
     default;
 
-KeyedService* QuickStartConnectivityServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+QuickStartConnectivityServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!ash::IsSigninBrowserContext(context)) {
     return nullptr;
@@ -56,7 +57,7 @@ KeyedService* QuickStartConnectivityServiceFactory::BuildServiceInstanceFor(
     // Note: the NearbyProcessManager* fetched here is bound to the lifetime of
     // the profile and is guaranteed to outlive
     // QuickStartConnectivityServiceImpl.
-    return new QuickStartConnectivityServiceImpl(
+    return std::make_unique<QuickStartConnectivityServiceImpl>(
         nearby::NearbyProcessManagerFactory::GetForProfile(profile));
   }
 
