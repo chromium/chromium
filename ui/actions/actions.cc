@@ -109,6 +109,7 @@ void ActionItem::SetImage(const ui::ImageModel& image) {
   if (image_ == image) {
     return;
   }
+  image_ = image;
   ActionItemChanged();
 }
 
