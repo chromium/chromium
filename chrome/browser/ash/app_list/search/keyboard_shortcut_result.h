@@ -80,6 +80,18 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       TextVector* text_vector,
       const std::vector<ash::mojom::TextAcceleratorPartPtr>& accelerator_parts);
 
+  // Add the `accelerator_info` to the `text_vector`.
+  void PopulateTextVector(
+      TextVector* text_vector,
+      const ash::mojom::AcceleratorInfoPtr& accelerator_info);
+
+  // Add `accelerator_1` and `accelerator_2` to the `text_vector`. When there
+  // are more than one shortcuts, we only show the first two.
+  void PopulateTextVectorWithTwoShortcuts(
+      TextVector* text_vector,
+      const ash::mojom::AcceleratorInfoPtr& accelerator_1,
+      const ash::mojom::AcceleratorInfoPtr& accelerator_2);
+
   void UpdateIcon();
 
   raw_ptr<Profile, ExperimentalAsh> profile_;

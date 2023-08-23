@@ -295,6 +295,39 @@ TEST_F(KeyboardShortcutResultTest,
   VerifyTextItem(text_vector[4], u"g", TextType::kIconifiedText);
 }
 
+TEST_F(KeyboardShortcutResultTest,
+       OneActionWithThreeAccelerators_ShouldDisplayTheFirstTwo) {
+  std::vector<ui::Accelerator> accelerators;
+  accelerators.emplace_back(/*key_code=*/ui::KeyboardCode::VKEY_F,
+                            /*modifiers=*/ui::EF_ALT_DOWN);
+  accelerators.emplace_back(/*key_code=*/ui::KeyboardCode::VKEY_A,
+                            /*modifiers=*/ui::EF_SHIFT_DOWN);
+  accelerators.emplace_back(/*key_code=*/ui::KeyboardCode::VKEY_G,
+                            /*modifiers=*/ui::EF_CONTROL_DOWN);
+  auto list = CreateFakeAcceleratorInfoList(accelerators);
+
+  SearchResultPtr search_result_ptr = SearchResult::New(
+      /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+          /*description=*/u"fake action",
+          /*source=*/ash::mojom::AcceleratorSource::kAsh,
+          /*action=*/
+          ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+          /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+      /*accelerator_infos=*/
+      CreateFakeAcceleratorInfoList(accelerators),
+      /*relevance_score=*/0.9);
+
+  auto result = std::make_unique<KeyboardShortcutResult>(
+      /* profile= */ nullptr, search_result_ptr);
+  const auto& text_vector = result->keyboard_shortcut_text_vector();
+  ASSERT_EQ(text_vector.size(), 5u);
+  VerifyTextItem(text_vector[0], u"alt", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[1], u"f", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[2], u" or ", TextType::kString);
+  VerifyTextItem(text_vector[3], u"shift", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[4], u"a", TextType::kIconifiedText);
+}
+
 TEST_F(KeyboardShortcutResultTest, PopulateTextVectorWithText) {
   std::vector<ash::mojom::TextAcceleratorPartPtr> text_parts;
   text_parts.push_back(ash::mojom::TextAcceleratorPart::New(

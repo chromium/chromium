@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 
+#include <cstddef>
 #include <string>
 
 #include "ash/accelerators/keyboard_code_util.h"
@@ -14,6 +15,7 @@
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
@@ -31,6 +33,7 @@
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -288,6 +291,62 @@ void KeyboardShortcutResult::PopulateTextVectorWithTextParts(
   }
 }
 
+void KeyboardShortcutResult::PopulateTextVector(
+    TextVector* text_vector,
+    const ash::mojom::AcceleratorInfoPtr& accelerator_info) {
+  if (accelerator_info->layout_properties->is_standard_accelerator()) {
+    const ash::mojom::StandardAcceleratorPropertiesPtr& standard_accelerator =
+        accelerator_info->layout_properties->get_standard_accelerator();
+    PopulateTextVector(text_vector, standard_accelerator->accelerator);
+  } else {
+    const ash::mojom::TextAcceleratorPropertiesPtr& text_accelerator =
+        accelerator_info->layout_properties->get_text_accelerator();
+    PopulateTextVectorWithTextParts(text_vector, text_accelerator->parts);
+  }
+}
+
+void KeyboardShortcutResult::PopulateTextVectorWithTwoShortcuts(
+    TextVector* text_vector,
+    const ash::mojom::AcceleratorInfoPtr& accelerator_1,
+    const ash::mojom::AcceleratorInfoPtr& accelerator_2) {
+  CHECK(accelerator_1);
+  CHECK(accelerator_2);
+
+  // The default for IDS_SHORTCUT_CUSTOMIZATION_ONE_OF_TWO_CHOICES is "$1 or
+  // $2". In other languages, the string may be different.
+  const std::u16string template_string =
+      l10n_util::GetStringUTF16(IDS_SHORTCUT_CUSTOMIZATION_ONE_OF_TWO_CHOICES);
+  // Find placeholder' positions.
+  const size_t first_index = template_string.find_first_of(u"$");
+  CHECK(first_index != std::u16string::npos);
+  const size_t second_index = template_string.find_last_of(u"$");
+  CHECK(second_index != std::u16string::npos);
+  CHECK(second_index > first_index);
+
+  // Add text before the first placeholder if any.
+  if (first_index > 0) {
+    text_vector->push_back(
+        CreateStringTextItem(template_string.substr(0, first_index)));
+  }
+  // Add first shortcut.
+  PopulateTextVector(text_vector, accelerator_1);
+  // Add text between the two placeholders if any.
+  // Since first_index points to the first char of "$1", the text we are
+  // interested in starts at first_index + 2.
+  const size_t between_len = second_index - first_index - 2;
+  if (between_len > 0) {
+    text_vector->push_back(CreateStringTextItem(
+        template_string.substr(first_index + 2, between_len)));
+  }
+  // Add second shortcut.
+  PopulateTextVector(text_vector, accelerator_2);
+  // Add text after the second placeholder if any.
+  if (second_index + 2 < template_string.size()) {
+    text_vector->push_back(
+        CreateStringTextItem(template_string.substr(second_index + 2)));
+  }
+}
+
 KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
                                                const KeyboardShortcutData& data,
                                                double relevance)
@@ -432,22 +491,20 @@ KeyboardShortcutResult::KeyboardShortcutResult(
   std::u16string accessible_string;
   TextVector text_vector;
 
-  int counter = 0;
-  for (auto& accelerator_info : search_result->accelerator_infos) {
-    if (++counter > 1) {
-      // TODO(xiangdongkong): localize the separator.
-      // Add a separator when there are multiple accelerators.
-      text_vector.push_back(CreateStringTextItem(u" or "));
-    }
-    if (accelerator_info->layout_properties->is_standard_accelerator()) {
-      ash::mojom::StandardAcceleratorPropertiesPtr& standard_accelerator =
-          accelerator_info->layout_properties->get_standard_accelerator();
-      PopulateTextVector(&text_vector, standard_accelerator->accelerator);
-    } else {
-      ash::mojom::TextAcceleratorPropertiesPtr& text_accelerator =
-          accelerator_info->layout_properties->get_text_accelerator();
-      PopulateTextVectorWithTextParts(&text_vector, text_accelerator->parts);
-    }
+  switch (search_result->accelerator_infos.size()) {
+    case 0:
+      // Mo match found.
+      break;
+    case 1:
+      // Only one shortcut for the accelerator.
+      PopulateTextVector(&text_vector, search_result->accelerator_infos[0]);
+      break;
+    default:
+      // When there are more than one shortcuts, we only show the first two.
+      PopulateTextVectorWithTwoShortcuts(&text_vector,
+                                         search_result->accelerator_infos[0],
+                                         search_result->accelerator_infos[1]);
+      break;
   }
 
   SetAccessibleName(

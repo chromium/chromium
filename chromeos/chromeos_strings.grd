@@ -4056,6 +4056,9 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog">
           You can only customize 5 shortcuts. Delete a shortcut to add a new one.
         </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ONE_OF_TWO_CHOICES" desc="Add a separator or in bwtween two shortcuts">
+          <ph name="shorctcut1">$1<ex>Ctrl A</ex></ph> or <ph name="shorctcut2">$2<ex>Ctrl B</ex></ph>
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHIFT_ONLY_NOT_ALLOWED_STATUS_MESSAGE"
             desc="The status message that displays when user press a key combination
             that use only 'shift' as modifier">
