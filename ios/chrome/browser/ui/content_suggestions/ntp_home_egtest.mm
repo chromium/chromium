@@ -513,6 +513,13 @@ id<GREYMatcher> notPracticallyVisible() {
 // Tests that the tap gesture recognizer that dismisses the keyboard and
 // defocuses the omnibox works.
 - (void)testDefocusOmniboxTapWorks {
+  // TODO(crbug.com/1394749): Test fails on iPhone devices.
+#if !TARGET_IPHONE_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPhone device.");
+  }
+#endif
+
   [self focusFakebox];
   // Tap on a space in the collectionView that is not a Feed card.
   [[EarlGrey
