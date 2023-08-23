@@ -259,19 +259,10 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     DCHECK(!shared_memory_ == !shared_memory_arbiter_);
-    if (shared_memory_arbiter_) {
-      shared_memory_arbiter_->BindToProducerEndpoint(this,
-                                                     producer_task_runner);
-    } else {
+    if (!shared_memory_) {
       shared_memory_ =
           std::make_unique<ChromeBaseSharedMemory>(shmem_size_bytes_);
-      shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
-          shared_memory_.get(), shmem_page_size_bytes_, ShmemMode::kDefault,
-          this, producer_task_runner);
     }
-
-    shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
-    shared_memory_arbiter_->EnableDirectSMBPatching();
 
     mojo::PendingRemote<mojom::ProducerClient> client_remote;
     mojo::PendingRemote<mojom::ProducerHost> host_remote;
@@ -288,6 +279,17 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
     receiver_->set_disconnect_handler(base::BindOnce(
         [](ProducerEndpoint* endpoint) { endpoint->receiver_->reset(); },
         base::Unretained(this)));
+
+    if (shared_memory_arbiter_) {
+      shared_memory_arbiter_->BindToProducerEndpoint(this,
+                                                     producer_task_runner);
+    } else {
+      shared_memory_arbiter_ = perfetto::SharedMemoryArbiter::CreateInstance(
+          shared_memory_.get(), shmem_page_size_bytes_, ShmemMode::kDefault,
+          this, producer_task_runner);
+    }
+    shared_memory_arbiter_->SetDirectSMBPatchingSupportedByService();
+    shared_memory_arbiter_->EnableDirectSMBPatching();
 
     producer_->OnConnect();
   }
