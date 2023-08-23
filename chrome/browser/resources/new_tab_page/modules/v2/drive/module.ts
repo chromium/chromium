@@ -13,6 +13,7 @@ import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 import {DriveProxy} from '../../drive/drive_module_proxy.js';
 import {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
+import {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 
@@ -21,6 +22,7 @@ export interface DriveModuleElement {
     fileRepeat: DomRepeat,
     files: HTMLElement,
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+    moduleHeaderElementV2: ModuleHeaderElementV2,
   };
 }
 
@@ -51,6 +53,31 @@ export class DriveModuleElement extends I18nMixin
         file.mimeType;
   }
 
+  private getMenuItemGroups_(): MenuItem[][] {
+    return [
+      [
+        {
+          action: 'disable',
+          icon: 'modules:block',
+          text: this.i18nRecursive(
+              '', 'modulesDisableButtonTextV2', 'modulesDriveSentence'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
+        },
+      ],
+      [
+        {
+          action: 'customize-module',
+          icon: 'modules:tune',
+          text: this.i18n('modulesCustomizeButtonText'),
+        },
+      ],
+    ];
+  }
+
   private onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
       composed: true,
@@ -72,6 +99,10 @@ export class DriveModuleElement extends I18nMixin
 
   private onInfoButtonClick_() {
     this.$.infoDialogRender.get().showModal();
+  }
+
+  private onMenuButtonClick_(e: Event) {
+    this.$.moduleHeaderElementV2.showAt(e);
   }
 }
 

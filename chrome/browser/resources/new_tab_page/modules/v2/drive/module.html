@@ -58,22 +58,15 @@
   }
 </style>
 <ntp-module-header-v2
-    show-info-button-dropdown
-    disable-text="[[i18nRecursive('',
-                                  'modulesDisableButtonText',
-                                  'modulesDriveSentence2')]]"
-    dismiss-text="[[i18nRecursive('',
-                                  'modulesDismissButtonText',
-                                  'modulesDriveFilesLower')]]"
+    id="moduleHeaderElementV2"
+    header-text="[[i18n('modulesDriveTitleV2')]]"
+    menu-item-groups="[[getMenuItemGroups_()]]"
     more-actions-text="[[i18nRecursive('',
                                   'modulesMoreActions',
                                   'modulesDriveSentence')]]"
-    icon-src="icons/drive_logo.svg"
-    show-info-button on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
     on-disable-button-click="onDisableButtonClick_"
     on-info-button-click="onInfoButtonClick_"
-    header-text="[[i18n('modulesDriveTitleV2')]]">
+    on-menu-button-click="onMenuButtonClick_">
 </ntp-module-header-v2>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
