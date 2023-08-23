@@ -49,7 +49,8 @@ SecurityTokenSessionControllerFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SecurityTokenSessionControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // The service should only exist for the primary and the sign-in profiles.
   Profile* profile = Profile::FromBrowserContext(context);
@@ -75,9 +76,9 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           context);
-  return new SecurityTokenSessionController(is_primary_profile, local_state,
-                                            primary_user,
-                                            certificate_provider_service);
+  return std::make_unique<SecurityTokenSessionController>(
+      is_primary_profile, local_state, primary_user,
+      certificate_provider_service);
 }
 
 bool SecurityTokenSessionControllerFactory::ServiceIsCreatedWithBrowserContext()
