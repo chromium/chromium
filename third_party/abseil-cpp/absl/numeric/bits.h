@@ -49,9 +49,22 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-#if !(defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L)
 
-// rotating
+// https://github.com/llvm/llvm-project/issues/64544
+// libc++ had the wrong signature for std::rotl and std::rotr
+// prior to libc++ 18.0.
+//
+// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
+#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L) && \
+    (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION >= 180000) &&   \
+    !defined(_LIBCPP_GOOGLE3)
+
+using std::rotl;
+using std::rotr;
+
+#else
+
+// Rotating functions
 template <class T>
 ABSL_MUST_USE_RESULT constexpr
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
@@ -65,6 +78,20 @@ ABSL_MUST_USE_RESULT constexpr
     rotr(T x, int s) noexcept {
   return numeric_internal::RotateRight(x, s);
 }
+
+#endif
+
+// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
+#if (defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L) && \
+    !defined(_LIBCPP_GOOGLE3)
+
+using std::countl_one;
+using std::countl_zero;
+using std::countr_one;
+using std::countr_zero;
+using std::popcount;
+
+#else
 
 // Counting functions
 //
@@ -107,19 +134,20 @@ ABSL_INTERNAL_CONSTEXPR_POPCOUNT inline
     popcount(T x) noexcept {
   return numeric_internal::Popcount(x);
 }
-#else  // defined(__cpp_lib_bitops) && __cpp_lib_bitops >= 201907L
-
-using std::countl_one;
-using std::countl_zero;
-using std::countr_one;
-using std::countr_zero;
-using std::popcount;
-using std::rotl;
-using std::rotr;
 
 #endif
 
-#if !(defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L)
+// b/289016048 requires a workaround for _LIBCPP_GOOGLE3.
+#if (defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L) && \
+    !defined(_LIBCPP_GOOGLE3)
+
+using std::bit_ceil;
+using std::bit_floor;
+using std::bit_width;
+using std::has_single_bit;
+
+#else
+
 // Returns: true if x is an integral power of two; false otherwise.
 template <class T>
 constexpr inline typename std::enable_if<std::is_unsigned<T>::value, bool>::type
@@ -162,12 +190,6 @@ ABSL_INTERNAL_CONSTEXPR_CLZ inline
   return has_single_bit(x) ? T{1} << (bit_width(x) - 1)
                            : numeric_internal::BitCeilNonPowerOf2(x);
 }
-#else  // defined(__cpp_lib_int_pow2) && __cpp_lib_int_pow2 >= 202002L
-
-using std::bit_ceil;
-using std::bit_floor;
-using std::bit_width;
-using std::has_single_bit;
 
 #endif
 

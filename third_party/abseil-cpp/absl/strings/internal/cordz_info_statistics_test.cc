@@ -452,8 +452,7 @@ TEST(CordzInfoStatisticsTest, BtreeNodeShared) {
 TEST(CordzInfoStatisticsTest, Crc) {
   RefHelper ref;
   auto* left = Flat(1000);
-  auto* crc =
-      ref.NeedsUnref(CordRepCrc::New(left, crc_internal::CrcCordState()));
+  auto* crc = ref.NeedsUnref(CordRepCrc::New(left, {}));
 
   CordzStatistics expected;
   expected.size = left->length;
@@ -462,6 +461,20 @@ TEST(CordzInfoStatisticsTest, Crc) {
   expected.node_count = 2;
   expected.node_counts.flat = 1;
   expected.node_counts.flat_1k = 1;
+  expected.node_counts.crc = 1;
+
+  EXPECT_THAT(SampleCord(crc), EqStatistics(expected));
+}
+
+TEST(CordzInfoStatisticsTest, EmptyCrc) {
+  RefHelper ref;
+  auto* crc = ref.NeedsUnref(CordRepCrc::New(nullptr, {}));
+
+  CordzStatistics expected;
+  expected.size = 0;
+  expected.estimated_memory_usage = SizeOf(crc);
+  expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
+  expected.node_count = 1;
   expected.node_counts.crc = 1;
 
   EXPECT_THAT(SampleCord(crc), EqStatistics(expected));
@@ -497,6 +510,7 @@ TEST(CordzInfoStatisticsTest, ThreadSafety) {
         InlineData cords[2];
         std::minstd_rand gen;
         std::uniform_int_distribution<int> coin_toss(0, 1);
+        std::uniform_int_distribution<int> dice_roll(1, 6);
 
         while (!stop.HasBeenNotified()) {
           for (InlineData& cord : cords) {
@@ -521,6 +535,18 @@ TEST(CordzInfoStatisticsTest, ThreadSafety) {
                     rep = CordRepRing::Create(rep);
                   } else {
                     rep = CordRepBtree::Create(rep);
+                  }
+                }
+
+                // Maybe CRC this cord
+                if (dice_roll(gen) == 6) {
+                  if (dice_roll(gen) == 6) {
+                    // Empty CRC rep
+                    CordRep::Unref(rep);
+                    rep = CordRepCrc::New(nullptr, {});
+                  } else {
+                    // Regular CRC rep
+                    rep = CordRepCrc::New(rep, {});
                   }
                 }
                 cord.make_tree(rep);

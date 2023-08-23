@@ -70,8 +70,8 @@ for std in ${STD}; do
         --rm \
         -e CC="/opt/llvm/clang/bin/clang" \
         -e BAZEL_CXXOPTS="-std=${std}:-nostdinc++" \
-        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx/lib/x86_64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx/lib/x86_64-unknown-linux-gnu" \
-        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx/include/x86_64-unknown-linux-gnu/c++/v1:/opt/llvm/libcxx/include/c++/v1" \
+        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx/lib" \
+        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx/include/c++/v1" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
         /usr/local/bin/bazel test ... \
