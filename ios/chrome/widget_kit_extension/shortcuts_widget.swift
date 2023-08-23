@@ -139,6 +139,15 @@ struct ShortcutsWidgetEntryView: View {
     static let widgetSearchBarColor = Color("widget_search_bar_color")
   }
 
+  // Create a chromewidgetkit:// url to open the given URL.
+  private func convertURL(url: URL) -> URL {
+    let query = URLQueryItem(name: "url", value: url.absoluteString)
+    var urlcomps = URLComponents(
+      url: WidgetConstants.ShortcutsWidget.open, resolvingAgainstBaseURL: false)!
+    urlcomps.queryItems = [query]
+    return urlcomps.url!
+  }
+
   // Shows the search bar of the shortcuts widget.
   @ViewBuilder
   private var searchBar: some View {
@@ -194,7 +203,7 @@ struct ShortcutsWidgetEntryView: View {
   // Shows the shortcut's icon with website's title on the left.
   @ViewBuilder
   private func oneVisitedSitesView(ntpTile: NTPTile) -> some View {
-    Link(destination: ntpTile.url) {
+    Link(destination: convertURL(url: ntpTile.url)) {
       HStack {
         WebsiteLogo(ntpTile: ntpTile).padding(.leading, 12)
         WebsiteLabel(
@@ -216,7 +225,8 @@ struct ShortcutsWidgetEntryView: View {
 
     ForEach(0..<numberOfShortcuts, id: \.self) { index in
       HStack(spacing: 0.5) {
-        Link(destination: ntpTiles[index].url) {
+
+        Link(destination: convertURL(url: ntpTiles[index].url)) {
           WebsiteLogo(ntpTile: ntpTiles[index])
         }
         .accessibilityLabel(ntpTiles[index].title)
