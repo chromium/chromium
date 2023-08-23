@@ -9,11 +9,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/mojom/anr.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -33,6 +35,24 @@ class BrowserContext;
 namespace arc {
 
 class ArcBridgeService;
+class ArcPowerBridge;  // So we can declare the factory first.
+
+// Singleton factory for ArcPowerBridge.
+class ArcPowerBridgeFactory
+    : public internal::ArcBrowserContextKeyedServiceFactoryBase<
+          ArcPowerBridge,
+          ArcPowerBridgeFactory> {
+ public:
+  // Factory name used by ArcBrowserContextKeyedServiceFactoryBase.
+  static constexpr const char* kName = "ArcPowerBridgeFactory";
+
+  static ArcPowerBridgeFactory* GetInstance();
+
+ private:
+  friend base::DefaultSingletonTraits<ArcPowerBridgeFactory>;
+  ArcPowerBridgeFactory() = default;
+  ~ArcPowerBridgeFactory() override = default;
+};
 
 // ARC Power Client sets power management policy based on requests from
 // ARC instances.
@@ -47,6 +67,13 @@ class ArcPowerBridge : public KeyedService,
     // Notifies that wakefulness mode is changed.
     virtual void OnWakefulnessChanged(mojom::WakefulnessMode mode) {}
     virtual void OnPreAnr(mojom::AnrType type) {}
+
+    // Notifies about resume state of the underlying VM (ARCVM-exclusive).
+    // ARC Container does not communicate with CrosVM, and it doesn't
+    // instantiate services that care about this event.
+    virtual void OnVmResumed() {}
+
+    virtual void OnWillDestroyArcPowerBridge() {}
   };
 
   // Returns singleton instance for the given BrowserContext,
