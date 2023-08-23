@@ -681,6 +681,59 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.GPU.LoadTime.ApplicationStartToGpuInitialized"
+    units="ms" expires_after="2023-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from when the application started to when the GPU finishes its
+    initialization.
+
+    Application start is a time recorded as early as possible in GPU process
+    startup. On Windows, application start is at the start of the GPU process'
+    chrome.exe:main, before chrome.dll is loaded. On other platforms, it is when
+    ChromeMainDelegate is constructed.
+
+    It should be noted that this does not include rendezvous starts, since in
+    that case, a new GPU process is not launched.
+
+    This metric is recorded every time the GPU process finishes its
+    initialization, including the case where the process restarts several times
+    during the same browser session. This does not include the GPU info
+    collection process, as that process does not use the GpuServiceImpl.
+  </summary>
+</histogram>
+
+<histogram name="Startup.GPU.LoadTime.ChromeMainToGpuInitialized" units="ms"
+    expires_after="2023-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from when ChromeMain was entered in the GPU process to when the GPU
+    finishes its initialization.
+
+    This metric is recorded every time the GPU process finishes its
+    initialization, including the case where the GPU process restarts several
+    times during the same browser session.
+  </summary>
+</histogram>
+
+<histogram name="Startup.GPU.LoadTime.ProcessCreationToGpuInitialized"
+    units="ms" expires_after="2023-09-01">
+  <owner>spvw@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time from when the GPU process was created according to the OS, to when the
+    GPU finishes its initialization.
+
+    Mostly useful on Windows, where much time is spent in pre-main.
+
+    This metric is recorded every time the GPU process finishes its
+    initialization, including the case where the GPU process restarts several
+    times during the same browser session.
+  </summary>
+</histogram>
+
 <histogram name="Startup.IncognitoForcedStart" enum="IncognitoForcedStart"
     expires_after="M119">
   <owner>arabm@google.com</owner>

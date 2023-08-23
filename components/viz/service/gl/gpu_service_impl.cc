@@ -26,6 +26,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/startup_metric_utils/gpu/startup_metric_utils.h"
 #include "components/viz/common/features.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
@@ -540,7 +541,9 @@ void GpuServiceImpl::UpdateGPUInfo() {
 
   // Record initialization only after collecting the GPU info because that can
   // take a significant amount of time.
-  gpu_info_.initialization_time = base::TimeTicks::Now() - start_time_;
+  base::TimeTicks now = base::TimeTicks::Now();
+  gpu_info_.initialization_time = now - start_time_;
+  startup_metric_utils::GetGpu().RecordGpuInitialized(now);
 
   // This metric code may be removed after the following investigation:
   // crbug.com/1350257
@@ -552,7 +555,7 @@ void GpuServiceImpl::UpdateGPUInfo() {
       TRACE_ID_LOCAL(this), start_time_);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
       kGpuInitializationEventCategory, kGpuInitializationEvent,
-      TRACE_ID_LOCAL(this), base::TimeTicks::Now());
+      TRACE_ID_LOCAL(this), now);
 }
 
 void GpuServiceImpl::UpdateGPUInfoGL() {

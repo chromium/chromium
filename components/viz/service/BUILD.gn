@@ -238,6 +238,7 @@ viz_component("service") {
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
+    "//components/startup_metric_utils",
 
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.

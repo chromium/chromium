@@ -6,5 +6,6 @@ component("startup_metric_utils") {
   public_deps = [
     "//components/startup_metric_utils/browser",
     "//components/startup_metric_utils/common",
+    "//components/startup_metric_utils/gpu",
   ]
 }
