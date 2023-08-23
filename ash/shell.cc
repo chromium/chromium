@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/accelerator_tracker.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accelerators/ash_focus_manager_factory.h"
@@ -812,6 +813,8 @@ Shell::~Shell() {
   // Must be destructed before human_presence_orientation_controller_.
   power_prefs_.reset();
 
+  accelerator_prefs_.reset();
+
   // Must be destructed before the tablet mode and message center controllers,
   // both of which these rely on.
   snooping_protection_controller_.reset();
@@ -1371,6 +1374,9 @@ void Shell::Init(
 
   cursor_manager_->SetDisplay(
       display::Screen::GetScreen()->GetPrimaryDisplay());
+
+  // Initialize before AcceleratorController and AshAcceleratorConfiguration.
+  accelerator_prefs_ = std::make_unique<AcceleratorPrefs>();
 
   // Must be initialized after InputMethodManager.
   accelerator_keycode_lookup_cache_ =

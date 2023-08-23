@@ -1791,6 +1791,11 @@ inline constexpr char kSixPackKeyInsertNotificationsRemaining[] =
 inline constexpr char kHandsFreeProfileInputSuperResolution[] =
     "ash.hands_free_profile_input_super_resolution";
 
+// A boolean pref used by an admin policy to allow/disallow user to customize
+// system shortcut. See the policy at ShortcutCustomizationAllowed.yaml.
+inline constexpr char kShortcutCustomizationAllowed[] =
+    "ash.shortcut_customization_allowed";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

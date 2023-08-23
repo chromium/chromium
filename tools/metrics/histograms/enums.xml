@@ -33822,6 +33822,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1144" label="CompressionDictionaryTransportEnabled"/>
   <int value="1145" label="MicrosoftOfficeCloudUpload"/>
   <int value="1146" label="GoogleWorkspaceCloudUpload"/>
+  <int value="1147" label="ShortcutCustomizationAllowed"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

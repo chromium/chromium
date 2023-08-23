@@ -4,6 +4,7 @@
 
 #include "ash/public/cpp/ash_prefs.h"
 
+#include "ash/accelerators/accelerator_prefs.h"
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
@@ -94,6 +95,7 @@ namespace {
 void RegisterProfilePrefs(PrefRegistrySimple* registry,
                           std::string_view country,
                           bool for_test) {
+  AcceleratorPrefs::RegisterProfilePrefs(registry);
   AccessibilityControllerImpl::RegisterProfilePrefs(registry);
   AppListControllerImpl::RegisterProfilePrefs(registry);
   AppListNudgeController::RegisterProfilePrefs(registry);
