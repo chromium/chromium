@@ -27,12 +27,6 @@ def RemoveAllStalePycFiles(base_dir):
         # Wrap OS calls in try/except in case another process touched this file.
         pass
 
-    try:
-      os.removedirs(dirname)
-    except OSError:
-      # Wrap OS calls in try/except in case another process touched this dir.
-      pass
-
 
 if __name__ == '__main__':
   for path in sys.argv[1:]:
