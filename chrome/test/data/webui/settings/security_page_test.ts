@@ -153,38 +153,6 @@ suite('Main', function() {
     flush();
     assertEquals(lockedSubLabel, toggle.subLabel);
   });
-
-  test('UpdatedStandardProtectionDropdown', function() {
-    const standardProtection = page.$.safeBrowsingStandard;
-    const updatedSpSubLabel =
-        loadTimeData.getString('safeBrowsingStandardDescUpdated');
-    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
-
-    const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const updatedPasswordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
-    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
-
-    const updatedPasswordLeakSubLabel = loadTimeData.getString(
-        'passwordsLeakDetectionGeneralDescriptionUpdated');
-    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
-  });
-
-  test('UpdatedEnhancedProtectionText', function() {
-    const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel =
-        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
-    assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
-    assertEquals(npSubLabel, noProtection.subLabel);
-
-    page.$.safeBrowsingEnhanced.click();
-    flush();
-    // Learn more label should be visible.
-    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
-  });
 });
 
 suite('FlagsDisabled', function() {
@@ -810,5 +778,37 @@ suite('SafeBrowsing', function() {
         page.prefs.generated.safe_browsing.value, SafeBrowsingSetting.STANDARD);
     assertFalse(page.$.safeBrowsingEnhanced.expanded);
     assertFalse(page.$.safeBrowsingStandard.expanded);
+  });
+
+  test('UpdatedStandardProtectionDropdown', function() {
+    const standardProtection = page.$.safeBrowsingStandard;
+    const updatedSpSubLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(updatedSpSubLabel, standardProtection.subLabel);
+
+    const passwordsLeakToggle = page.$.passwordsLeakToggle;
+    const updatedPasswordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabelUpdated');
+    assertEquals(updatedPasswordLeakLabel, passwordsLeakToggle.label);
+
+    const updatedPasswordLeakSubLabel = loadTimeData.getString(
+        'passwordsLeakDetectionGeneralDescriptionUpdated');
+    assertEquals(updatedPasswordLeakSubLabel, passwordsLeakToggle.subLabel);
+  });
+
+  test('UpdatedEnhancedProtectionText', function() {
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDescUpdated');
+    assertEquals(npSubLabel, noProtection.subLabel);
+
+    page.$.safeBrowsingEnhanced.click();
+    flush();
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
 });
