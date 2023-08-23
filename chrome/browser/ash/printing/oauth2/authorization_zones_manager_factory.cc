@@ -39,10 +39,11 @@ AuthorizationZonesManagerFactory::AuthorizationZonesManagerFactory()
 
 AuthorizationZonesManagerFactory::~AuthorizationZonesManagerFactory() = default;
 
-KeyedService* AuthorizationZonesManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AuthorizationZonesManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return AuthorizationZonesManager::Create(Profile::FromBrowserContext(context))
-      .release();
+  return AuthorizationZonesManager::Create(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace oauth2
