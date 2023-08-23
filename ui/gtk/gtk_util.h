@@ -42,6 +42,9 @@ aura::Window* GetAuraTransientParent(GtkWidget* dialog);
 // Clears the transient parent for |dialog|.
 void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent);
 
+// Disable input events handling on `parent` to make `dialog` modal.
+void DisableHostInputHandling(GtkWidget* dialog, aura::Window* parent);
+
 // Parses |button_string| into |leading_buttons| and
 // |trailing_buttons|.  The string is of the format
 // "<button>*:<button*>", for example, "close:minimize:maximize".

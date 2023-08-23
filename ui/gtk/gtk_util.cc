@@ -31,6 +31,7 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
 namespace gtk {
 
@@ -174,6 +175,13 @@ double GetOpacityFromRenderNode(GskRenderNode* node) {
   return GetOpacityFromRenderNode(GetRenderNodeChild(node));
 }
 
+// Runs DesktopWindowTreeHostLinux::EnableEventListening() when the dialog is
+// closed.
+void OnDialogDestroy(base::OnceClosure* callback_raw) {
+  std::unique_ptr<base::OnceClosure> callback = base::WrapUnique(callback_raw);
+  std::move(*callback).Run();
+}
+
 }  // namespace
 
 const char* GtkCssMenu() {
@@ -222,6 +230,30 @@ void ClearAuraTransientParent(GtkWidget* dialog, aura::Window* parent) {
   g_object_set_data(G_OBJECT(dialog), kAuraTransientParent, nullptr);
   GtkUi::GetPlatform()->ClearTransientFor(
       parent->GetHost()->GetAcceleratedWidget());
+}
+
+void DisableHostInputHandling(GtkWidget* dialog, aura::Window* parent) {
+  if (!parent) {
+    return;
+  }
+  auto* host =
+      static_cast<views::DesktopWindowTreeHostLinux*>(parent->GetHost());
+  if (!host) {
+    return;
+  }
+
+  // In some circumstances the mouse has been captured and by turning off event
+  // listening, it is never released. So we manually ensure there is no current
+  // capture.
+  host->ReleaseCapture();
+  auto callback =
+      std::make_unique<base::OnceClosure>(host->DisableEventListening());
+  // OnDialogDestroy() is called when |dialog| destroyed, which allows
+  // to invoke the callback function to re-enable event handling on the
+  // owning window.
+  g_object_set_data_full(G_OBJECT(dialog), "callback", callback.release(),
+                         reinterpret_cast<GDestroyNotify>(OnDialogDestroy));
+  gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
 }
 
 void ParseButtonLayout(const std::string& button_string,

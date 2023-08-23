@@ -391,8 +391,9 @@ void PrintDialogGtk::ShowDialog(
       gtk_print_settings_set_print_pages(gtk_settings_, GTK_PRINT_PAGES_ALL);
   }
 
-  // Set modal so user cannot focus the same tab and press print again.
-  gtk_window_set_modal(GTK_WINDOW(dialog_), TRUE);
+  // Disable input handling so the user cannot focus the same tab and press
+  // print again.
+  gtk::DisableHostInputHandling(dialog_, parent_view);
 
   // Since we only generate PDF, only show printers that support PDF.
   // TODO(thestig) Add more capabilities to support?

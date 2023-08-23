@@ -74,13 +74,6 @@ const char* GetSaveLabel() {
   return save;
 }
 
-// Runs DesktopWindowTreeHostLinux::EnableEventListening() when the file-picker
-// is closed.
-void OnFilePickerDestroy(base::OnceClosure* callback_raw) {
-  std::unique_ptr<base::OnceClosure> callback = base::WrapUnique(callback_raw);
-  std::move(*callback).Run();
-}
-
 void GtkFileChooserSetFilename(GtkFileChooser* dialog,
                                const base::FilePath& path) {
   if (GtkCheckVersion(4)) {
@@ -271,27 +264,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
 
   params_map_[dialog] = params;
 
-  // Disable input events handling in the host window to make this dialog modal.
-  if (owning_window) {
-    views::DesktopWindowTreeHostLinux* host =
-        static_cast<views::DesktopWindowTreeHostLinux*>(
-            owning_window->GetHost());
-    if (host) {
-      // In some circumstances (e.g. dialog from flash plugin) the mouse has
-      // been captured and by turning off event listening, it is never
-      // released. So we manually ensure there is no current capture.
-      host->ReleaseCapture();
-      std::unique_ptr<base::OnceClosure> callback =
-          std::make_unique<base::OnceClosure>(host->DisableEventListening());
-      // OnFilePickerDestroy() is called when |dialog| destroyed, which allows
-      // to invoke the callback function to re-enable event handling on the
-      // owning window.
-      g_object_set_data_full(
-          G_OBJECT(dialog), "callback", callback.release(),
-          reinterpret_cast<GDestroyNotify>(OnFilePickerDestroy));
-      gtk_window_set_modal(GTK_WINDOW(dialog), TRUE);
-    }
-  }
+  DisableHostInputHandling(dialog, owning_window);
 
   if (!GtkCheckVersion(4))
     gtk_widget_show_all(dialog);
