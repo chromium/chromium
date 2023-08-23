@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -105,8 +106,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   const GURL kTestGaiaURL = GURL("https://google.com");
 
   BoundSessionCookieRefreshServiceImplTest() {
-    BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
-        prefs_.registry());
+    BoundSessionParamsStorage::RegisterProfilePrefs(prefs_.registry());
   }
 
   ~BoundSessionCookieRefreshServiceImplTest() override = default;
@@ -131,8 +131,9 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     if (!cookie_refresh_service_) {
       cookie_refresh_service_ =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              fake_unexportable_key_service_, &prefs_, &storage_partition_,
-              content::GetNetworkConnectionTracker());
+              fake_unexportable_key_service_,
+              BoundSessionParamsStorage::CreatePrefsStorageForTesting(prefs_),
+              &storage_partition_, content::GetNetworkConnectionTracker());
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
                                   GetBoundSessionCookieController,
@@ -418,7 +419,22 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
   new_params.set_session_id("test_session_id_2");
   service->RegisterNewBoundSession(new_params);
 
-  EXPECT_TRUE(cookie_controller());
+  VerifyBoundSession();
+  // TODO(http://b/286222327): check registration params once they are
+  // properly passed to controller.
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       OverrideExistingBoundSessionWithInvalidParams) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->RegisterNewBoundSession(CreateTestRegistrationParams());
+
+  auto invalid_params = CreateTestRegistrationParams();
+  invalid_params.clear_session_id();
+  service->RegisterNewBoundSession(invalid_params);
+
+  // Original session should not be modified.
+  VerifyBoundSession();
   // TODO(http://b/286222327): check registration params once they are
   // properly passed to controller.
 }

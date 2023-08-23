@@ -12,43 +12,36 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 #include "chrome/common/renderer_configuration.mojom.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
-const char kRegistrationParamsPref[] =
-    "bound_session_credentials_registration_params";
 const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 }
 
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
-    PrefService* pref_service,
-    content::StoragePartition* storage_partion,
+    std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
+    content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker)
     : key_service_(key_service),
-      pref_service_(pref_service),
-      storage_partition_(storage_partion),
-      network_connection_tracker_(network_connection_tracker) {}
+      session_params_storage_(std::move(session_params_storage)),
+      storage_partition_(storage_partition),
+      network_connection_tracker_(network_connection_tracker) {
+  CHECK(session_params_storage_);
+}
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
 
-// static
-void BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(kRegistrationParamsPref, std::string());
-}
-
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
   absl::optional<bound_session_credentials::RegistrationParams>
-      registration_params = GetRegistrationParams();
+      registration_params = session_params_storage_->ReadParams();
   if (registration_params.has_value()) {
     InitializeBoundSession(registration_params.value());
   }
@@ -56,8 +49,7 @@ void BoundSessionCookieRefreshServiceImpl::Initialize() {
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     const bound_session_credentials::RegistrationParams& params) {
-  if (!IsValidRegistrationParams(params) ||
-      !PersistRegistrationParams(params)) {
+  if (!session_params_storage_->SaveParams(params)) {
     DVLOG(1) << "Invalid session params or failed to serialize bound session "
                 "registration params.";
     return;
@@ -149,47 +141,6 @@ void BoundSessionCookieRefreshServiceImpl::OnRegistrationRequestComplete(
   active_registration_request_.reset();
 }
 
-bool BoundSessionCookieRefreshServiceImpl::IsValidRegistrationParams(
-    const bound_session_credentials::RegistrationParams& registration_params) {
-  // TODO(crbug.com/1441168): Check for validity of other fields once they are
-  // available.
-  return registration_params.has_session_id() &&
-         registration_params.has_wrapped_key();
-}
-
-bool BoundSessionCookieRefreshServiceImpl::PersistRegistrationParams(
-    const bound_session_credentials::RegistrationParams& registration_params) {
-  std::string serialized_params = registration_params.SerializeAsString();
-  if (serialized_params.empty()) {
-    return false;
-  }
-
-  std::string encoded_serialized_params;
-  base::Base64Encode(serialized_params, &encoded_serialized_params);
-  pref_service_->SetString(kRegistrationParamsPref, encoded_serialized_params);
-  return true;
-}
-
-absl::optional<bound_session_credentials::RegistrationParams>
-BoundSessionCookieRefreshServiceImpl::GetRegistrationParams() {
-  std::string encoded_params_str =
-      pref_service_->GetString(kRegistrationParamsPref);
-  if (encoded_params_str.empty()) {
-    return absl::nullopt;
-  }
-
-  std::string params_str;
-  if (!base::Base64Decode(encoded_params_str, &params_str)) {
-    return absl::nullopt;
-  }
-
-  bound_session_credentials::RegistrationParams params;
-  if (params.ParseFromString(params_str) && IsValidRegistrationParams(params)) {
-    return params;
-  }
-  return absl::nullopt;
-}
-
 void BoundSessionCookieRefreshServiceImpl::
     OnBoundSessionThrottlerParamsChanged() {
   UpdateAllRenderers();
@@ -197,7 +148,7 @@ void BoundSessionCookieRefreshServiceImpl::
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
   cookie_controller_.reset();
-  pref_service_->ClearPref(kRegistrationParamsPref);
+  session_params_storage_->ClearParams();
   UpdateAllRenderers();
 }
 

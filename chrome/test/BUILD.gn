@@ -6986,6 +6986,7 @@ test("unit_tests") {
       "../browser/signin/bound_session_credentials/bound_session_cookie_controller_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_cookie_observer_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl_unittest.cc",
+      "../browser/signin/bound_session_credentials/bound_session_params_storage_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl_unittest.cc",
       "../browser/signin/bound_session_credentials/bound_session_registration_fetcher_param_unittest.cc",

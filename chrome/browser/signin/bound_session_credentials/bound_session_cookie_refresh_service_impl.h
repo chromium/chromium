@@ -25,15 +25,11 @@ namespace unexportable_keys {
 class UnexportableKeyService;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace content {
 class StoragePartition;
 }
 
-class PrefService;
+class BoundSessionParamsStorage;
 
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
@@ -41,13 +37,11 @@ class BoundSessionCookieRefreshServiceImpl
  public:
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
-      PrefService* pref_service,
-      content::StoragePartition* storage_partion,
+      std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
+      content::StoragePartition* storage_partition,
       network::NetworkConnectionTracker* network_connection_tracker);
 
   ~BoundSessionCookieRefreshServiceImpl() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // BoundSessionCookieRefreshService:
   void Initialize() override;
@@ -97,12 +91,6 @@ class BoundSessionCookieRefreshServiceImpl
   void OnRegistrationRequestComplete(
       absl::optional<bound_session_credentials::RegistrationParams>
           registration_params);
-  bool IsValidRegistrationParams(
-      const bound_session_credentials::RegistrationParams& registration_params);
-  bool PersistRegistrationParams(
-      const bound_session_credentials::RegistrationParams& registration_params);
-  absl::optional<bound_session_credentials::RegistrationParams>
-  GetRegistrationParams();
 
   // BoundSessionCookieController::Delegate
   void OnBoundSessionThrottlerParamsChanged() override;
@@ -118,7 +106,8 @@ class BoundSessionCookieRefreshServiceImpl
   void UpdateAllRenderers();
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
-  const raw_ptr<PrefService> pref_service_;
+  // Never null. Stored as `std::unique_ptr` for polymorphism.
+  const std::unique_ptr<BoundSessionParamsStorage> session_params_storage_;
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
