@@ -44,8 +44,9 @@ class InputReader {
   template <typename T>
   bool ReadBigEndian(T* out) {
     auto bytes = ReadBytes(sizeof(T));
-    if (!bytes)
+    if (!bytes) {
       return false;
+    }
     base::ReadBigEndian(bytes->data(), out);
     return true;
   }

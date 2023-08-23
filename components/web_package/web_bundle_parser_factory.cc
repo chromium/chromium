@@ -55,8 +55,7 @@ WebBundleParserFactory::WebBundleParserFactory() = default;
 WebBundleParserFactory::~WebBundleParserFactory() = default;
 
 std::unique_ptr<mojom::BundleDataSource>
-WebBundleParserFactory::CreateFileDataSourceForTesting(
-    base::File file) {
+WebBundleParserFactory::CreateFileDataSourceForTesting(base::File file) {
   return std::make_unique<FileDataSource>(std::move(file));
 }
 

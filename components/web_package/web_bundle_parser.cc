@@ -96,17 +96,20 @@ absl::optional<SectionLengths> ParseSectionLengths(
     base::span<const uint8_t> data) {
   cbor::Reader::DecoderError error;
   absl::optional<cbor::Value> value = cbor::Reader::Read(data, &error);
-  if (!value.has_value() || !value->is_array())
+  if (!value.has_value() || !value->is_array()) {
     return absl::nullopt;
+  }
 
   const cbor::Value::ArrayValue& array = value->GetArray();
-  if (array.size() % 2 != 0)
+  if (array.size() % 2 != 0) {
     return absl::nullopt;
+  }
 
   SectionLengths result;
   for (size_t i = 0; i < array.size(); i += 2) {
-    if (!array[i].is_string() || !array[i + 1].is_unsigned())
+    if (!array[i].is_string() || !array[i + 1].is_unsigned()) {
       return absl::nullopt;
+    }
     result.emplace_back(array[i].GetString(), array[i + 1].GetUnsigned());
   }
   return result;
@@ -122,22 +125,25 @@ struct ParsedHeaders {
 absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
     const cbor::Value& headers_value) {
   // |headers_value| of headers must be a map.
-  if (!headers_value.is_map())
+  if (!headers_value.is_map()) {
     return absl::nullopt;
+  }
 
   ParsedHeaders result;
 
   for (const auto& item : headers_value.GetMap()) {
-    if (!item.first.is_bytestring() || !item.second.is_bytestring())
+    if (!item.first.is_bytestring() || !item.second.is_bytestring()) {
       return absl::nullopt;
+    }
     base::StringPiece name = item.first.GetBytestringAsString();
     base::StringPiece value = item.second.GetBytestringAsString();
 
     // If name contains any upper-case or non-ASCII characters, return an error.
     // This matches the requirement in Section 8.1.2 of [RFC7540].
     if (!base::IsStringASCII(name) ||
-        base::ranges::any_of(name, base::IsAsciiUpper<char>))
+        base::ranges::any_of(name, base::IsAsciiUpper<char>)) {
       return absl::nullopt;
+    }
 
     if (!name.empty() && name[0] == ':') {
       // pseudos[name] must not exist, because CBOR maps cannot contain
@@ -150,8 +156,9 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
 
     // Both name and value must be valid.
     if (!net::HttpUtil::IsValidHeaderName(name) ||
-        !net::HttpUtil::IsValidHeaderValue(value))
+        !net::HttpUtil::IsValidHeaderValue(value)) {
       return absl::nullopt;
+    }
 
     // headers[name] must not exist, because CBOR maps cannot contain duplicate
     // keys. This is ensured by cbor::Reader.
@@ -167,16 +174,19 @@ absl::optional<ParsedHeaders> ConvertCBORValueToHeaders(
 GURL ParseExchangeURL(base::StringPiece str, const GURL& base_url) {
   DCHECK(base_url.is_empty() || base_url.is_valid());
 
-  if (!base::IsStringUTF8(str))
+  if (!base::IsStringUTF8(str)) {
     return GURL();
+  }
 
   GURL url = base_url.is_valid() ? base_url.Resolve(str) : GURL(str);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return GURL();
+  }
 
   // Exchange URL must not have a fragment or credentials.
-  if (url.has_ref() || url.has_username() || url.has_password())
+  if (url.has_ref() || url.has_username() || url.has_password()) {
     return GURL();
+  }
 
   return url;
 }
@@ -471,8 +481,9 @@ class WebBundleParser::MetadataParser
   void ReadMetadataSections(SectionOffsets::const_iterator section_iter) {
     for (; section_iter != section_offsets_.end(); ++section_iter) {
       const auto& name = section_iter->first;
-      if (!IsMetadataSection(name))
+      if (!IsMetadataSection(name)) {
         continue;
+      }
       const uint64_t section_offset = section_iter->second.first;
       const uint64_t section_length = section_iter->second.second;
       if (section_length > kMaxMetadataSectionSize) {
@@ -520,14 +531,17 @@ class WebBundleParser::MetadataParser
     const auto& name = section_iter->first;
     // Note: Parse*Section() delete |this| on failure.
     if (name == kIndexSection) {
-      if (!ParseIndexSection(*section_value))
+      if (!ParseIndexSection(*section_value)) {
         return;
+      }
     } else if (name == kCriticalSection) {
-      if (!ParseCriticalSection(*section_value))
+      if (!ParseCriticalSection(*section_value)) {
         return;
+      }
     } else if (name == kPrimarySection) {
-      if (!ParsePrimarySection(*section_value))
+      if (!ParsePrimarySection(*section_value)) {
         return;
+      }
     } else {
       NOTREACHED();
     }
@@ -571,8 +585,9 @@ class WebBundleParser::MetadataParser
       if (!parsed_url.is_valid()) {
         std::string message = base::StringPrintf(
             "Index section: exchange URL \"%s\" is not valid.", url.c_str());
-        if (base_url_.is_empty())
+        if (base_url_.is_empty()) {
           message += " (Relative URLs are not allowed in this context.)";
+        }
         RunErrorCallbackAndDestroy(message);
         return false;
       }
@@ -876,8 +891,9 @@ void WebBundleParser::SharedBundleDataSource::OnDisconnect() {
   // |observer->OnDisconnect()| below may remove the last external reference to
   // |this|.
   scoped_refptr<SharedBundleDataSource> keep_alive(this);
-  for (Observer& observer : observers_)
+  for (Observer& observer : observers_) {
     observer.OnDisconnect();
+  }
 }
 
 void WebBundleParser::SharedBundleDataSource::Read(

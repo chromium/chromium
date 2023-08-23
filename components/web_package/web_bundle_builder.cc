@@ -20,8 +20,9 @@ cbor::Value CreateByteString(base::StringPiece s) {
 
 cbor::Value CreateHeaderMap(const WebBundleBuilder::Headers& headers) {
   cbor::Value::MapValue map;
-  for (const auto& pair : headers)
+  for (const auto& pair : headers) {
     map.insert({CreateByteString(pair.first), CreateByteString(pair.second)});
+  }
   return cbor::Value(std::move(map));
 }
 

@@ -107,8 +107,9 @@ class WebBundleParserFuzzer {
       std::move(quit_loop_).Run();
       return;
     }
-    for (auto& item : metadata->requests)
+    for (auto& item : metadata->requests) {
       locations_.push_back(std::move(item.second));
+    }
     ParseResponses(0);
   }
 

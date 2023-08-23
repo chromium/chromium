@@ -148,8 +148,9 @@ mojom::BundleResponseLocationPtr FindResponse(
     const mojom::BundleMetadataPtr& metadata,
     const GURL& url) {
   const auto item = metadata->requests.find(url);
-  if (item == metadata->requests.end())
+  if (item == metadata->requests.end()) {
     return nullptr;
+  }
 
   return item->second.Clone();
 }
