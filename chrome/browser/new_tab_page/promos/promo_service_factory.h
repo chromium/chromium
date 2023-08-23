@@ -28,7 +28,7 @@ class PromoServiceFactory : public ProfileKeyedServiceFactory {
   ~PromoServiceFactory() override;
 
   // Overridden from BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
