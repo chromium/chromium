@@ -1981,6 +1981,9 @@ void UserMediaProcessor::OnLocalSourceStopped(
 void UserMediaProcessor::StopLocalSource(MediaStreamSource* source,
                                          bool notify_dispatcher) {
   WebPlatformMediaStreamSource* source_impl = source->GetPlatformSource();
+  if (!source_impl) {
+    return;
+  }
   SendLogMessage(base::StringPrintf(
       "StopLocalSource({session_id=%s})",
       source_impl->device().session_id().ToString().c_str()));
