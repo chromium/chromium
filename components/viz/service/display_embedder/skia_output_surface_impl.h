@@ -168,7 +168,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::ColorSpace& color_space) override;
   void DestroySharedImage(const gpu::Mailbox& mailbox) override;
   bool SupportsBGRA() const override;
-  bool IsUsingGraphite() const override;
 
   // ExternalUseClient implementation:
   gpu::SyncToken ReleaseImageContexts(

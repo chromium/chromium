@@ -219,10 +219,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurface : public OutputSurface,
   virtual void DestroySharedImage(const gpu::Mailbox& mailbox) = 0;
 
   virtual bool SupportsBGRA() const = 0;
-
-  // TODO(crbug.com/1449764): Remove after Graphite bottom left origin image
-  // flip Y workaround is removed from SkiaRenderer.
-  virtual bool IsUsingGraphite() const = 0;
 };
 
 }  // namespace viz

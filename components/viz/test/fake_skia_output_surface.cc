@@ -421,8 +421,4 @@ bool FakeSkiaOutputSurface::SupportsBGRA() const {
   return true;
 }
 
-bool FakeSkiaOutputSurface::IsUsingGraphite() const {
-  return false;
-}
-
 }  // namespace viz

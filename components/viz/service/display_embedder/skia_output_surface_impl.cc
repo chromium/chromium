@@ -1653,8 +1653,4 @@ bool SkiaOutputSurfaceImpl::SupportsBGRA() const {
       .isValid();
 }
 
-bool SkiaOutputSurfaceImpl::IsUsingGraphite() const {
-  return !!graphite_recorder_;
-}
-
 }  // namespace viz
