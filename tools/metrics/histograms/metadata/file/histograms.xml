@@ -385,6 +385,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.DriveDuplicateFinder.LongSearchByHash" units="ms"
     expires_after="M118">
+  <obsolete>
+    Became obsolete on 2023-08-18 as this feature is no longer in existence.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1287,7 +1290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.QuickView.FileTypeOnLaunch" enum="ViewFileType"
-    expires_after="M118">
+    expires_after="M128">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>File types that were selected when quick view is launched.</summary>
@@ -1301,7 +1304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.QuickView.WayToOpen"
-    enum="FileManagerQuickViewWayToOpen" expires_after="M118">
+    enum="FileManagerQuickViewWayToOpen" expires_after="M128">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>How quick view was opened.</summary>
@@ -1414,6 +1417,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="FileBrowser.SWA.PrefsMigrationStatus"
     enum="FileManagerPrefsMigrationStatus" expires_after="M118">
+  <obsolete>
+    Became obsolete on 2023-08-18 - It's been around for ~20-30 milestones now
+    and most results are either success or failed to find the existing chrome
+    preferences. We probably can't get much more actionable insights from this.
+  </obsolete>
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1423,7 +1431,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.SyncStatusTrackerMemoryUsage" units="KiB"
-    expires_after="M118">
+    expires_after="M120">
   <owner>msalomao@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Memory used by the Sync Status Tracker.</summary>
