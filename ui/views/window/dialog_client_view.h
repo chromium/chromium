@@ -73,7 +73,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // interval from when the protection is started as well as any following
   // clicks that happen in shorter succession than the user's double click
   // interval. Refer to InputEventActivationProtector for more information. If
-  // |force_early| is true, force to trigger even earlier (shortly before the
+  // `force_early` is true, force to trigger even earlier (shortly before the
   // this view is visible).
   void TriggerInputProtection(bool force_early = false);
 
@@ -83,7 +83,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
       const ViewHierarchyChangedDetails& details) override;
   void OnThemeChanged() override;
 
-  // Update the |view_shown_time_stamp_| of input protector. A short time
+  // Update the `view_shown_time_stamp_` of input protector. A short time
   // from this point onward, input event will be ignored.
   void UpdateInputProtectorTimeStamp();
 
@@ -113,19 +113,17 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // Returns the DialogDelegate for the window.
   DialogDelegate* GetDialogDelegate() const;
 
-  // View implementation.
-  void ChildVisibilityChanged(View* child) override;
-
   // DialogObserver:
   void OnDialogChanged() override;
 
   // Update the dialog buttons to match the dialog's delegate.
   void UpdateDialogButtons();
+  void OnButtonVisibilityChanged(View* view);
 
-  // Creates, deletes, or updates the appearance of the button of type |type|
-  // (which must be pointed to by |member|).  Which action is chosen is based on
-  // whether DialogDelegate::GetDialogButtons() includes |type|, and whether
-  // |member| points to a button that already exists.
+  // Creates, deletes, or updates the appearance of the button of type `type`
+  // (which must be pointed to by `member`).  Which action is chosen is based on
+  // whether DialogDelegate::GetDialogButtons() includes `type`, and whether
+  // `member` points to a button that already exists.
   void UpdateDialogButton(MdTextButton** member, ui::DialogButton type);
 
   void ButtonPressed(ui::DialogButton type, const ui::Event& event);
@@ -138,12 +136,16 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // a View should not appear, it will be null.
   std::array<View*, kNumButtons> GetButtonRowViews();
 
-  // Installs and configures the LayoutManager for |button_row_container_|.
+  // Installs and configures the LayoutManager for `button_row_container_`.
   void SetupLayout();
 
   // Creates or deletes any buttons that are required. Updates data members.
   // After calling this, no button row Views will be in the view hierarchy.
-  void SetupViews();
+  void UpdateButtonsFromModel();
+
+  // Ask the delegate for a new extra view. If there is one, replace the
+  // existing extra view with it.
+  void UpdateExtraViewFromDelegate();
 
   // Adds/Removes a filler view depending on whether the corresponding live view
   // is present.
@@ -165,8 +167,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // #addr-of
   RAW_PTR_EXCLUSION MdTextButton* cancel_button_ = nullptr;
 
-  // The extra view shown in the row of buttons; may be NULL.
-  raw_ptr<View, DanglingUntriaged> extra_view_ = nullptr;
+  // The extra view shown in the row of buttons; may be nullptr.
+  raw_ptr<View> extra_view_ = nullptr;
 
   // Container view for the button row.
   raw_ptr<ButtonRowContainer> button_row_container_ = nullptr;

@@ -734,4 +734,32 @@ TEST_F(DialogClientViewTest, ButtonLayoutWithExtra) {
   EXPECT_EQ(old_flex_margin + 100, get_flex_margin());
 }
 
+TEST_F(DialogClientViewTest, LayoutWithHiddenExtraView) {
+  SetDialogButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
+  SetDialogButtonLabel(ui::DIALOG_BUTTON_OK, u"ok");
+  SetDialogButtonLabel(ui::DIALOG_BUTTON_CANCEL, u"cancel");
+  SetExtraView(
+      std::make_unique<LabelButton>(Button::PressedCallback(), u"extra"));
+
+  widget()->Show();
+
+  SizeAndLayoutWidget();
+
+  auto* ok = GetButtonByAccessibleName(u"ok");
+  auto* cancel = GetButtonByAccessibleName(u"cancel");
+  auto* extra = GetButtonByAccessibleName(u"extra");
+
+  int ok_left = ok->bounds().x();
+  int cancel_left = cancel->bounds().x();
+
+  extra->SetVisible(false);
+  // Re-layout but do not resize the widget. If we resized it without the extra
+  // view, it would get narrower and the other buttons would love.
+  EXPECT_TRUE(widget()->GetContentsView()->needs_layout());
+  views::test::RunScheduledLayout(widget());
+
+  EXPECT_EQ(ok_left, ok->bounds().x());
+  EXPECT_EQ(cancel_left, cancel->bounds().x());
+}
+
 }  // namespace views
