@@ -10787,6 +10787,21 @@
             ]
         }
     ],
+    "OrcaDogfoodEnabled": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OrcaDogfood"
+                    ]
+                }
+            ]
+        }
+    ],
     "OriginAgentClusterDefaultEnabled": [
         {
             "platforms": [
