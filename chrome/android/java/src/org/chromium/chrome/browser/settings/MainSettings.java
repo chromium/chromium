@@ -20,6 +20,8 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.SettingsLauncherHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -236,14 +238,6 @@ public class MainSettings extends PreferenceFragmentCompat
             removePreferenceIfPresent(PREF_SIGN_IN);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
-            addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
-        } else {
-            removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
-        }
-
         updateManageSyncPreference();
         updateSearchEnginePreference();
         updateAutofillPreferences();
@@ -326,6 +320,22 @@ public class MainSettings extends PreferenceFragmentCompat
     }
 
     private void updateAutofillPreferences() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_VIRTUAL_VIEW_STRUCTURE_ANDROID)) {
+            addPreferenceIfAbsent(PREF_AUTOFILL_OPTIONS);
+            Preference preference = findPreference(PREF_AUTOFILL_OPTIONS);
+            preference.setFragment(null);
+            preference.setOnPreferenceClickListener(unused -> {
+                new SettingsLauncherImpl().launchSettingsActivity(getContext(),
+                        AutofillOptionsFragment.class,
+                        AutofillOptionsFragment.createRequiredArgs(
+                                AutofillOptionsReferrer.SETTINGS));
+                return true; // Means event is consumed.
+            });
+        } else {
+            removePreferenceIfPresent(PREF_AUTOFILL_OPTIONS);
+        }
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(preference
                         -> SettingsLauncherHelper.showAutofillCreditCardSettings(getActivity()));

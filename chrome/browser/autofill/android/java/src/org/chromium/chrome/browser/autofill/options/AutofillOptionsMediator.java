@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
@@ -23,6 +24,8 @@ class AutofillOptionsMediator {
     @VisibleForTesting
     static final String HISTOGRAM_USE_THIRD_PARTY_FILLING =
             "Autofill.Settings.ToggleUseThirdPartyFilling";
+    @VisibleForTesting
+    static final String HISTOGRAM_REFERRER = "Autofill.Settings.AutofillOptionsReferrerAndroid";
     private final Profile mProfile;
     private PropertyModel mModel;
 
@@ -30,8 +33,10 @@ class AutofillOptionsMediator {
         mProfile = profile;
     }
 
-    void initialize(PropertyModel model) {
+    void initialize(PropertyModel model, @AutofillOptionsReferrer int referrer) {
         mModel = model;
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_REFERRER, referrer, AutofillOptionsReferrer.COUNT);
     }
 
     boolean isInitialized() {

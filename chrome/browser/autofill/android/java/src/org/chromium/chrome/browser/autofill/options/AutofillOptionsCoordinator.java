@@ -84,7 +84,7 @@ public class AutofillOptionsCoordinator {
                                         .getBoolean(Pref.AUTOFILL_USING_VIRTUAL_VIEW_STRUCTURE))
                         .with(ON_THIRD_PARTY_TOGGLE_CHANGED, mMediator::onThirdPartyToggleChanged)
                         .build();
-        mMediator.initialize(model);
+        mMediator.initialize(model, mFragment.getReferrer());
 
         PropertyModelChangeProcessor.create(model, mFragment, AutofillOptionsViewBinder::bind);
         return model;

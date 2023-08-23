@@ -7615,6 +7615,11 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="User did not interact with the infobar"/>
 </enum>
 
+<enum name="AutofillOptionsReferrer">
+  <int value="0" label="User entered the autofill options via main settings."/>
+  <int value="1" label="User entered the autofill options via deep link."/>
+</enum>
+
 <enum name="AutofillOtpAuthEvent">
   <int value="0" label="Unknown result"/>
   <int value="1" label="OTP auth succeeded"/>

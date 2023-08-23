@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.ON_THIRD_PARTY_TOGGLE_CHANGED;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_AUTOFILL_ENABLED;
 
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -86,8 +86,9 @@ public class AutofillOptionsTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
 
-        mScenario = FragmentScenario.launchInContainer(
-                AutofillOptionsFragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario = FragmentScenario.launchInContainer(AutofillOptionsFragment.class,
+                AutofillOptionsFragment.createRequiredArgs(AutofillOptionsReferrer.SETTINGS),
+                R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> {
             mFragment = (AutofillOptionsFragment) fragment; // Valid until scenario is recreated.
             mFragment.setProfile(mProfile);
@@ -215,6 +216,18 @@ public class AutofillOptionsTest {
         mFragment.onOptionsItemSelected(helpItem);
         verify(mHelpAndFeedbackLauncher)
                 .show(mFragment.getActivity(), getString(R.string.help_context_autofill), null);
+    }
+
+    @Test
+    @SmallTest
+    public void passedReferrerRecordedInHistogram() {
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                AutofillOptionsMediator.HISTOGRAM_REFERRER, AutofillOptionsReferrer.SETTINGS);
+
+        // Component initialization triggers the recording.
+        AutofillOptionsCoordinator.createFor(mFragment);
+
+        histogramWatcher.assertExpected();
     }
 
     private String getString(@StringRes int stringId) {

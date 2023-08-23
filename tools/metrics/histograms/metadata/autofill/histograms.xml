@@ -4209,6 +4209,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Settings.AutofillOptionsReferrerAndroid"
+    enum="AutofillOptionsReferrer" expires_after="2024-01-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records which entry point opened the Autofill Options screen. Recorded on
+    Android.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Settings.ToggleUseThirdPartyFilling" enum="Boolean"
     expires_after="2024-01-30">
   <owner>fhorschig@chromium.org</owner>
