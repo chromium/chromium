@@ -695,7 +695,7 @@ VISIT_PROTO_FIELDS(
     const sync_pb::IncomingPasswordSharingInvitationSpecifics& proto) {
   VISIT(guid);
   VISIT(sender_info);
-  VISIT(encrypted_password_sharing_invitation_data);
+  VISIT_BYTES(encrypted_password_sharing_invitation_data);
   VISIT(client_only_unencrypted_data);
   VISIT(recipient_key_version);
 }
@@ -910,7 +910,7 @@ VISIT_PROTO_FIELDS(
     const sync_pb::OutgoingPasswordSharingInvitationSpecifics& proto) {
   VISIT(guid);
   VISIT(recipient_user_id);
-  VISIT(encrypted_password_sharing_invitation_data);
+  VISIT_BYTES(encrypted_password_sharing_invitation_data);
   VISIT(client_only_unencrypted_data);
   VISIT(recipient_key_version);
   VISIT(sender_key_version);

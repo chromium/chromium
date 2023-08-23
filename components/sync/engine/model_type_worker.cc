@@ -1390,6 +1390,8 @@ void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
     if (encrypted_data) {
       specifics->set_encrypted_password_sharing_invitation_data(
           encrypted_data->data(), encrypted_data->size());
+      specifics->set_recipient_key_version(
+          entity_data->recipient_public_key.version());
     } else {
       DLOG(ERROR) << "Failed to encrypt outgoing password sharing invitation";
     }

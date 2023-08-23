@@ -17,7 +17,9 @@ sync_pb::CrossUserSharingPublicKey PublicKey::ToProto() const {
   // Bytes from x25519_public_key proto may not match valid utf-8 characters.
   // Conversion to Base64 prevents further errors while converting string to
   // different types.
-  base::Base64Decode(key, proto_result.mutable_x25519_public_key());
+  bool success =
+      base::Base64Decode(key, proto_result.mutable_x25519_public_key());
+  CHECK(success);
   proto_result.set_version(key_version);
   return proto_result;
 }
