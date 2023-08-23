@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -2164,29 +2165,15 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     base::OnceClosure on_print_preview_done_;
   };
 
-  static TestPrintViewManagerForContentAnalysis* CreateForWebContents(
-      content::WebContents* web_contents) {
-    auto manager =
-        std::make_unique<TestPrintViewManagerForContentAnalysis>(web_contents);
-    auto* manager_ptr = manager.get();
-    web_contents->SetUserData(PrintViewManager::UserDataKey(),
-                              std::move(manager));
-    return manager_ptr;
-  }
-
-  explicit TestPrintViewManagerForContentAnalysis(
-      content::WebContents* web_contents)
-      : TestPrintViewManagerForContentAnalysis(
-            web_contents,
-            /*create_print_job_callback=*/base::DoNothing(),
-            /*composite_for_content_analysis_callback=*/base::DoNothing()) {}
-
   TestPrintViewManagerForContentAnalysis(
       content::WebContents* web_contents,
+      absl::optional<enterprise_connectors::ContentAnalysisRequest::Reason>
+          expected_reason,
       OnDidCreatePrintJobCallback create_print_job_callback,
       OnDidCompositeForContentAnalysis composite_for_content_analysis_callback)
       : TestPrintViewManager(web_contents,
                              std::move(create_print_job_callback)),
+        expected_reason_(expected_reason),
         did_composite_for_content_analysis_callback_(
             std::move(composite_for_content_analysis_callback)) {
     AddTestObserver(observer_);
@@ -2230,6 +2217,11 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     EXPECT_TRUE(params->content->metafile_data_region.IsValid());
     EXPECT_EQ(data.url,
               web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
+    // TODO(http://b/285243428): Change `expected_reason_` to a normal enum
+    // value instead of an optional to check it in every test.
+    if (expected_reason_) {
+      EXPECT_EQ(data.reason, *expected_reason_);
+    }
 
     PrintViewManager::OnGotSnapshotCallback(
         std::move(callback), std::move(data), rfh_id, std::move(params));
@@ -2261,6 +2253,11 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     EXPECT_TRUE(data.settings.block_large_files);
     EXPECT_EQ(data.url,
               web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
+    // TODO(http://b/285243428): Change `expected_reason_` to a normal enum
+    // value instead of an optional to check it in every test.
+    if (expected_reason_) {
+      EXPECT_EQ(data.reason, *expected_reason_);
+    }
 
     // The snapshot should be valid and populated.
     EXPECT_TRUE(LooksLikePdf(page_region.Map().GetMemoryAsSpan<char>()));
@@ -2302,6 +2299,11 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     EXPECT_TRUE(scanning_data.settings.block_large_files);
     EXPECT_EQ(scanning_data.url,
               web_contents()->GetOutermostWebContents()->GetLastCommittedURL());
+    // TODO(http://b/285243428): Change `expected_reason_` to a normal enum
+    // value instead of an optional to check it in every test.
+    if (expected_reason_) {
+      EXPECT_EQ(scanning_data.reason, *expected_reason_);
+    }
 
     // The data of the document should be a valid PDF as this code should be
     // called as the print job is about to start printing.
@@ -2351,6 +2353,12 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   // Indicates whether the preview was allowed after checking against content
   // analysis and DLP (if on CrOS). This is `absl::nullopt` until then.
   absl::optional<bool> preview_allowed_;
+
+  // Used to validate the corresponding `ContentAnalysisDelegate::Data` passed
+  // in various content analysis-related functions. A value of `absl::nullopt`
+  // means the value shouldn't be checked.
+  absl::optional<enterprise_connectors::ContentAnalysisRequest::Reason>
+      expected_reason_;
 
   base::RunLoop preview_run_loop_;
   OnDidCompositeForContentAnalysis did_composite_for_content_analysis_callback_;
@@ -2427,13 +2435,15 @@ class ContentAnalysisPrintBrowserTestBase
 
   TestPrintViewManagerForContentAnalysis*
   SetUpAndReturnPrintViewManagerForContentAnalysis(
-      content::WebContents* web_contents) {
+      content::WebContents* web_contents,
+      absl::optional<enterprise_connectors::ContentAnalysisRequest::Reason>
+          expected_reason) {
     // Safe to use `base::Unretained(this)` since this testing class
     // necessarily must outlive all interactions from the tests which will
     // run through `PrintViewManagerBase`, which is what causes new jobs to
     // be created and use this callback.
     auto manager = std::make_unique<TestPrintViewManagerForContentAnalysis>(
-        web_contents,
+        web_contents, expected_reason,
         base::BindRepeating(
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
             base::Unretained(this)),
@@ -2550,8 +2560,9 @@ class ContentAnalysisScriptedPreviewlessPrintBeforeDialogBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    auto* print_view_manager =
-        SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+    auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+        web_contents,
+        enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
     if (ContentAnalysisAllowsPrint()) {
       if (UseService()) {
@@ -2637,8 +2648,9 @@ class ContentAnalysisScriptedPreviewlessPrintAfterDialogBrowserTest
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    auto* print_view_manager =
-        SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+    auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+        web_contents,
+        enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
     if (ContentAnalysisAllowsPrint()) {
       if (UseService()) {
@@ -2707,8 +2719,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -2774,8 +2787,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -2833,8 +2847,19 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+
+#if BUILDFLAG(IS_WIN)
+  // `PRINT_PREVIEW_PRINT` is expected here since scanning takes place before
+  // the print preview dialog where the system dialog print is selected.
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
+#else
+  // TODO(http://b/285243428): Update expectation once a second analysis scan
+  // isn't done for system print from Print Preview.
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents, absl::nullopt);
+#endif
 
   // Since the content analysis scan happens before the Print Preview dialog,
   // checking behavior when requesting the system print dialog from print
@@ -2964,8 +2989,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
   // Since the content analysis scan happens before the Print Preview dialog,
   // checking behavior when requesting opening in Preview from the print preview
@@ -3036,8 +3062,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
   if (ContentAnalysisAllowsPrint() && UseService()) {
     // The expected events for this are:
@@ -3092,8 +3119,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -3196,8 +3224,9 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -3260,8 +3289,9 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -3342,8 +3372,9 @@ IN_PROC_BROWSER_TEST_P(
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
-  auto* print_view_manager =
-      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
+  auto* print_view_manager = SetUpAndReturnPrintViewManagerForContentAnalysis(
+      web_contents,
+      enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
   if (ContentAnalysisAllowsPrint()) {
     if (UseService()) {
@@ -3431,7 +3462,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisBeforePrintPreviewBrowserTest,
   ASSERT_TRUE(web_contents);
   auto* print_view_manager =
       TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
+          web_contents,
+          enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
   print_view_manager->set_allowed_by_dlp(false);
 
   test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());

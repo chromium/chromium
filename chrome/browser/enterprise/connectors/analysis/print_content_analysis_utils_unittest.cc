@@ -256,6 +256,7 @@ TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforeSystemDialog) {
 
   ASSERT_TRUE(data);
   ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+  ASSERT_EQ(data->reason, ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
   ASSERT_EQ(policy_value() == kLocalPolicy,
             data->settings.cloud_or_local_settings.is_local_analysis());
@@ -294,6 +295,7 @@ TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforePreview) {
   } else {
     ASSERT_TRUE(data);
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -343,6 +345,7 @@ TEST_P(PrintContentAnalysisUtilsTest,
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -398,6 +401,7 @@ TEST_P(PrintContentAnalysisUtilsTest,
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+    ASSERT_EQ(data->reason, ContentAnalysisRequest::SYSTEM_DIALOG_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());
@@ -439,6 +443,7 @@ TEST_P(PrintContentAnalysisUtilsTest,
   if (ExpectPostDialogAnalysis()) {
     ASSERT_TRUE(data);
     ASSERT_EQ(data->settings.block_until_verdict, BlockUntilVerdict::kBlock);
+    ASSERT_EQ(data->reason, ContentAnalysisRequest::PRINT_PREVIEW_PRINT);
 
     ASSERT_EQ(policy_value() == kLocalPolicy,
               data->settings.cloud_or_local_settings.is_local_analysis());

@@ -193,6 +193,23 @@ absl::optional<ContentAnalysisDelegate::Data> GetPrintAnalysisData(
     // every print content analysis workflow.
     RecordPrintType(context, scanning_data);
 
+    switch (context) {
+#if BUILDFLAG(IS_MAC)
+      case PrintScanningContext::kOpenPdfInPreview:
+#endif  // BUILDFLAG(IS_MAC)
+      case PrintScanningContext::kNormalPrintAfterPreview:
+      case PrintScanningContext::kBeforePreview:
+      case PrintScanningContext::kNormalPrintBeforePrintDocument:
+        scanning_data.reason = ContentAnalysisRequest::PRINT_PREVIEW_PRINT;
+        break;
+
+      case PrintScanningContext::kBeforeSystemDialog:
+      case PrintScanningContext::kSystemPrintAfterPreview:
+      case PrintScanningContext::kSystemPrintBeforePrintDocument:
+        scanning_data.reason = ContentAnalysisRequest::SYSTEM_DIALOG_PRINT;
+        break;
+    }
+
     return scanning_data;
   }
 
