@@ -373,17 +373,9 @@ void PostProcessFoundTasks(Profile* profile,
     // app. We want both tasks to be available, so add the office task if the
     // WebDrive task is available.
     // TODO(petermarshall): Find a better way to enable both tasks.
-    auto it = base::ranges::find_if(
-        resulting_tasks->tasks, [](const FullTaskDescriptor& task) {
-          if (!IsFilesAppId(task.task_descriptor.app_id)) {
-            return false;
-          }
-          std::string action_id =
-              ParseFilesAppActionId(task.task_descriptor.action_id);
-          return action_id == kActionIdWebDriveOfficeWord ||
-                 action_id == kActionIdWebDriveOfficeExcel ||
-                 action_id == kActionIdWebDriveOfficePowerPoint;
-        });
+    auto it =
+        base::ranges::find_if(resulting_tasks->tasks, &IsWebDriveOfficeTask,
+                              &FullTaskDescriptor::task_descriptor);
     if (it != resulting_tasks->tasks.end()) {
       FullTaskDescriptor office_task(*it);
       office_task.task_descriptor.action_id =
@@ -1209,6 +1201,17 @@ void ChooseAndSetDefaultTask(Profile* profile,
   // is available for Office files, set as default.
   for (FullTaskDescriptor& task : tasks) {
     if (IsWebDriveOfficeTask(task.task_descriptor)) {
+      task.is_default = true;
+      return;
+    }
+  }
+
+  // No default task. If the "Open in Microsoft 365" workflow is available for
+  // Office files, set as default.
+  // This step only makes sense in the enterprise environment when the
+  // corresponding Google workflow above is disabled by policy.
+  for (FullTaskDescriptor& task : tasks) {
+    if (IsOpenInOfficeTask(task.task_descriptor)) {
       task.is_default = true;
       return;
     }
