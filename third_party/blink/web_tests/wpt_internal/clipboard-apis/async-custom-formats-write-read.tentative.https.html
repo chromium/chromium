@@ -3,18 +3,17 @@
 <title>Async Clipboard custom format write -> Async Clipboard custom format read test</title>
 <link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
 <body>Body needed for test_driver.click()</body>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../../http/tests/resources/permissions-helper.js"></script>
-<script src="../../resources/testdriver.js"></script>
-<script src="../../resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/user-activation.js"></script>
 <script>
 'use strict';
 
 promise_test(async t => {
-  await PermissionsHelper.setPermission('clipboard-read-write', 'granted');
-  await PermissionsHelper.setPermission('clipboard-sanitized-write',
+  await test_driver.set_permission({name: 'clipboard-write', allowWithoutSanitization: true}, 'granted');
+  await test_driver.set_permission({name: 'clipboard-write', allowWithoutSanitization: false},
                                         'granted');
   const format1 = 'web application/x-custom-format-clipboard-test-format-1';
   const format2 = 'web application/x-custom-format-clipboard-test-format-2';
