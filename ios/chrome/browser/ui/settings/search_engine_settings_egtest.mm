@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -41,9 +42,9 @@ std::unique_ptr<net::test_server::HttpResponse> SearchResponse(
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
-  if (request.GetURL().path().find(kGoogleURL) != std::string::npos) {
+  if (base::Contains(request.GetURL().path(), kGoogleURL)) {
     http_response->set_content("<body>" + std::string(kGoogleURL) + "</body>");
-  } else if (request.GetURL().path().find(kYahooURL) != std::string::npos) {
+  } else if (base::Contains(request.GetURL().path(), kYahooURL)) {
     http_response->set_content("<body>" + std::string(kYahooURL) + "</body>");
   }
   return std::move(http_response);

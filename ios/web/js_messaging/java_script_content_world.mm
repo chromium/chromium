@@ -5,6 +5,7 @@
 #import "ios/web/js_messaging/java_script_content_world.h"
 
 #import "base/check_op.h"
+#import "base/containers/contains.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/js_messaging/web_view_js_utils.h"
@@ -66,7 +67,7 @@ WKContentWorld* JavaScriptContentWorld::GetWKContentWorld() {
 JavaScriptContentWorld::~JavaScriptContentWorld() {}
 
 bool JavaScriptContentWorld::HasFeature(const JavaScriptFeature* feature) {
-  return features_.find(feature) != features_.end();
+  return base::Contains(features_, feature);
 }
 
 void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {

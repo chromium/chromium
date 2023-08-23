@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_orderer.h"
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -286,7 +287,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 - (void)recordClickForDestination:(overflow_menu::Destination)destination {
   _untappedDestinations.erase(destination);
 
-  if (_destinationBadgeData.find(destination) != _destinationBadgeData.end() &&
+  if (base::Contains(_destinationBadgeData, destination) &&
       !_destinationBadgeData[destination].isFeatureDrivenBadge) {
     _destinationBadgeData.erase(destination);
   }
@@ -787,8 +788,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
 
     // If item is badged with impressions remaining, it should be reordered to
     // a specific position and will be added later.
-    if (_destinationBadgeData.find(destination) !=
-            _destinationBadgeData.end() &&
+    if (base::Contains(_destinationBadgeData, destination) &&
         _destinationBadgeData[destination].impressionsRemaining > 0) {
       continue;
     }
@@ -1005,8 +1005,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
   for (overflow_menu::Destination newDestination : newDestinations) {
     _untappedDestinations.insert(newDestination);
 
-    if (_destinationBadgeData.find(newDestination) ==
-        _destinationBadgeData.end()) {
+    if (!base::Contains(_destinationBadgeData, newDestination)) {
       _destinationBadgeData[newDestination].badgeType = BadgeTypeNew;
       _destinationBadgeData[newDestination].impressionsRemaining = 3;
     }
@@ -1040,8 +1039,7 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       // If this is a new badge, the current badge is not feature driven, or the
       // badge from the provider is different than the current, then update the
       // data. Otherwise, the badge is already known about.
-      if (_destinationBadgeData.find(destination) ==
-              _destinationBadgeData.end() ||
+      if (!base::Contains(_destinationBadgeData, destination) ||
           !_destinationBadgeData[destination].isFeatureDrivenBadge ||
           badgeType != _destinationBadgeData[destination].badgeType) {
         _destinationBadgeData[destination].badgeType = badgeType;

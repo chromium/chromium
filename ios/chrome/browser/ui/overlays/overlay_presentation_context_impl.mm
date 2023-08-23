@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
@@ -289,8 +290,9 @@ UIViewController* OverlayPresentationContextImpl::GetBaseViewController(
 
 OverlayRequestUIState* OverlayPresentationContextImpl::GetRequestUIState(
     OverlayRequest* request) const {
-  if (!request || states_.find(request) == states_.end())
+  if (!request || !base::Contains(states_, request)) {
     return nullptr;
+  }
   return states_.at(request).get();
 }
 

@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/check_op.h"
+#import "base/containers/contains.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "ios/net/ios_net_buildflags.h"
@@ -61,7 +62,7 @@ void CookieCreationTimeManager::SetCreationTime(
     NSHTTPCookie* cookie,
     const base::Time& creation_time) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(unique_times_.find(creation_time) == unique_times_.end());
+  DCHECK(!base::Contains(unique_times_, creation_time));
 
   // If the cookie overrides an existing cookie, remove its creation time.
   auto it = creation_times_.find(GetCookieUniqueID(cookie));

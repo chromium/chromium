@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -99,7 +100,7 @@ class UserAgentResponseProvider : public web::DataResponseProvider {
     }
 
     std::string purge_additions = "";
-    if (request.url.path().find(kPurgeURL) != std::string::npos) {
+    if (base::Contains(request.url.path(), kPurgeURL)) {
       purge_additions = kJavaScriptReload;
     }
 

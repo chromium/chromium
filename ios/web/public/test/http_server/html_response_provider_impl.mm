@@ -4,6 +4,7 @@
 
 #import "ios/web/public/test/http_server/html_response_provider_impl.h"
 
+#import "base/containers/contains.h"
 #import "ios/web/public/test/http_server/response_provider.h"
 #import "net/http/http_response_headers.h"
 #import "net/http/http_status_code.h"
@@ -87,7 +88,7 @@ HtmlResponseProviderImpl::~HtmlResponseProviderImpl() {}
 
 bool HtmlResponseProviderImpl::CanHandleRequest(
     const web::ResponseProvider::Request& request) {
-  return responses_.find(request.url) != responses_.end();
+  return base::Contains(responses_, request.url);
 }
 
 void HtmlResponseProviderImpl::GetResponseHeadersAndBody(

@@ -9,6 +9,7 @@
 #import <set>
 
 #import "base/check_op.h"
+#import "base/containers/contains.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
@@ -33,7 +34,7 @@ int FindIndexOfNextNonRemovedWebStateOpenedBy(
     }
 
     // All children are going to be removed, fallback to the next heuristic.
-    if (children.find(child_index) != children.end()) {
+    if (base::Contains(children, child_index)) {
       break;
     }
 

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -15,33 +16,25 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace {
-
-bool Contains(const std::string& source, const std::string& target) {
-  return source.find(target) != std::string::npos;
-}
-
-}  // namespace
-
 void TestParams(update_client::UpdateQueryParams::ProdId prod_id) {
   std::string params = update_client::UpdateQueryParams::Get(prod_id);
 
-  EXPECT_TRUE(Contains(
+  EXPECT_TRUE(base::Contains(
       params,
       base::StrCat({"os=", update_client::UpdateQueryParams::GetOS()})));
-  EXPECT_TRUE(Contains(
+  EXPECT_TRUE(base::Contains(
       params,
       base::StrCat({"arch=", update_client::UpdateQueryParams::GetArch()})));
-  EXPECT_TRUE(Contains(
+  EXPECT_TRUE(base::Contains(
       params,
       base::StrCat({"prod=", update_client::UpdateQueryParams::GetProdIdString(
                                  prod_id)})));
-  EXPECT_TRUE(
-      Contains(params, base::StrCat({"prodchannel=", GetChannelString()})));
-  EXPECT_TRUE(Contains(
+  EXPECT_TRUE(base::Contains(
+      params, base::StrCat({"prodchannel=", GetChannelString()})));
+  EXPECT_TRUE(base::Contains(
       params,
       base::StrCat({"prodversion=", version_info::GetVersionNumber()})));
-  EXPECT_TRUE(Contains(
+  EXPECT_TRUE(base::Contains(
       params,
       base::StrCat({"lang=", IOSChromeUpdateQueryParamsDelegate::GetLang()})));
 }

@@ -7,6 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
@@ -1816,8 +1817,8 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
     if (_documentURL.DeprecatedGetOriginAsURL() !=
         newURL.DeprecatedGetOriginAsURL()) {
       if (!_documentURL.host().empty() &&
-          (newURL.username().find(_documentURL.host()) != std::string::npos ||
-           newURL.password().find(_documentURL.host()) != std::string::npos)) {
+          (base::Contains(newURL.username(), _documentURL.host()) ||
+           base::Contains(newURL.password(), _documentURL.host()))) {
         CHECK(false);
       }
     }

@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/contains.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 namespace web {
@@ -119,7 +120,7 @@ bool JavaScriptFindInPageRequest::GoToPreviousMatch() {
 
 int JavaScriptFindInPageRequest::GetMatchCountForFrame(
     const std::string& frame_id) {
-  if (frame_match_count_.find(frame_id) == frame_match_count_.end()) {
+  if (!base::Contains(frame_match_count_, frame_id)) {
     return -1;
   }
   return frame_match_count_[frame_id];

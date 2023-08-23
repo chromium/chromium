@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 
+#import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/metrics/metrics_pref_names.h"
@@ -34,10 +35,9 @@ std::string portForRewrite;
 
 bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   DCHECK(url);
-  for (std::string host : listHosts) {
-    if (url->host().find(host) != std::string::npos) {
-      *url =
-          GURL(std::string("http://127.0.0.1:") + portForRewrite + "/" + host);
+  for (const std::string& host : listHosts) {
+    if (base::Contains(url->host(), host)) {
+      *url = GURL("http://127.0.0.1:" + portForRewrite + "/" + host);
       return true;
     }
   }

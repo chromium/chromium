@@ -542,8 +542,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   if (clipboard_content_types.has_value()) {
     std::set<ClipboardContentType> clipboard_content_types_values =
         clipboard_content_types.value();
-    if (clipboard_content_types_values.find(ClipboardContentType::Image) !=
-        clipboard_content_types_values.end()) {
+    if (base::Contains(clipboard_content_types_values,
+                       ClipboardContentType::Image)) {
       // Either add an option to search the copied image with Lens, or via the
       // default search engine's reverse image search functionality.
       if (self.shouldUseLensInLongPressMenu) {
@@ -569,8 +569,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                               handler:searchCopiedImageHandler];
         [menuElements addObject:searchCopiedImageAction];
       }
-    } else if (clipboard_content_types_values.find(ClipboardContentType::URL) !=
-               clipboard_content_types_values.end()) {
+    } else if (base::Contains(clipboard_content_types_values,
+                              ClipboardContentType::URL)) {
       id visitCopiedLinkHandler = ^(UIAction* action) {
         [self visitCopiedLink:nil];
       };
@@ -580,9 +580,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
                identifier:nil
                   handler:visitCopiedLinkHandler];
       [menuElements addObject:visitCopiedLinkAction];
-    } else if (clipboard_content_types_values.find(
-                   ClipboardContentType::Text) !=
-               clipboard_content_types_values.end()) {
+    } else if (base::Contains(clipboard_content_types_values,
+                              ClipboardContentType::Text)) {
       id searchCopiedTextHandler = ^(UIAction* action) {
         [self searchCopiedText:nil];
       };

@@ -4,6 +4,8 @@
 
 #import "ios/web/public/web_state_delegate.h"
 
+#import "base/containers/contains.h"
+
 namespace web {
 
 WebStateDelegate::WebStateDelegate() {}
@@ -61,12 +63,12 @@ UIView* WebStateDelegate::GetWebViewContainer(WebState* source) {
 }
 
 void WebStateDelegate::Attach(WebState* source) {
-  DCHECK(attached_states_.find(source) == attached_states_.end());
+  DCHECK(!base::Contains(attached_states_, source));
   attached_states_.insert(source);
 }
 
 void WebStateDelegate::Detach(WebState* source) {
-  DCHECK(attached_states_.find(source) != attached_states_.end());
+  DCHECK(base::Contains(attached_states_, source));
   attached_states_.erase(source);
 }
 

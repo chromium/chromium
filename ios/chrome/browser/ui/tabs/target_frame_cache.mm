@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/tabs/target_frame_cache.h"
 
+#import "base/containers/contains.h"
+
 TargetFrameCache::TargetFrameCache() {}
 
 TargetFrameCache::~TargetFrameCache() {}
@@ -25,5 +27,5 @@ CGRect TargetFrameCache::GetFrame(UIView* view) {
 }
 
 bool TargetFrameCache::HasFrame(UIView* view) {
-  return targetFrames_.find(view) != targetFrames_.end();
+  return base::Contains(targetFrames_, view);
 }

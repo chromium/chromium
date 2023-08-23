@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
@@ -103,7 +104,7 @@ bool IsWebViewContainingText(web::WebState* web_state,
       web::test::ExecuteJavaScript(web_state, kGetDocumentBodyJavaScript);
   std::string body;
   if (value && value->is_string()) {
-    return value->GetString().find(text) != std::string::npos;
+    return base::Contains(value->GetString(), text);
   }
   return false;
 }

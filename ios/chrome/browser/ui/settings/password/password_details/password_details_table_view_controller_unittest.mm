@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -622,8 +623,8 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
         // called with a URL argument which matches the initial URL passed to
         // the password form above. Information may have been appended to the
         // URL argument, so we only make sure it includes the initial URL.
-        return (((OpenNewTabCommand*)value).URL.spec().find(kExampleCom) !=
-                std::string::npos);
+        return base::Contains(((OpenNewTabCommand*)value).URL.spec(),
+                              kExampleCom);
       }]]);
   [password_details tableView:password_details.tableView
       didSelectRowAtIndexPath:indexPath];

@@ -5,6 +5,7 @@
 #import <XCTest/XCTest.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/contains.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -83,7 +84,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
   if (request.relative_url == kHeaderPageURL) {
     std::string result = kHeaderPageFailure;
-    if (request.headers.find("X-Client-Data") != request.headers.end()) {
+    if (base::Contains(request.headers, "X-Client-Data")) {
       result = kHeaderPageSuccess;
     }
     http_response->set_content("<html><body>" + result + "</body></html>");

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_mediator.h"
 
+#import "base/containers/contains.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -475,14 +476,14 @@
         clipboardContentType.value();
 
     if (search_engines::SupportsSearchByImage(self.templateURLService) &&
-        clipboardContentTypeValues.find(ClipboardContentType::Image) !=
-            clipboardContentTypeValues.end()) {
+        base::Contains(clipboardContentTypeValues,
+                       ClipboardContentType::Image)) {
       return [self.actionFactory actionToSearchCopiedImage];
-    } else if (clipboardContentTypeValues.find(ClipboardContentType::URL) !=
-               clipboardContentTypeValues.end()) {
+    } else if (base::Contains(clipboardContentTypeValues,
+                              ClipboardContentType::URL)) {
       return [self.actionFactory actionToSearchCopiedURL];
-    } else if (clipboardContentTypeValues.find(ClipboardContentType::Text) !=
-               clipboardContentTypeValues.end()) {
+    } else if (base::Contains(clipboardContentTypeValues,
+                              ClipboardContentType::Text)) {
       return [self.actionFactory actionToSearchCopiedText];
     }
   }

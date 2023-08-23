@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/format_macros.h"
 #include "base/i18n/number_formatting.h"
 #include "base/memory/ref_counted_memory.h"
@@ -136,7 +137,7 @@ void AboutUIHTMLSource::StartDataRequest(
     for (base::HistogramBase* histogram : base::StatisticsRecorder::Sort(
              base::StatisticsRecorder::GetHistograms())) {
       std::string histogram_name = histogram->histogram_name();
-      if (histogram_name.find(path) == std::string::npos) {
+      if (!base::Contains(histogram_name, path)) {
         continue;
       }
       base::Value::Dict histogram_dict = histogram->ToGraphDict();

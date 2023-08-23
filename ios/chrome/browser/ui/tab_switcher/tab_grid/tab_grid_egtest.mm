@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/containers/contains.h"
 #import "base/format_macros.h"
 #import "base/i18n/message_formatter.h"
 #import "base/ios/ios_util.h"
@@ -267,7 +268,7 @@ class EchoURLDefaultSearchEngineResponseProvider
 
 bool EchoURLDefaultSearchEngineResponseProvider::CanHandleRequest(
     const Request& request) {
-  return request.url.spec().find(kSearchEngineHost) != std::string::npos;
+  return base::Contains(request.url.spec(), kSearchEngineHost);
 }
 
 void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(

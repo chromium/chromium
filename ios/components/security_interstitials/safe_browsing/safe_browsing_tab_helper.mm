@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/containers/contains.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
@@ -155,8 +156,7 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
         web_state()->GetNavigationManager()->GetLastCommittedItem();
     return !last_committed_item ||
            last_committed_item->GetUniqueID() != query.main_frame_item_id ||
-           pending_sub_frame_queries_.find(url) ==
-               pending_sub_frame_queries_.end();
+           !base::Contains(pending_sub_frame_queries_, url);
   }
 }
 
@@ -209,12 +209,12 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowRequest(
   // Track all pending URL queries.
   bool is_main_frame = request_info.target_frame_is_main;
   if (is_main_frame) {
-    if (pending_main_frame_query_)
+    if (pending_main_frame_query_) {
       previous_main_frame_query_ = std::move(pending_main_frame_query_);
+    }
 
     pending_main_frame_query_ = MainFrameUrlQuery(request_url);
-  } else if (pending_sub_frame_queries_.find(request_url) ==
-             pending_sub_frame_queries_.end()) {
+  } else if (!base::Contains(pending_sub_frame_queries_, request_url)) {
     pending_sub_frame_queries_.insert({request_url, SubFrameUrlQuery()});
   }
 
@@ -435,8 +435,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnSubFrameUrlQueryDecided(
       navigation_manager->GetLastCommittedItem();
 
   // The URL check is expected to have been registered for the sub frame.
-  DCHECK(pending_sub_frame_queries_.find(url) !=
-         pending_sub_frame_queries_.end());
+  DCHECK(base::Contains(pending_sub_frame_queries_, url));
 
   // Store the decision for `url` and run all the response callbacks that have
   // been received before the URL check completion.
