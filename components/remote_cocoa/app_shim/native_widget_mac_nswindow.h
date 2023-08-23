@@ -52,10 +52,14 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // https://crbug.com/960904
 - (void)enforceNeverMadeVisible;
 
-// Order window for all cases, including for children windows that
-// -[NSWindow orderWindow:] can't properly handle.
-- (void)reallyOrderWindow:(NSWindowOrderingMode)place
-               relativeTo:(NSInteger)otherWin;
+// `- [NSWindow orderWindow:]` does not have any effect when called on child
+// windows. If you need to order a child window, use this method. Important:
+// this method adds or removes children from the parent. If you're observing
+// events related to adding or removing children, this could lead to issues. To
+// check whether ordering is currently in progress, inspect the
+// `isShufflingForOrdering` property on the child window.
+- (void)orderWindowByShuffling:(NSWindowOrderingMode)place
+                    relativeTo:(NSInteger)otherWin;
 
 // Order the window to the front (space switch if necessary), and ensure that
 // the window maintains its key state. A space switch will normally activate a
@@ -94,6 +98,10 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 
 // Whether this window is headless.
 @property(assign, nonatomic) BOOL isHeadless;
+
+// Whether this window is currently being added to and removed from parent for
+// ordering.
+@property(assign, nonatomic) BOOL isShufflingForOrdering;
 
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);

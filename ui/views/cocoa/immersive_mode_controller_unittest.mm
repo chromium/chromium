@@ -13,18 +13,41 @@
 #include "components/remote_cocoa/app_shim/bridged_content_view.h"
 #include "components/remote_cocoa/app_shim/immersive_mode_tabbed_controller.h"
 #include "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #import "ui/base/cocoa/window_size_constants.h"
 #import "ui/base/test/cocoa_helper.h"
 
 namespace {
-const double kBrowserHeight = 200;
-const double kBrowserWidth = 400;
-const double kOverlayViewHeight = 100;
-const double kOverlayViewWidth = kBrowserWidth;
-const double kTabOverlayViewHeight = 50;
-const double kTabOverlayViewWidth = kBrowserWidth;
-const double kTitlebarHeight = 28;
+
+constexpr float kBrowserHeight = 200;
+constexpr float kBrowserWidth = 400;
+constexpr float kOverlayViewHeight = 100;
+constexpr float kOverlayViewWidth = kBrowserWidth;
+constexpr float kTabOverlayViewHeight = 50;
+constexpr float kTabOverlayViewWidth = kBrowserWidth;
+constexpr float kPopupHeight = 100;
+constexpr float kPopupWidth = kPopupHeight;
+constexpr float kTitlebarHeight = 28;
+
+NativeWidgetMacNSWindow* CreateNativeWidgetMacNSWindow(
+    CGFloat width,
+    CGFloat height,
+    NSWindowStyleMask style_mask = NSWindowStyleMaskBorderless) {
+  NativeWidgetMacNSWindow* window = [[NativeWidgetMacNSWindow alloc]
+      initWithContentRect:ui::kWindowSizeDeterminedLater
+                styleMask:style_mask
+                  backing:NSBackingStoreBuffered
+                    defer:NO];
+  window.releasedWhenClosed = NO;
+  [window setFrame:NSMakeRect(0, 0, width, height) display:YES];
+  window.contentView = [[BridgedContentView alloc] initWithBridge:nullptr
+                                                           bounds:gfx::Rect()];
+  [window.contentView setFrame:NSMakeRect(0, 0, width, height)];
+
+  return window;
 }
+
+}  // namespace
 
 namespace remote_cocoa {
 
@@ -41,49 +64,21 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     ui::CocoaTest::SetUp();
 
     // Create a blank browser window.
-    browser_ =
-        [[NSWindow alloc] initWithContentRect:ui::kWindowSizeDeterminedLater
-                                    styleMask:NSWindowStyleMaskTitled |
-                                              NSWindowStyleMaskClosable |
-                                              NSWindowStyleMaskMiniaturizable |
-                                              NSWindowStyleMaskResizable
-                                      backing:NSBackingStoreBuffered
-                                        defer:NO];
-    browser_.releasedWhenClosed = NO;
-    [browser_ setFrame:NSMakeRect(0, 0, kBrowserWidth, kBrowserHeight)
-               display:YES];
+    browser_ = CreateNativeWidgetMacNSWindow(
+        kBrowserWidth, kBrowserHeight,
+        NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
+            NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable);
     [browser_ orderBack:nil];
 
     // Create a blank overlay window.
-    overlay_ = [[NativeWidgetMacNSWindow alloc]
-        initWithContentRect:ui::kWindowSizeDeterminedLater
-                  styleMask:NSWindowStyleMaskBorderless
-                    backing:NSBackingStoreBuffered
-                      defer:NO];
-    overlay_.releasedWhenClosed = NO;
-    [overlay_ setFrame:NSMakeRect(0, 0, kOverlayViewWidth, kOverlayViewHeight)
-               display:YES];
-    overlay_.contentView =
-        [[BridgedContentView alloc] initWithBridge:nullptr bounds:gfx::Rect()];
-    [overlay_.contentView
-        setFrame:NSMakeRect(0, 0, kOverlayViewWidth, kOverlayViewHeight)];
+    overlay_ =
+        CreateNativeWidgetMacNSWindow(kOverlayViewWidth, kOverlayViewHeight);
     [browser_ addChildWindow:overlay_ ordered:NSWindowAbove];
     EXPECT_EQ(overlay_.isVisible, YES);
 
     // Create a blank tab overlay window as a child of overlay window.
-    tab_overlay_ = [[NativeWidgetMacNSWindow alloc]
-        initWithContentRect:ui::kWindowSizeDeterminedLater
-                  styleMask:NSWindowStyleMaskBorderless
-                    backing:NSBackingStoreBuffered
-                      defer:NO];
-    tab_overlay_.releasedWhenClosed = NO;
-    [tab_overlay_
-        setFrame:NSMakeRect(0, 0, kTabOverlayViewWidth, kTabOverlayViewHeight)
-         display:YES];
-    tab_overlay_.contentView =
-        [[BridgedContentView alloc] initWithBridge:nullptr bounds:gfx::Rect()];
-    [tab_overlay_.contentView
-        setFrame:NSMakeRect(0, 0, kTabOverlayViewWidth, kTabOverlayViewHeight)];
+    tab_overlay_ = CreateNativeWidgetMacNSWindow(kTabOverlayViewWidth,
+                                                 kTabOverlayViewHeight);
     [overlay_ addChildWindow:tab_overlay_ ordered:NSWindowAbove];
     EXPECT_EQ(tab_overlay_.isVisible, YES);
   }
@@ -101,14 +96,14 @@ class CocoaImmersiveModeControllerTest : public ui::CocoaTest {
     ui::CocoaTest::TearDown();
   }
 
-  NSWindow* browser() { return browser_; }
-  NSWindow* overlay() { return overlay_; }
-  NSWindow* tab_overlay() { return tab_overlay_; }
+  NativeWidgetMacNSWindow* browser() { return browser_; }
+  NativeWidgetMacNSWindow* overlay() { return overlay_; }
+  NativeWidgetMacNSWindow* tab_overlay() { return tab_overlay_; }
 
  private:
-  NSWindow* __strong browser_;
-  NSWindow* __strong overlay_;
-  NSWindow* __strong tab_overlay_;
+  NativeWidgetMacNSWindow* __strong browser_;
+  NativeWidgetMacNSWindow* __strong overlay_;
+  NativeWidgetMacNSWindow* __strong tab_overlay_;
 };
 
 // Test ImmersiveModeController construction and destruction.
@@ -343,7 +338,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindow) {
       mojom::ToolbarVisibilityStyle::kAutohide);
 
   // Create a popup.
-  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  NSWindow* popup = CreateNativeWidgetMacNSWindow(kPopupWidth, kPopupHeight);
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
 
   // Add the popup as a child of tab_overlay.
@@ -366,7 +361,7 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   immersive_mode_controller->FullscreenTransitionCompleted();
 
   // Create a popup.
-  CocoaTestHelperWindow* popup = [[CocoaTestHelperWindow alloc] init];
+  NSWindow* popup = CreateNativeWidgetMacNSWindow(kPopupWidth, kPopupHeight);
   EXPECT_EQ(immersive_mode_controller->reveal_lock_count(), 0);
 
   // Add the popup as a child of overlay.
@@ -375,6 +370,41 @@ TEST_F(CocoaImmersiveModeControllerTest, TabbedChildWindowZOrder) {
   // Make sure the tab overlay window stays on z-order top.
   EXPECT_EQ(overlay().childWindows.lastObject, tab_overlay());
 
+  [popup close];
+}
+
+class MockImmersiveModeTabbedController : public ImmersiveModeTabbedController {
+ public:
+  MockImmersiveModeTabbedController(NativeWidgetMacNSWindow* browser_window,
+                                    NativeWidgetMacNSWindow* overlay_window,
+                                    NativeWidgetMacNSWindow* tab_window)
+      : ImmersiveModeTabbedController(browser_window,
+                                      overlay_window,
+                                      tab_window) {}
+  MOCK_METHOD(void, RevealLock, (), (override));
+  MOCK_METHOD(void, RevealUnlock, (), (override));
+};
+
+TEST_F(CocoaImmersiveModeControllerTest, NoRevealUnlockDuringChildReordering) {
+  // Controller under test.
+  testing::StrictMock<MockImmersiveModeTabbedController>
+      immersive_mode_controller(browser(), overlay(), tab_overlay());
+  immersive_mode_controller.Enable();
+  immersive_mode_controller.FullscreenTransitionCompleted();
+
+  // Create a popup.
+  NSWindow* popup = CreateNativeWidgetMacNSWindow(100, 100);
+
+  // Add the popup as a child of overlay.
+  // Reveal lock once on child add.
+  EXPECT_CALL(immersive_mode_controller, RevealLock()).Times(1);
+  [overlay() addChildWindow:popup ordered:NSWindowAbove];
+
+  // During re-ordering, no reveal lock or unlock should happen.
+  [overlay() orderWindowByShuffling:NSWindowAbove relativeTo:0];
+
+  // Reveal unlock once on child removal.
+  EXPECT_CALL(immersive_mode_controller, RevealUnlock()).Times(1);
   [popup close];
 }
 

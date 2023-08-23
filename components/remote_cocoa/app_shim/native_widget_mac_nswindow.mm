@@ -202,6 +202,7 @@ struct ChildWindowOrderingCommand {
   BOOL _preventKeyWindow;
   BOOL _isTooltip;
   BOOL _isHeadless;
+  BOOL _isShufflingForOrdering;
   BOOL _miniaturizationInProgress;
   BOOL _isOrderingOut;
 }
@@ -209,6 +210,7 @@ struct ChildWindowOrderingCommand {
 @synthesize bridge = _bridge;
 @synthesize isTooltip = _isTooltip;
 @synthesize isHeadless = _isHeadless;
+@synthesize isShufflingForOrdering = _isShufflingForOrdering;
 @synthesize childWindowAddedHandler = _childWindowAddedHandler;
 @synthesize childWindowRemovedHandler = _childWindowRemovedHandler;
 @synthesize commandDispatchParentOverride = _commandDispatchParentOverride;
@@ -267,6 +269,10 @@ struct ChildWindowOrderingCommand {
 // Overridden to ensure that removing a child window does not trigger a Space
 // change, and to perform post-removal operations.
 - (void)removeChildWindow:(NSWindow*)childWindow {
+  if (self != childWindow.parentWindow) {
+    return;
+  }
+
   // For any non-Chrome windows (i.e. those created by the frameworks),
   // remove as usual. Also continue as usual if we're on the active space,
   // or we happen to be a child of another window.
@@ -506,8 +512,8 @@ struct ChildWindowOrderingCommand {
   [super sendEvent:event];
 }
 
-- (void)reallyOrderWindow:(NSWindowOrderingMode)orderingMode
-               relativeTo:(NSInteger)otherWindowNumber {
+- (void)orderWindowByShuffling:(NSWindowOrderingMode)orderingMode
+                    relativeTo:(NSInteger)otherWindowNumber {
   NativeWidgetMacNSWindow* parent =
       static_cast<NativeWidgetMacNSWindow*>([self parentWindow]);
 
@@ -532,6 +538,8 @@ struct ChildWindowOrderingCommand {
     return;
   }
 
+  base::AutoReset<BOOL> shuffling(&_isShufflingForOrdering, YES);
+
   // `otherWindow` is nil if `otherWindowNumber` is 0. In this case, place
   // `self` at the top / bottom, depending on `orderingMode`.
   NSWindow* otherWindow = [NSApp windowWithWindowNumber:otherWindowNumber];
@@ -548,7 +556,7 @@ struct ChildWindowOrderingCommand {
 // hardly ever calls display, and reports -[NSWindow isVisible] incorrectly
 // when ordering in a window for the first time.
 // Note that this methods has no effect for children windows. Use
-// -reallyOrderWindow:relativeTo: instead.
+// -orderWindowByShuffling:relativeTo: instead.
 - (void)orderWindow:(NSWindowOrderingMode)orderingMode
          relativeTo:(NSInteger)otherWindowNumber {
   [super orderWindow:orderingMode relativeTo:otherWindowNumber];
@@ -867,8 +875,8 @@ struct ChildWindowOrderingCommand {
 
 - (void)processChildWindowOrderingCommands {
   for (const auto& command : _windowOrderingCommands) {
-    [self reallyOrderWindow:command.windowOrderingMode
-                 relativeTo:command.otherWindowNumber];
+    [self orderWindowByShuffling:command.windowOrderingMode
+                      relativeTo:command.otherWindowNumber];
   }
   _windowOrderingCommands.clear();
 }

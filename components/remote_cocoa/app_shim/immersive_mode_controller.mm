@@ -384,22 +384,36 @@ BridgedContentView* ImmersiveModeController::overlay_content_view() {
 }
 
 void ImmersiveModeController::OnChildWindowAdded(NSWindow* child) {
-  // When windows are re-ordered they get removed and re-added triggering
-  // OnChildWindowRemoved and OnChildWindowAdded calls.
-  // Prevent any given window from obtaining more than one lock.
-  if (!base::Contains(window_lock_received_, child)) {
-    window_lock_received_.insert(child);
-    RevealLock();
+  // Skip applying the reveal lock if the window is in the process of being
+  // re-ordered, as this may inadvertently trigger a recursive re-ordering.
+  // This is because changing the titlebar visibility (which reveal lock does)
+  // can itself initiate another window re-ordering, causing this method to be
+  // re-entered.
+  if (((NativeWidgetMacNSWindow*)child).isShufflingForOrdering) {
+    return;
   }
+  // TODO(kerenzhu): the sole purpose of `window_lock_received_` is to
+  // verify that we don't lock twice for a single window.
+  // We can remove it once this is verified.
+  CHECK(!base::Contains(window_lock_received_, child));
+  window_lock_received_.insert(child);
+  RevealLock();
 
   // TODO(https://crbug.com/1350595): Handle a detached find bar.
 }
 
 void ImmersiveModeController::OnChildWindowRemoved(NSWindow* child) {
-  if (base::Contains(window_lock_received_, child)) {
-    window_lock_received_.erase(child);
-    RevealUnlock();
+  // Skip applying the reveal lock if the window is in the process of being
+  // re-ordered, as this may inadvertently trigger a recursive re-ordering.
+  // This is because changing the titlebar visibility (which reveal lock does)
+  // can itself initiate another window re-ordering, causing this method to be
+  // re-entered.
+  if (((NativeWidgetMacNSWindow*)child).isShufflingForOrdering) {
+    return;
   }
+  CHECK(base::Contains(window_lock_received_, child));
+  window_lock_received_.erase(child);
+  RevealUnlock();
 }
 
 void ImmersiveModeController::RevealLock() {
