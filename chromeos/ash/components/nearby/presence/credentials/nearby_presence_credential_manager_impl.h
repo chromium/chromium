@@ -152,6 +152,7 @@ class NearbyPresenceCredentialManagerImpl
   void HandleFirstTimeRegistrationTimeout();
   void HandleFirstTimeRegistrationFailure(ash::nearby::NearbyHttpResult result);
   void OnRegistrationRpcSuccess(
+      base::TimeTicks registration_request_start_time,
       const ash::nearby::proto::UpdateDeviceResponse& response);
   void OnRegistrationRpcFailure(ash::nearby::NearbyHttpError error);
 

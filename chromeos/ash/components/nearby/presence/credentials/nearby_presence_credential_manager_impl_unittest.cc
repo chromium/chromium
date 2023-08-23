@@ -398,6 +398,10 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, RegistrationSuccess) {
       "Nearby.Presence.Credentials.FirstTimeServerRegistration."
       "AttemptsNeededCount",
       /*bucket: attempt_count=*/1, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "ServerRequestDuration",
+      1);
   histogram_tester_.ExpectBucketCount(
       "Nearby.Presence.Credentials.Upload.Result", /*bucket: success=*/true, 1);
   histogram_tester_.ExpectTotalCount(
@@ -444,6 +448,10 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationTimeout) {
       "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
       /*bucket: NearbyHttpResult::kTimeout*/
       ash::nearby::NearbyHttpResult::kTimeout, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "ServerRequestDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
@@ -472,6 +480,10 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
       "Nearby.Presence.Credentials.FirstTimeServerRegistration.FailureReason",
       /*bucket: NearbyHttpResult::kHttpErrorInternalServerError*/
       ash::nearby::NearbyHttpResult::kHttpErrorInternalServerError, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "ServerRequestDuration",
+      0);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
@@ -489,6 +501,10 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
   histogram_tester_.ExpectBucketCount(
       "Nearby.Presence.Credentials.FirstTimeRegistration.Result",
       /*bucket: kLocalCredentialGenerationFailure=*/2, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "ServerRequestDuration",
+      1);
 }
 
 TEST_F(NearbyPresenceCredentialManagerImplTest,

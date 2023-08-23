@@ -284,7 +284,8 @@ void NearbyPresenceCredentialManagerImpl::StartFirstTimeRegistration() {
       request,
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess,
-          weak_ptr_factory_.GetWeakPtr()),
+          weak_ptr_factory_.GetWeakPtr(),
+          /*registration_request_start_time=*/base::TimeTicks::Now()),
       base::BindOnce(
           &NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure,
           weak_ptr_factory_.GetWeakPtr()));
@@ -329,6 +330,7 @@ void NearbyPresenceCredentialManagerImpl::HandleFirstTimeRegistrationFailure(
 }
 
 void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
+    base::TimeTicks registration_request_start_time,
     const ash::nearby::proto::UpdateDeviceResponse& response) {
   server_response_timer_.Stop();
   first_time_registration_on_demand_scheduler_->HandleResult(/*success=*/true);
@@ -336,6 +338,10 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcSuccess(
       /*attempt_count=*/
       first_time_server_registration_attempts_needed_count_);
   first_time_server_registration_attempts_needed_count_ = 0;
+
+  base::TimeDelta registration_duration =
+      base::TimeTicks::Now() - registration_request_start_time;
+  metrics::RecordFirstTimeServerRegistrationDuration(registration_duration);
   server_client_.reset();
 
   // Persist responses to be used to generate credentials.

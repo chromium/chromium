@@ -25,6 +25,8 @@ void RecordFirstTimeServerRegistrationFailureReason(
     ash::nearby::NearbyHttpResult failure_reason);
 void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
     int attempt_count);
+void RecordFirstTimeServerRegistrationDuration(
+    base::TimeDelta registration_duration);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync with

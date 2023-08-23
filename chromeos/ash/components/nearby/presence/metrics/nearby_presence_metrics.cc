@@ -75,4 +75,12 @@ void RecordFirstTimeServerRegistrationTotalAttemptsNeededCount(
       /*exclusive_max=*/10);
 }
 
+void RecordFirstTimeServerRegistrationDuration(
+    base::TimeDelta registration_duration) {
+  base::UmaHistogramTimes(
+      "Nearby.Presence.Credentials.FirstTimeServerRegistration."
+      "ServerRequestDuration",
+      registration_duration);
+}
+
 }  // namespace ash::nearby::presence::metrics
