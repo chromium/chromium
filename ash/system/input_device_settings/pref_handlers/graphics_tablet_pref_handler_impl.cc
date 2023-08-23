@@ -7,7 +7,6 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
-#include "base/notreached.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -15,11 +14,32 @@ namespace ash {
 GraphicsTabletPrefHandlerImpl::GraphicsTabletPrefHandlerImpl() = default;
 GraphicsTabletPrefHandlerImpl::~GraphicsTabletPrefHandlerImpl() = default;
 
-// TODO(wangdanny): Implement graphics_tablet settings initialization.
 void GraphicsTabletPrefHandlerImpl::InitializeGraphicsTabletSettings(
     PrefService* pref_service,
     mojom::GraphicsTablet* graphics_tablet) {
-  NOTIMPLEMENTED();
+  const auto& tablet_button_remappings_dict = pref_service->GetDict(
+      prefs::kGraphicsTabletTabletButtonRemappingsDictPref);
+  const auto& pen_button_remappings_dict =
+      pref_service->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+  const auto* tablet_button_remappings_list =
+      tablet_button_remappings_dict.FindList(graphics_tablet->device_key);
+  const auto* pen_button_remappings_list =
+      pen_button_remappings_dict.FindList(graphics_tablet->device_key);
+  mojom::GraphicsTabletSettingsPtr settings =
+      mojom::GraphicsTabletSettings::New();
+
+  // Retrieve the settings if both tablet and pen button remappings lists
+  // exist.
+  if (tablet_button_remappings_list && pen_button_remappings_list) {
+    settings->tablet_button_remappings =
+        ConvertListToButtonRemappingArray(*tablet_button_remappings_list);
+    settings->pen_button_remappings =
+        ConvertListToButtonRemappingArray(*pen_button_remappings_list);
+  }
+  graphics_tablet->settings = std::move(settings);
+  DCHECK(graphics_tablet->settings);
+
+  UpdateGraphicsTabletSettings(pref_service, *graphics_tablet);
 }
 
 void GraphicsTabletPrefHandlerImpl::UpdateGraphicsTabletSettings(

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -72,6 +73,16 @@ class GraphicsTabletPrefHandlerTest : public AshTestBase {
 
     pref_handler_->UpdateGraphicsTabletSettings(pref_service_.get(),
                                                 *graphics_tablet);
+  }
+
+  mojom::GraphicsTabletSettingsPtr CallInitializeGraphicsTabletSettings(
+      const std::string& device_key) {
+    mojom::GraphicsTabletPtr graphics_tablet = mojom::GraphicsTablet::New();
+    graphics_tablet->device_key = device_key;
+
+    pref_handler_->InitializeGraphicsTabletSettings(pref_service_.get(),
+                                                    graphics_tablet.get());
+    return std::move(graphics_tablet->settings);
   }
 
  protected:
@@ -177,6 +188,61 @@ TEST_F(GraphicsTabletPrefHandlerTest, UpdateSettings) {
           .FindList(kGraphicsTabletKey1);
   ASSERT_NE(nullptr, updated_graphics_tablet1_pen_button_remappings);
   ASSERT_EQ(0u, updated_graphics_tablet1_pen_button_remappings->size());
+}
+
+TEST_F(GraphicsTabletPrefHandlerTest, InitializeSettings) {
+  // There should be no button remappings in the settings for
+  // a new graphics tablet by default. Verify if both the tablet and pen
+  // button remappings pref lists are empty by default.
+  mojom::GraphicsTabletSettingsPtr settings =
+      CallInitializeGraphicsTabletSettings(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, settings.get());
+  EXPECT_EQ(0u, settings->tablet_button_remappings.size());
+  EXPECT_EQ(0u, settings->pen_button_remappings.size());
+
+  auto tablet_button_remappings_dict =
+      pref_service_
+          ->GetDict(prefs::kGraphicsTabletTabletButtonRemappingsDictPref)
+          .Clone();
+  auto* graphics_tablet1_tablet_button_remappings =
+      tablet_button_remappings_dict.FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, graphics_tablet1_tablet_button_remappings);
+  ASSERT_EQ(0u, graphics_tablet1_tablet_button_remappings->size());
+  const auto& pen_button_remappings_dict =
+      pref_service_->GetDict(prefs::kGraphicsTabletPenButtonRemappingsDictPref);
+  auto* graphics_tablet1_pen_button_remappings =
+      pen_button_remappings_dict.FindList(kGraphicsTabletKey1);
+  ASSERT_NE(nullptr, graphics_tablet1_pen_button_remappings);
+  ASSERT_EQ(0u, graphics_tablet1_pen_button_remappings->size());
+
+  // Update the button remappings pref dicts to mock adding new tablet
+  // and pen button remappings in the future.
+  std::vector<mojom::ButtonRemappingPtr> tablet_button_remappings;
+  std::vector<mojom::ButtonRemappingPtr> pen_button_remappings;
+  tablet_button_remappings.push_back(button_remapping1.Clone());
+  tablet_button_remappings.push_back(button_remapping2.Clone());
+  pen_button_remappings.push_back(button_remapping1.Clone());
+  base::Value::Dict updated_graphics_tablet1_tablet_button_remappings_dict;
+  updated_graphics_tablet1_tablet_button_remappings_dict.Set(
+      kGraphicsTabletKey1,
+      ConvertButtonRemappingArrayToList(tablet_button_remappings));
+  base::Value::Dict updated_graphics_tablet1_pen_button_remappings_dict;
+  updated_graphics_tablet1_pen_button_remappings_dict.Set(
+      kGraphicsTabletKey1,
+      ConvertButtonRemappingArrayToList(pen_button_remappings));
+
+  pref_service_->SetDict(
+      prefs::kGraphicsTabletTabletButtonRemappingsDictPref,
+      updated_graphics_tablet1_tablet_button_remappings_dict.Clone());
+  pref_service_->SetDict(
+      prefs::kGraphicsTabletPenButtonRemappingsDictPref,
+      updated_graphics_tablet1_pen_button_remappings_dict.Clone());
+
+  mojom::GraphicsTabletSettingsPtr updated_settings =
+      CallInitializeGraphicsTabletSettings(kGraphicsTabletKey1);
+  EXPECT_EQ(tablet_button_remappings,
+            updated_settings->tablet_button_remappings);
+  EXPECT_EQ(pen_button_remappings, updated_settings->pen_button_remappings);
 }
 
 }  // namespace ash
