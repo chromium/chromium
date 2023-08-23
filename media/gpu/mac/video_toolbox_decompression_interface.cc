@@ -6,24 +6,11 @@
 
 #include <memory>
 
-#include "base/apple/osstatus_logging.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "media/base/media_log.h"
 #include "media/gpu/mac/video_toolbox_decode_metadata.h"
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
-
-#define MEDIA_DLOG_ERROR(msg)                  \
-  do {                                         \
-    DLOG(ERROR) << msg;                        \
-    MEDIA_LOG(ERROR, media_log_.get()) << msg; \
-  } while (0)
-
-#define OSSTATUS_MEDIA_DLOG_ERROR(status, msg)                  \
-  do {                                                          \
-    OSSTATUS_DLOG(ERROR, status) << msg;                        \
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get()) << msg; \
-  } while (0)
 
 namespace media {
 
@@ -175,7 +162,7 @@ bool VideoToolboxDecompressionInterface::CreateSession(
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   if (!decoder_config) {
-    MEDIA_DLOG_ERROR("CFDictionaryCreateMutable() failed");
+    MEDIA_LOG(ERROR, media_log_.get()) << "CFDictionaryCreateMutable() failed";
     return false;
   }
 
@@ -232,7 +219,8 @@ void VideoToolboxDecompressionInterface::OnOutput(
   }
 
   if (status != noErr) {
-    OSSTATUS_MEDIA_DLOG_ERROR(status, "VTDecompressionOutputCallback");
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionOutputCallback";
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
@@ -240,14 +228,15 @@ void VideoToolboxDecompressionInterface::OnOutput(
   if (flags & kVTDecodeInfo_FrameDropped) {
     CHECK(!image);
   } else if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
-    MEDIA_DLOG_ERROR("Decoded image is not a CVPixelBuffer");
+    MEDIA_LOG(ERROR, media_log_.get())
+        << "Decoded image is not a CVPixelBuffer";
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }
 
   auto metadata_it = active_decodes_.find(context);
   if (metadata_it == active_decodes_.end()) {
-    MEDIA_DLOG_ERROR("Unknown decode context");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Unknown decode context";
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);
     return;
   }

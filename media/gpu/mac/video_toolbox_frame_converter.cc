@@ -25,12 +25,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-#define MEDIA_DLOG_ERROR(msg)                  \
-  do {                                         \
-    DLOG(ERROR) << msg;                        \
-    MEDIA_LOG(ERROR, media_log_.get()) << msg; \
-  } while (0)
-
 namespace media {
 
 namespace {
@@ -93,7 +87,7 @@ void VideoToolboxFrameConverter::Initialize() {
 
   stub_ = std::move(get_stub_cb_).Run();
   if (!stub_) {
-    MEDIA_DLOG_ERROR("Failed to get command buffer stub");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get command buffer stub";
     return;
   }
 
@@ -107,7 +101,7 @@ void VideoToolboxFrameConverter::Initialize() {
 
   sis_ = stub_->channel()->shared_image_stub();
   if (!sis_) {
-    MEDIA_DLOG_ERROR("Failed to get shared image stub");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to get shared image stub";
     DestroyStub();
     return;
   }
@@ -143,7 +137,7 @@ void VideoToolboxFrameConverter::Convert(
   }
 
   if (!stub_) {
-    MEDIA_DLOG_ERROR("Command buffer stub is missing");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Command buffer stub is missing";
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
@@ -164,7 +158,8 @@ void VideoToolboxFrameConverter::Convert(
   absl::optional<viz::SharedImageFormat> format =
       PixelFormatToImageFormat(pixel_format);
   if (!format) {
-    MEDIA_DLOG_ERROR("Unknown pixel format " << pixel_format);
+    MEDIA_LOG(ERROR, media_log_.get())
+        << "Unknown pixel format " << pixel_format;
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
@@ -175,7 +170,7 @@ void VideoToolboxFrameConverter::Convert(
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, kSharedImageUsage,
       kSharedImageDebugLabel);
   if (!result) {
-    MEDIA_DLOG_ERROR("Failed to create shared image");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create shared image";
     std::move(output_cb).Run(nullptr, std::move(metadata));
     return;
   }
@@ -200,7 +195,7 @@ void VideoToolboxFrameConverter::Convert(
       visible_rect, natural_size, metadata->timestamp);
 
   if (!frame) {
-    MEDIA_DLOG_ERROR("Failed to create VideoFrame");
+    MEDIA_LOG(ERROR, media_log_.get()) << "Failed to create VideoFrame";
 
     // |image| was dropped along with |release_cb|, but the SharedImage is still
     // alive.

@@ -4,15 +4,8 @@
 
 #include "media/gpu/mac/video_toolbox_decompression_session.h"
 
-#include "base/apple/osstatus_logging.h"
 #include "base/logging.h"
 #include "media/base/media_log.h"
-
-#define OSSTATUS_MEDIA_DLOG_ERROR(status, msg)                  \
-  do {                                                          \
-    OSSTATUS_DLOG(ERROR, status) << msg;                        \
-    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get()) << msg; \
-  } while (0)
 
 namespace media {
 
@@ -70,7 +63,8 @@ bool VideoToolboxDecompressionSessionImpl::Create(
       &callback,       // output_callback
       session_.InitializeInto());
   if (status != noErr) {
-    OSSTATUS_MEDIA_DLOG_ERROR(status, "VTDecompressionSessionCreate()");
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionSessionCreate()";
     DCHECK(!session_);
     return false;
   }
@@ -123,7 +117,8 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
   OSStatus status = VTDecompressionSessionDecodeFrame(
       session_, sample, decode_flags, context, nullptr);
   if (status != noErr) {
-    OSSTATUS_MEDIA_DLOG_ERROR(status, "VTDecompressionSessionDecodeFrame()");
+    OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
+        << "VTDecompressionSessionDecodeFrame()";
     return false;
   }
 

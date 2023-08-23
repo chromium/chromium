@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/apple/osstatus_logging.h"
 #include "base/notreached.h"
 #include "media/base/media_log.h"
 #include "media/gpu/mac/vt_config_util.h"

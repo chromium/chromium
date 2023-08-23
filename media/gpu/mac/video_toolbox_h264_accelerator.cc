@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/apple/osstatus_logging.h"
 #include "base/sys_byteorder.h"
 #include "media/base/media_log.h"
 
@@ -91,8 +90,6 @@ VideoToolboxH264Accelerator::SubmitFrameMetadata(
         kNALUHeaderLength,  // nal_unit_header_length
         active_format_.InitializeInto());
     if (status != noErr) {
-      OSSTATUS_DLOG(ERROR, status)
-          << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMVideoFormatDescriptionCreateFromH264ParameterSets()";
       return Status::kFail;
@@ -144,7 +141,6 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
       0,                    // flags
       data.InitializeInto());
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferCreateWithMemoryBlock()";
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferCreateWithMemoryBlock()";
     return Status::kFail;
@@ -152,7 +148,6 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
 
   status = CMBlockBufferAssureBlockMemory(data);
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferAssureBlockMemory()";
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferAssureBlockMemory()";
     return Status::kFail;
@@ -167,7 +162,6 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     status =
         CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
     if (status != noErr) {
-      OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes()";
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
@@ -178,7 +172,6 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data, offset,
                                            nalu_data.size());
     if (status != noErr) {
-      OSSTATUS_DLOG(ERROR, status) << "CMBlockBufferReplaceDataBytes()";
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
       return Status::kFail;
@@ -201,7 +194,6 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
                                 &data_size,      // sample_size_array
                                 sample.InitializeInto());
   if (status != noErr) {
-    OSSTATUS_DLOG(ERROR, status) << "CMSampleBufferCreate()";
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";
     return Status::kFail;
