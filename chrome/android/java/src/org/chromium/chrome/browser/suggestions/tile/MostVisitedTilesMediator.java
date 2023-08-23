@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
@@ -148,6 +149,10 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     public void onTileCountChanged() {
         if (mTileCountChangedRunnable != null) mTileCountChangedRunnable.run();
         updateTilePlaceholderVisibility();
+
+        if (mIsSurfacePolishEnabled) {
+            mModel.set(IS_CONTAINER_VISIBLE, !mTileGroup.isEmpty());
+        }
     }
 
     @Override

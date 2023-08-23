@@ -10,14 +10,18 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -31,6 +35,8 @@ import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.S
 import org.chromium.chrome.browser.feed.test.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Test for the WebFeedFollowIntroView class. */
@@ -41,6 +47,10 @@ public final class SectionHeaderViewTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Mock
     private Tracker mTracker;
     @Mock
@@ -81,5 +91,21 @@ public final class SectionHeaderViewTest {
         setFeatureOverridesForIPH();
         mSectionHeaderView.showWebFeedAwarenessIph(mHelper, StreamTabId.FOLLOWING, mScroller);
         verify(mHelper, times(1)).requestShowIPH(any());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void mainContentTopMarginTest() {
+        mSectionHeaderView.onFinishInflate();
+
+        View mainContentView =
+                mSectionHeaderView.findViewById(org.chromium.chrome.browser.feed.R.id.main_content);
+        MarginLayoutParams contentMarginLayoutParams =
+                (MarginLayoutParams) mainContentView.getLayoutParams();
+        Assert.assertEquals(
+                mSectionHeaderView.getResources().getDimensionPixelSize(
+                        org.chromium.chrome.browser.feed.R.dimen.feed_header_top_margin),
+                contentMarginLayoutParams.topMargin);
     }
 }

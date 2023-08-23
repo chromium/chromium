@@ -1439,8 +1439,8 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     private void setMVTilesVisibility(boolean isVisible) {
         if (mInitializeMVTilesRunnable == null) return;
-        if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
         mPropertyModel.set(MV_TILES_VISIBLE, isVisible);
+        if (isVisible && mInitializeMVTilesRunnable != null) mInitializeMVTilesRunnable.run();
     }
 
     private void setLogoVisibility(boolean isVisible) {
@@ -1671,11 +1671,7 @@ class StartSurfaceMediator implements TabSwitcher.TabSwitcherViewObserver, View.
 
     private void tweakMarginsBetweenSections() {
         Resources resources = mContext.getResources();
-        if (mIsSurfacePolishEnabled) {
-            mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
-                    resources.getDimensionPixelSize(
-                            R.dimen.tasks_surface_body_top_margin_polished));
-        } else {
+        if (!mIsSurfacePolishEnabled) {
             mPropertyModel.set(TASKS_SURFACE_BODY_TOP_MARGIN,
                     resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin));
         }

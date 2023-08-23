@@ -1343,8 +1343,7 @@ public class StartSurfaceMediatorUnitTest {
     @EnableFeatures(ChromeFeatureList.SURFACE_POLISH)
     public void initializeStartSurfaceTopMargins_SurfacePolish() {
         Resources resources = ContextUtils.getApplicationContext().getResources();
-        int tasksSurfaceBodyTopMarginPolished =
-                resources.getDimensionPixelSize(R.dimen.tasks_surface_body_top_margin_polished);
+        int tasksSurfaceBodyTopMarginPolished = 0;
         int tabSwitcherTitleTopMargin =
                 resources.getDimensionPixelSize(R.dimen.tab_switcher_title_top_margin);
 

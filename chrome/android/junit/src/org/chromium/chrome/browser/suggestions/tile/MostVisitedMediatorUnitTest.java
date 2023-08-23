@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_EDGE_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
@@ -28,7 +29,9 @@ import android.view.ViewStub;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -37,6 +40,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,6 +48,8 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -102,6 +108,9 @@ public class MostVisitedMediatorUnitTest {
     private FakeMostVisitedSites mMostVisitedSites;
     private PropertyModel mModel;
     private MostVisitedTilesMediator mMediator;
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -178,6 +187,27 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertTrue(mModel.get(IS_MVT_LAYOUT_VISIBLE));
         Assert.assertNotNull(mModel.get(PLACEHOLDER_VIEW));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SURFACE_POLISH})
+    public void testOnTileCountChanged_SurfacePolished() {
+        ArrayList<SiteSuggestion> array = new ArrayList<>();
+        array.add(mData);
+        mMostVisitedSites.setTileSuggestions(array);
+        createMediator();
+
+        Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
+
+        // When there's no mv tile, the mv tiles container should be hidden.
+        mMostVisitedSites.setTileSuggestions(new ArrayList<>());
+        mMediator.onTileCountChanged();
+        Assert.assertFalse(mModel.get(IS_CONTAINER_VISIBLE));
+
+        // When there is mv tile, the mv tiles container should be shown.
+        mMostVisitedSites.setTileSuggestions(JUnitTestGURLs.HTTP_URL);
+        mMediator.onTileCountChanged();
+        Assert.assertTrue(mModel.get(IS_CONTAINER_VISIBLE));
     }
 
     @Test

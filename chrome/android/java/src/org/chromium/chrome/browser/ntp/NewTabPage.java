@@ -1129,7 +1129,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
      * Updates the margins for the single tab card container based on the type of MV tiles.
      */
     private void updateSingleTabCardContainerMargins() {
-        if (!mIsNtpAsHomeSurfaceEnabled) return;
+        if (!mIsNtpAsHomeSurfaceEnabled || mIsSurfacePolishEnabled) return;
 
         MarginLayoutParams marginLayoutParams =
                 (MarginLayoutParams) mSingleTabCardContainer.getLayoutParams();

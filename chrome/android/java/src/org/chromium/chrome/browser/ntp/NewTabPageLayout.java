@@ -593,8 +593,18 @@ public class NewTabPageLayout extends LinearLayout {
                 (MarginLayoutParams) mMvTilesContainerLayout.getLayoutParams();
 
         if (mIsSurfacePolishEnabled) {
-            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
-                    R.dimen.mvt_container_bottom_margin_polish);
+            if (mIsNtpAsHomeSurfaceEnabled) {
+                if (isScrollableMvtEnabled()) {
+                    marginLayoutParams.topMargin = getResources().getDimensionPixelSize(
+                            shouldShowLogo() ? R.dimen.tile_grid_layout_top_margin
+                                             : R.dimen.tile_grid_layout_no_logo_top_margin);
+                } else {
+                    // Set a bit more top padding on the tile grid if there is no logo.
+                    ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
+                    layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                    marginLayoutParams.topMargin = getGridMvtTopMargin();
+                }
+            }
             return;
         }
 

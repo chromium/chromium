@@ -60,6 +60,7 @@ found in the LICENSE file.
     <dimen name="feed_header_menu_width_polished">24dp</dimen>
     <dimen name="feed_header_menu_end_margin">20dp</dimen>
     <dimen name="feed_header_tab_end_margin">8dp</dimen>
+    <dimen name="feed_header_top_margin">16dp</dimen>
 
     <!-- Feed unread dot dimens -->
     <dimen name="feed_badge_radius">2.5dp</dimen>
