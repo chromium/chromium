@@ -334,13 +334,24 @@ enum AuthenticationState {
 
     case CHECK_MERGE_CASE: {
       DCHECK_EQ(SHOULD_CLEAR_DATA_USER_CHOICE, self.localDataClearingStrategy);
+      // Do not perform a custom data clearing strategy for supervised users
+      // with the experiment `syncer::kReplaceSyncPromosWithSignInPromos`.
+      if (base::FeatureList::IsEnabled(
+              syncer::kReplaceSyncPromosWithSignInPromos)) {
+        [self checkPostSigninAction];
+        return;
+      }
       __weak AuthenticationFlow* weakSelf = self;
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->IsSubjectToParentalControls(
               _identityToSignIn,
               base::BindOnce(^(SystemIdentityCapabilityResult result) {
-                [weakSelf isSubjectToParentalControlCapabilityFetched:result];
+                if (result == SystemIdentityCapabilityResult::kTrue) {
+                  [weakSelf checkMergeCaseForSupervisedAccounts];
+                  return;
+                }
+                [weakSelf checkPostSigninAction];
               }));
       return;
     }
@@ -407,15 +418,10 @@ enum AuthenticationState {
   NOTREACHED();
 }
 
-- (void)isSubjectToParentalControlCapabilityFetched:
-    (SystemIdentityCapabilityResult)result {
-  if (result == SystemIdentityCapabilityResult::kTrue) {
-    [self checkMergeCaseForSupervisedAccounts];
-    return;
-  }
+- (void)checkPostSigninAction {
   switch (self.postSignInAction) {
     case PostSignInAction::kCommitSync:
-      [self checkMergeCaseForUnsupervisedAccounts];
+      [self checkMergeCaseForIdentityToSignIn];
       break;
     case PostSignInAction::kShowSnackbar:
     case PostSignInAction::kNone:
@@ -435,9 +441,8 @@ enum AuthenticationState {
   [self continueSignin];
 }
 
-// Checks if data should be merged or cleared when `_identityToSignIn`
-// is not subject to parental controls and then continues sign-in.
-- (void)checkMergeCaseForUnsupervisedAccounts {
+// Checks if data should be merged or cleared for `_identityToSignIn`.
+- (void)checkMergeCaseForIdentityToSignIn {
   if (([_performer shouldHandleMergeCaseForIdentity:_identityToSignIn
                                   browserStatePrefs:[self originalBrowserState]
                                                         ->GetPrefs()])) {

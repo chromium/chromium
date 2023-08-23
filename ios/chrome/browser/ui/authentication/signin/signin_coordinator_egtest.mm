@@ -207,7 +207,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       [self isRunningTest:@selector
             (testOpenAuthActivityFromNTPIfNoDeviceAccount)] ||
       [self isRunningTest:@selector
-            (testOpenSignInFromNTPWhenSyncDisabledByPolicy)]) {
+            (testOpenSignInFromNTPWhenSyncDisabledByPolicy)] ||
+      [self isRunningTest:@selector(testSwitchToSupervisedUser)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -260,9 +261,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
-// Tests that signing out from an unsupervised account without clearing data
-// and then signing in to a supervised account performs a local data clearing
-// on sign-in.
+// Tests that switching between an unsupervised and supervised account does not
+// merge data on the device.
 - (void)testSwitchToSupervisedUser {
   // Add a fake supervised identity to the device.
   FakeSystemIdentity* fakeSupervisedIdentity =
@@ -283,7 +283,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [BookmarkEarlGrey
       setupStandardBookmarksInStorage:bookmarks::StorageType::kLocalOrSyncable];
 
-  // Sign out with option to keep local data.
+  // Confirmation choice is ignored when `kReplaceSyncPromosWithSignInPromos` is
+  // enabled.
   [SigninEarlGreyUI
       signOutWithConfirmationChoice:SignOutConfirmationChoiceKeepData];
 
