@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="WebGPUAdapterType">
+  <variant name="Discrete" summary="discrete"/>
+  <variant name="Integrated" summary="integrated"/>
+</variants>
+
 <variants name="WebGPUCacheable">
   <variant name="D3D11.CompileShader"/>
   <variant name="D3D12.CompileShader"/>
@@ -1624,6 +1629,38 @@ chromium-metrics-reviews@google.com.
     cache. Recorded only for clients that support high-resolution clocks.
   </summary>
   <token key="Module" variants="WebGPUModule"/>
+</histogram>
+
+<histogram name="GPU.WebGPU.HasGpuAdapter" enum="Boolean"
+    expires_after="2024-02-21">
+  <owner>cduvall@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records whether WebGPU has any GPU adapters available. This is recorded
+    during GPU process startup.
+  </summary>
+</histogram>
+
+<histogram name="GPU.WebGPU.MaxStorageBufferBindingSize.{AdapterType}"
+    units="MB" expires_after="2024-02-21">
+  <owner>cduvall@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records the maximum storage buffer binding size if {AdapterType} GPU is
+    available. This is recorded during GPU process startup.
+  </summary>
+  <token key="AdapterType" variants="WebGPUAdapterType"/>
+</histogram>
+
+<histogram name="GPU.WebGPU.MaxTextureDimension2D.{AdapterType}"
+    units="dimensions" expires_after="2024-02-21">
+  <owner>cduvall@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Records the maximum 2D texture dimensions if {AdapterType} GPU is available.
+    This is recorded during GPU process startup.
+  </summary>
+  <token key="AdapterType" variants="WebGPUAdapterType"/>
 </histogram>
 
 <histogram name="GPU.WebGPU.Support" enum="WebGPUSupport"
