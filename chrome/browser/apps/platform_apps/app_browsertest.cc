@@ -77,10 +77,12 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -1392,8 +1394,17 @@ IN_PROC_BROWSER_TEST_F(PlatformAppIncognitoBrowserTest,
   }
 }
 
-class RestartDeviceTest : public PlatformAppBrowserTest {
+class RestartDeviceTest : public PlatformAppBrowserTest,
+                          public ash::LocalStateMixin::Delegate {
  public:
+  void SetUpLocalState() override {
+    // Until EnterKioskSession is called, the setup and the test run in a
+    // regular user session. Marking another user as the owner prevents the
+    // current user from taking ownership and overriding the kiosk mode.
+    user_manager::UserManager::Get()->RecordOwner(
+        AccountId::FromUserEmail("not_current_user@example.com"));
+  }
+
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
 
@@ -1422,6 +1433,7 @@ class RestartDeviceTest : public PlatformAppBrowserTest {
   }
 
  private:
+  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 

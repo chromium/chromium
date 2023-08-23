@@ -40,6 +40,12 @@ OwnerKeyUmaEvent ConvertToUmaEvent(OwnerKeyEvent event, bool success) {
         return OwnerKeyUmaEvent::kSignedPolicySuccess;
       case OwnerKeyEvent::kStoredPolicy:
         return OwnerKeyUmaEvent::kStoredPolicySuccess;
+      case OwnerKeyEvent::kUserNotAnOwnerBasedOnUserType:
+        return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnUserTypeSuccess;
+      case OwnerKeyEvent::kUserNotAnOwnerBasedOnEmptyUsername:
+        return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnEmptyUsernameSuccess;
+      case OwnerKeyEvent::kUnsureTakeOwnership:
+        return OwnerKeyUmaEvent::kUnsureTakeOwnership;
     }
   } else {
     switch (event) {
@@ -71,6 +77,12 @@ OwnerKeyUmaEvent ConvertToUmaEvent(OwnerKeyEvent event, bool success) {
         return OwnerKeyUmaEvent::kSignedPolicyFail;
       case OwnerKeyEvent::kStoredPolicy:
         return OwnerKeyUmaEvent::kStoredPolicyFail;
+      case OwnerKeyEvent::kUserNotAnOwnerBasedOnUserType:
+        return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnUserTypeFail;
+      case OwnerKeyEvent::kUserNotAnOwnerBasedOnEmptyUsername:
+        return OwnerKeyUmaEvent::kUserNotAnOwnerBasedOnEmptyUsernameFail;
+      case OwnerKeyEvent::kUnsureTakeOwnership:
+        return OwnerKeyUmaEvent::kUnsureTakeOwnership;
     }
   }
 }

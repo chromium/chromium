@@ -4,10 +4,13 @@
 
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 
+#include <map>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -23,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/login_manager/policy_descriptor.pb.h"
@@ -74,6 +78,16 @@ void StoreFiles(std::map<base::FilePath, std::string> paths_and_data) {
     const std::string& data = kv.second;
     if (!base::WriteFile(path, data)) {
       LOG(WARNING) << "Failed to write to " << path.value();
+    }
+  }
+}
+
+void EnsureFilesDeleted(
+    const base::flat_set<base::FilePath>& files_to_clean_up) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  for (const base::FilePath& path : files_to_clean_up) {
+    if (!base::DeleteFile(path)) {
+      LOG(ERROR) << "Failed to delete " << path;
     }
   }
 }
@@ -242,6 +256,13 @@ FakeSessionManagerClient::FakeSessionManagerClient(
 
 FakeSessionManagerClient::~FakeSessionManagerClient() {
   g_is_fake = false;
+
+  // Run this on the current thread since the task runner will CHECK if it's
+  // posted Remove created files if necessary. The kInMemory is not expected to
+  // leave persistent changes and the following tests might fail because of
+  // them. Posting a non-skippable task during the shutdown phase is not
+  // allowed, so just do it on the current thread.
+  EnsureFilesDeleted(files_to_clean_up_);
 }
 
 // static
@@ -637,6 +658,7 @@ void FakeSessionManagerClient::StorePolicy(
         base::FilePath key_path;
         GetStubPolicyFilePath(descriptor, &key_path);
         DCHECK(!key_path.empty());
+        files_to_clean_up_.insert(key_path);
 
         base::ThreadPool::PostTaskAndReply(
             FROM_HERE,

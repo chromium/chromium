@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura_ash.h"
+
+#include <memory>
 
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/apps/platform_apps/app_window_interactive_uitest_base.h"
+#include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -161,6 +164,35 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
   raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
 };
 
+class ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest
+    : public ChromeNativeAppWindowViewsAuraAshBrowserTest,
+      public ash::LocalStateMixin::Delegate {
+ public:
+  void SetUpLocalState() override {
+    // Until ScopedTestPublicSessionLoginState is created, the setup runs in a
+    // regular user session. Marking another user as the owner prevents the
+    // current user from taking ownership and overriding the public session
+    // mode.
+    user_manager::UserManager::Get()->RecordOwner(
+        AccountId::FromUserEmail("not_current_user@example.com"));
+  }
+
+  void SetUpOnMainThread() override {
+    ChromeNativeAppWindowViewsAuraAshBrowserTest::SetUpOnMainThread();
+    // Emulate public session.
+    login_state_ = std::make_unique<ash::ScopedTestPublicSessionLoginState>();
+  }
+
+  void TearDownOnMainThread() override {
+    login_state_.reset();
+    ChromeNativeAppWindowViewsAuraAshBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  ash::LocalStateMixin local_state_mixin_{&mixin_host_, this};
+  std::unique_ptr<ash::ScopedTestPublicSessionLoginState> login_state_;
+};
+
 // Verify that immersive mode is enabled or disabled as expected.
 IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                        ImmersiveWorkFlow) {
@@ -271,18 +303,17 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 
 // Verify that the shelf behavior when requesting fullscreen is consistent
 // for managed guest sessions.
-IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                       ShelfBehaviorWhenFullscreenForManagedGuestSessions) {
-  ash::ScopedTestPublicSessionLoginState login_state;
+IN_PROC_BROWSER_TEST_F(
+    ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+    ShelfBehaviorWhenFullscreenForManagedGuestSessions) {
   VerifyShelfBehaviorWhenFullscreen();
 }
 
 // Verify that immersive mode stays disabled in the public session, no matter
 // that the app is in a normal window or fullscreen mode.
-IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                       PublicSessionNoImmersiveModeWhenFullscreen) {
-  ash::ScopedTestPublicSessionLoginState login_state;
-
+IN_PROC_BROWSER_TEST_F(
+    ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+    PublicSessionNoImmersiveModeWhenFullscreen) {
   InitWindow();
   ASSERT_TRUE(window());
   EXPECT_FALSE(IsImmersiveActive());
@@ -359,9 +390,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 // Ensures that JS-activated fullscreen in the Public session doesn't trigger
 // the immersive mode, but shows a bubble to guide users how to exit the
 // fullscreen mode under different conditions. (Window API)
-IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                       BubbleInsidePublicSessionWindow) {
-  ash::ScopedTestPublicSessionLoginState state;
+IN_PROC_BROWSER_TEST_F(
+    ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+    BubbleInsidePublicSessionWindow) {
   std::unique_ptr<ExtensionTestMessageListener> launched_listener =
       LaunchPlatformAppWithFocusedWindow();
   WaitFullscreenChange(launched_listener.get());
@@ -373,9 +404,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
 // Ensures that JS-activated fullscreen in the Public session doesn't trigger
 // the immersive mode, but shows a bubble to guide users how to exit the
 // fullscreen mode under different conditions. (DOM)
-IN_PROC_BROWSER_TEST_F(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                       BubbleInsidePublicSessionDom) {
-  ash::ScopedTestPublicSessionLoginState state;
+IN_PROC_BROWSER_TEST_F(
+    ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+    BubbleInsidePublicSessionDom) {
   std::unique_ptr<ExtensionTestMessageListener> launched_listener =
       LaunchPlatformAppWithFocusedWindow();
   WaitFullscreenChangeUntilKeyFocus(launched_listener.get());

@@ -12,7 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/mixin_based_extension_apitest.h"
 #include "extensions/browser/app_window/app_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -34,7 +34,7 @@ class ExtensionTestMessageListener;
 namespace extensions {
 class Extension;
 
-class PlatformAppBrowserTest : public ExtensionApiTest {
+class PlatformAppBrowserTest : public MixinBasedExtensionApiTest {
  public:
   PlatformAppBrowserTest();
   PlatformAppBrowserTest(const PlatformAppBrowserTest&) = delete;

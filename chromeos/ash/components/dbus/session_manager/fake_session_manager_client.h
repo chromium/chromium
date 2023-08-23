@@ -12,6 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -469,6 +471,8 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   absl::optional<std::string> primary_user_id_;
 
   base::flat_map<std::string, std::string> login_screen_storage_;
+
+  base::flat_set<base::FilePath> files_to_clean_up_;
 
   base::WeakPtrFactory<FakeSessionManagerClient> weak_ptr_factory_{this};
 };

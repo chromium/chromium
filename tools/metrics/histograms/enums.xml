@@ -81157,6 +81157,27 @@ Called by update_net_trust_anchors.py.-->
     Successfully stored policies.
   </int>
   <int value="26" label="StoredPolicyFail">Failed to store policies.</int>
+  <int value="27" label="UserNotAnOwnerBasedOnUserTypeSuccess">
+    A user was categorized as not an owner based on the user type, the public
+    key was successfully loaded.
+  </int>
+  <int value="28" label="UserNotAnOwnerBasedOnUserTypeFail">
+    A user was categorized as not an owner based on the user type, the public
+    key failed to load.
+  </int>
+  <int value="29" label="UserNotAnOwnerBasedOnEmptyUsernameSuccess">
+    A user was categorized as not an owner because the user name was empty, this
+    is not expected to happen, the public key was successfully loaded.
+  </int>
+  <int value="30" label="UserNotAnOwnerBasedOnEmptyUsernameFail">
+    A user was categorized as not an owner because the user name was empty, this
+    is not expected to happen, the public key failed to load.
+  </int>
+  <int value="31" label="UnsureTakeOwnership">
+    ChromeOS decided to establish consumer ownership when there was no
+    indication that it's the first user, but also no public key, no policies and
+    no local state entry.
+  </int>
 </enum>
 
 <enum name="OwnershipStatus">

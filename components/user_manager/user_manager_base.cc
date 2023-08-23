@@ -591,7 +591,9 @@ absl::optional<std::string> UserManagerBase::GetOwnerEmail() {
   }
 
   const std::string* email = owner.FindString(kOwnerAccountIdentity);
-  if (!email) {
+  // A valid email should not be empty, so return a nullopt if Chrome
+  // accidentally saved an empty string.
+  if (!email || email->empty()) {
     return absl::nullopt;
   }
   return *email;

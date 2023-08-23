@@ -152,18 +152,21 @@ class ChromeNativeAppWindowViewsAuraAsh
                            ImmersiveModeFullscreenRestoreType);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            NoImmersiveModeWhenForcedFullscreen);
-  FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           PublicSessionNoImmersiveModeWhenFullscreen);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+      PublicSessionNoImmersiveModeWhenFullscreen);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            RestoreImmersiveMode);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            NoImmersiveOrBubbleOutsidePublicSessionWindow);
   FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
                            NoImmersiveOrBubbleOutsidePublicSessionDom);
-  FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           BubbleInsidePublicSessionWindow);
-  FRIEND_TEST_ALL_PREFIXES(ChromeNativeAppWindowViewsAuraAshBrowserTest,
-                           BubbleInsidePublicSessionDom);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+      BubbleInsidePublicSessionWindow);
+  FRIEND_TEST_ALL_PREFIXES(
+      ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest,
+      BubbleInsidePublicSessionDom);
   FRIEND_TEST_ALL_PREFIXES(ShapedAppWindowTargeterTest,
                            ResizeInsetsWithinBounds);
 

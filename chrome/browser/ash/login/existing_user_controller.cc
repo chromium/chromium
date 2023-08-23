@@ -787,6 +787,13 @@ void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
   if (!is_enterprise_managed &&
       user_manager::UserManager::Get()->GetUsers().empty()) {
     DeviceSettingsService::Get()->MarkWillEstablishConsumerOwnership();
+
+    // Save the owner email in case Chrome restarts/crashes before fully taking
+    // ownership.
+    if (!user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
+      user_manager::UserManager::Get()->RecordOwner(
+          user_context.GetAccountId());
+    }
   }
 
   if (user_context.CanLockManagedGuestSession()) {

@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 
+#include <string>
+#include <utility>
+
 #include "base/check_is_test.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
@@ -258,6 +261,28 @@ void OwnerKeyLoader::OnPrivateKeyLoaded(
 }
 
 void OwnerKeyLoader::MaybeGenerateNewKey() {
+  const user_manager::User* user =
+      ProfileHelper::Get()->GetUserByProfile(profile_);
+  if (!user || (user->GetType() != user_manager::USER_TYPE_REGULAR)) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnUserType,
+                        /*success=*/IsKeyPresent(public_key_));
+    return std::move(callback_).Run(public_key_, nullptr);
+  }
+
+  std::string profile_email = user->GetAccountId().GetUserEmail();
+  if (profile_email.empty()) {
+    // In some cases (e.g. right after a crash) this returns an empty string
+    // even when the method above succeeds, so only use it as a fallback.
+    profile_email = profile_->GetProfileUserName();
+  }
+  if (profile_email.empty()) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kUserNotAnOwnerBasedOnEmptyUsername,
+                        /*success=*/IsKeyPresent(public_key_));
+    // This is not expected to happen, regular users should have a valid
+    // username.
+    return std::move(callback_).Run(public_key_, nullptr);
+  }
+
   // Check device policies. If the owner key was never generated before, the
   // policies will be empty. Also, in theory ChromeOS is allowed to lose the
   // policies and recover, so be prepared for them to still be empty.
@@ -314,10 +339,28 @@ void OwnerKeyLoader::MaybeGenerateNewKey() {
     return GenerateNewKey();
   }
 
+  // If there's no indication from `device_settings_service_` that this is the
+  // first user, but also no signs of other users ever taking ownership, take
+  // the ownership for the current user. This is not supposed to happen under
+  // normal circumstances, but that's what session_manager did before Chrome
+  // took over owner key generation. The main problem with this case is that if
+  // a device ends up with no owner and multiple users, the next user that signs
+  // in will become the owner (instead of the user that was created on the
+  // device first). But it's still better to have some owner on the device than
+  // none and it's hard to intentionally destroy all the signs of the existing
+  // owner to steal the ownership, so it's considered to be a reasonable
+  // fallback.
+  if (!IsKeyPresent(public_key_)) {
+    RecordOwnerKeyEvent(OwnerKeyEvent::kUnsureTakeOwnership,
+                        /*success=*/true);
+    return GenerateNewKey();
+  }
+
   RecordOwnerKeyEvent(OwnerKeyEvent::kUnsureUserNotAnOwner,
                       /*success=*/IsKeyPresent(public_key_));
-  // The current user doesn't seem to be the owner, just return the public key
-  // (or nullptr, if it wasn't successfully loaded earlier).
+  // If the public key was successfully loaded, then some other user probably
+  // generated it and they are the owner and hold the private key for it. The
+  // current user doesn't seem to be the owner, just return the public key.
   return std::move(callback_).Run(std::move(public_key_), nullptr);
   // `this` might be deleted here.
 }
@@ -327,7 +370,14 @@ void OwnerKeyLoader::GenerateNewKey() {
   if (!user_manager::UserManager::Get()->GetOwnerEmail().has_value()) {
     user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile_);
-    user_manager::UserManager::Get()->RecordOwner(user->GetAccountId());
+    if (user) {
+      user_manager::UserManager::Get()->RecordOwner(user->GetAccountId());
+    } else {
+      // Recording the owner is mainly useful for the next launch of Chrome,
+      // which doesn't happen in most tests. So just allow skipping it if the
+      // user was not set up.
+      CHECK_IS_TEST();
+    }
   }
 
   GetCertDbAndPostOnWorkerThread(

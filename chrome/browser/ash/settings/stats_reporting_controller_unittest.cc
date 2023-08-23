@@ -57,6 +57,8 @@ class StatsReportingControllerTest : public testing::Test {
     both_keys->ImportPrivateKeyAndSetPublicKey(device_policy_.GetSigningKey());
     public_key_only->SetPublicKeyFromPrivateKey(
         *device_policy_.GetSigningKey());
+    // Prevent new keys from being generated.
+    no_keys->SimulateGenerateKeyFailure(/*fail_times=*/999);
 
     observer_subscription_ = StatsReportingController::Get()->AddObserver(
         base::BindRepeating(&StatsReportingControllerTest::OnNotifiedOfChange,
