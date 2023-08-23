@@ -2246,7 +2246,7 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
   let rules = gCssRulesByNodeRrpId.get(nodeRrpId);
   const data = {};
 
-  if (!rules && isBlinkInstanceOf(nodeObj, Element)) {
+  if (!rules && isBlinkInstanceOf(nodeObj, Node)) {
     const nodeId = getBlinkNodeIdByRrpId(nodeRrpId);
 
     // NOTE: CSS domain commands are not accessible via `sendMessage`, so we have to get the data indirectly.
@@ -2254,6 +2254,11 @@ function CSS_getAppliedRules({ node: nodeRrpId }) {
     const cdpMatchedStyles = fromJsGetMatchedStylesForNode(nodeId);
     rules = convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles);
     gCssRulesByNodeRrpId.set(nodeRrpId, rules);
+  }
+  else {
+    // The target is not a node.
+    log(`[RuntimeWarning] CSS.getAppliedRules called with non-node: ${nodeRrpId} ${isBlinkObject(nodeObj)} ${nodeObj?.constructor?.name} ${nodeObj?.constructor}.`);
+    rules = [];
   }
 
   return { rules, data };
