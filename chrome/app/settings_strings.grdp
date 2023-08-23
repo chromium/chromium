@@ -1790,19 +1790,19 @@
     No preloading
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_NO_PRELOADING_SUMMARY" desc="Short explanation of what the no preloading mode does in the Preload Pages setting.">
-    Pages load only after you open them.
+    Pages load only after you open them
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_TITLE" desc="Name of the standard preloading option for the Preload Pages settings page. This option enables preloading pages that Chrome believes the user is likely to navigate to.">
     Standard preloading
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_SUMMARY" desc="Short explanation of what the standard preloading mode does in the Preload Pages setting.">
-    Some of the pages you visit are preloaded.
+    Some of the pages you visit are preloaded
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_ONE" desc="First bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
-    Browsing and searching is faster.
+    Browsing and searching is faster
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_STANDARD_PRELOADING_WHEN_ON_BULLET_TWO" desc="Second bullet point in the standard preloading and when on column. Informs the user about what the standard preloading setting does.">
-    Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them.
+    Chrome preloads pages you're likely to visit, so that they load more quickly when you visit them
   </message>
   <message name="IDS_SETTINGS_PRELOAD_PAGES_EXTENDED_PRELOADING_TITLE" desc="Name of the extended preloading option for the Preload Pages settings page. This option enables more extensive preloading of pages that Chrome believes the user is likely to navigate to.">
     Extended preloading
