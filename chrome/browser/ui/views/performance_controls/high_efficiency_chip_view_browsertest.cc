@@ -60,15 +60,6 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
 
   ~HighEfficiencyChipViewBrowserTest() override = default;
 
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{performance_manager::features::kHighEfficiencyModeAvailable,
-          {{"default_state", "true"}, {"time_before_discard", "1h"}}}},
-        {});
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -89,36 +80,12 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
-  void TearDown() override { InProcessBrowserTest::TearDown(); }
-
-  BrowserFeaturePromoController* GetFeaturePromoController() {
-    auto* promo_controller = static_cast<BrowserFeaturePromoController*>(
-        browser()->window()->GetFeaturePromoController());
-    return promo_controller;
-  }
-
   PageActionIconView* GetHighEfficiencyChipView() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     return browser_view->GetLocationBarView()
         ->page_action_icon_controller()
         ->GetIconView(PageActionIconType::kHighEfficiency);
-  }
-
-  views::StyledLabel* GetHighEfficiencyBubbleLabel() {
-    const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForWidget(
-            GetHighEfficiencyChipView()->GetBubble()->anchor_widget());
-    return views::ElementTrackerViews::GetInstance()
-        ->GetFirstMatchingViewAs<views::StyledLabel>(
-            HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
-            context);
-  }
-
-  void ClickHighEfficiencyChip() {
-    views::test::InteractionTestUtilSimulatorViews::PressButton(
-        GetHighEfficiencyChipView(),
-        ui::test::InteractionTestUtil::InputType::kMouse);
   }
 
   void DiscardTabAt(int tab_index) {
@@ -137,7 +104,6 @@ class HighEfficiencyChipViewBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;

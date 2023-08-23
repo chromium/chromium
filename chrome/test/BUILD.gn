@@ -3838,6 +3838,7 @@ if (!is_android) {
         "../browser/ui/views/payments/shipping_address_editor_view_controller_browsertest.cc",
         "../browser/ui/views/payments/shipping_option_view_controller_browsertest.cc",
         "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",
+        "../browser/ui/views/performance_controls/high_efficiency_chip_view_browsertest.cc",
         "../browser/ui/views/performance_controls/high_efficiency_exclusion_list_browsertest.cc",
         "../browser/ui/views/performance_controls/high_efficiency_iph_browsertest.cc",
         "../browser/ui/views/permissions/permission_prompt_bubble_base_view_browsertest.cc",
