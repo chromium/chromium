@@ -29,12 +29,13 @@ AccountConsistencyModeManagerFactory::AccountConsistencyModeManagerFactory()
 AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
     default;
 
-KeyedService* AccountConsistencyModeManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountConsistencyModeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(!context->IsOffTheRecord());
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new AccountConsistencyModeManager(profile);
+  return std::make_unique<AccountConsistencyModeManager>(profile);
 }
 
 void AccountConsistencyModeManagerFactory::RegisterProfilePrefs(
