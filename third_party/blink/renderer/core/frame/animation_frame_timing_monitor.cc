@@ -397,11 +397,10 @@ void AnimationFrameTimingMonitor::OnMicrotasksCompleted(
     return;
   }
 
-  DCHECK(pending_script_info_->type ==
-             ScriptTimingInfo::Type::kPromiseResolve ||
-         pending_script_info_->type == ScriptTimingInfo::Type::kPromiseReject);
-
-  MaybeAddScript(context, base::TimeTicks::Now());
+  if (pending_script_info_->type == ScriptTimingInfo::Type::kPromiseResolve ||
+      pending_script_info_->type == ScriptTimingInfo::Type::kPromiseReject) {
+    MaybeAddScript(context, base::TimeTicks::Now());
+  }
 }
 
 void AnimationFrameTimingMonitor::WillHandlePromise(
