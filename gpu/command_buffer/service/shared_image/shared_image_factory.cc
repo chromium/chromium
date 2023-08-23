@@ -830,6 +830,22 @@ bool SharedImageFactory::CopyToGpuMemoryBuffer(const Mailbox& mailbox) {
 }
 #endif
 
+bool SharedImageFactory::GetGpuMemoryBufferHandleInfo(
+    const Mailbox& mailbox,
+    gfx::GpuMemoryBufferHandle& handle,
+    viz::SharedImageFormat& format,
+    gfx::Size& size,
+    gfx::BufferUsage& buffer_usage) {
+  auto it = shared_images_.find(mailbox);
+  if (it == shared_images_.end()) {
+    LOG(ERROR)
+        << "GetGpuMemoryBufferHandleInfo: Could not find shared image mailbox";
+    return false;
+  }
+  (*it)->GetGpuMemoryBufferHandleInfo(handle, format, size, buffer_usage);
+  return true;
+}
+
 void SharedImageFactory::RegisterSharedImageBackingFactoryForTesting(
     SharedImageBackingFactory* factory) {
   backing_factory_for_testing_ = factory;

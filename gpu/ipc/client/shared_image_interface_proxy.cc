@@ -614,6 +614,44 @@ void SharedImageInterfaceProxy::NotifyMailboxAdded(const Mailbox& mailbox,
   AddMailbox(mailbox, usage);
 }
 
+SharedImageInterfaceProxy::GpuMemoryBufferHandleInfo
+SharedImageInterfaceProxy::GetGpuMemoryBufferHandleInfo(
+    const Mailbox& mailbox) {
+  // Check if the handle info is already present in the map.
+  {
+    base::AutoLock lock(lock_);
+    auto it = mailbox_infos_.find(mailbox);
+
+    // Mailbox for which query is made must be present.
+    CHECK(it != mailbox_infos_.end());
+    if (it->second.handle_info) {
+      return it->second.handle_info.value();
+    }
+  }
+
+  // If not present, then get it from service side via blocking call.
+  // Flush all the pending deferred messages first to send them to service side.
+  Flush();
+
+  // Get the handle info from service side. This call will be blocked on current
+  // thread which is client's calling thread.
+  gfx::GpuMemoryBufferHandle handle;
+  viz::SharedImageFormat format;
+  gfx::Size size;
+  gfx::BufferUsage buffer_usage;
+  host_->GetGpuMemoryBufferHandleInfo(mailbox, &handle, &format, &size,
+                                      &buffer_usage);
+  GpuMemoryBufferHandleInfo handle_info(std::move(handle), format, size,
+                                        buffer_usage);
+
+  // Cache the handle info in the map.
+  {
+    base::AutoLock lock(lock_);
+    mailbox_infos_[mailbox].handle_info = handle_info;
+  }
+  return handle_info;
+}
+
 SharedImageInterfaceProxy::SharedImageInfo::SharedImageInfo() = default;
 SharedImageInterfaceProxy::SharedImageInfo::~SharedImageInfo() = default;
 

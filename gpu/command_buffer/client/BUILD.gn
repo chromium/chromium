@@ -112,7 +112,10 @@ source_set("client_sources") {
       "//skia",
     ]
 
-    deps += [ "//skia:buildflags" ]
+    deps += [
+      "//gpu/ipc/common:ipc_common_sources",
+      "//skia:buildflags",
+    ]
   }
 }
 

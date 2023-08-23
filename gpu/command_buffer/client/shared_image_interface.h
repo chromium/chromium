@@ -7,12 +7,14 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/GrTypes.h"
@@ -45,6 +47,46 @@ class GpuMemoryBufferManager;
 // synchronized using SyncTokens. See //docs/design/gpu_synchronization.md.
 class GPU_EXPORT SharedImageInterface {
  public:
+  // Provides access to the CPU visible memory for the mailbox if it is being
+  // used for CPU READ/WRITE and underlying resource(native buffers/shared
+  // memory) is CPU mappable. Memory and strides can be requested for each
+  // plane.
+  class ScopedMapping {
+   public:
+    ~ScopedMapping();
+
+    // Returns a pointer to the beginning of the plane.
+    void* Memory(const uint32_t plane_index);
+
+    // Returns plane stride.
+    size_t Stride(const uint32_t plane_index);
+
+    // Returns BufferFormat.
+    gfx::BufferFormat Format();
+
+   private:
+    friend class ClientSharedImageInterface;
+
+    ScopedMapping();
+    static std::unique_ptr<ScopedMapping> Create(
+        gfx::GpuMemoryBufferHandle handle,
+        viz::SharedImageFormat format,
+        gfx::Size size,
+        gfx::BufferUsage buffer_usage);
+    bool Init(gfx::GpuMemoryBufferHandle handle,
+              viz::SharedImageFormat format,
+              gfx::Size size,
+              gfx::BufferUsage buffer_usage);
+
+    // ScopedMapping is essentially a wrapper around GpuMemoryBuffer for now for
+    // simplicity and will be removed later.
+    // TODO(crbug.com/1474697): Refactor/Rename GpuMemoryBuffer and its
+    // implementations  as the end goal after all clients using GMB are
+    // converted to use the ScopedMapping and notion of GpuMemoryBuffer is being
+    // removed.
+    std::unique_ptr<gpu::GpuMemoryBufferImpl> buffer_;
+  };
+
   virtual ~SharedImageInterface() = default;
 
   // Creates a shared image of requested |format|, |size| and |color_space|.
@@ -283,6 +325,14 @@ class GPU_EXPORT SharedImageInterface {
   // Informs that existing |mailbox| with |usage| can be passed to
   // DestroySharedImage().
   virtual void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
+
+  // Maps |mailbox| into CPU visible memory(if SharedImageUsage/BufferUsage are
+  // set to do CPU READ/WRITE) and returns a ScopedMapping object which can be
+  // used to read/write to the CPU mapped memory. Mailbox must have been created
+  // with CPU_READ/CPU_WRITE usage. Note that this call can be blocking
+  // and blocks on the clients thread only the first time for a given |mailbox|.
+  virtual std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
+      const Mailbox& mailbox);
 };
 
 }  // namespace gpu

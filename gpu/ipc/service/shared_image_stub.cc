@@ -148,6 +148,33 @@ void SharedImageStub::ExecuteDeferredRequest(
   }
 }
 
+bool SharedImageStub::GetGpuMemoryBufferHandleInfo(
+    const gpu::Mailbox& mailbox,
+    gfx::GpuMemoryBufferHandle& handle,
+    viz::SharedImageFormat& format,
+    gfx::Size& size,
+    gfx::BufferUsage& buffer_usage) {
+  TRACE_EVENT0("gpu", "SharedImageStub::GetGpuMemoryBufferHandleInfo");
+
+  if (!mailbox.IsSharedImage()) {
+    LOG(ERROR) << "SharedImageStub: Trying to access a SharedImage with a "
+                  "non-SharedImage mailbox.";
+    OnError();
+    return false;
+  }
+
+  // Note that we are not making |context_state_| current here as of now since
+  // it is not needed to get the handle from the backings. Make context current
+  // if we find that it is required.
+
+  if (!factory_->GetGpuMemoryBufferHandleInfo(mailbox, handle, format, size,
+                                              buffer_usage)) {
+    LOG(ERROR) << "SharedImageStub: Unable to get GpuMemoryBufferHandle";
+    return false;
+  }
+  return true;
+}
+
 bool SharedImageStub::CreateSharedImage(const Mailbox& mailbox,
                                         gfx::GpuMemoryBufferHandle handle,
                                         gfx::BufferFormat format,

@@ -116,6 +116,12 @@ class GPU_EXPORT GpuChannelHost
   // Generate a route ID guaranteed to be unique for this channel.
   int32_t GenerateRouteID();
 
+  void GetGpuMemoryBufferHandleInfo(const Mailbox& mailbox,
+                                    gfx::GpuMemoryBufferHandle* handle,
+                                    viz::SharedImageFormat* format,
+                                    gfx::Size* size,
+                                    gfx::BufferUsage* buffer_usage);
+
   // Crashes the GPU process. This functionality is added here because
   // of instability when creating a new tab just to navigate to
   // chrome://gpucrash . This only works when running tests and is

@@ -165,6 +165,10 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelMessageFilter
                            uint64_t decode_release_count) override;
   void FlushDeferredRequests(
       std::vector<mojom::DeferredRequestPtr> requests) override;
+
+  void GetGpuMemoryBufferHandleInfo(
+      const gpu::Mailbox& mailbox,
+      GetGpuMemoryBufferHandleInfoCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void CreateStreamTexture(
       int32_t stream_id,
@@ -361,6 +365,33 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
                        std::vector<::gpu::SyncToken>());
   }
 
+  scheduler_->ScheduleTasks(std::move(tasks));
+}
+
+void GpuChannelMessageFilter::GetGpuMemoryBufferHandleInfo(
+    const gpu::Mailbox& mailbox,
+    GetGpuMemoryBufferHandleInfoCallback callback) {
+  TRACE_EVENT0("viz", __PRETTY_FUNCTION__);
+  base::AutoLock auto_lock(gpu_channel_lock_);
+  int32_t routing_id =
+      static_cast<int32_t>(GpuChannelReservedRoutes::kSharedImageInterface);
+  auto it = route_sequences_.find(routing_id);
+  if (it == route_sequences_.end()) {
+    LOG(ERROR) << "Invalid route id in flush list.";
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle(),
+                            viz::SharedImageFormat(), gfx::Size(),
+                            gfx::BufferUsage::GPU_READ);
+    return;
+  }
+  std::vector<Scheduler::Task> tasks;
+  tasks.emplace_back(
+      it->second,
+      base::BindOnce(
+          &gpu::GpuChannel::GetGpuMemoryBufferHandleInfo,
+          gpu_channel_->AsWeakPtr(), mailbox,
+          base::BindPostTask(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                             std::move(callback))),
+      std::vector<::gpu::SyncToken>());
   scheduler_->ScheduleTasks(std::move(tasks));
 }
 
@@ -736,6 +767,23 @@ void GpuChannel::ExecuteDeferredRequest(
       shared_image_stub_->ExecuteDeferredRequest(
           std::move(params->get_shared_image_request()));
       break;
+  }
+}
+
+void GpuChannel::GetGpuMemoryBufferHandleInfo(
+    const gpu::Mailbox& mailbox,
+    mojom::GpuChannel::GetGpuMemoryBufferHandleInfoCallback callback) {
+  gfx::GpuMemoryBufferHandle handle;
+  viz::SharedImageFormat format;
+  gfx::Size size;
+  gfx::BufferUsage buffer_usage;
+  if (shared_image_stub_->GetGpuMemoryBufferHandleInfo(mailbox, handle, format,
+                                                       size, buffer_usage)) {
+    std::move(callback).Run(std::move(handle), format, size, buffer_usage);
+  } else {
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle(),
+                            viz::SharedImageFormat(), gfx::Size(),
+                            gfx::BufferUsage::GPU_READ);
   }
 }
 

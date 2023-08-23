@@ -149,6 +149,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
   // Executes a DeferredRequest that was previously received and has now been
   // scheduled by the scheduler.
   void ExecuteDeferredRequest(mojom::DeferredRequestParamsPtr params);
+  void GetGpuMemoryBufferHandleInfo(
+      const gpu::Mailbox& mailbox,
+      mojom::GpuChannel::GetGpuMemoryBufferHandleInfoCallback callback);
   void PerformImmediateCleanup();
 
   void WaitForTokenInRange(

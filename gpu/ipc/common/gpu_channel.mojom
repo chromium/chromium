@@ -168,6 +168,16 @@ interface GpuChannel {
   // Sends a batch of DeferredRequests to be executed by the service.
   FlushDeferredRequests(array<DeferredRequest> requests);
 
+  // Gets the GpuMemoryBufferHandle for the corresponding `mailbox` from
+  // service side. Note that this needs to be a blocking call on calling
+  // client's thread in order to return the GpuMemoryBufferHandle and other
+  // metadata required by client to map the mailbox to CPU memory before it can
+  // read/write from/to it.
+  [Sync] GetGpuMemoryBufferHandleInfo(gpu.mojom.Mailbox mailbox)
+  => (gfx.mojom.GpuMemoryBufferHandle buffer_handle,
+      viz.mojom.SharedImageFormat format, gfx.mojom.Size size,
+      gfx.mojom.BufferUsage buffer_usage);
+
   // Creates a StreamTexture associated with the given `stream_id`.
   [Sync, EnableIf=is_android] CreateStreamTexture(
       int32 stream_id,

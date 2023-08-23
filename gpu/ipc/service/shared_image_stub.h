@@ -35,6 +35,12 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub : public MemoryTracker {
   // Executes a DeferredRequest routed to this stub by a GpuChannel.
   void ExecuteDeferredRequest(mojom::DeferredSharedImageRequestPtr request);
 
+  bool GetGpuMemoryBufferHandleInfo(const gpu::Mailbox& mailbox,
+                                    gfx::GpuMemoryBufferHandle& handle,
+                                    viz::SharedImageFormat& format,
+                                    gfx::Size& size,
+                                    gfx::BufferUsage& buffer_usage);
+
   // MemoryTracker implementation:
   void TrackMemoryAllocatedChange(int64_t delta) override;
   uint64_t GetSize() const override;

@@ -141,6 +141,11 @@ class GPU_GLES2_EXPORT SharedImageFactory {
 #endif
 
   void SetGpuExtraInfo(const gfx::GpuExtraInfo& gpu_info);
+  bool GetGpuMemoryBufferHandleInfo(const Mailbox& mailbox,
+                                    gfx::GpuMemoryBufferHandle& handle,
+                                    viz::SharedImageFormat& format,
+                                    gfx::Size& size,
+                                    gfx::BufferUsage& buffer_usage);
 
   void RegisterSharedImageBackingFactoryForTesting(
       SharedImageBackingFactory* factory);

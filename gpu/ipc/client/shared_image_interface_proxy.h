@@ -5,6 +5,8 @@
 #ifndef GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 #define GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 
+#include <unordered_map>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -26,6 +28,57 @@ class SharedImageInterfaceProxy {
  public:
   explicit SharedImageInterfaceProxy(GpuChannelHost* host, int32_t route_id);
   ~SharedImageInterfaceProxy();
+
+  struct GpuMemoryBufferHandleInfo {
+    GpuMemoryBufferHandleInfo() = default;
+    GpuMemoryBufferHandleInfo(gfx::GpuMemoryBufferHandle handle,
+                              viz::SharedImageFormat format,
+                              gfx::Size size,
+                              gfx::BufferUsage buffer_usage)
+        : handle(std::move(handle)),
+          format(format),
+          size(size),
+          buffer_usage(buffer_usage) {}
+    ~GpuMemoryBufferHandleInfo() = default;
+
+    GpuMemoryBufferHandleInfo(const GpuMemoryBufferHandleInfo& other) {
+      handle = other.handle.Clone();
+      format = other.format;
+      size = other.size;
+      buffer_usage = other.buffer_usage;
+    }
+
+    GpuMemoryBufferHandleInfo& operator=(
+        const GpuMemoryBufferHandleInfo& other) {
+      handle = other.handle.Clone();
+      format = other.format;
+      size = other.size;
+      buffer_usage = other.buffer_usage;
+      return *this;
+    }
+
+    gfx::GpuMemoryBufferHandle handle;
+    viz::SharedImageFormat format;
+    gfx::Size size;
+    gfx::BufferUsage buffer_usage;
+  };
+
+  struct SharedImageInfo {
+    SharedImageInfo();
+    ~SharedImageInfo();
+
+    SharedImageInfo(SharedImageInfo&&);
+    SharedImageInfo& operator=(SharedImageInfo&&);
+
+    SharedImageInfo(const SharedImageInfo&) = delete;
+    SharedImageInfo& operator=(const SharedImageInfo&) = delete;
+
+    int ref_count = 0;
+    uint32_t usage = 0;
+    std::vector<SyncToken> destruction_sync_tokens;
+    absl::optional<GpuMemoryBufferHandleInfo> handle_info = absl::nullopt;
+  };
+
   Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
@@ -109,22 +162,10 @@ class SharedImageInterfaceProxy {
   uint32_t UsageForMailbox(const Mailbox& mailbox);
   void NotifyMailboxAdded(const Mailbox& mailbox, uint32_t usage);
 
+  GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
+      const Mailbox& mailbox);
+
  private:
-  struct SharedImageInfo {
-    SharedImageInfo();
-    ~SharedImageInfo();
-
-    SharedImageInfo(SharedImageInfo&&);
-    SharedImageInfo& operator=(SharedImageInfo&&);
-
-    SharedImageInfo(const SharedImageInfo&) = delete;
-    SharedImageInfo& operator=(const SharedImageInfo&) = delete;
-
-    int ref_count = 0;
-    uint32_t usage = 0;
-    std::vector<SyncToken> destruction_sync_tokens;
-  };
-
   bool GetSHMForPixelData(base::span<const uint8_t> pixel_data,
                           size_t* shm_offset,
                           bool* done_with_shm) EXCLUSIVE_LOCKS_REQUIRED(lock_);
