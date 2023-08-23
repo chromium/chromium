@@ -96,6 +96,9 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
 
   ScopedCFTypeRef<CFStringRef> item_ref(
       base::SysUTF8ToCFStringRef(keychain_identifier));
+  if (item_ref == nil) {
+    return false;
+  }
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
