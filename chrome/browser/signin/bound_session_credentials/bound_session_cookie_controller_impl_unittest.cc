@@ -26,7 +26,6 @@
 #include "content/public/test/test_storage_partition.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -59,8 +58,7 @@ class BoundSessionCookieControllerImplTest
 
     std::vector<uint8_t> wrapped_key = GetWrappedKey(key_id_);
     bound_session_credentials::RegistrationParams registration_params;
-    registration_params.set_site(
-        GaiaUrls::GetInstance()->secure_google_url().spec());
+    registration_params.set_site("https://google.com");
     registration_params.set_session_id("test_session_id");
     registration_params.set_wrapped_key(
         std::string(wrapped_key.begin(), wrapped_key.end()));

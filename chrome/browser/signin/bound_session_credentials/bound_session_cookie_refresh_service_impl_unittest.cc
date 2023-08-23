@@ -23,7 +23,6 @@
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_storage_partition.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,15 +98,6 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
   std::vector<base::OnceClosure> resume_blocked_requests_;
   std::vector<uint8_t> wrapped_key_;
 };
-
-bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
-  bound_session_credentials::RegistrationParams params;
-  params.set_site(GaiaUrls::GetInstance()->secure_google_url().spec());
-  params.set_session_id("test_session_id");
-  params.set_wrapped_key(kWrappedKey);
-  return params;
-}
-
 }  // namespace
 
 class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
@@ -201,6 +191,14 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionParams());
     EXPECT_FALSE(cookie_controller());
     EXPECT_FALSE(prefs()->HasPrefPath(kRegistrationParamsPref));
+  }
+
+  bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
+    bound_session_credentials::RegistrationParams params;
+    params.set_site(kTestGaiaURL.spec());
+    params.set_session_id("test_session_id");
+    params.set_wrapped_key(kWrappedKey);
+    return params;
   }
 
  private:
