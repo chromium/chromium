@@ -142,6 +142,8 @@ public final class ProductionSupportedFlagList {
                     VizFeatures.WEBVIEW_VULKAN_INTERMEDIATE_BUFFER, "For debugging vulkan"),
             Flag.baseFeature(VizFeatures.ALLOW_UNDAMAGED_NONROOT_RENDER_PASS_TO_SKIP,
                     "Enable optimization for skipping undamaged nonroot render passes."),
+            Flag.baseFeature(VizFeatures.DRAW_IMMEDIATELY_WHEN_INTERACTIVE,
+                    "Enable optimization for immediate activation and draw when interactive."),
             Flag.baseFeature(
                     GpuFeatures.USE_GLES2_FOR_OOP_R, "Force Skia context to use es2 only."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CONNECTIONLESS_SAFE_BROWSING,
