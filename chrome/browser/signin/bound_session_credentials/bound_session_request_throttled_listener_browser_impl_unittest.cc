@@ -34,8 +34,6 @@ class FakeBoundSessionCookieRefreshService
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override {
   }
 
-  bool IsBoundSession() const override { return true; }
-
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override {
     return chrome::mojom::BoundSessionParams::New();
   }

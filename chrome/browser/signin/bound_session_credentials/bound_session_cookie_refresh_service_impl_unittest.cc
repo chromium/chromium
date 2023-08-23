@@ -189,16 +189,16 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   void VerifyBoundSession() {
     CHECK(cookie_refresh_service_);
-    EXPECT_TRUE(cookie_refresh_service_->IsBoundSession());
     EXPECT_TRUE(cookie_refresh_service_->GetBoundSessionParams());
+    EXPECT_TRUE(prefs()->HasPrefPath(kRegistrationParamsPref));
     EXPECT_TRUE(cookie_controller());
   }
 
   void VerifyNoBoundSession() {
     CHECK(cookie_refresh_service_);
-    EXPECT_FALSE(cookie_refresh_service_->IsBoundSession());
     EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionParams());
     EXPECT_FALSE(cookie_controller());
+    EXPECT_FALSE(prefs()->HasPrefPath(kRegistrationParamsPref));
   }
 
  private:
@@ -213,8 +213,8 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   SetupPreConditionForBoundSession();
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  GetCookieRefreshServiceImpl();
+  VerifyBoundSession();
   FakeBoundSessionCookieController* controller = cookie_controller();
   EXPECT_TRUE(controller);
   EXPECT_EQ(controller->url(), kTestGaiaURL);
@@ -238,7 +238,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
        VerifyBoundSessionParamsBoundSession) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  ASSERT_TRUE(cookie_controller());
 
   chrome::mojom::BoundSessionParamsPtr bound_session_params =
       service->GetBoundSessionParams();
@@ -250,10 +250,9 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
        RefreshBoundSessionCookieBoundSession) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  EXPECT_TRUE(cookie_controller());
   base::test::TestFuture<void> future;
   service->OnRequestBlockedOnCookie(future.GetCallback());
-  EXPECT_TRUE(cookie_controller());
 
   EXPECT_FALSE(future.IsReady());
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
@@ -263,7 +262,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        RefreshBoundSessionCookieUnboundSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_FALSE(service->IsBoundSession());
+  EXPECT_FALSE(cookie_controller());
 
   // Unbound session, the callback should be called immediately.
   base::test::TestFuture<void> future;
@@ -274,7 +273,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        UpdateAllRenderersOnBoundSessionStarted) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_FALSE(service->IsBoundSession());
+  EXPECT_FALSE(cookie_controller());
+  EXPECT_FALSE(service->GetBoundSessionParams());
   base::MockRepeatingCallback<void()> renderer_updater;
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetRendererUpdater(renderer_updater.Get());
@@ -282,7 +282,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   // Create bound session.
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
-    EXPECT_TRUE(service->IsBoundSession());
+    EXPECT_TRUE(cookie_controller());
     EXPECT_FALSE(service->GetBoundSessionParams().is_null());
   });
   service->RegisterNewBoundSession(CreateTestRegistrationParams());
@@ -295,7 +295,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  EXPECT_TRUE(cookie_controller());
   SetRendererUpdater(renderer_updater.Get());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
@@ -305,7 +305,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
-    EXPECT_TRUE(service->IsBoundSession());
+    EXPECT_TRUE(cookie_controller());
     EXPECT_FALSE(service->GetBoundSessionParams().is_null());
   });
   cookie_controller()->SimulateOnCookieExpirationDateChanged(k3PSIDTSCookieName,
@@ -318,8 +318,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   base::MockRepeatingCallback<void()> renderer_updater;
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetupPreConditionForBoundSession();
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  GetCookieRefreshServiceImpl();
+  EXPECT_TRUE(cookie_controller());
   SetRendererUpdater(renderer_updater.Get());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
@@ -333,7 +333,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
   EXPECT_TRUE(service->GetBoundSessionParams());
 
   cookie_controller()->SimulateTerminateSession();
@@ -377,7 +376,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
        AddBoundSessionRequestThrottledListenerReceivers) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->IsBoundSession());
+  ASSERT_TRUE(cookie_controller());
   mojo::Remote<chrome::mojom::BoundSessionRequestThrottledListener> listener_1;
   mojo::Remote<chrome::mojom::BoundSessionRequestThrottledListener> listener_2;
   service->AddBoundSessionRequestThrottledListenerReceiver(
@@ -401,12 +400,10 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  VerifyNoBoundSession();
 
   service->RegisterNewBoundSession(CreateTestRegistrationParams());
-  EXPECT_TRUE(service->IsBoundSession());
-  EXPECT_TRUE(cookie_controller());
+  VerifyBoundSession();
   // TODO(http://b/286222327): check registration params once they are
   // properly passed to controller.
 }
@@ -419,7 +416,6 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, OverrideExistingBoundSession) {
   new_params.set_session_id("test_session_id_2");
   service->RegisterNewBoundSession(new_params);
 
-  EXPECT_TRUE(service->IsBoundSession());
   EXPECT_TRUE(cookie_controller());
   // TODO(http://b/286222327): check registration params once they are
   // properly passed to controller.

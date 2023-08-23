@@ -45,9 +45,6 @@ class BoundSessionCookieRefreshService
   virtual void MaybeTerminateSession(
       const net::HttpResponseHeaders* headers) = 0;
 
-  // Returns true if session is bound.
-  virtual bool IsBoundSession() const = 0;
-
   // Returns bound session params.
   virtual chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams()
       const = 0;

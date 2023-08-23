@@ -8,7 +8,6 @@
 
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
@@ -19,7 +18,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "content/public/browser/storage_partition.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -47,7 +45,11 @@ void BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
 }
 
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
-  OnBoundSessionUpdated();
+  absl::optional<bound_session_credentials::RegistrationParams>
+      registration_params = GetRegistrationParams();
+  if (registration_params.has_value()) {
+    InitializeBoundSession(registration_params.value());
+  }
 }
 
 void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
@@ -59,9 +61,8 @@ void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
     return;
   }
   // New session should override an existing one.
-  ResetBoundSession();
-
-  OnBoundSessionUpdated();
+  cookie_controller_.reset();
+  InitializeBoundSession(params);
 }
 
 void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
@@ -76,10 +77,6 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
     // TODO(b/293433229): Verify `session_id` matches the current session's id.
     TerminateSession();
   }
-}
-
-bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {
-  return pref_service_->HasPrefPath(kRegistrationParamsPref);
 }
 
 chrome::mojom::BoundSessionParamsPtr
@@ -106,12 +103,11 @@ void BoundSessionCookieRefreshServiceImpl::
 
 void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
     OnRequestBlockedOnCookieCallback resume_blocked_request) {
-  if (!IsBoundSession()) {
+  if (!cookie_controller_) {
     // Session has been terminated.
     std::move(resume_blocked_request).Run();
     return;
   }
-  CHECK(cookie_controller_);
   cookie_controller_->OnRequestBlockedOnCookie(
       std::move(resume_blocked_request));
 }
@@ -197,8 +193,9 @@ void BoundSessionCookieRefreshServiceImpl::OnBoundSessionParamsChanged() {
 }
 
 void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
+  cookie_controller_.reset();
   pref_service_->ClearPref(kRegistrationParamsPref);
-  OnBoundSessionUpdated();
+  UpdateAllRenderers();
 }
 
 std::unique_ptr<BoundSessionCookieController>
@@ -213,33 +210,15 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
                                                    cookie_names, this);
 }
 
-void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession() {
+void BoundSessionCookieRefreshServiceImpl::InitializeBoundSession(
+    const bound_session_credentials::RegistrationParams& registration_params) {
   CHECK(!cookie_controller_);
   constexpr char k1PSIDTSCookieName[] = "__Secure-1PSIDTS";
   constexpr char k3PSIDTSCookieName[] = "__Secure-3PSIDTS";
 
-  absl::optional<bound_session_credentials::RegistrationParams>
-      registration_params = GetRegistrationParams();
-  if (!registration_params) {
-    TerminateSession();
-    return;
-  }
-
   cookie_controller_ = CreateBoundSessionCookieController(
-      registration_params.value(), {k1PSIDTSCookieName, k3PSIDTSCookieName});
+      registration_params, {k1PSIDTSCookieName, k3PSIDTSCookieName});
   cookie_controller_->Initialize();
-}
-
-void BoundSessionCookieRefreshServiceImpl::ResetBoundSession() {
-  cookie_controller_.reset();
-}
-
-void BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated() {
-  if (!IsBoundSession()) {
-    ResetBoundSession();
-  } else {
-    InitializeBoundSession();
-  }
   UpdateAllRenderers();
 }
 

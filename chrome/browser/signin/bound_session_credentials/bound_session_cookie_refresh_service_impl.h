@@ -53,7 +53,6 @@ class BoundSessionCookieRefreshServiceImpl
   void RegisterNewBoundSession(
       const bound_session_credentials::RegistrationParams& params) override;
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
-  bool IsBoundSession() const override;
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
   void AddBoundSessionRequestThrottledListenerReceiver(
       mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
@@ -109,9 +108,8 @@ class BoundSessionCookieRefreshServiceImpl
   CreateBoundSessionCookieController(
       const bound_session_credentials::RegistrationParams& registration_params,
       const base::flat_set<std::string>& cookie_names);
-  void InitializeBoundSession();
-  void ResetBoundSession();
-  void OnBoundSessionUpdated();
+  void InitializeBoundSession(
+      const bound_session_credentials::RegistrationParams& registration_params);
 
   void UpdateAllRenderers();
 
