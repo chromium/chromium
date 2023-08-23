@@ -21,20 +21,6 @@
 
 namespace lens {
 
-bool IsValidLensResultUrl(const GURL& url) {
-  if (url.is_empty())
-    return false;
-
-  std::string payload;
-  // Make sure the payload is present
-  return net::GetValueForKeyInQuery(url, kPayloadQueryParameter, &payload);
-}
-
-bool IsLensUrl(const GURL& url) {
-  return !url.is_empty() &&
-         url.host() == GURL(lens::features::GetHomepageURLForLens()).host();
-}
-
 bool ShouldPageBeVisible(const GURL& url) {
   return lens::IsValidLensResultUrl(url) || !lens::IsLensUrl(url) ||
          !lens::features::GetEnableLensHtmlRedirectFix();

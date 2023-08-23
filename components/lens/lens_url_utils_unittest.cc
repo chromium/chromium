@@ -307,4 +307,16 @@ TEST(LensUrlUtilsTest, AppendNonSidePanelSettingsRemovesViewportSizeTest) {
   EXPECT_THAT(url.query(), MatchesRegex("p=123&ep=ccm&re=df&s=4&st=\\d+"));
 }
 
+TEST(LensUrlUtilsTest, AppendStartTimeUpdatesParamForLensUrlTest) {
+  GURL original_url = GURL("https://lens.google.com/search?p=123");
+  GURL url = lens::AppendOrReplaceStartTimeIfLensRequest(original_url);
+  EXPECT_THAT(url.query(), MatchesRegex("p=123&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, AppendStartTimeIgnoresNonLensUrlTest) {
+  GURL original_url = GURL("https://not-lens.com/search?p=123");
+  GURL url = lens::AppendOrReplaceStartTimeIfLensRequest(original_url);
+  EXPECT_THAT(url.query(), MatchesRegex("p=123"));
+}
+
 }  // namespace lens
