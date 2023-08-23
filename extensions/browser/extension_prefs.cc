@@ -405,7 +405,7 @@ base::Value::List* ExtensionPrefs::ScopedListUpdate::Ensure() {
 //
 
 // static
-ExtensionPrefs* ExtensionPrefs::Create(
+std::unique_ptr<ExtensionPrefs> ExtensionPrefs::Create(
     content::BrowserContext* browser_context,
     PrefService* prefs,
     const base::FilePath& root_dir,
@@ -418,7 +418,7 @@ ExtensionPrefs* ExtensionPrefs::Create(
 }
 
 // static
-ExtensionPrefs* ExtensionPrefs::Create(
+std::unique_ptr<ExtensionPrefs> ExtensionPrefs::Create(
     content::BrowserContext* browser_context,
     PrefService* pref_service,
     const base::FilePath& root_dir,
@@ -426,9 +426,9 @@ ExtensionPrefs* ExtensionPrefs::Create(
     bool extensions_disabled,
     const std::vector<EarlyExtensionPrefsObserver*>& early_observers,
     base::Clock* clock) {
-  return new ExtensionPrefs(browser_context, pref_service, root_dir,
-                            extension_pref_value_map, clock,
-                            extensions_disabled, early_observers);
+  return std::make_unique<ExtensionPrefs>(
+      browser_context, pref_service, root_dir, extension_pref_value_map, clock,
+      extensions_disabled, early_observers);
 }
 
 ExtensionPrefs::~ExtensionPrefs() {

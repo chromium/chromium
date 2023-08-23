@@ -378,12 +378,12 @@ void TestingProfile::Init(bool is_supervised_profile) {
     bool extensions_disabled =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kDisableExtensions);
-    std::unique_ptr<extensions::ExtensionPrefs> extension_prefs(
+    std::unique_ptr<extensions::ExtensionPrefs> extension_prefs =
         extensions::ExtensionPrefs::Create(
             this, GetPrefs(), extensions_path_,
             ExtensionPrefValueMapFactory::GetForBrowserContext(this),
             extensions_disabled,
-            std::vector<extensions::EarlyExtensionPrefsObserver*>()));
+            std::vector<extensions::EarlyExtensionPrefsObserver*>());
     extensions::ExtensionPrefsFactory::GetInstance()->SetInstanceForTesting(
         this, std::move(extension_prefs));
 

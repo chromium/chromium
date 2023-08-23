@@ -162,7 +162,7 @@ class ExtensionPrefs : public KeyedService {
   // content settings do not become effective. EarlyExtensionPrefsObservers
   // should be included in |early_observers| if they need to observe events
   // which occur during initialization of the ExtensionPrefs object.
-  static ExtensionPrefs* Create(
+  static std::unique_ptr<ExtensionPrefs> Create(
       content::BrowserContext* browser_context,
       PrefService* prefs,
       const base::FilePath& root_dir,
@@ -172,7 +172,7 @@ class ExtensionPrefs : public KeyedService {
 
   // A version of Create which allows injection of a custom base::Time provider.
   // Use this as needed for testing.
-  static ExtensionPrefs* Create(
+  static std::unique_ptr<ExtensionPrefs> Create(
       content::BrowserContext* browser_context,
       PrefService* prefs,
       const base::FilePath& root_dir,
@@ -180,6 +180,16 @@ class ExtensionPrefs : public KeyedService {
       bool extensions_disabled,
       const std::vector<EarlyExtensionPrefsObserver*>& early_observers,
       base::Clock* clock);
+
+  // See the Create methods.
+  ExtensionPrefs(
+      content::BrowserContext* browser_context,
+      PrefService* prefs,
+      const base::FilePath& root_dir,
+      ExtensionPrefValueMap* extension_pref_value_map,
+      base::Clock* clock,
+      bool extensions_disabled,
+      const std::vector<EarlyExtensionPrefsObserver*>& early_observers);
 
   ExtensionPrefs(const ExtensionPrefs&) = delete;
   ExtensionPrefs& operator=(const ExtensionPrefs&) = delete;
@@ -800,16 +810,6 @@ class ExtensionPrefs : public KeyedService {
   friend class ExtensionPrefsMigratesToLastUpdateTime;  // Unit test.
   friend class
       ExtensionPrefsBitMapPrefValueClearedIfEqualsDefaultValue;  // Unit test.
-
-  // See the Create methods.
-  ExtensionPrefs(
-      content::BrowserContext* browser_context,
-      PrefService* prefs,
-      const base::FilePath& root_dir,
-      ExtensionPrefValueMap* extension_pref_value_map,
-      base::Clock* clock,
-      bool extensions_disabled,
-      const std::vector<EarlyExtensionPrefsObserver*>& early_observers);
 
   // Updates ExtensionPrefs for a specific extension.
   void UpdateExtensionPrefInternal(const std::string& id,
