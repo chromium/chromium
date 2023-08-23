@@ -12,14 +12,13 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:paddingVertical="2dp"
-    android:paddingHorizontal="8dp"
+    android:paddingVertical="4dp"
     android:background="@drawable/shopping_accessory_view_background">
     <ImageView
         android:id="@+id/price_tracked_icon"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:layout_marginEnd="5dp"
+        android:layout_marginEnd="4dp"
         android:importantForAccessibility="no"
         android:src="@drawable/price_tracking_enabled_outline"
         android:scaleType="centerInside" />
@@ -34,7 +33,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextAppearance.ShoppingPriceDropText"
-        android:layout_marginEnd="5dp" />
+        android:layout_marginEnd="4dp" />
     <TextView
         android:id="@+id/original_price_text"
         android:visibility="gone"

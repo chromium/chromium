@@ -57,7 +57,11 @@ public class ShoppingAccessoryView extends FrameLayout {
         mPriceTrackedIcon.setVisibility(tracked ? View.VISIBLE : View.GONE);
         mContainer.setBackgroundResource(
                 tracked ? R.drawable.shopping_accessory_view_background : Resources.ID_NULL);
-
+        if (tracked) {
+            int padding = getContext().getResources().getDimensionPixelSize(
+                    R.dimen.shopping_chip_padding);
+            mContainer.setPadding(padding, 0, padding, 0);
+        }
         // Changing the tracked status should update the price info, since the background might
         // not have been updated.
         if (mInfo != null) setPriceInfo(mInfo);
