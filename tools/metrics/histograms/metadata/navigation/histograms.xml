@@ -1716,7 +1716,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.BookmarkBar.EnterToPressDuration{ButtonType}"
-    units="ms" expires_after="2023-09-24">
+    units="ms" expires_after="2024-02-24">
   <owner>robertlin@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -1732,7 +1732,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.BookmarkBar.HoverDuration{OriginType}.{ConversionResultType}"
-    units="ms" expires_after="2023-09-24">
+    units="ms" expires_after="2024-02-24">
   <owner>robertlin@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
