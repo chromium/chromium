@@ -7637,6 +7637,21 @@
             ]
         }
     ],
+    "IOSBackgroundPasteboardAccess": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CanaryDev",
+                    "enable_features": [
+                        "OnlyAccessClipboardAsync"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSBackgroundRefresh": [
         {
             "platforms": [
