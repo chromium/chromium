@@ -320,8 +320,8 @@ def _run_with_weston(cmd, env, stdoutfile, cwd):
     # of windows.
     # 5) --config=... - tells Weston to use our custom config.
     weston_cmd = ['./weston', '--backend=headless-backend.so', '--idle-time=0',
-          '--modules=test-plugin.so,systemd-notify.so', '--width=1024',
-          '--height=768', '--config=' + _weston_config_file_path()]
+          '--modules=test-plugin.so,systemd-notify.so', '--width=1280',
+          '--height=800', '--config=' + _weston_config_file_path()]
 
     if '--weston-use-gl' in cmd:
       # Runs Weston using hardware acceleration instead of SwiftShader.
