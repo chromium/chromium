@@ -133,6 +133,7 @@ void PolicyDialogBase::SetupScrollView() {
   scroll_view->ClipHeightTo(0, kConfidentialContentListMaxHeight);
   scroll_view_container_ =
       scroll_view->SetContents(std::make_unique<views::View>());
+  scroll_view_container_->SetID(kScrollViewId);
   views::BoxLayout* layout = scroll_view_container_->SetLayoutManager(
       std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, kConfidentialListInsets,

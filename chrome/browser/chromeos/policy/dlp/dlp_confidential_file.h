@@ -29,9 +29,9 @@ struct DlpConfidentialFile {
   bool operator>(const DlpConfidentialFile& other) const;
   bool operator>=(const DlpConfidentialFile& other) const;
 
-  // File icon used to display in the warning dialog.
+  // File icon used to display in the warning/error dialog.
   gfx::ImageSkia icon;
-  // File name used to display in the warning dialog.
+  // File name used to display in the warning/error dialog.
   std::u16string title;
   // File path used to retrieve |icon| and |title|.
   base::FilePath file_path;

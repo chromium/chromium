@@ -36,6 +36,13 @@ class PolicyDialogBase : public views::DialogDelegateView {
     kFiles
   };
 
+  // ViewIds to query different Views of this dialog using View::GetViewByID().
+  // Used for testing the dialog.
+  enum ViewIds {
+    kScrollViewId = 1,
+    kConfidentialRowTitleViewId,
+  };
+
   PolicyDialogBase();
   PolicyDialogBase(const PolicyDialogBase& other) = delete;
   PolicyDialogBase& operator=(const PolicyDialogBase& other) = delete;

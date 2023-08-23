@@ -129,6 +129,7 @@ void FilesPolicyDialog::AddConfidentialRow(const gfx::ImageSkia& icon,
   AddRowIcon(icon, row);
 
   views::Label* title_label = AddRowTitle(title, row);
+  title_label->SetID(PolicyDialogBase::kConfidentialRowTitleViewId);
   title_label->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));

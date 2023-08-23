@@ -436,6 +436,12 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
           features::kFileTransferEnterpriseConnectorUI)) {
     blocked_files_++;
     connectors_blocked_files_.push_back(source_url.path());
+    if (blocked_file_name_.empty()) {
+      blocked_file_name_ = util::GetDisplayablePath(profile_, source_url.path())
+                               .value_or(base::FilePath())
+                               .BaseName()
+                               .value();
+    }
   }
 
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);

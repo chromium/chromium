@@ -173,6 +173,9 @@ class FileManagerBrowserTestBase
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
 
+    // Whether test should enable the new UX for the file transfer connector.
+    bool enable_file_transfer_connector_new_ux = false;
+
     // Whether test should use report-only mode for the file transfer connector.
     bool file_transfer_connector_report_only = false;
 
@@ -242,6 +245,8 @@ class FileManagerBrowserTestBase
   // Returns an account id used for a test. The base class provides a default
   // implementation.
   virtual AccountId GetAccountId();
+
+  content::WebContents* GetWebContentsForId(const std::string& app_id);
 
   // Launches the test extension from GetTestExtensionManifestName() and uses
   // it to drive the testing the actual FileManager component extension under

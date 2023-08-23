@@ -53,9 +53,8 @@ class TransferInfo {
    * @param{{
          source: !TransferLocationInfo,
          destination: !TransferLocationInfo,
-         expectedDialogText: string,
          isMove: boolean,
-         expectFailure: boolean,
+         shouldShowReviewForErrors: boolean,
      }} opts Options for creating TransferInfo.
    */
   constructor(opts) {
@@ -79,10 +78,11 @@ class TransferInfo {
     this.isMove = opts.isMove || false;
 
     /**
-     * Whether the test is expected to fail, i.e. transferring blocked files.
+     * Whether the test is expected to show a review button + dialog in the
+     * error dialog.
      * @type {!boolean}
      */
-    this.expectFailure = opts.expectFailure || false;
+    this.shouldShowReviewForErrors = opts.shouldShowReviewForErrors || false;
   }
 }
 
@@ -194,6 +194,17 @@ const CONNECTOR_ENTRIES_DEEP = [
     sizeText: '886 bytes',
     typeText: 'JPEG image',
   }),
+
+  new TestEntryInfo({
+    type: EntryType.FILE,
+    targetPath: 'A/C/k_blocked.jpg',
+    sourceFileName: 'small.jpg',
+    mimeType: 'image/jpeg',
+    lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+    nameText: 'k_blocked.jpg',
+    sizeText: '886 bytes',
+    typeText: 'JPEG image',
+  }),
 ];
 
 /**
@@ -260,6 +271,8 @@ const OLD_MOVE_FAIL_FILE_MESSAGE =
 
 const NEW_COPY_FAIL_MESSAGE = 'File blocked from copying';
 const NEW_MOVE_FAIL_MESSAGE = `File blocked from moving`;
+const TWO_FILES_COPY_FAIL_MESSAGE = '2 files blocked from copying';
+const TWO_FILES_MOVE_FAIL_MESSAGE = '2 files blocked from moving';
 
 /**
  * Opens a Files app's main window and creates the source and destination
@@ -357,6 +370,34 @@ async function showAllPlayFiles(appId) {
 
   // Wait for item to be checked.
   await remoteCall.waitForElement(appId, toggleMenuItemSelector + '[checked]');
+}
+
+/**
+ * Checks that the panel item's primary and secondary buttons have expected type
+ * and text, and then clicks the button defined by selectedButton.
+ * @param {string} appId ID of the Files app window.
+ * @param {string} secondaryButtonCategory Expected secondary button category
+ *     (dismiss or cancel).
+ * @param {string} selectedButton The button to click (primary or secondary).
+ */
+async function verifyPanelButtonsAndClick(
+    appId, secondaryButtonCategory, selectedButton) {
+  const primaryButton = await remoteCall.waitForElement(
+      appId, ['#progress-panel', 'xf-panel-item', 'xf-button#primary-action']);
+  chrome.test.assertEq(
+      'extra-button', primaryButton.attributes['data-category']);
+
+  const secondaryButton = await remoteCall.waitForElement(
+      appId,
+      ['#progress-panel', 'xf-panel-item', 'xf-button#secondary-action']);
+  chrome.test.assertEq(
+      secondaryButtonCategory, secondaryButton.attributes['data-category']);
+
+  await remoteCall.waitAndClickElement(appId, [
+    '#progress-panel',
+    'xf-panel-item',
+    `xf-button#${selectedButton}-action`,
+  ]);
 }
 
 /**
@@ -529,7 +570,6 @@ async function verifyAfterPasteBlocking(
       appId, expectedSourceEntries, transferInfo.source.breadcrumbsPath);
 
   // Check that the error appears in the feedback panel.
-  // TODO(crbug.com/1361898): Adapt this check for proper error details.
   let element = {};
   await repeatUntil(async () => {
     element = await remoteCall.waitForElement(
@@ -547,8 +587,33 @@ async function verifyAfterPasteBlocking(
             actualMsg}"`);
   });
 
-  // Check that only one line of text is shown.
-  chrome.test.assertFalse(!!element.attributes['secondary-text']);
+  const usesNewFileTransferConnectorUI =
+      await sendTestMessage({name: 'usesNewFileTransferConnectorUI'}) ===
+      'true';
+
+  const expectedNumberOfBlockedFilesByConnectors = await sendTestMessage(
+      {name: 'getExpectedNumberOfBlockedFilesByConnectors'});
+
+  if (usesNewFileTransferConnectorUI &&
+      expectedNumberOfBlockedFilesByConnectors > 1) {
+    const secondaryMessage = element.attributes['secondary-text'];
+    chrome.test.assertEq('Review for further details', secondaryMessage);
+    await verifyPanelButtonsAndClick(appId, 'dismiss', 'primary');
+    await sendTestMessage({
+      name: 'verifyFileTransferErrorDialogAndDismiss',
+      app_id: appId,
+    });
+  } else if (usesNewFileTransferConnectorUI) {
+    // For a single file error, this should show an error reason as secondary
+    // text.
+    const secondaryMessage = element.attributes['secondary-text'];
+    chrome.test.assertTrue(
+        secondaryMessage.endsWith(' was blocked because of content'),
+        'actual message: ' + secondaryMessage);
+  } else {
+    // Check that only one line of text is shown.
+    chrome.test.assertFalse(!!element.attributes['secondary-text']);
+  }
 }
 
 /**
@@ -760,5 +825,53 @@ testcase.transferConnectorFromUsbToDownloadsFlat = () => {
       }),
       CONNECTOR_ENTRIES_FLAT,
       OLD_COPY_FAIL_MESSAGE,
+  );
+};
+
+/**
+ * Tests for new UX.
+ */
+testcase.transferConnectorFromUsbToDownloadsDeepNewUX = () => {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+        shouldShowReviewForErrors: true,
+      }),
+      CONNECTOR_ENTRIES_DEEP,
+      TWO_FILES_COPY_FAIL_MESSAGE,
+  );
+};
+testcase.transferConnectorFromUsbToDownloadsFlatNewUX = () => {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+      }),
+      CONNECTOR_ENTRIES_FLAT,
+      NEW_COPY_FAIL_MESSAGE,
+  );
+};
+testcase.transferConnectorFromUsbToDownloadsDeepMoveNewUX = () => {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+        isMove: true,
+        shouldShowReviewForErrors: true,
+      }),
+      CONNECTOR_ENTRIES_DEEP,
+      TWO_FILES_MOVE_FAIL_MESSAGE,
+  );
+};
+testcase.transferConnectorFromUsbToDownloadsFlatMoveNewUX = () => {
+  return transferBetweenVolumes(
+      new TransferInfo({
+        source: TRANSFER_LOCATIONS.usb,
+        destination: TRANSFER_LOCATIONS.downloads,
+        isMove: true,
+      }),
+      CONNECTOR_ENTRIES_FLAT,
+      NEW_MOVE_FAIL_MESSAGE,
   );
 };

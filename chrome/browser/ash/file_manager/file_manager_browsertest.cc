@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <codecvt>
 #include <memory>
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/gtest_prod_util.h"
@@ -26,12 +28,14 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
@@ -60,6 +64,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_manager_base.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -235,6 +240,11 @@ struct TestCase {
 
   TestCase& EnableFileTransferConnector() {
     options.enable_file_transfer_connector = true;
+    return *this;
+  }
+
+  TestCase& EnableFileTransferConnectorNewUX() {
+    options.enable_file_transfer_connector_new_ux = true;
     return *this;
   }
 
@@ -926,6 +936,10 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     return GetOptions().file_transfer_connector_report_only;
   }
 
+  bool UsesNewFileTransferConnectorUI() {
+    return GetOptions().enable_file_transfer_connector_new_ux;
+  }
+
   void ScanningHasCompletedCallback() {
     DCHECK(run_loop_)
         << "run loop not configured, missing call to `setupScanningRunLoop`";
@@ -948,7 +962,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       enterprise_connectors::MockFileTransferAnalysisDelegate* delegate) {
     // Expect one call to UploadData.
     EXPECT_CALL(*delegate, UploadData(::testing::_))
-        .WillOnce(testing::Invoke([this, delegate](base::OnceClosure callback) {
+        .WillOnce([this, delegate](base::OnceClosure callback) {
           // When scanning is started, start the normal scan.
           // We modify the callback such that in addition to the normal callback
           // we also call `ScanningHasCompletedCallback()` to notify the test
@@ -965,14 +979,19 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
               base::BindOnce(&FileTransferConnectorFilesAppBrowserTest::
                                  ScanningHasCompletedCallback,
                              base::Unretained(this))));
-        }));
+        });
+
+    // Call GetWarnedFiles from the base class.
+    EXPECT_CALL(*delegate, GetWarnedFiles()).WillRepeatedly([delegate]() {
+      return delegate->FileTransferAnalysisDelegate::GetWarnedFiles();
+    });
 
     // Call GetAnalysisResultAfterScan from the base class.
     EXPECT_CALL(*delegate, GetAnalysisResultAfterScan(::testing::_))
-        .WillRepeatedly(testing::Invoke([delegate](storage::FileSystemURL url) {
+        .WillRepeatedly([delegate](storage::FileSystemURL url) {
           return delegate
               ->FileTransferAnalysisDelegate::GetAnalysisResultAfterScan(url);
-        }));
+        });
   }
 
   bool HandleEnterpriseConnectorCommands(const std::string& name,
@@ -1041,6 +1060,14 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       *output = IsReportOnlyMode() ? "true" : "false";
       return true;
     }
+    if (name == "usesNewFileTransferConnectorUI") {
+      *output = UsesNewFileTransferConnectorUI() ? "true" : "false";
+      return true;
+    }
+    if (name == "getExpectedNumberOfBlockedFilesByConnectors") {
+      *output = base::NumberToString(expected_blocked_files_.size());
+      return true;
+    }
     if (name == "setupScanningRunLoop") {
       // Set the number of expected `FileTransferAnalysisDelegate`s. This is
       // done to correctly notify when scanning has completed.
@@ -1049,6 +1076,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       expected_number_of_file_transfer_analysis_delegates_ = maybe_int.value();
       DCHECK(!run_loop_);
       run_loop_ = std::make_unique<base::RunLoop>();
+      return true;
+    }
+    if (name == "verifyFileTransferErrorDialogAndDismiss") {
+      const std::string* app_id = value.FindString("app_id");
+      CHECK_NE(app_id, nullptr);
+      VerifyFileTransferErrorDialogAndDismiss(*app_id);
       return true;
     }
     if (name == "waitForFileTransferScanningToComplete") {
@@ -1075,10 +1108,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       std::vector<std::string> expected_results;
       std::vector<std::string> expected_scan_ids;
 
-      for (const auto& path : *entry_paths) {
-        const std::string* path_str = path.GetIfString();
+      for (const auto& path_value : *entry_paths) {
+        const std::string* path_str = path_value.GetIfString();
         CHECK(path_str);
-        auto file_name = base::FilePath(*path_str).BaseName().AsUTF8Unsafe();
+        base::FilePath path(*path_str);
+
+        auto file_name = path.BaseName().AsUTF8Unsafe();
         if (!base::Contains(file_name, "blocked")) {
           // If a file name does not contain blocked, expect no report.
           continue;
@@ -1092,7 +1127,9 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
 
         // Get the expected verdict from the ConnectorStatusCallback.
         expected_dlp_verdicts.push_back(
-            ConnectorStatusCallback(base::FilePath(*path_str)).results()[0]);
+            ConnectorStatusCallback(path).results()[0]);
+
+        expected_blocked_files_.push_back(file_name);
 
         // For report-only mode, the transfer is always allowed. It's blocked,
         // otherwise.
@@ -1178,6 +1215,47 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     saved_responses_.clear();
   }
 
+  void VerifyFileTransferErrorDialogAndDismiss(const std::string& app_id) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    content::WebContents* web_contents = GetWebContentsForId(app_id);
+    CHECK_NE(web_contents, nullptr);
+    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
+
+    std::set<views::Widget*> owned_widgets;
+    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+
+    // Verify that the FilesPolicyErrorDialog widget is displayed.
+    ASSERT_EQ(owned_widgets.size(), 1ul);
+    auto* widget = *owned_widgets.begin();
+    ASSERT_EQ(widget->GetName(), "FilesPolicyErrorDialog");
+
+    auto* view = widget->GetRootView()->GetViewByID(
+        policy::PolicyDialogBase::kScrollViewId);
+    ASSERT_TRUE(view);
+
+    // Verify the displayed blocked files shown in the dialog.
+    std::vector<std::string> displayed_files;
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+    for (const auto* row_view : view->children()) {
+      const views::Label* label =
+          static_cast<const views::Label*>(row_view->GetViewByID(
+              policy::PolicyDialogBase::kConfidentialRowTitleViewId));
+      if (label) {
+        displayed_files.push_back(converter.to_bytes(label->GetText()));
+      }
+    }
+    EXPECT_THAT(displayed_files,
+                ::testing::UnorderedElementsAreArray(expected_blocked_files_));
+
+    // Close the dialog.
+    auto* dialog = static_cast<policy::FilesPolicyErrorDialog*>(
+        widget->widget_delegate()->AsDialogDelegate());
+    dialog->AcceptDialog();
+
+    // Verify that the dialog is closed.
+    EXPECT_TRUE(widget->IsClosed());
+  }
+
   enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
       const base::FilePath& path) {
     enterprise_connectors::ContentAnalysisResponse response;
@@ -1215,6 +1293,8 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
 
   size_t finished_file_transfer_analysis_delegates_ = 0;
   size_t expected_number_of_file_transfer_analysis_delegates_ = 0;
+
+  std::vector<std::string> expected_blocked_files_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -1997,6 +2077,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 #define FILE_TRANSFER_TEST_CASE(name) \
   TestCase(name).EnableFileTransferConnector()
 
+// Enable both new policy UX and file transfer connector new UX, as the latter
+// requires the former.
+#define FILE_TRANSFER_TEST_CASE_NEW_UX(name) \
+  TestCase(name)                             \
+      .EnableFileTransferConnector()         \
+      .EnableFilesPolicyNewUX()              \
+      .EnableFileTransferConnectorNewUX()
+
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FileTransferConnector, /* file_transfer_connector.js */
     FileTransferConnectorFilesAppBrowserTest,
@@ -2026,9 +2114,18 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsDeep"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsFlat"),
         FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsDeep"),
-        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsFlat")));
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsFlat"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepMoveNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatMoveNewUX")));
 
 #undef FILE_TRANSFER_TEST_CASE
+#undef FILE_TRANSFER_TEST_CASE_NEW_UX
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     RestorePrefs, /* restore_prefs.js */

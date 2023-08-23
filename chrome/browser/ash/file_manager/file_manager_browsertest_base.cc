@@ -2303,6 +2303,12 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(features::kFileTransferEnterpriseConnector);
   }
 
+  if (options.enable_file_transfer_connector_new_ux) {
+    enabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
+  } else {
+    disabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
+  }
+
   if (options.enable_search_v2) {
     enabled_features.push_back(ash::features::kFilesSearchV2);
   } else {
@@ -4047,6 +4053,11 @@ std::string FileManagerBrowserTestBase::GetSwaAppId(
 std::vector<content::WebContents*>
 FileManagerBrowserTestBase::GetAllWebContents() {
   return content::GetAllWebContents();
+}
+
+content::WebContents* FileManagerBrowserTestBase::GetWebContentsForId(
+    const std::string& app_id) {
+  return swa_web_contents_.at(app_id);
 }
 
 content::WebContents*
