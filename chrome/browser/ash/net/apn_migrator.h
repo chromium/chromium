@@ -26,6 +26,9 @@ class NetworkStateHandler;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
     : public NetworkStateHandlerObserver {
  public:
+  // Notification ID prefix prepended to the cellular network GUID.
+  static const char kShowApnConfigurationDisabledNotificationIdPrefix[];
+
   ApnMigrator(
       ManagedCellularPrefHandler* managed_cellular_pref_handler,
       ManagedNetworkConfigurationHandler* managed_network_configuration_handler,
