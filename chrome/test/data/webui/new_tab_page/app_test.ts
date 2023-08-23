@@ -770,6 +770,10 @@ suite('NewTabPageAppTest', () => {
       assertStyle(modules, 'display', 'none');
     });
 
+    test('modules redesigned attribute applied', async () => {
+      assertTrue(app.hasAttribute('modules-redesigned-enabled_'));
+    });
+
     test(`clicking records click`, () => {
       // Act.
       $$<HTMLElement>(app, 'ntp-modules-v2')!.click();

@@ -239,6 +239,23 @@
     }
   }
 
+  @media (max-width: 1110px) {
+    :host-context([chrome-refresh-2023]):host([modules-redesigned-enabled_][modules-shown-to-user])
+        #customizeButton {
+      padding-inline-start: 8px;
+    }
+
+    :host([modules-redesigned-enabled_][modules-shown-to-user]) #customizeText {
+      display: none;
+    }
+
+    :host([modules-redesigned-enabled_][modules-shown-to-user])
+        #customizeButton {
+      padding-inline-start: 0;
+      padding-inline-end: 0;
+    }
+  }
+
   @media (max-width: 970px) {
     :host-context([chrome-refresh-2023]):host([modules-shown-to-user])
         #customizeButton {
@@ -426,6 +443,7 @@
         </template>
         <template is="dom-if" if="[[modulesRedesignedEnabled_]]">
           <ntp-modules-v2 id="modules"
+              modules-shown-to-user="{{modulesShownToUser}}"
               on-customize-module="onCustomizeModule_"
               on-modules-loaded="onModulesLoaded_"
               hidden="[[!promoAndModulesLoaded_]]">
