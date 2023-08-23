@@ -180,8 +180,8 @@ void ActionItem::AddSynonyms(std::initializer_list<std::u16string> synonyms) {
 }
 
 void ActionItem::InvokeAction() {
-  if (callback_) {
-    callback_.Run();
+  if (callback_ && enabled_) {
+    callback_.Run(this);
   }
 }
 

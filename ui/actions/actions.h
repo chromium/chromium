@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
       public ActionList::Delegate {
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
-  using InvokeActionCallback = base::RepeatingCallback<void()>;
+  using InvokeActionCallback = base::RepeatingCallback<void(ActionItem*)>;
   METADATA_HEADER_BASE(ActionItem);
 
   ActionItem();

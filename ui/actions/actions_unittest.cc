@@ -51,7 +51,10 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
       [](int* invoked_count, const std::u16string& text,
          ActionManager* manager) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(
-            [](int* invoked_count) { ++*invoked_count; }, invoked_count));
+            [](int* invoked_count, actions::ActionItem* action) {
+              ++*invoked_count;
+            },
+            invoked_count));
         action->SetActionId(kActionCut);
         action->SetText(text);
         action->SetEnabled(true);
