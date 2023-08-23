@@ -664,7 +664,7 @@
 
   // Feed top section visibility is based on feed visibility, so this should
   // always be below the block that sets `feedViewController`.
-  if ([self isFeedTopSectionVisible]) {
+  if ([self isFeedVisible]) {
     self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
   }
 }
@@ -734,7 +734,7 @@
       feedWrapperViewControllerWithDelegate:self
                          feedViewController:self.feedViewController];
 
-  if ([self isFeedTopSectionVisible]) {
+  if ([self isFeedVisible]) {
     self.NTPViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
   }
@@ -1183,6 +1183,23 @@
   [self.NTPViewController updateScrollPositionForFeedTopSectionClosed];
 }
 
+- (BOOL)isSignInAllowed {
+  AuthenticationService::ServiceStatus statusService =
+      self.authService->GetServiceStatus();
+  switch (statusService) {
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
+      return NO;
+    }
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed: {
+      break;
+    }
+  }
+  return YES;
+}
+
 #pragma mark - NewTabPageFollowDelegate
 
 - (NSUInteger)followedPublisherCount {
@@ -1458,7 +1475,7 @@
     self.feedHeaderViewController = nil;
   }
 
-  if ([self isFeedTopSectionVisible]) {
+  if ([self isFeedVisible]) {
     self.NTPViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
   }
@@ -1495,16 +1512,6 @@
 // Returns `YES` if the feed is currently visible on the NTP.
 - (BOOL)isFeedVisible {
   return [self shouldFeedBeVisible] && self.feedViewController;
-}
-
-// Whether the feed top section, which contains all content between the feed
-// header and the feed, is currently visible.
-// TODO(crbug.com/1331010): The feed top section may include content that is not
-// the signin promo, which may need to be visible when the user is signed in.
-- (BOOL)isFeedTopSectionVisible {
-  return IsDiscoverFeedTopSyncPromoEnabled() && [self isFeedVisible] &&
-         self.authService &&
-         !self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
 }
 
 // Creates, configures and returns a feed view controller configuration.
@@ -1649,24 +1656,6 @@
       [self.feedMetricsRecorder recordNTPDidChangeVisibility:visible];
     }
   }
-}
-
-// Returns whether sign-in is enabled for the user.
-- (BOOL)isSignInAllowed {
-  AuthenticationService::ServiceStatus statusService =
-      self.authService->GetServiceStatus();
-  switch (statusService) {
-    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
-    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
-    case AuthenticationService::ServiceStatus::SigninDisabledByUser: {
-      return NO;
-    }
-    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
-    case AuthenticationService::ServiceStatus::SigninAllowed: {
-      break;
-    }
-  }
-  return YES;
 }
 
 // Returns whether the user policies allow them to sync.
