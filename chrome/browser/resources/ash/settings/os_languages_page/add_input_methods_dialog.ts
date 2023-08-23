@@ -9,6 +9,7 @@
 
 import './add_items_dialog.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
@@ -41,6 +42,10 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   languages: LanguagesModel|undefined;
   languageHelper: LanguageHelper;
 
+  // Internal state.
+  private readonly shouldPrioritiseVietnameseExtensions_ =
+      !loadTimeData.getBoolean('allowFirstPartyVietnameseInput');
+
   /**
    * Get suggested input methods based on user's enabled languages and ARC IMEs
    */
@@ -51,17 +56,20 @@ class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
     ];
     let inputMethods =
         this.languageHelper.getInputMethodsForLanguages(languageCodes);
-    // Temporary solution for b/237492047: move Vietnamese extension input
-    // methods to the top of the suggested list.
-    // TODO(b/237492047): Remove this once 1P Vietnamese input methods are
-    // suitable for widespread use.
-    const isVietnameseExtension =
-        (inputMethod: chrome.languageSettingsPrivate.InputMethod): boolean =>
-            (inputMethod.id.startsWith('_ext_ime_') &&
-             inputMethod.languageCodes.includes('vi'));
-    inputMethods = inputMethods.filter(isVietnameseExtension)
-                       .concat(inputMethods.filter(
-                           inputMethod => !isVietnameseExtension(inputMethod)));
+    if (this.shouldPrioritiseVietnameseExtensions_) {
+      // Temporary solution for b/237492047: move Vietnamese extension input
+      // methods to the top of the suggested list.
+      // TODO(b/237492047): Remove this once 1P Vietnamese input methods are
+      // launched.
+      const isVietnameseExtension =
+          (inputMethod: chrome.languageSettingsPrivate.InputMethod): boolean =>
+              (inputMethod.id.startsWith('_ext_ime_') &&
+               inputMethod.languageCodes.includes('vi'));
+      inputMethods =
+          inputMethods.filter(isVietnameseExtension)
+              .concat(inputMethods.filter(
+                  inputMethod => !isVietnameseExtension(inputMethod)));
+    }
     return inputMethods.map(inputMethod => inputMethod.id);
   }
 
