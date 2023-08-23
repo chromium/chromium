@@ -66,7 +66,7 @@ export class DriveModuleElement extends I18nMixin
           action: 'disable',
           icon: 'modules:block',
           text: this.i18nRecursive(
-              '', 'modulesDisableButtonTextV2', 'modulesDriveSentence'),
+              '', 'modulesDisableButtonTextV2', 'modulesDriveSentenceV2'),
         },
         {
           action: 'info',
