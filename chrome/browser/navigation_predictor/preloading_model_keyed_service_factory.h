@@ -24,7 +24,7 @@ class PreloadingModelKeyedServiceFactory : public ProfileKeyedServiceFactory {
   ~PreloadingModelKeyedServiceFactory() override;
 
   // ProfileKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

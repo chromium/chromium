@@ -35,13 +35,14 @@ PreloadingModelKeyedServiceFactory::PreloadingModelKeyedServiceFactory()
 PreloadingModelKeyedServiceFactory::~PreloadingModelKeyedServiceFactory() =
     default;
 
-KeyedService* PreloadingModelKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+  PreloadingModelKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           blink::features::kPreloadingHeuristicsMLModel)) {
     return nullptr;
   }
   auto* profile = Profile::FromBrowserContext(context);
-  return new PreloadingModelKeyedService(
+  return std::make_unique<PreloadingModelKeyedService>(
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
 }
