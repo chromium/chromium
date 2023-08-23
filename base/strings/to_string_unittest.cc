@@ -91,6 +91,13 @@ TEST(ToStringTest, IoManip) {
   EXPECT_EQ(ToString("42 in hex is ", std::hex, 42), "42 in hex is 2a");
 }
 
+TEST(ToStringTest, Tuple) {
+  // Tuples should correctly format the contained types.
+  EXPECT_EQ(ToString(std::make_tuple(StreamableTestEnum::kGreeting,
+                                     HasToString(), "a string")),
+            "<hello, yay!, a string>");
+}
+
 void Func() {}
 
 TEST(ToStringTest, FunctionPointer) {

@@ -9,12 +9,17 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <type_traits>
+#include <utility>
 
 #include "base/template_util.h"
 #include "base/types/supports_ostream_operator.h"
 
 namespace base {
+
+template <typename... Ts>
+std::string ToString(const Ts&... values);
 
 namespace internal {
 
@@ -91,6 +96,23 @@ struct ToStringHelper<
   }
 };
 
+// Tuples. Will recursively apply `ToString()` to each value in the tuple.
+template <typename... T>
+struct ToStringHelper<std::tuple<T...>> {
+  template <size_t... I>
+  static void StringifyHelper(const std::tuple<T...>& values,
+                              std::index_sequence<I...>,
+                              std::ostringstream& ss) {
+    ss << "<";
+    (..., (ss << (I == 0 ? "" : ", "), ss << ToString(std::get<I>(values))));
+    ss << ">";
+  }
+
+  static void Stringify(const std::tuple<T...>& v, std::ostringstream& ss) {
+    StringifyHelper(v, std::make_index_sequence<sizeof...(T)>(), ss);
+  }
+};
+
 }  // namespace internal
 
 // Converts any type to a string, preferring defined operator<<() or ToString()
@@ -98,9 +120,8 @@ struct ToStringHelper<
 template <typename... Ts>
 std::string ToString(const Ts&... values) {
   std::ostringstream ss;
-  (internal::ToStringHelper<remove_cvref_t<decltype(values)>>::Stringify(values,
-                                                                         ss),
-   ...);
+  (..., internal::ToStringHelper<remove_cvref_t<decltype(values)>>::Stringify(
+            values, ss));
   return ss.str();
 }
 

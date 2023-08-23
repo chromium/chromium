@@ -116,12 +116,12 @@ TEST_F(TestFutureTest, GetShouldBlockUntilValueArrives) {
   EXPECT_EQ(expected_value, actual_value);
 }
 
-TEST_F(TestFutureTest, GetShouldDcheckIfTimeoutHappens) {
+TEST_F(TestFutureTest, GetShouldCheckIfTimeoutHappens) {
   ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   TestFuture<AnyType> future;
 
-  EXPECT_DCHECK_DEATH_WITH((void)future.Get(), "timed out");
+  EXPECT_CHECK_DEATH_WITH(std::ignore = future.Get(), "timed out");
 }
 
 TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
@@ -135,12 +135,12 @@ TEST_F(TestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   EXPECT_EQ(expected_data, actual_value.data);
 }
 
-TEST_F(TestFutureTest, TakeShouldDcheckIfTimeoutHappens) {
+TEST_F(TestFutureTest, TakeShouldCheckIfTimeoutHappens) {
   ScopedRunLoopTimeout timeout(FROM_HERE, Milliseconds(1));
 
   TestFuture<AnyType> future;
 
-  EXPECT_DCHECK_DEATH_WITH((void)future.Take(), "timed out");
+  EXPECT_CHECK_DEATH_WITH(std::ignore = future.Take(), "timed out");
 }
 
 TEST_F(TestFutureTest, IsReadyShouldBeTrueWhenValueIsSet) {
@@ -168,8 +168,7 @@ TEST_F(TestFutureTest, ShouldNotAllowOverwritingStoredValue) {
 
   future.SetValue(kAnyValue);
 
-  EXPECT_DCHECK_DEATH_WITH(future.SetValue(kOtherValue),
-                           "Overwriting previously stored value");
+  EXPECT_NONFATAL_FAILURE(future.SetValue(kOtherValue), "Received new value");
 }
 
 TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousValueIsFirstConsumed) {
@@ -373,6 +372,30 @@ TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousTupleValueIsFirstConsumed) {
 
   future.SetValue("second value", 2);
   EXPECT_EQ(future.Take(), std::make_tuple("second value", 2));
+}
+
+TEST_F(TestFutureTest, ShouldPrintCurrentValueIfItIsOverwritten) {
+  using UnprintableValue = MoveOnlyValue;
+
+  TestFuture<const char*, int, UnprintableValue> future;
+
+  future.SetValue("first-value", 1111, UnprintableValue());
+
+  EXPECT_NONFATAL_FAILURE(
+      future.SetValue("second-value", 2222, UnprintableValue()),
+      "old value <first-value, 1111, [4-byte object at 0x");
+}
+
+TEST_F(TestFutureTest, ShouldPrintNewValueIfItOverwritesOldValue) {
+  using UnprintableValue = MoveOnlyValue;
+
+  TestFuture<const char*, int, UnprintableValue> future;
+
+  future.SetValue("first-value", 1111, UnprintableValue());
+
+  EXPECT_NONFATAL_FAILURE(
+      future.SetValue("second-value", 2222, UnprintableValue()),
+      "new value <second-value, 2222, [4-byte object at 0x");
 }
 
 using TestFutureWithoutValuesTest = TestFutureTest;
