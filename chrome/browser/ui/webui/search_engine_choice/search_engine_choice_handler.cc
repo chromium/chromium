@@ -12,10 +12,6 @@ SearchEngineChoiceHandler::SearchEngineChoiceHandler(
     : receiver_(this, std::move(receiver)),
       display_dialog_callback_(std::move(display_dialog_callback)) {
   CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-  // `display_dialog_callback` being null would indicate that the handler is
-  // created before calling `SearchEngineChoiceUI::Initialize()`, which should
-  // never happen.
-  CHECK(display_dialog_callback_);
 }
 
 SearchEngineChoiceHandler::~SearchEngineChoiceHandler() = default;

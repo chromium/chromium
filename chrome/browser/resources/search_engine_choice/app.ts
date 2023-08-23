@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -24,6 +25,7 @@ import {SearchEngineChoice, SearchEngineChoiceBrowserProxy} from './browser_prox
 export interface SearchEngineChoiceAppElement {
   $: {
     infoDialog: CrDialogElement,
+    submitButton: CrButtonElement,
   };
 }
 
@@ -49,10 +51,21 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
           return JSON.parse(loadTimeData.getString('choiceList'));
         },
       },
+
+      selectedChoice_: {
+        type: String,
+        value: '',
+      },
+
+      isSubmitDisabled_: {
+        type: Boolean,
+        computed: 'isSubmitButtonDisabled_(selectedChoice_)',
+      },
     };
   }
 
   private choiceList_: SearchEngineChoice[];
+  private selectedChoice_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -68,6 +81,10 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
 
   private onLinkClicked_() {
     this.$.infoDialog.showModal();
+  }
+
+  private isSubmitButtonDisabled_() {
+    return this.selectedChoice_.length === 0;
   }
 }
 

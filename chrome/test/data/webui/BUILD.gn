@@ -72,6 +72,10 @@ source_set("browser_tests") {
     sources += [ "tab_strip/tab_strip_browsertest.cc" ]
   }
 
+  if (enable_search_engine_choice) {
+    sources += [ "search_engine_choice/search_engine_choice_js_browsertest.cc" ]
+  }
+
   if (!is_chromeos_ash) {
     sources += [
       "intro/intro_browsertest.cc",
@@ -548,6 +552,11 @@ generate_grd("build_grd") {
     # chrome://webui-test, even though they reside in chrome/test/data/pdf/.
     deps += [ "../pdf:build_grdp" ]
     grdp_files += [ "$target_gen_dir/../pdf/resources.grdp" ]
+  }
+
+  if (enable_search_engine_choice) {
+    deps += [ "search_engine_choice:build_grdp" ]
+    grdp_files += [ "$target_gen_dir/search_engine_choice/resources.grdp" ]
   }
 
   if (is_chrome_branded) {

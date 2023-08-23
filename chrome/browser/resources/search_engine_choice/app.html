@@ -11,7 +11,7 @@
     content: url(images/right_illustration.svg);
   }
 
-  cr-button {
+  #submitButton {
     bottom: 0;
     height: unset;
     margin: 40px;
@@ -23,7 +23,7 @@
     right: 0;
   }
 
-  :host-context([dir='rtl']) .button {
+  :host-context([dir='rtl']) #submitButton {
     left: 0;
     right: initial;
   }
@@ -171,7 +171,7 @@
       $i18n{subtitleInfoLink}
     </a>
   </p>
-  <cr-radio-group>
+  <cr-radio-group class="choice-list" selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
       <cr-radio-button class="label-first" name="[[item.id]]">
         <div class="choice">
@@ -182,7 +182,8 @@
     </template>
   </cr-radio-group>
 </div>
-<cr-button class="action-button" disabled>
+<cr-button class="action-button" id="submitButton"
+    disabled="[[isSubmitDisabled_]]">
   $i18n{buttonText}
 </cr-button>
 
