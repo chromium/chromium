@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class SharedStorage;
 class LocalDOMWindow;
 
@@ -17,7 +18,7 @@ class WindowSharedStorage {
   STATIC_ONLY(WindowSharedStorage);
 
  public:
-  static SharedStorage* sharedStorage(LocalDOMWindow&);
+  static SharedStorage* sharedStorage(LocalDOMWindow&, ExceptionState&);
 };
 
 }  // namespace blink
