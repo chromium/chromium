@@ -420,11 +420,6 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
     status = PrerenderFinalStatus::kBlockedByClient;
   } else if (is_prerender_main_frame && net_error != net::Error::OK) {
     status = PrerenderFinalStatus::kNavigationRequestNetworkError;
-    if (!final_status_) {
-      // Only tracks the first error this instance encountered.
-      RecordPrerenderNavigationErrorCode(net_error, trigger_type(),
-                                         embedder_histogram_suffix());
-    }
   } else if (is_prerender_main_frame && !navigation_request->HasCommitted()) {
     status = PrerenderFinalStatus::kNavigationNotCommitted;
   }
