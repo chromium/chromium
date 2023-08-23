@@ -33,6 +33,15 @@ namespace {
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
 
+constexpr char kCookieControlsActivatedSaaHistogram[] =
+    "Privacy.CookieControlsActivated.SaaRequested";
+constexpr char kCookieControlsActivatedRefreshCountHistogram[] =
+    "Privacy.CookieControlsActivated.PageRefreshCount";
+constexpr char kCookieControlsActivatedSiteEngagementHistogram[] =
+    "Privacy.CookieControlsActivated.SiteEngagementScore";
+constexpr char kCookieControlsActivatedSiteDataAccessHistogram[] =
+    "Privacy.CookieControlsActivated.SiteDataAccessType";
+
 class MockOldCookieControlsObserver
     : public content_settings::OldCookieControlsObserver {
  public:
@@ -538,11 +547,11 @@ TEST_P(CookieControlsUserBypassTest, SiteCounts) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample("CookieControlsActivated.SaaRequested", false, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.PageRefreshCount", 0, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteEngagementScore", 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
-      "CookieControlsActivated.SiteDataAccessType",
+      kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyBlockedThirdPartySiteAccesses, 1);
 
   // Navigating somewhere else should reset the sites count.
@@ -629,10 +638,10 @@ TEST_P(CookieControlsUserBypassTest, AllCookiesBlocked) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample("CookieControlsActivated.SaaRequested", false, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.PageRefreshCount", 0, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteEngagementScore", 0, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteDataAccessType",
+  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteDataAccessHistogram,
                        ThirdPartySiteDataAccessType::kNoThirdPartySiteAccesses,
                        1);
   testing::Mock::VerifyAndClearExpectations(mock());
@@ -946,11 +955,11 @@ TEST_P(CookieControlsUserBypassTest, FrequestPageReloadsMetrics) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample("CookieControlsActivated.SaaRequested", false, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.PageRefreshCount", 3, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteEngagementScore", 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 3, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
-      "CookieControlsActivated.SiteDataAccessType",
+      kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1030,11 +1039,11 @@ TEST_P(CookieControlsUserBypassTest, InfrequentPageReloads) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample("CookieControlsActivated.SaaRequested", false, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.PageRefreshCount", 1, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteEngagementScore", 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, false, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 1, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram, 0, 1);
   t.ExpectUniqueSample(
-      "CookieControlsActivated.SiteDataAccessType",
+      kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,
@@ -1171,12 +1180,12 @@ TEST_P(CookieControlsUserBypassTest, StorageAccessApiHighSiteEngagement) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
-  t.ExpectUniqueSample("CookieControlsActivated.SaaRequested", true, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.PageRefreshCount", 0, 1);
-  t.ExpectUniqueSample("CookieControlsActivated.SiteEngagementScore",
+  t.ExpectUniqueSample(kCookieControlsActivatedSaaHistogram, true, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedRefreshCountHistogram, 0, 1);
+  t.ExpectUniqueSample(kCookieControlsActivatedSiteEngagementHistogram,
                        kHighEngagement, 1);
   t.ExpectUniqueSample(
-      "CookieControlsActivated.SiteDataAccessType",
+      kCookieControlsActivatedSiteDataAccessHistogram,
       ThirdPartySiteDataAccessType::kAnyAllowedThirdPartySiteAccesses, 1);
   ValidateCookieControlsActivatedUKM(
       /*fed_cm_initiated=*/false,

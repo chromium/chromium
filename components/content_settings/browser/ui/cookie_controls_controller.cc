@@ -564,19 +564,22 @@ void CookieControlsController::RecordActivationMetrics() {
   // Metrics, related to confidence signals:
   // TODO(crbug.com/1446230): Add CookieControlsActivated.FedCmInitiated
   base::UmaHistogramBoolean(
-      "CookieControlsActivated.SaaRequested",
+      "Privacy.CookieControlsActivated.SaaRequested",
       cookie_settings_->HasAnyFrameRequestedStorageAccess(url));
-  base::UmaHistogramCounts100("CookieControlsActivated.PageRefreshCount",
-                              recent_reloads_count_);
-  base::UmaHistogramExactLinear("CookieControlsActivated.SiteEngagementScore",
-                                GetSiteEngagementScore(), 100);
+  base::UmaHistogramCounts100(
+      "Privacy.CookieControlsActivated.PageRefreshCount",
+      recent_reloads_count_);
+  base::UmaHistogramExactLinear(
+      "Privacy.CookieControlsActivated.SiteEngagementScore",
+      GetSiteEngagementScore(), 100);
 
   int allowed_sites = GetAllowedSitesCount();
   int blocked_sites = GetBlockedSitesCount();
   auto site_data_access_type =
       GetSiteDataAccessType(allowed_sites, blocked_sites);
-  base::UmaHistogramEnumeration("CookieControlsActivated.SiteDataAccessType",
-                                site_data_access_type);
+  base::UmaHistogramEnumeration(
+      "Privacy.CookieControlsActivated.SiteDataAccessType",
+      site_data_access_type);
 
   // Record activation UKM.
   // TODO(crbug.com/1446230): Include FedCM information.
