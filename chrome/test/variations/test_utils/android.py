@@ -51,7 +51,7 @@ def install_chrome(channel: str, device: device_utils.DeviceUtils) -> str:
     f'--channel={channel}', f'--serial={device.serial}',
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
-  args.append['--signed' if _is_require_signed(channel) else '--unsigned']
+  args.append('--signed' if _is_require_signed(channel) else '--unsigned')
   subprocess.check_call(args=args)
   return _package_name(channel)
 
@@ -66,7 +66,7 @@ def install_webview(
     f'--channel={channel}', f'--serial={device.serial}',
     f'--adb={adb_wrapper.AdbWrapper.GetAdbPath()}',
   ]
-  args.append['--signed' if _is_require_signed(channel) else '--unsigned']
+  args.append('--signed' if _is_require_signed(channel) else '--unsigned')
   subprocess.check_call(args=args)
 
   version_regex = r'\s*Preferred WebView package[^:]*[^\d]*([^\)]+)'
