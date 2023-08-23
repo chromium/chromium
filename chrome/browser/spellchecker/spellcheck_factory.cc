@@ -43,12 +43,11 @@ SpellcheckServiceFactory::SpellcheckServiceFactory()
 
 SpellcheckServiceFactory::~SpellcheckServiceFactory() = default;
 
-KeyedService* SpellcheckServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SpellcheckServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // Many variables are initialized from the |context| in the SpellcheckService.
-  SpellcheckService* spellcheck = new SpellcheckService(context);
-
-  return spellcheck;
+  return std::make_unique<SpellcheckService>(context);
 }
 
 void SpellcheckServiceFactory::RegisterProfilePrefs(
