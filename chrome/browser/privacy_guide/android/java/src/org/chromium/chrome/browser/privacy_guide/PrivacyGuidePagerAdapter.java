@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.privacy_guide;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,19 +22,21 @@ import java.util.Set;
 public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
     private final List<Integer> mFragmentTypeList;
 
-    public PrivacyGuidePagerAdapter(Fragment parent, StepDisplayHandler displayHandler) {
+    public PrivacyGuidePagerAdapter(Fragment parent, StepDisplayHandler displayHandler,
+            List<Integer> allFragmentTypesInOrder) {
         super(parent);
         Set<Integer> fragmentTypesToDisplay = getFragmentTypesToDisplay(displayHandler);
-        mFragmentTypeList = getFragmentTypesToDisplayInOrder(fragmentTypesToDisplay);
+        mFragmentTypeList =
+                getFragmentTypesToDisplayInOrder(fragmentTypesToDisplay, allFragmentTypesInOrder);
     }
 
-    private List<Integer> getFragmentTypesToDisplayInOrder(Set<Integer> fragmentTypesToDisplay) {
+    private List<Integer> getFragmentTypesToDisplayInOrder(
+            Set<Integer> fragmentTypesToDisplay, List<Integer> allFragmentTypesInOrder) {
         List<Integer> fragmentTypesToDisplayInOrder = new ArrayList<>();
 
         // Add the fragment types to display to |fragmentTypesToDisplayInOrder|
         // in the order they are declared in FragmentType.
-        for (@PrivacyGuideFragment.FragmentType int fragmentType = 0;
-                fragmentType <= PrivacyGuideFragment.FragmentType.MAX_VALUE; fragmentType++) {
+        for (Integer fragmentType : allFragmentTypesInOrder) {
             if (fragmentTypesToDisplay.contains(fragmentType)) {
                 fragmentTypesToDisplayInOrder.add(fragmentType);
             }
@@ -46,6 +50,11 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
         fragmentTypesToDisplay.addAll(Arrays.asList(PrivacyGuideFragment.FragmentType.WELCOME,
                 PrivacyGuideFragment.FragmentType.MSBB, PrivacyGuideFragment.FragmentType.DONE));
 
+        if (ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()) {
+            // TODO(crbug.com/1215630): This fragment is always displayed and need to be added to
+            // the above list once the privacy guide android 3 is removed.
+            fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
+        }
         if (displayHandler.shouldDisplayHistorySync()) {
             fragmentTypesToDisplay.add(PrivacyGuideFragment.FragmentType.HISTORY_SYNC);
         }
@@ -61,7 +70,6 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
 
     @Override
     public Fragment createFragment(int position) {
-        @PrivacyGuideFragment.FragmentType
         int fragmentType = getFragmentType(position);
         switch (fragmentType) {
             case PrivacyGuideFragment.FragmentType.WELCOME:
@@ -74,6 +82,8 @@ public class PrivacyGuidePagerAdapter extends FragmentStateAdapter {
                 return new SafeBrowsingFragment();
             case PrivacyGuideFragment.FragmentType.COOKIES:
                 return new CookiesFragment();
+            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS:
+                return new SearchSuggestionsFragment();
             case PrivacyGuideFragment.FragmentType.DONE:
                 return new DoneFragment();
         }

@@ -57,6 +57,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
@@ -179,6 +180,41 @@ public class PrivacyGuideFragmentTest {
         onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
     }
 
+    private void navigateFromHistorySyncToCookiesCardPG3() {
+        onView(withText(R.string.next)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+    }
+
+    private void navigateFromCookiesToHistorySyncCardPG3() {
+        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_history_sync_toggle));
+    }
+
+    private void navigateFromCookiesToSBCardPG3() {
+        onView(withText(R.string.next)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+    }
+
+    private void navigateFromSBToCookiesCardPG3() {
+        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+    }
+
+    private void navigateFromSBToSearchSuggestionsCardPG3() {
+        onView(withText(R.string.next)).perform(click());
+        onViewWaiting(withText(R.string.improve_search_suggestions_title));
+    }
+
+    private void navigateFromSearchSuggestionsToSBCardPG3() {
+        onView(withText(R.string.back)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+    }
+
+    private void navigateFromSearchSuggestionsToCompletionCardPG3() {
+        onView(withText(R.string.privacy_guide_finish_button)).perform(click());
+        onViewWaiting(withText(R.string.privacy_guide_done_title));
+    }
+
     private void goToHistorySyncCard() {
         navigateFromWelcomeToMSBBCard();
         navigateFromMSBBToHistorySyncCard();
@@ -189,14 +225,34 @@ public class PrivacyGuideFragmentTest {
         navigateFromHistorySyncToSBCard();
     }
 
+    private void goToSafeBrowsingCardPG3() {
+        goToCookiesCardPG3();
+        navigateFromCookiesToSBCardPG3();
+    }
+
     private void goToCookiesCard() {
         goToSafeBrowsingCard();
         navigateFromSBToCookiesCard();
     }
 
+    private void goToCookiesCardPG3() {
+        goToHistorySyncCard();
+        navigateFromHistorySyncToCookiesCardPG3();
+    }
+
+    private void goToSearchSuggestionsCardPG3() {
+        goToSafeBrowsingCardPG3();
+        navigateFromSBToSearchSuggestionsCardPG3();
+    }
+
     private void goToCompletionCard() {
         goToCookiesCard();
         navigateFromCookiesToCompletionCard();
+    }
+
+    private void goToCompletionCardPG3() {
+        goToSearchSuggestionsCardPG3();
+        navigateFromSearchSuggestionsToCompletionCardPG3();
     }
 
     private void setMSBBState(boolean isMSBBon) {
@@ -227,6 +283,13 @@ public class PrivacyGuideFragmentTest {
                 ()
                         -> UserPrefs.get(Profile.getLastUsedRegularProfile())
                                    .setInteger(PrefNames.COOKIE_CONTROLS_MODE, cookieControlsMode));
+    }
+
+    private void setSearchSuggestionsStatePG3(boolean isSearchSuggestionsOn) {
+        runOnUiThreadBlocking(
+                ()
+                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                   .setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isSearchSuggestionsOn));
     }
 
     private void executeWhileCapturingIntents(Runnable func) {
@@ -363,6 +426,16 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testRenderSearchSuggestionsCardPG3() throws IOException {
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+        mRenderTestRule.render(getRootView(), "privacy_guide_search_suggestions");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
     public void testRenderCompletionCard() throws IOException {
         launchPrivacyGuide();
         goToCompletionCard();
@@ -409,6 +482,51 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
+    @EnableFeatures(
+            {ChromeFeatureList.PRIVACY_GUIDE_POST_MVP, ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3})
+    public void
+    testForwardNavAllActionsPG3() {
+        setMSBBState(false);
+        setHistorySyncState(false);
+        setSearchSuggestionsStatePG3(false);
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+
+        launchPrivacyGuide();
+        testButtonVisibility(false, false, false);
+
+        navigateFromWelcomeToMSBBCard();
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.msbb_switch)).perform(click());
+        onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
+
+        navigateFromMSBBToHistorySyncCard();
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.history_sync_switch)).perform(click());
+        onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
+
+        navigateFromHistorySyncToCookiesCardPG3();
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.block_third_party)).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
+
+        navigateFromCookiesToSBCardPG3();
+        testButtonVisibility(true, true, false);
+        onView(withId(R.id.enhanced_option)).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
+
+        navigateFromSBToSearchSuggestionsCardPG3();
+        testButtonVisibility(false, true, true);
+        onView(withId(R.id.search_suggestions_switch)).perform(click());
+        onView(withId(R.id.search_suggestions_switch)).check(matches(isChecked()));
+
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+        testButtonVisibility(false, false, false);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_POST_MVP)
     @SuppressWarnings("CheckReturnValue")
     public void testBackwardNavAllActions() {
@@ -443,6 +561,76 @@ public class PrivacyGuideFragmentTest {
         // ViewUtils.waitForViewCheckingState().
         ViewUtils.withEventualExpectedViewState(
                 withText(R.string.privacy_guide_safe_browsing_intro), ViewUtils.VIEW_GONE);
+        onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.history_sync_switch)).perform(click());
+        onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.privacy_guide_history_sync_toggle), ViewUtils.VIEW_GONE);
+        onViewWaiting(allOf(withId(R.id.msbb_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.msbb_switch)).perform(click());
+        onView(withId(R.id.msbb_switch)).check(matches(isChecked()));
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.url_keyed_anonymized_data_title), ViewUtils.VIEW_GONE);
+        onViewWaiting(withText(R.string.privacy_guide_fragment_title));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(
+            {ChromeFeatureList.PRIVACY_GUIDE_POST_MVP, ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3})
+    @SuppressWarnings("CheckReturnValue")
+    public void
+    testBackwardNavAllActionsPG3() {
+        setMSBBState(false);
+        setHistorySyncState(false);
+        setSearchSuggestionsStatePG3(false);
+        setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
+        setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
+
+        launchPrivacyGuide();
+        goToCompletionCardPG3();
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.privacy_guide_done_title), ViewUtils.VIEW_GONE);
+        onViewWaiting(allOf(withId(R.id.search_suggestions_switch), isCompletelyDisplayed()));
+        onView(withId(R.id.search_suggestions_switch)).perform(click());
+        onView(withId(R.id.search_suggestions_switch)).check(matches(isChecked()));
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.improve_search_suggestions_title), ViewUtils.VIEW_GONE);
+        onViewWaiting(withText(R.string.privacy_guide_safe_browsing_intro));
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.enhanced_option).check(matches(isChecked()));
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.privacy_guide_safe_browsing_intro), ViewUtils.VIEW_GONE);
+        onViewWaiting(withText(R.string.privacy_guide_cookies_intro));
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).perform(click());
+        onInternalRadioButtonOfViewWithId(R.id.block_third_party).check(matches(isChecked()));
+
+        pressBack();
+        // TODO(crbug.com/1469988): This is a no-op, replace with
+        // ViewUtils.waitForViewCheckingState().
+        ViewUtils.withEventualExpectedViewState(
+                withText(R.string.privacy_guide_cookies_intro), ViewUtils.VIEW_GONE);
         onViewWaiting(allOf(withId(R.id.history_sync_switch), isCompletelyDisplayed()));
         onView(withId(R.id.history_sync_switch)).perform(click());
         onView(withId(R.id.history_sync_switch)).check(matches(isChecked()));

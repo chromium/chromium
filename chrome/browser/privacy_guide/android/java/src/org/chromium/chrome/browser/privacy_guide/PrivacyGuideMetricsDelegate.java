@@ -235,6 +235,9 @@ class PrivacyGuideMetricsDelegate {
                 mInitialCookiesControlMode = PrivacyGuideUtils.getCookieControlsMode();
                 break;
             }
+            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
+                break;
+            }
             case PrivacyGuideFragment.FragmentType.WELCOME:
             case PrivacyGuideFragment.FragmentType.DONE:
                 // The Welcome and Done cards don't store/update any state.
@@ -269,6 +272,9 @@ class PrivacyGuideMetricsDelegate {
             }
             case PrivacyGuideFragment.FragmentType.COOKIES: {
                 recordMetricsOnNextForCookiesCard();
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
                 break;
             }
             default:
@@ -394,6 +400,9 @@ class PrivacyGuideMetricsDelegate {
             }
             case PrivacyGuideFragment.FragmentType.MSBB: {
                 RecordUserAction.record("Settings.PrivacyGuide.BackClickMSBB");
+                break;
+            }
+            case PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS: {
                 break;
             }
             case PrivacyGuideFragment.FragmentType.DONE: {

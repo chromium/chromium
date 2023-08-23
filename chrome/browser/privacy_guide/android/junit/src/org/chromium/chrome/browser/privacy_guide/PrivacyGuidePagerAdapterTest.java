@@ -82,7 +82,8 @@ public class PrivacyGuidePagerAdapterTest {
                 return mShouldDisplayCookies;
             }
         };
-        mPagerAdapter = new PrivacyGuidePagerAdapter(mFragment, mStepDisplayHandler);
+        mPagerAdapter = new PrivacyGuidePagerAdapter(
+                mFragment, mStepDisplayHandler, PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER);
     }
 
     private Set<Class> getDisplayedFragmentClasses() {
