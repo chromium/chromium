@@ -2423,6 +2423,7 @@
     "bases": [
       "http/tests/lcp_critical_path_predictor"
     ],
+    "exclusive_tests": "ALL",
     "args": [
       "--enable-features=LCPCriticalPathPredictor",
       "--disable-threaded-compositing", "--disable-threaded-animation"
