@@ -41,6 +41,7 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/linux/device_scale_factor_observer.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/linux/linux_ui_delegate.h"
 #include "ui/linux/nav_button_provider.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_base.h"
@@ -248,7 +249,25 @@ bool QtUi::Initialize() {
   // [2] https://bugreports.qt.io/browse/QTBUG-38599
   base::ScopedEnvironmentVariableOverride env_override("SESSION_MANAGER");
 
-  cmd_line_ = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
+  auto cmd_line = *base::CommandLine::ForCurrentProcess();
+  if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
+    // Ensure QT is initialized with the same display server protocol as Chrome.
+    // In particular, when running under XWayland, make sure to use the xcb QT
+    // backend instead of the wayland backend.
+    switch (delegate->GetBackend()) {
+      case ui::LinuxUiBackend::kStub:
+        break;
+      case ui::LinuxUiBackend::kX11:
+        cmd_line.AppendArg("-platform");
+        cmd_line.AppendArg("xcb");
+        break;
+      case ui::LinuxUiBackend::kWayland:
+        cmd_line.AppendArg("-platform");
+        cmd_line.AppendArg("wayland");
+        break;
+    }
+  }
+  cmd_line_ = CopyCmdLine(cmd_line);
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
   native_theme_ = std::make_unique<QtNativeTheme>(shim_.get());
