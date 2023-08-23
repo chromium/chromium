@@ -5,6 +5,8 @@
 -BookmarkBarViewTest5.DND
 -BookmarkBarViewTest7.DNDToDifferentMenu
 -BookmarkBarViewTest8.DNDBackToOriginatingMenu
+# The following test is flaky.
+-BookmarkBarViewTest21.ContextMenusForEmptyFolder
 
 # TODO(crbug.com/1111979) Enable all tests on lacros.
 # The following tests fail consistently.
@@ -23,10 +25,8 @@
 -SameSiteSubframe/DragAndDropBrowserTest.DragSameOriginImageBetweenFrames/0
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
 # The following tests are flaky.
--CrossSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
 -MenuItemViewTestInsertWithSubmenu1.InsertItemWithSubmenu1
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
--SameSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
 -TouchMode/InteractionTestUtilMouseUiTest.Drag/0
 
 # TODO(crbug.com/1195712): Implement the feature for Wayland.
@@ -43,7 +43,6 @@
 
 # TODO(crbug.com/1336691) Fix TabDragging tests.
 # The following tests fail consistently.
--TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAllToSeparateWindow/*
@@ -56,13 +55,11 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderRightAvoidsOtherGroups/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderRightAvoidsOtherGroups/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/1
--TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragInSameWindow/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragInSameWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragLeftToUngroupTab/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragLeftToUngroupTab/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragRightToUngroupTab/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragRightToUngroupTab/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragSingleTabLeftIntoGroup/0
@@ -73,7 +70,6 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragTabWithinGroupDoesNotModifyGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragTabWithinGroupDoesNotModifyGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/1
--TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/3
@@ -84,23 +80,22 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.RevertDragSingleTabIntoGroup/*
 -TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragLeft/*
 -TabDragging/DetachToBrowserTabDragControllerTest.RevertHeaderDragRight/*
--TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/0
--TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/2
 # The following tests are flaky.
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachFromFullsizeWindow/3
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/1
--TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragGroupHeaderToSeparateWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsLeftIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsLeftIntoGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragOnlyTabInGroupRemovesGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragOnlyTabInGroupRemovesGroup/2
@@ -110,15 +105,14 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DragSingleTabRightOfRightmostGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragTabLeftPastCollapsedGroupHeader/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragTabLeftPastCollapsedGroupHeader/2
--TabDragging/DetachToBrowserTabDragControllerTest.DragTabRightPastCollapsedGroupHeader/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragTabRightPastCollapsedGroupHeader/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragUngroupedTabGroupedTabOutsideGroup/0
--TabDragging/DetachToBrowserTabDragControllerTest.DragUngroupedTabGroupedTabOutsideGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindow/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/0
 -TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/2
+-TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/0
+-TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/2
 
 # TODO(b/256212431): Re-enable when linux-lacros-rel support
 # signin::MakePrimaryAccountAvailable().
