@@ -24,4 +24,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   ASSERT_TRUE(SetupSync());
 }
 
+// TODO(crbug.com/1468523): introduce integration tests for incoming password
+// sharing invitation once it's possible to inject encrypted entities to the
+// fake server.
+
 }  // namespace

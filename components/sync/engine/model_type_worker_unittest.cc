@@ -87,6 +87,42 @@ sync_pb::EntitySpecifics EncryptPasswordSpecificsWithNthKey(
   return encrypted_specifics;
 }
 
+sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
+    const CrossUserSharingPublicPrivateKeyPair& key_pair,
+    uint32_t version) {
+  sync_pb::CrossUserSharingPublicKey output;
+  std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> key = key_pair.GetRawPublicKey();
+  output.set_x25519_public_key(std::string(key.begin(), key.end()));
+  output.set_version(version);
+  return output;
+}
+
+sync_pb::EntitySpecifics EncryptIncomingPasswordSharingInvitation(
+    const sync_pb::PasswordSharingInvitationData& password_data,
+    FakeCryptographer* cryptographer) {
+  std::string serialized_data;
+  bool success = password_data.SerializeToString(&serialized_data);
+  CHECK(success);
+
+  const CrossUserSharingPublicPrivateKeyPair& key_pair =
+      cryptographer->GetCrossUserSharingKeyPairForTesting(/*version=*/0);
+  absl::optional<std::vector<uint8_t>> encrypted_data =
+      cryptographer->AuthEncryptForCrossUserSharing(
+          base::as_bytes(base::make_span(serialized_data)),
+          key_pair.GetRawPublicKey());
+  CHECK(encrypted_data);
+
+  sync_pb::EntitySpecifics encrypted_specifics;
+  encrypted_specifics.mutable_incoming_password_sharing_invitation()
+      ->set_encrypted_password_sharing_invitation_data(encrypted_data->data(),
+                                                       encrypted_data->size());
+  encrypted_specifics.mutable_incoming_password_sharing_invitation()
+      ->mutable_sender_info()
+      ->mutable_cross_user_sharing_public_key()
+      ->CopyFrom(PublicKeyToProto(key_pair, /*version=*/0));
+  return encrypted_specifics;
+}
+
 ClientTagHash GeneratePreferenceTagHash(const std::string& tag) {
   if (tag.empty()) {
     return ClientTagHash();
@@ -3027,6 +3063,75 @@ TEST_F(ModelTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
   EXPECT_FALSE(entity.specifics()
                    .outgoing_password_sharing_invitation()
                    .has_client_only_unencrypted_data());
+}
+
+class ModelTypeWorkerIncomingPasswordSharingInvitationTest
+    : public ModelTypeWorkerTest {
+ public:
+  ModelTypeWorkerIncomingPasswordSharingInvitationTest()
+      : ModelTypeWorkerTest(INCOMING_PASSWORD_SHARING_INVITATION,
+                            /*is_encrypted_type=*/false) {}
+};
+
+TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
+       ShouldDecryptIncomingPasswordSharingInvitation) {
+  NormalInitialize();
+
+  sync_pb::PasswordSharingInvitationData password_data;
+  password_data.mutable_password_data()->set_signon_realm("signon_realm");
+  password_data.mutable_password_data()->set_password_value("password");
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptIncomingPasswordSharingInvitation(password_data, cryptographer());
+
+  // Receive an encrypted password sharing invitation.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
+
+  // The data should have been decrypted by the worker.
+  EXPECT_FALSE(update.entity.specifics.incoming_password_sharing_invitation()
+                   .has_encrypted_password_sharing_invitation_data());
+  EXPECT_FALSE(update.entity.specifics.has_encrypted());
+  EXPECT_TRUE(update.entity.specifics.incoming_password_sharing_invitation()
+                  .has_client_only_unencrypted_data());
+
+  const sync_pb::PasswordSharingInvitationData& received_password_data =
+      update.entity.specifics.incoming_password_sharing_invitation()
+          .client_only_unencrypted_data();
+  EXPECT_EQ(received_password_data.password_data().password_value(),
+            "password");
+  EXPECT_EQ(received_password_data.password_data().signon_realm(),
+            "signon_realm");
+}
+
+TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
+       ShouldIgnoreCorruptedInvitation) {
+  NormalInitialize();
+
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptIncomingPasswordSharingInvitation(
+          sync_pb::PasswordSharingInvitationData(), cryptographer());
+  encrypted_specifics.mutable_incoming_password_sharing_invitation()
+      ->set_encrypted_password_sharing_invitation_data("corrupted blob");
+
+  // Receive an invalid encrypted password sharing invitation.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+
+  // No updates should have reached the processor and the worker is not blocked
+  // for encyprion (and should never be for incoming invitations).
+  EXPECT_FALSE(processor()->HasUpdateResponse(kHash1));
+  EXPECT_FALSE(worker()->BlockForEncryption());
 }
 
 class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {

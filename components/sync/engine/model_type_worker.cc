@@ -164,7 +164,11 @@ std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
 bool DecryptSpecifics(const Cryptographer& cryptographer,
                       const sync_pb::EntitySpecifics& in,
                       sync_pb::EntitySpecifics* out) {
+  // Passwords and password sharing invitations have their own encryption
+  // schemes and they are handled in different helpers.
+  CHECK(!in.has_incoming_password_sharing_invitation());
   DCHECK(!in.has_password());
+
   DCHECK(in.has_encrypted());
   DCHECK(cryptographer.CanDecrypt(in.encrypted()));
 
@@ -227,6 +231,45 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
   // decryptable but with different keys. Ideally the password should be
   // re-uploaded potentially by setting needs_reupload boolean in
   // UpdateResponseData or EntityData.
+  return true;
+}
+
+bool DecryptIncomingPasswordSharingInvitationSpecifics(
+    const Cryptographer& cryptographer,
+    const sync_pb::EntitySpecifics& in,
+    sync_pb::EntitySpecifics* out) {
+  CHECK(in.has_incoming_password_sharing_invitation());
+
+  const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation =
+      in.incoming_password_sharing_invitation();
+
+  if (!invitation.has_encrypted_password_sharing_invitation_data() ||
+      !invitation.sender_info().has_cross_user_sharing_public_key()) {
+    DLOG(ERROR)
+        << "Incoming password sharing invitation missing required fields";
+    return false;
+  }
+
+  absl::optional<std::vector<uint8_t>> decrypted =
+      cryptographer.AuthDecryptForCrossUserSharing(
+          base::as_bytes(base::make_span(
+              invitation.encrypted_password_sharing_invitation_data())),
+          base::as_bytes(base::make_span(invitation.sender_info()
+                                             .cross_user_sharing_public_key()
+                                             .x25519_public_key())),
+          invitation.recipient_key_version());
+  if (!decrypted) {
+    DLOG(ERROR) << "Failed to decrypt an incoming password sharing invitation";
+    return false;
+  }
+
+  if (!out->mutable_incoming_password_sharing_invitation()
+           ->mutable_client_only_unencrypted_data()
+           ->ParseFromArray(decrypted->data(), decrypted->size())) {
+    DLOG(ERROR) << "Failed to parse password sharing invitation";
+    return false;
+  }
+
   return true;
 }
 
@@ -558,6 +601,15 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
       return FAILED_TO_DECRYPT;
     }
     specifics_were_encrypted = true;
+  } else if (specifics.has_incoming_password_sharing_invitation()) {
+    // Password sharing invitations use their own encryption scheme.
+    // DECRYPTION_PENDING is not used for sharing invitations since the password
+    // should be encrypted using recipient's public key (i.e. it's committed to
+    // the server), and hence it's expected to be present.
+    if (!DecryptIncomingPasswordSharingInvitationSpecifics(
+            cryptographer, specifics, &data.specifics)) {
+      return FAILED_TO_DECRYPT;
+    }
   } else if (specifics.has_encrypted()) {
     DCHECK(!update_entity.deleted()) << "Tombstones shouldn't be encrypted";
     if (!cryptographer.CanDecrypt(specifics.encrypted())) {
