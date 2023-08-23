@@ -6777,3 +6777,8 @@ crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-on-navig
 crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
 crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
 crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
+
+# Re-enable after new baselines are generated
+crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
+crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
+crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure

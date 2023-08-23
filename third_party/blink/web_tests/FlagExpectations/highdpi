@@ -447,3 +447,6 @@ crbug.com/1339051 fast/forms/suggestion-picker/month-suggestion-picker-appearanc
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/capture-with-opacity-zero-child.html [ Failure ]
+
+# Re-enable after new baselines are generated
+crbug.com/1456636 [ Linux ] virtual/view-transition/external/wpt/css/css-view-transitions/new-and-old-sizes-match.html [ Failure ]  # Reftest image failure

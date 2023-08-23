@@ -146,3 +146,8 @@ crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.s
 crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]
 
 crbug.com/1444753 http/tests/inspector-protocol/tracing/prerender.js [ Skip ]
+
+# Re-enable after new baselines are generated
+crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
+crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
+crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure

@@ -825,8 +825,8 @@ SkiaOutputSurfaceImplOnGpu::CreateSharedImageRepresentationSkia(
 
   gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
   bool result = shared_image_factory_->CreateSharedImage(
-      mailbox, format, size, color_space, kBottomLeft_GrSurfaceOrigin,
-      kUnpremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage,
+      mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, gpu::kNullSurfaceHandle, kUsage,
       std::string(debug_label));
   if (!result) {
     DLOG(ERROR) << "Failed to create shared image.";

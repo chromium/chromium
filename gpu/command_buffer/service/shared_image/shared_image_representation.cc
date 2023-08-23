@@ -309,6 +309,12 @@ SkiaGaneshImageRepresentation::BeginScopedWriteAccess(
     return nullptr;
   }
 
+  if (surface_origin() != kTopLeft_GrSurfaceOrigin) {
+    LOG(ERROR)
+        << "Skia write access is only allowed for top left origin surfaces.";
+    return nullptr;
+  }
+
   std::unique_ptr<skgpu::MutableTextureState> end_state;
   if (use_sk_surface) {
     std::vector<sk_sp<SkSurface>> surfaces =
@@ -543,6 +549,12 @@ SkiaGraphiteImageRepresentation::BeginScopedWriteAccess(
     bool use_sk_surface) {
   if (allow_uncleared != AllowUnclearedAccess::kYes && !IsCleared()) {
     LOG(ERROR) << "Attempt to write to an uninitialized SharedImage";
+    return nullptr;
+  }
+
+  if (surface_origin() != kTopLeft_GrSurfaceOrigin) {
+    LOG(ERROR)
+        << "Skia write access is only allowed for top left origin surfaces.";
     return nullptr;
   }
 

@@ -414,7 +414,8 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   void SetName(const std::string& name);
 
   // Set new TransferableResource for this layer. This method only supports
-  // a gpu-backed |resource|.
+  // a gpu-backed |resource| which is assumed to have top-left origin. Clients
+  // should call SetTextureFlipped(true) for bottom-left origin resources.
   void SetTransferableResource(const viz::TransferableResource& resource,
                                viz::ReleaseCallback release_callback,
                                gfx::Size texture_size_in_dip);

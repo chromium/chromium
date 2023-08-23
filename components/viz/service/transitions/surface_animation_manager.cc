@@ -99,14 +99,11 @@ void ReplaceSharedElementWithRenderPass(
 // drawn.
 // |shared_element_quad| is the quad providing the geometry to draw this shared
 // element's content.
-// |y_flipped| indicates if the texture should be flipped vertically when
-// composited.
 // |id| is a reference to the texture which provides the content for this shared
 // element.
 void ReplaceSharedElementWithTexture(
     CompositorRenderPass* target_render_pass,
     const SharedElementDrawQuad& shared_element_quad,
-    bool y_flipped,
     ResourceId resource_id) {
   auto* copied_quad_state =
       target_render_pass->CreateAndAppendSharedQuadState();
@@ -125,7 +122,7 @@ void ReplaceSharedElementWithTexture(
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SkColors::kTransparent,
-      /*vertex_opacity=*/vertex_opacity, y_flipped,
+      /*vertex_opacity=*/vertex_opacity, /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);
@@ -233,10 +230,8 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
 
       resource_list->push_back(transferable_resource);
 
-      // GPU textures are flipped but software bitmaps are not.
-      bool y_flipped = !transferable_resource.is_software;
       ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
-                                      y_flipped, resource_list->back().id);
+                                      resource_list->back().id);
       return true;
     }
   }

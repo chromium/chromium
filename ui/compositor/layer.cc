@@ -1031,7 +1031,6 @@ void Layer::SetTransferableResource(const viz::TransferableResource& resource,
   if (!texture_layer_.get()) {
     scoped_refptr<cc::TextureLayer> new_layer =
         cc::TextureLayer::CreateForMailbox(this);
-    new_layer->SetFlipped(true);
     if (!SwitchToLayer(new_layer))
       return;
 
