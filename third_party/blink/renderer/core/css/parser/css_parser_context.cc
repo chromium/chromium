@@ -231,8 +231,8 @@ KURL CSSParserContext::CompleteURL(const String& url) const {
 }
 
 KURL CSSParserContext::CompleteNonEmptyURL(const String& url) const {
-  if (url.empty()) {
-    return KURL();
+  if (url.empty() && !url.IsNull()) {
+    return KURL(g_empty_string);
   }
   return CompleteURL(url);
 }

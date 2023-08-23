@@ -41,20 +41,11 @@ class CORE_EXPORT StyleImageCache {
   void Trace(Visitor*) const;
 
  private:
-  static StyleFetchedImage* CreateImage(Document&,
-                                        FetchParameters&,
-                                        OriginClean,
-                                        bool is_ad_related,
-                                        const float override_image_resolution);
-
   // Map from URL to style image. A weak reference makes sure the entry is
   // removed when no style declarations nor computed styles have a reference to
   // the image.
   HeapHashMap<std::pair<String, float>, WeakMember<StyleFetchedImage>>
       fetched_image_map_;
-
-  // Style image returned for requests with a null KURL.
-  WeakMember<StyleFetchedImage> null_url_image_;
 
   friend class StyleImageCacheTest;
 };
