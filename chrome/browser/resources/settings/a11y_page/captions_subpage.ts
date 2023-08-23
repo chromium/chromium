@@ -154,6 +154,12 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
 
       /**
        * List of options for the text shadow drop-down menu.
+       *
+       * Other clients are relying on these values to determine text shadow type
+       * from preference. Please update the following files if any of these
+       * values are changed:
+       * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_a11y_page/captions_subpage.ts;l=142-170;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
+       * https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/arc/intent_helper/arc_settings_service.cc;l=86-94;drc=a782e6ac5124014b8473c9e7e445d799624b532c
        */
       textShadowOptions_: {
         readOnly: true,

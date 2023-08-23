@@ -84,7 +84,7 @@ constexpr char kArcProxyBypassListDelimiter[] = ",";
 constexpr float kAndroidFontScaleNormal = 1;
 
 // These values are based on
-// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/os_a11y_page/captions_subpage.ts;l=142;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
+// https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/ash/settings/a11y_page/captions_subpage.ts;l=142;drc=0918c7f73782a9575396f0c6b80a722b5a3d255a
 constexpr char kTextShadowRaised[] = "-2px -2px 4px rgba(0, 0, 0, 0.5)";
 constexpr char kTextShadowDepressed[] = "2px 2px 4px rgba(0, 0, 0, 0.5)";
 constexpr char kTextShadowUniform[] =
