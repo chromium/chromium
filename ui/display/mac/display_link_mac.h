@@ -21,6 +21,7 @@
 namespace ui {
 
 class DisplayLinkMac;
+class DisplayLinkMacSharedState;
 
 // VSync parameters parsed from CVDisplayLinkOutputCallback's parameters.
 struct DISPLAY_EXPORT VSyncParamsMac {
@@ -44,13 +45,15 @@ class DISPLAY_EXPORT VSyncCallbackMac {
 
  private:
   friend class DisplayLinkMac;
-  VSyncCallbackMac(scoped_refptr<DisplayLinkMac> display_link,
+  friend class DisplayLinkMacSharedState;
+  using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;
+
+  VSyncCallbackMac(UnregisterCallback unregister_callback,
                    Callback callback,
                    bool do_callback_on_ctor_thread);
 
-  // The DisplayLinkMac that `this` is observing is kept alive while `this` is
-  // alive.
-  scoped_refptr<DisplayLinkMac> display_link_;
+  // The callback to unregister `this` with its DisplayLinkMac.
+  UnregisterCallback unregister_callback_;
 
   // The callback that will be run on the CVDisplayLink thread. If `this` was
   // created with `do_callback_on_ctor_thread`, then this callback will post a
@@ -60,10 +63,11 @@ class DISPLAY_EXPORT VSyncCallbackMac {
   base::WeakPtrFactory<VSyncCallbackMac> weak_factory_;
 };
 
-class DISPLAY_EXPORT DisplayLinkMac
-    : public base::RefCountedThreadSafe<DisplayLinkMac> {
+// DisplayLinkMac indirectly owns a CVDisplayLink (via
+// DisplayLinkMacSharedState), and may be used to create VSync callbacks.
+class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
  public:
-  // Get the DisplayLinkMac for the specified display.
+  // Create a DisplayLinkMac for the specified display.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(
       CGDirectDisplayID display_id);
 
@@ -83,43 +87,25 @@ class DISPLAY_EXPORT DisplayLinkMac
       bool do_callback_on_register_thread = true);
 
   // Get the panel/monitor refresh rate
-  double GetRefreshRate();
+  double GetRefreshRate() const;
 
   // Retrieves the current (“now”) time of a given display link. Returns
   // base::TimeTicks() if the current time is not available.
-  base::TimeTicks GetCurrentTime();
+  base::TimeTicks GetCurrentTime() const;
 
  private:
-  friend class base::RefCountedThreadSafe<DisplayLinkMac>;
-  friend class VSyncCallbackMac;
+  friend class base::RefCounted<DisplayLinkMac>;
 
-  DisplayLinkMac(CGDirectDisplayID display_id,
-                 base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link);
+  DisplayLinkMac(DisplayLinkMacSharedState* shared_state);
   virtual ~DisplayLinkMac();
 
+  // This is called by VSyncCallbackMac's destructor.
   void UnregisterCallback(VSyncCallbackMac* callback);
 
-  // Called by the system on the display link thread, and posts a call to
-  // the thread indicated in DisplayLinkMac::RegisterCallback().
-  static CVReturn DisplayLinkCallback(CVDisplayLinkRef display_link,
-                                      const CVTimeStamp* now,
-                                      const CVTimeStamp* output_time,
-                                      CVOptionFlags flags_in,
-                                      CVOptionFlags* flags_out,
-                                      void* context);
-
-  // The display that this display link is attached to.
-  CGDirectDisplayID display_id_;
-
-  // CVDisplayLink for querying VSync timing info.
-  base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link_;
-
-  // Each VSyncCallbackMac holds a reference to `this`. This member may
-  // be accessed on any thread while |globals.lock| is held. But it can only be
-  // modified on the main thread. |globals.lock| also guards DisplayLinkMac map.
-  std::set<VSyncCallbackMac*> callbacks_;
-
-  SEQUENCE_CHECKER(display_link_mac_sequence_checker_);
+  // A single DisplayLinkMacSharedState is shared between all DisplayLinkMac
+  // instances that have same display ID. This is manually retained and
+  // released.
+  raw_ptr<DisplayLinkMacSharedState> shared_state_;
 };
 
 }  // namespace ui

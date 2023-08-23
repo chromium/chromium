@@ -30,9 +30,32 @@ struct ScopedTypeRefTraits<CVDisplayLinkRef> {
 
 namespace ui {
 
-using DisplayLinkMap = std::map<CGDirectDisplayID, DisplayLinkMac*>;
-
 namespace {
+
+struct DisplayLinkGlobals {
+  // |map| maybe accessed on anythread but only modified on the main thread..
+  std::map<CGDirectDisplayID, std::unique_ptr<DisplayLinkMacSharedState>>
+      GUARDED_BY(lock) map;
+
+  // Making any calls to the CVDisplayLink API while `lock` is held can
+  // result in deadlock, because `lock` is taken inside the CVDisplayLink
+  // system callback.
+  // https://crbug.com/1427235#c2
+  base::Lock lock;
+
+  void AssertLockHeldByCurrentThread() const { lock.AssertAcquired(); }
+
+  void AssertLockNotHeldByCurrentThread() const {
+    // The function base::Lock::AssertNotHeld asserts that no thread holds
+    // the specified lock, not that the current thread does not hold it.
+    // TODO(https://crbug.com/1427235): Make this be a real DCHECK.
+  }
+
+  static DisplayLinkGlobals& Get() {
+    static base::NoDestructor<DisplayLinkGlobals> instance;
+    return *instance;
+  }
+};
 
 bool ComputeVSyncParameters(const CVTimeStamp& cv_time,
                             base::TimeTicks* timebase,
@@ -63,63 +86,132 @@ bool ComputeVSyncParameters(const CVTimeStamp& cv_time,
   return true;
 }
 
-struct DisplayLinkGlobals {
-  // |map| maybe accessed on anythread but only modified on the main thread..
-  std::map<CGDirectDisplayID, DisplayLinkMac*> GUARDED_BY(lock) map;
-  // Making any calls to the CVDisplayLink API while `lock` is held can
-  // result in deadlock, because `lock` is taken inside the CVDisplayLink
-  // system callback.
-  // https://crbug.com/1427235#c2
-  base::Lock lock;
-
-  static DisplayLinkGlobals& Get() {
-    static base::NoDestructor<DisplayLinkGlobals> instance;
-    return *instance;
-  }
-};
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
-// DisplayLinkMac
+// DisplayLinkMacSharedState
 
-// static
-scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
-    CGDirectDisplayID display_id) {
-#if DCHECK_IS_ON()
-  // This function must be always called on the same thread. Check the thread
-  // id instead of the task runner. The task runner might not be available in
-  // the test.
-  static const base::PlatformThreadId first_thread_id =
-      base::PlatformThread::CurrentId();
-  base::PlatformThreadId current_thread_id = base::PlatformThread::CurrentId();
+// For each CGDirectDisplayID there is only one DisplayLinkMacSharedState
+// structure, which is shared_state between all DisplayLinkMacs that have that
+// CGDirectDisplayID.
+class DisplayLinkMacSharedState {
+ public:
+  static std::unique_ptr<DisplayLinkMacSharedState> Create(
+      CGDirectDisplayID display_id);
 
-  DCHECK(current_thread_id == first_thread_id);
-#endif
-
-  if (!display_id) {
-    return nullptr;
+  ~DisplayLinkMacSharedState() {
+    // The destructor will call into the CVDisplayLink API to delete
+    // `display_link_`. Ensure that we do not hold the globals' lock.
+    DisplayLinkGlobals::Get().AssertLockNotHeldByCurrentThread();
   }
 
-  // Return the existing display link for this display, if it exists.
+  // Increment the refcount for `this`. Caller must hold the global' lock.
+  void Retain();
+
+  // Decrement the refcount for `this` and potentially delete `this`. Caller
+  // must not hold the globals' lock.
+  void Release();
+
+  double GetRefreshRate() const;
+  base::TimeTicks GetCurrentTime() const;
+
+  // Run all callbacks. This is called during the CVDisplayLink callback.
+  void RunCallbacks(const VSyncParamsMac& params) const;
+
+  // The interval over which CVDisplayLinkStart and CVDisplayLinkStop are
+  // called is controlled by a reference count. The retain call will return
+  // false if CVDisplayLinkStart fails.
+  bool RetainDisplayLinkRunning();
+  void ReleaseDisplayLinkRunning();
+
+  // Register and unregister a callback. Note that the callback itself will keep
+  // `this` alive (because it holds a reference to a DisplayLinkMac, which holds
+  // a reference to `this`).
+  void RegisterCallback(VSyncCallbackMac* callback);
+  void UnregisterCallback(VSyncCallbackMac* callback);
+
+ private:
+  DisplayLinkMacSharedState(
+      CGDirectDisplayID display_id,
+      base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link)
+      : display_id_(display_id), display_link_(std::move(display_link)) {
+    DisplayLinkGlobals::Get().AssertLockNotHeldByCurrentThread();
+  }
+
+  // Reference count that controls the lifetime of `this`.
+  uint32_t refcount_ = 0;
+
+  // The display that this display link is attached to.
+  CGDirectDisplayID display_id_;
+
+  // CVDisplayLink for querying VSync timing info.
+  base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link_;
+
+  // Each VSyncCallbackMac holds a reference to `this`. This member may only be
+  // accessed or modified while holding `globals.lock`.
+  std::set<VSyncCallbackMac*> callbacks_;
+
+  // Refcount for controlling if the display link is running.
+  uint32_t display_link_running_refcount_
+      GUARDED_BY(display_link_running_lock_) = 0;
+
+  // The CVDisplayLink API is called while holding `display_link_running_lock_`.
+  base::Lock display_link_running_lock_;
+};
+
+namespace {
+
+// Called by the system on the display link thread, and posts a call to
+// the thread indicated in DisplayLinkMac::RegisterCallback().
+CVReturn DisplayLinkCallback(CVDisplayLinkRef display_link,
+                             const CVTimeStamp* now,
+                             const CVTimeStamp* output_time,
+                             CVOptionFlags flags_in,
+                             CVOptionFlags* flags_out,
+                             void* context) {
+  // This function is called on the system CVDisplayLink thread.
+  TRACE_EVENT0("ui", "DisplayLinkCallback");
+
+  // Convert the time parameters to our VSync parameters.
+  VSyncParamsMac params;
+  params.callback_times_valid = ComputeVSyncParameters(
+      *now, &params.callback_timebase, &params.callback_interval);
+  params.display_times_valid = ComputeVSyncParameters(
+      *output_time, &params.display_timebase, &params.display_interval);
+
+  // Take `globals.lock`. There exists a lock internal to the CVDisplayLink,
+  // and that lock is held during this callback. We cannot call the
+  // CVDisplayLink API while holding `globals.lock`, because that would take
+  // the locks in the opposite order, potentially deadlocking.
+  // https://crbug.com/1427235#c2
   auto& globals = DisplayLinkGlobals::Get();
-  {
-    base::AutoLock lock(globals.lock);
-    auto found = globals.map.find(display_id);
-    if (found != globals.map.end()) {
-      return found->second;
-    }
+  base::AutoLock lock(globals.lock);
+
+  // Locate the DisplayLinkMac for this display.
+  CGDirectDisplayID display_id =
+      static_cast<CGDirectDisplayID>(reinterpret_cast<uintptr_t>(context));
+  auto found = globals.map.find(display_id);
+  if (found == globals.map.end()) {
+    return kCVReturnSuccess;
   }
 
-  // Create a new DisplayLink, outside of the lock.
+  // Issue all of its callbacks.
+  auto* shared_state = found->second.get();
+  shared_state->RunCallbacks(params);
+
+  return kCVReturnSuccess;
+}
+
+}  // namespace
+
+std::unique_ptr<DisplayLinkMacSharedState> DisplayLinkMacSharedState::Create(
+    CGDirectDisplayID display_id) {
+  // Create a new DisplayLink, outside of the lock. Creating the CVDisplayLink
+  // wll take a OS-internal lock which is also held during the CVDisplayLink
+  // callback.
+  DisplayLinkGlobals::Get().AssertLockNotHeldByCurrentThread();
+
   CVReturn ret = kCVReturnSuccess;
-
-  // It's safe to call CVDisplayLinkCreateWithCGDisplay,
-  // CVDisplayLinkGetCurrentCGDisplay, and CVDisplayLinkSetOutputCallback
-  // without holding a lock to globals.map because DisplayLinkMac is always
-  // created/destroyed on the same thread. Holding a lock here can result in
-  // deadlock.
-
   base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link;
   ret = CVDisplayLinkCreateWithCGDisplay(display_id,
                                          display_link.InitializeInto());
@@ -153,30 +245,56 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     return nullptr;
   }
 
-  scoped_refptr<DisplayLinkMac> result(
-      new DisplayLinkMac(display_id, display_link));
-  {
-    base::AutoLock lock(globals.lock);
-    globals.map.emplace(display_id, result.get());
-  }
-  return result;
+  return absl::WrapUnique(
+      new DisplayLinkMacSharedState(display_id, std::move(display_link)));
 }
 
-double DisplayLinkMac::GetRefreshRate() {
+// Functions to call CVDisplayLinkStart and CVDisplayLinkStop. This is
+// reference counted, and takes `display_link_running_lock_`.
+bool DisplayLinkMacSharedState::RetainDisplayLinkRunning() {
+  base::AutoLock lock(display_link_running_lock_);
+
+  if (display_link_running_refcount_ == 0) {
+    DCHECK(!CVDisplayLinkIsRunning(display_link_));
+    CVReturn ret = CVDisplayLinkStart(display_link_);
+    if (ret != kCVReturnSuccess) {
+      LOG(ERROR) << "CVDisplayLinkStart failed. CVReturn: " << ret;
+      return false;
+    }
+  }
+  display_link_running_refcount_ += 1;
+  return true;
+}
+void DisplayLinkMacSharedState::ReleaseDisplayLinkRunning() {
+  base::AutoLock lock(display_link_running_lock_);
+
+  DCHECK(display_link_running_refcount_ > 0);
+  display_link_running_refcount_ -= 1;
+  if (display_link_running_refcount_ > 0) {
+    return;
+  }
+
+  CVReturn ret = CVDisplayLinkStop(display_link_);
+  if (ret != kCVReturnSuccess) {
+    LOG(ERROR) << "CVDisplayLinkStop failed. CVReturn: " << ret;
+  }
+}
+
+double DisplayLinkMacSharedState::GetRefreshRate() const {
   double refresh_rate = 0;
   CVTime cv_time =
       CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link_);
-  if (!(cv_time.flags & kCVTimeIsIndefinite))
+  if (!(cv_time.flags & kCVTimeIsIndefinite)) {
     refresh_rate = (static_cast<double>(cv_time.timeScale) /
                     static_cast<double>(cv_time.timeValue));
+  }
 
   return refresh_rate;
 }
 
-base::TimeTicks DisplayLinkMac::GetCurrentTime() {
+base::TimeTicks DisplayLinkMacSharedState::GetCurrentTime() const {
   CVTimeStamp out_time;
   CVReturn ret = CVDisplayLinkGetCurrentTime(display_link_, &out_time);
-
   if (ret == kCVReturnSuccess) {
     return base::TimeTicks::FromMachAbsoluteTime(out_time.hostTime);
   } else {
@@ -184,134 +302,160 @@ base::TimeTicks DisplayLinkMac::GetCurrentTime() {
   }
 }
 
-DisplayLinkMac::DisplayLinkMac(
-    CGDirectDisplayID display_id,
-    base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link)
-    : display_id_(display_id), display_link_(display_link) {}
-
-DisplayLinkMac::~DisplayLinkMac() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(display_link_mac_sequence_checker_);
-
-  auto& globals = DisplayLinkGlobals::Get();
-  base::AutoLock lock(globals.lock);
-
-  auto found = globals.map.find(display_id_);
-  DCHECK(found != globals.map.end());
-  DCHECK(found->second == this);
-  globals.map.erase(found);
-}
-
-// static
-CVReturn DisplayLinkMac::DisplayLinkCallback(CVDisplayLinkRef display_link,
-                                             const CVTimeStamp* now,
-                                             const CVTimeStamp* output_time,
-                                             CVOptionFlags flags_in,
-                                             CVOptionFlags* flags_out,
-                                             void* context) {
-  TRACE_EVENT0("ui", "DisplayLinkMac::DisplayLinkCallback");
-  // This function is called on the system CVDisplayLink thread.
-
-  // Convert the time parameters to our VSync parameters.
-  VSyncParamsMac params;
-  params.callback_times_valid = ComputeVSyncParameters(
-      *now, &params.callback_timebase, &params.callback_interval);
-  params.display_times_valid = ComputeVSyncParameters(
-      *output_time, &params.display_timebase, &params.display_interval);
-
-  // Locate the DisplayLinkMac for this display.
-  auto& globals = DisplayLinkGlobals::Get();
-  base::AutoLock lock(globals.lock);
-
-  CGDirectDisplayID display_id =
-      static_cast<CGDirectDisplayID>(reinterpret_cast<uintptr_t>(context));
-  auto found = globals.map.find(display_id);
-  if (found == globals.map.end()) {
-    return kCVReturnSuccess;
-  }
-
-  // Issue all of its callbacks.
-  DisplayLinkMac* display_link_mac = found->second;
-  for (auto* callback : display_link_mac->callbacks_) {
+void DisplayLinkMacSharedState::RunCallbacks(
+    const VSyncParamsMac& params) const {
+  DisplayLinkGlobals::Get().AssertLockHeldByCurrentThread();
+  for (auto* callback : callbacks_) {
     callback->callback_for_cvdisplaylink_thread_.Run(params);
   }
+}
 
-  return kCVReturnSuccess;
+void DisplayLinkMacSharedState::RegisterCallback(VSyncCallbackMac* callback) {
+  base::AutoLock lock(DisplayLinkGlobals::Get().lock);
+  callbacks_.insert(callback);
+}
+
+void DisplayLinkMacSharedState::UnregisterCallback(VSyncCallbackMac* callback) {
+  base::AutoLock lock(DisplayLinkGlobals::Get().lock);
+  callbacks_.erase(callback);
+}
+
+void DisplayLinkMacSharedState::Retain() {
+  DisplayLinkGlobals::Get().AssertLockHeldByCurrentThread();
+  refcount_ += 1;
+}
+
+void DisplayLinkMacSharedState::Release() {
+  auto& globals = DisplayLinkGlobals::Get();
+  globals.AssertLockNotHeldByCurrentThread();
+
+  // If the reference count drops to zero, the populate `scoped_this` with
+  // the std::unique_ptr holding `this`, so that it can be deleted after
+  // `globals.lock` is released.
+  std::unique_ptr<DisplayLinkMacSharedState> scoped_this;
+
+  // While holding `globals.lock`, decrement `refcount_`, and potentially
+  // remove `this` from `globals.map`.
+  {
+    base::AutoLock lock(globals.lock);
+    auto found = globals.map.find(display_id_);
+    DCHECK(found != globals.map.end());
+    DCHECK(found->second.get() == this);
+
+    DCHECK(refcount_ > 0);
+    refcount_ -= 1;
+    if (refcount_ == 0) {
+      scoped_this = std::move(found->second);
+      globals.map.erase(found);
+    }
+  }
+
+  // Let `scoped_this` be destroyed now that `globals.lock` is no longer held.
+  scoped_this = nullptr;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// DisplayLinkMac
+
+// static
+scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
+    CGDirectDisplayID display_id) {
+  if (!display_id) {
+    return nullptr;
+  }
+
+  // Take `globals.lock` and check if there exists DisplayLinkMacSharedState for
+  // this id.
+  auto& globals = DisplayLinkGlobals::Get();
+  {
+    base::AutoLock lock(globals.lock);
+    auto found = globals.map.find(display_id);
+    if (found != globals.map.end()) {
+      return new DisplayLinkMac(found->second.get());
+    }
+  }
+
+  // Create a new CVDisplayLink while not holding `globals.lock`.
+  auto shared_state = DisplayLinkMacSharedState::Create(display_id);
+
+  // Take `globals.lock` again and store `shared_state` in the map (or use an
+  // existing DisplayLinkMacSharedState, if another thread created one).
+  scoped_refptr<DisplayLinkMac> result;
+  {
+    base::AutoLock lock(globals.lock);
+
+    auto found = globals.map.find(display_id);
+    if (found == globals.map.end()) {
+      found = globals.map.emplace(display_id, std::move(shared_state)).first;
+    }
+    result = new DisplayLinkMac(found->second.get());
+  }
+
+  // If we didn't need `shared_state`, because another thread created one and
+  // won the race to put it in `globals.map`, delete it, now that we no longer
+  // hold `globals.lock`.
+  shared_state = nullptr;
+
+  return result;
+}
+
+double DisplayLinkMac::GetRefreshRate() const {
+  return shared_state_->GetRefreshRate();
+}
+
+base::TimeTicks DisplayLinkMac::GetCurrentTime() const {
+  return shared_state_->GetCurrentTime();
+}
+
+DisplayLinkMac::DisplayLinkMac(DisplayLinkMacSharedState* shared_state)
+    : shared_state_(shared_state) {
+  DisplayLinkGlobals::Get().AssertLockHeldByCurrentThread();
+  shared_state_->Retain();
+}
+
+DisplayLinkMac::~DisplayLinkMac() {
+  DisplayLinkGlobals::Get().AssertLockNotHeldByCurrentThread();
+
+  // `shared_state_` may be deleted by the call to Release. Avoid dangling
+  // raw_ptr warnings by setting `shared_state_` to nullptr prior to calling
+  // Release.
+  DisplayLinkMacSharedState* shared_state_to_release = shared_state_;
+  shared_state_ = nullptr;
+
+  shared_state_to_release->Release();
+  shared_state_to_release = nullptr;
 }
 
 std::unique_ptr<VSyncCallbackMac> DisplayLinkMac::RegisterCallback(
     VSyncCallbackMac::Callback callback,
     bool do_callback_on_register_thread) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(display_link_mac_sequence_checker_);
-  auto& globals = DisplayLinkGlobals::Get();
-
-  // Make sure the callback is added to |callbacks_| before calling
-  // CVDisplayLinkStart.
-  std::unique_ptr<VSyncCallbackMac> new_observer(new VSyncCallbackMac(
-      this, std::move(callback), do_callback_on_register_thread));
-  bool need_to_start_display_link = false;
-  std::pair<std::set<VSyncCallbackMac*>::iterator, bool> insert_result;
-  {
-    base::AutoLock lock(globals.lock);
-    need_to_start_display_link = callbacks_.empty();
-    insert_result = callbacks_.insert(new_observer.get());
-  }
-
-  // Start the display link, if needed. If we fail to start the link, return
+  // Ensure that the CVDisplayLink is running. If something goes wrong, return
   // nullptr.
-  if (need_to_start_display_link) {
-    DCHECK(!CVDisplayLinkIsRunning(display_link_));
-
-    // It's safe to call CVDisplayLinkStart and CVDisplayLinkStop without
-    // holding a lock to globals.lock because |callbacks_| are always modified
-    // on the same ctor thread, and also CVDisplayLinkStart and
-    // CVDisplayLinkStop are always called on the same thread. Holding a lock
-    // here can result in deadlock inside CVDisplayLinkStart.
-    CVReturn ret = CVDisplayLinkStart(display_link_);
-    if (ret != kCVReturnSuccess) {
-      LOG(ERROR) << "CVDisplayLinkStart failed. CVReturn: " << ret;
-
-      base::AutoLock lock(globals.lock);
-      callbacks_.erase(insert_result.first);
-      return nullptr;
-    }
+  if (!shared_state_->RetainDisplayLinkRunning()) {
+    return nullptr;
   }
 
-  return new_observer;
+  // Make add the new callback.
+  std::unique_ptr<VSyncCallbackMac> new_callback(new VSyncCallbackMac(
+      base::BindOnce(&DisplayLinkMac::UnregisterCallback, this),
+      std::move(callback), do_callback_on_register_thread));
+  shared_state_->RegisterCallback(new_callback.get());
+  return new_callback;
 }
 
-void DisplayLinkMac::UnregisterCallback(VSyncCallbackMac* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(display_link_mac_sequence_checker_);
-
-  bool need_to_stop_display_link = false;
-  auto found = callbacks_.find(observer);
-  CHECK(found != callbacks_.end());
-  {
-    auto& globals = DisplayLinkGlobals::Get();
-    base::AutoLock lock(globals.lock);
-    callbacks_.erase(found);
-    need_to_stop_display_link = callbacks_.empty();
-  }
-
-  // Stop the CVDisplayLink if all observers are removed.
-  if (need_to_stop_display_link) {
-    DCHECK(CVDisplayLinkIsRunning(display_link_));
-
-    // See the comment on DisplayLinkMac::RegisterCallback() for not holding a
-    // lock for CVDisplayLinkStop.
-    CVReturn ret = CVDisplayLinkStop(display_link_);
-    if (ret != kCVReturnSuccess) {
-      LOG(ERROR) << "CVDisplayLinkStop failed. CVReturn: " << ret;
-    }
-  }
+void DisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
+  shared_state_->UnregisterCallback(callback);
+  shared_state_->ReleaseDisplayLinkRunning();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // VSyncCallbackMac
 
-VSyncCallbackMac::VSyncCallbackMac(scoped_refptr<DisplayLinkMac> display_link,
+VSyncCallbackMac::VSyncCallbackMac(UnregisterCallback unregister_callback,
                                    Callback callback,
                                    bool do_callback_on_ctor_thread)
-    : display_link_(std::move(display_link)), weak_factory_(this) {
+    : unregister_callback_(std::move(unregister_callback)),
+      weak_factory_(this) {
   if (do_callback_on_ctor_thread) {
     auto lambda = [](base::WeakPtr<VSyncCallbackMac> weak_this,
                      Callback callback, VSyncParamsMac params) {
@@ -329,8 +473,7 @@ VSyncCallbackMac::VSyncCallbackMac(scoped_refptr<DisplayLinkMac> display_link,
 }
 
 VSyncCallbackMac::~VSyncCallbackMac() {
-  display_link_->UnregisterCallback(this);
-  display_link_ = nullptr;
+  std::move(unregister_callback_).Run(this);
 }
 
 }  // namespace ui
