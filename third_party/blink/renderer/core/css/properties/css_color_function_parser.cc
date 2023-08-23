@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -515,6 +516,11 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
                                  channels_[2], alpha_);
   // The parsing was successful, so we need to consume the input.
   input_range = range;
+
+  if (is_relative_color_) {
+    context.Count(WebFeature::kCSSRelativeColor);
+  }
+
   return true;
 }
 

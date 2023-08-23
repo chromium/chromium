@@ -43948,6 +43948,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4629" label="ZstdContentEncoding"/>
   <int value="4630" label="GetAllScreensMedia"/>
   <int value="4631" label="InputEventToRecentlyMovedIframeMistakenlyDiscarded"/>
+  <int value="4632" label="CSSRelativeColor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
