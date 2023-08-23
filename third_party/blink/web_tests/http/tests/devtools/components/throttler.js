@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`This test verifies throttler behavior.\n`);
 
@@ -90,7 +92,7 @@ import {TestRunner} from 'test_runner';
     }
   }
 
-  var throttler = new Common.Throttler(1989);
+  var throttler = new Common.Throttler.Throttler(1989);
   var timeoutMock = new TimeoutMock();
   throttler.setTimeout = timeoutMock.setTimeout;
   throttler.clearTimeout = timeoutMock.clearTimeout;
@@ -243,7 +245,7 @@ import {TestRunner} from 'test_runner';
   function waitForProcessFinish() {
     var promiseResolve;
     var hasFinished;
-    TestRunner.addSniffer(Common.Throttler.prototype, 'processCompletedForTests', onFinished);
+    TestRunner.addSniffer(Common.Throttler.Throttler.prototype, 'processCompletedForTests', onFinished);
     function onFinished() {
       hasFinished = true;
       if (promiseResolve)
