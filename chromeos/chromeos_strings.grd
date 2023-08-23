@@ -1923,20 +1923,17 @@
         <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH" desc="Settings > Internet > Title of section which displays the cellular signal strength of another device which provides a tether hotspot for the current device to connect to. The signal strength is displayed as a string (e.g., Strong)">
           Signal strength
         </message>
-        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_WEAK" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is weak. The strength value is 1 on a scale from 1 (min) to 5 (max).">
-          Weak
+        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_NONE" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when there's no signal. The strength value is 1 on a scale from 1 (min) to 4 (max).">
+          None
         </message>
-        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_OKAY" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is okay. The strength value is 2 on a scale from 1 (min) to 5 (max).">
-          Okay
+        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_LOW" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is low. The strength value is 2 on a scale from 1 (min) to 4 (max).">
+          Low
         </message>
-        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_GOOD" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is good. The strength value is 3 on a scale from 1 (min) to 5 (max).">
-          Fine
+        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_MEDIUM" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is medium. The strength value is 3 on a scale from 1 (min) to 4 (max).">
+          Medium
         </message>
-        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_STRONG" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is strong. The strength value is 4 on a scale from 1 (min) to 5 (max).">
+        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_STRONG" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is strong. The strength value is 4 on a scale from 1 (min) to 4 (max).">
           Strong
-        </message>
-        <message name="IDS_ONC_TETHER_SIGNAL_STRENGTH_VERY_STRONG" desc="Settings > Internet > Label used to describe the signal strength of a device's cellular connection when the signal is very strong. The strength value is 5 on a scale from 1 (min) to 5 (max).">
-          Very strong
         </message>
         <message name="IDS_ONC_TETHER_CARRIER" desc="Settings > Internet > Title of section which displays the name of the cellular provider (e.g., Verizon) of another device which provides a tether hotspot for the current device to connect to. To be clear, the current device does not have cellular service; instead, another device has it and can provide data to the current device via a Wi-Fi hotspot.">
           Cellular provider
