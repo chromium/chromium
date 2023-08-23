@@ -11206,13 +11206,60 @@
         {
             "platforms": [
                 "android",
-                "linux"
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
                         "PartitionAllocSortActiveSlotSpans"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocSortSmallerSlotSpanFreeLists": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocSortSmallerSlotSpanFreeLists"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PartitionAllocStraightenLargerSlotSpanFreeLists": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PartitionAllocStraightenLargerSlotSpanFreeLists"
                     ]
                 }
             ]
