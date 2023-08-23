@@ -37,9 +37,11 @@ UsbConnectionTrackerFactory::UsbConnectionTrackerFactory()
 
 UsbConnectionTrackerFactory::~UsbConnectionTrackerFactory() = default;
 
-KeyedService* UsbConnectionTrackerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+UsbConnectionTrackerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new UsbConnectionTracker(Profile::FromBrowserContext(context));
+  return std::make_unique<UsbConnectionTracker>(
+      Profile::FromBrowserContext(context));
 }
 
 void UsbConnectionTrackerFactory::BrowserContextShutdown(
