@@ -23,8 +23,7 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
 
 std::unique_ptr<KeyedService> BuildPrintingManager(
     content::BrowserContext* context) {
-  return std::unique_ptr<KeyedService>(
-      PrintingManagerFactory::BuildInstanceFor(context));
+  return PrintingManagerFactory::BuildInstanceFor(context);
 }
 
 std::unique_ptr<Profile> CreateProfile(std::string file_path) {

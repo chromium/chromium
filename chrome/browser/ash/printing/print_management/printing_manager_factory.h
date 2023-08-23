@@ -33,7 +33,8 @@ class PrintingManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static PrintingManager* GetForProfile(Profile* profile);
   static PrintingManagerFactory* GetInstance();
-  static KeyedService* BuildInstanceFor(content::BrowserContext* profile);
+  static std::unique_ptr<KeyedService> BuildInstanceFor(
+      content::BrowserContext* profile);
   static void MaybeBindPrintManagementForWebUI(
       Profile* profile,
       mojo::PendingReceiver<
@@ -52,7 +53,7 @@ class PrintingManagerFactory : public ProfileKeyedServiceFactory {
   PrintingManagerFactory& operator=(const PrintingManagerFactory&) = delete;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

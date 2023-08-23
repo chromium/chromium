@@ -53,10 +53,10 @@ PrintingManagerFactory::PrintingManagerFactory()
 PrintingManagerFactory::~PrintingManagerFactory() = default;
 
 // static
-KeyedService* PrintingManagerFactory::BuildInstanceFor(
+std::unique_ptr<KeyedService> PrintingManagerFactory::BuildInstanceFor(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PrintingManager(
+  return std::make_unique<PrintingManager>(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
@@ -88,7 +88,8 @@ PrintingManagerFactory::CreatePrintManagementUIController(
       std::make_unique<ash::print_management::PrintManagementDelegateImpl>());
 }
 
-KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrintingManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return BuildInstanceFor(context);
 }
