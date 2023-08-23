@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.page_insights;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
@@ -14,7 +15,12 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.page_insights.PageInsightsMediator.PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.test.filters.MediumTest;
 
@@ -37,6 +43,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights.AutoPeekConditions;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
@@ -50,6 +59,8 @@ import java.util.concurrent.TimeUnit;
 @LooperMode(Mode.PAUSED)
 @RunWith(BaseRobolectricTestRunner.class)
 public class PageInsightsMediatorTest {
+    private static final String TEST_CHILD_PAGE_TITLE = "People also View";
+
     @Mock
     private LayoutInflater mLayoutInflater;
     @Mock
@@ -66,7 +77,8 @@ public class PageInsightsMediatorTest {
     private BrowserControlsSizer mBrowserControlsSizer;
     @Mock
     private Tab mTab;
-
+    @Mock
+    private PageInsightsDataLoader mPageInsightsDataLoader;
     @Captor
     private ArgumentCaptor<BrowserControlsStateProvider.Observer>
             mBrowserControlsStateProviderObserver;
@@ -81,9 +93,11 @@ public class PageInsightsMediatorTest {
         Context mContext = ContextUtils.getApplicationContext();
         mShadowLooper = ShadowLooper.shadowMainLooper();
         when(mControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1.0f);
+        when(mPageInsightsDataLoader.getData()).thenReturn(getPageInsightsMetadata());
         mMediator = new PageInsightsMediator(mContext, mMockTabProvider, mBottomSheetController,
                 mBottomUiController, mExpandedSheetHelper, mControlsStateProvider,
                 mBrowserControlsSizer, () -> true);
+        mMediator.setPageInsightsDataLoaderForTesting(mPageInsightsDataLoader);
         verify(mControlsStateProvider).addObserver(mBrowserControlsStateProviderObserver.capture());
     }
 
@@ -120,6 +134,7 @@ public class PageInsightsMediatorTest {
 
     @Test
     @MediumTest
+    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
     public void testAutoTrigger_enoughDuration_showsBottomSheet() throws Exception {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
@@ -135,5 +150,102 @@ public class PageInsightsMediatorTest {
         mBrowserControlsStateProviderObserver.getValue().onControlsOffsetChanged(0, 70, 0, 0, true);
 
         verify(mBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getToolbarView()
+                        .findViewById(R.id.page_insights_feed_header)
+                        .getVisibility());
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getContentView()
+                        .findViewById(R.id.page_insights_feed_content)
+                        .getVisibility());
+        verify(mBottomSheetController, never()).expandSheet();
+    }
+
+    @Test
+    @MediumTest
+    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
+    public void testOpenInExpandedState_showsBottomSheet() throws Exception {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
+        FeatureList.setTestValues(testValues);
+
+        setBackgroundDrawable();
+        mMediator.openInExpandedState();
+
+        verify(mBottomSheetController, times(1)).requestShowContent(any(), anyBoolean());
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getToolbarView()
+                        .findViewById(R.id.page_insights_feed_header)
+                        .getVisibility());
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getContentView()
+                        .findViewById(R.id.page_insights_feed_content)
+                        .getVisibility());
+        verify(mBottomSheetController).expandSheet();
+    }
+
+    @Test
+    @MediumTest
+    // TODO(kamalchoudhury): Add checks to verify that the correct view is placed in the FrameLayout
+    public void changeToChildPage_childPageOpened() throws Exception {
+        TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.CCT_PAGE_INSIGHTS_HUB,
+                PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END, "2000");
+        FeatureList.setTestValues(testValues);
+
+        mMediator.changeToChildPage(1);
+
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getToolbarView()
+                        .findViewById(R.id.page_insights_child_page_header)
+                        .getVisibility());
+        assertEquals(View.VISIBLE,
+                mMediator.getSheetContent()
+                        .getContentView()
+                        .findViewById(R.id.page_insights_child_content)
+                        .getVisibility());
+        TextView childPageTitle = mMediator.getSheetContent().getToolbarView().findViewById(
+                R.id.page_insights_child_title);
+        assertEquals(childPageTitle.getText(), TEST_CHILD_PAGE_TITLE);
+    }
+
+    private PageInsightsMetadata getPageInsightsMetadata() {
+        Page childPage = Page.newBuilder()
+                                 .setId(Page.PageID.PEOPLE_ALSO_VIEW)
+                                 .setTitle(TEST_CHILD_PAGE_TITLE)
+                                 .build();
+        Page feedPage = Page.newBuilder()
+                                .setId(Page.PageID.SINGLE_FEED_ROOT)
+                                .setTitle("Related Insights")
+                                .build();
+        AutoPeekConditions mAutoPeekConditions = AutoPeekConditions.newBuilder()
+                                                         .setConfidence(0.51f)
+                                                         .setPageScrollFraction(0.4f)
+                                                         .setMinimumSecondsOnPage(30)
+                                                         .build();
+        return PageInsightsMetadata.newBuilder()
+                .setFeedPage(feedPage)
+                .addPages(childPage)
+                .setAutoPeekConditions(mAutoPeekConditions)
+                .build();
+    }
+
+    private void setBackgroundDrawable() {
+        // Making a ViewGroup only for testing purposes to provide with the value of Background
+        // Drawable (mBackgroundDrawable; which is a Gradient Drawable in PageInsightsMediator)
+        ViewGroup rootView = new LinearLayout(ContextUtils.getApplicationContext());
+        View backgroundView = new View(ContextUtils.getApplicationContext());
+        backgroundView.setId(R.id.background);
+        rootView.addView(backgroundView);
+        backgroundView.setBackground(new GradientDrawable());
+        mMediator.initView(rootView);
     }
 }

@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 
@@ -28,12 +27,14 @@ public class PageInsightsSheetContent implements BottomSheetContent {
      * @param context An Android context.
      */
     public PageInsightsSheetContent(Context context) {
+        // TODO(kamalchoudhury): Inflate with loading indicator instead
         mToolbarView = (ViewGroup) LayoutInflater.from(context).inflate(
             R.layout.page_insights_sheet_toolbar, null);
         mToolbarView
             .findViewById(R.id.page_insights_back_button)
             .setOnClickListener((view)-> onBackButtonPressed());
-        mSheetContentView = new FrameLayout(context);
+        mSheetContentView = (ViewGroup) LayoutInflater.from(context).inflate(
+                R.layout.page_insights_sheet_content, null);
     }
 
     @Override
@@ -123,22 +124,37 @@ public class PageInsightsSheetContent implements BottomSheetContent {
     }
 
     private void onBackButtonPressed(){
-        mToolbarView.findViewById(R.id.page_insights_main_header).setVisibility(View.VISIBLE);
-        mToolbarView.findViewById(R.id.page_insights_child_page_header).setVisibility(View.GONE);
+        showFeedPage();
     }
 
-    // TODO(kamalchoudhury): Update the function to fetch the title from child page once data
-    // fetching from server is finalized.
-    private String getChildSheetTitle() {
-        return "Places on this page";
+    void showFeedPage() {
+        setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.VISIBLE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.GONE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.VISIBLE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.GONE);
     }
 
-    // TODO(kamalchoudhury): Update the function once data fetching from server is finalized.
+    void setFeedPage(View feedPageView) {
+        ViewGroup feedContentView = mSheetContentView.findViewById(R.id.page_insights_feed_content);
+        feedContentView.removeAllViews();
+        feedContentView.addView(feedPageView);
+    }
+
     @VisibleForTesting
-    public void renderChildPage(){
-        TextView childTitle = mToolbarView.findViewById(R.id.page_insights_child_title);
-        childTitle.setText(getChildSheetTitle());
-        mToolbarView.findViewById(R.id.page_insights_main_header).setVisibility(View.GONE);
-        mToolbarView.findViewById(R.id.page_insights_child_page_header).setVisibility(View.VISIBLE);
+    void showChildPage(View childPageView, String childPageTitle) {
+        TextView childTitleView = mToolbarView.findViewById(R.id.page_insights_child_title);
+        childTitleView.setText(childPageTitle);
+        ViewGroup childContentView =
+                mSheetContentView.findViewById(R.id.page_insights_child_content);
+        childContentView.removeAllViews();
+        childContentView.addView(childPageView);
+        setVisibilityById(mToolbarView, R.id.page_insights_feed_header, View.GONE);
+        setVisibilityById(mToolbarView, R.id.page_insights_child_page_header, View.VISIBLE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_feed_content, View.GONE);
+        setVisibilityById(mSheetContentView, R.id.page_insights_child_content, View.VISIBLE);
+    }
+
+    private void setVisibilityById(ViewGroup mViewGroup, int id, int visibility) {
+        mViewGroup.findViewById(id).setVisibility(visibility);
     }
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A content layout designed for page insight bottom-sheet -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+  <!-- xUIKit container for main page (Feed Page). -->
+  <FrameLayout
+        android:id="@+id/page_insights_feed_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent">
+  </FrameLayout>
+
+  <!-- xUIKit container for child page. -->
+  <FrameLayout
+      android:id="@+id/page_insights_child_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="@android:color/transparent"
+      android:visibility="gone">
+  </FrameLayout>
+
+</LinearLayout>

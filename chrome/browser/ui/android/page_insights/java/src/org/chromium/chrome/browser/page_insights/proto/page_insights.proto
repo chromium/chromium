@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = "proto3";
+syntax = "proto2";
 
 package org.chromium.chrome.browser.page_insights.proto;
 
-option java_package = "org.chromium.chrome.browser.page_insights.proto" ;
+option java_package = "org.chromium.chrome.browser.page_insights.proto";
 
 option optimize_for = LITE_RUNTIME;
 

@@ -202,8 +202,12 @@ public class PageInsightsCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testRoundTopCornerAtExpandedState() throws Exception {
-        createAndLaunchPageInsightsCoordinator();
+    public void testRoundTopCornerAtExpandedStateAfterPeekState() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setAutoTriggerReady();
+
+        hideTopBar(); // Signal for auto triggering the PIH in Peek state
         assertEquals(0.f, mPageInsightsCoordinator.getCornerRadiusForTesting(), ASSERTION_DELTA);
 
         expandSheet();
@@ -215,8 +219,23 @@ public class PageInsightsCoordinatorTest {
 
     @Test
     @MediumTest
-    public void testResizeContent() throws Exception {
+    public void testRoundTopCornerAtFirstExpandedState() throws Exception {
         createAndLaunchPageInsightsCoordinator();
+
+        int maxCornerRadiusPx = sTestRule.getActivity().getResources().getDimensionPixelSize(
+                R.dimen.bottom_sheet_corner_radius);
+        assertEquals(maxCornerRadiusPx, mPageInsightsCoordinator.getCornerRadiusForTesting(),
+                ASSERTION_DELTA);
+    }
+
+    @Test
+    @MediumTest
+    public void testResizeContent() throws Exception {
+        createPageInsightsCoordinator();
+        assertEquals(SheetState.HIDDEN, mPageInsightsController.getSheetState());
+        setAutoTriggerReady();
+
+        hideTopBar(); // Signal for auto triggering the PIH
         int peekHeight = mPageInsightsController.getCurrentOffset();
         verify(mBrowserControlsSizer).setBottomControlsHeight(eq(peekHeight), eq(0));
 

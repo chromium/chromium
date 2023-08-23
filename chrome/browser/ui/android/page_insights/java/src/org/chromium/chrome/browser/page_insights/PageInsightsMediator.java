@@ -12,6 +12,9 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.protobuf.ByteString;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -19,6 +22,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights.Page;
+import org.chromium.chrome.browser.page_insights.proto.PageInsights.PageInsightsMetadata;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -45,7 +50,7 @@ import java.util.function.BooleanSupplier;
  */
 public class PageInsightsMediator extends EmptyTabObserver implements BottomSheetObserver {
     private static final int DEFAULT_TRIGGER_DELAY_MS = (int) DateUtils.MINUTE_IN_MILLIS;
-    private static final double MINIMUM_CONFIDENCE = 50;
+    private static final float MINIMUM_CONFIDENCE = 0.5f;
     static final String PAGE_INSIGHTS_CAN_AUTOTRIGGER_AFTER_END =
             "page_insights_can_autotrigger_after_end";
 
@@ -207,17 +212,54 @@ public class PageInsightsMediator extends EmptyTabObserver implements BottomShee
             return;
         }
 
+        mPageInsightsDataLoader.loadInsightsData();
+        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
         boolean hasEnoughConfidence =
-                mPageInsightsDataLoader.loadInsightsData().getConfidence() * 100
-                > MINIMUM_CONFIDENCE;
+                metadata.getAutoPeekConditions().getConfidence() > MINIMUM_CONFIDENCE;
         if (hasEnoughConfidence) {
-            requestShowContent();
+            openInPeekState(metadata);
             resetAutoTriggerTimer();
         }
     }
 
-    void requestShowContent() {
+    private void openInPeekState(PageInsightsMetadata metadata) {
+        mSheetContent.setFeedPage(getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
+        mSheetContent.showFeedPage();
         mSheetController.requestShowContent(mSheetContent, true);
+    }
+
+    // TODO(kamalchoudhury): Add logic for opening the sheet with loading indicator before loading
+    // data
+    void openInExpandedState() {
+        mPageInsightsDataLoader.loadInsightsData();
+        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
+        mSheetContent.setFeedPage(getXSurfaceView(metadata.getFeedPage().getElementsOutput()));
+        mSheetContent.showFeedPage();
+        mSheetController.requestShowContent(mSheetContent, true);
+        setCornerRadiusPx(mMaxCornerRadiusPx);
+        mSheetController.expandSheet();
+    }
+
+    // TODO(edmundw): Implement the complete function
+    private View getXSurfaceView(ByteString elementsOutput) {
+        return new View(mContext);
+    }
+
+    @VisibleForTesting
+    // TODO(kamalchoudhury): Make this function private when xUIKit code is written
+    void changeToChildPage(int id) {
+        PageInsightsMetadata metadata = mPageInsightsDataLoader.getData();
+        for (int i = 0; i < metadata.getPagesCount(); i++) {
+            Page currPage = metadata.getPages(i);
+            if (id == currPage.getId().getNumber()) {
+                mSheetContent.showChildPage(
+                        getXSurfaceView(currPage.getElementsOutput()), currPage.getTitle());
+            }
+        }
+    }
+
+    PageInsightsSheetContent getSheetContent() {
+        return mSheetContent;
     }
 
     // BottomSheetObserver

@@ -75,7 +75,7 @@ public class PageInsightsCoordinator {
      * Launch PageInsights hub in bottom sheet container and fetch the data to show.
      */
     public void launch() {
-        mMediator.requestShowContent();
+        mMediator.openInExpandedState();
     }
 
     /**
