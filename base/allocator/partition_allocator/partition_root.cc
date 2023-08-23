@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
@@ -401,7 +402,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
   for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
-       /**/) {
+       entry = entry->GetNext(slot_size)) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
     PA_DCHECK(slot_number < num_providioned_slots);
@@ -416,10 +417,9 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       last_slot = slot_number;
     }
 #endif
-    entry = entry->GetNext(slot_size);
   }
 
-  // If the slot(s) at the end of the slot span are not in used, we can truncate
+  // If the slot(s) at the end of the slot span are not in use, we can truncate
   // them entirely and rewrite the freelist.
   size_t truncated_slots = 0;
   while (!slot_usage[num_providioned_slots - 1]) {
@@ -456,6 +456,10 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       unprovisioned_bytes = end_addr - begin_addr;
       discardable_bytes += unprovisioned_bytes;
     }
+
+    // If there are any unprovisioned slots, and |discard| is set, then take
+    // action to remove these slots from the free list. "straighten" it, while
+    // at it (if requested), to help reduce fragmentation in the future.
     if (unprovisioned_bytes && discard) {
       PA_DCHECK(truncated_slots > 0);
       size_t new_unprovisioned_slots =
@@ -463,33 +467,79 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       PA_DCHECK(new_unprovisioned_slots <= bucket->get_slots_per_span());
       slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
 
-      // Rewrite the freelist.
-      internal::PartitionFreelistEntry* head = nullptr;
-      internal::PartitionFreelistEntry* back = head;
       size_t num_new_freelist_entries = 0;
-      for (size_t slot_index = 0; slot_index < num_providioned_slots;
-           ++slot_index) {
-        if (slot_usage[slot_index]) {
-          continue;
-        }
-
-        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
-            slot_span_start + (slot_size * slot_index));
-        if (!head) {
-          head = entry;
+      internal::PartitionFreelistEntry* back = nullptr;
+      if (PartitionRoot::IsStraightenLargerSlotSpanFreeListsEnabled()) {
+        // Rewrite the freelist to "straighten" it. The entries will be ordered
+        // based on how close they're to the slot span start. This reduce
+        // chances of allocating further slots, in hope that we'll get some
+        // unused pages at the end of the span that can be unprovisioned.
+        for (size_t slot_index = 0; slot_index < num_providioned_slots;
+             ++slot_index) {
+          if (slot_usage[slot_index]) {
+            continue;
+          }
+          // Add the slot to the end of the list. The most proper thing to do
+          // would be to null-terminate the new entry with:
+          //   auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(
+          //       slot_span_start + (slot_size * slot_index));
+          // But no need to do this, as it's last-ness is likely temporary, and
+          // the next iteration's back->SetNext(), or the post-loop
+          // PartitionFreelistEntry::EmplaceAndInitNull(back) will override it
+          // anyway.
+          auto* entry = static_cast<PartitionFreelistEntry*>(
+              SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
+          if (num_new_freelist_entries) {
+            back->SetNext(entry);
+          } else {
+            slot_span->SetFreelistHead(entry);
+          }
           back = entry;
-        } else {
-          back->SetNext(entry);
-          back = entry;
+          num_new_freelist_entries++;
         }
-        num_new_freelist_entries++;
-#if !BUILDFLAG(IS_WIN)
-        last_slot = slot_index;
-#endif
+      } else {
+        // Scan the list to remove unprovisioned entries, without
+        // "straightening" it.
+        uintptr_t first_unprovisioned_slot =
+            slot_span_start + (num_providioned_slots * slot_size);
+        bool skipped = false;
+        for (PartitionFreelistEntry* entry = slot_span->get_freelist_head();
+             entry; entry = entry->GetNext(slot_size)) {
+          uintptr_t entry_addr = SlotStartPtr2Addr(entry);
+          if (entry_addr >= first_unprovisioned_slot) {
+            skipped = true;
+            continue;
+          }
+          // If the last visited entry was skipped (due to being unprovisioned),
+          // updated the next pointer of the last not skipped entry (or the head
+          // if no entry exists). Otherwise the link is already correct.
+          if (skipped) {
+            if (num_new_freelist_entries) {
+              back->SetNext(entry);
+            } else {
+              slot_span->SetFreelistHead(entry);
+            }
+            skipped = false;
+          }
+          back = entry;
+          num_new_freelist_entries++;
+        }
       }
-
-      slot_span->SetFreelistHead(head);
-
+      // Now null-terminate the last entry, or the head if no entry exists.
+      if (num_new_freelist_entries) {
+        PA_DCHECK(back);
+        PartitionFreelistEntry::EmplaceAndInitNull(back);
+#if !BUILDFLAG(IS_WIN)
+        // Memorize index of the last slot in the list, as it may be able to
+        // participate in an optimization related to page discaring (below), due
+        // to its next pointer being represented as 0.
+        last_slot =
+            bucket->GetSlotNumber(SlotStartPtr2Addr(back) - slot_span_start);
+#endif
+      } else {
+        PA_DCHECK(!back);
+        slot_span->SetFreelistHead(nullptr);
+      }
       PA_DCHECK(num_new_freelist_entries ==
                 num_providioned_slots - slot_span->num_allocated_slots);
 
@@ -1694,13 +1744,19 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
 }
 
 // static
-void PartitionRoot::EnableSortSmallerSlotSpanFreeLists() {
-  sort_smaller_slot_span_free_lists_ = true;
+void PartitionRoot::SetStraightenLargerSlotSpanFreeListsEnabled(
+    bool new_value) {
+  straighten_larger_slot_span_free_lists_ = new_value;
 }
 
 // static
-void PartitionRoot::EnableSortActiveSlotSpans() {
-  sort_active_slot_spans_ = true;
+void PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(bool new_value) {
+  sort_smaller_slot_span_free_lists_ = new_value;
+}
+
+// static
+void PartitionRoot::SetSortActiveSlotSpansEnabled(bool new_value) {
+  sort_active_slot_spans_ = new_value;
 }
 
 static_assert(offsetof(PartitionRoot, sentinel_bucket) ==

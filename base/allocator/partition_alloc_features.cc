@@ -275,8 +275,13 @@ BASE_FEATURE(kPartitionAllocDCScan,
              "PartitionAllocDCScan",
              FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to straighten free lists for larger slot spans in PurgeMemory() ->
+// ... -> PartitionPurgeSlotSpan().
+BASE_FEATURE(kPartitionAllocStraightenLargerSlotSpanFreeLists,
+             "PartitionAllocStraightenLargerSlotSpanFreeLists",
+             FEATURE_ENABLED_BY_DEFAULT);
+
 // Whether to sort free lists for smaller slot spans in PurgeMemory().
-// Doesn't apply to free list streightening in PartitionPurgeSlotSpan().
 BASE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists,
              "PartitionAllocSortSmallerSlotSpanFreeLists",
              FEATURE_ENABLED_BY_DEFAULT);

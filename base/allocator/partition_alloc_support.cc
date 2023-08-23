@@ -1329,14 +1329,15 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSortSmallerSlotSpanFreeLists)) {
-    partition_alloc::PartitionRoot::EnableSortSmallerSlotSpanFreeLists();
-  }
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocSortActiveSlotSpans)) {
-    partition_alloc::PartitionRoot::EnableSortActiveSlotSpans();
-  }
+  partition_alloc::PartitionRoot::SetStraightenLargerSlotSpanFreeListsEnabled(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocStraightenLargerSlotSpanFreeLists));
+  partition_alloc::PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortSmallerSlotSpanFreeLists));
+  partition_alloc::PartitionRoot::SetSortActiveSlotSpansEnabled(
+      base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocSortActiveSlotSpans));
 }
 
 void PartitionAllocSupport::OnForegrounded(bool has_main_frame) {

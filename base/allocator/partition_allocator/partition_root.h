@@ -821,13 +821,22 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     max_empty_slot_spans_dirty_bytes_shift = 0;
   }
 
-  // Enables the free list sorting for smaller slot spans in PurgeMemory().
-  static void EnableSortSmallerSlotSpanFreeLists();
-  // Enables the sorting of active slot spans in PurgeMemory().
-  static void EnableSortActiveSlotSpans();
+  // Enables/disables the free list straightening for larger slot spans in
+  // PurgeMemory().
+  static void SetStraightenLargerSlotSpanFreeListsEnabled(bool new_value);
+  // Enables/disables the free list sorting for smaller slot spans in
+  // PurgeMemory().
+  static void SetSortSmallerSlotSpanFreeListsEnabled(bool new_value);
+  // Enables/disables the sorting of active slot spans in PurgeMemory().
+  static void SetSortActiveSlotSpansEnabled(bool new_value);
+
+  static bool IsStraightenLargerSlotSpanFreeListsEnabled() {
+    return straighten_larger_slot_span_free_lists_;
+  }
 
  private:
-  static inline bool sort_smaller_slot_span_free_lists_ = false;
+  static inline bool straighten_larger_slot_span_free_lists_ = true;
+  static inline bool sort_smaller_slot_span_free_lists_ = true;
   static inline bool sort_active_slot_spans_ = false;
 
   // Common path of Free() and FreeInUnknownRoot(). Returns
