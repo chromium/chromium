@@ -5,13 +5,11 @@
 #include "ash/wm/desks/desk_textfield.h"
 
 #include "ash/shell.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
@@ -71,7 +69,7 @@ std::u16string DeskTextfield::GetTooltipText(const gfx::Point& p) const {
 
 void DeskTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_NAME));
+  node_data->SetNameChecked(GetAccessibleName());
 }
 
 ui::Cursor DeskTextfield::GetCursor(const ui::MouseEvent& event) {
