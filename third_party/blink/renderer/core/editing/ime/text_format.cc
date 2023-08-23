@@ -10,28 +10,18 @@ namespace blink {
 
 TextFormat::TextFormat(wtf_size_t range_start,
                        wtf_size_t range_end,
-                       const String& text_color,
-                       const String& background_color,
-                       const String& underline_color,
                        const String& underline_style,
                        const String& underline_thickness)
     : range_start_(range_start),
       range_end_(range_end),
-      text_color_(text_color),
-      background_color_(background_color),
-      underline_color_(underline_color),
       underline_style_(underline_style),
       underline_thickness_(underline_thickness) {}
 
 TextFormat* TextFormat::Create(wtf_size_t range_start,
                                wtf_size_t range_end,
-                               const String& text_color,
-                               const String& background_color,
-                               const String& underline_color,
                                const String& underline_style,
                                const String& underline_thickness) {
-  return MakeGarbageCollected<TextFormat>(range_start, range_end, text_color,
-                                          background_color, underline_color,
+  return MakeGarbageCollected<TextFormat>(range_start, range_end,
                                           underline_style, underline_thickness);
 }
 
@@ -41,15 +31,6 @@ TextFormat::TextFormat(const TextFormatInit* dict) {
 
   if (dict->hasRangeEnd())
     range_end_ = dict->rangeEnd();
-
-  if (dict->hasTextColor())
-    text_color_ = dict->textColor();
-
-  if (dict->hasBackgroundColor())
-    background_color_ = dict->backgroundColor();
-
-  if (dict->hasUnderlineColor())
-    underline_color_ = dict->underlineColor();
 
   if (dict->hasUnderlineStyle())
     underline_style_ = dict->underlineStyle();
@@ -68,18 +49,6 @@ wtf_size_t TextFormat::rangeStart() const {
 
 wtf_size_t TextFormat::rangeEnd() const {
   return range_end_;
-}
-
-String TextFormat::textColor() const {
-  return text_color_;
-}
-
-String TextFormat::backgroundColor() const {
-  return background_color_;
-}
-
-String TextFormat::underlineColor() const {
-  return underline_color_;
 }
 
 String TextFormat::underlineStyle() const {

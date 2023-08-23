@@ -15,9 +15,6 @@
 
     readonly attribute unsigned long rangeStart;
     readonly attribute unsigned long rangeEnd;
-    readonly attribute DOMString textColor;
-    readonly attribute DOMString backgroundColor;
-    readonly attribute DOMString underlineColor;
     readonly attribute DOMString underlineStyle;
     readonly attribute DOMString underlineThickness;
 };

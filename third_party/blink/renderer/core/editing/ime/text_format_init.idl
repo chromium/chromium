@@ -10,9 +10,6 @@
 dictionary TextFormatInit {
     unsigned long rangeStart;
     unsigned long rangeEnd;
-    DOMString textColor;
-    DOMString backgroundColor;
-    DOMString underlineColor;
     DOMString underlineStyle;
     DOMString underlineThickness;
 };

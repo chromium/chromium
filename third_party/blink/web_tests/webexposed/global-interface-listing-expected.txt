@@ -9476,11 +9476,8 @@ interface TextEvent : UIEvent
     method initTextEvent
 interface TextFormat
     attribute @@toStringTag
-    getter backgroundColor
     getter rangeEnd
     getter rangeStart
-    getter textColor
-    getter underlineColor
     getter underlineStyle
     getter underlineThickness
     method constructor
