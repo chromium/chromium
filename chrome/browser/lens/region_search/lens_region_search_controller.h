@@ -77,6 +77,7 @@ class LensRegionSearchController : public content::WebContentsObserver {
   // Returns whether the overlay and instruction bubble are both visible. If
   // either of the UI elements is not visible, returns false.
   bool IsOverlayUIVisibleForTesting();
+  void SetEntryPointForTesting(lens::AmbientSearchEntryPoint entry_point);
 
   // Sets the web contents for unit tests that do not launch the region search
   // UI.

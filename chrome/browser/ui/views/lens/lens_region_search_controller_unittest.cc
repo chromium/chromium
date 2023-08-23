@@ -29,11 +29,14 @@ class LensRegionSearchControllerTest : public TestWithBrowserView {
         std::make_unique<LensRegionSearchController>(browser_view()->browser());
     controller_->SetWebContentsForTesting(
         browser_view()->GetActiveWebContents());
+    controller_->SetEntryPointForTesting(
+        lens::AmbientSearchEntryPoint::
+            CONTEXT_MENU_SEARCH_REGION_WITH_GOOGLE_LENS);
   }
 
   void TearDown() override {
-    TestWithBrowserView::TearDown();
     controller_.reset();
+    TestWithBrowserView::TearDown();
   }
 
  protected:
