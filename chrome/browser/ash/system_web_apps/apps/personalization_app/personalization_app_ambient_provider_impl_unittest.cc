@@ -341,10 +341,6 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
     return ambient_provider_->settings_->art_settings;
   }
 
-  bool HasPendingFetchRequestAtProvider() const {
-    return ambient_provider_->has_pending_fetch_request_;
-  }
-
   bool IsUpdateSettingsPendingAtProvider() const {
     return ambient_provider_->is_updating_backend_;
   }
@@ -850,12 +846,9 @@ TEST_F(PersonalizationAppAmbientProviderImplTest,
 
 TEST_F(PersonalizationAppAmbientProviderImplTest,
        TestNoFetchRequestWhenUpdatingSettings) {
-  EXPECT_FALSE(HasPendingFetchRequestAtProvider());
   UpdateSettings();
-  EXPECT_FALSE(HasPendingFetchRequestAtProvider());
-
   FetchSettings();
-  EXPECT_TRUE(HasPendingFetchRequestAtProvider());
+
   EXPECT_FALSE(IsFetchSettingsPendingAtBackend());
 }
 

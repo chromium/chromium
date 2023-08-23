@@ -341,7 +341,6 @@ void PersonalizationAppAmbientProviderImpl::FetchSettingsAndAlbums() {
   // update the UI with the new settings. If update fails, it will restore
   // previous settings and update UI.
   if (is_updating_backend_) {
-    has_pending_fetch_request_ = true;
     return;
   }
 
@@ -539,60 +538,27 @@ void PersonalizationAppAmbientProviderImpl::OnUpdateSettings(
 
   if (success) {
     update_settings_retry_backoff_.Reset();
-    cached_settings_ = settings;
+    OnSettingsAndAlbumsFetched(settings, std::move(personal_albums_));
+    // The request to fetch preview images came in during |UpdateSettings|. Call
+    // it now that updating has finished.
     if (needs_update_previews_) {
       FetchPreviewImages();
     }
   } else {
     update_settings_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    // When the update fails, send a retry or revert to cached settings.
+    if (update_settings_retry_backoff_.failure_count() <= kMaxRetries) {
+      const base::TimeDelta kDelay =
+          update_settings_retry_backoff_.GetTimeUntilRelease();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&PersonalizationAppAmbientProviderImpl::UpdateSettings,
+                         write_weak_factory_.GetWeakPtr()),
+          kDelay);
+    } else {
+      OnSettingsAndAlbumsFetched(cached_settings_, std::move(personal_albums_));
+    }
   }
-
-  if (MaybeScheduleNewUpdateSettings(success)) {
-    return;
-  }
-
-  UpdateUIWithCachedSettings(success);
-}
-
-bool PersonalizationAppAmbientProviderImpl::MaybeScheduleNewUpdateSettings(
-    bool success) {
-  // If it was unsuccessful to update settings, but have not reached
-  // `kMaxRetries`, then it will retry.
-  const bool need_retry_update_settings_at_backend =
-      !success && update_settings_retry_backoff_.failure_count() <= kMaxRetries;
-
-  if (!need_retry_update_settings_at_backend) {
-    return false;
-  }
-
-  const base::TimeDelta kDelay =
-      update_settings_retry_backoff_.GetTimeUntilRelease();
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PersonalizationAppAmbientProviderImpl::UpdateSettings,
-                     write_weak_factory_.GetWeakPtr()),
-      kDelay);
-  return true;
-}
-
-void PersonalizationAppAmbientProviderImpl::UpdateUIWithCachedSettings(
-    bool success) {
-  // If it was unsuccessful to update settings with `kMaxRetries`, need to
-  // restore to cached settings.
-  const bool should_restore_previous_settings =
-      !success && update_settings_retry_backoff_.failure_count() > kMaxRetries;
-
-  // Otherwise, if there has pending fetching request or need to restore
-  // cached settings, then updates the WebUi.
-  const bool should_update_web_ui =
-      has_pending_fetch_request_ || should_restore_previous_settings;
-
-  if (!should_update_web_ui) {
-    return;
-  }
-
-  OnSettingsAndAlbumsFetched(cached_settings_, std::move(personal_albums_));
-  has_pending_fetch_request_ = false;
 }
 
 void PersonalizationAppAmbientProviderImpl::OnSettingsAndAlbumsFetched(
@@ -746,7 +712,6 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
   cached_settings_.reset();
   update_settings_retry_backoff_.Reset();
   fetch_settings_retry_backoff_.Reset();
-  has_pending_fetch_request_ = false;
   is_updating_backend_ = false;
 }
 

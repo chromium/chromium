@@ -91,13 +91,6 @@ class PersonalizationAppAmbientProviderImpl
   // `success` is true when update successfully.
   void OnUpdateSettings(bool success, const AmbientSettings& settings);
 
-  // Return true if a new update needed.
-  // `success` is true when update successfully.
-  bool MaybeScheduleNewUpdateSettings(bool success);
-
-  // `success` is true when update successfully.
-  void UpdateUIWithCachedSettings(bool success);
-
   void OnSettingsAndAlbumsFetched(
       const absl::optional<ash::AmbientSettings>& settings,
       ash::PersonalAlbums personal_albums);
@@ -157,9 +150,6 @@ class PersonalizationAppAmbientProviderImpl
   absl::optional<ash::AmbientSettings> cached_settings_;
 
   ash::PersonalAlbums personal_albums_;
-
-  // Whether to update UI when `UpdateSettings()` returns successfully.
-  bool has_pending_fetch_request_ = false;
 
   // Whether the Settings updating is ongoing.
   bool is_updating_backend_ = false;
