@@ -30,6 +30,7 @@
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_history_observer_service.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager_factory.h"
@@ -425,6 +426,7 @@
 #include "chrome/browser/download/offline_item_model_manager_factory.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
+#include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/new_tab_page/chrome_colors/chrome_colors_factory.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos_service_factory.h"
@@ -766,6 +768,11 @@ void ChromeBrowserMainExtraPartsProfiles::
   LookalikeUrlService::EnsureFactoryBuilt();
 #if !BUILDFLAG(IS_ANDROID)
   ManagedConfigurationAPIFactory::GetInstance();
+#endif
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kMantaService)) {
+    manta::MantaServiceFactory::GetInstance();
+  }
 #endif
   MediaDeviceSaltServiceFactory::GetInstance();
   if (base::FeatureList::IsEnabled(media::kUseMediaHistoryStore)) {

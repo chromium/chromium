@@ -10863,6 +10863,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableServerIbanDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableServerIban)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-manta-service", flag_descriptions::kEnableMantaServiceName,
+     flag_descriptions::kEnableMantaServiceDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMantaService)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

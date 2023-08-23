@@ -2187,6 +2187,12 @@ const char kEnableMachineLearningModelLoaderWebPlatformApiName[] =
 const char kEnableMachineLearningModelLoaderWebPlatformApiDescription[] =
     "Enables the Machine Learning Model Loader Web Platform API.";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kEnableMantaServiceName[] = "Enable Manta Service";
+const char kEnableMantaServiceDescription[] =
+    "Enables the profile keyed Manta service at startup.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kSystemProxyForSystemServicesName[] =
     "Enable system-proxy for selected system services";
 const char kSystemProxyForSystemServicesDescription[] =
@@ -7073,7 +7079,7 @@ const char kFileSystemAccessGetCloudIdentifiersDescription[] =
     "for more information.";
 
 const char kCrOSDspBasedAecAllowedName[] =
-        "Allow CRAS to use a DSP-based AEC if available";
+    "Allow CRAS to use a DSP-based AEC if available";
 const char kCrOSDspBasedAecAllowedDescription[] =
     "Allows the system variant of the AEC in CRAS to be run on DSP ";
 

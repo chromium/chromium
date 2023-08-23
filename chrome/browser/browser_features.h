@@ -129,6 +129,12 @@ BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 
 BASE_DECLARE_FEATURE(kOmniboxTriggerForNoStatePrefetch);
 
+#if !BUILDFLAG(IS_ANDROID)
+// This flag is used for enabling the Manta Service, a profile keyed service for
+// the google chrome Manta project.
+BASE_DECLARE_FEATURE(kMantaService);
+#endif
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_BROWSER_FEATURES_H_

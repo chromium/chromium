@@ -3099,6 +3099,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-manta-service",
+    "owners": [ "amoylan", "sanjeetnd@google.com", "alanlxl" ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "enable-media-dynamic-cgroup",
     "owners": [ "erin.park@intel.com", "youssefesmat" ],
     "expiry_milestone": 120

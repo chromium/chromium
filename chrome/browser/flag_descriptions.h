@@ -2667,6 +2667,9 @@ extern const char kCopyLinkToTextDescription[];
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 
+extern const char kEnableMantaServiceName[];
+extern const char kEnableMantaServiceDescription[];
+
 extern const char kReadAnythingName[];
 extern const char kReadAnythingDescription[];
 
