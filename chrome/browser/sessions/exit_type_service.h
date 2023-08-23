@@ -64,6 +64,7 @@ class ExitTypeService : public KeyedService {
     raw_ptr<ExitTypeService> service_;
   };
 
+  explicit ExitTypeService(Profile* profile);
   ExitTypeService(const ExitTypeService&) = delete;
   ExitTypeService& operator=(const ExitTypeService&) = delete;
   ~ExitTypeService() override;
@@ -114,8 +115,6 @@ class ExitTypeService : public KeyedService {
  private:
   friend class ExitTypeServiceFactory;
   class BrowserTabObserverImpl;
-
-  explicit ExitTypeService(Profile* profile);
 
   // Checks if the user acknowledged the crash.
   void CheckUserAckedCrash();
