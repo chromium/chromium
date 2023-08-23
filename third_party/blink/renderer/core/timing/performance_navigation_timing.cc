@@ -284,13 +284,58 @@ DOMHighResTimeStamp PerformanceNavigationTiming::duration() const {
   return loadEventEnd();
 }
 
-NotRestoredReasons* PerformanceNavigationTiming::notRestoredReasons() const {
+ScriptValue PerformanceNavigationTiming::notRestoredReasons(
+    ScriptState* script_state) const {
   DocumentLoader* loader = GetDocumentLoader();
   if (!loader || !loader->GetFrame()->IsOutermostMainFrame()) {
-    return nullptr;
+    return ScriptValue::CreateNull(script_state->GetIsolate());
   }
 
-  return BuildNotRestoredReasons(loader->GetFrame()->GetNotRestoredReasons());
+  // TODO(crbug.com/1370954): Save NotRestoredReasons in Document instead of
+  // Frame.
+  return NotRestoredReasonsBuilder(script_state,
+                                   loader->GetFrame()->GetNotRestoredReasons());
+}
+
+ScriptValue PerformanceNavigationTiming::NotRestoredReasonsBuilder(
+    ScriptState* script_state,
+    const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& reasons) const {
+  if (!reasons) {
+    return ScriptValue::CreateNull(script_state->GetIsolate());
+  }
+  V8ObjectBuilder builder(script_state);
+  switch (reasons->blocked) {
+    case mojom::blink::BFCacheBlocked::kYes:
+    case mojom::blink::BFCacheBlocked::kNo:
+      builder.AddBoolean(
+          "blocked", reasons->blocked == mojom::blink::BFCacheBlocked::kYes);
+      break;
+    case mojom::blink::BFCacheBlocked::kMasked:
+      // |blocked| can be null when masking the value.
+      builder.AddNull("blocked");
+      break;
+  }
+  builder.AddStringOrNull("src", AtomicString(reasons->src));
+  builder.AddStringOrNull("id", AtomicString(reasons->id));
+  builder.AddStringOrNull("name", AtomicString(reasons->name));
+  Vector<AtomicString> reason_strings;
+  Vector<v8::Local<v8::Value>> children_result;
+  if (reasons->same_origin_details) {
+    builder.AddString("url", AtomicString(reasons->same_origin_details->url));
+    for (const auto& reason : reasons->same_origin_details->reasons) {
+      reason_strings.push_back(reason);
+    }
+    for (const auto& child : reasons->same_origin_details->children) {
+      children_result.push_back(
+          NotRestoredReasonsBuilder(script_state, child).V8Value());
+    }
+  } else {
+    // For cross-origin iframes, url should always be null.
+    builder.AddNull("url");
+  }
+  builder.Add("reasons", reason_strings);
+  builder.Add("children", children_result);
+  return builder.GetScriptValue();
 }
 
 AtomicString PerformanceNavigationTiming::systemEntropy() const {
@@ -315,51 +360,6 @@ DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
       CrossOriginIsolatedCapability());
 }
 
-NotRestoredReasons* PerformanceNavigationTiming::BuildNotRestoredReasons(
-    const mojom::blink::BackForwardCacheNotRestoredReasonsPtr& nrr) const {
-  if (!nrr) {
-    return nullptr;
-  }
-
-  String blocked;
-  switch (nrr->blocked) {
-    case mojom::blink::BFCacheBlocked::kYes:
-      blocked = "yes";
-      break;
-    case mojom::blink::BFCacheBlocked::kNo:
-      blocked = "no";
-      break;
-    case mojom::blink::BFCacheBlocked::kMasked:
-      blocked = "masked";
-      break;
-  }
-  String url;
-  Vector<String> reasons;
-  HeapVector<NotRestoredReasons> children;
-  if (nrr->same_origin_details) {
-    url = nrr->same_origin_details->url;
-    for (const auto& reason : nrr->same_origin_details->reasons) {
-      reasons.push_back(reason);
-    }
-    for (const auto& child : nrr->same_origin_details->children) {
-      NotRestoredReasons* nrr_child = BuildNotRestoredReasons(child);
-      // Reasons in children vector should never be null.
-      CHECK(nrr_child);
-      children.push_back(*nrr_child);
-    }
-  }
-
-  NotRestoredReasons* not_restored_reasons =
-      MakeGarbageCollected<NotRestoredReasons>(
-          /*prevented_back_forward_cache=*/blocked,
-          /*src=*/nrr->src,
-          /*id=*/nrr->id,
-          /*name=*/nrr->name, /*url=*/url,
-          nrr->same_origin_details ? &reasons : nullptr,
-          nrr->same_origin_details ? &children : nullptr);
-  return not_restored_reasons;
-}
-
 void PerformanceNavigationTiming::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceResourceTiming::BuildJSONValue(builder);
@@ -381,7 +381,8 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("notRestoredReasons", notRestoredReasons());
+    builder.Add("notRestoredReasons",
+                notRestoredReasons(builder.GetScriptState()));
     ExecutionContext::From(builder.GetScriptState())
         ->CountUse(WebFeature::kBackForwardCacheNotRestoredReasons);
   }

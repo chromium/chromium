@@ -6585,17 +6585,6 @@ interface NodePart : Part
     attribute @@toStringTag
     getter node
     method constructor
-interface NotRestoredReasons
-    attribute @@toStringTag
-    getter children
-    getter id
-    getter name
-    getter preventedBackForwardCache
-    getter reasons
-    getter src
-    getter url
-    method constructor
-    method toJSON
 interface Notification : EventTarget
     static getter maxActions
     static getter permission

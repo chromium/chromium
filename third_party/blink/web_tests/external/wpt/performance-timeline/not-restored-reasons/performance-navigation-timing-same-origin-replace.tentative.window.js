@@ -31,10 +31,13 @@ promise_test(async t => {
   // Go back.
   await newRemoteContextHelper.historyBack();
 
+  const navigation_entry = await rc1.executeScript(() => {
+    return performance.getEntriesByType('navigation')[0];
+  });
   // Reasons are not reset for same-origin replace.
   await assertNotRestoredReasonsEquals(
       rc1,
-      /*preventedBackForwardCache=*/ "yes",
+      /*blocked=*/ true,
       /*url=*/ rc1_url,
       /*src=*/ null,
       /*id=*/ null,
