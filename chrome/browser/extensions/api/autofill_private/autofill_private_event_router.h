@@ -27,16 +27,14 @@ class AutofillPrivateEventRouter :
     public EventRouter::Observer,
     public autofill::PersonalDataManagerObserver {
  public:
-  static AutofillPrivateEventRouter* Create(
-      content::BrowserContext* browser_context);
+  // Uses AutofillPrivateEventRouterFactory instead.
+  explicit AutofillPrivateEventRouter(content::BrowserContext* context);
   AutofillPrivateEventRouter(const AutofillPrivateEventRouter&) = delete;
   AutofillPrivateEventRouter& operator=(const AutofillPrivateEventRouter&) =
       delete;
   ~AutofillPrivateEventRouter() override = default;
 
  protected:
-  explicit AutofillPrivateEventRouter(content::BrowserContext* context);
-
   // KeyedService overrides:
   void Shutdown() override;
 
