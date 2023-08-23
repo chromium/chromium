@@ -94,6 +94,7 @@ class FirstRunService : public KeyedService {
   static void EnsureStickToFirstRunCohort();
 #endif
 
+  FirstRunService(Profile& profile, signin::IdentityManager& identity_manager);
   ~FirstRunService() override;
 
   // Runs `::ShouldOpenFirstRun(Profile*)` with the profile associated with this
@@ -129,8 +130,6 @@ class FirstRunService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(FirstRunCohortSetupTest, JoinFirstRunCohort);
   FRIEND_TEST_ALL_PREFIXES(FirstRunServiceTest,
                            ShouldPopulateProfileNameFromPrimaryAccount);
-
-  FirstRunService(Profile& profile, signin::IdentityManager& identity_manager);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Internal interface for `SetUpClientSideFieldTrialIfNeeded()`, exposed to
@@ -221,7 +220,7 @@ class FirstRunServiceFactory : public ProfileKeyedServiceFactory {
   FirstRunServiceFactory();
   ~FirstRunServiceFactory() override;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };

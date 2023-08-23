@@ -455,7 +455,8 @@ FirstRunService* FirstRunServiceFactory::GetForBrowserContextIfExists(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
 }
 
-KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FirstRunServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!ShouldOpenFirstRun(profile)) {
@@ -482,7 +483,7 @@ KeyedService* FirstRunServiceFactory::BuildServiceInstanceFor(
   }
 #endif
 
-  auto* instance = new FirstRunService(
+  std::unique_ptr<FirstRunService> instance = std::make_unique<FirstRunService>(
       *profile, *IdentityManagerFactory::GetForProfile(profile));
   base::UmaHistogramBoolean("ProfilePicker.FirstRun.ServiceCreated", true);
 
