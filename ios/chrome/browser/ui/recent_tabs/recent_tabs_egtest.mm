@@ -1056,7 +1056,13 @@ id<GREYAction> HistorySyncScrollSearchAction() {
 
 // Tests that the sign-in promo isn't shown and the 'Other Devices' section is
 // managed when the SyncTypesListDisabled tabs item policy is selected.
-- (void)testSyncTypesListDisabled {
+// TODO(crbug.com/1475232): This test is flaky on devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSyncTypesListDisabled testSyncTypesListDisabled
+#else
+#define MAYBE_testSyncTypesListDisabled FLAKY_testSyncTypesListDisabled
+#endif
+- (void)MAYBE_testSyncTypesListDisabled {
   OpenRecentTabsPanel();
 
   // Check that the sign-in promo is not visible.
