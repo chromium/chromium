@@ -5,6 +5,8 @@
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
+load("//lib/chrome_settings.star", "chrome_settings")
+
 luci.project(
     name = "chromium",
     config_dir = "luci",
@@ -55,6 +57,10 @@ luci.logdog(
 
 luci.milo(
     logo = "https://storage.googleapis.com/chrome-infra-public/logo/chromium.svg",
+)
+
+chrome_settings.per_builder_outputs(
+    root_dir = "builders-dev",
 )
 
 # An all-purpose public realm.
