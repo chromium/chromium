@@ -470,9 +470,10 @@ RendererStartupHelperFactory::RendererStartupHelperFactory()
 
 RendererStartupHelperFactory::~RendererStartupHelperFactory() = default;
 
-KeyedService* RendererStartupHelperFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+RendererStartupHelperFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new RendererStartupHelper(context);
+  return std::make_unique<RendererStartupHelper>(context);
 }
 
 BrowserContext* RendererStartupHelperFactory::GetBrowserContextToUse(
