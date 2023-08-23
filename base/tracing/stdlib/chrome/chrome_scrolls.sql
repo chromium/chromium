@@ -16,7 +16,7 @@
 -- WebView instances. Currently gesture_scroll_id unique within an instance, but
 -- is not unique across multiple instances. Switching to an EventLatency based
 -- definition of scrolls should resolve this.
-CREATE TABLE chrome_scrolls AS
+CREATE PERFETTO TABLE chrome_scrolls AS
 WITH all_scrolls AS (
   SELECT
     name,

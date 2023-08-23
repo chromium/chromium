@@ -100,7 +100,7 @@ USING
 -- @column sched_id    Id for the sched_slice table.
 -- @column utid        Unique id for the thread that ran within the slice.
 -- @column previous_power_state   The CPU's power state before this slice.
-CREATE TABLE chrome_cpu_power_first_sched_slice_after_powerup AS
+CREATE PERFETTO TABLE chrome_cpu_power_first_sched_slice_after_powerup AS
   SELECT
     ts,
     dur,

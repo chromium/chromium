@@ -8,7 +8,7 @@ SELECT IMPORT("common.slices");
 -- argument of descendant ScopedSetIpcHash slice.
 -- This is relevant only for the older Chrome traces, where mojo IPC
 -- hash was reported in a separate ScopedSetIpcHash slice.
-CREATE PERFETTO FUNCTION INTERNAL_EXTRACT_MOJO_IPC_HASH(slice_id INT)
+CREATE PERFETTO FUNCTION internal_extract_mojo_ipc_hash(slice_id INT)
 RETURNS INT AS
 SELECT EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.ipc_hash")
 FROM descendant_slice($slice_id)
@@ -18,7 +18,7 @@ LIMIT 1;
 
 -- Returns the frame type (main frame vs subframe) for key navigation tasks
 -- which capture the associated RenderFrameHost in an argument.
-CREATE PERFETTO FUNCTION INTERNAL_EXTRACT_FRAME_TYPE(slice_id INT)
+CREATE PERFETTO FUNCTION internal_extract_frame_type(slice_id INT)
 RETURNS INT AS
 SELECT EXTRACT_ARG(arg_set_id, "render_frame_host.frame_type")
 FROM descendant_slice($slice_id)
@@ -31,7 +31,7 @@ WHERE name IN (
 LIMIT 1;
 
 -- Human-readable aliases for a few key navigation tasks.
-CREATE PERFETTO FUNCTION INTERNAL_HUMAN_READABLE_NAVIGATION_TASK_NAME(task_name STRING)
+CREATE PERFETTO FUNCTION internal_human_readable_navigation_task_name(task_name STRING)
 RETURNS STRING AS
 SELECT
   CASE
@@ -46,19 +46,19 @@ SELECT
   END;
 
 -- Takes a task name and formats it correctly for scheduler tasks.
-CREATE PERFETTO FUNCTION INTERNAL_FORMAT_SCHEDULER_TASK_NAME(task_name STRING)
+CREATE PERFETTO FUNCTION internal_format_scheduler_task_name(task_name STRING)
 RETURNS STRING AS
 SELECT printf("RunTask(posted_from=%s)", $task_name);
 
 -- Takes the category and determines whether it is "Java" only, as opposed to
 -- "toplevel,Java".
-CREATE PERFETTO FUNCTION INTERNAL_JAVA_NOT_TOP_LEVEL_CATEGORY(category STRING)
+CREATE PERFETTO FUNCTION internal_java_not_top_level_category(category STRING)
 RETURNS BOOL AS
 SELECT $category GLOB "*Java*" AND $category not GLOB "*toplevel*";
 
 -- Takes the category and determines whether is any valid
 -- toplevel category or combination of categories.
-CREATE PERFETTO FUNCTION INTERNAL_ANY_TOP_LEVEL_CATEGORY(category STRING)
+CREATE PERFETTO FUNCTION internal_any_top_level_category(category STRING)
 RETURNS BOOL AS
 SELECT $category IN ("toplevel", "toplevel,viz", "toplevel,Java");
 
@@ -67,10 +67,10 @@ SELECT $category IN ("toplevel", "toplevel,viz", "toplevel,Java");
 -- a "child" table with more information about the task (e.g. posted_from for
 -- scheduler tasks). Currently this is not the case and needs a cleanup.
 -- Also we should align this with how table inheritance should work for
--- `create perfetto table`.
+-- `CREATE PERFETTO TABLE`.
 
 -- Get task type for a given task kind.
-CREATE PERFETTO FUNCTION INTERNAL_GET_JAVA_VIEWS_TASK_TYPE(kind STRING)
+CREATE PERFETTO FUNCTION internal_get_java_views_task_type(kind STRING)
 RETURNS STRING AS
 SELECT
   CASE $kind
@@ -118,7 +118,7 @@ new_mojo_slices AS (
 old_associated_mojo_slices AS (
   SELECT
     name AS interface_name,
-    INTERNAL_EXTRACT_MOJO_IPC_HASH(id) AS ipc_hash,
+    internal_extract_mojo_ipc_hash(id) AS ipc_hash,
     "message" AS message_type,
     id
   FROM slice
@@ -133,7 +133,7 @@ old_non_associated_mojo_slices AS (
       EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.watcher_notify_interface_tag"),
       EXTRACT_ARG(arg_set_id, "chrome_mojo_event_info.mojo_interface_tag")
     ) AS interface_name,
-    INTERNAL_EXTRACT_MOJO_IPC_HASH(id) AS ipc_hash,
+    internal_extract_mojo_ipc_hash(id) AS ipc_hash,
     "message" AS message_type,
     id
   FROM slice
@@ -189,7 +189,7 @@ java_slices_with_trimmed_names AS (
     -- with either category = "toplevel" or category = "toplevel,Java".
     -- Also filter out the zero duration slices as an attempt to reduce noise as
     -- "Java" category contains misc events (as it's hard to add new categories).
-    WHERE INTERNAL_JAVA_NOT_TOP_LEVEL_CATEGORY(category) AND dur > 0
+    WHERE internal_java_not_top_level_category(category) AND dur > 0
   ),
   -- We filter out generic slices from various UI frameworks which don't tell us much about
   -- what exactly this view is doing.
@@ -228,11 +228,11 @@ SELECT
   s1.*,
   -- While the parent slices are too generic to be used by themselves,
   -- they can provide some useful metadata.
-  HAS_PARENT_SLICE_WITH_NAME(
+  has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithSoftwareDraw"
   ) AS is_software_screenshot,
-  HAS_PARENT_SLICE_WITH_NAME(
+  has_parent_slice_with_name(
     s1.id,
     "ViewResourceAdapter:captureWithHardwareDraw"
   ) AS is_hardware_screenshot
@@ -276,7 +276,7 @@ FROM slice
 WHERE name GLOB "Looper.dispatch: android.view.Choreographer$FrameHandler*";
 
 -- Extract task's posted_from information from task's arguments.
-CREATE PERFETTO FUNCTION INTERNAL_GET_POSTED_FROM(arg_set_id INT)
+CREATE PERFETTO FUNCTION internal_get_posted_from(arg_set_id INT)
 RETURNS STRING AS
 WITH posted_from as (
   SELECT
@@ -310,7 +310,7 @@ SELECT CREATE_VIEW_FUNCTION(
     FROM slice
     WHERE
       (name = $name
-        AND INTERNAL_GET_POSTED_FROM(arg_set_id) =
+        AND internal_get_posted_from(arg_set_id) =
             "cc/trees/single_thread_proxy.cc:ScheduledActionSendBeginMainFrame")
   '
 );
@@ -377,8 +377,8 @@ CREATE VIEW chrome_scheduler_tasks AS
 SELECT
   task.id,
   "chrome_scheduler_tasks" as type,
-  INTERNAL_FORMAT_SCHEDULER_TASK_NAME(
-    INTERNAL_GET_POSTED_FROM(slice.arg_set_id)) as name,
+  internal_format_scheduler_task_name(
+    internal_get_posted_from(slice.arg_set_id)) as name,
   slice.ts,
   slice.dur,
   thread.utid,
@@ -392,7 +392,7 @@ SELECT
   slice.arg_set_id,
   slice.thread_ts,
   slice.thread_dur,
-  INTERNAL_GET_POSTED_FROM(slice.arg_set_id) as posted_from
+  internal_get_posted_from(slice.arg_set_id) as posted_from
 FROM internal_chrome_scheduler_tasks task
 JOIN slice using (id)
 JOIN thread_track ON slice.track_id = thread_track.id
@@ -402,7 +402,7 @@ ORDER BY task.id;
 
 -- Select the slice that might be the descendant mojo slice for the given task
 -- slice if it exists.
-CREATE PERFETTO FUNCTION INTERNAL_GET_DESCENDANT_MOJO_SLICE_CANDIDATE(
+CREATE PERFETTO FUNCTION internal_get_descendant_mojo_slice_candidate(
   slice_id INT
 )
 RETURNS INT AS
@@ -432,7 +432,7 @@ SELECT CREATE_VIEW_FUNCTION('INTERNAL_DESCENDANT_MOJO_SLICE(slice_id INT)',
       mojo.interface_name, mojo.message_type, mojo.ipc_hash) AS task_name
   FROM slice task
   JOIN internal_chrome_mojo_slices mojo
-    ON mojo.id = INTERNAL_GET_DESCENDANT_MOJO_SLICE_CANDIDATE($slice_id)
+    ON mojo.id = internal_get_descendant_mojo_slice_candidate($slice_id)
   WHERE task.id = $slice_id
   ');
 
@@ -452,7 +452,7 @@ WITH
 non_embedded_toplevel_slices AS (
   SELECT * FROM slice
   WHERE
-    INTERNAL_ANY_TOP_LEVEL_CATEGORY(category)
+    internal_any_top_level_category(category)
     AND (SELECT count() FROM ancestor_slice(slice.id) anc
       WHERE anc.category GLOB "*toplevel*" or anc.category GLOB "*toplevel.viz*") = 0
 ),
@@ -468,7 +468,7 @@ non_embedded_java_slices AS (
     "java" as task_type
   FROM slice s
   WHERE
-    INTERNAL_JAVA_NOT_TOP_LEVEL_CATEGORY(category)
+    internal_java_not_top_level_category(category)
     AND (SELECT count()
       FROM ancestor_slice(s.id) s2
       WHERE s2.category GLOB "*toplevel*" OR s2.category GLOB "*Java*") = 0
@@ -478,7 +478,7 @@ java_views_tasks AS (
   SELECT
     id,
     printf('%s(java_views=%s)', kind, java_views) AS task_name,
-    INTERNAL_GET_JAVA_VIEWS_TASK_TYPE(kind) AS task_type
+    internal_get_java_views_task_type(kind) AS task_type
   FROM internal_chrome_slices_with_java_views
 ),
 scheduler_tasks AS (
@@ -513,8 +513,8 @@ navigation_tasks AS (
   WITH tasks_with_readable_names AS (
     SELECT
       id,
-      INTERNAL_HUMAN_READABLE_NAVIGATION_TASK_NAME(task_name) as readable_name,
-      IFNULL(INTERNAL_EXTRACT_FRAME_TYPE(id), 'unknown frame type') as frame_type
+      internal_human_readable_navigation_task_name(task_name) as readable_name,
+      IFNULL(internal_extract_frame_type(id), 'unknown frame type') as frame_type
     FROM
       scheduler_tasks_with_mojo
   )

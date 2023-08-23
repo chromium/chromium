@@ -5,7 +5,7 @@
 -- Returns hardware class of the device, often use to find device brand
 -- and model.
 -- @ret STRING Hardware class name.
-CREATE PERFETTO FUNCTION CHROME_HARDWARE_CLASS()
+CREATE PERFETTO FUNCTION chrome_hardware_class()
 RETURNS STRING AS
 SELECT
   str_value
