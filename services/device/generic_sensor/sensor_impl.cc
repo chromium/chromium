@@ -64,7 +64,6 @@ void SensorImpl::OnSensorReadingChanged(mojom::SensorType type) {
 }
 
 void SensorImpl::OnSensorError() {
-  DCHECK(!suspended_);
   if (client_)
     client_->RaiseError();
 }

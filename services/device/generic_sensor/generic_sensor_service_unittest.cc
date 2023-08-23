@@ -4,6 +4,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -51,7 +52,11 @@ class TestSensorClient : public mojom::SensorClient {
       std::move(on_reading_changed_callback_).Run(reading_data_.als.value);
     }
   }
-  void RaiseError() override {}
+  void RaiseError() override {
+    if (on_error_callback_) {
+      std::move(on_error_callback_).Run();
+    }
+  }
 
   double WaitForReading() {
     base::test::TestFuture<double> future;
@@ -95,6 +100,11 @@ class TestSensorClient : public mojom::SensorClient {
     on_reading_changed_callback_ = std::move(callback);
   }
 
+  // For RaiseError().
+  void SetOnErrorCallback(base::OnceClosure callback) {
+    on_error_callback_ = std::move(callback);
+  }
+
   mojom::Sensor* sensor() { return sensor_.get(); }
   void ResetSensor() { sensor_.reset(); }
 
@@ -108,6 +118,9 @@ class TestSensorClient : public mojom::SensorClient {
   // |on_reading_changed_callback_| is called to verify the data is same as we
   // expected in SensorReadingChanged().
   base::OnceCallback<void(double)> on_reading_changed_callback_;
+
+  base::OnceClosure on_error_callback_;
+
   SensorType type_;
 };
 
@@ -315,6 +328,39 @@ TEST_F(GenericSensorServiceTest, SuspendTest) {
 
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(30.0)));
   EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(31.0)));
+}
+
+// Tests that error notifications are delivered even if a sensor is suspended.
+TEST_F(GenericSensorServiceTest, ErrorWhileSuspendedTest) {
+  auto client = std::make_unique<TestSensorClient>(SensorType::AMBIENT_LIGHT);
+  {
+    base::RunLoop run_loop;
+    sensor_provider_->GetSensor(
+        SensorType::AMBIENT_LIGHT,
+        base::BindOnce(&TestSensorClient::OnSensorCreated,
+                       base::Unretained(client.get()), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  client->sensor()->Suspend();
+
+  // Expect that SensorReadingChanged() will not be called.
+  client->SetOnReadingChangedCallback(
+      base::BindOnce([](double) { ADD_FAILURE() << "Unexpected reading."; }));
+
+  EXPECT_TRUE(client->AddConfigurationSync(PlatformSensorConfiguration(30.0)));
+
+  // Expect that RaiseError() will be called.
+  base::test::TestFuture<void> error_future;
+  client->SetOnErrorCallback(error_future.GetCallback());
+
+  auto scoped_sensor =
+      fake_platform_sensor_provider_->GetSensor(SensorType::AMBIENT_LIGHT);
+  auto* fake_platform_sensor =
+      static_cast<FakePlatformSensor*>(scoped_sensor.get());
+  fake_platform_sensor->TriggerError();
+
+  EXPECT_TRUE(error_future.Wait());
 }
 
 // Test suspend and resume. After resuming, client can add configuration and

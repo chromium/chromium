@@ -33,6 +33,9 @@ class FakePlatformSensor : public PlatformSensor {
   // Public interface to UpdateSharedBufferAndNotifyClients().
   void AddNewReading(const SensorReading& reading);
 
+  // Public interface to NotifySensorError().
+  void TriggerError();
+
  protected:
   void StopSensor() override {}
 
