@@ -112,8 +112,11 @@
       </message>
     </else>
   </if>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt when the card is to be saved locally. The prompt can be either a bubble or an infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and Chrome sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
     Save card?
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and Chrome sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
+    To pay faster next time, save your card to your device
   </message>
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save CVC prompt that offers to save CVC for existing local cards. This prompt is shown if a CVC is detected for an existing local card on form submission.">
     Save security code?

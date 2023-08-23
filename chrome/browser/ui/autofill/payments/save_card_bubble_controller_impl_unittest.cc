@@ -624,6 +624,56 @@ TEST_P(SaveCvcBubbleLoggingTest, Metrics_Unknown) {
       autofill_metrics::SaveCardPromptResult::kUnknown, 1);
 }
 
+TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveDialogContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  // Show the local card save bubble.
+  ShowLocalBubble(
+      /*card=*/nullptr,
+      /*options=*/AutofillClient::SaveCreditCardOptions()
+          .with_cvc_save_only(false)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(BubbleType::LOCAL_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"To pay faster next time, save your card to your device");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
+  // Show the local CVC save bubble.
+  ShowLocalBubble(
+      /*card=*/nullptr,
+      /*options=*/AutofillClient::SaveCreditCardOptions()
+          .with_cvc_save_only(true)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(BubbleType::LOCAL_CVC_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save security code?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"For faster checkout, save the CVC for this card to your device");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableNewSaveCardBubbleUi);
+
+  // Show the server card save bubble.
+  ShowUploadBubble(
+      /*options=*/AutofillClient::SaveCreditCardOptions().with_show_prompt(
+          true));
+
+  ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetWindowTitle(), u"Save card?");
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"Pay faster next time and protect your card with Google’s "
+            u"industry-leading security.");
+}
+
 TEST_F(SaveCardBubbleControllerImplTest,
        LocalCard_FirstShow_SaveButton_SigninPromo_Close_Reshow_ManageCards) {
   EXPECT_CALL(*mock_sentiment_service_, SavedCard()).Times(1);
@@ -638,8 +688,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // After closing the sign-in promo, clicking the icon should bring up the
   // Manage cards bubble. Verify that the icon tooltip, the title for the
   // bubble, and the save animation reflect the correct info.
-  EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
-  EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
+  ASSERT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"Card saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save card");
   EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
@@ -660,8 +710,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // After closing the sign-in promo, clicking the icon should bring up the
   // Manage cards bubble. Verify that the icon tooltip, the title for the
   // bubble, and the save animation reflect the correct info.
-  EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
-  EXPECT_NE(nullptr, controller()->GetPaymentBubbleView());
+  ASSERT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
   EXPECT_EQ(controller()->GetWindowTitle(), u"CVC saved");
   EXPECT_EQ(controller()->GetSavePaymentIconTooltipText(), u"Save CVC");
   EXPECT_EQ(controller()->GetSaveSuccessAnimationStringId(),
@@ -675,7 +725,7 @@ TEST_F(SaveCardBubbleControllerImplTest,
   ShowLocalBubble();
   ClickSaveButton();
   CloseAndReshowBubble();
-  EXPECT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
+  ASSERT_EQ(BubbleType::MANAGE_CARDS, controller()->GetBubbleType());
 
   ClickSaveButton();
   EXPECT_THAT(

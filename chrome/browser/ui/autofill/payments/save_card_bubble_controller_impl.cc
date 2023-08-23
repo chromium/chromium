@@ -200,6 +200,13 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   if (current_bubble_type_ == BubbleType::FAILURE)
     return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_EXPLANATION);
 
+  if (current_bubble_type_ == BubbleType::LOCAL_SAVE &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling)) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_PROMPT_EXPLANATION_LOCAL);
+  }
+
   if (current_bubble_type_ == BubbleType::LOCAL_CVC_SAVE) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
