@@ -78,10 +78,4 @@ VIEW_TEST(MenuControllerMnemonicTestTitleMatch, MAYBE_TitleMatch)
 typedef MenuControllerMnemonicTest<ui::VKEY_A,0>
     MenuControllerMnemonicTestNoMatch;
 
-// TODO(https://crbug.com/1444104): Re-enable the test once fixed.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_NoMatch DISABLED_NoMatch
-#else
-#define MAYBE_NoMatch NoMatch
-#endif
-VIEW_TEST(MenuControllerMnemonicTestNoMatch, MAYBE_NoMatch)
+VIEW_TEST(MenuControllerMnemonicTestNoMatch, NoMatch)
