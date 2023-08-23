@@ -153,7 +153,7 @@ public class AwContentsTest {
     @Feature({"AndroidWebView"})
     public void testCreateLoadDestroyManyAtOnce() throws Throwable {
         mActivityTestRule.startBrowserProcess();
-        AwTestContainerView views[] = new AwTestContainerView[10];
+        AwTestContainerView[] views = new AwTestContainerView[10];
 
         for (int i = 0; i < views.length; ++i) {
             views[i] = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -1006,7 +1006,7 @@ public class AwContentsTest {
                 mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
         mActivityTestRule.waitForVisualStateCallback(testView.getAwContents());
 
-        int expectedQuadrantColors[] = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
+        int[] expectedQuadrantColors = {Color.rgb(255, 0, 0), Color.rgb(0, 255, 0),
                 Color.rgb(0, 0, 255), Color.rgb(r, g, b)};
 
         GraphicsTestUtils.pollForQuadrantColors(testView, expectedQuadrantColors);
@@ -1026,7 +1026,7 @@ public class AwContentsTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testHardwareRenderingSmokeTestVulkanWhereSupported() throws Throwable {
         // Manually curated list.
-        final String supportedModels[] = {
+        final String[] supportedModels = {
                 "Pixel",
                 "Pixel 2",
                 "Pixel 3",
@@ -1442,7 +1442,7 @@ public class AwContentsTest {
                     "http://foo.bar", null);
 
             // Check initial iframe is displayed.
-            int expectedQuadrantColors[] = {
+            int[] expectedQuadrantColors = {
                     Color.rgb(0, 255, 0),
                     Color.rgb(0, 255, 0),
                     Color.rgb(255, 0, 0),

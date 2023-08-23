@@ -183,7 +183,7 @@ public class AwContentsClientOnRenderProcessGoneTest {
         // navigate.
         mActivityTestRule.getAwSettingsOnUiThread(mAwContents).setJavaScriptEnabled(true);
         // Crash the frame.
-        AwRenderProcess renderProcess1 = createAndTerminateRenderProcess(
+        createAndTerminateRenderProcess(
                 () -> { mAwContents.getRenderProcess().terminate(); }, false);
         // Run JS in the frame.
         Assert.assertEquals("3",

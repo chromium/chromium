@@ -329,7 +329,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
 
     public void loadHtmlSync(final AwContents awContents, CallbackHelper onPageFinishedHelper,
             final String html) throws Throwable {
-        int currentCallCount = onPageFinishedHelper.getCallCount();
         final String encodedData = Base64.encodeToString(html.getBytes(), Base64.NO_PADDING);
         loadDataSync(awContents, onPageFinishedHelper, encodedData, "text/html", true);
     }
@@ -752,7 +751,6 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public void loadPopupContents(final AwContents parentAwContents, PopupInfo info,
             OnCreateWindowHandler onCreateWindowHandler) throws Exception {
         TestAwContentsClient popupContentsClient = info.popupContentsClient;
-        AwTestContainerView popupContainerView = info.popupContainerView;
         final AwContents popupContents = info.popupContents;
         OnPageFinishedHelper onPageFinishedHelper = popupContentsClient.getOnPageFinishedHelper();
         int finishCallCount = onPageFinishedHelper.getCallCount();
