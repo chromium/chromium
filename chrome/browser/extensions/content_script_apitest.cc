@@ -1166,6 +1166,52 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptBypassingSandbox) {
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+// Regression test for https://crbug.com/1407986.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ExecuteScriptForSandboxFrame) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(
+      R"({
+           "name": "Execute Script Sandbox CSP",
+           "description": "Execute scripts should work for CSP sandbox.",
+           "version": "0.1",
+           "manifest_version": 2,
+           "permissions": ["tabs","activeTab","http://*/*","https://*/*"],
+           "background": {
+            "scripts": [
+              "script.js"
+            ]}
+          })");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"),
+                     R"(
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  if (changeInfo.status === "complete" && tab.url) {
+    chrome.tabs.executeScript(
+      tabId,
+      { code: 'var x = 1;' },
+      () => {
+        let lastError = chrome.runtime.lastError;
+        if (lastError) {
+          chrome.test.notifyFail(lastError.message);
+        } else {
+          chrome.test.notifyPass();
+      }
+    });
+  }
+});)");
+
+  ResultCatcher catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL url = embedded_test_server()->GetURL(
+      "example.com", "/extensions/page_with_sandbox_csp.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 // Regression test for https://crbug.com/883526.
 IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, InifiniteLoopInGetEffectiveURL) {
   // Create an extension that injects content scripts into about:blank frames

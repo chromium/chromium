@@ -2414,4 +2414,27 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
       permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       ExtensionAccessToCSPSandboxedFrameTest) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  GURL url = embedded_test_server()->GetURL(
+      "example.com", "/extensions/page_with_sandbox_csp.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  extensions::ResultCatcher catcher;
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("sandbox_csp"));
+
+  ASSERT_TRUE(extension);
+
+  // Open a popup with the extension.
+  content::WebContents* extension_popup = OpenPopupViaToolbar(extension->id());
+  ASSERT_TRUE(extension_popup);
+
+  // Wait for all JS tests to resolve their promises.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
 }  // anonymous namespace
