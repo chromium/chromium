@@ -178,6 +178,11 @@ extern const char kBringYourOwnTabsIOSDescription[];
 extern const char kConsistencyNewAccountInterfaceName[];
 extern const char kConsistencyNewAccountInterfaceDescription[];
 
+// Title and description for the flag to enable the content notifications
+// feature.
+extern const char kContentPushNotificationsName[];
+extern const char kContentPushNotificationsDescription[];
+
 // Title and description for the flag to enable experience kit apple calendar
 // events.
 extern const char kAppleCalendarExperienceKitName[];

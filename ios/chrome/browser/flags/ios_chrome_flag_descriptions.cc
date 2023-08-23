@@ -217,6 +217,10 @@ extern const char kConsistencyNewAccountInterfaceName[] =
 extern const char kConsistencyNewAccountInterfaceDescription[] =
     "Enables a sign-in only UI for users who need to add a new account.";
 
+const char kContentPushNotificationsName[] = "Content Push Notifications";
+const char kContentPushNotificationsDescription[] =
+    "Enables the content push notifications.";
+
 extern const char kEmailName[] = "Email experience enable";
 extern const char kEmailDescription[] =
     "When enabled, one tapping or long pressing on an email address will "
