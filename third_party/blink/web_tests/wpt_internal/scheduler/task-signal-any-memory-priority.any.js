@@ -1,157 +1,152 @@
+// META: script=../dom/abort/resources/run-async-gc.js
+
 // Global state that should be prevented from being garbage collected.
-let gRegistry;
 let gController;
 let gSignals = [];
 
 // The tests below rely on the same global state, which each test manipulates.
 // Use promise_tests so tests are not interleaved, otherwise the global state
 // can change unexpectedly.
-promise_test(t => {
-  return new Promise((resolve) => {
-    let tokens = [];
-    gController = new TaskController();
-    gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-      tokens.push(token);
-      if (tokens.length == 3) {
-        assert_in_array(1, tokens);
-        assert_in_array(2, tokens);
-        assert_in_array(3, tokens);
-        resolve();
-      }
-    }));
+promise_test(async t => {
+  let wr1;
+  let wr2;
+  let wr3;
 
-    (function() {
-      let signal1 = TaskSignal.any([], {priority: gController.signal});
-      let signal2 = TaskSignal.any([gController.signal], {priority: gController.signal});
-      let signal3 = TaskSignal.any([signal2]);
+  gController = new TaskController();
 
-      gRegistry.register(signal1, 1);
-      gRegistry.register(signal2, 2);
-      gRegistry.register(signal3, 3);
+  (function() {
+    let signal1 = TaskSignal.any([], {priority: gController.signal});
+    let signal2 = TaskSignal.any([gController.signal], {priority: gController.signal});
+    let signal3 = TaskSignal.any([signal2]);
 
-      signal1 = null;
-      signal2 = null;
-      signal3 = null;
-    })();
+     wr1 = new WeakRef(signal1);
+     wr2 = new WeakRef(signal2);
+     wr3 = new WeakRef(signal3);
 
-    gc();
-  });
+    signal1 = null;
+    signal2 = null;
+    signal3 = null;
+  })();
+
+  await runAsyncGC();
+
+  assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+  assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
+  assert_equals(wr3.deref(), undefined, 'signal3 should be GCed');
 }, "TaskSignals can be GCed when they have no references or event listeners");
 
-promise_test(t => {
-  return new Promise((resolve) => {
-    let tokens = [];
-    gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-      tokens.push(token);
-      if (tokens.length == 2) {
-        assert_in_array(1, tokens);
-        assert_in_array(2, tokens);
-        resolve();
-      }
-    }));
+promise_test(async t => {
+  let wr1;
+  let wr2;
 
-    (function() {
-      let controller = new TaskController();
-      let signal = TaskSignal.any([], {priority: controller.signal});
-      signal.onprioritychange = () => {};
+  (function() {
+    let controller = new TaskController();
+    let signal = TaskSignal.any([], {priority: controller.signal});
+    signal.onprioritychange = () => {};
 
-      gRegistry.register(controller, 1);
-      gRegistry.register(signal, 2);
+    wr1 = new WeakRef(controller);
+    wr2 = new WeakRef(signal);
 
-      controller = null;
-      signal = null;
-    })();
+    controller = null;
+    signal = null;
+  })();
 
-    gc();
-  });
+  await runAsyncGC();
+  assert_equals(wr1.deref(), undefined, 'controller should be GCed');
+  assert_equals(wr2.deref(), undefined, 'signal should be GCed');
 }, "A TaskSignal with a prioritychange listener can be GCed when its priority source has been GCed");
 
-promise_test(t => {
-  return new Promise((resolve) => {
-    (function() {
-      gController = new TaskController();
-      let signal = TaskSignal.any([], {priority: gController.signal});
-      signal.onprioritychange = t.step_func((e) => {
-        assert_equals(e.target.priority, 'background');
-        resolve();
-      });
-      signal = null;
-    })();
+promise_test(async t => {
+  let fired = false;
 
-    gc();
-    gController.setPriority('background');
-  });
+  (function() {
+    gController = new TaskController();
+    let signal = TaskSignal.any([], {priority: gController.signal});
+    signal.onprioritychange = t.step_func((e) => {
+      assert_equals(e.target.priority, 'background', 'Priority should change to background');
+      fired = true;
+    });
+    signal = null;
+  })();
+
+  await runAsyncGC();
+  gController.setPriority('background');
+  assert_true(fired, 'prioritchange event should fire');
 }, "TaskSignals with prioritychange listeners are not GCed if their priority source is alive");
 
-promise_test(t => {
-  return new Promise((resolve) => {
-    (function() {
-      gController = new TaskController();
-      let controller = new AbortController();
-      let signal = TaskSignal.any([controller.signal], {priority: gController.signal});
-      signal.onprioritychange = t.step_func((e) => {
-        assert_equals(e.target.priority, 'background');
-        resolve();
-      });
-      signal = null;
-      controller = null;
-    })();
+promise_test(async t => {
+  (function() {
+    gController = new TaskController();
+    let controller = new AbortController();
+    let signal = TaskSignal.any([controller.signal], {priority: gController.signal});
+    signal.onprioritychange = t.step_func((e) => {
+      assert_equals(e.target.priority, 'background', 'Priority should change to background');
+      fired = true;
+    });
+    signal = null;
+    controller = null;
+  })();
 
-    gc();
-    gController.setPriority('background');
-  });
+  await runAsyncGC();
+  gController.setPriority('background');
+  assert_true(fired, 'prioritchange event should fire');
 }, "TaskSignals with prioritychange listeners are not GCed after their abort source is GCed if their priority source is alive");
 
-promise_test(t => {
-  return new Promise((resolve) => {
-    (function() {
-      gController = new TaskController();
-      let controller = new AbortController();
-      let signal = TaskSignal.any([controller.signal], {priority: gController.signal});
-      signal.onprioritychange = t.step_func((e) => {
-        assert_equals(e.target.priority, 'background');
-        resolve();
-      });
+promise_test(async t => {
+  let fired = true;
 
-      let abortFired = false;
-      signal.onabort = t.step_func(() => {
-        abortFired = true;
-      });
-      controller.abort();
-      assert_true(abortFired);
+  (function() {
+    gController = new TaskController();
+    let controller = new AbortController();
+    let signal = TaskSignal.any([controller.signal], {priority: gController.signal});
+    signal.onprioritychange = t.step_func((e) => {
+      assert_equals(e.target.priority, 'background');
+      fired = true;
+    });
 
-      signal = null;
-      controller = null;
-    })();
+    let abortFired = false;
+    signal.onabort = t.step_func(() => {
+      abortFired = true;
+    });
+    controller.abort();
+    assert_true(abortFired);
 
-    gc();
-    gController.setPriority('background');
-  });
+    signal = null;
+    controller = null;
+  })();
+
+  await runAsyncGC();
+  gController.setPriority('background');
+  assert_true(fired, 'prioritchange event should fire');
 }, "TaskSignals with prioritychange listeners are not GCed after they are aborted if their priority source is alive");
 
-promise_test(t => {
-  return new Promise((resolve) => {
-    let runCount = 0;
-    gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-      assert_equals(token, 1);
-      assert_equals(runCount, 3);
-      resolve();
-    }));
-    gController = new TaskController({priority: 'background'});
+promise_test(async t => {
+  let runCount = 0;
+  gController = new TaskController({priority: 'background'});
+  const tasks = [];
 
-    (function() {
-      let signal = TaskSignal.any([], {priority: gController.signal});
-      scheduler.postTask(() => { ++runCount; }, {signal});
-      scheduler.postTask(() => { ++runCount; }, {signal});
-      scheduler.postTask(() => { ++runCount; }, {signal});
+  (function() {
+    let signal = TaskSignal.any([], {priority: gController.signal});
+    scheduler.postTask(() => { ++runCount; }, {signal});
+    scheduler.postTask(() => { ++runCount; }, {signal});
+    scheduler.postTask(() => { ++runCount; }, {signal});
 
-      // Finally, gc in a separate task so `signal` can be GCed.
-      scheduler.postTask(() => { gc(); }, {priority: 'background'});
+    wr = new WeakRef(signal);
+    signal = null;
+  })();
 
-      gRegistry.register(signal, 1);
-      signal = null;
-    })();
+  // Since this runs at higher than background priority, nothing should have
+  // happened yet.
+  await runAsyncGC();
+  assert_not_equals(wr.deref(), undefined, 'signal should not have been GCed yet');
 
-    gc();
-  });
+  // Let the background tasks run.
+  // NB: we don't use the task promises since the signal will be propagated for
+  // yield inheritance.
+  await scheduler.postTask(() => {}, {priority: 'background'});
+  assert_equals(runCount, 3, '3 tasks should have run');
+
+  // Finally, run gc so `signal` can be GCed.
+  await runAsyncGC();
+  assert_equals(wr.deref(), undefined, 'signal should have been GCed');
 }, "Composite TaskSignals with pending tasks are not GCed if their priority source is alive");

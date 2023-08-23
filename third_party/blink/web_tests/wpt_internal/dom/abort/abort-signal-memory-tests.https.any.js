@@ -1,15 +1,16 @@
+// META: script=./resources/run-async-gc.js
 // META: script=./resources/abort-signal-any-memory-tests.js
 
 abortSignalAnyMemoryTests(AbortSignal, AbortController);
 
-test(t => {
+promise_test(async t => {
   let count = 0;
   const controller = new AbortController();
   const signal = controller.signal;
   addEventListener('test', () => { ++count; }, {signal});
 
   // GC should not affect the event dispatch or listener removal below.
-  gc();
+  await runAsyncGC();
 
   dispatchEvent(new Event('test'));
   dispatchEvent(new Event('test'));
@@ -21,7 +22,7 @@ test(t => {
   assert_equals(count, 2);
 }, 'AbortSignalRegistry tracks algorithm handles for event listeners');
 
-test(t => {
+promise_test(async t => {
   let count = 0;
   const controller = new AbortController();
 
@@ -39,14 +40,14 @@ test(t => {
   // GC should not affect the listener removal below. The composite signal
   // above is not held onto by JS, so this test will fail if nothing is
   // holding a reference to it.
-  gc();
+  await runAsyncGC();
 
   controller.abort();
   dispatchEvent(new Event('test2'));
   assert_equals(count, 2);
 }, 'AbortSignalRegistry tracks algorithm handles for event listeners (composite signal)');
 
-promise_test(t => {
+promise_test(async t => {
   const controller = new AbortController();
   let promise;
 
@@ -58,7 +59,9 @@ promise_test(t => {
 
   // Make sure the composite signal isn't GCed even though the lock request
   // doesn't hold onto it.
-  gc();
+  // Note: use high priority GC tasks to ensure they're scheduled before the
+  // locks request promise is resolved.
+  await runAsyncGC({priority: 'user-blocking'});
 
   controller.abort();
   return promise_rejects_dom(t, 'AbortError', promise);

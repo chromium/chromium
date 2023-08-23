@@ -1,5 +1,4 @@
 // Global state that should be prevented from being garbage collected.
-let gRegistry;
 let gController;
 let gController2;
 let gSignals = [];
@@ -7,356 +6,306 @@ let gSignals = [];
 function abortSignalAnyMemoryTests(signalInterface, controllerInterface) {
   const suffix = `(using ${signalInterface.name} and ${controllerInterface.name})`;
 
-  // Schedules a GC to run before any pending finalization registry callbacks.
-  // This depends on user-blocking tasks running at a higher priority than
-  // main-thread V8 tasks.
-  const scheduleHighPriorityGC = () => scheduler.postTask(() => { gc(); }, {priority: 'user-blocking'});
-
   // Use promise tests so tests are not interleaved (to prevent global state
   // from getting clobbered).
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokens = [];
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        tokens.push(token);
-        if (tokens.length == 2) {
-          assert_in_array(1, tokens);
-          assert_in_array(2, tokens);
-          resolve();
-        }
-      }));
+  promise_test(async t => {
+    let wr1;
+    let wr2;
 
-      (function() {
-        let controller1 = new controllerInterface();
-        let controller2 = new controllerInterface();
+    (function() {
+      let controller1 = new controllerInterface();
+      let controller2 = new controllerInterface();
 
-        gSignals.push(controller1.signal);
-        gSignals.push(controller2.signal);
+      gSignals.push(controller1.signal);
+      gSignals.push(controller2.signal);
 
-        signal = signalInterface.any(gSignals);
-        gSignals.push(signal);
+      signal = signalInterface.any(gSignals);
+      gSignals.push(signal);
 
-        gRegistry.register(controller1, 1);
-        gRegistry.register(controller2, 2);
-        controller1 = null;
-        controller2 = null;
-      })();
+      wr1 = new WeakRef(controller1);
+      wr2 = new WeakRef(controller2);
+      controller1 = null;
+      controller2 = null;
+    })();
 
-      gc();
-    });
+    await runAsyncGC();
+
+    assert_equals(wr1.deref(), undefined, 'controller1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'controller2 should be GCed');
   }, `Controllers can be GCed when their signals are being followed ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokens = [];
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        tokens.push(token);
-        if (tokens.length == 3) {
-          assert_in_array(1, tokens);
-          assert_in_array(2, tokens);
-          assert_in_array(3, tokens);
-          resolve();
-        }
-      }));
+  promise_test(async t => {
+    let wr1;
+    let wr2;
+    let wr3;
 
-      (function() {
-        let controller1 = new controllerInterface();
-        let controller2 = new controllerInterface();
-        let signal = signalInterface.any([controller1.signal, controller2.signal]);
+    (function() {
+      let controller1 = new controllerInterface();
+      let controller2 = new controllerInterface();
+      let signal = signalInterface.any([controller1.signal, controller2.signal]);
 
-        gRegistry.register(controller1, 1);
-        gRegistry.register(controller2, 2);
-        gRegistry.register(signal, 3);
+      wr1 = new WeakRef(controller1);
+      wr2 = new WeakRef(controller2);
+      wr3 = new WeakRef(signal);
 
-        controller1 = null;
-        controller2 = null;
-        signal = null;
-      })();
+      controller1 = null;
+      controller2 = null;
+      signal = null;
+    })();
 
-      gc();
-    });
+    await runAsyncGC();
+
+    assert_equals(wr1.deref(), undefined, 'controller1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'controller2 should be GCed');
+    assert_equals(wr3.deref(), undefined, 'signal should be GCed');
   }, `Signals can be GCed when all abort sources have been GCed ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokens = [];
-      gController = new controllerInterface();
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        tokens.push(token);
-        if (tokens.length == 2) {
-          assert_false(gController.signal.aborted);
-          assert_in_array(1, tokens);
-          assert_in_array(2, tokens);
-          resolve();
-        }
-      }));
+  promise_test(async t => {
+    let wr1;
+    let wr2;
 
-      (function() {
-        let signal1 = signalInterface.any([gController.signal]);
-        let signal2 = signalInterface.any([signal1]);
+    gController = new controllerInterface();
 
-        gRegistry.register(signal1, 1);
-        gRegistry.register(signal2, 2);
+    (function() {
+      let signal1 = signalInterface.any([gController.signal]);
+      let signal2 = signalInterface.any([signal1]);
 
-        signal1 = null;
-        signal2 = null;
-      })();
+      wr1 = new WeakRef(signal1);
+      wr2 = new WeakRef(signal2);
 
-      gc();
-    });
+      signal1 = null;
+      signal2 = null;
+    })();
+
+    await runAsyncGC();
+
+    assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
   }, `Signals can be GCed when they have no references or event listeners ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokens = [];
-      gController = new controllerInterface();
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        tokens.push(token);
-        if (tokens.length == 2) {
-          assert_false(gController.signal.aborted);
-          assert_in_array(1, tokens);
-          assert_in_array(2, tokens);
-          resolve();
-        }
-      }));
+  promise_test(async t => {
+    let wr1;
+    let wr2;
 
-      (function() {
-        let signal1 = signalInterface.any([gController.signal]);
-        signal1.addEventListener('event', () => {});
+    gController = new controllerInterface();
 
-        let signal2 = signalInterface.any([signal1]);
-        signal2.addEventListener('event', () => {});
+    (function() {
+      let signal1 = signalInterface.any([gController.signal]);
+      signal1.addEventListener('event', () => {});
 
-        gRegistry.register(signal1, 1);
-        gRegistry.register(signal2, 2);
+      let signal2 = signalInterface.any([signal1]);
+      signal2.addEventListener('event', () => {});
 
-        signal1 = null;
-        signal2 = null;
-      })();
+      wr1 = new WeakRef(signal1);
+      wr2 = new WeakRef(signal2);
 
-      gc();
-    });
+      signal1 = null;
+      signal2 = null;
+    })();
+
+    await runAsyncGC();
+
+    assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
   }, `Signals can be GCed when they have no references or relevant event listeners ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokens = [];
+  promise_test(async t => {
+    let wr1;
+    let wr2;
 
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        tokens.push(token);
-        if (tokens.length == 2) {
-          assert_in_array(1, tokens);
-          assert_in_array(2, tokens);
-          resolve();
-        }
-      }));
+    gController = new controllerInterface();
 
-      gController = new controllerInterface();
+    (function() {
+      let signal1 = signalInterface.any([gController.signal]);
+      let signal2 = signalInterface.any([signal1]);
 
-      (function() {
-        let signal1 = signalInterface.any([gController.signal]);
-        let signal2 = signalInterface.any([signal1]);
+      wr1 = new WeakRef(signal1);
+      wr2 = new WeakRef(signal2);
 
-        gRegistry.register(signal1, 1);
-        gRegistry.register(signal2, 2);
+      const abortCallback1 = () => {};
+      const abortCallback2 = () => {};
 
-        const abortCallback1 = () => {};
-        const abortCallback2 = () => {};
+      signal1.addEventListener('abort', abortCallback1);
+      signal1.addEventListener('abort', abortCallback2);
 
-        signal1.addEventListener('abort', abortCallback1);
-        signal1.addEventListener('abort', abortCallback2);
+      signal2.addEventListener('abort', abortCallback1);
+      signal2.addEventListener('abort', abortCallback2);
 
-        signal2.addEventListener('abort', abortCallback1);
-        signal2.addEventListener('abort', abortCallback2);
+      signal1.removeEventListener('abort', abortCallback1);
+      signal1.removeEventListener('abort', abortCallback2);
 
-        signal1.removeEventListener('abort', abortCallback1);
-        signal1.removeEventListener('abort', abortCallback2);
+      signal2.removeEventListener('abort', abortCallback1);
+      signal2.removeEventListener('abort', abortCallback2);
 
-        signal2.removeEventListener('abort', abortCallback1);
-        signal2.removeEventListener('abort', abortCallback2);
+      signal1 = null;
+      signal2 = null;
+    })();
 
-        signal1 = null;
-        signal2 = null;
-      })();
+    await runAsyncGC();
 
-      gc();
-    });
+    assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
   }, `Signals can be GCed when all abort event listeners have been removed ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokenCount = 0;
-      let fired = false;
+  promise_test(async t => {
+    let fired = false;
 
-      gController = new controllerInterface();
+    gController = new controllerInterface();
 
-      (function() {
-        let signal = signalInterface.any([gController.signal]);
-        signal.onabort = t.step_func((e) => {
-          assert_true(e.target.aborted);
-          resolve();
-        });
+    (function() {
+      let signal = signalInterface.any([gController.signal]);
+      signal.onabort = t.step_func((e) => {
+        fired = true;
+        assert_true(e.target.aborted);
+      });
 
-        signal = null;
-      })();
+      signal = null;
+    })();
 
-      gc();
-      gController.abort();
-    });
+    await runAsyncGC();
+
+    gController.abort();
+    assert_true(fired, 'signal should not be GCed before being aborted');
   }, `Signals are not GCed before being aborted by a controller when they have abort event listeners ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      gController = new controllerInterface();
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        assert_equals(token, 1);
-        assert_true(fired, 'The abort listener should not run before the signal is GCed');
-        resolve();
-      }));
+  promise_test(async t => {
+    let fired = false;
+    let wr;
 
-      (function() {
-        let signal = signalInterface.any([AbortSignal.timeout(20)]);
-        signal.onabort = t.step_func(() => {
-          fired = true;
-          // GC could also be triggered in this timeout task, so run GC at high
-          // priority to ensure the task finishes before the test.
-          scheduleHighPriorityGC();
-        });
-        gRegistry.register(signal, 1);
-        signal = null;
-      })();
+    gController = new controllerInterface();
 
-      gc();
-    });
+    (function() {
+      let signal = signalInterface.any([AbortSignal.timeout(20)]);
+      signal.onabort = t.step_func(() => {
+        fired = true;
+      });
+      wr = new WeakRef(signal);
+      signal = null;
+    })();
+
+    await runAsyncGC();
+    await t.step_wait(() => fired, 'The abort listener should run before the signal is GCed', 500, 20);
+    await runAsyncGC();
+    assert_equals(wr.deref(), undefined, 'signal should be GCed');
   }, `Composite signals are not GCed before being aborted by timeout when they have abort event listeners ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokenCount = 0;
-      let fired = false;
+  promise_test(async t => {
+    let fired = false;
+    let wr1;
+    let wr2;
 
-      gController = new controllerInterface();
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        ++tokenCount;
-        if (tokenCount == 1) {
-          assert_equals(token, 1, 'tempCompositeSignal should be GCed first');
-          assert_false(fired, 'The abort listener should not run before tempCompositeSignal is GCed');
-          gController.abort();
-          gc();
-        }
+    gController = new controllerInterface();
 
-        if (tokenCount == 2) {
-          assert_equals(token, 2, 'compositeSignal should be GCed second');
-          assert_true(fired, 'The abort listener should run before compositeSignal is GCed');
-          resolve();
-        }
-      }));
+    (function() {
+      // `tempCompositeSignal` can be GCed after this function because it is
+      // only used to construct `compositeSignal`.
+      let tempCompositeSignal = signalInterface.any([gController.signal]);
+      wr1 = new WeakRef(tempCompositeSignal);
 
-      (function() {
-        // `tempCompositeSignal` can be GCed after this function because it is
-        // only used to construct `compositeSignal`.
-        let tempCompositeSignal = signalInterface.any([gController.signal]);
-        gRegistry.register(tempCompositeSignal, 1);
+      let compositeSignal = signalInterface.any([tempCompositeSignal]);
+      compositeSignal.onabort = t.step_func(() => {
+        fired = true;
+      });
+      wr2 = new WeakRef(compositeSignal);
 
-        let compositeSignal = signalInterface.any([tempCompositeSignal]);
-        compositeSignal.onabort = t.step_func(() => {
-          fired = true;
-        });
-        gRegistry.register(compositeSignal, 2);
+      tempCompositeSignal = null;
+      compositeSignal = null;
+    })();
 
-        tempCompositeSignal = null;
-        compositeSignal = null;
-      })();
+    await runAsyncGC();
 
-      gc();
-    });
+    assert_equals(wr1.deref(), undefined, 'tempCompositeSignal should be GCed');
+    assert_not_equals(wr2.deref(), undefined, 'compositeSignal shound not be GCed yet');
+    assert_false(fired, 'The abort listener should not run before tempCompositeSignal is GCed');
+
+    gController.abort();
+
+    await runAsyncGC();
+
+    assert_equals(wr2.deref(), undefined, 'compositeSignal should be GCed');
+    assert_true(fired, 'The abort listener should run before compositeSignal is GCed');
   }, `Temporary composite signals used for constructing other composite signals can be GCed ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokenCount = 0;
-      let fired = false;
-      let tokens = [];
+  promise_test(async t => {
+    let fired = false;
+    let wr1;
+    let wr2;
+    let wr3;
+    let wr4;
+    let wr5;
 
-      gController = new controllerInterface();
-      gController2 = new controllerInterface();
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        ++tokenCount;
-        tokens.push(token);
+    gController = new controllerInterface();
+    gController2 = new controllerInterface();
 
-        if (tokenCount == 3) {
-          assert_array_equals(tokens.sort(), [1, 2, 3], 'The temporary signals should be GCed first');
-          assert_false(fired, 'The temporary signals should be GCed before the abort event listener fires');
-        }
+    (function() {
+      // These signals should be GCed after this function runs, before the
+      // timeout aborts `testSignal`.
+      let signal1 = signalInterface.any([gController.signal]);
+      let signal2 = signalInterface.any([gController2.signal]);
+      let signal3 = signalInterface.any([signal1, signal2]);
 
-        if (tokenCount == 5) {
-          assert_true(fired, 'The abort listener should run before compositeSignal is GCed');
-          resolve();
-        }
-      }));
+      wr1 = new WeakRef(signal1);
+      wr2 = new WeakRef(signal2);
+      wr3 = new WeakRef(signal3);
 
-      (function() {
-        // These signals should be GCed after this function runs, before the
-        // timeout aborts `testSignal`.
-        let signal1 = signalInterface.any([gController.signal]);
-        let signal2 = signalInterface.any([gController2.signal]);
-        let signal3 = signalInterface.any([signal1, signal2]);
+      let timeoutSignal = AbortSignal.timeout(20);
+      // This and `timeoutSignal` must remain alive until the timeout fires.
+      let testSignal = signalInterface.any([signal3, timeoutSignal]);
+      testSignal.onabort = t.step_func(() => {
+        fired = true;
+      });
 
-        let timeoutSignal = AbortSignal.timeout(20);
-        // This and `timeoutSignal` must remain alive until the timeout fires.
-        let testSignal = signalInterface.any([signal3, timeoutSignal]);
-        testSignal.onabort = t.step_func(() => {
-          fired = true;
-          scheduleHighPriorityGC();
-        });
+      wr4 = new WeakRef(timeoutSignal);
+      wr5 = new WeakRef(testSignal);
 
-        gRegistry.register(signal1, 1);
-        gRegistry.register(signal2, 2);
-        gRegistry.register(signal3, 3);
-        gRegistry.register(timeoutSignal, 4);
-        gRegistry.register(testSignal, 5);
+      signal1 = null;
+      signal2 = null;
+      signal3 = null;
+      timeoutSignal = null;
+      testSignal = null;
+    })();
 
-        signal1 = null;
-        signal2 = null;
-        signal3 = null;
-        timeoutSignal = null;
-        testSignal = null;
-      })();
+    // Running GC async in high priority tasks should complete before the timeout.
+    await runAsyncGC({priority: 'user-blocking'});
+    assert_false(fired, 'GC should complete before the timeout fires');
+    assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
+    assert_equals(wr3.deref(), undefined, 'signal3 should be GCed');
+    assert_not_equals(wr4.deref(), undefined, 'timeoutSignal should not be GCed before the timeout');
+    assert_not_equals(wr5.deref(), undefined, 'testSignal should not be GCed before the timeout');
 
-      gc();
-    });
+    await t.step_wait(() => fired, 'The abort listener should run before the signal is GCed', 500, 20);
+
+    await runAsyncGC();
+    assert_equals(wr4.deref(), undefined, 'timeoutSignal should be GCed');
+    assert_equals(wr5.deref(), undefined, 'testSignal should be GCed');
   }, `Nested and intermediate composite signals can be GCed when expected ${suffix}`);
 
-  promise_test(t => {
-    return new Promise((resolve) => {
-      let tokenCount = 0;
-      gRegistry = new FinalizationRegistry(t.step_func(function(token) {
-        ++tokenCount;
-        if (tokenCount == 2) {
-          resolve();
-        }
-      }));
+  promise_test(async t => {
+    let wr1;
+    let wr2;
 
-      (function() {
-        let signal1 = signalInterface.any([]);
-        signal1.addEventListener('abort', () => {});
-        // For plain AbortSignals, this should not be a no-op. For TaskSignals,
-        // this will test the settling logic.
-        signal1.addEventListener('prioritychange', () => {});
-        gRegistry.register(signal1, 1);
+    (function() {
+      let signal1 = signalInterface.any([]);
+      signal1.addEventListener('abort', () => {});
+      // For plain AbortSignals, this should not be a no-op. For TaskSignals,
+      // this will test the settling logic.
+      signal1.addEventListener('prioritychange', () => {});
+      wr1 = new WeakRef(signal1);
 
-        let controller = new controllerInterface();
-        let signal2 = signalInterface.any([controller.signal]);
-        signal2.addEventListener('abort', () => {});
-        signal2.addEventListener('prioritychange', () => {});
-        gRegistry.register(signal2, 2);
+      let controller = new controllerInterface();
+      let signal2 = signalInterface.any([controller.signal]);
+      signal2.addEventListener('abort', () => {});
+      signal2.addEventListener('prioritychange', () => {});
+      wr2 = new WeakRef(signal2);
 
-        signal1 = null;
-        signal2 = null;
-        controller = null;
-      })();
+      signal1 = null;
+      signal2 = null;
+      controller = null;
+    })();
 
-      gc();
-    });
+    await runAsyncGC();
+    assert_equals(wr1.deref(), undefined, 'signal1 should be GCed');
+    assert_equals(wr2.deref(), undefined, 'signal2 should be GCed');
   }, `Settled composite signals with event listeners can be GCed ${suffix}`);
 }
