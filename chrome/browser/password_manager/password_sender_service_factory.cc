@@ -46,7 +46,8 @@ PasswordSenderServiceFactory::PasswordSenderServiceFactory()
 
 PasswordSenderServiceFactory::~PasswordSenderServiceFactory() = default;
 
-KeyedService* PasswordSenderServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PasswordSenderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManagerEnableSenderService)) {
@@ -70,6 +71,6 @@ KeyedService* PasswordSenderServiceFactory::BuildServiceInstanceFor(
       password_manager::OutgoingPasswordSharingInvitationSyncBridge>(
       std::move(change_processor));
 
-  return new password_manager::PasswordSenderServiceImpl(
+  return std::make_unique<password_manager::PasswordSenderServiceImpl>(
       std::move(sync_bridge));
 }
