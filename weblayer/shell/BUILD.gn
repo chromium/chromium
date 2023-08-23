@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -143,7 +144,7 @@ repack("support_pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/components_resources_100_percent.pak",
-    "$root_gen_dir/components/strings/components_chromium_strings_en-US.pak",
+    "$root_gen_dir/components/strings/components_${branding_path_product}_strings_en-US.pak",
     "$root_gen_dir/components/strings/components_locale_settings_en-US.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/content_resources.pak",

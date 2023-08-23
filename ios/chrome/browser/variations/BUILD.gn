@@ -68,20 +68,16 @@ source_set("constants") {
 generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
   inputs = [
     "$root_gen_dir/components/strings/grit/components_chromium_strings.h",
-    "$root_gen_dir/components/strings/grit/components_google_chrome_strings.h",
     "$root_gen_dir/components/strings/grit/components_locale_settings.h",
     "$root_gen_dir/components/strings/grit/components_strings.h",
     "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h",
-    "$root_gen_dir/ios/chrome/grit/ios_google_chrome_strings.h",
     "$root_gen_dir/ios/chrome/grit/ios_strings.h",
   ]
   deps = [
     "//components/strings:components_chromium_strings",
-    "//components/strings:components_google_chrome_strings",
     "//components/strings:components_locale_settings",
     "//components/strings:components_strings",
     "//ios/chrome/app/strings:ios_chromium_strings",
-    "//ios/chrome/app/strings:ios_google_chrome_strings",
     "//ios/chrome/app/strings:ios_strings",
   ]
   namespace = ""  # Put the functions in the global namespace on iOS.

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/default_promo/tailored_promo_util.h"
 
 #import "base/notreached.h"
-#import "ios/chrome/grit/ios_google_chrome_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #import "ui/base/device_form_factor.h"

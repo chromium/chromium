@@ -2,13 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
 group("strings") {
   public_deps = [
     ":ios_search_widget_extension_chromium_strings",
-    ":ios_search_widget_extension_google_chrome_strings",
     ":ios_search_widget_extension_strings",
   ]
 }
@@ -23,20 +23,10 @@ grit("ios_search_widget_extension_strings") {
 }
 
 grit("ios_search_widget_extension_chromium_strings") {
-  source = "ios_search_widget_extension_chromium_strings.grd"
+  source = "ios_search_widget_extension_${branding_path_product}_strings.grd"
   output_dir = "$root_gen_dir/ios/search_widget_extension"
   outputs = [ "grit/ios_search_widget_extension_chromium_strings.h" ]
   foreach(locale, all_chrome_locales) {
-    outputs += [ "ios_search_widget_extension_chromium_strings_$locale.pak" ]
-  }
-}
-
-grit("ios_search_widget_extension_google_chrome_strings") {
-  source = "ios_search_widget_extension_google_chrome_strings.grd"
-  output_dir = "$root_gen_dir/ios/search_widget_extension"
-  outputs = [ "grit/ios_search_widget_extension_google_chrome_strings.h" ]
-  foreach(locale, all_chrome_locales) {
-    outputs +=
-        [ "ios_search_widget_extension_google_chrome_strings_$locale.pak" ]
+    outputs += [ "ios_search_widget_extension_${branding_path_product}_strings_$locale.pak" ]
   }
 }

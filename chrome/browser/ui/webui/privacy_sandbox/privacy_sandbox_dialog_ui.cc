@@ -15,7 +15,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/google_chrome_strings.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
 #include "chrome/grit/privacy_sandbox_resources_map.h"
 #include "components/strings/grit/components_strings.h"

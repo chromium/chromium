@@ -23,13 +23,10 @@ bundle_data("whats_new_entries_plist") {
 substitute_strings_identifier("convert_whats_new_items_m116") {
   source = "whats_new_entries_m116.plist"
   output = "$target_gen_dir/whats_new_items_m116.plist"
-  headers = [ "$root_gen_dir/ios/chrome/grit/ios_strings.h" ]
-
-  if (is_chrome_branded) {
-    headers += [ "$root_gen_dir/ios/chrome/grit/ios_google_chrome_strings.h" ]
-  } else {
-    headers += [ "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h" ]
-  }
+  headers = [
+    "$root_gen_dir/ios/chrome/grit/ios_chromium_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_strings.h",
+  ]
 
   deps = [ "//ios/chrome/app/strings" ]
 }

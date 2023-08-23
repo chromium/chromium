@@ -51,10 +51,10 @@ template("ios_chrome_repack_locales") {
 
     deps = [
       "//components/omnibox/resources:omnibox_pedal_synonyms_grit",
-      "//components/strings:components_${branding_path_product}_strings",
+      "//components/strings:components_chromium_strings",
       "//components/strings:components_locale_settings",
       "//components/strings:components_strings",
-      "//ios/chrome/app/strings:ios_${branding_path_product}_strings",
+      "//ios/chrome/app/strings:ios_chromium_strings",
       "//ios/chrome/app/strings:ios_strings",
       "//third_party/libaddressinput:strings",
       "//ui/strings:app_locale_settings",

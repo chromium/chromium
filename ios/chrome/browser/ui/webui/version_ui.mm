@@ -15,7 +15,6 @@
 #import "components/grit/version_ui_resources.h"
 #import "components/grit/version_ui_resources_map.h"
 #import "components/strings/grit/components_chromium_strings.h"
-#import "components/strings/grit/components_google_chrome_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/variations/service/variations_service.h"
 #import "components/version_info/version_info.h"

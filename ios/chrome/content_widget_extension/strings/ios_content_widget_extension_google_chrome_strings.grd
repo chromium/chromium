@@ -13,7 +13,7 @@ all other OS specific variables will be false.
 <grit base_dir="." latest_public_release="0" current_release="1"
       output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <outputs>
-    <output filename="grit/ios_content_widget_extension_google_chrome_strings.h" type="rc_header">
+    <output filename="grit/ios_content_widget_extension_chromium_strings.h" type="rc_header">
       <emit emit_type="prepend"></emit>
     </output>
     <output filename="ios_content_widget_extension_google_chrome_strings_af.pak" type="data_package" lang="af" />
