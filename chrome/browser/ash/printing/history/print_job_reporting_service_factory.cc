@@ -35,11 +35,10 @@ PrintJobReportingServiceFactory::PrintJobReportingServiceFactory()
 
 PrintJobReportingServiceFactory::~PrintJobReportingServiceFactory() = default;
 
-KeyedService* PrintJobReportingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrintJobReportingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  auto reporting_service = PrintJobReportingService::Create();
-
-  return reporting_service.release();
+  return PrintJobReportingService::Create();
 }
 
 bool PrintJobReportingServiceFactory::ServiceIsNULLWhileTesting() const {
