@@ -32,6 +32,7 @@ public class SearchSuggestionsFragment extends Fragment {
         searchSuggestionsSwitch.setChecked(PrivacyGuideUtils.isSearchSuggestionsEnabled());
 
         searchSuggestionsSwitch.setOnCheckedChangeListener((button, isChecked) -> {
+            PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(isChecked);
             UserPrefs.get(Profile.getLastUsedRegularProfile())
                     .setBoolean(Pref.SEARCH_SUGGEST_ENABLED, isChecked);
         });

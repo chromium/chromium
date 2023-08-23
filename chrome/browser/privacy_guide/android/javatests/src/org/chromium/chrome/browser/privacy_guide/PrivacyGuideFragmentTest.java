@@ -1409,6 +1409,157 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testCookiesCard_backButtonInitialCookiesStateIsSetPG3() {
+        launchPrivacyGuide();
+        mPrivacyGuideTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
+                mPrivacyGuideMetricsDelegateMock);
+
+        goToSafeBrowsingCardPG3();
+        navigateFromSBToCookiesCardPG3();
+
+        verify(mPrivacyGuideMetricsDelegateMock, times(2))
+                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.COOKIES);
+
+        mPrivacyGuideTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_nextClickSearchSuggestionsUserActionPG3() {
+        launchPrivacyGuide();
+        goToCompletionCardPG3();
+
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.NextClickSearchSuggestions"));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_nextNavigationHistogramPG3() {
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON);
+
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_offToOffSettingsStatesHistogramPG3() {
+        setSearchSuggestionsStatePG3(false);
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(SETTINGS_STATES_HISTOGRAM,
+                PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF);
+
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_offToOnSettingsStatesHistogramPG3() {
+        setSearchSuggestionsStatePG3(false);
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON);
+
+        onView(withId(R.id.search_suggestions_switch)).perform(click());
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_onToOffSettingsStatesHistogramPG3() {
+        setSearchSuggestionsStatePG3(true);
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF);
+
+        onView(withId(R.id.search_suggestions_switch)).perform(click());
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_onToOnSettingsStatesHistogramPG3() {
+        setSearchSuggestionsStatePG3(true);
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON);
+
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_nextButtonInitialSearchSuggestionsStateIsSetPG3() {
+        launchPrivacyGuide();
+        mPrivacyGuideTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(
+                mPrivacyGuideMetricsDelegateMock);
+        goToSearchSuggestionsCardPG3();
+
+        verify(mPrivacyGuideMetricsDelegateMock)
+                .setInitialStateForCard(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
+
+        mPrivacyGuideTestRule.getFragment().setPrivacyGuideMetricsDelegateForTesting(null);
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_nextButtonAfterActivityRecreationPG3() {
+        setSearchSuggestionsStatePG3(false);
+        launchPrivacyGuide();
+        goToSearchSuggestionsCardPG3();
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(
+                SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON);
+
+        onView(withId(R.id.search_suggestions_switch)).perform(click());
+        mPrivacyGuideTestRule.recreateActivity();
+        navigateFromSearchSuggestionsToCompletionCardPG3();
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
     public void testHistorySyncCard_backClickHistorySyncUserAction() {
         launchPrivacyGuide();
 
@@ -1448,6 +1599,22 @@ public class PrivacyGuideFragmentTest {
         // Verify that the user action is emitted when the back button is clicked on the Cookies
         // card
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickCookies"));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"PrivacyGuide"})
+    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
+    public void testSearchSuggestionsCard_backClickSearchSuggestionsUserActionPG3() {
+        launchPrivacyGuide();
+
+        goToSearchSuggestionsCardPG3();
+        navigateFromSearchSuggestionsToSBCardPG3();
+
+        // Verify that the user action is emitted when the back button is clicked on the search
+        // suggestions card
+        assertTrue(mActionTester.getActions().contains(
+                "Settings.PrivacyGuide.BackClickSearchSuggestions"));
     }
 
     @Test

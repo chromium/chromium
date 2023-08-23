@@ -60,8 +60,8 @@ enum class PrivacyGuideInteractions {
   kPromoEntry = 7,
   kSWAACompletionLink = 8,
   kPrivacySandboxCompletionLink = 9,
-  kSearchSuggestionsNextButtion = 10,
-  kMaxValue = kSearchSuggestionsNextButtion,
+  kSearchSuggestionsNextButton = 10,
+  kMaxValue = kSearchSuggestionsNextButton,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
