@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
     expires_after="never">
-  <owner>ellyjones@chromium.org</owner>
+  <owner>dimich@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
     expires_after="never">
-  <owner>ellyjones@chromium.org</owner>
+  <owner>dimich@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
@@ -271,7 +271,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
     enum="SendTabToSelfNotificationStatus" expires_after="2024-01-14">
-  <owner>ellyjones@chromium.org</owner>
+  <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     Status of STTS notifications. Recorded whenever a target device is chosen, a
