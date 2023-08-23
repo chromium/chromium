@@ -85,6 +85,11 @@ export class ModulesV2Element extends PolymerElement {
         value: () => ({all: true, ids: []}),
       },
 
+      modulesShownToUser: {
+        type: Boolean,
+        notify: true,
+      },
+
       /** Data about the most recent un-doable action. */
       undoData_: {
         type: Object,
@@ -93,6 +98,7 @@ export class ModulesV2Element extends PolymerElement {
     };
   }
 
+  modulesShownToUser: boolean;
   private disabledModules_: {all: boolean, ids: string[]};
   private eventTracker_: EventTracker = new EventTracker();
   private undoData_: {message: string, undo?: () => void}|null;
@@ -276,6 +282,7 @@ export class ModulesV2Element extends PolymerElement {
     const moduleWrappers =
         Array.from(this.shadowRoot!.querySelectorAll(
             'ntp-module-wrapper:not([hidden])')) as ModuleWrapperElement[];
+    this.modulesShownToUser = moduleWrappers.length !== 0;
     if (moduleWrappers.length === 0) {
       return;
     }
