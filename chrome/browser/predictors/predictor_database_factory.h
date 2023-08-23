@@ -32,7 +32,7 @@ class PredictorDatabaseFactory : public ProfileKeyedServiceFactory {
   ~PredictorDatabaseFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
