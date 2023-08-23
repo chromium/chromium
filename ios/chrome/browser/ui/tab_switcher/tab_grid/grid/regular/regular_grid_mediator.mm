@@ -143,17 +143,18 @@
 #pragma mark - Parent's function
 
 - (void)configureToolbarsButtons {
+  // Start to configure the delegate, so configured buttons will depend on the
+  // correct delegate.
+  [self.toolbarsMutator setToolbarsButtonsDelegate:self];
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-
   toolbarsConfiguration.closeAllButton = [self canCloseAll];
   toolbarsConfiguration.doneButton = YES;
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];
   toolbarsConfiguration.undoButton = [self canUndo];
-
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
-  [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 }
 
 #pragma mark - Private
