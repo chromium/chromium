@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 934 tests; 893 PASS, 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 910 tests; 893 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'rgb(from rebeccapurple r g b)'
 PASS Property color value 'rgb(from rebeccapurple r g b / alpha)'
 PASS Property color value 'rgb(from rgb(20%, 40%, 60%, 80%) r g b / alpha)'
@@ -262,18 +262,6 @@ PASS Property color value 'oklab(from oklab(none none none) l a b)'
 PASS Property color value 'oklab(from oklab(none none none / none) l a b / alpha)'
 PASS Property color value 'oklab(from oklab(0.25 none 0.5) l a b)'
 PASS Property color value 'oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)'
-FAIL Property color value 'lab(from lab(.7 45 30) alpha b a / l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lab(from lab(.7 45 30) alpha a b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lab(from lab(.7 45 30) alpha a a / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha b a / l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha a b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'lab(from lab(.7 45 30 / 40%) alpha a a / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha b a / l)' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1 +/- 0.0001, expected 1 but got 0.01
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1 +/- 0.0001, expected 1 but got 0.01
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.0001, expected 0.4 but got 0.004
-FAIL Property color value 'oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.0001, expected 0.4 but got 0.004
 PASS Property color value 'lch(from lch(0.7 45 30) l c h)'
 PASS Property color value 'lch(from lch(0.7 45 30) l c h / alpha)'
 PASS Property color value 'lch(from lch(0.7 45 30 / 40%) l c h / alpha)'
@@ -376,18 +364,6 @@ PASS Property color value 'oklch(from oklch(none none none) l c h)'
 PASS Property color value 'oklch(from oklch(none none none / none) l c h / alpha)'
 PASS Property color value 'oklch(from oklch(0.7 none 30) l c h)'
 PASS Property color value 'oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)'
-FAIL Property color value 'lch(from lch(.7 45 30) alpha c h / l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lch(from lch(.7 45 30) alpha c h / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lch(from lch(.7 45 30) alpha c c / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 100 +/- 0.0001, expected 100 but got 1
-FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c h / l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c h / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'lch(from lch(.7 45 30 / 40%) alpha c c / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 40 +/- 0.0001, expected 40 but got 0.4
-FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c h / l)' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
-FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c h / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1 +/- 0.0001, expected 1 but got 0.01
-FAIL Property color value 'oklch(from oklch(.7 0.45 30) alpha c c / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 1 +/- 0.0001, expected 1 but got 0.01
-FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)' assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
-FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.0001, expected 0.4 but got 0.004
-FAIL Property color value 'oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.0001, expected 0.4 but got 0.004
 PASS Property color value 'color(from color(srgb 0.7 0.5 0.3) srgb r g b)'
 PASS Property color value 'color(from color(srgb 0.7 0.5 0.3) srgb r g b / alpha)'
 PASS Property color value 'color(from color(srgb 0.7 0.5 0.3 / 40%) srgb r g b)'

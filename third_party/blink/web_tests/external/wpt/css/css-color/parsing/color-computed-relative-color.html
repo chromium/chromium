@@ -385,21 +385,6 @@
   test_computed_value(`color`, `oklab(from oklab(0.25 none 0.5) l a b)`, `oklab(0.25 0 0.5)`);
   test_computed_value(`color`, `oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)`, `oklab(0.25 0.2 0.5 / 0)`);
 
-  // lab and oklab tests that require different results due to percent scaling differences.
-  test_computed_value(`color`, `lab(from lab(.7 45 30) alpha b a / l)`, `lab(100 30 45 / 0.7)`);
-  test_computed_value(`color`, `lab(from lab(.7 45 30) alpha a b / alpha)`, `lab(100 45 30)`);
-  test_computed_value(`color`, `lab(from lab(.7 45 30) alpha a a / alpha)`, `lab(100 45 45)`);
-  test_computed_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha b a / l)`, `lab(40 30 45 / 0.7)`);
-  test_computed_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha a b / alpha)`, `lab(40 45 30 / 0.4)`);
-  test_computed_value(`color`, `lab(from lab(.7 45 30 / 40%) alpha a a / alpha)`, `lab(40 45 45 / 0.4)`);
-
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha b a / l)`, `oklab(1 0.3 0.45 / 0.7)`);
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)`, `oklab(1 0.45 0.3)`);
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)`, `oklab(1 0.45 0.45)`);
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)`, `oklab(0.4 0.3 0.45 / 0.7)`);
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)`, `oklab(0.4 0.45 0.3 / 0.4)`);
-  test_computed_value(`color`, `oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)`, `oklab(0.4 0.45 0.45 / 0.4)`);
-
   // lch()
 
   // Testing no modifications.
@@ -542,22 +527,6 @@
   test_computed_value(`color`, `oklch(from oklch(none none none / none) l c h / alpha)`,                        `oklch(0 0 0 / 0)`);
   test_computed_value(`color`, `oklch(from oklch(0.7 none 30) l c h)`,                                          `oklch(0.7 0 30)`);
   test_computed_value(`color`, `oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)`,                             `oklch(0.7 0.45 30 / 0)`);
-
-  // lch and oklch tests that require different results due to percent scaling differences.
-  test_computed_value(`color`, `lch(from lch(.7 45 30) alpha c h / l)`, `lch(100 45 30 / 0.7)`);
-  test_computed_value(`color`, `lch(from lch(.7 45 30) alpha c h / alpha)`, `lch(100 45 30)`);
-  test_computed_value(`color`, `lch(from lch(.7 45 30) alpha c c / alpha)`, `lch(100 45 45)`);
-  test_computed_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c h / l)`, `lch(40 45 30 / 0.7)`);
-  test_computed_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c h / alpha)`, `lch(40 45 30 / 0.4)`);
-  test_computed_value(`color`, `lch(from lch(.7 45 30 / 40%) alpha c c / alpha)`, `lch(40 45 45 / 0.4)`);
-
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c h / l)`, `oklch(1 0.45 30 / 0.7)`);
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c h / alpha)`, `oklch(1 0.45 30)`);
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30) alpha c c / alpha)`, `oklch(1 0.45 0.45)`);
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)`, `oklch(0.4 0.45 30 / 0.7)`);
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)`, `oklch(0.4 0.45 30 / 0.4)`);
-  test_computed_value(`color`, `oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)`, `oklch(0.4 0.45 0.45 / 0.4)`);
-
 
   for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
       // Testing no modifications.

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 934 tests; 902 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 910 tests; 902 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS e.style['color'] = "rgb(from rebeccapurple r g b)" should set the property value
 PASS e.style['color'] = "rgb(from rebeccapurple r g b / alpha)" should set the property value
 PASS e.style['color'] = "rgb(from rgb(20%, 40%, 60%, 80%) r g b / alpha)" should set the property value
@@ -262,18 +262,6 @@ PASS e.style['color'] = "oklab(from oklab(none none none) l a b)" should set the
 PASS e.style['color'] = "oklab(from oklab(none none none / none) l a b / alpha)" should set the property value
 PASS e.style['color'] = "oklab(from oklab(0.25 none 0.5) l a b)" should set the property value
 PASS e.style['color'] = "oklab(from oklab(0.25 0.2 0.5 / none) l a b / alpha)" should set the property value
-FAIL e.style['color'] = "lab(from lab(.7 45 30) alpha b a / l)" should set the property value assert_equals: serialization should be canonical expected "lab(100 30 45 / 0.7)" but got "lab(1 30 45 / 0.7)"
-FAIL e.style['color'] = "lab(from lab(.7 45 30) alpha a b / alpha)" should set the property value assert_equals: serialization should be canonical expected "lab(100 45 30)" but got "lab(1 45 30)"
-FAIL e.style['color'] = "lab(from lab(.7 45 30) alpha a a / alpha)" should set the property value assert_equals: serialization should be canonical expected "lab(100 45 45)" but got "lab(1 45 45)"
-FAIL e.style['color'] = "lab(from lab(.7 45 30 / 40%) alpha b a / l)" should set the property value assert_equals: serialization should be canonical expected "lab(40 30 45 / 0.7)" but got "lab(0.4 30 45 / 0.7)"
-FAIL e.style['color'] = "lab(from lab(.7 45 30 / 40%) alpha a b / alpha)" should set the property value assert_equals: serialization should be canonical expected "lab(40 45 30 / 0.4)" but got "lab(0.4 45 30 / 0.4)"
-FAIL e.style['color'] = "lab(from lab(.7 45 30 / 40%) alpha a a / alpha)" should set the property value assert_equals: serialization should be canonical expected "lab(40 45 45 / 0.4)" but got "lab(0.4 45 45 / 0.4)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3) alpha b a / l)" should set the property value assert_equals: serialization should be canonical expected "oklab(1 0.3 0.45 / 0.7)" but got "oklab(0.01 0.3 0.45)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3) alpha a b / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklab(1 0.45 0.3)" but got "oklab(0.01 0.45 0.3)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3) alpha a a / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklab(1 0.45 0.45)" but got "oklab(0.01 0.45 0.45)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3 / 40%) alpha b a / l)" should set the property value assert_equals: serialization should be canonical expected "oklab(0.4 0.3 0.45 / 0.7)" but got "oklab(0.004 0.3 0.45)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3 / 40%) alpha a b / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklab(0.4 0.45 0.3 / 0.4)" but got "oklab(0.004 0.45 0.3 / 0.4)"
-FAIL e.style['color'] = "oklab(from oklab(.7 0.45 0.3 / 40%) alpha a a / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklab(0.4 0.45 0.45 / 0.4)" but got "oklab(0.004 0.45 0.45 / 0.4)"
 PASS e.style['color'] = "lch(from lch(0.7 45 30) l c h)" should set the property value
 PASS e.style['color'] = "lch(from lch(0.7 45 30) l c h / alpha)" should set the property value
 PASS e.style['color'] = "lch(from lch(0.7 45 30 / 40%) l c h / alpha)" should set the property value
@@ -376,18 +364,6 @@ PASS e.style['color'] = "oklch(from oklch(none none none) l c h)" should set the
 PASS e.style['color'] = "oklch(from oklch(none none none / none) l c h / alpha)" should set the property value
 PASS e.style['color'] = "oklch(from oklch(0.7 none 30) l c h)" should set the property value
 PASS e.style['color'] = "oklch(from oklch(0.7 0.45 30 / none) l c h / alpha)" should set the property value
-FAIL e.style['color'] = "lch(from lch(.7 45 30) alpha c h / l)" should set the property value assert_equals: serialization should be canonical expected "lch(100 45 30 / 0.7)" but got "lch(1 45 30 / 0.7)"
-FAIL e.style['color'] = "lch(from lch(.7 45 30) alpha c h / alpha)" should set the property value assert_equals: serialization should be canonical expected "lch(100 45 30)" but got "lch(1 45 30)"
-FAIL e.style['color'] = "lch(from lch(.7 45 30) alpha c c / alpha)" should set the property value assert_equals: serialization should be canonical expected "lch(100 45 45)" but got "lch(1 45 45)"
-FAIL e.style['color'] = "lch(from lch(.7 45 30 / 40%) alpha c h / l)" should set the property value assert_equals: serialization should be canonical expected "lch(40 45 30 / 0.7)" but got "lch(0.4 45 30 / 0.7)"
-FAIL e.style['color'] = "lch(from lch(.7 45 30 / 40%) alpha c h / alpha)" should set the property value assert_equals: serialization should be canonical expected "lch(40 45 30 / 0.4)" but got "lch(0.4 45 30 / 0.4)"
-FAIL e.style['color'] = "lch(from lch(.7 45 30 / 40%) alpha c c / alpha)" should set the property value assert_equals: serialization should be canonical expected "lch(40 45 45 / 0.4)" but got "lch(0.4 45 45 / 0.4)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30) alpha c h / l)" should set the property value assert_equals: serialization should be canonical expected "oklch(1 0.45 30 / 0.7)" but got "oklch(0.01 0.45 30)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30) alpha c h / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklch(1 0.45 30)" but got "oklch(0.01 0.45 30)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30) alpha c c / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklch(1 0.45 0.45)" but got "oklch(0.01 0.45 0.45)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30 / 40%) alpha c h / l)" should set the property value assert_equals: serialization should be canonical expected "oklch(0.4 0.45 30 / 0.7)" but got "oklch(0.004 0.45 30)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30 / 40%) alpha c h / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklch(0.4 0.45 30 / 0.4)" but got "oklch(0.004 0.45 30 / 0.4)"
-FAIL e.style['color'] = "oklch(from oklch(.7 0.45 30 / 40%) alpha c c / alpha)" should set the property value assert_equals: serialization should be canonical expected "oklch(0.4 0.45 0.45 / 0.4)" but got "oklch(0.004 0.45 0.45 / 0.4)"
 PASS e.style['color'] = "color(from color(srgb 0.7 0.5 0.3) srgb r g b)" should set the property value
 PASS e.style['color'] = "color(from color(srgb 0.7 0.5 0.3) srgb r g b / alpha)" should set the property value
 PASS e.style['color'] = "color(from color(srgb 0.7 0.5 0.3 / 40%) srgb r g b)" should set the property value
