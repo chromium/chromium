@@ -101,7 +101,7 @@ class TouchSelectionControllerClientAura::EnvEventObserver
       }
     }
 
-    selection_controller_->HideAndDisallowShowingAutomatically();
+    selection_controller_->OnSessionEndEvent(event);
   }
 
   raw_ptr<ui::TouchSelectionController> selection_controller_;
@@ -562,10 +562,11 @@ bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
 
 void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
                                                         int event_flags) {
-  if (command_id != ui::TouchEditable::kSelectAll &&
-      command_id != ui::TouchEditable::kSelectWord) {
-    rwhva_->selection_controller()->HideAndDisallowShowingAutomatically();
-  }
+  const bool should_dismiss_handles =
+      command_id != ui::TouchEditable::kSelectAll &&
+      command_id != ui::TouchEditable::kSelectWord;
+  rwhva_->selection_controller()->OnMenuCommand(should_dismiss_handles);
+
   RenderWidgetHostDelegate* host_delegate = rwhva_->host()->delegate();
   if (!host_delegate)
     return;

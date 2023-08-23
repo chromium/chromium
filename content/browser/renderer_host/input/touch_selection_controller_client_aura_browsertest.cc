@@ -1378,6 +1378,11 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraCAPFeatureTest,
       ui::TouchSelectionDragType::kDoublePressDrag, 1);
   histogram_tester.ExpectTotalCount(ui::kTouchSelectionDragTypeHistogramName,
                                     2);
+
+  // Start typing to end the touch selection session.
+  generator.PressAndReleaseKey(ui::VKEY_A);
+  histogram_tester.ExpectUniqueSample(
+      ui::kTouchSelectionSessionTouchDownCountHistogramName, 3, 1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
