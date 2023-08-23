@@ -553,7 +553,6 @@ export class OperationScheduler {
     } catch (e) {
       onReconfigured.signalError(assertInstanceof(e, Error));
       this.clearPendingReconfigureWaiters();
-      throw e;
     } finally {
       this.finishOperation();
     }
