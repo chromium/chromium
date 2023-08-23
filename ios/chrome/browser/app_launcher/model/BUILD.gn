@@ -4,7 +4,7 @@
 
 import("//build/config/ios/rules.gni")
 
-source_set("app_launcher") {
+source_set("model") {
   sources = [
     "app_launcher_abuse_detector.h",
     "app_launcher_abuse_detector.mm",
@@ -45,7 +45,7 @@ source_set("test_support") {
     "fake_app_launcher_abuse_detector.mm",
   ]
   deps = [
-    ":app_launcher",
+    ":model",
     "//base",
   ]
 }
@@ -59,7 +59,7 @@ source_set("unit_tests") {
     "app_launching_state_unittest.mm",
   ]
   deps = [
-    ":app_launcher",
+    ":model",
     ":test_support",
     "//base",
     "//base/test:test_support",

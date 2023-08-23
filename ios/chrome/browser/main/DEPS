@@ -8,7 +8,7 @@ specific_include_rules = {
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^browser_agent_util.mm": [
     "+ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h",
-    "+ios/chrome/browser/app_launcher/app_launcher_browser_agent.h",
+    "+ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h",
     "+ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h",
     "+ios/chrome/browser/device_sharing/device_sharing_browser_agent.h",
     "+ios/chrome/browser/follow/follow_browser_agent.h",

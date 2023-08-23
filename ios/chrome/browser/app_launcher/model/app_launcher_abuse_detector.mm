@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/app_launcher/app_launching_state.h"
+#import "ios/chrome/browser/app_launcher/model/app_launching_state.h"
 #import "url/gurl.h"
 
 const int kMaxAllowedConsecutiveExternalAppLaunches = 2;
@@ -58,8 +58,9 @@ bool HasChromeAppLaunchScheme(const GURL& url) {
 - (void)didRequestLaunchExternalAppURL:(const GURL&)URL
                      fromSourcePageURL:(const GURL&)sourcePageURL {
   NSString* key = [[self class] stateKeyForAppURL:URL sourceURL:sourcePageURL];
-  if (!_appLaunchingStates[key])
+  if (!_appLaunchingStates[key]) {
     _appLaunchingStates[key] = [[AppLaunchingState alloc] init];
+  }
   [_appLaunchingStates[key] updateWithLaunchRequest];
 }
 
@@ -69,17 +70,20 @@ bool HasChromeAppLaunchScheme(const GURL& url) {
   bool isChromeLaunchAttempt = HasChromeAppLaunchScheme(URL);
   UMA_HISTOGRAM_BOOLEAN("IOS.AppLauncher.AppURLHasChromeLaunchScheme",
                         isChromeLaunchAttempt);
-  if (isChromeLaunchAttempt)
+  if (isChromeLaunchAttempt) {
     return ExternalAppLaunchPolicyBlock;
+  }
 
   NSString* key = [[self class] stateKeyForAppURL:URL sourceURL:sourcePageURL];
   // Don't block apps that are not registered with the abuse detector.
-  if (!_appLaunchingStates[key])
+  if (!_appLaunchingStates[key]) {
     return ExternalAppLaunchPolicyAllow;
+  }
 
   AppLaunchingState* state = _appLaunchingStates[key];
-  if ([state isAppLaunchingBlocked])
+  if ([state isAppLaunchingBlocked]) {
     return ExternalAppLaunchPolicyBlock;
+  }
 
   if (state.consecutiveLaunchesCount >
       kMaxAllowedConsecutiveExternalAppLaunches) {

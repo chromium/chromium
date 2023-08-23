@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
@@ -26,8 +26,8 @@
 
 BROWSER_USER_DATA_KEY_IMPL(AppLauncherBrowserAgent)
 
-using app_launcher_overlays::AppLaunchConfirmationRequest;
 using app_launcher_overlays::AllowAppLaunchResponse;
+using app_launcher_overlays::AppLaunchConfirmationRequest;
 
 namespace {
 // Records histogram metric on the user's response when prompted to open another
@@ -46,8 +46,9 @@ void AppLauncherOverlayCallback(base::OnceCallback<void(bool)> completion,
   bool user_accepted = response && response->GetInfo<AllowAppLaunchResponse>();
 
   // Record the UMA for repeated requests.
-  if (repeated_request)
+  if (repeated_request) {
     RecordUserAcceptedAppLaunchMetric(user_accepted);
+  }
 
   // Execute the completion with the response.
   DCHECK(!completion.is_null());

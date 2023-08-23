@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 
 #import <memory>
 
@@ -16,8 +16,8 @@
 #import "components/policy/policy_constants.h"
 #import "components/reading_list/core/reading_list_entry.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
-#import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
+#import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"

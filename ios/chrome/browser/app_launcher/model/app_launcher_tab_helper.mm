@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 
 #import <UIKit/UIKit.h>
 
@@ -11,8 +11,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_util.h"
 #import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
@@ -28,16 +28,19 @@
 namespace {
 
 bool IsValidAppUrl(const GURL& app_url) {
-  if (!app_url.is_valid())
+  if (!app_url.is_valid()) {
     return false;
+  }
 
-  if (!app_url.has_scheme())
+  if (!app_url.has_scheme()) {
     return false;
+  }
 
   // Block attempts to open this application's settings in the native system
   // settings application.
-  if (app_url.SchemeIs("app-settings"))
+  if (app_url.SchemeIs("app-settings")) {
     return false;
+  }
   return true;
 }
 
@@ -123,8 +126,9 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
       is_prompt_active_ = true;
       base::WeakPtr<AppLauncherTabHelper> weak_this =
           weak_factory_.GetWeakPtr();
-      if (!delegate_)
+      if (!delegate_) {
         return;
+      }
       delegate_->ShowRepeatedAppLaunchAlert(
           this,
           base::BindOnce(&AppLauncherTabHelper::ShowRepeatedAppLaunchAlertDone,

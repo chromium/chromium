@@ -194,7 +194,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/app/application_delegate:unit_tests",
     "//ios/chrome/app/spotlight:unit_tests",
     "//ios/chrome/app/startup:unit_tests",
-    "//ios/chrome/browser/app_launcher:unit_tests",
+    "//ios/chrome/browser/app_launcher/model:unit_tests",
     "//ios/chrome/browser/autofill:unit_tests",
     "//ios/chrome/browser/autofill/manual_fill:unit_tests",
     "//ios/chrome/browser/bookmarks/model:unit_tests",

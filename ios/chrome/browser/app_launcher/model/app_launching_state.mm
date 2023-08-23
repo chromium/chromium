@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launching_state.h"
+#import "ios/chrome/browser/app_launcher/model/app_launching_state.h"
 
 const double kDefaultMaxSecondsBetweenConsecutiveExternalAppLaunches = 30.0;
 
@@ -24,8 +24,9 @@ static double _maxSecondsBetweenConsecutiveLaunches =
 }
 
 - (void)updateWithLaunchRequest {
-  if (_appLaunchingBlocked)
+  if (_appLaunchingBlocked) {
     return;
+  }
   if (!_lastAppLaunchTime ||
       -_lastAppLaunchTime.timeIntervalSinceNow >
           [[self class] maxSecondsBetweenConsecutiveLaunches]) {

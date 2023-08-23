@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launching_state.h"
+#import "ios/chrome/browser/app_launcher/model/app_launching_state.h"
 
 #import "base/test/ios/wait_util.h"
 #import "testing/gtest/include/gtest/gtest.h"

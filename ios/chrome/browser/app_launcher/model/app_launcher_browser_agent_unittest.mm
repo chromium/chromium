@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_browser_agent.h"
 
 #import <UIKit/UIKit.h>
 #import <map>
 
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
@@ -27,8 +27,8 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "url/gurl.h"
 
-using app_launcher_overlays::AppLaunchConfirmationRequest;
 using app_launcher_overlays::AllowAppLaunchResponse;
+using app_launcher_overlays::AppLaunchConfirmationRequest;
 
 // Test fixture for AppLauncherBrowserAgent.
 class AppLauncherBrowserAgentTest : public PlatformTest {
@@ -86,8 +86,9 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
     OverlayRequest* request = OverlayRequestQueue::FromWebState(
                                   web_state, OverlayModality::kWebContentArea)
                                   ->front_request();
-    if (!request)
+    if (!request) {
       return false;
+    }
 
     AppLaunchConfirmationRequest* config =
         request->GetConfig<AppLaunchConfirmationRequest>();

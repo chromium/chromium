@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/fake_app_launcher_abuse_detector.h"
 
 @implementation FakeAppLauncherAbuseDetector
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_BROWSER_AGENT_H_
-#define IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_BROWSER_AGENT_H_
+#ifndef IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_
+#define IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_
 
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
-#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/tab_helper_delegate_installer.h"
 
@@ -58,4 +58,4 @@ class AppLauncherBrowserAgent
   BROWSER_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_APP_LAUNCHER_BROWSER_AGENT_H_
+#endif  // IOS_CHROME_BROWSER_APP_LAUNCHER_MODEL_APP_LAUNCHER_BROWSER_AGENT_H_

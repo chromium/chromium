@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
 
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
