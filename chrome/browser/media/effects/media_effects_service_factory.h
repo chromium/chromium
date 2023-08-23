@@ -28,7 +28,7 @@ class MediaEffectsServiceFactory : public ProfileKeyedServiceFactory {
   ~MediaEffectsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

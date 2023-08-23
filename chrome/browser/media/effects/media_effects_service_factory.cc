@@ -28,7 +28,9 @@ MediaEffectsServiceFactory::MediaEffectsServiceFactory()
 
 MediaEffectsServiceFactory::~MediaEffectsServiceFactory() = default;
 
-KeyedService* MediaEffectsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+MediaEffectsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new MediaEffectsService(Profile::FromBrowserContext(context));
+  return std::make_unique<MediaEffectsService>(
+      Profile::FromBrowserContext(context));
 }
