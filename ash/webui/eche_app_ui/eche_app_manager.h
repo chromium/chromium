@@ -60,6 +60,7 @@ class EcheTrayStreamStatusObserver;
 class EcheConnectionScheduler;
 class EcheStreamOrientationObserver;
 class EcheConnectionStatusHandler;
+class EcheKeyboardLayoutHandler;
 
 // Implements the core logic of the EcheApp and exposes interfaces via its
 // public API. Implemented as a KeyedService since it depends on other
@@ -106,6 +107,9 @@ class EcheAppManager : public KeyedService {
   void BindConnectionStatusObserverInterface(
       mojo::PendingReceiver<mojom::ConnectionStatusObserver> receiver);
 
+  void BindKeyboardLayoutHandlerInterface(
+      mojo::PendingReceiver<mojom::KeyboardLayoutHandler> receiver);
+
   AppsAccessManager* GetAppsAccessManager();
 
   EcheConnectionStatusHandler* GetEcheConnectionStatusHandler();
@@ -146,6 +150,7 @@ class EcheAppManager : public KeyedService {
       eche_tray_stream_status_observer_;
   std::unique_ptr<EcheStreamOrientationObserver>
       eche_stream_orientation_observer_;
+  std::unique_ptr<EcheKeyboardLayoutHandler> eche_keyboard_layout_handler_;
 };
 
 }  // namespace eche_app

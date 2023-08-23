@@ -16,6 +16,7 @@
 #include "ash/webui/eche_app_ui/eche_connection_scheduler_impl.h"
 #include "ash/webui/eche_app_ui/eche_connection_status_handler.h"
 #include "ash/webui/eche_app_ui/eche_connector_impl.h"
+#include "ash/webui/eche_app_ui/eche_keyboard_layout_handler.h"
 #include "ash/webui/eche_app_ui/eche_message_receiver_impl.h"
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 #include "ash/webui/eche_app_ui/eche_signaler.h"
@@ -128,7 +129,9 @@ EcheAppManager::EcheAppManager(
               stream_status_change_handler_.get(),
               feature_status_provider_.get())),
       eche_stream_orientation_observer_(
-          std::make_unique<EcheStreamOrientationObserver>()) {
+          std::make_unique<EcheStreamOrientationObserver>()),
+      eche_keyboard_layout_handler_(
+          std::make_unique<EcheKeyboardLayoutHandler>()) {
   ash::GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   system_info_provider_ = std::make_unique<SystemInfoProvider>(
@@ -188,6 +191,11 @@ void EcheAppManager::BindConnectionStatusObserverInterface(
   eche_connection_status_handler_->Bind(std::move(receiver));
 }
 
+void EcheAppManager::BindKeyboardLayoutHandlerInterface(
+    mojo::PendingReceiver<mojom::KeyboardLayoutHandler> receiver) {
+  eche_keyboard_layout_handler_->Bind(std::move(receiver));
+}
+
 AppsAccessManager* EcheAppManager::GetAppsAccessManager() {
   return apps_access_manager_.get();
 }
@@ -212,6 +220,7 @@ void EcheAppManager::Shutdown() {
     phone_hub_manager_->SetSystemInfoProvider(nullptr);
   }
 
+  eche_keyboard_layout_handler_.reset();
   eche_stream_orientation_observer_.reset();
   system_info_provider_.reset();
   eche_tray_stream_status_observer_.reset();

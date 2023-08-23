@@ -118,4 +118,8 @@
   ACCESSIBILITY_EVENT_DATA: 'accessibility_event_data',
   // Message for sending actions and their parameters.
   ACCESSIBILITY_PERFORM_ACTION: 'accessibility_perform_action',
+  // Message for requesting keyboard layout information.
+  KEYBOARD_LAYOUT_REQUEST: 'keyboard_layout_request',
+  // Message for sending keyboard layout information.
+  KEYBOARD_LAYOUT_INFO: 'keyboard_layout_info',
 };
