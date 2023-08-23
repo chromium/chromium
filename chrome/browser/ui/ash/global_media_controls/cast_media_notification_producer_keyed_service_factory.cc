@@ -43,13 +43,13 @@ CastMediaNotificationProducerKeyedServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-KeyedService*
-CastMediaNotificationProducerKeyedServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> CastMediaNotificationProducerKeyedServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   if (!media_router::MediaRouterEnabled(context)) {
     return nullptr;
   }
-  return new CastMediaNotificationProducerKeyedService(
+  return std::make_unique<CastMediaNotificationProducerKeyedService>(
       Profile::FromBrowserContext(context));
 }
 
