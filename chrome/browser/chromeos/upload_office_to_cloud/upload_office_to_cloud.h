@@ -6,12 +6,17 @@
 #define CHROME_BROWSER_CHROMEOS_UPLOAD_OFFICE_TO_CLOUD_UPLOAD_OFFICE_TO_CLOUD_H_
 
 class Profile;
+class PrefRegistrySimple;
 
 namespace chromeos {
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for
 // the user of the `profile`. A user is eligible if they are not managed.
 bool IsEligibleAndEnabledUploadOfficeToCloud(Profile* profile);
+
+namespace cloud_upload {
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
+}  // namespace cloud_upload
 
 }  // namespace chromeos
 

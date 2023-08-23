@@ -2088,6 +2088,16 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
     "filebrowser.office.file_moved_google_drive";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
+inline constexpr char kMicrosoftOfficeCloudUpload[] =
+    "filebrowser.office.microsoft_office_cloud_upload";
+
+// Pref that contains the value of the GoogleWorkspaceCloudUpload policy.
+inline constexpr char kGoogleWorkspaceCloudUpload[] =
+    "filebrowser.office.google_workspace_cloud_upload";
+#endif
+
 // A flag to enable/disable the Shared Clipboard feature which enables users to
 // send text across devices.
 inline constexpr char kSharedClipboardEnabled[] =

@@ -937,6 +937,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kReportWebsiteTelemetryCollectionRateMs,
     ::reporting::kReportWebsiteTelemetryCollectionRateMs,
     base::Value::Type::INTEGER },
+  { key::kMicrosoftOfficeCloudUpload,
+    prefs::kMicrosoftOfficeCloudUpload,
+    base::Value::Type::STRING },
+  { key::kGoogleWorkspaceCloudUpload,
+    prefs::kGoogleWorkspaceCloudUpload,
+    base::Value::Type::STRING},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

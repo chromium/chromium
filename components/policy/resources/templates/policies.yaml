@@ -1143,6 +1143,8 @@ policies:
   1142: BlockTruncatedCookies
   1143: ReportWebsiteTelemetry
   1144: CompressionDictionaryTransportEnabled
+  1145: MicrosoftOfficeCloudUpload
+  1146: GoogleWorkspaceCloudUpload
 atomic_groups:
   1: Homepage
   2: RemoteAccess

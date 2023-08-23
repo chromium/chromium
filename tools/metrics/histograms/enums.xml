@@ -33813,6 +33813,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1142" label="BlockTruncatedCookies"/>
   <int value="1143" label="ReportWebsiteTelemetry"/>
   <int value="1144" label="CompressionDictionaryTransportEnabled"/>
+  <int value="1145" label="MicrosoftOfficeCloudUpload"/>
+  <int value="1146" label="GoogleWorkspaceCloudUpload"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
