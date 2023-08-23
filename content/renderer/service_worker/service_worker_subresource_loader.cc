@@ -429,11 +429,15 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
 
   switch (race_network_request_mode) {
     case kForced:
-      did_start_race_network_request_ = StartRaceNetworkRequest();
+      if (StartRaceNetworkRequest()) {
+        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
+      }
       break;
     case kDefault:
       // Dispatch RaceNetworkRequest if enabled.
-      did_start_race_network_request_ = MaybeStartRaceNetworkRequest();
+      if (MaybeStartRaceNetworkRequest()) {
+        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
+      }
       break;
     case kSkipped:
       // Don't start race network request.
@@ -605,7 +609,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // yet, ask its URLLoaderClient to handle the response regardless of the
       // response status not to dispatch additional network request for
       // fallback.
-      if (did_start_race_network_request_) {
+      if (dispatched_preload_type() ==
+          DispatchedPreloadType::kRaceNetworkRequest) {
         SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
         return;
       }
@@ -619,7 +624,8 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       // handle the response anymore because the execution is already completed.
       // It costs additional request but we cancel the in-flight
       // RaceNetworkRequest and start the new network equest.
-      if (did_start_race_network_request_) {
+      if (dispatched_preload_type() ==
+          DispatchedPreloadType::kRaceNetworkRequest) {
         race_network_request_loader_client_.reset();
       }
       break;

@@ -47,6 +47,26 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
     kMaxValue = kAutoPreloadHandlingFallback,
   };
 
+  // Indicates what kind of preload request is dispatched before starting
+  // the ServiceWorker.
+  //
+  // kNone: No preload request is triggered. This is the default state.
+  // kRaceNetworkRequest:
+  //    RaceNetworkRequest is triggered.
+  //    TODO(crbug.com/1420517) This will be passed to the renderer and block
+  //    the corresponding request from the ServiceWorker.
+  // kNavigationPreload:
+  //    Enabled when Navigation Preload is triggered.
+  // kAutoPreload:
+  //    AutoPreload is triggered. This is consumed in the fetch handler or
+  //    the fallback request.
+  enum class DispatchedPreloadType {
+    kNone,
+    kRaceNetworkRequest,
+    kNavigationPreload,
+    kAutoPreload,
+  };
+
   ServiceWorkerResourceLoader();
   virtual ~ServiceWorkerResourceLoader();
 
@@ -54,6 +74,11 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
 
   FetchResponseFrom commit_responsibility() { return commit_responsibility_; }
   void SetCommitResponsibility(FetchResponseFrom fetch_response_from);
+
+  DispatchedPreloadType dispatched_preload_type() {
+    return dispatched_preload_type_;
+  }
+  void SetDispatchedPreloadType(DispatchedPreloadType type);
 
   // Tells if the class is main resource's class or not.
   virtual bool IsMainResourceLoader() = 0;
@@ -84,6 +109,7 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
 
  private:
   FetchResponseFrom commit_responsibility_ = FetchResponseFrom::kNoResponseYet;
+  DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
 };
 }  // namespace content
 

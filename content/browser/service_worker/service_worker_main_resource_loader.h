@@ -116,25 +116,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     // occurred so the request was not handled.
     kCompleted,
   };
-  // Indicates what kind of preload request is dispatched before starting
-  // the ServiceWorker.
-  //
-  // kNone: No preload request is triggered. This is the default state.
-  // kRaceNetworkRequest:
-  //    RaceNetworkRequest is triggered.
-  //    TODO(crbug.com/1420517) This will be passed to the renderer and block
-  //    the corresponding request from the ServiceWorker.
-  // kNavigationPreload:
-  //    Enabled when Navigation Preload is triggered.
-  // kAutoPreload:
-  //    AutoPreload is triggered. This is consumed in the fetch handler or
-  //    the fallback request.
-  enum class DispatchedPreloadType {
-    kNone,
-    kRaceNetworkRequest,
-    kNavigationPreload,
-    kAutoPreload,
-  };
 
   void DidPrepareFetchEvent(scoped_refptr<ServiceWorkerVersion> version,
                             EmbeddedWorkerStatus initial_worker_status);
@@ -263,7 +244,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   // The blob needs to be held while it's read to keep it alive.
   mojo::Remote<blink::mojom::Blob> body_as_blob_;
 
-  DispatchedPreloadType dispatched_preload_type_ = DispatchedPreloadType::kNone;
 
   network::mojom::URLResponseHeadPtr response_head_ =
       network::mojom::URLResponseHead::New();

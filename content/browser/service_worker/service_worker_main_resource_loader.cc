@@ -338,11 +338,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     // RaceNetworkRequest is triggered, Navigation Preload never happens.
     if (race_network_request_mode == kForced) {
       if (StartRaceNetworkRequest(context, active_worker)) {
-        dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
+        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
       }
     } else if (race_network_request_mode != kSkipped &&
                MaybeStartRaceNetworkRequest(context, active_worker)) {
-      dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
+      SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
     } else if (MaybeStartAutoPreload(context, active_worker)) {
       // When the AutoPreload is triggered, set the commit responsibility
       // because the response is always committed by the fetch handler
@@ -350,12 +350,12 @@ void ServiceWorkerMainResourceLoader::StartRequest(
       // handler result is fallback. The fallback case is handled after
       // receiving the fetch handler result.
       SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
-      dispatched_preload_type_ = DispatchedPreloadType::kAutoPreload;
+      SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
       active_worker->set_fetch_handler_bypass_option(
           blink::mojom::ServiceWorkerFetchHandlerBypassOption::kAutoPreload);
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {
-      dispatched_preload_type_ = DispatchedPreloadType::kNavigationPreload;
+      SetDispatchedPreloadType(DispatchedPreloadType::kNavigationPreload);
     }
   }
 
@@ -580,7 +580,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
         // response is not handled yet, ask RaceNetworkRequestURLLoaderClient to
         // handle the response regardless of the response status not to dispatch
         // additional network request for fallback.
-        switch (dispatched_preload_type_) {
+        switch (dispatched_preload_type()) {
           case DispatchedPreloadType::kRaceNetworkRequest:
           case DispatchedPreloadType::kAutoPreload:
             SetCommitResponsibility(FetchResponseFrom::kWithoutServiceWorker);
@@ -590,7 +590,7 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
         }
         break;
       case FetchResponseFrom::kServiceWorker:
-        switch (dispatched_preload_type_) {
+        switch (dispatched_preload_type()) {
           case DispatchedPreloadType::kAutoPreload:
             // If the AutoPreload is triggered and the response is already
             // received, but the fetch result is fallback, set the intermediate
@@ -730,7 +730,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
                                                       response_head_.get());
 
   response_head_->did_service_worker_navigation_preload =
-      dispatched_preload_type_ == DispatchedPreloadType::kNavigationPreload;
+      dispatched_preload_type() == DispatchedPreloadType::kNavigationPreload;
   response_head_->load_timing.receive_headers_start = base::TimeTicks::Now();
   response_head_->load_timing.receive_headers_end =
       response_head_->load_timing.receive_headers_start;

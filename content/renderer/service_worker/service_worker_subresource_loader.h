@@ -275,9 +275,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   blink::mojom::ServiceWorkerFetchEventTimingPtr fetch_event_timing_;
   network::mojom::FetchResponseSource response_source_;
 
-  // True when RaceNetworkRequest is triggered regardless of its result.
-  bool did_start_race_network_request_ = false;
-
   scoped_refptr<network::SharedURLLoaderFactory>
       race_network_request_url_loader_factory_;
   absl::optional<ServiceWorkerRaceNetworkRequestURLLoaderClient>
