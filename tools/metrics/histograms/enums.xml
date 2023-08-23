@@ -81098,6 +81098,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Three fingers swiping up on the trackpad"/>
   <int value="8" label="Entering overview through dev tools"/>
   <int value="9" label="Entering overview in tests"/>
+  <int value="10"
+      label="Entering overview during a switch desk trackpad animation"/>
   <int value="11" label="Entering overview via desk button on shelf"/>
 </enum>
 
