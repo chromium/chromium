@@ -10,4 +10,7 @@ specific_include_rules = {
   "zcr_remote_shell_impl_unittest\.cc": [
     "+chromeos/ui/wm/features.h",
   ],
+  "surface_augmentor_unittest\.cc": [
+    "+ui/accessibility/aura/aura_window_properties.h",
+  ],
 }

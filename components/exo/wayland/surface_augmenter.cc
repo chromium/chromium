@@ -15,6 +15,7 @@
 #include "components/exo/surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,6 +41,12 @@ class AugmentedSurface : public SurfaceObserver {
   explicit AugmentedSurface(Surface* surface) : surface_(surface) {
     surface_->AddSurfaceObserver(this);
     surface_->SetProperty(kSurfaceHasAugmentedSurfaceKey, true);
+    // No need to create AX Tree for augmented surfaces because they're
+    // equivalent to quads.
+    // TODO(b/296326746): Revert this CL and set the property to the root
+    // surface once arc accessibility is refactored.
+    surface_->window()->SetProperty(ui::kAXConsiderInvisibleAndIgnoreChildren,
+                                    true);
     surface_->set_legacy_buffer_release_skippable(true);
   }
   AugmentedSurface(const AugmentedSurface&) = delete;
