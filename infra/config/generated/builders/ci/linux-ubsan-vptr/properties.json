@@ -37,7 +37,7 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux_chromium_ubsan_rel_ng",
+          "builder": "linux-ubsan-vptr",
           "group": "tryserver.chromium.linux"
         }
       ]

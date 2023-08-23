@@ -604,6 +604,16 @@
       "use_remoteexec": true
     }
   },
+  "linux-ubsan-vptr": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "is_ubsan_no_recover": true,
+      "is_ubsan_vptr": true,
+      "use_remoteexec": true
+    }
+  },
   "linux-v4l2-codec-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -892,16 +902,6 @@
       "is_debug": false,
       "is_tsan": true,
       "symbol_level": 1,
-      "use_remoteexec": true
-    }
-  },
-  "linux_chromium_ubsan_rel_ng": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "is_ubsan_no_recover": true,
-      "is_ubsan_vptr": true,
       "use_remoteexec": true
     }
   },

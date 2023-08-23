@@ -1257,6 +1257,9 @@
       'linux-rel-warmed': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage',
       'linux-siso-rel': 'gpu_tests_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_do_typecheck_reclient',
       'linux-ubsan-fyi-rel': 'ubsan_release_bot_reclient',
+      # This is intentionally a release_bot and not a release_trybot to match
+      # the CI configuration, where no debug builder exists.
+      'linux-ubsan-vptr': 'ubsan_vptr_release_bot_reclient',
       'linux-v4l2-codec-rel': 'v4l2_codec_chrome_with_codecs_release_trybot_reclient',
       'linux-viz-rel': 'release_trybot_reclient',
       'linux-wayland-rel': 'gpu_tests_wayland_release_trybot_no_symbols_use_dummy_lastchange_code_coverage_reclient',
@@ -1289,10 +1292,6 @@
 
       'linux_chromium_tsan_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
       'linux_chromium_tsan_siso_rel_ng': 'tsan_disable_nacl_release_trybot_reclient',
-
-      # This is intentionally a release_bot and not a release_trybot to match
-      # the CI configuration, where no debug builder exists.
-      'linux_chromium_ubsan_rel_ng': 'ubsan_vptr_release_bot_reclient',
 
       'linux_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot_reclient',
       'linux_upload_clang': 'release_bot',
