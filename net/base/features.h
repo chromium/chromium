@@ -324,9 +324,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kStaticKeyPinningEnforcement);
 // When enabled, cookies with a non-ASCII domain attribute will be rejected.
 NET_EXPORT BASE_DECLARE_FEATURE(kCookieDomainRejectNonASCII);
 
-// Blocks the 'Set-Cookie' request header on outbound fetch requests.
-NET_EXPORT BASE_DECLARE_FEATURE(kBlockSetCookieHeader);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 NET_EXPORT BASE_DECLARE_FEATURE(kSupportPartitionedBlobUrl);
 

@@ -271,10 +271,6 @@ BASE_FEATURE(kCookieDomainRejectNonASCII,
              "CookieDomainRejectNonASCII",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kBlockSetCookieHeader,
-             "BlockSetCookieHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables partitioning of third party storage (IndexedDB, CacheStorage, etc.)
 // by the top level site to reduce fingerprinting.
 BASE_FEATURE(kThirdPartyStoragePartitioning,

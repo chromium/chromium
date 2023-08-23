@@ -304,6 +304,7 @@ const char* const kForbiddenHeaderFields[] = {
     "keep-alive",
     "origin",
     "referer",
+    "set-cookie",
     "te",
     "trailer",
     "transfer-encoding",
@@ -353,11 +354,6 @@ bool HttpUtil::IsSafeHeader(base::StringPiece name, base::StringPiece value) {
   for (const char* field : kForbiddenHeaderFields) {
     if (base::EqualsCaseInsensitiveASCII(name, field))
       return false;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kBlockSetCookieHeader) &&
-      base::EqualsCaseInsensitiveASCII(name, "set-cookie")) {
-    return false;
   }
 
   if (base::FeatureList::IsEnabled(features::kBlockNewForbiddenHeaders)) {

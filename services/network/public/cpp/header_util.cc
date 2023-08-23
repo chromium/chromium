@@ -9,7 +9,6 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "net/base/features.h"
 #include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -53,6 +52,9 @@ const char* kUnsafeHeaders[] = {
     // Forbidden by the fetch spec.
     net::HttpRequestHeaders::kTransferEncoding,
 
+    // Semantically a response header, so not useful on requests.
+    "Set-Cookie",
+
     // TODO(mmenke): Figure out what to do about the remaining headers:
     // Connection, Cookie, Date, Expect, Referer, Via.
 };
@@ -76,12 +78,6 @@ bool IsRequestHeaderSafe(const base::StringPiece& key,
   for (const auto* header : kUnsafeHeaders) {
     if (base::EqualsCaseInsensitiveASCII(header, key))
       return false;
-  }
-
-  // 'Set-Cookie' is semantically a response header, so not useuful on requests.
-  if (base::FeatureList::IsEnabled(net::features::kBlockSetCookieHeader) &&
-      base::EqualsCaseInsensitiveASCII("Set-Cookie", key)) {
-    return false;
   }
 
   for (const auto& header : kUnsafeHeaderValues) {
