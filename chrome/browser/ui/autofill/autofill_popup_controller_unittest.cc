@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -222,17 +221,21 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     autofill_popup_view_ = std::make_unique<NiceMock<MockAutofillPopupView>>();
 
 #if BUILDFLAG(IS_ANDROID)
-    autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
-        external_delegate_->GetWeakPtrForTest(), web_contents(), gfx::RectF(),
-        show_pwd_migration_warning_callback_.Get());
+    autofill_popup_controller_ =
+        (new NiceMock<TestAutofillPopupController>(
+             external_delegate_->GetWeakPtrForTest(), web_contents(),
+             gfx::RectF(), show_pwd_migration_warning_callback_.Get()))
+            ->GetWeakPtr();
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(), mock_cc_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
 #else
-    autofill_popup_controller_ = new NiceMock<TestAutofillPopupController>(
-        external_delegate_->GetWeakPtrForTest(), web_contents(), gfx::RectF(),
-        base::DoNothing());
+    autofill_popup_controller_ =
+        (new NiceMock<TestAutofillPopupController>(
+             external_delegate_->GetWeakPtrForTest(), web_contents(),
+             gfx::RectF(), base::DoNothing()))
+            ->GetWeakPtr();
 #endif
     autofill_popup_controller_->SetViewForTesting(
         autofill_popup_view()->GetWeakPtr());
@@ -242,7 +245,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     // This will make sure the controller and the view (if any) are both
     // cleaned up.
     if (autofill_popup_controller_) {
-      autofill_popup_controller_->DoHide();
+      popup_controller().DoHide();
     }
 
     external_delegate_.reset();
@@ -272,7 +275,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   }
 
   TestAutofillPopupController& popup_controller() {
-    return *autofill_popup_controller_;
+    return static_cast<TestAutofillPopupController&>(
+        *autofill_popup_controller_);
   }
 
   NiceMock<MockAutofillExternalDelegate>* delegate() {
@@ -332,8 +336,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
       password_manager::metrics_util::PasswordMigrationWarningTriggers)>>
       show_pwd_migration_warning_callback_;
 #endif
-  raw_ptr<NiceMock<TestAutofillPopupController>, AcrossTasksDanglingUntriaged>
-      autofill_popup_controller_ = nullptr;
+  base::WeakPtr<AutofillPopupControllerImpl> autofill_popup_controller_;
 };
 
 TEST_F(AutofillPopupControllerUnitTest, RemoveSuggestion) {
