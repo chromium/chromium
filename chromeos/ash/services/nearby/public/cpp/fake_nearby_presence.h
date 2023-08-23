@@ -13,6 +13,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/mojom/base/absl_status.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using NearbyPresenceMojom = ::ash::nearby::presence::mojom::NearbyPresence;
@@ -65,7 +66,7 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
 
   void SetGenerateCredentialsResponse(
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
-      mojom::StatusCode status) {
+      mojo_base::mojom::AbslStatusCode status) {
     generated_shared_credentials_response_ = std::move(shared_credentials);
     generate_credentials_response_status_ = status;
   }
@@ -78,7 +79,8 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
     update_local_device_metadata_callback_ = std::move(callback);
   }
 
-  void SetUpdateRemoteCredentialsStatus(mojom::StatusCode status) {
+  void SetUpdateRemoteCredentialsStatus(
+      mojo_base::mojom::AbslStatusCode status) {
     update_remote_shared_credentials_status_ = status;
   }
 
@@ -88,7 +90,7 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
 
   void SetLocalSharedCredentialsResponse(
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
-      mojom::StatusCode status) {
+      mojo_base::mojom::AbslStatusCode status) {
     local_shared_credentials_response_ = std::move(shared_credentials);
     get_local_shared_credential_status_ = status;
   }
@@ -108,13 +110,13 @@ class FakeNearbyPresence : public mojom::NearbyPresence,
   std::vector<mojom::SharedCredentialPtr>
       generated_shared_credentials_response_;
   std::vector<mojom::SharedCredentialPtr> local_shared_credentials_response_;
-  mojom::StatusCode generate_credentials_response_status_ =
-      mojom::StatusCode::kFailure;
-  mojom::StatusCode update_remote_shared_credentials_status_ =
-      mojom::StatusCode::kOk;
+  mojo_base::mojom::AbslStatusCode generate_credentials_response_status_ =
+      mojo_base::mojom::AbslStatusCode::kNotFound;
+  mojo_base::mojom::AbslStatusCode update_remote_shared_credentials_status_ =
+      mojo_base::mojom::AbslStatusCode::kOk;
   base::OnceClosure on_disconnect_callback_;
-  mojom::StatusCode get_local_shared_credential_status_ =
-      mojom::StatusCode::kOk;
+  mojo_base::mojom::AbslStatusCode get_local_shared_credential_status_ =
+      mojo_base::mojom::AbslStatusCode::kOk;
   base::WeakPtrFactory<FakeNearbyPresence> weak_ptr_factory_{this};
 };
 

@@ -89,7 +89,7 @@ class NearbyPresenceTest : public testing::Test,
       base::OnceClosure on_complete,
       mojo::PendingRemote<::ash::nearby::presence::mojom::ScanSession>
           scan_session,
-      ash::nearby::presence::mojom::StatusCode status) {
+      mojo_base::mojom::AbslStatusCode status) {
     was_on_scan_started_called = true;
     returned_status_ = status;
     if (scan_session_) {
@@ -155,7 +155,7 @@ class NearbyPresenceTest : public testing::Test,
  protected:
   base::test::TaskEnvironment task_environment_;
   bool was_on_scan_started_called = false;
-  ash::nearby::presence::mojom::StatusCode returned_status_;
+  mojo_base::mojom::AbslStatusCode returned_status_;
   mojo::Remote<mojom::NearbyPresence> remote_;
 
   mojo::Receiver<::ash::nearby::presence::mojom::ScanObserver> scan_observer_{
@@ -207,8 +207,7 @@ TEST_F(NearbyPresenceTest, RunStartScan_StatusNotOk) {
 
   EXPECT_TRUE(was_on_scan_started_called);
   EXPECT_FALSE(ScanSessionRemoteIsBound());
-  EXPECT_EQ(ash::nearby::presence::mojom::StatusCode::kFailure,
-            returned_status_);
+  EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kCancelled, returned_status_);
 }
 
 TEST_F(NearbyPresenceTest, RunStartScan_DeviceFoundCallback) {
@@ -327,12 +326,12 @@ TEST_F(NearbyPresenceTest,
       BuildTestMetadata(),
       base::BindLambdaForTesting(
           [&](std::vector<mojom::SharedCredentialPtr> shared_credentials,
-              mojom::StatusCode status) {
+              mojo_base::mojom::AbslStatusCode status) {
             EXPECT_EQ(3u, shared_credentials.size());
             EXPECT_EQ(kSecretId1, shared_credentials[0]->secret_id);
             EXPECT_EQ(kSecretId2, shared_credentials[1]->secret_id);
             EXPECT_EQ(kSecretId3, shared_credentials[2]->secret_id);
-            EXPECT_EQ(mojom::StatusCode::kOk, status);
+            EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kOk, status);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -350,9 +349,9 @@ TEST_F(NearbyPresenceTest,
       BuildTestMetadata(),
       base::BindLambdaForTesting(
           [&](std::vector<mojom::SharedCredentialPtr> shared_credentials,
-              mojom::StatusCode status) {
+              mojo_base::mojom::AbslStatusCode status) {
             EXPECT_TRUE(shared_credentials.empty());
-            EXPECT_EQ(mojom::StatusCode::kFailure, status);
+            EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kCancelled, status);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -379,8 +378,8 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Success) {
   base::RunLoop run_loop;
   nearby_presence_->UpdateRemoteSharedCredentials(
       std::move(remote_creds), kAccountName,
-      base::BindLambdaForTesting([&](mojom::StatusCode status) {
-        EXPECT_EQ(mojom::StatusCode::kOk, status);
+      base::BindLambdaForTesting([&](mojo_base::mojom::AbslStatusCode status) {
+        EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kOk, status);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -417,8 +416,8 @@ TEST_F(NearbyPresenceTest, UpdateRemoteSharedCredentials_Fail) {
   base::RunLoop run_loop;
   nearby_presence_->UpdateRemoteSharedCredentials(
       std::move(remote_creds), kAccountName,
-      base::BindLambdaForTesting([&](mojom::StatusCode status) {
-        EXPECT_EQ(mojom::StatusCode::kFailure, status);
+      base::BindLambdaForTesting([&](mojo_base::mojom::AbslStatusCode status) {
+        EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kCancelled, status);
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -449,8 +448,8 @@ TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Success) {
       kAccountName,
       base::BindLambdaForTesting(
           [&](std::vector<mojom::SharedCredentialPtr> shared_creds,
-              mojom::StatusCode status) {
-            EXPECT_EQ(mojom::StatusCode::kOk, status);
+              mojo_base::mojom::AbslStatusCode status) {
+            EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kOk, status);
             EXPECT_FALSE(shared_creds.empty());
             EXPECT_EQ(3u, shared_creds.size());
             EXPECT_EQ(kSecretId1, shared_creds[0]->secret_id);
@@ -472,8 +471,8 @@ TEST_F(NearbyPresenceTest, GetLocalSharedCredentials_Failure) {
       kAccountName,
       base::BindLambdaForTesting(
           [&](std::vector<mojom::SharedCredentialPtr> shared_creds,
-              mojom::StatusCode status) {
-            EXPECT_EQ(mojom::StatusCode::kFailure, status);
+              mojo_base::mojom::AbslStatusCode status) {
+            EXPECT_EQ(mojo_base::mojom::AbslStatusCode::kCancelled, status);
             EXPECT_TRUE(shared_creds.empty());
             run_loop.Quit();
           }));

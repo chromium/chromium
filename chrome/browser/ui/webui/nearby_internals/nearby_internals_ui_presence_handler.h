@@ -53,7 +53,7 @@ class NearbyInternalsPresenceHandler
   void OnScanStarted(
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
           scan_session,
-      ash::nearby::presence::mojom::StatusCode status);
+      ash::nearby::presence::NearbyPresenceService::StatusCode status);
   void OnNearbyPresenceCredentialManagerInitialized();
 
   void HandleConnectToPresenceDevice(const base::Value::List& args);

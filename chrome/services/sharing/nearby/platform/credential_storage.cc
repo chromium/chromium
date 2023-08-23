@@ -58,10 +58,8 @@ void CredentialStorage::GetPublicCredentials(
 void CredentialStorage::OnCredentialsSaved(
     nearby::presence::SaveCredentialsResultCallback
         on_credentials_saved_callback,
-    ash::nearby::presence::mojom::StatusCode credential_save_result) {
-  // TODO(b/297097956): Use AbslStatusCode in callback rather than StatusCode
-  // once NP migration to this type lands.
-  if (credential_save_result == ash::nearby::presence::mojom::StatusCode::kOk) {
+    mojo_base::mojom::AbslStatusCode credential_save_result) {
+  if (credential_save_result == mojo_base::mojom::AbslStatusCode::kOk) {
     std::move(on_credentials_saved_callback)
         .credentials_saved_cb(absl::OkStatus());
   } else {

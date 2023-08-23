@@ -253,10 +253,11 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials) {
     base::RunLoop run_loop;
     credential_storage_->SaveCredentials(
         std::move(credentials),
-        base::BindLambdaForTesting([&run_loop](mojom::StatusCode status) {
-          EXPECT_EQ(status, mojom::StatusCode::kOk);
-          run_loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+              run_loop.Quit();
+            }));
 
     private_db_->UpdateCallback(true);
     run_loop.Run();

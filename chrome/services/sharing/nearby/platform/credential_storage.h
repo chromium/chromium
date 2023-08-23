@@ -49,7 +49,7 @@ class CredentialStorage : public nearby::api::CredentialStorage {
   void OnCredentialsSaved(
       nearby::presence::SaveCredentialsResultCallback
           on_credentials_saved_callback,
-      ash::nearby::presence::mojom::StatusCode credential_save_result);
+      mojo_base::mojom::AbslStatusCode credential_save_result);
 
   const mojo::SharedRemote<
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>

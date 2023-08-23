@@ -95,10 +95,9 @@ class FakeNearbyPresenceCredentialStorage
       ash::nearby::presence::mojom::NearbyPresenceCredentialStorage::
           SaveCredentialsCallback callback) override {
     if (should_credentials_successfully_save_) {
-      std::move(callback).Run(ash::nearby::presence::mojom::StatusCode::kOk);
+      std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kOk);
     } else {
-      std::move(callback).Run(
-          ash::nearby::presence::mojom::StatusCode::kFailure);
+      std::move(callback).Run(mojo_base::mojom::AbslStatusCode::kUnknown);
     }
   }
 

@@ -372,8 +372,8 @@ void NearbyPresenceCredentialManagerImpl::OnRegistrationRpcFailure(
 
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsGenerated(
     std::vector<mojom::SharedCredentialPtr> shared_credentials,
-    mojom::StatusCode status) {
-  if (status != mojom::StatusCode::kOk) {
+    mojo_base::mojom::AbslStatusCode status) {
+  if (status != mojo_base::mojom::AbslStatusCode::kOk) {
     OnFirstTimeRegistrationComplete(metrics::FirstTimeRegistrationResult::
                                         kLocalCredentialGenerationFailure);
     return;
@@ -456,8 +456,8 @@ void NearbyPresenceCredentialManagerImpl::OnFirstTimeCredentialsDownload(
 }
 
 void NearbyPresenceCredentialManagerImpl::OnFirstTimeRemoteCredentialsSaved(
-    mojom::StatusCode status) {
-  if (status != mojom::StatusCode::kOk) {
+    mojo_base::mojom::AbslStatusCode status) {
+  if (status != mojo_base::mojom::AbslStatusCode::kOk) {
     OnFirstTimeRegistrationComplete(
         metrics::FirstTimeRegistrationResult::kSaveRemoteCredentialsFailure);
     return;
@@ -496,9 +496,9 @@ void NearbyPresenceCredentialManagerImpl::StartDailySync() {
 
 void NearbyPresenceCredentialManagerImpl::OnGetLocalSharedCredentials(
     std::vector<mojom::SharedCredentialPtr> shared_credentials,
-    mojom::StatusCode status) {
+    mojo_base::mojom::AbslStatusCode status) {
   // On failures, exponentially retry the daily sync flow.
-  if (status != mojom::StatusCode::kOk) {
+  if (status != mojo_base::mojom::AbslStatusCode::kOk) {
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
   }
@@ -598,9 +598,9 @@ void NearbyPresenceCredentialManagerImpl::OnDailySyncCredentialDownload(
 }
 
 void NearbyPresenceCredentialManagerImpl::OnDailySyncRemoteCredentialsSaved(
-    mojom::StatusCode status) {
+    mojo_base::mojom::AbslStatusCode status) {
   // On failures, exponentially retry the daily sync flow.
-  if (status != mojom::StatusCode::kOk) {
+  if (status != mojo_base::mojom::AbslStatusCode::kOk) {
     daily_credential_sync_scheduler_->HandleResult(/*success=*/false);
     return;
   }

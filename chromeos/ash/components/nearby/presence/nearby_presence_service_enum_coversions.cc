@@ -48,4 +48,44 @@ NearbyPresenceService::PresenceIdentityType ConvertToMojomIdentityType(
   }
 }
 
+NearbyPresenceService::StatusCode ConvertToPresenceStatus(
+    mojo_base::mojom::AbslStatusCode status_code) {
+  switch (status_code) {
+    case mojo_base::mojom::AbslStatusCode::kOk:
+      return NearbyPresenceService::StatusCode::kAbslOk;
+    case mojo_base::mojom::AbslStatusCode::kCancelled:
+      return NearbyPresenceService::StatusCode::kAbslCancelled;
+    case mojo_base::mojom::AbslStatusCode::kUnknown:
+      return NearbyPresenceService::StatusCode::kAbslUnknown;
+    case mojo_base::mojom::AbslStatusCode::kInvalidArgument:
+      return NearbyPresenceService::StatusCode::kAbslInvalidArgument;
+    case mojo_base::mojom::AbslStatusCode::kDeadlineExceeded:
+      return NearbyPresenceService::StatusCode::kAbslDeadlineExceeded;
+    case mojo_base::mojom::AbslStatusCode::kNotFound:
+      return NearbyPresenceService::StatusCode::kAbslNotFound;
+    case mojo_base::mojom::AbslStatusCode::kAlreadyExists:
+      return NearbyPresenceService::StatusCode::kAbslAlreadyExists;
+    case mojo_base::mojom::AbslStatusCode::kPermissionDenied:
+      return NearbyPresenceService::StatusCode::kAbslPermissionDenied;
+    case mojo_base::mojom::AbslStatusCode::kResourceExhausted:
+      return NearbyPresenceService::StatusCode::kAbslResourceExhausted;
+    case mojo_base::mojom::AbslStatusCode::kFailedPrecondition:
+      return NearbyPresenceService::StatusCode::kAbslFailedPrecondition;
+    case mojo_base::mojom::AbslStatusCode::kAborted:
+      return NearbyPresenceService::StatusCode::kAbslAborted;
+    case mojo_base::mojom::AbslStatusCode::kOutOfRange:
+      return NearbyPresenceService::StatusCode::kAbslOutOfRange;
+    case mojo_base::mojom::AbslStatusCode::kUnimplemented:
+      return NearbyPresenceService::StatusCode::kAbslUnimplemented;
+    case mojo_base::mojom::AbslStatusCode::kInternal:
+      return NearbyPresenceService::StatusCode::kAbslInternal;
+    case mojo_base::mojom::AbslStatusCode::kUnavailable:
+      return NearbyPresenceService::StatusCode::kAbslUnavailable;
+    case mojo_base::mojom::AbslStatusCode::kDataLoss:
+      return NearbyPresenceService::StatusCode::kAbslDataLoss;
+    case mojo_base::mojom::AbslStatusCode::kUnauthenticated:
+      return NearbyPresenceService::StatusCode::kAbslUnauthenticated;
+  }
+}
+
 }  // namespace ash::nearby::presence

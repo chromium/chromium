@@ -38,7 +38,7 @@ void FakeNearbyPresence::StartScan(
 
   std::move(start_scan_callback_)
       .Run(std::move(scan_session_remote_),
-           /*status=*/ash::nearby::presence::mojom::StatusCode::kOk);
+           /*status=*/mojo_base::mojom::AbslStatusCode::kOk);
 }
 
 void FakeNearbyPresence::OnDisconnect() {

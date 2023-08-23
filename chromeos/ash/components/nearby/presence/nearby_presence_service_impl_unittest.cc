@@ -153,7 +153,7 @@ class NearbyPresenceServiceImplTest : public testing::Test {
       base::OnceClosure on_complete,
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
           scan_session,
-      ash::nearby::presence::mojom::StatusCode status) {
+      ash::nearby::presence::NearbyPresenceService::StatusCode status) {
     scan_session_ = std::move(scan_session);
     std::move(on_complete).Run();
   }

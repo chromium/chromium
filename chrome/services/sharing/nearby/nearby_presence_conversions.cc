@@ -113,6 +113,48 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
       return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }
 }
+mojo_base::mojom::AbslStatusCode CovertStatusToMojomStatus(
+    absl::Status status) {
+  switch (status.code()) {
+    case absl::StatusCode::kOk:
+      return mojo_base::mojom::AbslStatusCode::kOk;
+    case absl::StatusCode::kCancelled:
+      return mojo_base::mojom::AbslStatusCode::kCancelled;
+    case absl::StatusCode::kUnknown:
+      return mojo_base::mojom::AbslStatusCode::kUnknown;
+    case absl::StatusCode::kInvalidArgument:
+      return mojo_base::mojom::AbslStatusCode::kInvalidArgument;
+    case absl::StatusCode::kDeadlineExceeded:
+      return mojo_base::mojom::AbslStatusCode::kDeadlineExceeded;
+    case absl::StatusCode::kNotFound:
+      return mojo_base::mojom::AbslStatusCode::kNotFound;
+    case absl::StatusCode::kAlreadyExists:
+      return mojo_base::mojom::AbslStatusCode::kAlreadyExists;
+    case absl::StatusCode::kPermissionDenied:
+      return mojo_base::mojom::AbslStatusCode::kPermissionDenied;
+    case absl::StatusCode::kResourceExhausted:
+      return mojo_base::mojom::AbslStatusCode::kResourceExhausted;
+    case absl::StatusCode::kFailedPrecondition:
+      return mojo_base::mojom::AbslStatusCode::kFailedPrecondition;
+    case absl::StatusCode::kAborted:
+      return mojo_base::mojom::AbslStatusCode::kAborted;
+    case absl::StatusCode::kOutOfRange:
+      return mojo_base::mojom::AbslStatusCode::kOutOfRange;
+    case absl::StatusCode::kUnimplemented:
+      return mojo_base::mojom::AbslStatusCode::kUnimplemented;
+    case absl::StatusCode::kInternal:
+      return mojo_base::mojom::AbslStatusCode::kInternal;
+    case absl::StatusCode::kUnavailable:
+      return mojo_base::mojom::AbslStatusCode::kUnavailable;
+    case absl::StatusCode::kDataLoss:
+      return mojo_base::mojom::AbslStatusCode::kDataLoss;
+    case absl::StatusCode::kUnauthenticated:
+      return mojo_base::mojom::AbslStatusCode::kUnauthenticated;
+    case absl::StatusCode::
+        kDoNotUseReservedForFutureExpansionUseDefaultInSwitchInstead_:
+      NOTREACHED_NORETURN();
+  }
+}
 
 mojom::ActionType ConvertActionTypeToMojom(uint32_t action) {
   switch (::nearby::presence::ActionBit(action)) {

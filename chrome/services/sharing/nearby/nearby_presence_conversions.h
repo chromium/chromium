@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_NEARBY_PRESENCE_CONVERSIONS_H_
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom-forward.h"
+#include "mojo/public/mojom/base/absl_status.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/metadata.pb.h"
@@ -27,6 +28,7 @@ mojom::IdentityType ConvertIdentityTypeToMojom(
     mojom::IdentityType identity_type);
 
 mojom::ActionType ConvertActionTypeToMojom(uint32_t action);
+mojo_base::mojom::AbslStatusCode CovertStatusToMojomStatus(absl::Status status);
 
 mojom::SharedCredentialPtr SharedCredentialToMojom(
     ::nearby::internal::SharedCredential shared_credential);

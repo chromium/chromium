@@ -109,12 +109,15 @@ NearbyPresenceServiceImpl::~NearbyPresenceServiceImpl() = default;
 void NearbyPresenceServiceImpl::StartScan(
     ScanFilter scan_filter,
     ScanDelegate* scan_delegate,
-    base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
+    base::OnceCallback<void(std::unique_ptr<ScanSession>,
+                            NearbyPresenceService::StatusCode)>
         on_start_scan_callback) {
   if (!SetProcessReference()) {
     LOG(ERROR) << "Failed to create process reference.";
     std::move(on_start_scan_callback)
-        .Run(/*scan_session=*/nullptr, PresenceStatus::kFailure);
+        .Run(/*scan_session=*/nullptr,
+             /*status=*/NearbyPresenceService::StatusCode::
+                 kFailedToStartProcess);
     return;
   }
 
@@ -175,19 +178,21 @@ void NearbyPresenceServiceImpl::UpdateCredentials() {
 
 void NearbyPresenceServiceImpl::OnScanStarted(
     ScanDelegate* scan_delegate,
-    base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
+    base::OnceCallback<void(std::unique_ptr<ScanSession>,
+                            NearbyPresenceService::StatusCode)>
         on_start_scan_callback,
     mojo::PendingRemote<mojom::ScanSession> pending_remote,
-    PresenceStatus status) {
+    mojo_base::mojom::AbslStatusCode status) {
   std::unique_ptr<ScanSession> scan_session;
-  if (status == PresenceStatus::kOk) {
+  if (status == mojo_base::mojom::AbslStatusCode::kOk) {
     scan_session = std::make_unique<ScanSession>(
         std::move(pending_remote),
         base::BindOnce(&NearbyPresenceServiceImpl::OnScanSessionDisconnect,
                        weak_ptr_factory_.GetWeakPtr(), scan_delegate));
     scan_delegate_set_.insert(scan_delegate);
   }
-  std::move(on_start_scan_callback).Run(std::move(scan_session), status);
+  std::move(on_start_scan_callback)
+      .Run(std::move(scan_session), ConvertToPresenceStatus(status));
 }
 
 void NearbyPresenceServiceImpl::OnScanSessionDisconnect(

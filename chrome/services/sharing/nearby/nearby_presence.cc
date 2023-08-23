@@ -23,19 +23,10 @@ void PostStartScanCallbackOnSequence(
     ash::nearby::presence::NearbyPresence::StartScanCallback callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     mojo::PendingRemote<ash::nearby::presence::mojom::ScanSession> scan_session,
-    ash::nearby::presence::mojom::StatusCode status) {
+    mojo_base::mojom::AbslStatusCode status) {
   task_runner->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(scan_session), status));
-}
-
-ash::nearby::presence::mojom::StatusCode CovertStatusToMojomStatus(
-    absl::Status status) {
-  if (status.code() == absl::StatusCode::kOk) {
-    return ash::nearby::presence::mojom::StatusCode::kOk;
-  } else {
-    return ash::nearby::presence::mojom::StatusCode::kFailure;
-  }
 }
 
 }  // namespace

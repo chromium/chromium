@@ -196,8 +196,9 @@ void NearbyInternalsPresenceHandler::HandleFirstTimePresenceFlow(
 void NearbyInternalsPresenceHandler::OnScanStarted(
     std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
         scan_session,
-    ash::nearby::presence::mojom::StatusCode status) {
-  if (status == ash::nearby::presence::mojom::StatusCode::kOk) {
+    ash::nearby::presence::NearbyPresenceService::StatusCode status) {
+  if (status ==
+      ash::nearby::presence::NearbyPresenceService::StatusCode::kAbslOk) {
     scan_session_ = std::move(scan_session);
     NS_LOG(VERBOSE) << __func__
                     << ": ScanSession remote successfully returned and bound.";

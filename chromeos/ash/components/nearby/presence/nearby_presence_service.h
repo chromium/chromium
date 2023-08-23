@@ -20,7 +20,6 @@ namespace ash::nearby::presence {
 // interface.
 class NearbyPresenceService {
  public:
-  using PresenceStatus = ash::nearby::presence::mojom::StatusCode;
   using PresenceIdentityType = ash::nearby::presence::mojom::IdentityType;
   using PresenceFilter = ash::nearby::presence::mojom::PresenceScanFilter;
 
@@ -45,6 +44,31 @@ class NearbyPresenceService {
     kFastPairSass = 14,
     kTapToTransfer = 15,
     kLast
+  };
+
+  // This is a super set of the absl status code found in
+  // //mojo/public/mojom/base/absl_status.mojom with the only difference being
+  // the addition of kFailedToStartProcess. Any updates to absl_status should be
+  // reflected here.
+  enum class StatusCode {
+    kAbslOk = 0,
+    kAbslCancelled = 1,
+    kAbslUnknown = 2,
+    kAbslInvalidArgument = 3,
+    kAbslDeadlineExceeded = 4,
+    kAbslNotFound = 5,
+    kAbslAlreadyExists = 6,
+    kAbslPermissionDenied = 7,
+    kAbslResourceExhausted = 8,
+    kAbslFailedPrecondition = 9,
+    kAbslAborted = 10,
+    kAbslOutOfRange = 11,
+    kAbslUnimplemented = 12,
+    kAbslInternal = 13,
+    kAbslUnavailable = 14,
+    kAbslDataLoss = 15,
+    kAbslUnauthenticated = 16,
+    kFailedToStartProcess = 17,
   };
 
   // TODO(b/276642472): Move PresenceDevice into its own class and file, to
@@ -118,7 +142,7 @@ class NearbyPresenceService {
   virtual void StartScan(
       ScanFilter scan_filter,
       ScanDelegate* scan_delegate,
-      base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
+      base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
           on_start_scan_callback) = 0;
 
   virtual void Initialize(base::OnceClosure on_initialized_callback) = 0;

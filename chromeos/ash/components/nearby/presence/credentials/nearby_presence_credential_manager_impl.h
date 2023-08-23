@@ -164,10 +164,11 @@ class NearbyPresenceCredentialManagerImpl
   // changes.
   void OnFirstTimeCredentialsGenerated(
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
-      mojom::StatusCode status);
+      mojo_base::mojom::AbslStatusCode status);
 
   // Callback for first time remote credential saving in the NP library.
-  void OnFirstTimeRemoteCredentialsSaved(mojom::StatusCode status);
+  void OnFirstTimeRemoteCredentialsSaved(
+      mojo_base::mojom::AbslStatusCode status);
 
   // Callbacks for credential upload/download during first time
   // server registration and daily syncs.
@@ -182,7 +183,7 @@ class NearbyPresenceCredentialManagerImpl
   // daily syncs.
   void OnGetLocalSharedCredentials(
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
-      mojom::StatusCode status);
+      mojo_base::mojom::AbslStatusCode status);
 
   // Callbacks for uploading/downloading credentials as part of the
   // daily syncs.
@@ -193,7 +194,8 @@ class NearbyPresenceCredentialManagerImpl
 
   // Callback for remote credential saving in the NP library that is part of
   // the daily sync flow.
-  void OnDailySyncRemoteCredentialsSaved(mojom::StatusCode status);
+  void OnDailySyncRemoteCredentialsSaved(
+      mojo_base::mojom::AbslStatusCode status);
 
   // Helper functions to trigger uploading credentials in the NP server. The
   // helper functions are used for first time server registration to upload

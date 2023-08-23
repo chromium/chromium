@@ -140,7 +140,7 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
 
     // Simulate the credentials being generated in the NP library.
     fake_nearby_presence_.SetGenerateCredentialsResponse(
-        BuildSharedCredentials(), mojom::StatusCode::kOk);
+        BuildSharedCredentials(), mojo_base::mojom::AbslStatusCode::kOk);
   }
 
   void TearDown() override {
@@ -243,17 +243,17 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
       // Simulate the local device credentials stored in the NP library and
       // retrieved successfully.
       fake_nearby_presence_.SetLocalSharedCredentialsResponse(
-          BuildSharedCredentials(), mojom::StatusCode::kOk);
+          BuildSharedCredentials(), mojo_base::mojom::AbslStatusCode::kOk);
     } else {
       // Simulate the local device credentials retrieved unsuccessfully.
       fake_nearby_presence_.SetLocalSharedCredentialsResponse(
-          /*credentials=*/{}, mojom::StatusCode::kFailure);
+          /*credentials=*/{}, mojo_base::mojom::AbslStatusCode::kUnknown);
     }
 
     // Simulate the remote device credentials being successfully set in the
     // NP library.
     fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
-        mojom::StatusCode::kOk);
+        mojo_base::mojom::AbslStatusCode::kOk);
 
     base::RunLoop update_local_device_metadata_run_loop;
     fake_nearby_presence_.SetUpdateLocalDeviceMetadataCallback(
@@ -489,7 +489,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest, ServerRegistrationFailure) {
 TEST_F(NearbyPresenceCredentialManagerImplTest, CredentialGenerationFailure) {
   // Simulate the credentials being failed to be generated in the NP library.
   fake_nearby_presence_.SetGenerateCredentialsResponse(
-      {}, mojom::StatusCode::kFailure);
+      {}, mojo_base::mojom::AbslStatusCode::kFailedPrecondition);
 
   base::RunLoop create_credential_manager_run_loop;
   CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
@@ -685,7 +685,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   // Simulate the remote device credentials being unsuccessfully set in the
   // NP library.
   fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
-      mojom::StatusCode::kFailure);
+      mojo_base::mojom::AbslStatusCode::kDeadlineExceeded);
 
   base::RunLoop create_credential_manager_run_loop;
   CreateCredentialManager(create_credential_manager_run_loop.QuitClosure());
@@ -919,7 +919,7 @@ TEST_F(NearbyPresenceCredentialManagerImplTest,
   // Simulate the remote device credentials being unsuccessfully set in the
   // NP library.
   fake_nearby_presence_.SetUpdateRemoteCredentialsStatus(
-      mojom::StatusCode::kFailure);
+      mojo_base::mojom::AbslStatusCode::kUnknown);
 
   // Simulate a successful download of credentials from the server.
   TriggerDownloadRemoteCredentialSuccess();

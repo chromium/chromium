@@ -49,7 +49,7 @@ class NearbyPresenceServiceImpl
   void StartScan(
       ScanFilter scan_filter,
       ScanDelegate* scan_delegate,
-      base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
+      base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
           on_start_scan_callback) override;
   void Initialize(base::OnceClosure on_initialized_callback) override;
   void UpdateCredentials() override;
@@ -57,10 +57,10 @@ class NearbyPresenceServiceImpl
  private:
   void OnScanStarted(
       ScanDelegate* scan_delegate,
-      base::OnceCallback<void(std::unique_ptr<ScanSession>, PresenceStatus)>
+      base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
           on_start_scan_callback,
       mojo::PendingRemote<mojom::ScanSession> pending_remote,
-      PresenceStatus status);
+      mojo_base::mojom::AbslStatusCode status);
   void OnScanSessionDisconnect(ScanDelegate* scan_delegate);
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason);

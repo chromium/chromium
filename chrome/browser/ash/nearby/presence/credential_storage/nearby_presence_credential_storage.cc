@@ -102,13 +102,13 @@ void NearbyPresenceCredentialStorage::SaveCredentials(
 void NearbyPresenceCredentialStorage::OnPrivateCredentialsSaved(
     SaveCredentialsCallback on_save_credential_callback,
     bool success) {
-  mojom::StatusCode save_status;
+  mojo_base::mojom::AbslStatusCode save_status;
   if (success) {
-    save_status = mojom::StatusCode::kOk;
+    save_status = mojo_base::mojom::AbslStatusCode::kOk;
   } else {
     // TODO(b/287334363): Emit a failure metric.
     LOG(ERROR) << __func__ << ": failed to save private credentials";
-    save_status = mojom::StatusCode::kFailure;
+    save_status = mojo_base::mojom::AbslStatusCode::kUnknown;
   }
 
   // TODO(b/287334195): Attempt to save public credentials if private
