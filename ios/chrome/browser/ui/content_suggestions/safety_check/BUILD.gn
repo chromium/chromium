@@ -16,9 +16,9 @@ source_set("safety_check") {
     "utils.h",
     "utils.mm",
   ]
+  public_deps = [ "//base" ]
   deps = [
     ":constants",
-    "//base",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common:features",
     "//components/version_info",

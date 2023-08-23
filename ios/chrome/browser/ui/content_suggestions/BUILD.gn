@@ -212,6 +212,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:set_up_list",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
+    "//ios/chrome/browser/passwords:password_checkup_utils",
     "//ios/chrome/browser/safety_check:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

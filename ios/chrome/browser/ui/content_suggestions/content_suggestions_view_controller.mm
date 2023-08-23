@@ -7,11 +7,13 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/time/time.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -53,6 +55,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
@@ -849,6 +852,18 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 
 - (void)neverShowModuleType:(ContentSuggestionsModuleType)type {
   [self.audience neverShowModuleType:type];
+}
+
+- (NSString*)subtitleStringForModule:(ContentSuggestionsModuleType)type {
+  if (type == ContentSuggestionsModuleType::kSafetyCheck ||
+      type == ContentSuggestionsModuleType::kSafetyCheckMultiRow) {
+    absl::optional<base::Time> lastRunTime =
+        absl::optional<base::Time>(_safetyCheckState.lastRunTime);
+
+    return password_manager::FormatElapsedTimeSinceLastCheck(lastRunTime);
+  }
+
+  return @"";
 }
 
 #pragma mark - Private

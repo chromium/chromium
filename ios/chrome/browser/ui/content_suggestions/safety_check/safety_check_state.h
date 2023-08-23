@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_SAFETY_CHECK_STATE_H_
 
+#import "base/time/time.h"
+
 #import <UIKit/UIKit.h>
 
 enum class UpdateChromeSafetyCheckState;
@@ -43,6 +45,9 @@ enum class RunningSafetyCheckState;
 
 // The number of compromised passwords found by the Password check.
 @property(nonatomic, assign) NSInteger compromisedPasswordsCount;
+
+// The last run time of the Safety Check.
+@property(nonatomic, assign) base::Time lastRunTime;
 
 @end
 

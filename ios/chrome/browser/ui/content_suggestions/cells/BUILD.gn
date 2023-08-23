@@ -60,6 +60,7 @@ source_set("cells") {
     "//ui/base",
     "//url",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("constants") {

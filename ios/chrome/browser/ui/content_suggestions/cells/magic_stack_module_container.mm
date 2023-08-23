@@ -57,6 +57,7 @@ const CGFloat kSeparatorHeight = 0.5;
   NSLayoutConstraint* _contentViewWidthAnchor;
   id<MagicStackModuleContainerDelegate> _delegate;
   UILabel* _title;
+  UILabel* _subtitle;
 }
 
 - (instancetype)initWithType:(ContentSuggestionsModuleType)type {
@@ -133,6 +134,24 @@ const CGFloat kSeparatorHeight = 0.5;
           setContentHuggingPriority:UILayoutPriorityDefaultHigh
                             forAxis:UILayoutConstraintAxisHorizontal];
       [titleStackView addArrangedSubview:showMoreButton];
+    } else if ([self shouldShowSubtitle]) {
+      // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
+      // config in its initializer so the container can build itself from a
+      // passed config/state object.
+      NSString* subtitle = [delegate subtitleStringForModule:type];
+
+      _subtitle = [[UILabel alloc] init];
+      _subtitle.text = subtitle;
+      _subtitle.font = [MagicStackModuleContainer fontForSubtitle];
+      _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      _subtitle.numberOfLines = 0;
+      _subtitle.lineBreakMode = NSLineBreakByWordWrapping;
+      _subtitle.accessibilityTraits |= UIAccessibilityTraitHeader;
+      _subtitle.accessibilityIdentifier = subtitle;
+      [_subtitle setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                   forAxis:UILayoutConstraintAxisHorizontal];
+
+      [titleStackView addArrangedSubview:_subtitle];
     }
 
     UIStackView* stackView = [[UIStackView alloc] init];
@@ -237,6 +256,10 @@ const CGFloat kSeparatorHeight = 0.5;
   return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
 }
 
++ (UIFont*)fontForSubtitle {
+  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+}
+
 - (NSDirectionalEdgeInsets)contentMargins {
   NSDirectionalEdgeInsets contentMargins =
       NSDirectionalEdgeInsetsMake(kContentTopInset, kContentHorizontalInset,
@@ -335,6 +358,16 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
     case ContentSuggestionsModuleType::kCompactedSetUpList:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
+- (BOOL)shouldShowSubtitle {
+  switch (_type) {
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
       return YES;
     default:
       return NO;

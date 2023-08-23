@@ -325,6 +325,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                   safeBrowsingState:initialSafeBrowsingState
                        runningState:initialRunningState];
 
+      _safetyCheckState.lastRunTime = lastRunTime;
+
       std::vector<password_manager::CredentialUIEntry> insecureCredentials =
           safetyCheckManager->GetInsecureCredentials();
 
