@@ -122,7 +122,7 @@ void ReturnToAppButtonBase::OnButtonClicked(
                                 app_type);
 }
 
-std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() {
+std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() const {
   std::u16string tooltip_text;
   if (is_capturing_camera_) {
     tooltip_text += l10n_util::GetStringFUTF16(
@@ -142,6 +142,10 @@ std::u16string ReturnToAppButtonBase::GetPeripheralsAccessibleName() {
             VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
   }
   return tooltip_text;
+}
+
+std::u16string ReturnToAppButtonBase::GetLabelText() const {
+  return label_->GetText();
 }
 
 }  // namespace ash::video_conference

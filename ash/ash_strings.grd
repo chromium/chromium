@@ -1698,6 +1698,14 @@ Style notes:
       <message name="VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME" desc="Tooltip shown for the return to app button regarding peripherals in the video conference panel.">
         <ph name="CAPTURE_MEDIUM">$1<ex>Camera</ex></ph> in use.
       </message>
+      <message name="VIDEO_CONFERENCE_RETURN_TO_APP_EXPANDED_ACCESSIBLE_NAME" desc="The part of the accessible name that indicate if the return to app panel is expanded or collapsed.
+      It also contains a separator (comma) to separate it from the rest of the accessible name that comes before it.">
+        , expanded
+      </message>
+      <message name="VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME" desc="The part of the accessible name that indicate if the return to app panel is expanded or collapsed.
+      It also contains a separator (comma) to separate it from the rest of the accessible name that comes before it.">
+        , collapsed
+      </message>
 
       <!-- Phone Hub tray-->
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">

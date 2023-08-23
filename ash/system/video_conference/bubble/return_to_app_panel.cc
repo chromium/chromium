@@ -222,25 +222,26 @@ ReturnToAppButton::ReturnToAppButton(
                             is_capturing_screen,
                             display_text,
                             app_type),
+      is_top_row_(is_top_row),
       panel_(panel) {
-  auto spacing = is_top_row ? kReturnToAppButtonTopRowSpacing / 2
-                            : kReturnToAppButtonSpacing / 2;
+  auto spacing = is_top_row_ ? kReturnToAppButtonTopRowSpacing / 2
+                             : kReturnToAppButtonSpacing / 2;
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(is_top_row ? views::LayoutAlignment::kCenter
-                                       : views::LayoutAlignment::kStart)
+      .SetMainAxisAlignment(is_top_row_ ? views::LayoutAlignment::kCenter
+                                        : views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch)
       .SetDefault(views::kMarginsKey, gfx::Insets::TLBR(0, spacing, 0, spacing))
       .SetInteriorMargin(gfx::Insets::TLBR(0, kReturnToAppPanelSidePadding, 0,
                                            kReturnToAppPanelSidePadding));
 
-  if (!is_top_row) {
+  if (!is_top_row_) {
     icons_container()->SetPreferredSize(
         gfx::Size(/*width=*/kReturnToAppIconSize * panel->max_capturing_count(),
                   /*height=*/kReturnToAppIconSize));
   }
 
-  if (is_top_row) {
+  if (is_top_row_) {
     auto expand_indicator = std::make_unique<ReturnToAppExpandButton>(this);
     expand_indicator->SetImage(ui::ImageModel::FromVectorIcon(
         kUnifiedMenuExpandIcon, cros_tokens::kCrosSysSecondary, 16));
@@ -253,12 +254,12 @@ ReturnToAppButton::ReturnToAppButton(
     icons_container()->layer()->SetFillsBoundsOpaquely(false);
   }
 
-  SetAccessibleName(GetPeripheralsAccessibleName() + display_text);
+  UpdateAccessibleName();
 
   // When we show the bubble for the first time, only the top row is visible.
-  SetVisible(is_top_row);
+  SetVisible(is_top_row_);
 
-  if (!is_top_row) {
+  if (!is_top_row_) {
     // Add a layer to perform fade in animation.
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
@@ -294,6 +295,8 @@ void ReturnToAppButton::OnButtonClicked(
   // For summary row, toggle the expand state.
   expanded_ = !expanded_;
 
+  UpdateAccessibleName();
+
   for (auto& observer : observer_list_) {
     observer.OnExpandedStateChanged(expanded_);
   }
@@ -309,6 +312,18 @@ void ReturnToAppButton::OnButtonClicked(
                /*animation_histogram_name=*/
                "Ash.VideoConference.SummaryIcons.FadeIn.AnimationSmoothness");
   }
+}
+
+void ReturnToAppButton::UpdateAccessibleName() {
+  auto accessible_name = GetPeripheralsAccessibleName() + GetLabelText();
+
+  if (is_top_row_) {
+    accessible_name += l10n_util::GetStringUTF16(
+        expanded_ ? VIDEO_CONFERENCE_RETURN_TO_APP_EXPANDED_ACCESSIBLE_NAME
+                  : VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME);
+  }
+
+  SetAccessibleName(accessible_name);
 }
 
 // -----------------------------------------------------------------------------

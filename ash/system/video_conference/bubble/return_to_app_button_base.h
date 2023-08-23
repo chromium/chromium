@@ -59,7 +59,10 @@ class ASH_EXPORT ReturnToAppButtonBase : public views::Button {
 
   // Get the text regarding the peripherals part of the return to app button
   // accessible name.
-  std::u16string GetPeripheralsAccessibleName();
+  std::u16string GetPeripheralsAccessibleName() const;
+
+  // Get the text displayed in `label_`.
+  std::u16string GetLabelText() const;
 
  private:
   // Indicates if the running app is using camera, microphone, or screen

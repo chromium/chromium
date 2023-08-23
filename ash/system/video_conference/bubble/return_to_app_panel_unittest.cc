@@ -617,8 +617,6 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
   auto* return_to_app_panel = GetReturnToAppPanel();
   auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
 
-  auto* summary_row = static_cast<ReturnToAppButton*>(
-      return_to_app_container->children().front());
   auto* first_app_row =
       static_cast<ReturnToAppButton*>(return_to_app_container->children()[1]);
   auto* second_app_row =
@@ -637,14 +635,63 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
           VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
 
   // Verify accessible name for each row.
-  EXPECT_EQ(expected_camera_text + expected_microphone_text +
-                expected_screen_share_text +
-                l10n_util::GetStringFUTF16Int(
-                    IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT, 2),
-            summary_row->GetAccessibleName());
   EXPECT_EQ(expected_camera_text + u"Meet", first_app_row->GetAccessibleName());
   EXPECT_EQ(expected_microphone_text + expected_screen_share_text + u"Zoom",
             second_app_row->GetAccessibleName());
+}
+
+TEST_F(ReturnToAppPanelTest, ReturnToAppButtonSummaryRowAccessibleName) {
+  controller()->ClearMediaApps();
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
+      /*is_capturing_screen=*/false, /*title=*/u"Meet",
+      /*url=*/kMeetTestUrl));
+  controller()->AddMediaApp(CreateFakeMediaApp(
+      /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
+      /*url=*/""));
+
+  LeftClickOn(toggle_bubble_button());
+  auto* return_to_app_panel = GetReturnToAppPanel();
+  auto* return_to_app_container = GetReturnToAppContainer(return_to_app_panel);
+
+  auto* summary_row = static_cast<ReturnToAppButton*>(
+      return_to_app_container->children().front());
+
+  auto expected_camera_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
+  auto expected_microphone_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
+  auto expected_screen_share_text = l10n_util::GetStringFUTF16(
+      VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+      l10n_util::GetStringUTF16(
+          VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
+  auto expected_button_text =
+      expected_camera_text + expected_microphone_text +
+      expected_screen_share_text +
+      l10n_util::GetStringFUTF16Int(
+          IDS_ASH_VIDEO_CONFERENCE_RETURN_TO_APP_SUMMARY_TEXT, 2);
+
+  EXPECT_EQ(expected_button_text +
+                l10n_util::GetStringUTF16(
+                    VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME),
+            summary_row->GetAccessibleName());
+
+  LeftClickOn(summary_row);
+
+  EXPECT_EQ(expected_button_text +
+                l10n_util::GetStringUTF16(
+                    VIDEO_CONFERENCE_RETURN_TO_APP_EXPANDED_ACCESSIBLE_NAME),
+            summary_row->GetAccessibleName());
+
+  LeftClickOn(summary_row);
+  EXPECT_EQ(expected_button_text +
+                l10n_util::GetStringUTF16(
+                    VIDEO_CONFERENCE_RETURN_TO_APP_COLLAPSED_ACCESSIBLE_NAME),
+            summary_row->GetAccessibleName());
 }
 
 }  // namespace ash::video_conference

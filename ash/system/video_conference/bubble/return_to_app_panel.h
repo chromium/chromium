@@ -84,8 +84,12 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
  private:
   FRIEND_TEST_ALL_PREFIXES(ReturnToAppPanelTest, ExpandCollapse);
 
+  void UpdateAccessibleName();
+
   // Registered observers.
   base::ObserverList<Observer> observer_list_;
+
+  const bool is_top_row_;
 
   // Indicates if this button (and also the parent panel) is in the expanded
   // state. Note that `expanded_` is only meaningful in the case that the button
