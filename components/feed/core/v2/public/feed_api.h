@@ -108,6 +108,15 @@ class FeedApi {
   virtual void ManualRefresh(SurfaceId surface_id,
                              base::OnceCallback<void(bool)> callback) = 0;
 
+  // Request to fetch a URL resource. Calls |callback| with the network response
+  // when complete.
+  virtual void FetchResource(
+      const GURL& url,
+      const std::string& method,
+      const std::vector<std::string>& header_name_and_values,
+      const std::string& post_data,
+      base::OnceCallback<void(NetworkResponse)> callback) = 0;
+
   // Request to fetch and image for use in the feed. Calls |callback|
   // with the network response when complete. The returned ImageFetchId can be
   // passed to CancelImageFetch() to cancel the request.

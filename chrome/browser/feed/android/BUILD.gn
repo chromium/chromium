@@ -25,6 +25,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProvider.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLogger.java",
     "java/src/org/chromium/chrome/browser/feed/FeedReliabilityLoggingBridge.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedResourceFetcher.java",
     "java/src/org/chromium/chrome/browser/feed/FeedScrollState.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
     "java/src/org/chromium/chrome/browser/feed/FeedServiceDependencyProviderFactory.java",

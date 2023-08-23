@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler.OpenWebFeedEnt
 import org.chromium.chrome.browser.xsurface.feed.FeedActionsHandler;
 import org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScope;
 import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
+import org.chromium.chrome.browser.xsurface.feed.ResourceFetcher;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -548,6 +549,11 @@ public class FeedStream implements Stream {
         public void triggerManualRefresh() {
             mBridge.reportOtherUserAction(FeedUserActionType.NON_SWIPE_MANUAL_REFRESH);
             mStreamsMediator.refreshStream();
+        }
+
+        @Override
+        public ResourceFetcher getAsyncDataFetcher() {
+            return new FeedResourceFetcher(mBridge);
         }
     }
 

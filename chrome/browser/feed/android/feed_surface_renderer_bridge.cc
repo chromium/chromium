@@ -46,6 +46,23 @@ SurfaceId FromJavaSurfaceId(jint surface_id) {
   return feed::SurfaceId::FromUnsafeValue(surface_id);
 }
 
+ScopedJavaLocalRef<jobject> ToJava(JNIEnv* env,
+                                   const NetworkResponse& response) {
+  return Java_NetworkResponse_Constructor(
+      env, response.status_code == 200, response.status_code,
+      base::android::ToJavaArrayOfStrings(
+          env, response.response_header_names_and_values),
+      base::android::ToJavaByteArray(
+          env, reinterpret_cast<const uint8_t*>(response.response_bytes.data()),
+          response.response_bytes.size()));
+}
+
+void OnFetchResourceFinished(JNIEnv* env,
+                             const JavaRef<jobject>& callback,
+                             NetworkResponse response) {
+  base::android::RunObjectCallbackAndroid(callback, ToJava(env, response));
+}
+
 }  // namespace
 
 static jlong JNI_FeedSurfaceRendererBridge_Init(
@@ -165,6 +182,30 @@ void FeedSurfaceRendererBridge::ManualRefresh(
   feed_stream_api_->ManualRefresh(
       surface_id_, base::BindOnce(&base::android::RunBooleanCallbackAndroid,
                                   ScopedJavaGlobalRef<jobject>(callback_obj)));
+}
+
+void FeedSurfaceRendererBridge::FetchResource(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_url,
+    const JavaParamRef<jstring>& j_method,
+    const JavaParamRef<jobjectArray>& j_header_name_and_values,
+    const JavaParamRef<jbyteArray>& j_post_data,
+    const base::android::JavaParamRef<jobject>& callback_obj) {
+  if (!feed_stream_api_) {
+    return;
+  }
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  std::vector<std::string> header_name_and_values;
+  AppendJavaStringArrayToStringVector(env, j_header_name_and_values,
+                                      &header_name_and_values);
+  std::string post_data;
+  base::android::JavaByteArrayToString(env, j_post_data, &post_data);
+  feed_stream_api_->FetchResource(
+      url ? *url : GURL(),
+      base::android::ConvertJavaStringToUTF8(env, j_method),
+      header_name_and_values, post_data,
+      base::BindOnce(&OnFetchResourceFinished, env,
+                     ScopedJavaGlobalRef<jobject>(callback_obj)));
 }
 
 static void JNI_FeedSurfaceRendererBridge_ProcessThereAndBackAgain(

@@ -25,6 +25,7 @@
 #include "components/feed/core/v2/persistent_key_value_store_impl.h"
 #include "components/feed/core/v2/prefs.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
+#include "components/feed/core/v2/resource_fetcher.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
@@ -257,6 +258,7 @@ FeedService::FeedService(
       network_delegate_.get(), identity_manager, api_key, url_loader_factory,
       profile_prefs);
   image_fetcher_ = std::make_unique<ImageFetcher>(url_loader_factory);
+  resource_fetcher_ = std::make_unique<ResourceFetcher>(url_loader_factory);
   store_ = std::make_unique<FeedStore>(std::move(database));
   persistent_key_value_store_ = std::make_unique<PersistentKeyValueStoreImpl>(
       std::move(key_value_store_database));
@@ -264,8 +266,8 @@ FeedService::FeedService(
   stream_ = std::make_unique<FeedStream>(
       refresh_task_scheduler_.get(), metrics_reporter_.get(),
       stream_delegate_.get(), profile_prefs, feed_network_.get(),
-      image_fetcher_.get(), store_.get(), persistent_key_value_store_.get(),
-      template_url_service, chrome_info);
+      image_fetcher_.get(), resource_fetcher_.get(), store_.get(),
+      persistent_key_value_store_.get(), template_url_service, chrome_info);
   api_ = stream_.get();
 
   history_observer_ = std::make_unique<HistoryObserverImpl>(

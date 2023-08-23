@@ -52,6 +52,7 @@ class FeedStore;
 class FeedStream;
 class PersistentKeyValueStoreImpl;
 class ImageFetcher;
+class ResourceFetcher;
 
 namespace internal {
 bool ShouldClearFeed(bool is_signed_in,
@@ -151,6 +152,7 @@ class FeedService : public KeyedService {
   std::unique_ptr<NetworkDelegateImpl> network_delegate_;
   std::unique_ptr<FeedNetwork> feed_network_;
   std::unique_ptr<ImageFetcher> image_fetcher_;
+  std::unique_ptr<ResourceFetcher> resource_fetcher_;
   std::unique_ptr<FeedStore> store_;
   std::unique_ptr<PersistentKeyValueStoreImpl> persistent_key_value_store_;
   std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler_;

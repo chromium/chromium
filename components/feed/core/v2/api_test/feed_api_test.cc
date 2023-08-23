@@ -1013,7 +1013,7 @@ void FeedApiTest::CreateStream(bool wait_for_initialization,
   chrome_info.start_surface = start_surface;
   stream_ = std::make_unique<FeedStream>(
       &refresh_scheduler_, metrics_reporter_.get(), this, &profile_prefs_,
-      &network_, image_fetcher_.get(), store_.get(),
+      &network_, image_fetcher_.get(), nullptr, store_.get(),
       persistent_key_value_store_.get(), template_url_service_.get(),
       chrome_info);
   stream_->SetWireResponseTranslatorForTesting(&response_translator_);
