@@ -35,9 +35,10 @@ AcceptLanguagesServiceFactory::AcceptLanguagesServiceFactory()
 
 AcceptLanguagesServiceFactory::~AcceptLanguagesServiceFactory() = default;
 
-KeyedService* AcceptLanguagesServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AcceptLanguagesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new language::AcceptLanguagesService(
+  return std::make_unique<language::AcceptLanguagesService>(
       user_prefs::UserPrefs::Get(browser_context),
       language::prefs::kAcceptLanguages);
 }
