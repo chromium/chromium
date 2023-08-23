@@ -2045,20 +2045,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Platform.Trunks.FirstTimeoutReadingCommand"
-    enum="TPMCommandCode" expires_after="2022-01-14">
-  <owner>chingkang@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>Command code of the first timeout reading TPM command</summary>
-</histogram>
-
-<histogram name="Platform.Trunks.FirstTimeoutReadingTime" units="seconds"
-    expires_after="2022-01-14">
-  <owner>chingkang@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
-  <summary>System uptime when first timeout reading TPM command occurs</summary>
-</histogram>
-
 <histogram name="Platform.Trunks.FirstTimeoutWritingCommand"
     enum="TPMCommandCode" expires_after="2024-01-07">
   <owner>chingkang@chromium.org</owner>
