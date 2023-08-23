@@ -3104,14 +3104,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary of warning for a file blocked for being too large.">
         Your organization blocked this file because it is too big for a security check. You can open files up to 50 MB.
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED"
-        desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
-        This file might be a virus or malware.<ph name="LINE_BREAK">$1</ph>You can send it to Google Safe Browsing to check if it's unsafe. Scans usually take a few seconds.
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK"
-        desc="Additional text describing the process of deep scanning a download">
-        Learn more about malware scans
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING"
         desc="Subpage summary when download deep scanning is in progress">
         This file might be a virus or malware
@@ -3135,18 +3127,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_TRY_AGAIN"
                desc="Retry button when a download is failed">
         Try again
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
-               desc="Prompt for Deep Scanning of a download">
-        Scan before opening
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT_UPDATED"
-               desc="Prompt for Deep Scanning of a download">
-        Scan for malware
-      </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
-               desc="Status text for a download item that is being scanned.">
-        Scanning...
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING_ENTERPRISE"
                desc="Status text for a download item that is being scanned by enterprise policy.">
@@ -3293,6 +3273,44 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_MALWARE"
                desc="Subpage summary text for a download item when the downloaded file may hide malware.">
         This file may hide malware
+      </message>
+
+      <!-- Deep scanning in download bubble -->
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT"
+               desc="Prompt for Deep Scanning of a download">
+        Scan before opening
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_DEEP_SCANNING_PROMPT_UPDATED"
+               desc="Prompt for Deep Scanning of a download">
+        Scan for malware
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_STATUS_ASYNC_SCANNING"
+               desc="Status text for a download item that is being scanned.">
+        Scanning...
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_DEEP_SCANNING_PROMPT_UPDATED"
+        desc="Subpage summary of warning for a file where we recommend sending the file for deep scanning.">
+        This file might be a virus or malware.<ph name="LINE_BREAK">$1</ph>You can send it to Google Safe Browsing to check if it's unsafe. Scans usually take a few seconds.
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_DEEP_SCANNING_LINK"
+        desc="Additional text describing the process of deep scanning a download">
+        Learn more about malware scans
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT"
+        desc="Prompt for the user to enter the file's password">
+        File password
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_ACCESSIBLE_ALERT"
+        desc="Accessible alert text for screen readers when users focus on the password textfield">
+        File password
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_EMPTY"
+        desc="Prompt for the user when the password entered is empty">
+        Enter the file's password
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_INVALID"
+        desc="Prompt for the user when the password entered is incorrect">
+        Incorrect password. Try again.
       </message>
 
       <!-- Desktop omnibox PWA install icon -->
