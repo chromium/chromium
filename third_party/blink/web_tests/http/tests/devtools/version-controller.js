@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests inspector version controller.\n`);
 
@@ -16,7 +18,7 @@ import {TestRunner} from 'test_runner';
     function testMethodsToRunToUpdateVersion(next) {
       function runVersionControllerTest(oldVersion, currentVersion) {
         TestRunner.addResult('Testing methods to run to upgrade from ' + oldVersion + ' to ' + currentVersion + '.');
-        var versionController = new Common.VersionController();
+        var versionController = new Common.Settings.VersionController();
         var methodsToRun = versionController.methodsToRunToUpdateVersion(oldVersion, currentVersion);
         TestRunner.addResult('Methods to run: ' + JSON.stringify(methodsToRun));
         TestRunner.addResult('');
@@ -38,7 +40,7 @@ import {TestRunner} from 'test_runner';
       function runClearBreakpointsTest(breakpointsCount, maxBreakpointsCount) {
         TestRunner.addResult(
             'Starting test with ' + breakpointsCount + ' breakpoints and ' + maxBreakpointsCount + ' allowed at max.');
-        var versionController = new Common.VersionController();
+        var versionController = new Common.Settings.VersionController();
         var serializedBreakpoints = [];
         for (var i = 0; i < breakpointsCount; ++i)
           serializedBreakpoints.push(createBreakpoint('file' + i + '.js', i % 10, '', true));
