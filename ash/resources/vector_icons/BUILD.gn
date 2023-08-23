@@ -153,6 +153,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ks_calculator.icon",
     "ks_dictation.icon",
     "ks_emoji_picker.icon",
+    "ks_input_mode_change.icon",
     "ks_launcher.icon",
     "ks_media_fast_forward.icon",
     "ks_media_pause.icon",

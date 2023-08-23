@@ -609,6 +609,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutCalculator,
     kKeyboardShortcutDictationToggle,
     kKeyboardShortcutEmojiPicker,
+    kKeyboardShortcutInputModeChange,
     kKeyboardShortcutZoom,
     kKeyboardShortcutMediaLaunchApp1,
     kKeyboardShortcutMediaFastForward,

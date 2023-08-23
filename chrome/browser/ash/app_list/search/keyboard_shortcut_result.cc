@@ -136,6 +136,8 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutAllApps;
     case (KeyboardCode::VKEY_ASSISTANT):
       return IconCode::kKeyboardShortcutAssistant;
+    case (KeyboardCode::VKEY_MODECHANGE):
+      return IconCode::kKeyboardShortcutInputModeChange;
     default:
       return absl::nullopt;
   }
