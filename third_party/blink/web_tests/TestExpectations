@@ -6767,12 +6767,6 @@ crbug.com/1472721 [ Linux ] virtual/scalefactor200/fast/hidpi/static/pointereven
 # Gardener 2023-08-16
 crbug.com/1473474 [ Mac13 ] wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure Pass ]
 
-# Disable the following tests to land and reenable after the land.
-crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
-
 # Re-enable after new baselines are generated
 crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure

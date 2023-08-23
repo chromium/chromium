@@ -35,9 +35,9 @@ Background services
   Push messaging
   Reporting API
 Preloading
-  Speculation Rules
+  Speculation rules
   Preloads
-  This Page
+  This page
 Frames
   top
     Scripts
@@ -80,9 +80,9 @@ Background services
   Push messaging
   Reporting API
 Preloading
-  Speculation Rules
+  Speculation rules
   Preloads
-  This Page
+  This page
 Frames
   top
     Scripts
@@ -125,9 +125,9 @@ Background services
   Push messaging
   Reporting API
 Preloading
-  Speculation Rules
+  Speculation rules
   Preloads
-  This Page
+  This page
 Frames
   top
     Scripts
