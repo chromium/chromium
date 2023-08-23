@@ -27,6 +27,7 @@ FAIL e.style['grid-template'] = "\"a\" [a] [b] \"b\"" should set the property va
 FAIL e.style['grid-template'] = "\"a\" [a] \"b\"" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\"" but got "\"a\" auto [a] \"b\" auto"
 PASS e.style['grid-template'] = "\"a\" / 0" should set the property value
 PASS e.style['grid-template'] = "\"a\" 10px / 10px" should set the property value
+PASS e.style['grid-template'] = "\"a\" calc(100% - 10px) / calc(10px)" should set the property value
 FAIL e.style['grid-template'] = "\"a\" [a] \"b\" 10px" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" 10px" but got "\"a\" auto [a] \"b\" 10px"
 FAIL e.style['grid-template'] = "\"a\" [a] \"b\" 10px [a]" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a] \"b\" 10px [a]" but got "\"a\" auto [a] \"b\" 10px [a]"
 FAIL e.style['grid-template'] = "\"a\" [a] [a] \"b\" 10px" should set the property value assert_equals: serialization should be canonical expected "\"a\" [a a] \"b\" 10px" but got "\"a\" auto [a a] \"b\" 10px"
