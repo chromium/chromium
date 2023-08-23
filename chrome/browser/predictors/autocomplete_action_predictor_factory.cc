@@ -41,9 +41,11 @@ AutocompleteActionPredictorFactory::AutocompleteActionPredictorFactory()
 AutocompleteActionPredictorFactory::~AutocompleteActionPredictorFactory() =
     default;
 
-KeyedService* AutocompleteActionPredictorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutocompleteActionPredictorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new AutocompleteActionPredictor(static_cast<Profile*>(profile));
+  return std::make_unique<AutocompleteActionPredictor>(
+      static_cast<Profile*>(profile));
 }
 
 }  // namespace predictors
