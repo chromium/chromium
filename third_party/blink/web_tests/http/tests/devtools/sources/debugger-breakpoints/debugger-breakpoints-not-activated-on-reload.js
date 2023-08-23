@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that breakpoints are not activated on page reload.Bug 41461\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -34,7 +36,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function step3() {
     TestRunner.addResult('Main resource was shown.');
-    if (!Common.moduleSetting('breakpointsActive').get())
+    if (!Common.Settings.moduleSetting('breakpointsActive').get())
       TestRunner.addResult('Breakpoints are deactivated.');
     else
       TestRunner.addResult('Error: breakpoints are activated.');

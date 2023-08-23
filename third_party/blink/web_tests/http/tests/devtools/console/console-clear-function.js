@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that console is cleared via console.clear() method\n`);
 
@@ -42,13 +44,13 @@ import {ConsoleTestRunner} from 'console_test_runner';
       await TestRunner.RuntimeAgent.evaluate('log();');
       TestRunner.addResult('=== Before clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Common.moduleSetting('preserveConsoleLog').set(true);
+      Common.Settings.moduleSetting('preserveConsoleLog').set(true);
 
       await TestRunner.RuntimeAgent.evaluate('clearConsoleFromPage();');
 
       TestRunner.addResult('=== After clear ===');
       await ConsoleTestRunner.dumpConsoleMessages();
-      Common.moduleSetting('preserveConsoleLog').set(false);
+      Common.Settings.moduleSetting('preserveConsoleLog').set(false);
       next();
     }
   ]);
