@@ -2067,17 +2067,17 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
       // NOTE: `isSystem` is part of RRP from `gecko`.
       //    -> Chromium has a more diversified `StyleSheetOrigin` enum for this, 
       //      (that is only accessible on the rule level in CDP, for some reason)
-      const href = nativeSheet?.href;
       const isSystem = origin !== 'regular';
+      const styleSheet = { isSystem };
+      if (nativeSheet?.href) {
+        styleSheet.href = nativeSheet.href;
+      }
 
       const styleSheetPreview = {
         className: 'RRPStyleSheetPreview', // no pre-defined className
         preview: {
           overflow: true,
-          styleSheet: {
-            href,
-            isSystem
-          }
+          styleSheet
         }
       };
       styleSheetRrpId = registerRrpPreview(styleSheetPreview, nativeSheet);
