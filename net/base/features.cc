@@ -365,10 +365,6 @@ const base::FeatureParam<std::string> kIpPrivacyProxyServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyServer",
     /*default_value=*/""};
 
-const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
-    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
-    /*default_value=*/""};
-
 const base::FeatureParam<std::string> kIpPrivacyTokenServer{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
     /*default_value=*/"https://autopush-phosphor-pa.sandbox.googleapis.com"};

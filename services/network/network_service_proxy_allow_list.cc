@@ -4,13 +4,12 @@
 //
 #include "services/network/network_service_proxy_allow_list.h"
 
-#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/features.h"
 #include "net/base/schemeful_site.h"
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 #include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_switches.h"
 
 namespace network {
 namespace {
@@ -41,17 +40,8 @@ net::ProxyBypassRules BuildBypassRules(
 NetworkServiceProxyAllowList::NetworkServiceProxyAllowList() {
   custom_proxy_config_ = network::mojom::CustomProxyConfig::New();
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-
-  std::string ip_protection_proxy_server =
-      command_line.HasSwitch(network::switches::kIPAnonymizationProxyServer)
-          ? command_line.GetSwitchValueASCII(
-                network::switches::kIPAnonymizationProxyServer)
-          : net::features::kIpPrivacyProxyServer.Get();
-
   std::string proxy_spec =
-      base::StrCat({ip_protection_proxy_server, ",direct://"});
+      base::StrCat({net::features::kIpPrivacyProxyServer.Get(), ",direct://"});
   custom_proxy_config_->rules.ParseFromString(proxy_spec);
 
   custom_proxy_config_->rules.restrict_to_network_service_proxy_allow_list =
