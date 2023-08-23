@@ -167,9 +167,9 @@ void SettingsPrivateEventRouter::SendPrefChange(const std::string& pref_name) {
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
-SettingsPrivateEventRouter* SettingsPrivateEventRouter::Create(
+std::unique_ptr<SettingsPrivateEventRouter> SettingsPrivateEventRouter::Create(
     content::BrowserContext* context) {
-  return new SettingsPrivateEventRouter(context);
+  return std::make_unique<SettingsPrivateEventRouter>(context);
 }
 
 }  // namespace extensions

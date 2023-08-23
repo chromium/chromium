@@ -46,7 +46,8 @@ SettingsPrivateEventRouterFactory::SettingsPrivateEventRouterFactory()
 SettingsPrivateEventRouterFactory::~SettingsPrivateEventRouterFactory() =
     default;
 
-KeyedService* SettingsPrivateEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SettingsPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return SettingsPrivateEventRouter::Create(context);
 }

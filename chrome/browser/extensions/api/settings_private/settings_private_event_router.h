@@ -35,9 +35,10 @@ class SettingsPrivateEventRouter
       public EventRouter::Observer,
       public settings_private::GeneratedPref::Observer {
  public:
-  static SettingsPrivateEventRouter* Create(
+  static std::unique_ptr<SettingsPrivateEventRouter> Create(
       content::BrowserContext* browser_context);
 
+  explicit SettingsPrivateEventRouter(content::BrowserContext* context);
   SettingsPrivateEventRouter(const SettingsPrivateEventRouter&) = delete;
   SettingsPrivateEventRouter& operator=(const SettingsPrivateEventRouter&) =
       delete;
@@ -50,8 +51,6 @@ class SettingsPrivateEventRouter
   content::BrowserContext* context_for_test() { return context_; }
 
  protected:
-  explicit SettingsPrivateEventRouter(content::BrowserContext* context);
-
   // KeyedService overrides:
   void Shutdown() override;
 
