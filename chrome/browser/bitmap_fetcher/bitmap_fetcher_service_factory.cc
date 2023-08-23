@@ -31,9 +31,10 @@ BitmapFetcherServiceFactory::BitmapFetcherServiceFactory()
 
 BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() = default;
 
-KeyedService* BitmapFetcherServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BitmapFetcherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   DCHECK(!profile->IsOffTheRecord());
-  return new BitmapFetcherService(profile);
+  return std::make_unique<BitmapFetcherService>(profile);
 }
