@@ -25,6 +25,7 @@ import {ChromeVoxState} from '../chromevox_state.js';
 import {CommandHandlerInterface} from '../command_handler_interface.js';
 import {TextEditHandler} from '../editing/editing.js';
 import {EventSource} from '../event_source.js';
+import {LiveRegions} from '../live_regions.js';
 import {Output} from '../output/output.js';
 import {OutputCustomEvent} from '../output/output_types.js';
 
@@ -72,16 +73,6 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     /** @private {string} */
     this.lastAlertText_ = '';
 
-    /**
-     * The last time we handled a live region changed event.
-     * @type {!Date}
-     * @private
-     */
-    this.liveRegionChange_ = new Date();
-
-    /** @private {string}*/
-    this.lastLiveRegionChangeText_ = '';
-
     /** @private {string} */
     this.lastRootUrl_ = '';
 
@@ -113,7 +104,9 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // Note that live region changes from views are really announcement
     // events. Their target nodes contain no live region semantics and have no
     // relation to live regions which are supported in |LiveRegions|.
-    this.addListener_(EventType.LIVE_REGION_CHANGED, this.onLiveRegionChanged);
+    this.addListener_(
+        EventType.LIVE_REGION_CHANGED,
+        event => this.onLiveRegionChanged_(event));
 
     this.addListener_(EventType.LOAD_COMPLETE, this.onLoadComplete);
     this.addListener_(EventType.FOCUS_AFTER_MENU_CLOSE, this.onMenuEnd);
@@ -368,37 +361,10 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
 
   /**
    * @param {!ChromeVoxEvent} evt
+   * @private
    */
-  onLiveRegionChanged(evt) {
-    if (evt.target.root.role === RoleType.DESKTOP ||
-        evt.target.root.role === RoleType.APPLICATION) {
-      if (evt.target.containerLiveStatus !== 'assertive' &&
-          evt.target.containerLiveStatus !== 'polite') {
-        return;
-      }
-
-      const output = new Output();
-      if (evt.target.containerLiveStatus === 'assertive') {
-        output.withQueueMode(QueueMode.CATEGORY_FLUSH);
-      } else {
-        output.withQueueMode(QueueMode.QUEUE);
-      }
-      const liveRegionChange = (new Date() - this.liveRegionChange_) <
-          DesktopAutomationHandler.LIVE_REGION_DELAY_MS;
-
-      output
-          .withRichSpeechAndBraille(
-              CursorRange.fromNode(evt.target), null, evt.type)
-          .withSpeechCategory(TtsCategory.LIVE);
-      if (liveRegionChange &&
-          output.toString() === this.lastLiveRegionChangeText_) {
-        return;
-      }
-
-      this.liveRegionChange_ = new Date();
-      this.lastLiveRegionChangeText_ = output.toString();
-      output.go();
-    }
+  onLiveRegionChanged_(evt) {
+    LiveRegions.announceDesktopLiveRegionChanged(evt.target);
   }
 
   /**
@@ -967,13 +933,6 @@ DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
  * @const {number}
  */
 DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 50;
-
-/**
- * Time to wait until processing more live region change events on the same
- * text content.
- * @const {number}
- */
-DesktopAutomationHandler.LIVE_REGION_DELAY_MS = 100;
 
 /**
  * Time to wait before announcing attribute changes that are otherwise too

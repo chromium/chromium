@@ -14,6 +14,7 @@ import {Output} from './output/output.js';
 import {OutputCustomEvent} from './output/output_types.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 const TreeChange = chrome.automation.TreeChange;
@@ -26,6 +27,12 @@ const TreeChangeType = chrome.automation.TreeChangeType;
 export class LiveRegions {
   /** @private */
   constructor() {
+    /** @private {!Date} */
+    this.lastDesktopLiveRegionChangedTime_ = new Date(0);
+
+    /** @private {string} */
+    this.lastDesktopLiveRegionChangedText_ = '';
+
     /**
      * The time the last live region event was output.
      * @type {!Date}
@@ -57,6 +64,41 @@ export class LiveRegions {
       throw 'Error: Trying to create two instances of singleton LiveRegions';
     }
     LiveRegions.instance = new LiveRegions();
+  }
+
+  /** @param {!AutomationNode} area */
+  static announceDesktopLiveRegionChanged(area) {
+    if (area.root.role !== RoleType.DESKTOP &&
+        area.root.role !== RoleType.APPLICATION) {
+      return;
+    }
+
+    const output = new Output();
+    if (area.containerLiveStatus === 'assertive') {
+      output.withQueueMode(QueueMode.CATEGORY_FLUSH);
+    } else if (area.containerLiveStatus === 'polite') {
+      output.withQueueMode(QueueMode.QUEUE);
+    } else {
+      return;
+    }
+
+    const withinDelay =
+        (new Date() - LiveRegions.instance.lastDesktopLiveRegionChangedTime_) <
+        DESKTOP_CHANGE_DELAY_MS;
+
+    output
+        .withRichSpeechAndBraille(
+            CursorRange.fromNode(area), null, EventType.LIVE_REGION_CHANGED)
+        .withSpeechCategory(TtsCategory.LIVE);
+    if (withinDelay &&
+        output.toString() ===
+            LiveRegions.instance.lastDesktopLiveRegionChangedText_) {
+      return;
+    }
+
+    LiveRegions.instance.lastDesktopLiveRegionChangedTime_ = new Date();
+    LiveRegions.instance.lastDesktopLiveRegionChangedText_ = output.toString();
+    output.go();
   }
 
   /**
@@ -266,3 +308,10 @@ LiveRegions.announceLiveRegionsFromBackgroundTabs_ = false;
 
 /** @type {LiveRegions} */
 LiveRegions.instance;
+
+/**
+ * Time to wait until processing more live region change events on the same
+ * text content.
+ * @const {number}
+ */
+const DESKTOP_CHANGE_DELAY_MS = 100;

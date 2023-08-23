@@ -433,7 +433,7 @@ AX_TEST_F(
       };
 
       const onLiveRegionChanged = status => () =>
-          DesktopAutomationInterface.instance.onLiveRegionChanged(
+          DesktopAutomationInterface.instance.onLiveRegionChanged_(
               fakeEvent(status));
 
       mockFeedback.call(onLiveRegionChanged('assertive'))
