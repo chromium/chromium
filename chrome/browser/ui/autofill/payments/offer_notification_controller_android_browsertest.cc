@@ -128,7 +128,6 @@ class OfferNotificationControllerAndroidBrowserTest
   // CreditCard that is linked to the offer displayed in the offer notification.
   CreditCard card_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   test::AutofillBrowserTestEnvironment autofill_environment_;
@@ -184,6 +183,9 @@ class OfferNotificationControllerAndroidBrowserTestForInfobar
         "Autofill.OfferNotificationInfoBarResult.CardLinkedOffer", metric,
         count);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OfferNotificationControllerAndroidBrowserTestForInfobar,
@@ -268,6 +270,9 @@ class OfferNotificationControllerAndroidBrowserTestForMessagesUi
   }
 
   messages::MessagesTestHelper messages_test_helper_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(

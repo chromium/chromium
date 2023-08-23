@@ -62,11 +62,11 @@ class AutofillUnitTestEnvironment : public AutofillTestEnvironment {
 };
 
 // This encapsulates global browsertest state. By default this environment
-// disables `kAutofillServerCommunication` feature.
+// disables the `kAutofillServerCommunication` feature.
 class AutofillBrowserTestEnvironment : public AutofillTestEnvironment {
  public:
   explicit AutofillBrowserTestEnvironment(
-      const Options& options = {.disable_server_communication = false});
+      const Options& options = {.disable_server_communication = true});
 };
 
 using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;

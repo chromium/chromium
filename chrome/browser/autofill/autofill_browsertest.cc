@@ -284,8 +284,8 @@ class AutofillTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
