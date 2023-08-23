@@ -21,7 +21,8 @@ void DummyProducer::StartDataSource(perfetto::DataSourceInstanceID,
 void DummyProducer::StopDataSource(perfetto::DataSourceInstanceID) {}
 void DummyProducer::Flush(perfetto::FlushRequestID,
                           const perfetto::DataSourceInstanceID* data_source_ids,
-                          size_t num_data_sources) {}
+                          size_t num_data_sources,
+                          perfetto::FlushFlags) {}
 void DummyProducer::ClearIncrementalState(
     const perfetto::DataSourceInstanceID* data_source_ids,
     size_t num_data_sources) {}

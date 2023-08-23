@@ -242,7 +242,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
              const std::vector<uint64_t>& data_source_ids) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     producer_->Flush(flush_request_id, data_source_ids.data(),
-                     data_source_ids.size());
+                     data_source_ids.size(), perfetto::FlushFlags(0));
   }
 
   void ClearIncrementalState() override {

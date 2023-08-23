@@ -374,7 +374,8 @@ void PosixSystemProducer::StopDataSource(perfetto::DataSourceInstanceID id) {
 void PosixSystemProducer::Flush(
     perfetto::FlushRequestID id,
     const perfetto::DataSourceInstanceID* data_source_ids,
-    size_t num_data_sources) {
+    size_t num_data_sources,
+    perfetto::FlushFlags /*ignored*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_replies_for_latest_flush_ = {id, num_data_sources};
   for (auto* const data_source : PerfettoTracedProcess::Get()->data_sources()) {

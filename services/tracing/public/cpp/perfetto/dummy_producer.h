@@ -26,7 +26,8 @@ class COMPONENT_EXPORT(TRACING_CPP) DummyProducer : public SystemProducer {
   void StopDataSource(perfetto::DataSourceInstanceID) override;
   void Flush(perfetto::FlushRequestID,
              const perfetto::DataSourceInstanceID* data_source_ids,
-             size_t num_data_sources) override;
+             size_t num_data_sources,
+             perfetto::FlushFlags) override;
   void ClearIncrementalState(
       const perfetto::DataSourceInstanceID* data_source_ids,
       size_t num_data_sources) override;

@@ -135,7 +135,8 @@ void ProducerHost::StopDataSource(perfetto::DataSourceInstanceID id) {
 void ProducerHost::Flush(
     perfetto::FlushRequestID id,
     const perfetto::DataSourceInstanceID* raw_data_source_ids,
-    size_t num_data_sources) {
+    size_t num_data_sources,
+    perfetto::FlushFlags /*ignored*/) {
   DCHECK(producer_client_);
   std::vector<uint64_t> data_source_ids(raw_data_source_ids,
                                         raw_data_source_ids + num_data_sources);

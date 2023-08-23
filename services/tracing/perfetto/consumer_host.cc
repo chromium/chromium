@@ -601,15 +601,18 @@ void ConsumerHost::TracingSession::Flush(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   flush_callback_ = std::move(callback);
   base::WeakPtr<TracingSession> weak_this = weak_factory_.GetWeakPtr();
-  host_->consumer_endpoint()->Flush(timeout, [weak_this](bool success) {
-    if (!weak_this) {
-      return;
-    }
+  host_->consumer_endpoint()->Flush(
+      timeout,
+      [weak_this](bool success) {
+        if (!weak_this) {
+          return;
+        }
 
-    if (weak_this->flush_callback_) {
-      std::move(weak_this->flush_callback_).Run(success);
-    }
-  });
+        if (weak_this->flush_callback_) {
+          std::move(weak_this->flush_callback_).Run(success);
+        }
+      },
+      perfetto::FlushFlags(0));
 }
 
 // static
