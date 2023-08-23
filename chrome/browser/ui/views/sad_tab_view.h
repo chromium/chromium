@@ -22,7 +22,11 @@ class WebView;
 
 namespace test {
 class SadTabViewTestApi;
-}
+}  // namespace test
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -42,6 +46,8 @@ class SadTabView : public SadTab, public views::View {
   SadTabView& operator=(const SadTabView&) = delete;
 
   ~SadTabView() override;
+
+  void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // Overridden from SadTab:
   void ReinstallInWebView() override;

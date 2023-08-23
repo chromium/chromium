@@ -38,6 +38,9 @@ class ContentsWebView
   // Toggles whether the background is visible.
   void SetBackgroundVisible(bool background_visible);
 
+  const gfx::RoundedCornersF& background_radii() const {
+    return background_radii_;
+  }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // WebView overrides:
