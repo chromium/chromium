@@ -261,6 +261,36 @@ suite('FlagsDisabled', function() {
     const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);
   });
+
+  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // standard protection is launched.
+  test('NotUpdatedPasswordsLeakDetectionSubLabel', function() {
+    const toggle = page.$.passwordsLeakToggle;
+    const defaultSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    const activeWhenSignedInSubLabel =
+        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
+        ' ' +
+        loadTimeData.getString(
+            'passwordsLeakDetectionSignedOutEnabledDescription');
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.profile.password_manager_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', true);
+    flush();
+    assertEquals(activeWhenSignedInSubLabel, toggle.subLabel);
+
+    page.set('prefs.generated.password_leak_detection.value', true);
+    page.set(
+        'prefs.generated.password_leak_detection.userControlDisabled', false);
+    flush();
+    assertEquals(defaultSubLabel, toggle.subLabel);
+
+    page.set('prefs.profile.password_manager_leak_detection.value', false);
+    flush();
+    assertEquals(defaultSubLabel, toggle.subLabel);
+  });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -271,12 +301,6 @@ suite('SafeBrowsing', function() {
   // <if expr="chrome_root_store_supported">
   let openWindowProxy: TestOpenWindowProxy;
   // </if>
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableFriendlierSafeBrowsingSettings: false,
-    });
-  });
 
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
@@ -309,10 +333,11 @@ suite('SafeBrowsing', function() {
 
   test('PasswordsLeakDetectionSubLabel', function() {
     const toggle = page.$.passwordsLeakToggle;
-    const defaultSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
+    const defaultSubLabel = loadTimeData.getString(
+        'passwordsLeakDetectionGeneralDescriptionUpdated');
     const activeWhenSignedInSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription') +
+        loadTimeData.getString(
+            'passwordsLeakDetectionGeneralDescriptionUpdated') +
         ' ' +
         loadTimeData.getString(
             'passwordsLeakDetectionSignedOutEnabledDescription');
