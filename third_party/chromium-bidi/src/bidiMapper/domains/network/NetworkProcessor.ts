@@ -22,7 +22,7 @@ import {
 } from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
 
-import type {NetworkStorage} from './NetworkStorage.js';
+import {NetworkStorage} from './NetworkStorage.js';
 
 /** Dispatches Network domain commands. */
 export class NetworkProcessor {
@@ -37,15 +37,6 @@ export class NetworkProcessor {
     this.#networkStorage = networkStorage;
   }
 
-  /** Applies all existing network intercepts to all CDP targets concurrently. */
-  async applyIntercepts() {
-    await Promise.all(
-      this.#browsingContextStorage.getAllContexts().map(async (context) => {
-        await context.cdpTarget.fetchApply();
-      })
-    );
-  }
-
   async addIntercept(
     params: Network.AddInterceptParameters
   ): Promise<Network.AddInterceptResult> {
@@ -55,16 +46,17 @@ export class NetworkProcessor {
       );
     }
 
-    // TODO: Parse the pattern. Should fix a WPT test with the "foo" string.
     const urlPatterns: Network.UrlPattern[] = params.urlPatterns ?? [];
+    const parsedUrlPatterns: Network.UrlPattern[] =
+      NetworkProcessor.parseUrlPatterns(urlPatterns);
 
     const intercept: Network.Intercept = this.#networkStorage.addIntercept({
-      urlPatterns,
+      urlPatterns: parsedUrlPatterns,
       phases: params.phases,
     });
 
     // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.applyIntercepts();
+    await this.#applyIntercepts();
 
     return {
       intercept,
@@ -97,8 +89,75 @@ export class NetworkProcessor {
     this.#networkStorage.removeIntercept(params.intercept);
 
     // TODO: Add try/catch. Remove the intercept if CDP Fetch commands fail.
-    await this.applyIntercepts();
+    await this.#applyIntercepts();
 
     return {};
+  }
+
+  /** Applies all existing network intercepts to all CDP targets concurrently. */
+  async #applyIntercepts() {
+    await Promise.all(
+      this.#browsingContextStorage.getAllContexts().map(async (context) => {
+        await context.cdpTarget.fetchApply();
+      })
+    );
+  }
+
+  static parseUrlPatterns(
+    urlPatterns: Network.UrlPattern[]
+  ): Network.UrlPattern[] {
+    return urlPatterns.map((urlPattern) => {
+      switch (urlPattern.type) {
+        case 'string': {
+          try {
+            new URL(urlPattern.pattern);
+          } catch (error) {
+            throw new InvalidArgumentException(
+              `Invalid URL '${urlPattern.pattern}': ${error}`
+            );
+          }
+          return urlPattern;
+        }
+        case 'pattern':
+          if (urlPattern.protocol === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a protocol`
+            );
+          }
+
+          if (urlPattern.hostname === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a hostname`
+            );
+          }
+
+          if ((urlPattern.hostname?.length ?? 0) > 0) {
+            if (urlPattern.protocol?.match(/^file/i)) {
+              throw new InvalidArgumentException(
+                `URL pattern protocol cannot be 'file'`
+              );
+            }
+
+            if (urlPattern.hostname?.includes(':')) {
+              throw new InvalidArgumentException(
+                `URL pattern hostname must not contain a colon`
+              );
+            }
+          }
+
+          if (urlPattern.port === '') {
+            throw new InvalidArgumentException(
+              `URL pattern must specify a port`
+            );
+          }
+
+          try {
+            new URL(NetworkStorage.buildUrlPatternString(urlPattern));
+          } catch (error) {
+            throw new InvalidArgumentException(`${error}`);
+          }
+          return urlPattern;
+      }
+    });
   }
 }

@@ -34,6 +34,12 @@ describe('NetworkStorage', () => {
     networkStorage = new NetworkStorage(eventManager);
   });
 
+  it('disposeRequestMap', () => {
+    networkStorage.disposeRequestMap();
+
+    expect(networkStorage.requestMap).to.be.empty;
+  });
+
   it('requestStageFromPhase', () => {
     expect(
       NetworkStorage.requestStageFromPhase(
@@ -51,13 +57,34 @@ describe('NetworkStorage', () => {
   });
 
   describe('add intercept', () => {
-    it('once', () => {
+    it('once with string type', () => {
       const intercept = networkStorage.addIntercept({
         urlPatterns: [
           {
             type: 'string',
             pattern: 'http://example.com',
           },
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+      });
+
+      expect(intercept).to.match(UUID_REGEX);
+      expect(networkStorage.getFetchEnableParams().patterns).to.have.lengthOf(
+        1
+      );
+    });
+
+    it('once with pattern type', () => {
+      const intercept = networkStorage.addIntercept({
+        urlPatterns: [
+          {
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+            search: 'bar=baz',
+          } satisfies Network.UrlPattern,
         ],
         phases: [Network.InterceptPhase.BeforeRequestSent],
       });
@@ -126,7 +153,7 @@ describe('NetworkStorage', () => {
 
     [
       {
-        description: 'one url pattern',
+        description: 'one url pattern of string type',
         urlPatterns: [
           {
             type: 'string',
@@ -140,6 +167,29 @@ describe('NetworkStorage', () => {
             {
               requestStage: 'Request',
               urlPattern: 'http://example.com',
+            },
+          ],
+        },
+      },
+      {
+        description: 'one url pattern of pattern type',
+        urlPatterns: [
+          {
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+            search: 'bar=baz',
+          } satisfies Network.UrlPattern,
+        ],
+        phases: [Network.InterceptPhase.BeforeRequestSent],
+        expected: {
+          handleAuthRequests: false,
+          patterns: [
+            {
+              requestStage: 'Request',
+              urlPattern: 'https://example.com:80/foo?bar=baz',
             },
           ],
         },
@@ -289,6 +339,165 @@ describe('NetworkStorage', () => {
       });
     });
   });
-});
 
-// TODO: add test with UrlPatternPattern
+  describe('cdpFromSpecUrlPattern', () => {
+    it('string type', () => {
+      expect(
+        NetworkStorage.cdpFromSpecUrlPattern({
+          type: 'string',
+          pattern: 'https://example.com',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com');
+    });
+
+    it('pattern type', () => {
+      expect(
+        NetworkStorage.cdpFromSpecUrlPattern({
+          type: 'pattern',
+          protocol: 'https',
+          hostname: 'example.com',
+          port: '80',
+          pathname: '/foo',
+          search: 'bar=baz',
+        } satisfies Network.UrlPattern)
+      ).to.equal('https://example.com:80/foo?bar=baz');
+    });
+  });
+
+  describe('buildUrlPatternString', () => {
+    describe('protocol', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: '',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('example.com:80');
+      });
+
+      it('without colon', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('with colon', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https:',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('port', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com');
+      });
+
+      it('standard', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+    });
+
+    describe('pathname', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without slash', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: 'foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+
+      it('with slash', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            pathname: '/foo',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80/foo');
+      });
+    });
+
+    describe('search', () => {
+      it('empty', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80');
+      });
+
+      it('without question mark', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: 'bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+
+      it('with question mark', () => {
+        expect(
+          NetworkStorage.buildUrlPatternString({
+            type: 'pattern',
+            protocol: 'https',
+            hostname: 'example.com',
+            port: '80',
+            search: '?bar=baz',
+          } satisfies Network.UrlPatternPattern)
+        ).to.equal('https://example.com:80?bar=baz');
+      });
+    });
+  });
+});
