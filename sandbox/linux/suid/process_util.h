@@ -22,10 +22,4 @@
 // values, of course.
 bool AdjustOOMScore(pid_t process, int score);
 
-// This adjusts /sys/kernel/mm/chromeos-low_mem/margin so that
-// the kernel notifies us that we are low on memory when less than
-// |margin_mb| megabytes are available.  Setting |margin_mb| to -1
-// turns off low memory notification.
-bool AdjustLowMemoryMargin(int64_t margin_mb);
-
 #endif  // SANDBOX_LINUX_SUID_PROCESS_UTIL_H_
