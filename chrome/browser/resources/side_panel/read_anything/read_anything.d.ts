@@ -50,6 +50,9 @@ declare namespace chrome {
     // Whether the WebUI toolbar feature flag is enabled.
     let isWebUIToolbarVisible: boolean;
 
+    // Whether the Read Aloud feature flag is enabled.
+    let isReadAloudEnabled: boolean;
+
     // Indicates if select-to-distill works on the web page. Used to
     // determine which empty state to display.
     let isSelectable: boolean;

@@ -66,12 +66,18 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     anchorAlignmentY: AnchorAlignment.AFTER_END,
   };
 
+  private isReadAloudEnabled_: boolean;
+
+  // If Read Aloud is in the paused state.
+  isPaused = true;
+
   // This is needed to keep a reference to any dynamically added callbacks so
   // that they can be removed with #removeEventListener.
   private elementCallbackMap = new Map<any, () => void>();
 
   override connectedCallback() {
     super.connectedCallback();
+    this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
 
     const onFontClick = (fontName: string) => {
       this.onFontClick_(fontName);
@@ -292,6 +298,21 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       this.contentPage.updateFontSize(increase);
     }
     // Don't close the menu
+  }
+
+  private onPlayPauseClick_() {
+    const shadowRoot = this.shadowRoot;
+    assert(shadowRoot);
+    const button = shadowRoot.getElementById('play-pause');
+    assert(button);
+
+    if (this.isPaused) {
+      button.setAttribute('iron-icon', 'read-anything:pause');
+      this.isPaused = false;
+    } else {
+      button.setAttribute('iron-icon', 'read-anything:play');
+      this.isPaused = true;
+    }
   }
 }
 

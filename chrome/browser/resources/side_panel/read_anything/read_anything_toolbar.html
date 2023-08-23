@@ -44,13 +44,27 @@
     margin-left: 12px;
     float: right;
   }
+  .toolbar-container {
+    text-align: center;
+  }
+  #settings {
+    float:inline-start;
+  }
 </style>
-<div>
+<div class="toolbar-container">
   <cr-icon-button
       id="settings"
       iron-icon="read-anything:settings-outline"
       on-click="onShowSettingsMenuClick_">
   </cr-icon-button>
+
+  <div hidden="[[!isReadAloudEnabled_]]">
+    <cr-icon-button
+      id="play-pause"
+      iron-icon="read-anything:play"
+      on-click="onPlayPauseClick_">
+    </cr-icon-button>
+  </div>
 
   <cr-action-menu id="menu">
     <span class="dropdown-item section">

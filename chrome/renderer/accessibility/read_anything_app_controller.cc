@@ -623,6 +623,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::IsWebUIToolbarEnabled)
+      .SetProperty("isReadAloudEnabled",
+                   &ReadAnythingAppController::isReadAloudEnabled)
       .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
       .SetMethod("getTextDirection",
@@ -874,6 +876,10 @@ bool ReadAnythingAppController::IsSelectable() const {
 
 bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
   return features::IsReadAnythingWebUIToolbarEnabled();
+}
+
+bool ReadAnythingAppController::isReadAloudEnabled() const {
+  return features::IsReadAnythingReadAloudEnabled();
 }
 
 void ReadAnythingAppController::OnConnected() {

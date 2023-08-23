@@ -145,6 +145,7 @@ class ReadAnythingAppController
                          int focus_offset) const;
   bool IsSelectable() const;
   bool IsWebUIToolbarEnabled() const;
+  bool isReadAloudEnabled() const;
   void OnStandardLineSpacing();
   void OnLooseLineSpacing();
   void OnVeryLooseLineSpacing();
