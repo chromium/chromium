@@ -782,6 +782,7 @@ def GetThirdPartyDepsFromGNDepsOutput(
 
   # Use non-capturing group with or's for all possible options.
   allowed_paths = '|'.join([re.escape(x) for x in allowed_paths_list])
+  sep = re.escape(os.path.sep)
   path_regex = re.compile(
       r'''^
             (                                     # capture
@@ -794,7 +795,7 @@ def GetThirdPartyDepsFromGNDepsOutput(
               {sep}
             )
             (.+{sep})?BUILD\.gn$                  # with filename BUILD.gn
-  '''.format(allowed_paths=allowed_paths, sep=r'[/\\]', nonsep=r'[^/\\]'),
+  '''.format(allowed_paths=allowed_paths, sep=sep, nonsep=f'[^{sep}]'),
       re.VERBOSE)
 
   third_party_deps = set()
