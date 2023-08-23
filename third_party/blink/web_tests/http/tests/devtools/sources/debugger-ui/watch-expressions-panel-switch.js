@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests debugger does not fail when stopped while a panel other than scripts was opened. Both valid and invalid expressions are added to watch expressions.\n`);
@@ -20,7 +22,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   `);
 
   SourcesTestRunner.setQuiet(true);
-  Common.settings.createLocalSetting('watchExpressions', []).set([
+  Common.Settings.Settings.instance().createLocalSetting('watchExpressions', []).set([
     'x', 'y.foo'
   ]);
   await SourcesTestRunner.startDebuggerTestPromise();

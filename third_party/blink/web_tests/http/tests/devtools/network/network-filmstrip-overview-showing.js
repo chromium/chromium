@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests to make sure film strip and overview pane show if the other does not exist. http://crbug.com/723659\n`);
@@ -12,8 +14,8 @@ import {NetworkTestRunner} from 'network_test_runner';
 
   NetworkTestRunner.recordNetwork();
   var networkPanel = UI.panels.network;
-  var showOverviewSetting = Common.settings.createSetting('networkLogShowOverview', true);
-  var showFilmstripSetting = Common.settings.createSetting('networkRecordFilmStripSetting', false);
+  var showOverviewSetting = Common.Settings.Settings.instance().createSetting('networkLogShowOverview', true);
+  var showFilmstripSetting = Common.Settings.Settings.instance().createSetting('networkRecordFilmStripSetting', false);
 
   TestRunner.addResult('Overview should not be showing');
   TestRunner.addResult('Filmstrip should not be showing');
