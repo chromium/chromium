@@ -190103,6 +190103,19 @@
         {}
        ]
       ],
+      "text-indent-overflow.html": [
+       "c8678bf8aa85513a2d883341dd6bde7d53380ec2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-overflow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-indent-percentage-001.xht": [
        "6da26308b266e6d1574d78238f9d12cf5a404b25",
        [
@@ -190162,6 +190175,19 @@
         [
          [
           "/css/css-text/text-indent/reference/text-indent-tab-positions-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "text-indent-text-align-end.html": [
+       "df37463ae7b04a06c3267395df1d9aafa9fa3356",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/text-indent-text-align-end-ref.html",
           "=="
          ]
         ],
@@ -279240,16 +279266,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "274dedb0dd7476cb974a6fe6f70721c4fe9814a4",
-     []
-    ],
-    "mtime.json": [
-     "bc2ca7a33ff4ad5ec4b8a02bd58361ba7ea514d5",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -344410,6 +344426,10 @@
         "faa6adc4dca1b68585d06bece5d8982c18377180",
         []
        ],
+       "text-indent-overflow-ref.html": [
+        "578cc760677e7c3540b307254f052420ff00a587",
+        []
+       ],
        "text-indent-percentage-001-ref.xht": [
         "5b065d1db7ac1e399668e8588727be09922bf62b",
         []
@@ -344420,6 +344440,10 @@
        ],
        "text-indent-tab-positions-001-ref.html": [
         "4d85456dd172b108486b51eedddb687209a30b2a",
+        []
+       ],
+       "text-indent-text-align-end-ref.html": [
+        "c4619235d395cd2e10ea3e50c784880048508812",
         []
        ],
        "text-indent-with-absolute-pos-child-ref.html": [
