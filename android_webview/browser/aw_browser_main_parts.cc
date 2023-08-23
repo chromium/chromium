@@ -70,6 +70,7 @@
 namespace android_webview {
 
 namespace {
+
 // Return true if the version code indicates the bundle is primarily 64-bit
 // (even if it may have 32-bit bits).
 bool Is64bitAccordingToVersionCode(const std::string& version_code) {
@@ -94,6 +95,15 @@ bool Is64bitAccordingToVersionCode(const std::string& version_code) {
   char arch_code = version_code.back();
   return arch_codes_64bit.count(arch_code) > 0;
 }
+
+bool IsBundleForMixedDeviceAccordingToVersionCode(
+    const std::string& version_code) {
+  // See comment in Is64bitAccordingToVersionCode.
+  std::set<char> arch_codes_mixed = {'1', '2', '3', '7', '8'};
+  char arch_code = version_code.back();
+  return arch_codes_mixed.count(arch_code) > 0;
+}
+
 }  // namespace
 
 AwBrowserMainParts::AwBrowserMainParts(AwContentBrowserClient* browser_client)
@@ -212,6 +222,8 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    filter out).
   // 3) Mixed 32-/64-bit devices, as non-mixed devices are forced to use
   //    a particular bitness, thus don't participate in the experiment.
+  std::string version_code =
+      base::android::BuildInfo::GetInstance()->package_version_code();
   size_t ram_mb = base::SysInfo::AmountOfPhysicalMemoryMB();
   auto cpu_abi_bitness_support =
       metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();
@@ -219,15 +231,15 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
       (GetMultipleUserProfilesState() ==
        MultipleUserProfilesState::kSingleProfile) &&
-      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit);
+      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit) &&
+      IsBundleForMixedDeviceAccordingToVersionCode(version_code);
   if (is_device_of_interest) {
     std::string trial_group;
     // We can't use defined(ARCH_CPU_64_BITS) on WebView, because bitness of
     // Browser doesn't have to match the bitness of the bundle. Browser always
     // follows bitness of the app, whereas Renderer follows bitness of the
     // bundle.
-    if (Is64bitAccordingToVersionCode(
-            base::android::BuildInfo::GetInstance()->package_version_code())) {
+    if (Is64bitAccordingToVersionCode(version_code)) {
       trial_group = "64bit";
     } else {
       trial_group = "32bit";

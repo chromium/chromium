@@ -72,6 +72,7 @@
 #if defined(__arm__)
 #include <cpu-features.h>
 #endif
+#include "base/android/build_info.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -550,6 +551,32 @@ void RecordStartupMetrics() {
 #endif
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool IsBundleForMixedDeviceAccordingToVersionCode(
+    const std::string& version_code) {
+  // Primary bitness of the bundle is encoded in the last digit of the version
+  // code.
+  //
+  // From build/util/android_chrome_version.py:
+  //       'arm': {
+  //          '32': 0,
+  //          '32_64': 1,
+  //          '64_32': 2,
+  //          '64_32_high': 3,
+  //          '64': 4,
+  //      },
+  //      'intel': {
+  //          '32': 6,
+  //          '32_64': 7,
+  //          '64_32': 8,
+  //          '64': 9,
+  //      },
+  std::set<char> arch_codes_mixed = {'1', '2', '3', '7', '8'};
+  char arch_code = version_code.back();
+  return arch_codes_mixed.count(arch_code) > 0;
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
@@ -660,7 +687,9 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       (3.2 * 1024 < ram_mb && ram_mb < 6.5 * 1024) &&
       (chrome::android::GetMultipleUserProfilesState() ==
        chrome::android::MultipleUserProfilesState::kSingleProfile) &&
-      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit);
+      (cpu_abi_bitness_support == metrics::CpuAbiBitnessSupport::k32And64bit) &&
+      IsBundleForMixedDeviceAccordingToVersionCode(
+          base::android::BuildInfo::GetInstance()->package_version_code());
   if (is_device_of_interest) {
     uint32_t gws_experiment_id = 0;
     std::string trial_group;
