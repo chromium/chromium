@@ -44,8 +44,12 @@ bool VerifyBlobToken(
   return true;
 }
 
-bool VerifyInitiatorOrigin(int process_id,
-                           const url::Origin& initiator_origin) {
+bool VerifyInitiatorOrigin(
+    int process_id,
+    const url::Origin& initiator_origin,
+    RenderFrameHostImpl* current_rfh = nullptr,
+    GURL* navigation_url = nullptr,
+    absl::optional<blink::LocalFrameToken>* initiator_frame_token = nullptr) {
   // TODO(acolwell, nasko): https://crbug.com/1029092: Ensure the precursor of
   // opaque origins matches the origin lock.  One known problematic case are
   // reloads initiated from error pages - see the following
@@ -61,6 +65,80 @@ bool VerifyInitiatorOrigin(int process_id,
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (!policy->CanAccessDataForOrigin(process_id, initiator_origin)) {
+    if (navigation_url) {
+      static auto* const navigation_url_key =
+          base::debug::AllocateCrashKeyString(
+              "navigation_url", base::debug::CrashKeySize::Size256);
+      base::debug::SetCrashKeyString(
+          navigation_url_key,
+          navigation_url->DeprecatedGetOriginAsURL().spec());
+    }
+    if (initiator_frame_token) {
+      if (RenderFrameHostImpl* initiator_render_frame_host =
+              RenderFrameHostImpl::FromFrameToken(
+                  process_id, initiator_frame_token->value())) {
+        static auto* const initiator_rfh_origin_key =
+            base::debug::AllocateCrashKeyString(
+                "initiator_rfh_origin", base::debug::CrashKeySize::Size256);
+        base::debug::SetCrashKeyString(
+            initiator_rfh_origin_key,
+            initiator_render_frame_host->GetLastCommittedOrigin()
+                .GetDebugString());
+      }
+    }
+
+    if (current_rfh) {
+      auto bool_to_crash_key = [](bool b) { return b ? "true" : "false"; };
+      static auto* const is_main_frame_key =
+          base::debug::AllocateCrashKeyString(
+              "is_main_frame", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(
+          is_main_frame_key, bool_to_crash_key(current_rfh->is_main_frame()));
+
+      static auto* const is_outermost_frame_key =
+          base::debug::AllocateCrashKeyString(
+              "is_outermost_frame", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(
+          is_outermost_frame_key,
+          bool_to_crash_key(current_rfh->IsOutermostMainFrame()));
+
+      static auto* const is_on_initial_empty_document_key =
+          base::debug::AllocateCrashKeyString(
+              "is_on_initial_empty_doc", base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(
+          is_on_initial_empty_document_key,
+          bool_to_crash_key(
+              current_rfh->frame_tree_node()->is_on_initial_empty_document()));
+
+      static auto* const last_committed_origin_key =
+          base::debug::AllocateCrashKeyString(
+              "last_committed_origin", base::debug::CrashKeySize::Size256);
+      base::debug::SetCrashKeyString(
+          last_committed_origin_key,
+          current_rfh->GetLastCommittedOrigin().GetDebugString());
+
+      if (current_rfh->GetParentOrOuterDocumentOrEmbedder()) {
+        static auto* const parent_etc_origin_key =
+            base::debug::AllocateCrashKeyString(
+                "parent_etc_origin", base::debug::CrashKeySize::Size256);
+        base::debug::SetCrashKeyString(
+            parent_etc_origin_key,
+            current_rfh->GetParentOrOuterDocumentOrEmbedder()
+                ->GetLastCommittedOrigin()
+                .GetDebugString());
+      }
+
+      if (FrameTreeNode* opener = current_rfh->frame_tree_node()->opener()) {
+        static auto* const opener_origin_key =
+            base::debug::AllocateCrashKeyString(
+                "opener_origin", base::debug::CrashKeySize::Size256);
+        base::debug::SetCrashKeyString(opener_origin_key,
+                                       opener->current_frame_host()
+                                           ->GetLastCommittedOrigin()
+                                           .GetDebugString());
+      }
+    }
+
     bad_message::ReceivedBadMessage(process_id,
                                     bad_message::INVALID_INITIATOR_ORIGIN);
     return false;
@@ -131,8 +209,10 @@ bool VerifyOpenURLParams(RenderFrameHostImpl* current_rfh,
   }
 
   // Verify |params.initiator_origin|.
-  if (!VerifyInitiatorOrigin(process_id, params->initiator_origin))
+  if (!VerifyInitiatorOrigin(process_id, params->initiator_origin, current_rfh,
+                             &params->url, &params->initiator_frame_token)) {
     return false;
+  }
 
   if (params->initiator_base_url) {
     // `initiator_base_url` should only be defined for about:blank and
