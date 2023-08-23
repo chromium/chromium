@@ -40,9 +40,10 @@ NotificationDisplayServiceFactory::NotificationDisplayServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {}
 
-KeyedService* NotificationDisplayServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NotificationDisplayServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   // TODO(peter): Register the notification handlers here.
-  return new NotificationDisplayServiceImpl(
+  return std::make_unique<NotificationDisplayServiceImpl>(
       Profile::FromBrowserContext(context));
 }
