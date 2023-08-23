@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -231,7 +232,7 @@ using signin_metrics::PromoAction;
 - (void)dealloc {
   // -[SigninCoordinator runCompletionCallbackWithSigninResult:completionInfo:]
   // has to be called by the subclass before the coordinator is deallocated.
-  DCHECK(!self.signinCompletion);
+  DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
 }
 
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
