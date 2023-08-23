@@ -85,7 +85,9 @@ enum class PairFailure {
   kFailedToConnectAfterPairing = 30,
   // Failed to write to Additional Data characteristic.
   kAdditionalDataCharacteristicWrite = 31,
-  // Failed to discover Additional Data Characteristic
+  // Failed to discover Additional Data Characteristic.
+  // Currently this failure is not emitted anywhere.
+  // TODO(b/279654454) measure this pair failure in some metric.
   kAdditionalDataCharacteristicDiscovery = 32,
   // Timed out while writing to Additional Data characteristic.
   kAdditionalDataCharacteristicWriteTimeout = 33,
