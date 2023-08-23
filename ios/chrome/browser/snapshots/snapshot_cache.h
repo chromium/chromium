@@ -95,13 +95,6 @@ class Time;
 // Releases alls images in grey cache.
 - (void)removeGreyCache;
 
-// Requests the grey snapshot for `snapshotID`. If the image is already loaded
-// in memory, this will immediately call back with `callback`. Otherwise, only
-// uses `callback` for the most recent caller. The callback is not guaranteed to
-// be called.
-- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
-                      callback:(void (^)(UIImage*))callback;
-
 // Writes a grey copy of the snapshot for `snapshotID` to disk, but if and only
 // if a color version of the snapshot already exists in memory or on disk.
 - (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID;
@@ -124,6 +117,12 @@ class Time;
 
 // Additionnal methods that should only be used for tests.
 @interface SnapshotCache (TestingAdditions)
+// Requests the grey snapshot for `snapshotID`. If the image is already loaded
+// in memory, this will immediately call back with `callback`. Otherwise, only
+// uses `callback` for the most recent caller. The callback is not guaranteed to
+// be called.
+- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
+                      callback:(void (^)(UIImage*))callback;
 - (BOOL)hasImageInMemory:(SnapshotID)snapshotID;
 - (BOOL)hasGreyImageInMemory:(SnapshotID)snapshotID;
 - (NSUInteger)lruCacheMaxSize;

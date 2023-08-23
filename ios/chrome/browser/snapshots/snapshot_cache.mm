@@ -747,22 +747,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   _mostRecentGreyBlock = nil;
 }
 
-- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
-                      callback:(void (^)(UIImage*))callback {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  DCHECK(snapshotID.valid());
-  DCHECK(callback);
-
-  auto iterator = _greyImageDictionary.find(snapshotID);
-  if (iterator != _greyImageDictionary.end()) {
-    callback(iterator->second);
-    [self clearGreySnapshotInfo];
-  } else {
-    _mostRecentGreySnapshotID = snapshotID;
-    _mostRecentGreyBlock = [callback copy];
-  }
-}
-
 - (void)retrieveGreyImageForSnapshotID:(SnapshotID)snapshotID
                               callback:(void (^)(UIImage*))callback {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -843,6 +827,22 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
 @end
 
 @implementation SnapshotCache (TestingAdditions)
+
+- (void)greyImageForSnapshotID:(SnapshotID)snapshotID
+                      callback:(void (^)(UIImage*))callback {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  DCHECK(snapshotID.valid());
+  DCHECK(callback);
+
+  auto iterator = _greyImageDictionary.find(snapshotID);
+  if (iterator != _greyImageDictionary.end()) {
+    callback(iterator->second);
+    [self clearGreySnapshotInfo];
+  } else {
+    _mostRecentGreySnapshotID = snapshotID;
+    _mostRecentGreyBlock = [callback copy];
+  }
+}
 
 - (BOOL)hasImageInMemory:(SnapshotID)snapshotID {
   return [_lruCache objectForKey:snapshotID] != nil;
