@@ -555,6 +555,7 @@ TEST_F(FailedUkmDatabaseTest, QueriesAreNoop) {
   backend_->UpdateUrlForUkmSource(10, kUrl1, true);
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/false);
   backend_->RemoveUrls({kUrl1}, /*all_urls=*/true);
+  backend_->DeleteEntriesOlderThan(base::Time() - base::Seconds(10));
 
   UkmDatabase::QueryList queries;
   queries.emplace(0, UkmDatabase::CustomSqlQuery("SELECT bad query", {}));

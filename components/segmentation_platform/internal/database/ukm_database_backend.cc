@@ -255,6 +255,10 @@ void UkmDatabaseBackend::RunReadonlyQueries(QueryList&& queries,
 
 void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (status_ != Status::INIT_SUCCESS) {
+    return;
+  }
+
   std::vector<UrlId> deleted_urls =
       metrics_table_.DeleteEventsBeforeTimestamp(time);
   url_table_.RemoveUrls(deleted_urls);
@@ -263,6 +267,7 @@ void UkmDatabaseBackend::DeleteEntriesOlderThan(base::Time time) {
 
 void UkmDatabaseBackend::DeleteAllUrls() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(status_, Status::INIT_SUCCESS);
 
   // Remove all metrics associated with any URL, but retain the metrics that are
   // not keyed on URL.
