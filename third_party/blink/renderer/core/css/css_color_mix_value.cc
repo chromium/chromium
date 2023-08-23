@@ -66,7 +66,14 @@ String CSSColorMixValue::CustomCSSText() const {
                                                    hue_interpolation_method_));
   result.Append(", ");
   result.Append(color1_->CssText());
-  if (percentage1_ && percentage1_->GetDoubleValue() != 50.0) {
+  bool percentagesNormalized = true;
+  if (percentage1_ && percentage2_ &&
+      (percentage1_->GetDoubleValue() + percentage2_->GetDoubleValue() !=
+       100.0)) {
+    percentagesNormalized = false;
+  }
+  if (percentage1_ &&
+      (percentage1_->GetDoubleValue() != 50.0 || !percentagesNormalized)) {
     result.Append(" ");
     result.Append(percentage1_->CssText());
   }
@@ -77,10 +84,7 @@ String CSSColorMixValue::CustomCSSText() const {
   }
   result.Append(", ");
   result.Append(color2_->CssText());
-  if (percentage1_ && percentage2_ &&
-      percentage1_->GetDoubleValue() + percentage2_->GetDoubleValue() !=
-          100.0 &&
-      percentage2_->GetDoubleValue() != 50.0) {
+  if (!percentagesNormalized) {
     result.Append(" ");
     result.Append(percentage2_->CssText());
   }
