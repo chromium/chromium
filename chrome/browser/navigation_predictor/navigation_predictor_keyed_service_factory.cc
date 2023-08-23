@@ -41,7 +41,8 @@ NavigationPredictorKeyedServiceFactory::NavigationPredictorKeyedServiceFactory()
 NavigationPredictorKeyedServiceFactory::
     ~NavigationPredictorKeyedServiceFactory() {}
 
-KeyedService* NavigationPredictorKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+  NavigationPredictorKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new NavigationPredictorKeyedService(context);
+  return std::make_unique<NavigationPredictorKeyedService>(context);
 }
