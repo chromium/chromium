@@ -506,36 +506,14 @@ gfx::Size DeskMiniView::CalculatePreferredSize() const {
 }
 
 void DeskMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  desk_preview_->GetAccessibleNodeData(node_data);
-
-  // Note that the desk may have already been destroyed.
   if (desk_) {
-    // Announce desk name.
+    // Add node name for the tast test. In `ash.LaunchSavedDesk`, it should have
+    // a node with the below name for the desk mini view.
     node_data->AddStringAttribute(
         ax::mojom::StringAttribute::kName,
         l10n_util::GetStringFUTF8(IDS_ASH_DESKS_DESK_ACCESSIBLE_NAME,
                                   desk_->name()));
-
-    node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kValue,
-        l10n_util::GetStringUTF8(
-            desk_->is_active()
-                ? IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP
-                : IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP));
   }
-
-  // If the desk can be combined or closed, add a tip to let the user know they
-  // can use an accelerator.
-  if (!DesksController::Get()->CanRemoveDesks())
-    return;
-
-  const std::u16string target_desk_name =
-      DesksController::Get()->GetCombineDesksTargetName(desk_);
-  const std::string extra_tip = l10n_util::GetStringFUTF8(
-      IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP, target_desk_name);
-
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
-                                extra_tip);
 }
 
 void DeskMiniView::OnThemeChanged() {

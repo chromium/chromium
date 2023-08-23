@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/style_util.h"
 #include "ash/wallpaper/views/wallpaper_base_view.h"
 #include "ash/wm/desks/desk.h"
@@ -33,6 +34,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -504,6 +506,35 @@ void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   views::Button::GetAccessibleNodeData(node_data);
   if (GetAccessibleName().empty())
     node_data->SetNameExplicitlyEmpty();
+
+  // Note that the desk may have already been destroyed.
+  Desk* desk = mini_view_->desk();
+  if (desk) {
+    // Announce desk name.
+    node_data->AddStringAttribute(
+        ax::mojom::StringAttribute::kRoleDescription,
+        l10n_util::GetStringFUTF8(
+            IDS_ASH_DESKS_DESK_PREVIEW_A11Y_NAME,
+            l10n_util::GetStringUTF16(
+                desk->is_active()
+                    ? IDS_ASH_DESKS_ACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP
+                    : IDS_ASH_DESKS_INACTIVE_DESK_MINIVIEW_A11Y_EXTRA_TIP),
+            desk->name()));
+  }
+
+  // If the desk can be combined or closed, add a tip to let the user know they
+  // can use an accelerator.
+  if (!DesksController::Get()->CanRemoveDesks()) {
+    return;
+  }
+
+  const std::u16string target_desk_name =
+      DesksController::Get()->GetCombineDesksTargetName(desk);
+  const std::string extra_tip = l10n_util::GetStringFUTF8(
+      IDS_ASH_OVERVIEW_CLOSABLE_DESK_MINIVIEW_A11Y_EXTRA_TIP, target_desk_name);
+
+  node_data->AddStringAttribute(ax::mojom::StringAttribute::kDescription,
+                                extra_tip);
 }
 
 void DeskPreviewView::Layout() {
