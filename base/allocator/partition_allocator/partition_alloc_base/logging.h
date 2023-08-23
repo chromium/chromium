@@ -161,7 +161,7 @@ typedef bool (*LogMessageHandlerFunction)(int severity,
                                           const char* file,
                                           int line,
                                           size_t message_start,
-                                          const std::string& str);
+                                          const char* str);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void SetLogMessageHandler(LogMessageHandlerFunction handler);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)

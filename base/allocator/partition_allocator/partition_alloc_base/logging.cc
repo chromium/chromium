@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/safe_sprintf.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/string_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -38,10 +39,6 @@
 #include <string.h>
 #include <unistd.h>
 #endif
-
-#include <cstring>
-#include <ostream>
-#include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 
@@ -155,7 +152,7 @@ LogMessage::LogMessage(const char* file, int line, const char* condition)
 
 LogMessage::~LogMessage() {
   stream_ << '\n';
-  std::string str_newline(stream_.c_str());
+  const char* str_newline = stream_.c_str();
 
   // Give any log message handler first dibs on the message.
   if (g_log_message_handler &&
@@ -166,7 +163,7 @@ LogMessage::~LogMessage() {
   }
 
   // Always use RawLog() if g_log_message_handler doesn't filter messages.
-  RawLog(severity_, str_newline.c_str());
+  RawLog(severity_, str_newline);
 }
 
 // writes the common header info to the stream
@@ -204,8 +201,9 @@ SystemErrorCode GetLastSystemErrorCode() {
 #endif
 }
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-std::string SystemErrorCodeToString(SystemErrorCode error_code) {
+void SystemErrorCodeToStream(base::strings::CStringBuilder& os,
+                             SystemErrorCode error_code) {
+  char buffer[256];
 #if BUILDFLAG(IS_WIN)
   const int kErrorMessageBufferSize = 256;
   char msgbuf[kErrorMessageBufferSize];
@@ -215,16 +213,21 @@ std::string SystemErrorCodeToString(SystemErrorCode error_code) {
   if (len) {
     // Messages returned by system end with line breaks.
     const char* whitespace_pos = base::strings::FindLastNotOf(msgbuf, "\n\r ");
-    const char* message = whitespace_pos ? whitespace_pos + 1 : msgbuf;
-    return std::string(message) +
-           base::TruncatingStringPrintf(" (0x%lX)", error_code);
+    if (whitespace_pos) {
+      size_t whitespace_index = whitespace_pos - msgbuf + 1;
+      msgbuf[whitespace_index] = '\0';
+    }
+    base::strings::SafeSPrintf(buffer, "%s (0x%x)", msgbuf, error_code);
+    os << buffer;
+    return;
   }
-  return base::TruncatingStringPrintf(
-      "Error (0x%lX) while retrieving error. (0x%lX)", GetLastError(),
-      error_code);
+  base::strings::SafeSPrintf(buffer,
+                             "Error (0x%x) while retrieving error. (0x%x)",
+                             GetLastError(), error_code);
+  os << buffer;
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  return base::safe_strerror(error_code) +
-         base::TruncatingStringPrintf(" (%d)", error_code);
+  base::safe_strerror_r(error_code, buffer, sizeof(buffer));
+  os << buffer << " (" << error_code << ")";
 #endif  // BUILDFLAG(IS_WIN)
 }
 
@@ -236,7 +239,8 @@ Win32ErrorLogMessage::Win32ErrorLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 Win32ErrorLogMessage::~Win32ErrorLogMessage() {
-  stream() << ": " << SystemErrorCodeToString(err_).c_str();
+  stream() << ": ";
+  SystemErrorCodeToStream(stream(), err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   DWORD last_error = err_;
@@ -250,7 +254,8 @@ ErrnoLogMessage::ErrnoLogMessage(const char* file,
     : LogMessage(file, line, severity), err_(err) {}
 
 ErrnoLogMessage::~ErrnoLogMessage() {
-  stream() << ": " << SystemErrorCodeToString(err_).c_str();
+  stream() << ": ";
+  SystemErrorCodeToStream(stream(), err_);
   // We're about to crash (CHECK). Put |err_| on the stack (by placing it in a
   // field) and use Alias in hopes that it makes it into crash dumps.
   int last_error = err_;
