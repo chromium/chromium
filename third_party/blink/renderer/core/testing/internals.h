@@ -87,7 +87,6 @@ class StaticSelection;
 class Text;
 class TypeConversions;
 class UnionTypesTest;
-class HTMLImageElement;
 
 template <typename NodeType>
 class StaticNodeTypeList;
@@ -642,10 +641,6 @@ class Internals final : public ScriptWrappable {
   void setBackForwardCacheRestorationBufferSize(unsigned int maxSize);
 
   InternalsUkmRecorder* initializeUKMRecorder();
-
-  // Returns scripts that created an image, as observed by
-  // the LCPScriptObserver Probe.
-  Vector<String> getCreatorScripts(HTMLImageElement* img);
 
  private:
   Document* ContextDocument() const;
