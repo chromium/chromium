@@ -94,6 +94,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -2484,6 +2485,86 @@ public class CustomTabActivityTest {
         Assert.assertFalse(tab.canGoForward());
 
         CriteriaHelper.pollUiThread(() -> !dialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testBackPressNavigationFailure_WithRecover() {
+        Context context = getInstrumentation().getTargetContext().getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = getActivity().getActivityTab();
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+
+        BackPressHandler navigationHandler =
+                getActivity()
+                        .getBackPressManagerForTesting()
+                        .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
+        ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
+                (ObservableSupplierImpl<Boolean>) (navigationHandler
+                                                           .getHandleBackPressChangedSupplier());
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Android.BackPress.Failure",
+                        BackPressManager.getHistogramValueForTesting(
+                                BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handleBackPressChangedSupplier.set(false);
+            try {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            } catch (AssertionError ignored) {
+                if (!ignored.getMessage().contains("-1")) throw ignored;
+            }
+        });
+
+        histogramWatcher.assertExpected("Failure should be recorded");
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Tab should be navigated when tab handler fails",
+                    ChromeTabUtils.getUrlStringOnUiThread(getActivity().getActivityTab()),
+                    is(mTestPage));
+        });
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(false);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
+    public void testBackPressNavigationFailure_WithoutRecover() {
+        Context context = getInstrumentation().getTargetContext().getApplicationContext();
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        final Tab tab = getActivity().getActivityTab();
+        BackPressManager.TAB_HISTORY_RECOVER.setForTesting(false);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> tab.loadUrl(new LoadUrlParams(mTestPage2)));
+        ChromeTabUtils.waitForTabPageLoaded(tab, mTestPage2);
+
+        BackPressHandler navigationHandler =
+                getActivity()
+                        .getBackPressManagerForTesting()
+                        .getHandlersForTesting()[BackPressHandler.Type.TAB_HISTORY];
+        ObservableSupplierImpl<Boolean> handleBackPressChangedSupplier =
+                (ObservableSupplierImpl<Boolean>) (navigationHandler
+                                                           .getHandleBackPressChangedSupplier());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            handleBackPressChangedSupplier.set(false);
+            try {
+                getActivity().getOnBackPressedDispatcher().onBackPressed();
+            } catch (AssertionError ignored) {
+                if (!ignored.getMessage().contains("-1")) throw ignored;
+            }
+        });
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Tab should not be navigated when tab handler fails without recover",
+                    ChromeTabUtils.getUrlStringOnUiThread(getActivity().getActivityTab()),
+                    is(mTestPage2));
+        });
     }
 
     @Test
