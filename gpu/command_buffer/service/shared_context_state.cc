@@ -14,7 +14,9 @@
 #include "gpu/command_buffer/common/shm_count.h"
 #include "gpu/command_buffer/service/context_state.h"
 #include "gpu/command_buffer/service/gl_context_virtual.h"
+#include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_cache_controller.h"
 #include "gpu/command_buffer/service/graphite_image_provider.h"
 #include "gpu/command_buffer/service/service_transfer_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -378,6 +380,7 @@ bool SharedContextState::InitializeGanesh(
 
   gr_context_->setResourceCacheLimit(max_resource_cache_bytes);
   transfer_cache_ = std::make_unique<ServiceTransferCache>(gpu_preferences);
+  gr_cache_controller_ = std::make_unique<raster::GrCacheController>(this);
   return true;
 }
 
@@ -419,6 +422,10 @@ bool SharedContextState::InitializeGraphite(
   // promoted to composited).
   gpu_main_graphite_recorder_ =
       MakeGraphiteRecorderWithImageProvider(graphite_context_);
+  gpu_main_graphite_cache_controller_ =
+      base::MakeRefCounted<raster::GraphiteCacheController>(
+          graphite_context_.get(), gpu_main_graphite_recorder_.get());
+
   viz_compositor_graphite_recorder_ =
       MakeGraphiteRecorderWithImageProvider(graphite_context_);
 
@@ -939,8 +946,13 @@ bool SharedContextState::CheckResetStatus(bool need_gl) {
   return false;
 }
 
-void SharedContextState::ScheduleGrContextCleanup() {
-  gr_cache_controller_.ScheduleGrContextCleanup();
+void SharedContextState::ScheduleSkiaCleanup() {
+  if (gr_cache_controller_) {
+    gr_cache_controller_->ScheduleGrContextCleanup();
+  }
+  if (gpu_main_graphite_cache_controller_) {
+    gpu_main_graphite_cache_controller_->ScheduleCleanup();
+  }
 }
 
 int32_t SharedContextState::GetMaxTextureSize() const {

@@ -22,7 +22,6 @@
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
-#include "gpu/command_buffer/service/gr_cache_controller.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/config/gpu_preferences.h"
@@ -71,7 +70,9 @@ struct ContextState;
 }  // namespace gles2
 
 namespace raster {
+class GrCacheController;
 class GrShaderCache;
+class GraphiteCacheController;
 class RasterDecoderTestBase;
 }  // namespace raster
 
@@ -252,7 +253,7 @@ class GPU_GLES2_EXPORT SharedContextState
   bool CheckResetStatus(bool needs_gl);
   bool device_needs_reset() { return device_needs_reset_; }
 
-  void ScheduleGrContextCleanup();
+  void ScheduleSkiaCleanup();
 
   int32_t GetMaxTextureSize() const;
 
@@ -407,7 +408,12 @@ class GPU_GLES2_EXPORT SharedContextState
   std::unique_ptr<ExternalSemaphorePool> external_semaphore_pool_;
 #endif
 
-  raster::GrCacheController gr_cache_controller_{this};
+  std::unique_ptr<raster::GrCacheController> gr_cache_controller_;
+
+  // The graphite cache controller for |graphite_context_| and
+  // |gpu_main_graphite_recorder_|.
+  scoped_refptr<raster::GraphiteCacheController>
+      gpu_main_graphite_cache_controller_;
 
   base::WeakPtrFactory<SharedContextState> weak_ptr_factory_{this};
 };

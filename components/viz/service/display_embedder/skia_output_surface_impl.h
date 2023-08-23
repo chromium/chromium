@@ -44,6 +44,10 @@ class SharedImageRepresentationFactory;
 struct SwapBuffersCompleteParams;
 }  // namespace gpu
 
+namespace gpu::raster {
+class GraphiteCacheController;
+}  // namespace gpu::raster
+
 namespace skgpu::graphite {
 class Recorder;
 class Recording;
@@ -411,6 +415,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::GrContextType gr_context_type_ = gpu::GrContextType::kGL;
   sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe_;
   raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
+  scoped_refptr<gpu::raster::GraphiteCacheController>
+      graphite_cache_controller_;
 
   bool has_set_draw_rectangle_for_frame_ = false;
   absl::optional<gfx::Rect> draw_rectangle_;

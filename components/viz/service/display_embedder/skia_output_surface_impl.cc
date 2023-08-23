@@ -18,6 +18,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -36,6 +37,7 @@
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/graphite_cache_controller.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
@@ -129,6 +131,30 @@ gpu::ContextUrl& GetActiveUrl() {
   static base::NoDestructor<gpu::ContextUrl> active_url(
       GURL("chrome://gpu/SkiaRenderer"));
   return *active_url;
+}
+
+scoped_refptr<gpu::raster::GraphiteCacheController>
+GetOrCreateGraphiteCacheController(skgpu::graphite::Recorder* recorder) {
+#if DCHECK_IS_ON()
+  static base::ThreadChecker thread_checker;
+#endif
+  // This method is called on viz thread only.
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker);
+
+  // All SkiaOutputSurfaceImpl instances share one cache controller, and the
+  // controller will be released when all SkiaOutputSurfaceImpl instances are
+  // released, so we use WeakPtr here.
+  static base::WeakPtr<gpu::raster::GraphiteCacheController>
+      weak_controller_ptr;
+  if (weak_controller_ptr) {
+    return base::WrapRefCounted(weak_controller_ptr.get());
+  }
+
+  auto controller = base::MakeRefCounted<gpu::raster::GraphiteCacheController>(
+      /*context=*/nullptr, recorder);
+  weak_controller_ptr = controller->GetWeakPtr();
+
+  return controller;
 }
 
 }  // namespace
@@ -765,6 +791,10 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   if (reset_ddl_recorder_on_swap_) {
     RecreateRootDDLRecorder();
   }
+
+  if (graphite_cache_controller_) {
+    graphite_cache_controller_->ScheduleCleanup();
+  }
 }
 
 void SkiaOutputSurfaceImpl::SwapBuffersSkipped(
@@ -1105,6 +1135,13 @@ bool SkiaOutputSurfaceImpl::Initialize() {
       frame_buffer_damage_tracker_.emplace(capabilities_.number_of_buffers);
     }
   }
+
+  // |graphite_recorder_| is used on viz thread, so we get or create cache
+  // controller for graphite_recorder_ and use it on viz thread.
+  if (graphite_recorder_) {
+    graphite_cache_controller_ =
+        GetOrCreateGraphiteCacheController(graphite_recorder_);
+  }
   return result;
 }
 
@@ -1142,7 +1179,6 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(
   }
   graphite_recorder_ =
       dependency_->GetSharedContextState()->viz_compositor_graphite_recorder();
-
   *result = true;
 }
 

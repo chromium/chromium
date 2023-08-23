@@ -93,7 +93,7 @@ gpu::MailboxManager* SkiaOutputSurfaceDependencyWebView::GetMailboxManager() {
 }
 
 void SkiaOutputSurfaceDependencyWebView::ScheduleGrContextCleanup() {
-  shared_context_state_->ScheduleGrContextCleanup();
+  shared_context_state_->ScheduleSkiaCleanup();
 }
 
 scoped_refptr<base::TaskRunner>
