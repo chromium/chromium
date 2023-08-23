@@ -23,11 +23,6 @@ namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1332628): Remove this flag once it's clear it's not necessary.
-BASE_FEATURE(kCropTopPromiseWaitsForFirstFrame,
-             "CropTopPromiseWaitsForFirstFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If crop_id is the empty string, returns an empty base::Token.
 // If crop_id is a valid UUID, returns a base::Token representing the ID.
 // Otherwise, returns nullopt.
@@ -268,10 +263,6 @@ void BrowserCaptureMediaStreamTrack::OnCropVersionObserved(
   DCHECK(IsMainThread());
   DCHECK_GT(crop_version, 0u);
 
-  if (!base::FeatureList::IsEnabled(kCropTopPromiseWaitsForFirstFrame)) {
-    return;
-  }
-
   const auto iter = pending_promises_.find(crop_version);
   if (iter == pending_promises_.end()) {
     return;
@@ -300,7 +291,6 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   // Failure can be reported immediately, but success is only reported once
   // the new crop-version is observed.
   if (result == media::mojom::CropRequestResult::kSuccess &&
-      base::FeatureList::IsEnabled(kCropTopPromiseWaitsForFirstFrame) &&
       !info->crop_version_observed) {
     return;
   }
