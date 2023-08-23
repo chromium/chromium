@@ -831,6 +831,11 @@ public class FeedSurfaceCoordinator
                 lateralPaddingsPx = 0;
             }
 
+            if (header == mSectionHeaderView && ChromeFeatureList.sSurfacePolish.isEnabled()) {
+                mSectionHeaderView.setBackground(AppCompatResources.getDrawable(
+                        mActivity, R.drawable.home_surface_background));
+            }
+
             FeedListContentManager.NativeViewContent content =
                     new FeedListContentManager.NativeViewContent(
                             lateralPaddingsPx, "Header" + header.hashCode(), header);
