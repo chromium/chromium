@@ -85,7 +85,7 @@ const int kMaxGpuIdleTimeMs = 40;
 const int kMaxKeepAliveTimeMs = 200;
 #endif
 #if BUILDFLAG(IS_WIN)
-void TrimD3DResources() {
+void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
   // Graphics drivers periodically allocate internal memory buffers in
   // order to speed up subsequent rendering requests. These memory allocations
   // in general lead to increased memory usage by the overall system.
@@ -98,10 +98,19 @@ void TrimD3DResources() {
   // apps should only call Trim when going idle for a period of time or during
   // low memory conditions.
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
+      context_state->GetD3D11Device();
   if (d3d11_device) {
     Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
     if (SUCCEEDED(d3d11_device.As(&dxgi_device))) {
+      dxgi_device->Trim();
+    }
+  }
+
+  Microsoft::WRL::ComPtr<ID3D11Device> angle_d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  if (angle_d3d11_device && angle_d3d11_device != d3d11_device) {
+    Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
+    if (SUCCEEDED(angle_d3d11_device.As(&dxgi_device))) {
       dxgi_device->Trim();
     }
   }
@@ -858,7 +867,7 @@ void GpuChannelManager::HandleMemoryPressure(
   if (gr_shader_cache_)
     gr_shader_cache_->PurgeMemory(memory_pressure_level);
 #if BUILDFLAG(IS_WIN)
-  TrimD3DResources();
+  TrimD3DResources(shared_context_state_);
 #endif
 }
 
