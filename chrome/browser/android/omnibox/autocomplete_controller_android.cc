@@ -378,6 +378,21 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
       ->OnOmniboxOpenedUrl(log);
 }
 
+jboolean AutocompleteControllerAndroid::OnSuggestionTouchDown(
+    JNIEnv* env,
+    jint match_index,
+    const base::android::JavaParamRef<jobject>& j_web_contents) {
+  const auto& match = autocomplete_controller_->result().match_at(match_index);
+
+  if (SearchPrefetchService* search_prefetch_service =
+          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
+    return search_prefetch_service->OnNavigationLikely(
+        match_index, match, omnibox::mojom::NavigationPredictor::kTouchDown,
+        content::WebContents::FromJavaWebContents(j_web_contents));
+  }
+  return false;
+}
+
 void AutocompleteControllerAndroid::DeleteMatch(JNIEnv* env, jint match_index) {
   const auto& match = autocomplete_controller_->result().match_at(match_index);
   if (match.SupportsDeletion())

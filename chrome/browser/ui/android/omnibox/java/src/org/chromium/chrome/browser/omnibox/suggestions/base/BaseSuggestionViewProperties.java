@@ -114,8 +114,13 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_LONG_CLICK =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
-            ICON, ACTION_BUTTONS, ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK};
+    /** Callback invoked when user touches down on the suggestion. */
+    @VisibleForTesting
+    public static final WritableObjectPropertyKey<Runnable> ON_TOUCH_DOWN_EVENT =
+            new WritableObjectPropertyKey<>();
+
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {ICON, ACTION_BUTTONS,
+            ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK, ON_TOUCH_DOWN_EVENT};
 
     public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, ActionChipsProperties.ALL_UNIQUE_KEYS),

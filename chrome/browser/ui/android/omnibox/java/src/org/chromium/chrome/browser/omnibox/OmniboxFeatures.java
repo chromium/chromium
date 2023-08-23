@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.FeatureList;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -90,6 +91,12 @@ public class OmniboxFeatures {
     public static final MutableFlagWithSafeDefault sSearchReadyOmniboxAllowQueryEdit =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
+
+    private static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetchFlag =
+            new MutableFlagWithSafeDefault(
+                    ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
+
+    public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
     /**
      * @param context The activity context.
@@ -217,5 +224,26 @@ public class OmniboxFeatures {
      */
     public static boolean shouldShortCircuitUnfocusAnimation() {
         return sShortCircuitUnfocusAnimation.isEnabled();
+    }
+
+    /**
+     * Returns whether a touch down event on a search suggestion should send a signal to prefetch
+     * the corresponding page.
+     */
+    public static boolean isTouchDownTriggerForPrefetchEnabled() {
+        return sTouchDownTriggerForPrefetchFlag.isEnabled();
+    }
+
+    /**
+     * Returns the maximum number of prefetches that can be triggered by touch down events within an
+     * omnibox session.
+     */
+    public static int getMaxPrefetchesPerOmniboxSession() {
+        if (!FeatureList.isInitialized()) {
+            return DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION;
+        }
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
+                "max_prefetches_per_omnibox_session", DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
     }
 }

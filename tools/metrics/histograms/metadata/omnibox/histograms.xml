@@ -2954,10 +2954,11 @@ chromium-metrics-reviews@google.com.
       variants="NavigationOrSuggestionPrefetch"/>
 </histogram>
 
-<histogram name="Omnibox.{SearchPrefetch}.StartTime.{NavigationPrefetchOnly}"
+<histogram name="Omnibox.{SearchPrefetch}.StartTimeV2.{NavigationPrefetchOnly}"
     units="ms" expires_after="2023-10-15">
   <owner>ryansturm@chromium.org</owner>
-  <owner>chrome-omnibox-team@google.com</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
   <summary>
     {SearchPrefetch}
 

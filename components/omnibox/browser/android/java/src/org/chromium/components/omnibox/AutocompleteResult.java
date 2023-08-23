@@ -30,7 +30,7 @@ public class AutocompleteResult {
     @IntDef({VerificationPoint.INVALID, VerificationPoint.SELECT_MATCH,
             VerificationPoint.UPDATE_MATCH, VerificationPoint.DELETE_MATCH,
             VerificationPoint.GROUP_BY_SEARCH_VS_URL_BEFORE,
-            VerificationPoint.GROUP_BY_SEARCH_VS_URL_AFTER})
+            VerificationPoint.GROUP_BY_SEARCH_VS_URL_AFTER, VerificationPoint.ON_TOUCH_MATCH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface VerificationPoint {
         int INVALID = 0;
@@ -39,6 +39,7 @@ public class AutocompleteResult {
         int DELETE_MATCH = 3;
         int GROUP_BY_SEARCH_VS_URL_BEFORE = 4;
         int GROUP_BY_SEARCH_VS_URL_AFTER = 5;
+        int ON_TOUCH_MATCH = 6;
     }
 
     /** An empty, initialized AutocompleteResult object. */

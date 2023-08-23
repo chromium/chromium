@@ -46,9 +46,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
@@ -237,6 +239,15 @@ public class AutocompleteMediatorUnitTest {
         when(mLocationBarDataProvider.getTitle()).thenReturn(title);
         when(mLocationBarDataProvider.getPageClassification(false, false))
                 .thenReturn(pageClassification);
+    }
+
+    /**
+     * Sets the native object reference for all suggestions in mSuggestionList.
+     */
+    void setSuggestionNativeObjectRef() {
+        for (int index = 0; index < mSuggestionsList.size(); index++) {
+            mSuggestionsList.get(index).updateNativeObjectRef(index + 1);
+        }
     }
 
     @Test
@@ -967,5 +978,161 @@ public class AutocompleteMediatorUnitTest {
         assertEquals("query", mMediator.queryFromGurl(url));
         verify(mTemplateUrlService).getSearchQueryForUrl(url);
         verifyNoMoreInteractions(mTemplateUrlService);
+    }
+
+    @Test
+    @SmallTest
+    public void touchDownForPrefetch_PrefetchHit() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
+                                OmniboxMetrics.PrefetchResult.HIT)
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                                1)
+                        .build();
+        mMediator.setAutocompleteProfile(mProfile);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(false);
+        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(true);
+        setSuggestionNativeObjectRef();
+        mMediator.onNativeInitialized();
+
+        // Simulate a suggestion being touched down.
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+
+        // Ensure that no extra signals are sent to native.
+        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+
+        // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
+        // prefetch to be recorded.
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), /*matchIndex=*/0,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+
+        // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
+        mMediator.onUrlFocusChange(false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void touchDownForPrefetch_PrefetchMiss() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
+                                OmniboxMetrics.PrefetchResult.MISS)
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                                1)
+                        .build();
+        mMediator.setAutocompleteProfile(mProfile);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(false);
+        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(true);
+        setSuggestionNativeObjectRef();
+        mMediator.onNativeInitialized();
+
+        // Simulate a suggestion being touched down.
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+
+        // Ensure that no extra signals are sent to native.
+        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+
+        // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
+        // prefetch to be recorded.
+        mMediator.onSuggestionClicked(mSuggestionsList.get(1), /*matchIndex=*/1,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+
+        // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
+        mMediator.onUrlFocusChange(false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void touchDownForPrefetch_NoPrefetch() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT,
+                                OmniboxMetrics.PrefetchResult.NO_PREFETCH)
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                                0)
+                        .build();
+        mMediator.setAutocompleteProfile(mProfile);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(false);
+        setSuggestionNativeObjectRef();
+        mMediator.onNativeInitialized();
+
+        // This will simulate the touch down trigger not starting a prefetch.
+        when(mAutocompleteController.onSuggestionTouchDown(0, null)).thenReturn(false);
+
+        // Simulate a suggestion being touched down.
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+
+        // Ensure that no extra signals are sent to native.
+        verify(mAutocompleteController, times(1)).onSuggestionTouchDown(anyInt(), any());
+
+        // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
+        // about prefetch to be recorded.
+        mMediator.onSuggestionClicked(mSuggestionsList.get(0), /*matchIndex=*/0,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1));
+
+        // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
+        mMediator.onUrlFocusChange(false);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void touchDownForPrefetch_LimitNumPrefetches() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                                OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION)
+                        .expectIntRecord(
+                                OmniboxMetrics
+                                        .HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                                1)
+                        .build();
+        mMediator.setAutocompleteProfile(mProfile);
+        when(mLocationBarDataProvider.hasTab()).thenReturn(false);
+        when(mAutocompleteController.onSuggestionTouchDown(anyInt(), any())).thenReturn(true);
+        setSuggestionNativeObjectRef();
+        mMediator.onNativeInitialized();
+
+        // Triggeer one touch down event the maximum allowed. The extra event should not be sent to
+        // native.
+        int numTouchDownEvents = OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1;
+        Assert.assertTrue(numTouchDownEvents < mSuggestionsList.size());
+        for (int i = 0; i < numTouchDownEvents; i++) {
+            mMediator.onSuggestionTouchDown(mSuggestionsList.get(i), i);
+        }
+
+        // Ensure that no extra signals are sent to native.
+        verify(mAutocompleteController,
+                times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
+                .onSuggestionTouchDown(anyInt(), any());
+
+        // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
+        mMediator.onUrlFocusChange(false);
+
+        // Since the state is reset, new prefetches are allowed.
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
+        verify(mAutocompleteController,
+                times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
+                .onSuggestionTouchDown(anyInt(), any());
+        mMediator.onUrlFocusChange(false);
+
+        histogramWatcher.assertExpected();
     }
 }

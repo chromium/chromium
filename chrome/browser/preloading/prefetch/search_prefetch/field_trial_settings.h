@@ -60,12 +60,17 @@ bool IsSearchNavigationPrefetchEnabled();
 bool SearchPrefetchSkipsCancel();
 
 // A flavor of navigation prefetch that triggers when the user changes the
-// selected index in omnibox to a search suggestion via arrow buttons.
+// selected index in omnibox to a search suggestion via arrow buttons. This is
+// for Desktop only.
 bool IsUpOrDownArrowPrefetchEnabled();
 
 // A flavor of navigation prefetch that triggers when the user pushes the mouse
-// down on a Search suggestion.
+// down on a Search suggestion. This is for Desktop only.
 bool IsSearchMouseDownPrefetchEnabled();
+
+// A flavor of navigation prefetch that triggers when the user touches down on a
+// Search suggestion. This is for Android only.
+bool IsTouchDownPrefetchEnabled();
 
 // Allows the top selection to be prefetched by navigation prefetch strategies.
 bool AllowTopNavigationPrefetch();

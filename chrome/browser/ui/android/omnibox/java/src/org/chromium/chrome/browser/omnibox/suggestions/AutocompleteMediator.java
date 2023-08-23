@@ -27,6 +27,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics.RefineActionUsage;
 import org.chromium.chrome.browser.omnibox.R;
@@ -148,6 +149,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mShouldPreventOmniboxAutocomplete;
     private long mLastActionUpTimestamp;
     private boolean mIgnoreOmniboxItemSelection = true;
+
+    // The number of touch down events sent to native during an omnibox session.
+    private int mNumTouchDownEventForwardedInOmniboxSession;
+    // The number of prefetches that were started from touch down events during an omnibox session.
+    private int mNumPrefetchesStartedInOmniboxSession;
+    // The suggestion that the last prefetch was started for within the current omnibox session.
+    private @Nullable AutocompleteMatch mLastPrefetchStartedSuggestion;
 
     public AutocompleteMediator(@NonNull Context context,
             @NonNull AutocompleteControllerProvider controllerProvider,
@@ -352,6 +360,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
                             mDelegate.didFocusUrlFromFakebox(), /*isPrefetch=*/false),
                     mSuggestionsListScrolled);
 
+            // Reset the per omnibox session state of touch down prefetch.
+            OmniboxMetrics.recordNumPrefetchesStartedInOmniboxSession(
+                    mNumPrefetchesStartedInOmniboxSession);
+            mNumTouchDownEventForwardedInOmniboxSession = 0;
+            mNumPrefetchesStartedInOmniboxSession = 0;
+            mLastPrefetchStartedSuggestion = null;
+
             mEditSessionState = EditSessionState.INACTIVE;
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
@@ -427,6 +442,29 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         }
 
         loadUrlForOmniboxMatch(matchIndex, suggestion, url, mLastActionUpTimestamp, true);
+    }
+
+    /**
+     * Triggered when the user touches down on a search suggestion.
+     *
+     * @param suggestion The AutocompleteMatch which was selected.
+     * @param matchIndex Position of the suggestion in the drop down view.
+     */
+    @Override
+    public void onSuggestionTouchDown(@NonNull AutocompleteMatch suggestion, int matchIndex) {
+        if (!mNativeInitialized || mAutocomplete == null
+                || mNumTouchDownEventForwardedInOmniboxSession
+                        >= OmniboxFeatures.getMaxPrefetchesPerOmniboxSession()) {
+            return;
+        }
+        mNumTouchDownEventForwardedInOmniboxSession++;
+        WebContents webContents =
+                mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
+        boolean wasPrefetchStarted = mAutocomplete.onSuggestionTouchDown(matchIndex, webContents);
+        if (wasPrefetchStarted) {
+            mNumPrefetchesStartedInOmniboxSession++;
+            mLastPrefetchStartedSuggestion = suggestion;
+        }
     }
 
     @Override
@@ -1018,6 +1056,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      */
     private void recordMetrics(int matchIndex, int disposition, AutocompleteMatch suggestion) {
         OmniboxMetrics.recordUsedSuggestionFromCache(mAutocompleteResult.isFromCachedResult());
+        OmniboxMetrics.recordTouchDownPrefetchResult(suggestion, mLastPrefetchStartedSuggestion);
 
         // Do not attempt to record other metrics for cached suggestions if the source of the list
         // is local cache. These suggestions do not have corresponding native objects and will fail

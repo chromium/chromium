@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
 import java.lang.annotation.Retention;
@@ -50,6 +52,25 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
 
+    /**
+     * The amount of time it takes to process a touch down event. A touch down event can send a
+     * signal to native to start a prefetch for the suggestion.
+     */
+    public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PROCESS_TIME =
+            "Android.Omnibox.SearchPrefetch.TouchDownProcessTime.NavigationPrefetch";
+
+    /**
+     * The number of prefetches started in an omnibox session via the touch down trigger.
+     */
+    public static final String HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION =
+            "Android.Omnibox.SearchPrefetch.NumPrefetchesStartedInOmniboxSession.NavigationPrefetch";
+
+    /**
+     * The result of prefetches started by touch down events within an omnibox session
+     */
+    public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT =
+            "Android.Omnibox.SearchPrefetch.TouchDownPrefetchResult.NavigationPrefetch";
+
     @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
             RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
             RefineActionUsage.COUNT})
@@ -72,6 +93,19 @@ public class OmniboxMetrics {
         int BAD_URI_SYNTAX = 1;
         /// Unable to start intent: no activity.
         int ACTIVITY_NOT_FOUND = 2;
+        int COUNT = 3;
+    }
+
+    @IntDef({PrefetchResult.HIT, PrefetchResult.MISS, PrefetchResult.NO_PREFETCH,
+            PrefetchResult.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface PrefetchResult {
+        // The last prefetch started matches the suggestion navigated to.
+        int HIT = 0;
+        // The last prefetch started does NOT match the suggesiton navigated to.
+        int MISS = 1;
+        // No prefetches were stated in the omnibox session.
+        int NO_PREFETCH = 2;
         int COUNT = 3;
     }
 
@@ -273,6 +307,48 @@ public class OmniboxMetrics {
      */
     public static void recordOmniboxActionIsUsed(boolean wasUsed) {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_OMNIBOX_ACTION_USED, wasUsed);
+    }
+
+    /**
+     * Record the amount of time it takes to process a touch down event. This can include sending
+     * event to native and then starting a prefetch for the suggestion.
+     */
+    public static TimingMetric recordTouchDownProcessTime() {
+        return TimingMetric.shortThreadTime(HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PROCESS_TIME);
+    }
+
+    /**
+     * Records the number of prefetches started by touch down events in an omnibox session.
+     *
+     * @param numPrefetchesStarted the number of prefetches started wihin the omnibox session.
+     */
+    public static void recordNumPrefetchesStartedInOmniboxSession(int numPrefetchesStarted) {
+        RecordHistogram.recordCount100Histogram(
+                HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION,
+                numPrefetchesStarted);
+    }
+
+    /**
+     * Records the result of prefetches started by touch down events within an omnibox session.
+     *
+     * @param navSuggestion the suggestion that was navigated to.
+     * @param prefetchSuggestion the most recent suggestion that a prefetch was started for. This
+     *         value is null if no prefetches have been started in the current omnibox session.
+     */
+    public static void recordTouchDownPrefetchResult(@NonNull AutocompleteMatch navSuggestion,
+            @Nullable AutocompleteMatch prefetchSuggestion) {
+        @PrefetchResult
+        int result = PrefetchResult.NO_PREFETCH;
+        if (prefetchSuggestion != null) {
+            result = navSuggestion.getNativeObjectRef() != 0
+                            && navSuggestion.getNativeObjectRef()
+                                    == prefetchSuggestion.getNativeObjectRef()
+                    ? PrefetchResult.HIT
+                    : PrefetchResult.MISS;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT, result, PrefetchResult.COUNT);
     }
 
     /**

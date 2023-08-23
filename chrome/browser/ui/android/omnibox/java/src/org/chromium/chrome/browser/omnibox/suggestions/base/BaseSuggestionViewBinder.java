@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -11,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
@@ -83,6 +85,7 @@ public final class BaseSuggestionViewBinder<T extends View>
     }
 
     @Override
+    @SuppressLint("ClickableViewAccessibility")
     public void bind(PropertyModel model, BaseSuggestionView<T> view, PropertyKey propertyKey) {
         if (!sDimensionsInitialized) {
             initializeDimensions(view.getContext());
@@ -126,6 +129,18 @@ public final class BaseSuggestionViewBinder<T extends View>
                 view.setOnLongClickListener(v -> {
                     listener.run();
                     return true;
+                });
+            }
+        } else if (BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT == propertyKey) {
+            Runnable listener = model.get(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT);
+            if (listener == null) {
+                view.setOnTouchListener(null);
+            } else {
+                view.setOnTouchListener((v, event) -> {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        listener.run();
+                    }
+                    return false;
                 });
             }
         }

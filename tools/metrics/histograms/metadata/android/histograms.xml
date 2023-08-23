@@ -40,6 +40,46 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary=""/>
 </variants>
 
+<variants name="AndroidNavigationOrSuggestionPrefetch">
+  <variant name="NavigationPrefetch"
+      summary="Recorded for prefetches where Chrome is relatively confident
+               an omnibox navigation is about to occur (i.e. the user
+               selected a search suggestion). These prefetches allow Chrome
+               to kickstart the request without waiting until before unload
+               handlers or other navigation pre-processing mechanisms in
+               Chrome."/>
+  <variant name="SuggestionPrefetch"
+      summary="Recorded for prefetches where an omnibox suggestion from the
+               suggestion server recommends a prefetch of a suggestion
+               results page."/>
+</variants>
+
+<variants name="AndroidNavigationPrefetchOnly">
+  <variant name="NavigationPrefetch"
+      summary="Recorded for prefetches where Chrome is relatively confident
+               an omnibox navigation is about to occur (i.e. the user
+               selected a search suggestion). These prefetches allow Chrome
+               to kickstart the request without waiting until before unload
+               handlers or other navigation pre-processing mechanisms in
+               Chrome."/>
+</variants>
+
+<variants name="AndroidSearchPrefetch">
+  <variant name="SearchPrefetch"
+      summary="Search Prefetch issues results page requests in response to
+               either the suggestion server or the Omnibox client being
+               confident that the user will navigate to a specific search
+               suggestion. These requests are then served instantly to the
+               user when the user navigates to a search suggestion with the
+               same search terms. These requests can have mismatching query
+               params as the Omnibox client updates the search navigation URL
+               as the user types more into the Omnibox. The suggestion server
+               issues prefetch hints along with the suggestion request.
+               Additionally, the Omnibox client decides to prefetch when the
+               user has chosen (or likely chosen) a search suggestion to
+               initiate the search suggestion navigation earlier."/>
+</variants>
+
 <variants name="ChildProcessConnectionMetricsBindingState">
   <variant name="ContentModerate"
       summary="Moderate binding excluding BindingManager bindings"/>
@@ -2623,6 +2663,86 @@ chromium-metrics-reviews@google.com.
     Recorded every time the User initiates navigation using the Omnibox or the
     Suggestions list, regardless of context.
   </summary>
+</histogram>
+
+<histogram
+    name="Android.Omnibox.{AndroidSearchPrefetch}.GeoLocationTime.{AndroidNavigationOrSuggestionPrefetch}"
+    units="ms" expires_after="2023-10-15">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    {AndroidSearchPrefetch}
+
+    The amount of time it takes to get the Geo Location header for a prefetch
+    request.
+
+    {AndroidNavigationOrSuggestionPrefetch}
+  </summary>
+  <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
+  <token key="AndroidNavigationOrSuggestionPrefetch"
+      variants="AndroidNavigationOrSuggestionPrefetch"/>
+</histogram>
+
+<histogram
+    name="Android.Omnibox.{AndroidSearchPrefetch}.NumPrefetchesStartedInOmniboxSession.{AndroidNavigationPrefetchOnly}"
+    units="count" expires_after="2023-10-15">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    {AndroidSearchPrefetch}
+
+    The number of prefetches that were successfully started from touch down
+    events. This is recorded once per omnibox session.
+
+    {AndroidNavigationPrefetchOnly}
+  </summary>
+  <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
+  <token key="AndroidNavigationPrefetchOnly"
+      variants="AndroidNavigationPrefetchOnly"/>
+</histogram>
+
+<histogram
+    name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownPrefetchResult.{AndroidNavigationPrefetchOnly}"
+    enum="SearchPrefetchTouchDownPrefetchResult" expires_after="2023-10-15">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    {AndroidSearchPrefetch}
+
+    Whether or not the last prefetch started from the touch down trigger was
+    used for a navigation. This is recorded once per omnibox session.
+
+    {AndroidNavigationPrefetchOnly}
+  </summary>
+  <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
+  <token key="AndroidNavigationPrefetchOnly"
+      variants="AndroidNavigationPrefetchOnly"/>
+</histogram>
+
+<histogram
+    name="Android.Omnibox.{AndroidSearchPrefetch}.TouchDownProcessTime.{AndroidNavigationPrefetchOnly}"
+    units="ms" expires_after="2023-10-15">
+  <owner>ryansturm@chromium.org</owner>
+  <owner>curranmax@chromium.org</owner>
+  <owner>chrome-search@google.com</owner>
+  <summary>
+    {AndroidSearchPrefetch}
+
+    The amount of time it takes to process a touch down event for Search
+    Prefetch. This includes cases where: 1) the event is filtered out in the
+    Java code (native is not initialized, the limit for preetches in an omnibox
+    session is reached, etc.), 2) the event is sent to native but the prefetch
+    is not started, and 3) the event is sent to native and the prefetch request
+    is started.
+
+    {AndroidNavigationPrefetchOnly}
+  </summary>
+  <token key="AndroidSearchPrefetch" variants="AndroidSearchPrefetch"/>
+  <token key="AndroidNavigationPrefetchOnly"
+      variants="AndroidNavigationPrefetchOnly"/>
 </histogram>
 
 <histogram name="Android.OmniboxFocusReason" enum="OmniboxFocusReason"

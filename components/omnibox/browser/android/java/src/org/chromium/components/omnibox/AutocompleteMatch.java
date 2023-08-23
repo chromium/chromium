@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
 import androidx.core.util.ObjectsCompat;
 
@@ -191,13 +192,14 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
-    private void updateNativeObjectRef(long nativeMatch) {
+    @VisibleForTesting
+    public void updateNativeObjectRef(long nativeMatch) {
         assert nativeMatch != 0 : "Invalid native object.";
         mNativeMatch = nativeMatch;
     }
 
     /** Returns a reference to Native AutocompleteMatch object. */
-    long getNativeObjectRef() {
+    public long getNativeObjectRef() {
         return mNativeMatch;
     }
 

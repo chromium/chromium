@@ -573,4 +573,11 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
          base::FeatureList::IsEnabled(feature);
 }
 
+// If enabled, sends a signal when a user touches down on a search suggestion to
+// |SearchPrefetchService|. |SearchPrefetchService| will then prefetch
+// suggestion iff the SearchNavigationPrefetch feature and "touch_down" param
+// are enabled.
+BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
+             "OmniboxTouchDownTriggerForPrefetch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace omnibox

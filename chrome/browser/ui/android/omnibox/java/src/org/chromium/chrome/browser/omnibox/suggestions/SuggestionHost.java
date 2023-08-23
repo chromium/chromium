@@ -31,6 +31,14 @@ public interface SuggestionHost {
             @NonNull AutocompleteMatch suggestion, int position, @NonNull GURL url);
 
     /**
+     * Triggered when the user touches down on a suggestion. Only called for search suggestions.
+     *
+     * @param suggestion Touch-downed Suggestion.
+     * @param position The position of the suggestion on the list.
+     */
+    void onSuggestionTouchDown(@NonNull AutocompleteMatch suggestion, int position);
+
+    /**
      * Triggered when the user clicks one of the OmniboxActions attached to Suggestion.
      *
      * @param action the action the user interacted with

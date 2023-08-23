@@ -91,6 +91,11 @@ bool IsSearchMouseDownPrefetchEnabled() {
                                                  "mouse_down", true);
 }
 
+bool IsTouchDownPrefetchEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "touch_down", true);
+}
+
 bool AllowTopNavigationPrefetch() {
   return base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
                                                  "allow_top_selection", true);

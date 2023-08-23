@@ -154,6 +154,11 @@ BASE_DECLARE_FEATURE(kMergeSubtypes);
 // chrome, should be enabled.
 bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
 
+// Allows for touch down events to send a signal to |SearchPrefetchService| to
+// start prefetching the suggestion. The feature only applies to search
+// suggestions and only controls whether the signal is sent.
+BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_

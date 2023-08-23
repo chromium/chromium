@@ -1158,6 +1158,14 @@ const base::FeatureParam<bool> kOmniboxModernizeVisualUpdateMergeClipboardOnNTP(
     false);
 // <- Android UI Revamp
 // ---------------------------------------------------------
+// Touch Down Trigger For Prefetch ->
+const base::FeatureParam<int>
+    kTouchDownTriggerForPrefetchMaxPrefetchesPerOmniboxSession(
+        &omnibox::kOmniboxTouchDownTriggerForPrefetch,
+        "max_prefetches_per_omnibox_session",
+        5);
+// <- Touch Down Trigger For Prefetch
+// ---------------------------------------------------------
 
 }  // namespace OmniboxFieldTrial
 

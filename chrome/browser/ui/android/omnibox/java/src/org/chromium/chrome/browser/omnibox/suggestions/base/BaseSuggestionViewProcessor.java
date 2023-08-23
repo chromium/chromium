@@ -14,7 +14,10 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.metrics.TimingMetric;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -170,6 +173,18 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         mSuggestionHost.onDeleteMatch(suggestion, suggestion.getDisplayText(), position);
     }
 
+    /**
+     * Process the touch down event. Only handles search suggestions.
+     *
+     * @param suggestion Selected suggestion.
+     * @param position Position of the suggesiton on the list.
+     */
+    protected void onSuggestionTouchDownEvent(@NonNull AutocompleteMatch suggestion, int position) {
+        try (TimingMetric metric = OmniboxMetrics.recordTouchDownProcessTime()) {
+            mSuggestionHost.onSuggestionTouchDown(suggestion, position);
+        }
+    }
+
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         model.set(BaseSuggestionViewProperties.ON_CLICK,
@@ -179,6 +194,12 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         setActionButtons(model, null);
+
+        if (OmniboxFeatures.isTouchDownTriggerForPrefetchEnabled()
+                && !OmniboxFeatures.isLowMemoryDevice() && suggestion.isSearchSuggestion()) {
+            model.set(BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT,
+                    () -> onSuggestionTouchDownEvent(suggestion, position));
+        }
 
         if (allowOmniboxActions()) {
             mActionChipsProcessor.populateModel(suggestion, model, position);

@@ -261,6 +261,22 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
+     * Called when the user touches down on a suggestion. Only called for search suggestions.
+     *
+     * @param matchIndex The position at which the match is located.
+     * @param webContents The web contents for the tab where suggestion could be used.
+     * @return Whether or not a prefetch was started.
+     */
+    public boolean onSuggestionTouchDown(int matchIndex, @Nullable WebContents webContents) {
+        if (mNativeController == 0) return false;
+        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.ON_TOUCH_MATCH)) {
+            return false;
+        }
+        return AutocompleteControllerJni.get().onSuggestionTouchDown(
+                mNativeController, matchIndex, webContents);
+    }
+
+    /**
      * Pass the voice provider a list representing the results of a voice recognition.
      * @param results A list containing the results of a voice recognition.
      */
@@ -360,6 +376,8 @@ public class AutocompleteController implements Destroyable {
         void onSuggestionSelected(long nativeAutocompleteControllerAndroid, int matchIndex,
                 int disposition, String currentPageUrl, int pageClassification,
                 long elapsedTimeSinceModified, int completedLength, WebContents webContents);
+        boolean onSuggestionTouchDown(
+                long nativeAutocompleteControllerAndroid, int matchIndex, WebContents webContents);
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
                 String currentUrl, int pageClassification, String currentTitle);
         void deleteMatchElement(

@@ -14,6 +14,7 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -246,10 +247,18 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
       content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
 
 #if BUILDFLAG(IS_ANDROID)
+  base::TimeTicks geo_header_start_timestamp = base::TimeTicks::Now();
   absl::optional<std::string> geo_header =
       GetGeolocationHeaderIfAllowed(resource_request->url, profile);
   if (geo_header) {
     resource_request->headers.AddHeaderFromString(geo_header.value());
+
+    std::string histogram_name =
+        "Omnibox.SearchPrefetch.GeoLocationHeaderTime.";
+    histogram_name.append(navigation_prefetch_ ? "NavigationPrefetch"
+                                               : "SuggestionPrefetch");
+    base::UmaHistogramTimes(
+        histogram_name, (base::TimeTicks::Now() - geo_header_start_timestamp));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

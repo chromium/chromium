@@ -10,8 +10,9 @@ import "url/mojom/url.mojom";
 
 // Events that indicate that the user is about to navigate to a suggestion.
 enum NavigationPredictor {
-  kMouseDown = 1,           // The user pushed the mouse button down.
-  kUpOrDownArrowButton = 2  // The user pushed the down or up arrow button.
+  kMouseDown = 1,            // The user pushed the mouse button down.
+  kUpOrDownArrowButton = 2,  // The user pushed the down or up arrow button.
+  kTouchDown = 3             // The user touched down on a suggestion.
 };
 
 // See components/omnibox/browser/autocomplete_match.h.

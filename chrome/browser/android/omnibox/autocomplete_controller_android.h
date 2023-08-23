@@ -66,6 +66,10 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       jlong elapsed_time_since_first_modified,
       jint completed_length,
       const base::android::JavaParamRef<jobject>& j_web_contents);
+  jboolean OnSuggestionTouchDown(
+      JNIEnv* env,
+      jint match_index,
+      const base::android::JavaParamRef<jobject>& j_web_contents);
   void DeleteMatch(JNIEnv* env, jint match_index);
   void DeleteMatchElement(JNIEnv* env, jint match_index, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>

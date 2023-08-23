@@ -358,6 +358,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &omnibox::kSearchReadyOmniboxAllowQueryEdit,
     &omnibox::kSuggestionAnswersColorReverse,
     &omnibox::kUpdatedConnectionSecurityIndicators,
+    &omnibox::kOmniboxTouchDownTriggerForPrefetch,
     &optimization_guide::features::kPushNotifications,
     &page_info::kPageInfoAboutThisSiteMoreLangs,
     &password_manager::features::kBiometricTouchToFill,

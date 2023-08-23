@@ -61687,6 +61687,7 @@ from previous Chrome versions.
       label="SyncPseudoUSSHistoryDeleteDirectives:enabled"/>
   <int value="-1390005994" label="AppCache:disabled"/>
   <int value="-1389948505" label="InitialNavigationEntry:disabled"/>
+  <int value="-1388956102" label="OmniboxTouchDownTriggerForPrefetch:disabled"/>
   <int value="-1388817073" label="OmniboxReverseAnswers:disabled"/>
   <int value="-1388546778" label="WebAppManifestImmediateUpdating:disabled"/>
   <int value="-1388044691" label="ContentLanguagesInLanguagePicker:enabled"/>
@@ -63698,6 +63699,7 @@ from previous Chrome versions.
   <int value="-373233195" label="SyncUSSAutofillWalletData:enabled"/>
   <int value="-372171039" label="BlinkGenPropertyTrees:disabled"/>
   <int value="-371321069" label="SyncPromoAfterSigninIntercept:enabled"/>
+  <int value="-371103035" label="OmniboxTouchDownTriggerForPrefetch:enabled"/>
   <int value="-370876369" label="ContextualSearchLiteralTapSearch:enabled"/>
   <int value="-369565225" label="SkipServiceWorkerCheckInstallOnly:disabled"/>
   <int value="-369150124" label="SendTabToSelfV2:enabled"/>
@@ -95968,6 +95970,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="Serving to prerender navigation stack and user navigated to
              search terms"/>
   <int value="10" label="Upgraded to prerender and succeeded"/>
+</enum>
+
+<enum name="SearchPrefetchTouchDownPrefetchResult">
+  <int value="0" label="Hit, last prefetch matches navigation"/>
+  <int value="1" label="Miss, last prefetch does not match navigation"/>
+  <int value="2" label="No prefetch"/>
 </enum>
 
 <enum name="SearchPreloadForwardingResult">

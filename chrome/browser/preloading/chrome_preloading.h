@@ -99,6 +99,12 @@ static constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
     110,
     "MouseHoverOnNewTabPage");
 
+// When the preloading URL is predicted from the default search suggest due to
+// the user touching down on a Omnibox Search suggestion.
+static constexpr content::PreloadingPredictor kOmniboxTouchDownPredictor(
+    111,
+    "OmniboxTouchDownPredirector");
+
 // TODO(crbug.com/1309934): Integrate more Preloading predictors with
 // Preloading logging APIs.
 }  // namespace chrome_preloading_predictor
