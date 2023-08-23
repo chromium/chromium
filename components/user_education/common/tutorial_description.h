@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -534,6 +535,9 @@ struct TutorialDescription {
   // cases this flag should be set to false so that the restart tutorial button
   // is not displayed.
   bool can_be_restarted = false;
+
+  // The text ID to use for the complete button at the end of the tutorial.
+  int complete_button_text_id = IDS_TUTORIAL_CLOSE_TUTORIAL;
 
  private:
   static void AddStep(std::vector<Step>& dest, Step step) {

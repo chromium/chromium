@@ -68,6 +68,7 @@ class Tutorial {
                              int& current_progress,
                              bool is_terminal,
                              bool can_be_restarted,
+                             int complete_button_text_id,
                              TutorialService* tutorial_service);
 
     Builder(const Builder& other) = delete;

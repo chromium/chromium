@@ -130,30 +130,30 @@ TEST_F(TutorialTest, TutorialBuilder) {
   auto step1 = Tutorial::Builder::BuildFromDescriptionStep(
       TutorialDescription::BubbleStep(kTestIdentifier1)
           .SetBubbleBodyText(IDS_OK),
-      2, current_progress, false, false, &service);
+      2, current_progress, false, false, IDS_TUTORIAL_CLOSE_TUTORIAL, &service);
 
   // build a step that names an element
   auto step2 = Tutorial::Builder::BuildFromDescriptionStep(
       TutorialDescription::HiddenStep::WaitForShown(kTestIdentifier1)
           .NameElement(kTestElementName1),
-      2, current_progress, false, false, &service);
+      2, current_progress, false, false, IDS_TUTORIAL_CLOSE_TUTORIAL, &service);
 
   // build a step with a named element
   auto step3 = Tutorial::Builder::BuildFromDescriptionStep(
       TutorialDescription::BubbleStep(kTestElementName1)
           .SetBubbleBodyText(IDS_OK),
-      2, current_progress, false, false, &service);
+      2, current_progress, false, false, IDS_TUTORIAL_CLOSE_TUTORIAL, &service);
 
   // transition event
   auto step4 = Tutorial::Builder::BuildFromDescriptionStep(
       TutorialDescription::HiddenStep::WaitForShowEvent(kTestIdentifier1), 2,
-      current_progress, false, false, &service);
+      current_progress, false, false, IDS_TUTORIAL_CLOSE_TUTORIAL, &service);
 
   // final bubble
   auto step5 = Tutorial::Builder::BuildFromDescriptionStep(
       TutorialDescription::BubbleStep(kTestIdentifier1)
           .SetBubbleBodyText(IDS_OK),
-      2, current_progress, true, false, &service);
+      2, current_progress, true, false, IDS_TUTORIAL_CLOSE_TUTORIAL, &service);
 
   builder.SetContext(kTestContext1)
       .AddStep(std::move(step1))

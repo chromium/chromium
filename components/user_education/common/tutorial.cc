@@ -77,13 +77,14 @@ void AddStepBuilderSubsequence(
     int& current_progress,
     bool is_terminal,
     bool can_be_restarted,
+    int complete_button_text_id,
     TutorialService* tutorial_service) {
   ui::InteractionSequence::Builder subsequence;
   for (const auto& step : steps) {
     subsequence.AddStep(Tutorial::Builder::BuildFromDescriptionStep(
         step, max_progress, current_progress,
         is_terminal && &step == &steps.back(), can_be_restarted,
-        tutorial_service));
+        complete_button_text_id, tutorial_service));
   }
   builder.AddSubsequence(std::move(subsequence), std::move(condition));
 }
@@ -104,11 +105,15 @@ class TutorialStepBuilder {
   explicit TutorialStepBuilder(const TutorialDescription::Step& step,
                                absl::optional<std::pair<int, int>> progress,
                                bool is_last_step,
-                               bool can_be_restarted)
+                               bool can_be_restarted,
+                               int complete_button_text_id)
       : progress_(progress),
         is_last_step_(is_last_step),
         can_be_restarted_(can_be_restarted),
-        step_(step) {}
+        complete_button_text_id_(complete_button_text_id),
+        step_(step) {
+    CHECK_NE(complete_button_text_id_, 0);
+  }
   ~TutorialStepBuilder() = default;
 
   std::unique_ptr<ui::InteractionSequence::Step> Build(
@@ -124,10 +129,11 @@ class TutorialStepBuilder {
   ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
       TutorialService* tutorial_service);
 
-  absl::optional<std::pair<int, int>> progress_;
-  bool is_last_step_ = false;
-  bool can_be_restarted_ = false;
-  TutorialDescription::Step step_;
+  const absl::optional<std::pair<int, int>> progress_;
+  const bool is_last_step_;
+  const bool can_be_restarted_;
+  const int complete_button_text_id_;
+  const TutorialDescription::Step step_;
 };
 
 std::unique_ptr<ui::InteractionSequence::Step> TutorialStepBuilder::Build(
@@ -183,7 +189,7 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
       [](TutorialService* tutorial_service, std::u16string title_text_,
          std::u16string body_text_, HelpBubbleArrow arrow_,
          absl::optional<std::pair<int, int>> progress, bool is_last_step,
-         bool can_be_restarted,
+         bool can_be_restarted, int complete_button_text_id,
          TutorialDescription::NextButtonCallback next_button_callback,
          HelpBubbleParams::ExtendedProperties extended_properties,
          ui::InteractionSequence* sequence, ui::TrackedElement* element) {
@@ -230,16 +236,16 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
             params.buttons.emplace_back(std::move(restart_button));
           }
 
-          HelpBubbleButtonParams close_button;
-          close_button.text =
-              l10n_util::GetStringUTF16(IDS_TUTORIAL_CLOSE_TUTORIAL);
-          close_button.is_default = true;
-          close_button.callback = base::BindOnce(
+          HelpBubbleButtonParams complete_button;
+          complete_button.text =
+              l10n_util::GetStringUTF16(complete_button_text_id);
+          complete_button.is_default = true;
+          complete_button.callback = base::BindOnce(
               [](TutorialService* tutorial_service) {
                 tutorial_service->CompleteTutorial();
               },
               base::Unretained(tutorial_service));
-          params.buttons.emplace_back(std::move(close_button));
+          params.buttons.emplace_back(std::move(complete_button));
         } else if (next_button_callback) {
           HelpBubbleButtonParams next_button;
           next_button.text =
@@ -263,8 +269,8 @@ TutorialStepBuilder::BuildMaybeShowBubbleCallback(
         tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step);
       },
       base::Unretained(tutorial_service), title_text, body_text, step_.arrow(),
-      progress_, is_last_step_, can_be_restarted_, step_.next_button_callback(),
-      step_.extended_properties());
+      progress_, is_last_step_, can_be_restarted_, complete_button_text_id_,
+      step_.next_button_callback(), step_.extended_properties());
 }
 
 ui::InteractionSequence::StepEndCallback
@@ -285,6 +291,7 @@ Tutorial::Builder::BuildFromDescriptionStep(
     int& current_progress,
     bool is_terminal,
     bool can_be_restarted,
+    int complete_button_text_id,
     TutorialService* tutorial_service) {
   if (step.step_type() == ui::InteractionSequence::StepType::kSubsequence) {
     CHECK(!step.branches().empty());
@@ -303,7 +310,7 @@ Tutorial::Builder::BuildFromDescriptionStep(
                  const ui::TrackedElement* el) { return callback.Run(el); },
               std::move(branch.first)),
           std::move(branch.second), max_progress, branch_progress, is_terminal,
-          can_be_restarted, tutorial_service);
+          can_be_restarted, complete_button_text_id, tutorial_service);
       current_progress = std::max(current_progress, branch_progress);
     }
     return builder.Build();
@@ -326,8 +333,8 @@ Tutorial::Builder::BuildFromDescriptionStep(
       DCHECK(!is_terminal)
           << "Hidden step should never be the last step in a sequence.";
     }
-    internal::TutorialStepBuilder step_builder(step, progress, is_terminal,
-                                               can_be_restarted);
+    internal::TutorialStepBuilder step_builder(
+        step, progress, is_terminal, can_be_restarted, complete_button_text_id);
     return step_builder.Build(tutorial_service);
   }
 }
@@ -351,7 +358,7 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
     builder.AddStep(BuildFromDescriptionStep(
         step, max_progress, current_progress,
         &step == &description.steps.back(), description.can_be_restarted,
-        tutorial_service));
+        description.complete_button_text_id, tutorial_service));
   }
   DCHECK_EQ(current_progress, max_progress + 1);
 
