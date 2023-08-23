@@ -52,8 +52,6 @@ class ProxyImplBase {
   explicit ProxyImplBase(UpdaterScope scope) : scope_(scope) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
     VLOG(2) << __func__;
-    // TODO(crbug.com/1473487): remove after the issue is resolved.
-    task_runner_->PostTask(FROM_HERE, base::BindOnce([] { ExpectIsSTA(); }));
   }
 
   ~ProxyImplBase() {
@@ -62,9 +60,7 @@ class ProxyImplBase {
   }
 
   void PostRPCTask(base::OnceClosure task) {
-    // TODO(crbug.com/1473487): replace expectation with a CHECK.
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce([] { ExpectIsSTA(); }).Then(std::move(task)));
+    task_runner_->PostTask(FROM_HERE, std::move(task));
   }
 
   HResultOr<Microsoft::WRL::ComPtr<Interface>> CreateInterface() const {
