@@ -7,12 +7,15 @@
 #import <Foundation/Foundation.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/base_paths.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/path_service.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/history/core/browser/history_constants.h"
 #import "components/optimization_guide/core/optimization_guide_constants.h"
 
 // Key for last stored time that size metrics of the documents directory were
@@ -20,8 +23,26 @@
 NSString* const kLastApplicationStorageMetricsLogTime =
     @"LastApplicationStorageMetricsLogTime";
 
+// The path, relative to the profile directory, where tab state is stored.
+const base::FilePath::CharType kSessionsPath[] = FILE_PATH_LITERAL("Sessions");
+
+// The path, relative to the application's Library directory, to WebKit's
+// storage location for website local data .
+const base::FilePath::CharType kWebsiteLocalDataPath[] =
+    FILE_PATH_LITERAL("WebKit/WebsiteData/Default");
+
+// The path, relative to the tmp directory, used for WebKit tmp data.
+const base::FilePath::CharType kWebKitTmpPath[] = FILE_PATH_LITERAL("WebKit");
+
+// The path, relative to the Caches directory, used for WebKit cache.
+const base::FilePath::CharType kWebKitCachePath[] = FILE_PATH_LITERAL("WebKit");
+
 // Calculates and returns the total size used by `root`.
 int64_t CalculateTotalSize(base::FilePath root) {
+  if (!base::PathExists(root)) {
+    return 0;
+  }
+
   base::File file(root, base::File::FLAG_OPEN | base::File::FLAG_READ);
   base::File::Info info;
   if (!file.IsValid() || !file.GetInfo(&info)) {
@@ -45,6 +66,38 @@ int64_t CalculateTotalSize(base::FilePath root) {
   return total_directory_size;
 }
 
+// Returns the path to the sandbox "Application Support" directory.
+base::FilePath GetApplicationSupportDirectory() {
+  base::FilePath application_support_path;
+  base::PathService::Get(base::DIR_APP_DATA, &application_support_path);
+  return application_support_path;
+}
+
+// Returns the path to the sandbox "Caches" directory.
+base::FilePath GetCachesDirectory() {
+  NSArray* cachesDirectories = NSSearchPathForDirectoriesInDomains(
+      NSCachesDirectory, NSUserDomainMask, YES);
+  NSString* cachePath = [cachesDirectories objectAtIndex:0];
+  return base::apple::NSStringToFilePath(cachePath);
+}
+
+// Logs the WebKit and Chrome Cache directory sizes. Accepts a task runner as a
+// parameter in order to keep it in scope throughout the execution.
+void LogCacheDirectorySizes(scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath caches_path = GetCachesDirectory();
+
+  base::FilePath webkit_caches_path = caches_path.Append(kWebKitCachePath);
+  int64_t webkit_cache_size_bytes = CalculateTotalSize(webkit_caches_path);
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.WebKitCacheSize",
+                                 webkit_cache_size_bytes / 1024 / 1024);
+
+  int64_t total_cache_size_bytes = CalculateTotalSize(caches_path);
+  int64_t chrome_cache_size_bytes =
+      total_cache_size_bytes - webkit_cache_size_bytes;
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.ChromeCacheSize",
+                                 chrome_cache_size_bytes / 1024 / 1024);
+}
+
 // Logs the "Documents" directory size. Accepts a task runner as a parameter in
 // order to keep it in scope throughout the execution.
 void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
@@ -52,6 +105,17 @@ void LogDocumentsDirectorySize(scoped_refptr<base::SequencedTaskRunner>) {
   int total_size_bytes = CalculateTotalSize(documents_path);
   UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.DocumentsSize2",
                                  total_size_bytes / 1024 / 1024);
+}
+
+// Logs the Favicons storage size. Accepts a task runner as a parameter in
+// order to keep it in scope throughout the execution.
+void LogFaviconsStorageSize(base::FilePath profile_path,
+                            scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath favicons_path =
+      profile_path.Append(history::kFaviconsFilename);
+  int64_t total_size_bytes = CalculateTotalSize(favicons_path);
+  UMA_HISTOGRAM_MEMORY_KB("IOS.SandboxMetrics.FaviconsSize",
+                          total_size_bytes / 1024);
 }
 
 // Logs the "Library" directory size. Accepts a task runner as a parameter in
@@ -90,6 +154,61 @@ void LogOptimizationGuideModelDownloadsMetrics(
       "IOS.SandboxMetrics.OptimizationGuideModelDownloadedItems", items);
 }
 
+// Logs the total amount of storage used by the regular and OTR tabs for both
+// tab state and snapshots and the total size of the Application Support
+// directory excluding the storage used by tabs.
+void LogApplicationSupportDirectorySize(
+    base::FilePath profile_path,
+    base::FilePath otr_profile_path,
+    scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath session_storage_dir = profile_path.Append(kSessionsPath);
+  int64_t regular_tabs_size_bytes = CalculateTotalSize(session_storage_dir);
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.TotalRegularSessionSize",
+                                 regular_tabs_size_bytes / 1024 / 1024);
+
+  base::FilePath otr_storage_dir = otr_profile_path.Append(kSessionsPath);
+  int64_t otr_tabs_size_bytes = CalculateTotalSize(otr_storage_dir);
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.TotalOTRSessionSize",
+                                 otr_tabs_size_bytes / 1024 / 1024);
+
+  int64_t tab_storage_size = regular_tabs_size_bytes + otr_tabs_size_bytes;
+  int64_t application_support_size =
+      CalculateTotalSize(GetApplicationSupportDirectory());
+  int64_t size_without_tabs_data = application_support_size - tab_storage_size;
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.ApplicationSupportSize",
+                                 size_without_tabs_data / 1024 / 1024);
+}
+
+// Logs the WebKit tmp directory size and the size of the tmp directory
+// excluding the WebKit directory. Accepts a task runner as a parameter in order
+// to keep it in scope throughout the execution.
+void LogTmpDirectorySizes(base::FilePath profile_path,
+                          scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath tmp_dir;
+  if (GetTempDir(&tmp_dir)) {
+    base::FilePath tmp_webkit_path = profile_path.Append(kWebKitTmpPath);
+    int webkit_tmp_size_bytes = CalculateTotalSize(tmp_webkit_path);
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.WebKitTempSize",
+                                   webkit_tmp_size_bytes / 1024 / 1024);
+
+    int total_tmp_size_bytes = CalculateTotalSize(tmp_dir);
+    int tmp_without_webkit_data = total_tmp_size_bytes - webkit_tmp_size_bytes;
+    UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.ChromeTempSize",
+                                   tmp_without_webkit_data / 1024 / 1024);
+  }
+}
+
+// Logs the `kWebsiteLocalDataPath` directory size. Accepts a task runner as a
+// parameter in order to keep it in scope throughout the execution.
+void LogWebsiteLocalDataSize(base::FilePath profile_path,
+                             scoped_refptr<base::SequencedTaskRunner>) {
+  base::FilePath library_path = base::apple::GetUserLibraryPath();
+  base::FilePath website_data_dir = profile_path.Append(kWebsiteLocalDataPath);
+  int total_size_bytes = CalculateTotalSize(website_data_dir);
+  UMA_HISTOGRAM_MEMORY_MEDIUM_MB("IOS.SandboxMetrics.WebsiteLocalData",
+                                 total_size_bytes / 1024 / 1024);
+}
+
 // Updates the last metric logged time. Accepts a task runner as a parameter in
 // order to keep it in scope throughout the execution.
 void UpdateLastLoggedTime(scoped_refptr<base::SequencedTaskRunner>) {
@@ -98,19 +217,33 @@ void UpdateLastLoggedTime(scoped_refptr<base::SequencedTaskRunner>) {
          forKey:kLastApplicationStorageMetricsLogTime];
 }
 
-void LogApplicationStorageMetrics(base::FilePath profile_path) {
+void LogApplicationStorageMetrics(base::FilePath profile_path,
+                                  base::FilePath off_the_record_state_path) {
   scoped_refptr<base::SequencedTaskRunner> task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&LogApplicationSupportDirectorySize, profile_path,
+                     off_the_record_state_path, task_runner));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&LogCacheDirectorySizes, task_runner));
+  task_runner->PostTask(
       FROM_HERE, base::BindOnce(&LogDocumentsDirectorySize, task_runner));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&LogFaviconsStorageSize,
+                                                  profile_path, task_runner));
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&LogLibraryDirectorySize, task_runner));
   task_runner->PostTask(
       FROM_HERE, base::BindOnce(&LogOptimizationGuideModelDownloadsMetrics,
                                 profile_path, task_runner));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&LogTmpDirectorySizes,
+                                                  profile_path, task_runner));
+  task_runner->PostTask(FROM_HERE, base::BindOnce(&LogWebsiteLocalDataSize,
+                                                  profile_path, task_runner));
+
   task_runner->PostTask(FROM_HERE,
                         base::BindOnce(&UpdateLastLoggedTime, task_runner));
 }

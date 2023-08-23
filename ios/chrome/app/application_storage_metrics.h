@@ -14,8 +14,9 @@ extern NSString* const kLastApplicationStorageMetricsLogTime;
 
 // Logs metrics about the storage used by the application and then updates the
 // `kLastApplicationStorageMetricsLogTime` user default value. `profile_path`
-// must point to the main user profile directory in order to log metrics about
-// Optimization Guide storage usage.
-void LogApplicationStorageMetrics(base::FilePath profile_path);
+// must point to the main user non-incognito profile directory and
+// `off_the_record_state_path` to the incognito state path.
+void LogApplicationStorageMetrics(base::FilePath profile_path,
+                                  base::FilePath off_the_record_state_path);
 
 #endif  // IOS_CHROME_APP_APPLICATION_STORAGE_METRICS_H_

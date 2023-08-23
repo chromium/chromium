@@ -1250,8 +1250,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     return;
   }
 
-  base::FilePath profilePath = self.appState.mainBrowserState->GetStatePath();
-  LogApplicationStorageMetrics(profilePath);
+  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  base::FilePath profilePath = browserState->GetStatePath();
+  base::FilePath offTheRecordStatePath =
+      browserState->GetOffTheRecordStatePath();
+  LogApplicationStorageMetrics(profilePath, offTheRecordStatePath);
 }
 
 - (void)expireFirstUserActionRecorder {

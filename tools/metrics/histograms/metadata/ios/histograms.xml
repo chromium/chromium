@@ -2177,6 +2177,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SandboxMetrics.ApplicationSupportSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the &quot;Application Support&quot; directory
+    excluding the storage used by all currently open tabs. Logged at application
+    startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SandboxMetrics.AvailableCapacity" units="MB"
     expires_after="2024-02-11">
   <owner>michaeldo@chromium.org</owner>
@@ -2237,6 +2249,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SandboxMetrics.ChromeCacheSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the Chrome cache directory. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.ChromeTempSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the Chrome tmp directory. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SandboxMetrics.DocumentsSize2" units="MB"
     expires_after="2024-02-11">
   <owner>michaeldo@chromium.org</owner>
@@ -2245,6 +2279,17 @@ chromium-metrics-reviews@google.com.
     The total amount of storage used by the application Documents directory.
     Chrome uses this directory to store files downloaded by the user. Logged at
     application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.FaviconsSize" units="KB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the favicons file. Logged at application
+    startup, maximum once every 2 weeks, if the
     `kLogApplicationStorageSizeMetrics` flag is enabled.
   </summary>
 </histogram>
@@ -2290,6 +2335,66 @@ chromium-metrics-reviews@google.com.
   <summary>
     The total amount of storage capacity on the device. Logged once per
     application cold launch, on startup.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.TotalOTRSessionSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the currently open incognito tabs. This
+    includes both the storage used for current tab state and the associated
+    snapshot images. Logged at application startup, maximum once every 2 weeks,
+    if the `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.TotalRegularSessionSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The total amount of storage used by the currently open regular (non
+    incognito) tabs. This includes both the storage used for current tab state
+    and the associated snapshot images. Logged at application startup, maximum
+    once every 2 weeks, if the `kLogApplicationStorageSizeMetrics` flag is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.WebKitCacheSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the WebKit cache directory. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.WebKitTempSize" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the WebKit tmp directory. Logged at
+    application startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SandboxMetrics.WebsiteLocalData" units="MB"
+    expires_after="2023-12-10">
+  <owner>michaeldo@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    The amount of storage used by the
+    &quot;Library/WebKit/WebsiteData/Default&quot; directory which stores
+    IndexedDB and Local Storage data for websites. Logged at application
+    startup, maximum once every 2 weeks, if the
+    `kLogApplicationStorageSizeMetrics` flag is enabled.
   </summary>
 </histogram>
 
