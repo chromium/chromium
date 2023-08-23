@@ -160,4 +160,19 @@ public class ReadingListSectionHeaderTest {
         assertSectionHeader(listItems.get(1), R.string.reading_list_read,
                 R.dimen.bookmark_reading_list_section_header_padding_top);
     }
+
+    @Test
+    public void testReadAndUnreadItems_equalCreationTime() {
+        List<BookmarkListEntry> listItems = new ArrayList<>();
+        listItems.add(createReadingListEntry(1, false, OLDER_CREATION_TIMESTAMP));
+        listItems.add(createReadingListEntry(2, false, OLDER_CREATION_TIMESTAMP));
+        listItems.add(createReadingListEntry(3, true, OLDER_CREATION_TIMESTAMP));
+        listItems.add(createReadingListEntry(4, true, OLDER_CREATION_TIMESTAMP));
+        ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems);
+
+        assertEquals("Incorrect number of items in the adapter", 6, listItems.size());
+        assertSectionHeader(listItems.get(0), R.string.reading_list_unread, 0);
+        assertSectionHeader(listItems.get(3), R.string.reading_list_read,
+                R.dimen.bookmark_reading_list_section_header_padding_top);
+    }
 }
