@@ -42,14 +42,7 @@
       width: 100%;
     }
 
-    /* Used to spread out the buttons in the old-style OOBE layout
-     * which has 2 buttons at the bottom  of the page.
-     */
-    .buttons-layout {
-      justify-content: space-between;
-    }
-
-    .new-oobe-layout-back-button {
+    .back-button {
       padding: 22px 0 0 22px;
     }
 
@@ -66,8 +59,7 @@
         flex-direction: row;
       }
 
-      /* Layout for the new OOBE buttons is adaptive */
-      .new-oobe-buttons-layout {
+      .buttons-layout {
         align-items: center;
         display: flex;
         justify-content: flex-end;
@@ -103,8 +95,7 @@
         flex-direction: column;
       }
 
-      /* Layout for the new OOBE buttons is adaptive */
-      .new-oobe-buttons-layout {
+      .buttons-layout {
         display: flex;
         justify-content: center;
         width: 100%;
@@ -224,16 +215,6 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-
-    .buttons-layout {
-      align-items: center;
-      display: flex;
-      justify-content: space-between;
-      margin-inline-end: 32px;
-      margin-inline-start: 32px;
-      width: 100%;
-    }
-
     span[slot='buttons'] {
       display: flex;
       width: 100%;

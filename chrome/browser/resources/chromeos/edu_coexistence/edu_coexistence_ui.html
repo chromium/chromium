@@ -23,9 +23,8 @@
 
 <edu-coexistence-template>
   <span slot="main">
-    <div class="new-oobe-layout-back-button" hidden$="[[!showGaiaButtons_]]">
-      <edu-coexistence-button hidden$="[[!newOobeLayoutEnabled_]]"
-                              button-type="back"
+    <div class="back-button" hidden$="[[!showGaiaButtons_]]">
+      <edu-coexistence-button button-type="back"
          id="gaia-back-button"
          on-go-back="handleGaiaLoginGoBack_">
       </edu-coexistence-button>
@@ -42,20 +41,11 @@
       </div>
     </div>
   </span>
-  <span slot="buttons" hidden$="[[!showGaiaButtons_]]"
-        class$="[[buttonsLayoutCssClass_]]">
-    <span hidden$="[[newOobeLayoutEnabled_]]">
-      <edu-coexistence-button button-type="back"
-        id="gaia-back-button"
-        on-go-back="handleGaiaLoginGoBack_">
-      </edu-coexistence-button>
-    </span>
-    <span>
-      <gaia-action-buttons id="gaiaNextButton"
-        authenticator="[[controller_.authExtHost_]]"
-        rounded-button="[[newOobeLayoutEnabled_]]"
-        hidden$="[[!showGaiaNextButton_]]">
-      </gaia-action-buttons>
-    </span>
+  <span slot="buttons" hidden$="[[!showGaiaButtons_]]" class="buttons-layout">
+    <gaia-action-buttons id="gaiaNextButton"
+      authenticator="[[controller_.authExtHost_]]"
+      rounded-button="true"
+      hidden$="[[!showGaiaNextButton_]]">
+    </gaia-action-buttons>
   </span>
 </edu-coexistence-template>

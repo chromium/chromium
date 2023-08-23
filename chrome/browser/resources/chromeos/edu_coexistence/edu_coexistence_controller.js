@@ -25,7 +25,6 @@ const MILLISECONDS_PER_SECOND = 1000;
  *   email: (string|undefined),
  *   readOnlyEmail: (string|undefined),
  *   signinTime: (number),
- *   newOobeLayoutEnabled: (boolean),
  * }}
  */
 export let EduCoexistenceParams;
@@ -72,7 +71,6 @@ export class EduCoexistenceController extends PostMessageApiServer {
     super(webview, originURLPrefix, originURLPrefix);
 
     this.ui = ui;
-    this.newOobeLayoutEnabled_ = params.newOobeLayoutEnabled;
     this.isOobe_ = params.sourceUi === 'oobe';
     this.flowURL_ = flowURL;
     this.originURLPrefix_ = originURLPrefix;
@@ -130,11 +128,6 @@ export class EduCoexistenceController extends PostMessageApiServer {
   onInitializationError(origin) {
     this.reportError_(
         ['Error initializing communication channel with origin:' + origin]);
-  }
-
-  /** @return {boolean} */
-  getNewOobeLayoutEnabled() {
-    return this.newOobeLayoutEnabled_;
   }
 
   /** @return {boolean} */

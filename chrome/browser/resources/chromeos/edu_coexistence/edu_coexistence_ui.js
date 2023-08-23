@@ -65,29 +65,6 @@ class EduCoexistenceUi extends EduCoexistenceUiBase {
       },
 
       /**
-       * Indicates whether the new OOBE Layout should be enabled. For
-       * simplicity, this only controls whether particular elements are
-       * rendered, and does not prevent the new oobe adaptive layout features,
-       * which will always be enabled.
-       * @private
-       */
-      newOobeLayoutEnabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Indicates the CSS class used for the buttons-layout for
-       * the buttons at the bottom of the screen.  The layout
-       * differs depending on whether the new OOBE layout is enabled.
-       * @private
-       */
-      buttonsLayoutCssClass_: {
-        type: String,
-        computed: 'getButtonsCssClass_(newOobeLayoutEnabled_)',
-      },
-
-      /**
        * The EDU Coexistence controller instance.
        * @private
        */
@@ -116,8 +93,6 @@ class EduCoexistenceUi extends EduCoexistenceUiBase {
         (data) => {
           this.controller_ =
               new EduCoexistenceController(this, assert(this.webview_), data);
-          this.newOobeLayoutEnabled_ =
-              this.controller_.getNewOobeLayoutEnabled();
           EduCoexistenceBrowserProxyImpl.getInstance().initializeLogin();
         },
         (err) => {
@@ -176,11 +151,6 @@ class EduCoexistenceUi extends EduCoexistenceUiBase {
     });
   }
 
-  /** @private */
-  getButtonsCssClass_(newOobeLayoutEnabled) {
-    return newOobeLayoutEnabled ? 'new-oobe-buttons-layout' : 'buttons-layout';
-  }
-
   /**
    * Configures the UI for showing/hiding the GAIA login flow.
    * @private
@@ -191,12 +161,6 @@ class EduCoexistenceUi extends EduCoexistenceUiBase {
     const contentContainer = template.$$('div.content-container');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
-      this.shadowRoot.querySelector('edu-coexistence-button')
-          .newOobeStyleEnabled = this.newOobeLayoutEnabled_;
-
-      this.shadowRoot.querySelector('gaia-action-buttons').roundedButton =
-          this.newOobeLayoutEnabled_;
-
       // Show the GAIA Buttons.
       this.showGaiaButtons_ = true;
       // Shrink the content-container so that the buttons line up more closely

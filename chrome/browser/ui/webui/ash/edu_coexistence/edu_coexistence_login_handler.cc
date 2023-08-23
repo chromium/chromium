@@ -296,8 +296,6 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
   params.Set("deviceId", GetDeviceIdForActiveUserProfile());
 
   params.Set("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
-  // TODO(crbug.com/1202135): Remove along with JS part.
-  params.Set("newOobeLayoutEnabled", true);
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

@@ -23,8 +23,6 @@ class EduCoexistenceError extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
-    this.shadowRoot.querySelector('edu-coexistence-button')
-        .newOobeStyleEnabled = true;
     this.shadowRoot.querySelector('edu-coexistence-template')
         .showButtonFooter(true);
 
