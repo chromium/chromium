@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -616,8 +617,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   EXPECT_THAT(GetIwaUsage(url_info2), 0);
 }
 
+// TODO(https://crbug.com/1475108): Flaky on Linux Debug bots.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_ClearBrowserDataTimeRanged DISABLED_ClearBrowserDataTimeRanged
+#else
+#define MAYBE_ClearBrowserDataTimeRanged ClearBrowserDataTimeRanged
+#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
-                       ClearBrowserDataTimeRanged) {
+                       MAYBE_ClearBrowserDataTimeRanged) {
   auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
   cache_test_server->AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("content/test/data")));
