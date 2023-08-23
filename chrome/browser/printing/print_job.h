@@ -165,14 +165,14 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
 
   // Returns the ID of the source.
   const std::string& source_id() const;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Posts the given task to be run.
-  bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
   const base::ObserverList<Observer>& GetObserversForTesting() {
     return observers_;
   }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Posts the given task to be run.
+  bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
   // Adds and removes observers for `PrintJob` events. The order in
   // which notifications are sent to observers is undefined. Observers must be
