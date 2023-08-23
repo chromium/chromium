@@ -37,9 +37,10 @@ SpeechRecognitionServiceFactory::SpeechRecognitionServiceFactory()
 
 SpeechRecognitionServiceFactory::~SpeechRecognitionServiceFactory() = default;
 
-KeyedService* SpeechRecognitionServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SpeechRecognitionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new speech::ChromeSpeechRecognitionService(context);
+  return std::make_unique<speech::ChromeSpeechRecognitionService>(context);
 }
 
 // static
