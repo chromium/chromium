@@ -37,15 +37,14 @@ NoStatePrefetchLinkManagerFactory::NoStatePrefetchLinkManagerFactory()
   DependsOn(NoStatePrefetchManagerFactory::GetInstance());
 }
 
-KeyedService* NoStatePrefetchLinkManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NoStatePrefetchLinkManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   NoStatePrefetchManager* no_state_prefetch_manager =
       NoStatePrefetchManagerFactory::GetForBrowserContext(context);
   if (!no_state_prefetch_manager)
     return nullptr;
-  NoStatePrefetchLinkManager* no_state_prefetch_link_manager =
-      new NoStatePrefetchLinkManager(no_state_prefetch_manager);
-  return no_state_prefetch_link_manager;
+  return std::make_unique<NoStatePrefetchLinkManager>(no_state_prefetch_manager);
 }
 
 }  // namespace prerender
