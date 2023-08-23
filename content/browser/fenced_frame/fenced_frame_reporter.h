@@ -46,7 +46,7 @@ struct DestinationEnumEvent {
 
 // An event to be sent to a custom url.
 // `url` is the custom destination url, and the request is sent as a GET.
-// TODO(gtanzer): Macros are substituted using the `ReportingMacroMap`.
+// Macros are substituted using the `ReportingMacros`.
 struct DestinationURLEvent {
   GURL url;
 };
@@ -60,7 +60,7 @@ class CONTENT_EXPORT FencedFrameReporter
  public:
   using ReportingUrlMap = base::flat_map<std::string, GURL>;
 
-  using ReportingMacroMap = base::flat_map<std::string, std::string>;
+  using ReportingMacros = std::vector<std::pair<std::string, std::string>>;
 
   using PrivateAggregationRequests =
       std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>;
@@ -145,11 +145,10 @@ class CONTENT_EXPORT FencedFrameReporter
   // destination, so it can discard reports for that destination, and provide
   // errors messages for subsequent SendReporter() using that destination.
   //
-  // `reporting_ad_macro_map` is absl::nullopt unless when
-  // `reporting_destination` is kBuyer. If it is learned that there are no ad
-  // macros for kBuyer, should be called with an empty ReportingMacroMap, so it
-  // can discard macro reports, and provide errors messages for subsequent
-  // SendReporter().
+  // `reporting_ad_macros` is absl::nullopt unless when `reporting_destination`
+  // is kBuyer. If it is learned that there are no ad macros for kBuyer, should
+  // be called with an empty ReportingMacros, so it can discard macro reports,
+  // and provide errors messages for subsequent SendReporter().
   //
   // TODO(https://crbug.com/1409133): Consider investing in outputting error to
   // correct frame, if it still exists. `frame_tree_node_id` somewhat does this,
@@ -159,7 +158,7 @@ class CONTENT_EXPORT FencedFrameReporter
   void OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination reporting_destination,
       ReportingUrlMap reporting_url_map,
-      absl::optional<ReportingMacroMap> reporting_ad_macro_map = absl::nullopt);
+      absl::optional<ReportingMacros> reporting_ad_macros = absl::nullopt);
 
   // Sends a report for the specified event, using the ReportingUrlMap
   // associated with `reporting_destination`. If the map for
@@ -174,7 +173,7 @@ class CONTENT_EXPORT FencedFrameReporter
   //   sent.
   // * a `DestinationURLEvent`, which contains a `url`
   //   * Sends a GET to `url`.
-  //   * TODO(gtanzer): Substitutes macros from the ReportingMacroMap.
+  //   * Substitutes macros from the ReportingMacros.
   //
   // Returns false and populated `error_message` and `console_message_level` if
   // no network request was attempted, unless the reporting URL map for
@@ -232,12 +231,12 @@ class CONTENT_EXPORT FencedFrameReporter
   GetAdBeaconMapForTesting();
 
   // Returns a copy of the internal reporting metadata's
-  // `reporting_ad_macro_map`, so it can be validated in tests. Only includes ad
-  // macro maps for which maps have been received - i.e., if wait for
+  // `reporting_ad_macros`, so it can be validated in tests. Only includes ad
+  // macros for which maps have been received - i.e., if wait for
   // OnUrlMappingReady() to be invoked for a reporting destination, it is not
   // included in the returned map.
-  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacroMap>
-  GetAdMacroMapForTesting();
+  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacros>
+  GetAdMacrosForTesting();
 
   // Returns `received_pa_events_`, so that it can be validated in tests. Should
   // only be called from tests.
@@ -296,10 +295,10 @@ class CONTENT_EXPORT FencedFrameReporter
     // `pending_events`, and only sent once this is populated.
     absl::optional<ReportingUrlMap> reporting_url_map;
 
-    // If null, the reporting ad macro map has yet to be received, and any
-    // reports that are attempted to be sent to custom URLs will be added to
+    // If null, the reporting ad macros has yet to be received, and any reports
+    // that are attempted to be sent to custom URLs will be added to
     // `pending_events`, and only sent once this is populated.
-    absl::optional<ReportingMacroMap> reporting_ad_macro_map;
+    absl::optional<ReportingMacros> reporting_ad_macros;
 
     // Pending report strings received while `reporting_url_map` was
     // absl::nullopt. Once the map is received, this is cleared, and reports are

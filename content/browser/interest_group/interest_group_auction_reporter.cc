@@ -868,10 +868,19 @@ bool InterestGroupAuctionReporter::AddReportWinResult(
       break;
     }
   }
+  // Convert `bidder_ad_macro_map` to a vector of (${macro_name}, macro_value)
+  // pairs as fenced frame reporter expects.
+  absl::optional<std::vector<std::pair<std::string, std::string>>>
+      bidder_macros = absl::nullopt;
+  if (bidder_ad_macro_map.has_value()) {
+    bidder_macros.emplace();
+    for (const auto& [macro_name, macro_value] : bidder_ad_macro_map.value()) {
+      bidder_macros->emplace_back("${" + macro_name + "}", macro_value);
+    }
+  }
   fenced_frame_reporter_->OnUrlMappingReady(
       blink::FencedFrame::ReportingDestination::kBuyer,
-      std::move(validated_bidder_ad_beacon_map),
-      std::move(bidder_ad_macro_map));
+      std::move(validated_bidder_ad_beacon_map), std::move(bidder_macros));
 
   if (bidder_report_url) {
     if (!IsEventLevelReportingUrlValid(*bidder_report_url)) {

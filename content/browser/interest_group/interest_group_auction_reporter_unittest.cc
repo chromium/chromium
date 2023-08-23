@@ -571,8 +571,13 @@ class InterestGroupAuctionReporterTest
       {"cluck", GURL("https://buyer.cluck.test/")},
   };
 
-  const FencedFrameReporter::ReportingMacroMap kAdMacroMap = {
+  const base::flat_map<std::string, std::string> kAdMacroMap = {
       {"campaign", "123"},
+  };
+
+  // The converted `kAdMacroMap` that is passed to fenced frame reporter.
+  const FencedFrameReporter::ReportingMacros kAdMacros = {
+      {"${campaign}", "123"},
   };
 
   base::HistogramTester histogram_tester_;
@@ -2028,11 +2033,11 @@ class InterestGroupAuctionReporterAdMacroReportingEnabledTest
 };
 
 TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       SingleSellerReportMacroMap) {
+       SingleSellerReportMacros) {
   SetUpAndStartSingleSellerAuction();
-  // The macro map should be empty from the start.
+  // The macros should be empty from the start.
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre());
 
   WaitForReportResultAndRunCallback(kSellerScriptUrl,
@@ -2041,10 +2046,10 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
   WaitForReportWinAndRunCallback(/*report_url=*/absl::nullopt,
                                  /*ad_beacon_map=*/{}, kAdMacroMap);
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre(testing::Pair(
                   blink::FencedFrame::ReportingDestination::kBuyer,
-                  testing::UnorderedElementsAreArray(kAdMacroMap))));
+                  testing::UnorderedElementsAreArray(kAdMacros))));
 
   // Invoking the callback has no effect on macro maps. Fenced frames navigated
   // to the winning ad use them to trigger reports, so no need to hold them back
@@ -2053,17 +2058,17 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
 
   WaitForCompletion();
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre(testing::Pair(
                   blink::FencedFrame::ReportingDestination::kBuyer,
-                  testing::UnorderedElementsAreArray(kAdMacroMap))));
+                  testing::UnorderedElementsAreArray(kAdMacros))));
 }
 
 TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
-       ComponentAuctionReportMacroMap) {
+       ComponentAuctionReportMacros) {
   SetUpAndStartComponentAuction();
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre());
 
   WaitForReportResultAndRunCallback(kSellerScriptUrl,
@@ -2075,10 +2080,10 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
   WaitForReportWinAndRunCallback(/*report_url=*/absl::nullopt,
                                  /*ad_beacon_map=*/{}, kAdMacroMap);
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre(testing::Pair(
                   blink::FencedFrame::ReportingDestination::kBuyer,
-                  testing::UnorderedElementsAreArray(kAdMacroMap))));
+                  testing::UnorderedElementsAreArray(kAdMacros))));
 
   // Invoking the callback has no effect on per-destination reporting maps.
   // Fenced frames navigated to the winning ad use them to trigger reports, so
@@ -2088,10 +2093,10 @@ TEST_F(InterestGroupAuctionReporterAdMacroReportingEnabledTest,
 
   WaitForCompletion();
   EXPECT_THAT(interest_group_auction_reporter_->fenced_frame_reporter()
-                  ->GetAdMacroMapForTesting(),
+                  ->GetAdMacrosForTesting(),
               testing::UnorderedElementsAre(testing::Pair(
                   blink::FencedFrame::ReportingDestination::kBuyer,
-                  testing::UnorderedElementsAreArray(kAdMacroMap))));
+                  testing::UnorderedElementsAreArray(kAdMacros))));
 }
 
 }  // namespace

@@ -4834,7 +4834,7 @@ class FencedFrameReportEventBrowserTest
         {
             {"click", reporting_url},
         },
-        /*reporting_ad_macro_map=*/FencedFrameReporter::ReportingMacroMap());
+        /*reporting_ad_macros=*/FencedFrameReporter::ReportingMacros());
     // Set empty reporting url for seller.
     fenced_frame_reporter->OnUrlMappingReady(
         blink::FencedFrame::ReportingDestination::kSeller, {{"click", GURL()}});

@@ -257,14 +257,14 @@ FencedFrameReporter::~FencedFrameReporter() {
 void FencedFrameReporter::OnUrlMappingReady(
     blink::FencedFrame::ReportingDestination reporting_destination,
     ReportingUrlMap reporting_url_map,
-    absl::optional<ReportingMacroMap> reporting_ad_macro_map) {
+    absl::optional<ReportingMacros> reporting_ad_macros) {
   auto it = reporting_metadata_.find(reporting_destination);
   DCHECK(it != reporting_metadata_.end());
   DCHECK(!it->second.reporting_url_map);
-  DCHECK(!it->second.reporting_ad_macro_map);
+  DCHECK(!it->second.reporting_ad_macros);
 
   it->second.reporting_url_map = std::move(reporting_url_map);
-  it->second.reporting_ad_macro_map = std::move(reporting_ad_macro_map);
+  it->second.reporting_ad_macros = std::move(reporting_ad_macros);
   auto pending_events = std::exchange(it->second.pending_events, {});
   for (const auto& pending_event : pending_events) {
     std::string ignored_error_message;
@@ -410,7 +410,7 @@ bool FencedFrameReporter::SendReportInternal(
     // Check that reportEvent to custom destination URLs with macro
     // substitution is allowed in this context. (i.e., The macro map has a
     // value.)
-    if (!reporting_destination_info.reporting_ad_macro_map.has_value()) {
+    if (!reporting_destination_info.reporting_ad_macros.has_value()) {
       error_message =
           "This frame attempted to send a report to a custom destination URL "
           "with macro substitution, which is not supported by the API that "
@@ -447,16 +447,10 @@ bool FencedFrameReporter::SendReportInternal(
       return false;
     }
 
-    // Substitute macros in the specified URL using the macro map.
-    // TODO(qingxinwu): Lift these changes up out of FencedFrameReporter into
-    // the code that constructs the reporting ad macro map.
-    std::vector<std::pair<std::string, std::string>> macro_map;
-    for (const auto& entry :
-         reporting_destination_info.reporting_ad_macro_map.value()) {
-      macro_map.emplace_back("${" + entry.first + "}", entry.second);
-    }
+    // Substitute macros in the specified URL using the macros.
     url = GURL(SubstituteMappedStrings(
-        absl::get<DestinationURLEvent>(event_variant).url.spec(), macro_map));
+        absl::get<DestinationURLEvent>(event_variant).url.spec(),
+        reporting_destination_info.reporting_ad_macros.value()));
     url::Origin destination_origin = url::Origin::Create(url);
 
     // Check whether the destination URL has an allowed origin.
@@ -724,14 +718,13 @@ FencedFrameReporter::GetAdBeaconMapForTesting() {
 }
 
 base::flat_map<blink::FencedFrame::ReportingDestination,
-               FencedFrameReporter::ReportingMacroMap>
-FencedFrameReporter::GetAdMacroMapForTesting() {
-  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacroMap>
-      out;
+               FencedFrameReporter::ReportingMacros>
+FencedFrameReporter::GetAdMacrosForTesting() {
+  base::flat_map<blink::FencedFrame::ReportingDestination, ReportingMacros> out;
   for (const auto& reporting_metadata : reporting_metadata_) {
-    if (reporting_metadata.second.reporting_ad_macro_map) {
+    if (reporting_metadata.second.reporting_ad_macros) {
       out.emplace(reporting_metadata.first,
-                  *reporting_metadata.second.reporting_ad_macro_map);
+                  *reporting_metadata.second.reporting_ad_macros);
     }
   }
   return out;
