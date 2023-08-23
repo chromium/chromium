@@ -1628,4 +1628,8 @@ interface NetworkContext {
   // `client_token` identifies which client has changed its visibility.
   ResourceSchedulerClientVisibilityChanged(
       mojo_base.mojom.UnguessableToken client_token, bool visible);
+
+  // Will flush cached client certificate for `host` if `certificate`
+  // doesn't match the corresponding cached certificate.
+  FlushCachedClientCertIfNeeded(HostPortPair host, X509Certificate certificate);
 };

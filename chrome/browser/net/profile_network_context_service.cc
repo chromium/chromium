@@ -659,6 +659,19 @@ ProfileNetworkContextService::CreateCookieManagerParams(
   return out;
 }
 
+void ProfileNetworkContextService::FlushCachedClientCertIfNeeded(
+    const net::HostPortPair& host,
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](const net::HostPortPair& host,
+         const scoped_refptr<net::X509Certificate>& certificate,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetNetworkContext()->FlushCachedClientCertIfNeeded(
+            host, certificate);
+      },
+      host, certificate));
+}
+
 void ProfileNetworkContextService::FlushProxyConfigMonitorForTesting() {
   proxy_config_monitor_.FlushForTesting();
 }

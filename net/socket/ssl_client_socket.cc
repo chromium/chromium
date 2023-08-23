@@ -9,12 +9,43 @@
 #include "base/containers/flat_tree.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/values.h"
+#include "net/cert/x509_certificate_net_log_param.h"
+#include "net/log/net_log.h"
+#include "net/log/net_log_event_type.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_client_session_cache.h"
 #include "net/ssl/ssl_key_logger.h"
 
 namespace net {
+
+namespace {
+
+// Returns true if |first_cert| and |second_cert| represent the same certificate
+// (with the same chain), or if they're both NULL.
+bool AreCertificatesEqual(const scoped_refptr<X509Certificate>& first_cert,
+                          const scoped_refptr<X509Certificate>& second_cert) {
+  return (!first_cert && !second_cert) ||
+         (first_cert && second_cert &&
+          first_cert->EqualsIncludingChain(second_cert.get()));
+}
+
+// Returns a base::Value::Dict value NetLog parameter with the expected format
+// for events of type CLEAR_CACHED_CLIENT_CERT.
+base::Value::Dict NetLogClearCachedClientCertParams(
+    const net::HostPortPair& host,
+    const scoped_refptr<net::X509Certificate>& cert,
+    bool is_cleared) {
+  base::Value::Dict dict;
+  dict.Set("host", host.ToString());
+  dict.Set("certificates", cert ? net::NetLogX509CertificateList(cert.get())
+                                : base::Value(base::Value::List()));
+  dict.Set("is_cleared", is_cleared);
+  return dict;
+}
+
+}  // namespace
 
 SSLClientSocket::SSLClientSocket() = default;
 
@@ -155,6 +186,38 @@ void SSLClientContext::OnClientCertStoreChanged() {
     ssl_client_session_cache_->FlushForServers(servers);
   }
   NotifySSLConfigForServersChanged(servers);
+}
+
+void SSLClientContext::ClearClientCertificateIfNeeded(
+    const net::HostPortPair& host,
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  scoped_refptr<X509Certificate> cached_certificate;
+  scoped_refptr<SSLPrivateKey> cached_private_key;
+  if (!ssl_client_auth_cache_.Lookup(host, &cached_certificate,
+                                     &cached_private_key) ||
+      AreCertificatesEqual(cached_certificate, certificate)) {
+    // No cached client certificate preference for this host.
+    net::NetLog::Get()->AddGlobalEntry(
+        NetLogEventType::CLEAR_CACHED_CLIENT_CERT, [&]() {
+          return NetLogClearCachedClientCertParams(host, certificate,
+                                                   /*is_cleared=*/false);
+        });
+    return;
+  }
+
+  net::NetLog::Get()->AddGlobalEntry(
+      NetLogEventType::CLEAR_CACHED_CLIENT_CERT, [&]() {
+        return NetLogClearCachedClientCertParams(host, certificate,
+                                                 /*is_cleared=*/true);
+      });
+
+  ssl_client_auth_cache_.Remove(host);
+
+  if (ssl_client_session_cache_) {
+    ssl_client_session_cache_->FlushForServers({host});
+  }
+
+  NotifySSLConfigForServersChanged({host});
 }
 
 void SSLClientContext::NotifySSLConfigChanged(SSLConfigChangeType change_type) {

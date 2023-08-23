@@ -3050,4 +3050,16 @@ void NetworkContext::ResourceSchedulerClientVisibilityChanged(
   resource_scheduler_->OnClientVisibilityChanged(client_token, visible);
 }
 
+void NetworkContext::FlushCachedClientCertIfNeeded(
+    const net::HostPortPair& host,
+    const scoped_refptr<net::X509Certificate>& certificate) {
+  net::HttpNetworkSession* http_session =
+      url_request_context_->http_transaction_factory()->GetSession();
+  DCHECK(http_session);
+  if (http_session->ssl_client_context()) {
+    http_session->ssl_client_context()->ClearClientCertificateIfNeeded(
+        host, certificate);
+  }
+}
+
 }  // namespace network

@@ -530,6 +530,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void ResourceSchedulerClientVisibilityChanged(
       const base::UnguessableToken& client_token,
       bool visible) override;
+  void FlushCachedClientCertIfNeeded(
+      const net::HostPortPair& host,
+      const scoped_refptr<net::X509Certificate>& certificate) override;
   void VerifyIpProtectionAuthTokenGetterForTesting(
       VerifyIpProtectionAuthTokenGetterForTestingCallback callback) override;
 
