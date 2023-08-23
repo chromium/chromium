@@ -297,6 +297,68 @@ IN_PROC_BROWSER_TEST_F(
               true);
 }
 
+class DevToolsProtocolTest_PrefetchHoldbackDisabledIfCDPClientConnected
+    : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    preloading_config_override_.SetHoldback("Prefetch", "SpeculationRules",
+                                            true);
+
+    DevToolsProtocolTest::SetUp();
+  }
+
+ private:
+  content::test::PreloadingConfigOverride preloading_config_override_;
+};
+
+// Check that prefetch is enabled if DevToolsAgentHost exists even if it is
+// disabled by PreloadingConfig.
+IN_PROC_BROWSER_TEST_F(
+    DevToolsProtocolTest_PrefetchHoldbackDisabledIfCDPClientConnected,
+    PrefetchHoldbackDisabledIfCDPClientConnected) {
+  Attach();
+
+  {
+    SendCommandAsync("Preload.enable");
+    const base::Value::Dict result =
+        WaitForNotification("Preload.preloadEnabledStateUpdated", true);
+
+    EXPECT_THAT(result.FindBool("disabledByHoldbackPrefetchSpeculationRules"),
+                true);
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const std::string add_specrules = R"(
+    const specrules = document.createElement("script");
+    specrules.type = "speculationrules";
+    specrules.text = `
+      {
+        "prefetch":[
+          {
+            "source": "list",
+            "urls": ["title1.html"]
+          }
+        ]
+      }`;
+    document.body.appendChild(specrules);
+  )";
+
+  EXPECT_TRUE(content::EvalJs(web_contents(), add_specrules).error.empty());
+
+  {
+    base::Value::Dict result;
+    while (true) {
+      result = WaitForNotification("Preload.prefetchStatusUpdated", true);
+      if (*result.FindString("status") == "Ready") {
+        break;
+      }
+    }
+  }
+}
+
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
     NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {

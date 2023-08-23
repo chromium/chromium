@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/timer/timer.h"
 #include "content/browser/browser_context_impl.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -202,13 +203,27 @@ bool CheckAndSetPrefetchHoldbackStatus(
   if (!prefetch_container->HasPreloadingAttempt()) {
     return false;
   }
-  // In addition to the globally-controlled preloading config, check for the
-  // feature-specific holdback. We disable the feature if the user is in either
-  // of those holdbacks.
-  if (IsContentPrefetchHoldback()) {
+
+  // Normally CheckIfShouldHoldback() computes the holdback status based on
+  // PreloadingConfig. In special cases, we call SetHoldbackOverride() to
+  // override that processing.
+  RenderFrameHostImpl* initiator_rfh = RenderFrameHostImpl::FromID(
+      prefetch_container->GetReferringRenderFrameHostId());
+  bool devtools_client_exist =
+      initiator_rfh &&
+      RenderFrameDevToolsAgentHost::GetFor(initiator_rfh) != nullptr;
+  if (devtools_client_exist) {
+    prefetch_container->preloading_attempt()->SetHoldbackStatus(
+        PreloadingHoldbackStatus::kAllowed);
+  } else if (IsContentPrefetchHoldback()) {
+    // In addition to the globally-controlled preloading config, check for the
+    // feature-specific holdback. We disable the feature if the user is in
+    // either of those holdbacks.
+
     prefetch_container->preloading_attempt()->SetHoldbackStatus(
         PreloadingHoldbackStatus::kHoldback);
   }
+
   if (prefetch_container->preloading_attempt()->ShouldHoldback()) {
     prefetch_container->SetPrefetchStatus(PrefetchStatus::kPrefetchHeldback);
     return true;
