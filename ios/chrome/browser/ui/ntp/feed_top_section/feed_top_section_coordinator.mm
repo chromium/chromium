@@ -140,7 +140,7 @@
 
 #pragma mark - Setters
 
-- (void)setIsSigninPromoEnabled:(BOOL)isSignInPromoEnabled {
+- (void)setIsSignInPromoEnabled:(BOOL)isSignInPromoEnabled {
   _isSignInPromoEnabled = isSignInPromoEnabled;
   CHECK(self.feedTopSectionMediator);
   self.feedTopSectionMediator.isSignInPromoEnabled = isSignInPromoEnabled;

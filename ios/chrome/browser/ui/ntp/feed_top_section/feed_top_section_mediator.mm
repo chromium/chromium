@@ -125,12 +125,8 @@
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
-  // Identity was changed: So first figure out if the promo should still
-  // appear. Then update it to match the new configurator if it will show.
-  [self updateShouldShowSigninPromo];
-  if (self.shouldShowSigninPromo) {
-    [self.consumer updateSigninPromoWithConfigurator:configurator];
-  }
+  // No-op: The NTP is always recreated when the identity changes, so this is
+  // not needed.
 }
 
 - (void)signinPromoViewMediatorCloseButtonWasTapped:
