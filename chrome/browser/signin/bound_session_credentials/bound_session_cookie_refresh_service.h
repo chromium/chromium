@@ -23,7 +23,8 @@ class BoundSessionCookieRefreshService
     : public KeyedService,
       public chrome::mojom::BoundSessionRequestThrottledListener {
  public:
-  using RendererBoundSessionParamsUpdaterDelegate = base::RepeatingClosure;
+  using RendererBoundSessionThrottlerParamsUpdaterDelegate =
+      base::RepeatingClosure;
 
   BoundSessionCookieRefreshService() = default;
 
@@ -46,8 +47,8 @@ class BoundSessionCookieRefreshService
       const net::HttpResponseHeaders* headers) = 0;
 
   // Returns bound session params.
-  virtual chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams()
-      const = 0;
+  virtual chrome::mojom::BoundSessionThrottlerParamsPtr
+  GetBoundSessionThrottlerParams() const = 0;
 
   virtual void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) = 0;
@@ -58,9 +59,10 @@ class BoundSessionCookieRefreshService
   friend class RendererUpdater;
 
   // `RendererUpdater` class that is responsible for pushing updates to all
-  // renderers calls this setter to subscribe for bound session params updates.
-  virtual void SetRendererBoundSessionParamsUpdaterDelegate(
-      RendererBoundSessionParamsUpdaterDelegate renderer_updater) = 0;
+  // renderers calls this setter to subscribe for bound session throttler params
+  // updates.
+  virtual void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+      RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) = 0;
 
   // Adds a Receiver to `BoundSessionCookieRefreshService` to receive
   // notification when a request is throttled and requires a fresh cookie.

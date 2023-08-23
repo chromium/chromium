@@ -78,7 +78,7 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     base::Time old_min_cookie_expiration_time = min_cookie_expiration_time();
     bound_cookies_info_[cookie_name] = cookie_expiration_date;
     if (min_cookie_expiration_time() != old_min_cookie_expiration_time) {
-      delegate_->OnBoundSessionParamsChanged();
+      delegate_->OnBoundSessionThrottlerParamsChanged();
     }
   }
 
@@ -144,16 +144,18 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   void SetRendererUpdater(
       BoundSessionCookieRefreshService::
-          RendererBoundSessionParamsUpdaterDelegate renderer_updater) {
+          RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) {
     CHECK(cookie_refresh_service_);
-    cookie_refresh_service_->SetRendererBoundSessionParamsUpdaterDelegate(
-        renderer_updater);
+    cookie_refresh_service_
+        ->SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+            renderer_updater);
   }
 
   void ResetRendererUpdater() {
     CHECK(cookie_refresh_service_);
-    cookie_refresh_service_->SetRendererBoundSessionParamsUpdaterDelegate(
-        base::RepeatingClosure());
+    cookie_refresh_service_
+        ->SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+            base::RepeatingClosure());
   }
 
   void ResetCookieRefreshService() { cookie_refresh_service_.reset(); }
@@ -181,14 +183,14 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
 
   void VerifyBoundSession() {
     CHECK(cookie_refresh_service_);
-    EXPECT_TRUE(cookie_refresh_service_->GetBoundSessionParams());
+    EXPECT_TRUE(cookie_refresh_service_->GetBoundSessionThrottlerParams());
     EXPECT_TRUE(prefs()->HasPrefPath(kRegistrationParamsPref));
     EXPECT_TRUE(cookie_controller());
   }
 
   void VerifyNoBoundSession() {
     CHECK(cookie_refresh_service_);
-    EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionParams());
+    EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionThrottlerParams());
     EXPECT_FALSE(cookie_controller());
     EXPECT_FALSE(prefs()->HasPrefPath(kRegistrationParamsPref));
   }
@@ -229,21 +231,21 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       VerifyBoundSessionParamsUnboundSession) {
+       VerifyBoundSessionThrottlerParamsUnboundSession) {
   GetCookieRefreshServiceImpl();
   VerifyNoBoundSession();
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       VerifyBoundSessionParamsBoundSession) {
+       VerifyBoundSessionThrottlerParamsBoundSession) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   ASSERT_TRUE(cookie_controller());
 
-  chrome::mojom::BoundSessionParamsPtr bound_session_params =
-      service->GetBoundSessionParams();
-  EXPECT_EQ(bound_session_params->domain, kTestGaiaURL.host());
-  EXPECT_EQ(bound_session_params->path, kTestGaiaURL.path_piece());
+  chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params =
+      service->GetBoundSessionThrottlerParams();
+  EXPECT_EQ(bound_session_throttler_params->domain, kTestGaiaURL.host());
+  EXPECT_EQ(bound_session_throttler_params->path, kTestGaiaURL.path_piece());
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
@@ -274,7 +276,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
        UpdateAllRenderersOnBoundSessionStarted) {
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_FALSE(cookie_controller());
-  EXPECT_FALSE(service->GetBoundSessionParams());
+  EXPECT_FALSE(service->GetBoundSessionThrottlerParams());
   base::MockRepeatingCallback<void()> renderer_updater;
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetRendererUpdater(renderer_updater.Get());
@@ -283,14 +285,14 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   // Create bound session.
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     EXPECT_TRUE(cookie_controller());
-    EXPECT_FALSE(service->GetBoundSessionParams().is_null());
+    EXPECT_FALSE(service->GetBoundSessionThrottlerParams().is_null());
   });
   service->RegisterNewBoundSession(CreateTestRegistrationParams());
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
-       UpdateAllRenderersOnBoundSessionParamsChanged) {
+       UpdateAllRenderersOnBoundSessionThrottlerParamsChanged) {
   base::MockRepeatingCallback<void()> renderer_updater;
   EXPECT_CALL(renderer_updater, Run()).Times(0);
   SetupPreConditionForBoundSession();
@@ -306,7 +308,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
     EXPECT_TRUE(cookie_controller());
-    EXPECT_FALSE(service->GetBoundSessionParams().is_null());
+    EXPECT_FALSE(service->GetBoundSessionThrottlerParams().is_null());
   });
   cookie_controller()->SimulateOnCookieExpirationDateChanged(k3PSIDTSCookieName,
                                                              base::Time::Now());
@@ -333,7 +335,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_TRUE(service->GetBoundSessionParams());
+  EXPECT_TRUE(service->GetBoundSessionThrottlerParams());
 
   cookie_controller()->SimulateTerminateSession();
   VerifyNoBoundSession();

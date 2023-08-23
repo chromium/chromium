@@ -207,28 +207,30 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
 bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
     const GURL& request_url) const {
   CHECK(switches::IsBoundSessionCredentialsEnabled());
-  const chrome::mojom::BoundSessionParamsPtr& bound_session_params =
-      dynamic_params_->bound_session_params;
+  const chrome::mojom::BoundSessionThrottlerParamsPtr&
+      bound_session_throttler_params =
+          dynamic_params_->bound_session_throttler_params;
 
   // No bound session.
-  if (bound_session_params.is_null() || bound_session_params->domain.empty()) {
+  if (bound_session_throttler_params.is_null() ||
+      bound_session_throttler_params->domain.empty()) {
     return false;
   }
 
   // Short lived Cookie fresh.
-  if (bound_session_params->cookie_expiry_date > base::Time::Now()) {
+  if (bound_session_throttler_params->cookie_expiry_date > base::Time::Now()) {
     return false;
   }
 
   // Short lived Cookie expired.
   // Check if the request requires the short lived cookie.
 
-  if (!request_url.DomainIs(bound_session_params->domain)) {
+  if (!request_url.DomainIs(bound_session_throttler_params->domain)) {
     return false;
   }
 
-  if (!bound_session_params->path.empty() &&
-      !net::cookie_util::IsOnPath(bound_session_params->path,
+  if (!bound_session_throttler_params->path.empty() &&
+      !net::cookie_util::IsOnPath(bound_session_throttler_params->path,
                                   request_url.path())) {
     return false;
   }

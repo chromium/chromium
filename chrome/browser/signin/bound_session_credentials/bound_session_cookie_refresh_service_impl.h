@@ -55,7 +55,8 @@ class BoundSessionCookieRefreshServiceImpl
   void RegisterNewBoundSession(
       const bound_session_credentials::RegistrationParams& params) override;
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
-  chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override;
+  chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
+      const override;
   void AddBoundSessionRequestThrottledListenerReceiver(
       mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
           receiver) override;
@@ -83,8 +84,9 @@ class BoundSessionCookieRefreshServiceImpl
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:
-  void SetRendererBoundSessionParamsUpdaterDelegate(
-      RendererBoundSessionParamsUpdaterDelegate renderer_updater) override;
+  void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+      RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater)
+      override;
 
   void set_controller_factory_for_testing(
       const BoundSessionCookieControllerFactoryForTesting&
@@ -103,7 +105,7 @@ class BoundSessionCookieRefreshServiceImpl
   GetRegistrationParams();
 
   // BoundSessionCookieController::Delegate
-  void OnBoundSessionParamsChanged() override;
+  void OnBoundSessionThrottlerParamsChanged() override;
   void TerminateSession() override;
 
   std::unique_ptr<BoundSessionCookieController>
@@ -120,7 +122,7 @@ class BoundSessionCookieRefreshServiceImpl
   const raw_ptr<content::StoragePartition> storage_partition_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   BoundSessionCookieControllerFactoryForTesting controller_factory_for_testing_;
-  RendererBoundSessionParamsUpdaterDelegate renderer_updater_;
+  RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater_;
 
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
 

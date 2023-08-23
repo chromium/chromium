@@ -65,8 +65,9 @@ RendererUpdater::RendererUpdater(Profile* profile)
   if (bound_session_cookie_refresh_service_) {
     // `base::Unretained` is safe as `this` deregister itself on destruction.
     bound_session_cookie_refresh_service_
-        ->SetRendererBoundSessionParamsUpdaterDelegate(base::BindRepeating(
-            &RendererUpdater::UpdateAllRenderers, base::Unretained(this)));
+        ->SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+            base::BindRepeating(&RendererUpdater::UpdateAllRenderers,
+                                base::Unretained(this)));
   }
 #endif
 
@@ -99,7 +100,7 @@ RendererUpdater::~RendererUpdater() {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (bound_session_cookie_refresh_service_) {
     bound_session_cookie_refresh_service_
-        ->SetRendererBoundSessionParamsUpdaterDelegate(
+        ->SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
             base::RepeatingClosure());
   }
 #endif
@@ -212,12 +213,13 @@ void RendererUpdater::OnPrimaryAccountChanged(
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-chrome::mojom::BoundSessionParamsPtr RendererUpdater::GetBoundSessionParams()
-    const {
+chrome::mojom::BoundSessionThrottlerParamsPtr
+RendererUpdater::GetBoundSessionThrottlerParams() const {
   if (bound_session_cookie_refresh_service_) {
-    return bound_session_cookie_refresh_service_->GetBoundSessionParams();
+    return bound_session_cookie_refresh_service_
+        ->GetBoundSessionThrottlerParams();
   }
-  return chrome::mojom::BoundSessionParamsPtr();
+  return chrome::mojom::BoundSessionThrottlerParamsPtr();
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -239,7 +241,7 @@ chrome::mojom::DynamicParamsPtr RendererUpdater::CreateRendererDynamicParams()
     const {
   return chrome::mojom::DynamicParams::New(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      GetBoundSessionParams(),
+      GetBoundSessionThrottlerParams(),
 #endif
       force_google_safesearch_.GetValue(), force_youtube_restrict_.GetValue(),
       allowed_domains_for_apps_.GetValue());

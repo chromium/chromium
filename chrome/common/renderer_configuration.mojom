@@ -11,11 +11,11 @@ import "mojo/public/mojom/base/time.mojom";
 // Renderer configuration for a bound session.
 // Network requests with `domain` and that are on `path` require a short lived
 // cookie that would expire at `cookie_expiry_date`. Renderer throtller relies
-// on `BoundSessionParams` to defer a request when required.
-// `BoundSessionParams` can change when a bound session is created, terminated
-// or on cookie expiration change.
+// on `BoundSessionThrottlerParams` to defer a request when required.
+// `BoundSessionThrottlerParams` can change when a bound session is created,
+// terminated or on cookie expiration change.
 [EnableIf=enable_bound_session_credentials]
-struct BoundSessionParams {
+struct BoundSessionThrottlerParams {
   string domain;
   string path;
   mojo_base.mojom.Time cookie_expiry_date;
@@ -23,9 +23,9 @@ struct BoundSessionParams {
 
 // The renderer configuration parameters which can change post renderer launch.
 struct DynamicParams {
-  // `BoundSessionParams` can be null if there is no ongoing bound session.
+  // `BoundSessionThrottlerParams` can be null if there is no bound session.
   [EnableIf=enable_bound_session_credentials]
-  BoundSessionParams? bound_session_params;
+  BoundSessionThrottlerParams? bound_session_throttler_params;
   bool force_safe_search = true;
   int32 youtube_restrict = 0;
   string allowed_domains_for_apps;

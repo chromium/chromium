@@ -127,7 +127,7 @@ void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
   }
 
   if (min_cookie_expiration_time() != old_min_expiration_time) {
-    delegate_->OnBoundSessionParamsChanged();
+    delegate_->OnBoundSessionThrottlerParamsChanged();
     MaybeScheduleCookieRotation();
   }
 }

@@ -40,7 +40,7 @@ class BoundSessionCookieController {
     // Called when the bound session parameters change, for example the minimum
     // cookie expiration date changes. Cookie deletion is considered as a change
     // in the expiration date to the null time.
-    virtual void OnBoundSessionParamsChanged() = 0;
+    virtual void OnBoundSessionThrottlerParamsChanged() = 0;
   };
 
   BoundSessionCookieController(
@@ -61,7 +61,8 @@ class BoundSessionCookieController {
 
   const GURL& url() const { return url_; }
   base::Time min_cookie_expiration_time();
-  chrome::mojom::BoundSessionParamsPtr bound_session_params();
+  chrome::mojom::BoundSessionThrottlerParamsPtr
+  bound_session_throttler_params();
 
  protected:
   const GURL url_;

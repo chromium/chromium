@@ -5622,21 +5622,21 @@ std::unique_ptr<blink::URLLoaderThrottle> CreateGoogleURLLoaderThrottle(
       BoundSessionCookieRefreshServiceFactory::GetForProfile(profile);
   std::unique_ptr<BoundSessionRequestThrottledListener>
       bound_session_request_throttled_listener;
-  chrome::mojom::BoundSessionParamsPtr bound_session_params;
+  chrome::mojom::BoundSessionThrottlerParamsPtr bound_session_throttler_params;
 
   if (bound_session_cookie_refresh_service) {
     bound_session_request_throttled_listener =
         std::make_unique<BoundSessionRequestThrottledListenerBrowserImpl>(
             *bound_session_cookie_refresh_service);
-    bound_session_params =
-        bound_session_cookie_refresh_service->GetBoundSessionParams();
+    bound_session_throttler_params =
+        bound_session_cookie_refresh_service->GetBoundSessionThrottlerParams();
   }
 #endif
 
   chrome::mojom::DynamicParamsPtr dynamic_params =
       chrome::mojom::DynamicParams::New(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-          std::move(bound_session_params),
+          std::move(bound_session_throttler_params),
 #endif
           profile->GetPrefs()->GetBoolean(
               policy::policy_prefs::kForceGoogleSafeSearch),

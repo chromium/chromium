@@ -32,8 +32,8 @@ base::Time BoundSessionCookieController::min_cookie_expiration_time() {
       ->second;
 }
 
-chrome::mojom::BoundSessionParamsPtr
-BoundSessionCookieController::bound_session_params() {
-  return chrome::mojom::BoundSessionParams::New(url().host(), url().path(),
-                                                min_cookie_expiration_time());
+chrome::mojom::BoundSessionThrottlerParamsPtr
+BoundSessionCookieController::bound_session_throttler_params() {
+  return chrome::mojom::BoundSessionThrottlerParams::New(
+      url().host(), url().path(), min_cookie_expiration_time());
 }

@@ -81,18 +81,18 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   }
 }
 
-chrome::mojom::BoundSessionParamsPtr
-BoundSessionCookieRefreshServiceImpl::GetBoundSessionParams() const {
+chrome::mojom::BoundSessionThrottlerParamsPtr
+BoundSessionCookieRefreshServiceImpl::GetBoundSessionThrottlerParams() const {
   if (!cookie_controller_) {
-    return chrome::mojom::BoundSessionParamsPtr();
+    return chrome::mojom::BoundSessionThrottlerParamsPtr();
   }
 
-  return cookie_controller_->bound_session_params();
+  return cookie_controller_->bound_session_throttler_params();
 }
 
 void BoundSessionCookieRefreshServiceImpl::
-    SetRendererBoundSessionParamsUpdaterDelegate(
-        RendererBoundSessionParamsUpdaterDelegate renderer_updater) {
+    SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
+        RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater) {
   renderer_updater_ = renderer_updater;
 }
 
@@ -190,7 +190,8 @@ BoundSessionCookieRefreshServiceImpl::GetRegistrationParams() {
   return absl::nullopt;
 }
 
-void BoundSessionCookieRefreshServiceImpl::OnBoundSessionParamsChanged() {
+void BoundSessionCookieRefreshServiceImpl::
+    OnBoundSessionThrottlerParamsChanged() {
   UpdateAllRenderers();
 }
 
