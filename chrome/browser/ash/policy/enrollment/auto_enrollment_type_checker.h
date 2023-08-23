@@ -133,7 +133,7 @@ class AutoEnrollmentTypeChecker {
 
   // Allows to configure unified state determination kill switch. Used for
   // testing.
-  static void SetUnifiedStateDeterminationKillSwitchForTesting(bool enabled);
+  static void SetUnifiedStateDeterminationKillSwitchForTesting(bool is_killed);
 
   // Clears unified state determination kill switch. Used for testing.
   static void ClearUnifiedStateDeterminationKillSwitchForTesting();

@@ -538,8 +538,8 @@ AutoEnrollmentTypeChecker::DetermineAutoEnrollmentCheckType(
 
 // static
 void AutoEnrollmentTypeChecker::
-    SetUnifiedStateDeterminationKillSwitchForTesting(bool enabled) {
-  g_unified_state_determination_kill_switch = enabled;
+    SetUnifiedStateDeterminationKillSwitchForTesting(bool is_killed) {
+  g_unified_state_determination_kill_switch = is_killed;
 }
 
 // static
