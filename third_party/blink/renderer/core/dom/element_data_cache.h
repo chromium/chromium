@@ -34,17 +34,13 @@
 
 namespace blink {
 
-class ElementData;
 class ShareableElementData;
 
 class ElementDataCache final : public GarbageCollected<ElementDataCache> {
  public:
   ElementDataCache();
 
-  // Returns an ElementData representing the specified attributes. This prefers
-  // returning a ShareableElementData, but in some cases returns an
-  // ElementData.
-  ElementData* ElementDataWithAttributes(
+  ShareableElementData* CachedShareableElementDataWithAttributes(
       const Vector<Attribute, kAttributePrealloc>&);
 
   void Trace(Visitor*) const;
