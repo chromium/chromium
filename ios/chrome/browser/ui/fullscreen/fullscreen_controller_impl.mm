@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcaster.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_system_notification_observer.h"
-#import "ios/web/common/features.h"
 
 // static
 FullscreenController* FullscreenController::FromBrowser(Browser* browser) {
@@ -46,10 +45,8 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
                 forSelector:@selector(broadcastScrollViewContentInset:)];
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastContentScrollOffset:)];
-  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
-    [broadcaster_ addObserver:bridge_
-                  forSelector:@selector(broadcastScrollViewIsScrolling:)];
-  }
+  [broadcaster_ addObserver:bridge_
+                forSelector:@selector(broadcastScrollViewIsScrolling:)];
   [broadcaster_ addObserver:bridge_
                 forSelector:@selector(broadcastScrollViewIsZooming:)];
   [broadcaster_ addObserver:bridge_

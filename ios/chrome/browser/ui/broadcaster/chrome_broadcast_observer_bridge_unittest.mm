@@ -84,6 +84,14 @@ TEST_F(ChromeBroadcastObserverBridgeTest, ContentOffset) {
   EXPECT_EQ(observer().scroll_offset(), kOffset);
 }
 
+// Tests that `-broadcastScrollViewIsScrolling:` is correctly forwarded to the
+// observer.
+TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsScrolling) {
+  ASSERT_FALSE(observer().scroll_view_scrolling());
+  [bridge() broadcastScrollViewIsScrolling:YES];
+  EXPECT_TRUE(observer().scroll_view_scrolling());
+}
+
 // Tests that `-broadcastScrollViewIsDragging:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsDragging) {

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 
 #import "base/check.h"
-#import "ios/web/common/features.h"
 
 ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 
@@ -37,7 +36,6 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewIsScrolling:(BOOL)scrolling {
-  CHECK(!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault));
   self.observer->OnScrollViewIsScrollingBroadcasted(scrolling);
 }
 
