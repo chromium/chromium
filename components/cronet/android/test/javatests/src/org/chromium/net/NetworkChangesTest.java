@@ -9,7 +9,6 @@ import static android.system.OsConstants.SOCK_STREAM;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import android.os.Build;
 import android.system.Os;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
-import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.FileDescriptor;
@@ -29,10 +27,11 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Test NetworkChangeNotifier.
+ * Test Cronet under different network change scenarios.
  */
 @RunWith(AndroidJUnit4.class)
-public class NetworkChangeNotifierTest {
+@OnlyRunNativeCronet
+public class NetworkChangesTest {
     @Rule
     public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
@@ -42,10 +41,7 @@ public class NetworkChangeNotifierTest {
      */
     @Test
     @SmallTest
-    @OnlyRunNativeCronet
-    @RequiresMinAndroidApi(Build.VERSION_CODES.LOLLIPOP)
-    // Os and OsConstants aren't exposed until Lollipop
-    public void testNetworkChangeNotifier() throws Exception {
+    public void testDefaultNetworkChange() throws Exception {
         // Bind a listening socket to a local port. The socket won't be used to accept any
         // connections, but rather to get connection stuck waiting to connect.
         FileDescriptor s = Os.socket(AF_INET6, SOCK_STREAM, 0);
