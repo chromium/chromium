@@ -13265,7 +13265,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "RestoreTabsOnFRE"
+                        "RestoreTabsOnFRE",
+                        "ThumbnailPlaceholder"
                     ]
                 }
             ]
