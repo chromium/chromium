@@ -5,6 +5,3 @@ buganizer: {
 buganizer_public: {
   component_id:1246129
 }
-monorail {
-  component: "UI>Shell>StatusArea>Calendar"
-}

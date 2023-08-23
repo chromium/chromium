@@ -6,6 +6,3 @@ buganizer: {
 buganizer_public: {
   component_id:1246047
 }
-monorail {
-  component: "UI>Shell>Notifications"
-}
