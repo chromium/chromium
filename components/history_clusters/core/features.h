@@ -96,6 +96,9 @@ BASE_DECLARE_FEATURE(kSidePanelJourneys);
 extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
 BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 
+// Enables renaming Journeys in the UI.
+BASE_DECLARE_FEATURE(kRenameJourneys);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_FEATURES_H_

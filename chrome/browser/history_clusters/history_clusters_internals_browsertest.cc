@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersInternalsDisabledBrowserTest,
 
   // Trigger the debug messages to be added to the internals page.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(history_clusters::kChromeUIHistoryClustersURL)));
+      browser(), GURL(history_clusters::GetChromeUIHistoryClustersURL())));
 
   // Verify that log messages are not added to the UI. There are still two
   // entries in the UI - the table header and the feature disabled message.
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersInternalsBrowserTest,
 
   // Trigger the debug messages to be added to the internals page.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL(history_clusters::kChromeUIHistoryClustersURL)));
+      browser(), GURL(history_clusters::GetChromeUIHistoryClustersURL())));
 
   // Verify that log messages are added to the UI.
   EXPECT_EQ(true, EvalJs(internals_page_web_contents, R"(

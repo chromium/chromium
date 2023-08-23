@@ -1,15 +1,14 @@
-caption: Show Journeys on the Chrome history page
+caption: Show a view of Chrome history with groups of pages
 default: null
-desc: "This policy controls the visibility of Journeys on the Chrome history page.\n\
-  \n      If the policy is set to Enabled, Journeys will be visible at chrome://history/journeys.\n\
-  \n      If the policy is set to Disabled, Journeys will not be visible at chrome://history/journeys.\n\
-  \n      If the policy is left unset, Journeys will be visible at chrome://history/journeys\
-  \ by default and users can change the visibility of Journeys.\n\n      Please note,\
+desc: "This policy controls the visibility of the Chrome history page organized into groups of pages.\n\
+  \n      If the policy is set to Enabled, a Chrome history page organized into groups will be visible at chrome://history/2.\n\
+  \n      If the policy is set to Disabled, a Chrome history page organized into groups will not be visible at chrome://history/2.\n\
+  \n      If the policy is left unset, a Chrome history page organized into groups will be visible at chrome://history/2\
+  \ by default.\n\n      Please note,\
   \ if <ph name=\"COMPONENT_UPDATES_ENABLED_POLICY_NAME\">ComponentUpdatesEnabled</ph>\
   \ policy is set to Disabled, but <ph name=\"HISTORY_CLUSTERS_VISIBLE_POLICY_NAME\"\
-  >HistoryClustersVisible</ph> is set to Enabled or unset, Journeys will still be\
-  \ available at chrome://history/journeys, but may be absent from the omnibox, and\
-  \ less relevant to the user.\n      "
+  >HistoryClustersVisible</ph> is set to Enabled or unset, a Chrome history page organized into groups will still be\
+  \ available at chrome://history/2, but may be less relevant to the user.\n"
 example_value: false
 features:
   dynamic_refresh: true
@@ -17,12 +16,11 @@ features:
 future_on:
 - fuchsia
 items:
-- caption: Journeys will be visible at chrome://history/journeys.
+- caption: Chrome history page organized into groups will be visible at chrome://history/2.
   value: true
-- caption: Journeys will not be visible at chrome://history/journeys.
+- caption: Chrome history page organized into groups will not be visible at chrome://history/2.
   value: false
-- caption: Journeys will be visible at chrome://history/journeys by default and users
-    can change the visibility of Journeys.
+- caption: Chrome history page organized into groups will be visible at chrome://history/2 by default.
   value: null
 owners:
 - file://components/history_clusters/OWNERS

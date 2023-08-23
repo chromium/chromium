@@ -66,6 +66,7 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/history_clusters/core/features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -492,7 +493,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesJourneysResumeJourney", IDS_NTP_MODULES_RESUME_YOUR_JOURNEY},
       {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
-      {"modulesJourneysSentence2", IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2},
+      {"disableQuestsModuleToastName",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2},
+      {"disableQuestsModuleToastMessage",
+       IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE},
       {"modulesJourneyDisable", IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT},
       {"modulesJourneysDismissButton",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON},
@@ -526,6 +530,23 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
 
   source->AddBoolean("wideModulesEnabled", base::FeatureList::IsEnabled(
                                                ntp_features::kNtpWideModules));
+
+  if (base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)) {
+    source->AddLocalizedString(
+        "modulesJourneysResumeJourney",
+        IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING);
+    source->AddLocalizedString("modulesJourneysInfo",
+                               IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO2);
+    source->AddLocalizedString(
+        "disableQuestsModuleToastName",
+        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME);
+    source->AddLocalizedString(
+        "disableQuestsModuleToastMessage",
+        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE);
+    source->AddLocalizedString(
+        "modulesJourneyDisable",
+        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT);
+  }
 
   source->AddBoolean(
       "modulesHeaderIconEnabled",

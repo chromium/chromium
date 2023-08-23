@@ -5,17 +5,21 @@
 import 'chrome://resources/polymer/v3_0/iron-location/iron-location.js';
 import 'chrome://resources/polymer/v3_0/iron-location/iron-query-params.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Debouncer, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {QueryState} from './externs.js';
 import {getTemplate} from './router.html.js';
 
 // All valid pages.
-export enum Page {
-  HISTORY = 'history',
-  HISTORY_CLUSTERS = 'journeys',
-  SYNCED_TABS = 'syncedTabs',
-}
+// TODO(crbug.com/1473855): Change this to an enum and use that type for holding
+//  these values for better type check when `loadTimeData` is no longer needed.
+export const Page = {
+  HISTORY: 'history',
+  HISTORY_CLUSTERS: loadTimeData.getBoolean('renameJourneys') ? '2' :
+                                                                'journeys',
+  SYNCED_TABS: 'syncedTabs',
+};
 
 // The ids of pages with corresponding tabs in the order of their tab indices.
 export const TABBED_PAGES = [Page.HISTORY, Page.HISTORY_CLUSTERS];

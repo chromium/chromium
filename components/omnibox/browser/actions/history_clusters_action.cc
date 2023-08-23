@@ -91,8 +91,8 @@ bool IsNavigationIntent(int top_search_relevance,
 }
 
 GURL GetFullJourneysUrlForQuery(const std::string& query) {
-  return net::AppendOrReplaceQueryParameter(GURL(kChromeUIHistoryClustersURL),
-                                            "q", query);
+  return net::AppendOrReplaceQueryParameter(
+      GURL(GetChromeUIHistoryClustersURL()), "q", query);
 }
 
 HistoryClustersAction::HistoryClustersAction(

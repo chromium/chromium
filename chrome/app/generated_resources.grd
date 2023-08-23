@@ -7689,6 +7689,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming a module has been disabled.">
         You won't see <ph name="MODULE_NAME">$1<ex>shopping suggestions</ex></ph> on this page again
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE" desc="Text shown in the toast confirming the NTP History Clusters module has been disabled.">
+        You won't see <ph name="MODULE_NAME">$1<ex>this type of card</ex></ph> again
+      </message>
       <message name="IDS_NTP_MODULES_DISMISS_BUTTON_TEXT" desc="Text shown on the disable button of an NTP module.">
         Hide <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
       </message>
@@ -8005,6 +8008,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_RESUME_YOUR_JOURNEY" desc="A label for the title in NTP Quests Module.">
         Resume your journey for <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_RESUME_BROWSING" desc="A label for the title in NTP History Clusters Module in sentence case.">
+        Resume browsing for <ph name="MODULE_TITLE">$1<ex>Office Chairs</ex></ph>
+      </message>
       <message name="IDS_NTP_MODULES_SHOW_ALL" desc="A label for the show all button in NTP Quests Module.">
         Show all
       </message>
@@ -8013,6 +8019,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO" desc="Text shown in the body of the info dialog of the history clusters module.">
         You’re seeing pages you've visited and suggested searches to help you easily get back to your most recent activity in Chrome Journeys.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        You can manage settings from the card menu or see more options in Customize Chrome.
+      </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO2" desc="Text shown in the body of the info dialog of the NTP History Clusters module.">
+        You’re seeing pages you've visited and suggested searches to help you easily get back to your most recent activity.
         <ph name="BREAK">&lt;br&gt;</ph>
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
@@ -8026,11 +8038,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_SENTENCE2" desc="Variant of the name of the History Clusters module in sentence case shown in various UIs.">
         Journeys
       </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_NAME" desc="Variant of the name of the History Clusters module shown in the toast confirming it has been disabled.">
+        this type of card
+      </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON" desc="A label for the dismiss button in the dropdown.">
         No longer interested
       </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TEXT" desc="A label to append to the disable text in the dropdown.">
         Journeys card
+      </message>
+      <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT" desc="A label to append to the disable text in the dropdown.">
+        this card
       </message>
       <message name="IDS_NTP_MODULES_HISTORY_CLUSTERS_DONE_BUTTON" desc="A label for the done button in the dropdown.">
         Mark as done and hide

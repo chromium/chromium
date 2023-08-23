@@ -218,12 +218,18 @@ void HistoryUI::UpdateDataSource() {
 
   base::Value::Dict update;
   update.Set(kIsUserSignedInKey, IsUserSignedIn(profile));
+
+  const bool rename_journeys =
+      base::FeatureList::IsEnabled(history_clusters::kRenameJourneys);
+  const bool is_managed = profile->GetPrefs()->IsManagedPreference(
+      history_clusters::prefs::kVisible);
+  // When history_clusters::kRenameJourneys is enabled, history clusters are
+  // always visible unless the visibility prefs is set to false by policy.
   update.Set(
       kIsHistoryClustersVisibleKey,
-      profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
-  update.Set(kIsHistoryClustersVisibleManagedByPolicyKey,
-             profile->GetPrefs()->IsManagedPreference(
-                 history_clusters::prefs::kVisible));
+      profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible) ||
+          (rename_journeys && !is_managed));
+  update.Set(kIsHistoryClustersVisibleManagedByPolicyKey, is_managed);
 
   content::WebUIDataSource::Update(profile, chrome::kChromeUIHistoryHost,
                                    std::move(update));
