@@ -104278,6 +104278,9 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Datetime"/>
   <int value="3" label="Address"/>
   <int value="4" label="Phone number"/>
+  <int value="5" label="Email"/>
+  <int value="6" label="ParcelTracking"/>
+  <int value="7" label="Measurement"/>
 </enum>
 
 <enum name="TextToSpeechEvent">

@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_context_menu_item.h"
+#import "services/metrics/public/cpp/ukm_source_id.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 class ChromeBrowserState;
@@ -84,6 +85,7 @@ NSArray<CRWContextMenuItem*>* GetContextMenuElementsToAdd(
 absl::optional<base::Value> ExtractDataElementsFromText(
     const std::string& text,
     NSTextCheckingType handled_types,
+    ukm::SourceId source_id,
     const base::FilePath& model_path);
 
 }  // namespace provider
