@@ -34,7 +34,7 @@ class OriginTrialsFactory : public ProfileKeyedServiceFactory {
   ~OriginTrialsFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

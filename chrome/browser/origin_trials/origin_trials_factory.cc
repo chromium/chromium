@@ -51,10 +51,11 @@ OriginTrialsFactory::OriginTrialsFactory()
 
 OriginTrialsFactory::~OriginTrialsFactory() noexcept = default;
 
-KeyedService* OriginTrialsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OriginTrialsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return new origin_trials::OriginTrials(
+  return std::make_unique<origin_trials::OriginTrials>(
       std::make_unique<origin_trials::LevelDbPersistenceProvider>(
           context->GetPath(),
           context->GetDefaultStoragePartition()->GetProtoDatabaseProvider()),
