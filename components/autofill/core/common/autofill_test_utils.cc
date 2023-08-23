@@ -65,6 +65,9 @@ FieldRendererId AutofillTestEnvironment::NextFieldRendererId() {
   return FieldRendererId(++field_renderer_id_counter_);
 }
 
+AutofillUnitTestEnvironment::AutofillUnitTestEnvironment(const Options& options)
+    : AutofillTestEnvironment(options) {}
+
 AutofillBrowserTestEnvironment::AutofillBrowserTestEnvironment(
     const Options& options)
     : AutofillTestEnvironment(options) {}

@@ -53,10 +53,12 @@ class AutofillTestEnvironment {
   FieldRendererId::underlying_type field_renderer_id_counter_ = 10;
 };
 
-// This encapsulates global unittest state.
+// This encapsulates global unittest state. By default this environment
+// enables the `kAutofillServerCommunication` feature.
 class AutofillUnitTestEnvironment : public AutofillTestEnvironment {
  public:
-  AutofillUnitTestEnvironment() = default;
+  explicit AutofillUnitTestEnvironment(
+      const Options& options = {.disable_server_communication = false});
 };
 
 // This encapsulates global browsertest state. By default this environment
