@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, CanShowPromo) {
 
   RunTestSequence(
       // Verify that at first, we can show the promo on the browser.
-      CheckElement(kAppMenuButtonElementId, can_show_promo, true),
+      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo, true),
       // Start observing widget focus, and create the widget.
       ObserveState(views::test::kCurrentWidgetFocus),
       // Create a second widget and give it focus. We can't guarantee that we
@@ -58,5 +58,5 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest, CanShowPromo) {
                    [&widget]() { return widget->GetNativeView(); }),
       // Verify that we can no longer show the promo, since the browser is not
       // the active window.
-      CheckElement(kAppMenuButtonElementId, can_show_promo, false));
+      CheckElement(kToolbarAppMenuButtonElementId, can_show_promo, false));
 }

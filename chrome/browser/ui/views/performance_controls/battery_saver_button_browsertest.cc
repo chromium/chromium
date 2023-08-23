@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(BatterySaverHelpPromoTest, ShowPromoOnModeActivation) {
   views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
   views::View* const battery_saver_button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kBatterySaverButtonElementId,
+          kToolbarBatterySaverButtonElementId,
           browser()->window()->GetElementContext());
   PressButton(static_cast<views::Button*>(battery_saver_button_view));
   destroyed_waiter.Wait();

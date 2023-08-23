@@ -382,7 +382,7 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
-      feature_engagement::kIPHLiveCaptionFeature, kMediaButtonElementId,
+      feature_engagement::kIPHLiveCaptionFeature, kToolbarMediaButtonElementId,
       IDS_LIVE_CAPTION_PROMO, IDS_LIVE_CAPTION_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo()));
 
@@ -397,7 +397,8 @@ void MaybeRegisterChromeFeaturePromos(
 
   // kIPHGMCCastStartStopFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHGMCCastStartStopFeature, kMediaButtonElementId,
+      &feature_engagement::kIPHGMCCastStartStopFeature,
+      kToolbarMediaButtonElementId,
       IDS_GLOBAL_MEDIA_CONTROLS_CONTROL_CAST_SESSIONS_PROMO));
 
   // kIPHPasswordsAccountStorageFeature:
@@ -438,7 +439,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHPowerBookmarksSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
       feature_engagement::kIPHPowerBookmarksSidePanelFeature,
-      kSidePanelButtonElementId, IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO));
+      kToolbarSidePanelButtonElementId, IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO));
 
   // kIPHCompanionSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
@@ -449,14 +450,15 @@ void MaybeRegisterChromeFeaturePromos(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // kIPHSwitchProfileFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
-      feature_engagement::kIPHProfileSwitchFeature, kAvatarButtonElementId,
-      IDS_PROFILE_SWITCH_PROMO, IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
+      feature_engagement::kIPHProfileSwitchFeature,
+      kToolbarAvatarButtonElementId, IDS_PROFILE_SWITCH_PROMO,
+      IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo(IDC_SHOW_AVATAR_MENU)));
 
   // kIPHPasswordsWebAppProfileSwitchFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
-      kAvatarButtonElementId,
+      kToolbarAvatarButtonElementId,
       IDS_PASSWORD_MANAGER_IPH_BODY_WEB_APP_PROFILE_SWITCH,
       IDS_PROFILE_SWITCH_PROMO_SCREENREADER,
       FeaturePromoSpecification::AcceleratorInfo()));
@@ -489,7 +491,7 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHReadingListDiscoveryFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListDiscoveryFeature,
-      kSidePanelButtonElementId, IDS_READING_LIST_DISCOVERY_PROMO));
+      kToolbarSidePanelButtonElementId, IDS_READING_LIST_DISCOVERY_PROMO));
 
   // kIPHReadingListEntryPointFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
@@ -499,12 +501,12 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHReadingListInSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHReadingListInSidePanelFeature,
-      kSidePanelButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
+      kToolbarSidePanelButtonElementId, IDS_READING_LIST_IN_SIDE_PANEL_PROMO));
 
   // kIPHReadingModeSidePanelFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
       feature_engagement::kIPHReadingModeSidePanelFeature,
-      kSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
+      kToolbarSidePanelButtonElementId, IDS_READING_MODE_SIDE_PANEL_PROMO));
 
   // kIPHSideSearchFeature:
   registry.RegisterFeature(std::move(
@@ -522,8 +524,8 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHWebUITabStripFeature:
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
-      &feature_engagement::kIPHWebUITabStripFeature, kTabCounterButtonElementId,
-      IDS_WEBUI_TAB_STRIP_PROMO));
+      &feature_engagement::kIPHWebUITabStripFeature,
+      kToolbarTabCounterButtonElementId, IDS_WEBUI_TAB_STRIP_PROMO));
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   // kIPHDesktopSharedHighlightingFeature:
@@ -548,7 +550,8 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHBatterySaverModeFeature,
-          kBatterySaverButtonElementId, IDS_BATTERY_SAVER_MODE_PROMO_TEXT,
+          kToolbarBatterySaverButtonElementId,
+          IDS_BATTERY_SAVER_MODE_PROMO_TEXT,
           IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
               [](ui::ElementContext ctx,
@@ -566,7 +569,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForCustomAction(
           feature_engagement::kIPHHighEfficiencyModeFeature,
-          kAppMenuButtonElementId, IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT,
+          kToolbarAppMenuButtonElementId, IDS_HIGH_EFFICIENCY_MODE_PROMO_TEXT,
           IDS_HIGH_EFFICIENCY_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
               [](ui::ElementContext context,
@@ -583,13 +586,13 @@ void MaybeRegisterChromeFeaturePromos(
   // kIPHPriceTrackingInSidePanelFeature;
   registry.RegisterFeature(FeaturePromoSpecification::CreateForLegacyPromo(
       &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
-      kSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
+      kToolbarSidePanelButtonElementId, IDS_PRICE_TRACKING_SIDE_PANEL_IPH));
 
   // kIPHDownloadToolbarButtonFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForToastPromo(
                     feature_engagement::kIPHDownloadToolbarButtonFeature,
-                    kDownloadToolbarButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO,
+                    kToolbarDownloadButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO,
                     IDS_DOWNLOAD_BUBBLE_PROMO_SCREENREADER,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -599,7 +602,7 @@ void MaybeRegisterChromeFeaturePromos(
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForSnoozePromo(
                     feature_engagement::kIPHBackNavigationMenuFeature,
-                    kBackButtonElementId, IDS_BACK_NAVIGATION_MENU_PROMO,
+                    kToolbarBackButtonElementId, IDS_BACK_NAVIGATION_MENU_PROMO,
                     IDS_BACK_NAVIGATION_MENU_PROMO_ACCESSIBLE_TEXT,
                     FeaturePromoSpecification::AcceleratorInfo())
                     .SetBubbleArrow(HelpBubbleArrow::kTopLeft)));
@@ -626,7 +629,7 @@ void MaybeRegisterChromeTutorials(
   {  // Menu item bubble test.
     TutorialDescription test_description;
     test_description.steps = {
-        BubbleStep(kAppMenuButtonElementId)
+        BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_OK)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight),
         BubbleStep(AppMenuModel::kDownloadsMenuItem)
@@ -742,7 +745,7 @@ void MaybeRegisterChromeTutorials(
       TutorialDescription::Create<kSidePanelReadingListTutorialMetricPrefix>(
 
           // Open side panel
-          BubbleStep(kSidePanelButtonElementId)
+          BubbleStep(kToolbarSidePanelButtonElementId)
               .SetBubbleBodyText(
                   IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL)
               .SetBubbleArrow(HelpBubbleArrow::kTopRight),
@@ -818,7 +821,7 @@ void MaybeRegisterChromeTutorials(
       kPasswordManagerTutorialId,
       TutorialDescription::Create<kPasswordManagerTutorialMetricPrefix>(
           // Bubble step - Browser app menu
-          TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+          TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
               .SetBubbleBodyText(IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU)
               .SetBubbleArrow(HelpBubbleArrow::kTopRight),
 

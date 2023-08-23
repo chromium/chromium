@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kAppMenuButtonElementId)
+                       .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* seq,
                                ui::TrackedElement* element) {
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kAppMenuButtonElementId)
+                       .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* seq,
                                ui::TrackedElement* element) {
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
                        .Build())
           .AddStep(ui::InteractionSequence::StepBuilder()
                        .SetType(ui::InteractionSequence::StepType::kShown)
-                       .SetElementID(kAppMenuButtonElementId)
+                       .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [&](ui::InteractionSequence* seq,
                                ui::TrackedElement* element) {

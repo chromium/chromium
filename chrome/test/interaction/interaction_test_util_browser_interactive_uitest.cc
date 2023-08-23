@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserUiTest,
 
   RunTestSequence(
       InstrumentTab(kDownloadsPageElementId),
-      PressButton(kAppMenuButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
       WaitForWebContentsNavigation(kDownloadsPageElementId,
                                    GURL("chrome://downloads")),

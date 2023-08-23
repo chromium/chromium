@@ -33,7 +33,7 @@ void UpgradeNotificationController::OnCriticalUpgradeInstalled() {
 
   views::View* anchor_view =
       views::ElementTrackerViews::GetInstance()->GetUniqueView(
-          kAppMenuButtonElementId,
+          kToolbarAppMenuButtonElementId,
           views::ElementTrackerViews::GetContextForView(browser_view));
   if (!anchor_view) {
     return;

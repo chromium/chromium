@@ -71,9 +71,9 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       // Simulate press of the menu button and ensure the button activates and
       // the menu appears.
       Do(base::BindOnce([]() { LOG(INFO) << "In second action."; })),
-      PressButton(kAppMenuButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
       AfterActivate(
-          kAppMenuButtonElementId,
+          kToolbarAppMenuButtonElementId,
           base::BindLambdaForTesting(
               [&](ui::InteractionSequence* seq, ui::TrackedElement* el) {
                 // Check AsView() to make sure it correctly returns the view.
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
               })),
       AfterShow(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()),
       // Move the mouse to the button and click it. This will hide the menu.
-      MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
       AfterHide(AppMenuModel::kMoreToolsMenuItem, base::DoNothing()));
 }
 
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
                 WaitForShow(kBrowserViewElementId)),
       InSameContext(Steps(
           ActivateSurface(kBrowserViewElementId), FlushEvents(),
-          MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+          MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
           SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
           WaitForHide(AppMenuModel::kDownloadsMenuItem),
           // These two types of actions use PostTask() internally and bounce off
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
           FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
           // Make sure this picks up the correct button, since it was after a
           // string of non-element-specific actions.
-          WithElement(kAppMenuButtonElementId,
+          WithElement(kToolbarAppMenuButtonElementId,
                       base::BindOnce(base::BindLambdaForTesting(
                           [incognito](ui::TrackedElement* el) {
                             EXPECT_EQ(incognito->window()->GetElementContext(),
@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
   RunTestSequence(InContext(
       incognito->window()->GetElementContext(),
       Steps(ActivateSurface(kBrowserViewElementId), FlushEvents(),
-            MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+            MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
             SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
             WaitForHide(AppMenuModel::kDownloadsMenuItem),
             // These two types of actions use PostTask() internally and
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
             FlushEvents(), EnsureNotPresent(AppMenuModel::kDownloadsMenuItem),
             // Make sure this picks up the correct button, since it was
             // after a string of non-element-specific actions.
-            WithElement(kAppMenuButtonElementId,
+            WithElement(kToolbarAppMenuButtonElementId,
                         base::BindOnce(base::BindLambdaForTesting(
                             [incognito](ui::TrackedElement* el) {
                               EXPECT_EQ(
@@ -211,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
   RunTestSequence(
       InContext(incognito->window()->GetElementContext(),
                 Steps(ActivateSurface(kBrowserViewElementId),
-                      MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+                      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
                       SelectMenuItem(AppMenuModel::kDownloadsMenuItem),
                       WaitForHide(AppMenuModel::kDownloadsMenuItem))),
       FlushEvents(),
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest, ActivateMultipleSurfaces) {
                               "programmatically raising/activating windows. "
                               "This invalidates the rest of the test."),
       ActivateSurface(kBrowserViewElementId),
-      MoveMouseTo(kAppMenuButtonElementId), ClickMouse(),
+      MoveMouseTo(kToolbarAppMenuButtonElementId), ClickMouse(),
       WaitForShow(AppMenuModel::kDownloadsMenuItem));
 }
 

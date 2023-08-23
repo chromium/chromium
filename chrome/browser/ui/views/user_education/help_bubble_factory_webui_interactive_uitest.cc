@@ -56,7 +56,7 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
               ->SetNoDelaysForTesting(true);
         }),
         // Click the Side Panel button and wait for the side panel to appear.
-        PressButton(kSidePanelButtonElementId),
+        PressButton(kToolbarSidePanelButtonElementId),
         WaitForShow(kSidePanelElementId), FlushEvents(),
         // Select the Reading List side panel and wait for the WebView to
         // appear.

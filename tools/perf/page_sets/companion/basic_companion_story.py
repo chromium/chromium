@@ -7,7 +7,7 @@ from page_sets.desktop_ui.multitab_story import MultiTabStory
 from page_sets.desktop_ui.ui_devtools_utils import ClickOn, InputText, \
     PressKey, SHIFT_DOWN
 from page_sets.companion.browser_element_identifiers import \
-    kSidePanelButtonElementId, kSidePanelComboboxElementId
+    kToolbarSidePanelButtonElementId, kSidePanelComboboxElementId
 from page_sets.companion.histograms import _CQ, _PROMO_EVENT, _SEARCH_BOX, \
     _STARTUP, _ZERO_STATE
 from page_sets.login_helpers import google_login
@@ -35,7 +35,7 @@ class CompanionStory(MultiTabStory):
     self.InteractWithPage(action_runner)
 
   def ToggleSidePanel(self, action_runner):
-    ClickOn(self._devtools, element_id=kSidePanelButtonElementId)
+    ClickOn(self._devtools, element_id=kToolbarSidePanelButtonElementId)
     action_runner.Wait(3)
 
   def OpenCompanion(self, action_runner):

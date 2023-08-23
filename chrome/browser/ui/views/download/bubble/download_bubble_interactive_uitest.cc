@@ -209,7 +209,7 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        ToolbarIconAndBubbleDetailsShownAfterDownload) {
   RunTestSequence(Do(DownloadTestFile()),
-                  WaitForShow(kDownloadToolbarButtonElementId),
+                  WaitForShow(kToolbarDownloadButtonElementId),
                   Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
                   // Hide the bubble so it's not showing while tearing down the
                   // test browser (which causes a crash on Mac).
@@ -219,11 +219,11 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        DownloadBubbleInteractedWith_NoIPHShown) {
   RunTestSequence(Do(ChangeButtonVisibility(true)),
-                  WaitForShow(kDownloadToolbarButtonElementId),
+                  WaitForShow(kToolbarDownloadButtonElementId),
                   Check(DownloadBubbleIsShowingDetails(false)),
                   // Press the button to register an interaction (which should
                   // suppress the IPH) which opens the main view.
-                  PressButton(kDownloadToolbarButtonElementId),
+                  PressButton(kToolbarDownloadButtonElementId),
                   // Close the main view.
                   Do(ChangeBubbleVisibility(false)),
                   // Now download a file to show the partial view, if enabled.
@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        DownloadBubbleShownAfterDownload_IPHShown) {
   RunTestSequence(Do(DownloadTestFile()),
-                  WaitForShow(kDownloadToolbarButtonElementId),
+                  WaitForShow(kToolbarDownloadButtonElementId),
                   Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
                   // Hide the partial view, if enabled. The IPH should be shown.
                   Do(ChangeBubbleVisibility(false)),
@@ -259,20 +259,20 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
       Check(IsInImmersiveFullscreen()),
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
       // No download toolbar icon should be present before the download.
-      EnsureNotPresent(kDownloadToolbarButtonElementId),
+      EnsureNotPresent(kToolbarDownloadButtonElementId),
       // Download a file to make the partial bubble show up, if enabled.
       Do(DownloadTestFile()),
       // This step is fine and won't be flaky on ChromeOS, because waiting for
       // the element to show includes waiting for the server to notify us that
       // we are in immersive mode.
-      WaitForShow(kDownloadToolbarButtonElementId),
+      WaitForShow(kToolbarDownloadButtonElementId),
       Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
       // Hide the bubble, if enabled, so it's not showing while tearing down the
       // test browser (which causes a crash on Mac).
       // TODO(chlily): Rewrite this test to interact with the UI instead of
       // hiding the bubble artificially, to properly test user journeys.
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
-      WaitForHide(kDownloadToolbarButtonElementId));
+      WaitForHide(kToolbarDownloadButtonElementId));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(
       // TODO(chlily): Rewrite this test to interact with the UI instead of
       // hiding the bubble artificially, to properly test user journeys.
       Do(ChangeBubbleVisibility(false)), Do(ChangeButtonVisibility(false)),
-      WaitForHide(kDownloadToolbarButtonElementId));
+      WaitForHide(kToolbarDownloadButtonElementId));
 }
 #endif
 

@@ -110,7 +110,8 @@ void ShowOutdatedUpgradeBubble(Browser* browser, bool auto_update_enabled) {
               base::UserMetricsAction("OutdatedUpgradeBubble.Later")))
           .Build();
 
-  chrome::ShowBubble(browser, kAppMenuButtonElementId, std::move(dialog_model));
+  chrome::ShowBubble(browser, kToolbarAppMenuButtonElementId,
+                     std::move(dialog_model));
 
   base::RecordAction(
       auto_update_enabled

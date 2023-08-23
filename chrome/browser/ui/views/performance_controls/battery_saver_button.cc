@@ -36,7 +36,8 @@ BatterySaverButton::BatterySaverButton(BrowserView* browser_view)
       l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_ACCNAME));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_BATTERY_SAVER_BUTTON_TOOLTIP));
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
-  SetProperty(views::kElementIdentifierKey, kBatterySaverButtonElementId);
+  SetProperty(views::kElementIdentifierKey,
+              kToolbarBatterySaverButtonElementId);
 
   // We start hidden and only show once |controller_| tells us to.
   SetVisible(false);

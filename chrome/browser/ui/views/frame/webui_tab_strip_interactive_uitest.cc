@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(WebUITabStripDragInteractiveTest,
       AddInstrumentedTab(kSecondTabElementId, GURL("about:blank")),
       // Click the counter button and then wait for the WebUI tabstrip to
       // appear.
-      PressButton(kTabCounterButtonElementId),
+      PressButton(kToolbarTabCounterButtonElementId),
       InstrumentNonTabWebView(kWebUiTabStripElementId, get_tabstrip_webview),
       // Verify there are two tabs.
       CheckResult(get_tab_count, 2),

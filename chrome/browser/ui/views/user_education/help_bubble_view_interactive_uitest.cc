@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
           testing::Ne(nullptr)),
       // Show the help bubble on the app menu and verify that it appears as
       // expected.
-      ShowHelpBubble(kAppMenuButtonElementId),
+      ShowHelpBubble(kToolbarAppMenuButtonElementId),
       CheckView(HelpBubbleView::kHelpBubbleElementIdForTesting,
                 [](HelpBubbleView* bubble) {
                   return bubble->GetWidget()->IsVisible();
@@ -132,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       // Now that the help bubble is gone, locate the editor again and transfer
       // activation to its primary window widget (the browser window) - this
       // should close the editor as it is no longer pinned by the help bubble.
-      ActivateSurface(kAppMenuButtonElementId),
+      ActivateSurface(kToolbarAppMenuButtonElementId),
       // Verify that the editor bubble closes now that it has lost focus.
       WaitForHide(kTabGroupEditorBubbleId));
 }
@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 
   RunTestSequence(
       // Show a help bubble and verify the button text.
-      ShowHelpBubble(kAppMenuButtonElementId, std::move(params)),
+      ShowHelpBubble(kToolbarAppMenuButtonElementId, std::move(params)),
       CheckViewProperty(HelpBubbleView::kDefaultButtonIdForTesting,
                         &views::LabelButton::GetText, kButton1Text),
       CheckViewProperty(HelpBubbleView::kFirstNonDefaultButtonIdForTesting,
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, AnnotateMenu) {
 
   RunTestSequence(
       // Show the application menu and attach a bubble to a menu item.
-      PressButton(kAppMenuButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params)),
 
       // Hover the default button and verify that the inkdrop is highlighted.
@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
   RunTestSequence(
       // Show the application menu and attach a bubble to two different menu
       // items.
-      PressButton(kAppMenuButtonElementId),
+      PressButton(kToolbarAppMenuButtonElementId),
       ShowHelpBubble(AppMenuModel::kDownloadsMenuItem, std::move(params1)),
       ShowHelpBubble(AppMenuModel::kMoreToolsMenuItem, std::move(params2)),
 

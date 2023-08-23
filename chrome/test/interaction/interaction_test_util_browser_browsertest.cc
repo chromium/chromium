@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest, CompareScreenshot_View) {
                               kSkipPixelTestsReason),
       // This adds a callback that calls
       // InteractionTestUtilBrowser::CompareScreenshot().
-      Screenshot(kAppMenuButtonElementId, "AppMenuButton", "3924454"));
+      Screenshot(kToolbarAppMenuButtonElementId, "AppMenuButton", "3924454"));
 }
 
 IN_PROC_BROWSER_TEST_F(InteractionTestUtilBrowserTest,

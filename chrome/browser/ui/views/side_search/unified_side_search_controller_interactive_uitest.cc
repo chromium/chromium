@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       WaitForShow(kSideSearchButtonElementId),
       EnsureNotPresent(kSidePanelElementId),
       // Going back will increase the returned-to-SRP count to 1.
-      PressButton(kBackButtonElementId),
+      PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kPrimaryTabId),
       // The side panel should not automatically open when navigating to a
       // non-SRP URL.
@@ -1129,7 +1129,7 @@ IN_PROC_BROWSER_TEST_F(SideSearchAutoTriggeringBrowserTest,
       WaitForShow(kSideSearchButtonElementId),
       EnsureNotPresent(kSidePanelElementId),
       // Going back will increase the returned-to-SRP count to 2.
-      PressButton(kBackButtonElementId),
+      PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kPrimaryTabId),
       // Navigating to a non-SRP URL should now automatically trigger the side
       // search side panel.

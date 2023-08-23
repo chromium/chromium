@@ -26,7 +26,7 @@ AppMenuButton::AppMenuButton(PressedCallback callback)
   menu_button_controller_ = menu_button_controller.get();
   SetButtonController(std::move(menu_button_controller));
   SetProperty(views::kInternalPaddingKey, gfx::Insets());
-  SetProperty(views::kElementIdentifierKey, kAppMenuButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kToolbarAppMenuButtonElementId);
 }
 
 AppMenuButton::~AppMenuButton() = default;

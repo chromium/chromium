@@ -239,11 +239,11 @@ IN_PROC_BROWSER_TEST_F(SideSearchSideContentsHelperBrowsertest,
       WaitForWebContentsNavigation(kPrimaryTabElementId, b2_url),
 
       // Go back from page B2. B1 should be skippable and we should return to A.
-      PressButton(kBackButtonElementId),
+      PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kPrimaryTabElementId, a_url),
 
       // Go back from page A. We should return to the initial page.
-      PressButton(kBackButtonElementId),
+      PressButton(kToolbarBackButtonElementId),
       WaitForWebContentsNavigation(kPrimaryTabElementId, initial_url));
 }
 

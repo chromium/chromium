@@ -75,16 +75,16 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
   TutorialDescription GetDefaultTutorialDescription() {
     TutorialDescription description;
     description.steps.emplace_back(
-        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+        TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight));
     description.steps.emplace_back(
         TutorialDescription::EventStep(kCustomEventType1));
     description.steps.emplace_back(
         TutorialDescription::HiddenStep::WaitForActivated(
-            kAppMenuButtonElementId));
+            kToolbarAppMenuButtonElementId));
     description.steps.emplace_back(
-        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+        TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
             .SetBubbleArrow(HelpBubbleArrow::kTopRight));
     return description;
@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(TutorialInteractiveUitest, SampleTutorial) {
 
   InteractionTestUtilBrowser test_util;
   EXPECT_EQ(ui::test::ActionResult::kSucceeded,
-            test_util.PressButton(GetElement(kAppMenuButtonElementId)));
+            test_util.PressButton(GetElement(kToolbarAppMenuButtonElementId)));
 
   // Simulate click on close button.
   EXPECT_CALL_IN_SCOPE(
@@ -159,7 +159,7 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     description.steps.emplace_back(
         TutorialDescription::EventStep(kCustomEventType1));
     description.steps.emplace_back(
-        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+        TutorialDescription::BubbleStep(kToolbarAppMenuButtonElementId)
             .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP));
     return description;
   }

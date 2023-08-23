@@ -61,7 +61,7 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
   }
 
   MultiStep ShowBookmarksBar() {
-    return Steps(PressButton(kAppMenuButtonElementId),
+    return Steps(PressButton(kToolbarAppMenuButtonElementId),
                  SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
                  SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
                  WaitForShow(kBookmarkBarElementId));

@@ -43,7 +43,7 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
-  SetProperty(views::kElementIdentifierKey, kSidePanelButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kToolbarSidePanelButtonElementId);
 }
 
 SidePanelToolbarButton::~SidePanelToolbarButton() = default;

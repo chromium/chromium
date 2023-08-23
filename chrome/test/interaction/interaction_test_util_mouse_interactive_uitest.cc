@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, MoveAndClick) {
           .SetCompletedCallback(completed.Get())
           // Find the app menu button.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kAppMenuButtonElementId)
+                       .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [this](ui::InteractionSequence* seq,
                                   ui::TrackedElement* el) {
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, GestureAborted) {
           .SetCompletedCallback(completed.Get())
           // Find the app menu button.
           .AddStep(ui::InteractionSequence::StepBuilder()
-                       .SetElementID(kAppMenuButtonElementId)
+                       .SetElementID(kToolbarAppMenuButtonElementId)
                        .SetStartCallback(base::BindLambdaForTesting(
                            [this, &cancel](ui::TrackedElement* el) {
                              auto* const view =

@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
   // the BrowserView hierarcny.
   auto* const app_menu_button =
       ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          kAppMenuButtonElementId, context);
+          kToolbarAppMenuButtonElementId, context);
   ASSERT_NE(nullptr, app_menu_button);
   InteractionTestUtilBrowser test_util;
   ASSERT_EQ(ui::test::ActionResult::kSucceeded,

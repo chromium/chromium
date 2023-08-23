@@ -426,21 +426,21 @@ class PageSpecificSiteDataDialogIsolatedWebAppInteractiveUiTest
   // Installs and launches an IWA, then opens the PageSpecificSiteData dialog.
   MultiStep NavigateAndOpenDialog(Browser* iwa_browser,
                                   ui::ElementIdentifier section_id) {
-    return Steps(
-        InstrumentTab(kWebContentsElementId,
-                      /*tab_index=*/absl::nullopt, iwa_browser),
-        PressButton(kAppMenuButtonElementId),
-        WithView(
-            kAppMenuButtonElementId, base::BindOnce([](AppMenuButton* button) {
-              CHECK(button->IsMenuShowing());
-              button->app_menu()->ExecuteCommand(IDC_WEB_APP_MENU_APP_INFO, 0);
-            })),
-        PressButton(PageInfoMainView::kCookieButtonElementId),
-        PressButton(PageInfoCookiesContentView::kCookieDialogButton),
-        InAnyContext(AfterShow(
-            section_id,
-            ExpectActionCount(PageSpecificSiteDataDialogAction::kDialogOpened,
-                              1))));
+    return Steps(InstrumentTab(kWebContentsElementId,
+                               /*tab_index=*/absl::nullopt, iwa_browser),
+                 PressButton(kToolbarAppMenuButtonElementId),
+                 WithView(kToolbarAppMenuButtonElementId,
+                          base::BindOnce([](AppMenuButton* button) {
+                            CHECK(button->IsMenuShowing());
+                            button->app_menu()->ExecuteCommand(
+                                IDC_WEB_APP_MENU_APP_INFO, 0);
+                          })),
+                 PressButton(PageInfoMainView::kCookieButtonElementId),
+                 PressButton(PageInfoCookiesContentView::kCookieDialogButton),
+                 InAnyContext(AfterShow(
+                     section_id,
+                     ExpectActionCount(
+                         PageSpecificSiteDataDialogAction::kDialogOpened, 1))));
   }
 
   // Returns a test step that verifies that the hostname for `row` is equal to

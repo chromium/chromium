@@ -145,21 +145,21 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
 
     registry()->RegisterFeature(
         FeaturePromoSpecification::CreateForTutorialPromo(
-            kTutorialIPHFeature, kAppMenuButtonElementId, IDS_CHROME_TIP,
+            kTutorialIPHFeature, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP,
             kTestTutorialIdentifier));
 
     registry()->RegisterFeature(
         FeaturePromoSpecification::CreateForCustomAction(
-            kCustomActionIPHFeature, kAppMenuButtonElementId, IDS_CHROME_TIP,
-            IDS_CHROME_TIP,
+            kCustomActionIPHFeature, kToolbarAppMenuButtonElementId,
+            IDS_CHROME_TIP, IDS_CHROME_TIP,
             base::BindRepeating(
                 &BrowserFeaturePromoControllerTest::OnCustomPromoAction,
                 base::Unretained(this),
                 base::Unretained(&kCustomActionIPHFeature))));
 
     auto default_custom = FeaturePromoSpecification::CreateForCustomAction(
-        kDefaultCustomActionIPHFeature, kAppMenuButtonElementId, IDS_CHROME_TIP,
-        IDS_CHROME_TIP,
+        kDefaultCustomActionIPHFeature, kToolbarAppMenuButtonElementId,
+        IDS_CHROME_TIP, IDS_CHROME_TIP,
         base::BindRepeating(
             &BrowserFeaturePromoControllerTest::OnCustomPromoAction,
             base::Unretained(this),
@@ -224,7 +224,7 @@ class BrowserFeaturePromoControllerTest : public TestWithBrowserView {
 
   FeaturePromoSpecification DefaultBubbleParams() {
     return FeaturePromoSpecification::CreateForLegacyPromo(
-        &kTestIPHFeature, kAppMenuButtonElementId, IDS_CHROME_TIP);
+        &kTestIPHFeature, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP);
   }
 
   void OnCustomPromoAction(const base::Feature* feature,
@@ -1085,12 +1085,12 @@ TEST_F(BrowserFeaturePromoControllerTest, DoesNotPerformDefaultCustomAction) {
 TEST_F(BrowserFeaturePromoControllerTest, CustomActionHidesAnchorView) {
   FeaturePromoHandle promo_handle;
   registry()->RegisterFeature(FeaturePromoSpecification::CreateForCustomAction(
-      kCustomActionIPHFeature2, kAppMenuButtonElementId, IDS_CHROME_TIP,
+      kCustomActionIPHFeature2, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP,
       IDS_CHROME_TIP,
       base::BindLambdaForTesting(
           [&](ui::ElementContext context, FeaturePromoHandle handle) {
             views::ElementTrackerViews::GetInstance()
-                ->GetUniqueView(kAppMenuButtonElementId, context)
+                ->GetUniqueView(kToolbarAppMenuButtonElementId, context)
                 ->SetVisible(false);
             promo_handle = std::move(handle);
           })));
@@ -1167,7 +1167,7 @@ class BrowserFeaturePromoControllerViewsTest
   auto RegisterPromo(int body_string, int title_string = 0) {
     return Do([this, body_string, title_string]() {
       auto spec = FeaturePromoSpecification::CreateForLegacyPromo(
-          &kStringTestIPHFeature, kAppMenuButtonElementId, body_string);
+          &kStringTestIPHFeature, kToolbarAppMenuButtonElementId, body_string);
       if (title_string) {
         spec.SetBubbleTitleText(title_string);
       }

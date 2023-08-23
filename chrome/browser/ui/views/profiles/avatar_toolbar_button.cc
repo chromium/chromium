@@ -80,7 +80,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON);
 
   SetID(VIEW_ID_AVATAR_BUTTON);
-  SetProperty(views::kElementIdentifierKey, kAvatarButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kToolbarAvatarButtonElementId);
 
   // The avatar should not flip with RTL UI. This does not affect text rendering
   // and LabelButton image/label placement is still flipped like usual.

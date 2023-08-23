@@ -11,8 +11,8 @@
 
 kOmniboxElementId = 'kOmniboxElementId'
 kSideSearchButtonElementId = 'kSideSearchButtonElementId'
-kTabCounterButtonElementId = 'kTabCounterButtonElementId'
+kToolbarTabCounterButtonElementId = 'kToolbarTabCounterButtonElementId'
 kTabSearchButtonElementId = 'kTabSearchButtonElementId'
 kSidePanelOpenInNewTabButtonElementId = 'kSidePanelOpenInNewTabButtonElementId'
-kSidePanelButtonElementId = 'kSidePanelButtonElementId'
+kToolbarSidePanelButtonElementId = 'kToolbarSidePanelButtonElementId'
 kSidePanelComboboxElementId = 'kSidePanelComboboxElementId'

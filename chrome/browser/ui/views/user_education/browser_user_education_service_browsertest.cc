@@ -434,9 +434,10 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
                        TutorialConsistencyCheck) {
   const auto kAlwaysPresentElementIds =
       base::MakeFixedFlatSet<ui::ElementIdentifier>(
-          {kAppMenuButtonElementId, kAvatarButtonElementId,
-           kBackButtonElementId, kBrowserViewElementId, kForwardButtonElementId,
-           kNewTabButtonElementId, kOmniboxElementId, kSidePanelButtonElementId,
+          {kToolbarAppMenuButtonElementId, kToolbarAvatarButtonElementId,
+           kToolbarBackButtonElementId, kBrowserViewElementId,
+           kToolbarForwardButtonElementId, kNewTabButtonElementId,
+           kOmniboxElementId, kToolbarSidePanelButtonElementId,
            kTabSearchButtonElementId, kTabStripElementId,
            kTabStripRegionElementId, kTopContainerElementId});
 

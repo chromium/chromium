@@ -79,7 +79,7 @@ class FeaturePromoSnoozeInteractiveTest : public InteractiveBrowserTest {
             kSnoozeTestFeature)) {
       promo_controller_->registry()->RegisterFeature(
           user_education::FeaturePromoSpecification::CreateForSnoozePromo(
-              kSnoozeTestFeature, kAppMenuButtonElementId,
+              kSnoozeTestFeature, kToolbarAppMenuButtonElementId,
               IDS_TAB_GROUPS_NEW_GROUP_PROMO));
     }
   }

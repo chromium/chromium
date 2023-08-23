@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest, ShowPromoOnTabThreshold) {
   TriggerHighEfficiencyPromo();
   auto* app_menu_button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kAppMenuButtonElementId, browser()->window()->GetElementContext());
+          kToolbarAppMenuButtonElementId,
+          browser()->window()->GetElementContext());
   PressButton(views::AsViewClass<views::Button>(app_menu_button_view));
 
   auto* const promo_controller = GetFeaturePromoController();
@@ -126,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyHelpPromoTest,
 
   auto* app_menu_button_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-          kAppMenuButtonElementId, browser()->window()->GetElementContext());
+          kToolbarAppMenuButtonElementId,
+          browser()->window()->GetElementContext());
   PressButton(views::AsViewClass<views::Button>(app_menu_button_view));
 
   AppMenuModel* app_menu_model =

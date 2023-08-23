@@ -155,7 +155,7 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
   SetTooltipText(tooltip_texts_.at(0));
   SetVisible(false);
-  SetProperty(views::kElementIdentifierKey, kDownloadToolbarButtonElementId);
+  SetProperty(views::kElementIdentifierKey, kToolbarDownloadButtonElementId);
 
   badge_image_view_ = AddChildView(std::make_unique<views::ImageView>());
   badge_image_view_->SetPaintToLayer();

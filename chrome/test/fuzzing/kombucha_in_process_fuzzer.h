@@ -43,7 +43,7 @@ class KombuchaInProcessFuzzer
 
   // Custom Kombucha Verbs
   auto ShowBookmarksBar() {
-    return Steps(PressButton(kAppMenuButtonElementId),
+    return Steps(PressButton(kToolbarAppMenuButtonElementId),
                  SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
                  SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
                  WaitForShow(kBookmarkBarElementId));

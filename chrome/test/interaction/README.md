@@ -374,7 +374,7 @@ RunTestSequence(
          // If the side panel is visible...
          [](const SidePanel* side_panel) { return side_panel != nullptr; },
          // Then press the side panel button to close the side panel.
-         Steps(PressButton(kSidePanelButtonElementId),
+         Steps(PressButton(kToolbarSidePanelButtonElementId),
                WaitForHide(kSidePanelElementId)),
          // Else note that it was not open.
          Log("Side panel was already closed.")),

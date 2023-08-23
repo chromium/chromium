@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 from page_sets.desktop_ui.browser_element_identifiers import \
-    kTabCounterButtonElementId
+    kToolbarTabCounterButtonElementId
 from page_sets.desktop_ui.custom_metric_utils import SetMetricNames
 from page_sets.desktop_ui.js_utils import MEASURE_JS_MEMORY
 from page_sets.desktop_ui.multitab_story import MultiTabStory
@@ -53,7 +53,7 @@ class WebUITabStripStory(MultiTabStory):
 
   def RunPageInteractions(self, action_runner):
     SetMetricNames(action_runner, WEBUI_TAB_STRIP_CUSTOM_METRIC_NAMES)
-    ClickOn(self._devtools, element_id=kTabCounterButtonElementId)
+    ClickOn(self._devtools, element_id=kToolbarTabCounterButtonElementId)
     action_runner = Inspect(action_runner.tab.browser, WEBUI_TAB_STRIP_URL)
     action_runner.ExecuteJavaScript(MEASURE_JS_MEMORY %
                                     'webui_tab_strip:used_js_heap_size_begin')
