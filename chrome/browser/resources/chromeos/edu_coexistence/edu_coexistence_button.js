@@ -151,7 +151,7 @@ class EduCoexistenceButton extends EduCoexistenceButtonBase {
    * @param {!Event} e
    * @private
    */
-  onTap_(e) {
+  onClick_(e) {
     if (this.disabled) {
       e.stopPropagation();
       return;
