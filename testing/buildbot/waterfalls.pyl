@@ -3681,6 +3681,7 @@
           'x86-64',
         ],
         'test_suites': {
+          'gtest_tests': 'cr23_linux_gtests'
         },
         'os_type': 'linux',
       },
@@ -3841,6 +3842,7 @@
       },
       'mac-cr23-rel': {
         'test_suites': {
+          'gtest_tests': 'cr23_mac_gtests',
         },
         'mixins': [
           'mac_x64',
@@ -3955,6 +3957,7 @@
       },
       'win-cr23-rel': {
         'test_suites': {
+          'gtest_tests': 'cr23_win_gtests',
         },
         'mixins': [
           'win10-any',
@@ -4964,10 +4967,7 @@
           'linux-jammy',
         ],
         'test_suites': {
-          # TODO(crbug.com/1444855): Switch this back to
-          # 'chromium_linux_gtests' after the ChromeRefresh2023
-          # is fully rolled out.
-          'gtest_tests': 'chromium_linux_gtests_once',
+          'gtest_tests': 'chromium_linux_gtests',
           'isolated_scripts': 'chromium_linux_rel_isolated_scripts_once',
         },
       },
@@ -5087,10 +5087,7 @@
             'isolate_profile_data',
         ],
         'test_suites': {
-          # TODO(crbug.com/1444855): Switch this back to
-          # 'chromium_mac_gtests_no_nacl_no_nocompile' after the
-          # ChromeRefresh2023 is fully rolled out.
-          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile_once',
+          'gtest_tests': 'chromium_mac_gtests_no_nacl_no_nocompile',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
         },
       },
@@ -6325,10 +6322,7 @@
           'isolate_profile_data',
         ],
         'test_suites': {
-          # TODO(crbug.com/1444855): Switch this back to
-          # 'chromium_win10_gtests' after the
-          # ChromeRefresh2023 is fully rolled out.
-          'gtest_tests': 'chromium_win10_gtests_once',
+          'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts_once',
         },
       },
