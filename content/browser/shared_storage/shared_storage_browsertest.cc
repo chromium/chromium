@@ -8374,16 +8374,17 @@ class SharedStorageHeaderObserverBrowserTest
 
   void SetUpResponsesAndNavigateMainPage(
       std::string main_hostname,
-      std::string subresource_hostname,
+      std::string subresource_or_subframe_hostname,
       absl::optional<std::string> shared_storage_permissions = absl::nullopt,
       bool is_image = false,
       absl::optional<std::string> redirect_hostname = absl::nullopt) {
-    subresource_content_type_ =
+    subresource_or_subframe_content_type_ =
         is_image ? "image/png" : "text/plain;charset=UTF-8";
-    const char* subresource_path = is_image ? kPngPath : kTitle1Path;
-    subresource_response_ =
+    const char* subresource_or_subframe_path =
+        is_image ? kPngPath : kTitle1Path;
+    subresource_or_subframe_response_ =
         std::make_unique<net::test_server::ControllableHttpResponse>(
-            https_server(), subresource_path);
+            https_server(), subresource_or_subframe_path);
 
     std::unique_ptr<net::test_server::ControllableHttpResponse> main_response;
 
@@ -8402,9 +8403,11 @@ class SharedStorageHeaderObserverBrowserTest
 
     main_url_ =
         https_server()->GetURL(std::move(main_hostname), kSimplePagePath);
-    subresource_url_ = https_server()->GetURL(std::move(subresource_hostname),
-                                              subresource_path);
-    subresource_origin_ = url::Origin::Create(subresource_url_);
+    subresource_or_subframe_url_ =
+        https_server()->GetURL(std::move(subresource_or_subframe_hostname),
+                               subresource_or_subframe_path);
+    subresource_or_subframe_origin_ =
+        url::Origin::Create(subresource_or_subframe_url_);
     if (redirect_hostname.has_value()) {
       redirect_url_ =
           https_server()->GetURL(redirect_hostname.value(), kTitle2Path);
@@ -8445,22 +8448,22 @@ class SharedStorageHeaderObserverBrowserTest
     response.Done();
   }
 
-  void WaitForSubresourceRequestAndSendResponse(
+  void WaitForSubresourceOrSubframeRequestAndSendResponse(
       bool expect_writable_header,
       net::HttpStatusCode http_status,
       const std::vector<std::string>& extra_headers) {
-    WaitForRequestAndSendResponse(*subresource_response_,
-                                  expect_writable_header, http_status,
-                                  subresource_content_type_, extra_headers);
+    WaitForRequestAndSendResponse(
+        *subresource_or_subframe_response_, expect_writable_header, http_status,
+        subresource_or_subframe_content_type_, extra_headers);
   }
 
   void WaitForRedirectRequestAndSendResponse(
       bool expect_writable_header,
       net::HttpStatusCode http_status,
       const std::vector<std::string>& extra_headers) {
-    WaitForRequestAndSendResponse(*redirected_response_, expect_writable_header,
-                                  http_status, subresource_content_type_,
-                                  extra_headers);
+    WaitForRequestAndSendResponse(
+        *redirected_response_, expect_writable_header, http_status,
+        subresource_or_subframe_content_type_, extra_headers);
   }
 
   void FetchWithSharedStorageWritable(const ToRenderFrameHost& execution_target,
@@ -8473,42 +8476,52 @@ class SharedStorageHeaderObserverBrowserTest
                        EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   }
 
-  void StartServerAndLoadMainURLWithSameOriginSubresource(
+  void StartServerAndLoadMainURLWithSameOriginSubresourceOrSubframe(
       std::string main_hostname,
       std::string main_path) {
     ASSERT_TRUE(https_server()->Start());
     main_url_ =
         https_server()->GetURL(std::move(main_hostname), std::move(main_path));
-    subresource_origin_ = url::Origin::Create(main_url_);
+    subresource_or_subframe_origin_ = url::Origin::Create(main_url_);
     EXPECT_TRUE(NavigateToURL(shell(), main_url_));
   }
 
   void CreateSharedStorageWritableImage(
       const ToRenderFrameHost& execution_target,
       const GURL& url) {
-    EXPECT_TRUE(ExecJs(execution_target,
-                       JsReplace(R"(
+    EXPECT_TRUE(ExecJs(execution_target, JsReplace(R"(
       let img = document.createElement('img');
       img.src = $1;
       img.sharedStorageWritable = true;
       document.body.appendChild(img);
     )",
-                                 url.spec()),
-                       EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+                                                   url.spec())));
+  }
+
+  void CreateSharedStorageWritableIframe(
+      const ToRenderFrameHost& execution_target,
+      const GURL& url) {
+    EXPECT_TRUE(ExecJs(execution_target, JsReplace(R"(
+      let frame = document.createElement('iframe');
+      frame.sharedStorageWritable = true;
+      frame.src = $1;
+      document.body.appendChild(frame);
+    )",
+                                                   url.spec())));
   }
 
  protected:
   base::WeakPtr<TestSharedStorageHeaderObserver> observer_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
-      subresource_response_;
+      subresource_or_subframe_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       redirected_response_;
   GURL main_url_;
-  GURL subresource_url_;
+  GURL subresource_or_subframe_url_;
   GURL redirect_url_;
-  url::Origin subresource_origin_;
+  url::Origin subresource_or_subframe_origin_;
   url::Origin redirect_origin_;
-  std::string subresource_content_type_;
+  std::string subresource_or_subframe_content_type_;
 
  private:
   base::test::ScopedFeatureList shared_storage_m118_feature_;
@@ -8516,12 +8529,13 @@ class SharedStorageHeaderObserverBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsDefault_ClearSetAppend) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8547,28 +8561,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsNone) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"()");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"()");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8583,13 +8599,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsAll_ClearSetAppend) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"*");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"*");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8615,28 +8632,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsSelf_ClearSetAppend) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"self");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"self");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8662,27 +8681,29 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_CrossOrigin_PermissionsDefault_ClearSetAppend) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8713,28 +8734,30 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_CrossOrigin_PermissionsNone) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"()");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"()");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8749,13 +8772,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_CrossOrigin_PermissionsAll_ClearSetAppend) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"*");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"*");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8767,17 +8791,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the fetch URL.
   FrameTreeNode* iframe_node =
@@ -8801,13 +8826,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_CrossOrigin_PermissionsSelf) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"self");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"self");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -8825,15 +8851,15 @@ IN_PROC_BROWSER_TEST_F(
     Fetch_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteInitial) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/false,
       /*redirect_hostname=*/"c.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -8847,17 +8873,18 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/true,
@@ -8867,21 +8894,22 @@ IN_PROC_BROWSER_TEST_F(
 
   // There won't be additional operations invoked.
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -8903,15 +8931,15 @@ IN_PROC_BROWSER_TEST_F(
     Fetch_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteFinal) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/false,
       /*redirect_hostname=*/"c.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -8941,7 +8969,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -8980,15 +9008,15 @@ IN_PROC_BROWSER_TEST_F(
     Fetch_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteBoth) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/false,
       /*redirect_hostname=*/"c.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -9002,17 +9030,18 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/true,
@@ -9032,10 +9061,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(
       observer_->operations(),
       testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
+          ClearOperation(subresource_or_subframe_origin_,
+                         OperationResult::kSuccess),
+          SetOperation(subresource_or_subframe_origin_, "hello", "world", true,
                        OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
+          AppendOperation(subresource_or_subframe_origin_, "hello", "there",
                           OperationResult::kSet),
           DeleteOperation(redirect_origin_, "a", OperationResult::kSuccess),
           SetOperation(redirect_origin_, "set", "will", absl::nullopt,
@@ -9043,7 +9073,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9084,15 +9114,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_CrossOrigin_Redirect_InititalAllowed_FinalDenied) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\")",
       /*is_image=*/false,
       /*redirect_hostname=*/"c.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -9106,17 +9136,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   WaitForRedirectRequestAndSendResponse(
       /*expect_writable_header=*/false,
@@ -9127,21 +9158,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
   // No new operations are invoked.
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original fetch URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9172,8 +9204,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsDefault_VerifyDelete) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), R"(sharedStorage.set('hello', 'world');)"));
@@ -9204,9 +9237,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   EXPECT_EQ("sharedStorage.get('hello'): world",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9216,12 +9249,14 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(DeleteOperation(subresource_origin_, "hello",
-                                                   OperationResult::kSuccess)));
+              testing::ElementsAre(
+                  DeleteOperation(subresource_or_subframe_origin_, "hello",
+                                  OperationResult::kSuccess)));
 
   // There is 1 more "worklet operation": `run()`.
   test_worklet_host_manager()
@@ -9245,8 +9280,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsDefault_VerifyClear) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_TRUE(ExecJs(shell(), R"(sharedStorage.set('hello', 'world');)"));
@@ -9277,9 +9313,9 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   EXPECT_EQ("sharedStorage.get('hello'): world",
             base::UTF16ToUTF8(console_observer.messages()[1].message));
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9289,12 +9325,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
   EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(ClearOperation(subresource_origin_,
-                                                  OperationResult::kSuccess)));
+              testing::ElementsAre(ClearOperation(
+                  subresource_or_subframe_origin_, OperationResult::kSuccess)));
 
   // There is 1 more "worklet operation": `run()`.
   test_worklet_host_manager()
@@ -9318,12 +9355,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Fetch_SameOrigin_PermissionsDefault_MultipleSet_Bytes) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9335,17 +9373,18 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "hello", "world",
-                                        absl::nullopt, OperationResult::kSet),
-                           SetOperation(subresource_origin_, "hello", "friend",
-                                        false, OperationResult::kSet),
-                           SetOperation(subresource_origin_, "hello", "there",
-                                        true, OperationResult::kIgnored)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", absl::nullopt, OperationResult::kSet),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "friend", false, OperationResult::kSet),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "there", true, OperationResult::kIgnored)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9364,7 +9403,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        NetworkServiceRestarts_HeaderObserverContinuesWorking) {
-  subresource_response_ =
+  subresource_or_subframe_response_ =
       std::make_unique<net::test_server::ControllableHttpResponse>(
           https_server(), kTitle1Path);
   ASSERT_TRUE(https_server()->Start());
@@ -9384,12 +9423,12 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   // We should still have an `observer_`.
   ASSERT_TRUE(observer_);
 
-  // We need to reinitialize `subresource_url_` after network service restart.
-  // Fetching with `sharedStorageWritable` works as expected.
-  subresource_url_ = https_server()->GetURL("a.test", kTitle1Path);
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  // We need to reinitialize `subresource_or_subframe_url_` after network
+  // service restart. Fetching with `sharedStorageWritable` works as expected.
+  subresource_or_subframe_url_ = https_server()->GetURL("a.test", kTitle1Path);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9400,19 +9439,21 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   ASSERT_TRUE(observer_);
   observer_->WaitForOperations(3);
 
-  subresource_origin_ = url::Origin::Create(subresource_url_);
+  subresource_or_subframe_origin_ =
+      url::Origin::Create(subresource_or_subframe_url_);
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9431,12 +9472,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        InvalidHeader_NoOperationsInvoked) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9462,12 +9504,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     SharedStorageHeaderObserverBrowserTest,
     ParsableUnrecognizedItemSkipped_RecognizedOperationsInvoked) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9479,17 +9522,18 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9508,12 +9552,13 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        ExtraParametersIgnored) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9540,30 +9585,32 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(4);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", absl::nullopt,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet),
-          DeleteOperation(subresource_origin_, "toDelete",
-                          OperationResult::kSuccess)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", absl::nullopt, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet),
+                  DeleteOperation(subresource_or_subframe_origin_, "toDelete",
+                                  OperationResult::kSuccess)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        KeyOrValueLengthInvalid_ItemSkipped) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test");
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test");
 
-  FetchWithSharedStorageWritable(shell(), subresource_url_);
+  FetchWithSharedStorageWritable(shell(), subresource_or_subframe_url_);
 
   std::string long_str(1025, 'x');
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9578,15 +9625,17 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(2);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, false, false, false, false, false,
                                    false, false, false, true));
   EXPECT_THAT(
       observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          ClearOperation(subresource_origin_, OperationResult::kSuccess)));
+      testing::ElementsAre(ClearOperation(subresource_or_subframe_origin_,
+                                          OperationResult::kSuccess),
+                           ClearOperation(subresource_or_subframe_origin_,
+                                          OperationResult::kSuccess)));
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9604,13 +9653,13 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_SameOrigin_PermissionsDefault) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
       /*shared_storage_permissions=*/absl::nullopt,
       /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9633,25 +9682,27 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "a", "b",
-                                        absl::nullopt, OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_SameOrigin_PermissionsNone) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"()",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"()",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9666,14 +9717,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_SameOrigin_PermissionsAll) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"*",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"*",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9697,25 +9749,27 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "a", "b",
-                                        absl::nullopt, OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_SameOrigin_PermissionsSelf) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"a.test",
-                                    /*shared_storage_permissions=*/"self",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"self",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9739,26 +9793,27 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "a", "b",
-                                        absl::nullopt, OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_CrossOrigin_PermissionsDefault) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/absl::nullopt,
       /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9786,25 +9841,27 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "a", "b",
-                                        absl::nullopt, OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_CrossOrigin_PermissionsNone) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"()",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"()",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9819,14 +9876,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_CrossOrigin_PermissionsAll) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"*",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"*",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9855,25 +9913,27 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(SetOperation(subresource_origin_, "a", "b",
-                                        absl::nullopt, OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_CrossOrigin_PermissionsSelf) {
-  SetUpResponsesAndNavigateMainPage(/*main_hostname=*/"a.test",
-                                    /*subresource_hostname=*/"b.test",
-                                    /*shared_storage_permissions=*/"self",
-                                    /*is_image=*/true);
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"self",
+      /*is_image=*/true);
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/false,
       /*http_status=*/net::HTTP_OK,
       /*extra_headers=*/
@@ -9891,15 +9951,15 @@ IN_PROC_BROWSER_TEST_F(
     Image_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteInitial) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/true,
       /*redirect_hostname=*/"c.test");
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -9917,7 +9977,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node2 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -9939,17 +9999,18 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -9957,15 +10018,15 @@ IN_PROC_BROWSER_TEST_F(
     Image_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteFinal) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/true,
       /*redirect_hostname=*/"c.test");
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -9995,7 +10056,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -10034,15 +10095,15 @@ IN_PROC_BROWSER_TEST_F(
     Image_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteBoth) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
       /*is_image=*/true,
       /*redirect_hostname=*/"c.test");
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -10070,10 +10131,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(
       observer_->operations(),
       testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
+          ClearOperation(subresource_or_subframe_origin_,
+                         OperationResult::kSuccess),
+          SetOperation(subresource_or_subframe_origin_, "hello", "world", true,
                        OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
+          AppendOperation(subresource_or_subframe_origin_, "hello", "there",
                           OperationResult::kSet),
           DeleteOperation(redirect_origin_, "a", OperationResult::kSuccess),
           SetOperation(redirect_origin_, "set", "will", absl::nullopt,
@@ -10081,7 +10143,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -10122,15 +10184,15 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_CrossOrigin_Redirect_InititalAllowed_FinalDenied) {
   SetUpResponsesAndNavigateMainPage(
       /*main_hostname=*/"a.test",
-      /*subresource_hostname=*/"b.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
       /*shared_storage_permissions=*/
       "(self \"https://b.test:{{port}}\")",
       /*is_image=*/true,
       /*redirect_hostname=*/"c.test");
 
-  CreateSharedStorageWritableImage(shell(), subresource_url_);
+  CreateSharedStorageWritableImage(shell(), subresource_or_subframe_url_);
 
-  WaitForSubresourceRequestAndSendResponse(
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
       /*expect_writable_header=*/true,
       /*http_status=*/net::HTTP_FOUND,
       /*extra_headers=*/
@@ -10153,21 +10215,22 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   observer_->WaitForOperations(3);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true, true, true));
-  EXPECT_THAT(
-      observer_->operations(),
-      testing::ElementsAre(
-          ClearOperation(subresource_origin_, OperationResult::kSuccess),
-          SetOperation(subresource_origin_, "hello", "world", true,
-                       OperationResult::kSet),
-          AppendOperation(subresource_origin_, "hello", "there",
-                          OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
 
   // Create an iframe that's same-origin to the original image URL.
   FrameTreeNode* iframe_node1 =
-      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_url_);
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
@@ -10201,7 +10264,7 @@ IN_PROC_BROWSER_TEST_F(
     Image_ContentAttributeIncluded_Set_2ndImageCached_NotSet) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
 
-  StartServerAndLoadMainURLWithSameOriginSubresource(
+  StartServerAndLoadMainURLWithSameOriginSubresourceOrSubframe(
       /*main_hostname=*/"a.test",
       /*main_path=*/
       "/shared_storage/page-with-shared-storage-writable-image.html");
@@ -10227,12 +10290,13 @@ IN_PROC_BROWSER_TEST_F(
   observer_->WaitForOperations(1);
 
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(AppendOperation(
-                  subresource_origin_, "a", "b", OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(), testing::ElementsAre(AppendOperation(
+                                           subresource_or_subframe_origin_, "a",
+                                           "b", OperationResult::kSet)));
 
   EXPECT_EQ(
       true,
@@ -10273,18 +10337,19 @@ IN_PROC_BROWSER_TEST_F(
   // No new operations are invoked.
   ASSERT_TRUE(observer_);
   EXPECT_EQ(observer_->header_results().size(), 1u);
-  EXPECT_EQ(observer_->header_results().front().first, subresource_origin_);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
   EXPECT_THAT(observer_->header_results().front().second,
               testing::ElementsAre(true));
-  EXPECT_THAT(observer_->operations(),
-              testing::ElementsAre(AppendOperation(
-                  subresource_origin_, "a", "b", OperationResult::kSet)));
+  EXPECT_THAT(observer_->operations(), testing::ElementsAre(AppendOperation(
+                                           subresource_or_subframe_origin_, "a",
+                                           "b", OperationResult::kSet)));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
                        Image_ContentAttributeNotIncluded_NotSet) {
   WebContentsConsoleObserver console_observer(shell()->web_contents());
-  StartServerAndLoadMainURLWithSameOriginSubresource(
+  StartServerAndLoadMainURLWithSameOriginSubresourceOrSubframe(
       /*main_hostname=*/"a.test",
       /*main_path=*/
       "/shared_storage/page-with-non-shared-storage-writable-image.html");
@@ -10293,6 +10358,688 @@ IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
   EXPECT_TRUE(console_observer.Wait());
   EXPECT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ("Image Loaded",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_SameOrigin_PermissionsDefault) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/absl::nullopt,
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Shared-Storage-Write: set;key=a;value=b"});
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_SameOrigin_PermissionsNone) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"()",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_SameOrigin_PermissionsAll) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"*",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_SameOrigin_PermissionsSelf) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"a.test",
+      /*shared_storage_permissions=*/"self",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_CrossOrigin_PermissionsDefault) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/absl::nullopt,
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Shared-Storage-Write: set;key=a;value=b"});
+
+  // Create another iframe that's same-origin to the first iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(),
+                   https_server()->GetURL("b.test", kTitle2Path));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_CrossOrigin_PermissionsNone) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"()",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_CrossOrigin_PermissionsAll) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"*",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  // Create another iframe that's same-origin to the first iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(),
+                   https_server()->GetURL("b.test", kTitle2Path));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_CrossOrigin_PermissionsSelf) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/"self",
+      /*is_image=*/false);
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: set;key=a;value=b"});
+
+  // No operations are invoked.
+  ASSERT_TRUE(observer_);
+  EXPECT_TRUE(observer_->header_results().empty());
+  EXPECT_TRUE(observer_->operations().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteInitial) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostname=*/"c.test");
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url_.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *"});
+
+  // Create another iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // There won't be additional operations invoked from the redirect, just the
+  // original 3.
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteFinal) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostname=*/"c.test");
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url_.spec()}),
+       "Access-Control-Allow-Origin: *"});
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"});
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(2);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().back().first, redirect_origin_);
+  EXPECT_THAT(observer_->header_results().back().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          DeleteOperation(redirect_origin_, "a", OperationResult::kSuccess),
+          SetOperation(redirect_origin_, "set", "will", absl::nullopt,
+                       OperationResult::kSet)));
+
+  // Create another iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+
+  // Nothing was set in b.test's shared storage.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("0", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Create another iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node3 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url_);
+
+  ExecuteScriptInWorklet(iframe_node3, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2u);
+
+  // The entry was set in c.test's shared storage.
+  EXPECT_EQ(4u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[3].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InititalAllowed_FinalAllowed_WriteBoth) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://b.test:{{port}}\" \"https://c.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostname=*/"c.test");
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url_.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=will;key=set"});
+
+  // There will now have been a total of 5 operations (3 previous, 2 current).
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(5);
+
+  EXPECT_EQ(observer_->header_results().size(), 2u);
+  EXPECT_EQ(observer_->header_results().back().first, redirect_origin_);
+  EXPECT_THAT(observer_->header_results().back().second,
+              testing::ElementsAre(true, true));
+  EXPECT_THAT(
+      observer_->operations(),
+      testing::ElementsAre(
+          ClearOperation(subresource_or_subframe_origin_,
+                         OperationResult::kSuccess),
+          SetOperation(subresource_or_subframe_origin_, "hello", "world", true,
+                       OperationResult::kSet),
+          AppendOperation(subresource_or_subframe_origin_, "hello", "there",
+                          OperationResult::kSet),
+          DeleteOperation(redirect_origin_, "a", OperationResult::kSuccess),
+          SetOperation(redirect_origin_, "set", "will", absl::nullopt,
+                       OperationResult::kSet)));
+
+  // Create another iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node2, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  // Only one entry was set in b.test's shared storage.
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  // Create another iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node3 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url_);
+
+  ExecuteScriptInWorklet(iframe_node3, R"(
+      console.log(await sharedStorage.get('set'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url, /*expected_total_host_count=*/2u);
+
+  // One entry was set in c.test's shared storage.
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("will", base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SharedStorageHeaderObserverBrowserTest,
+    Iframe_CrossOrigin_Redirect_InititalAllowed_FinalDenied) {
+  SetUpResponsesAndNavigateMainPage(
+      /*main_hostname=*/"a.test",
+      /*subresource_or_subframe_hostname=*/"b.test",
+      /*shared_storage_permissions=*/
+      "(self \"https://b.test:{{port}}\")",
+      /*is_image=*/false,
+      /*redirect_hostname=*/"c.test");
+
+  CreateSharedStorageWritableIframe(shell(), subresource_or_subframe_url_);
+
+  WaitForSubresourceOrSubframeRequestAndSendResponse(
+      /*expect_writable_header=*/true,
+      /*http_status=*/net::HTTP_FOUND,
+      /*extra_headers=*/
+      {base::StrCat({"Location: ", redirect_url_.spec()}),
+       "Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: clear, "
+       "set;key=\"hello\";value=\"world\";ignore_if_present, "
+       "append;key=hello;value=there"});
+
+  WaitForRedirectRequestAndSendResponse(
+      /*expect_writable_header=*/false,
+      /*http_status=*/net::HTTP_OK,
+      /*extra_headers=*/
+      {"Access-Control-Allow-Origin: *",
+       "Shared-Storage-Write: delete;key=a, set;value=wont;key=set"});
+
+  // There won't be additional operations invoked from the redirect, just the
+  // original 3.
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(3);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true, true, true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(
+                  ClearOperation(subresource_or_subframe_origin_,
+                                 OperationResult::kSuccess),
+                  SetOperation(subresource_or_subframe_origin_, "hello",
+                               "world", true, OperationResult::kSet),
+                  AppendOperation(subresource_or_subframe_origin_, "hello",
+                                  "there", OperationResult::kSet)));
+
+  // Create an iframe that's same-origin to the original iframe URL.
+  FrameTreeNode* iframe_node1 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), subresource_or_subframe_url_);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(iframe_node1, R"(
+      console.log(await sharedStorage.get('hello'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("worldthere",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // Create another iframe that's same-origin to the redirect URL.
+  FrameTreeNode* iframe_node2 =
+      CreateIFrame(PrimaryFrameTreeNodeRoot(), redirect_url_);
+
+  EvalJsResult result = EvalJs(iframe_node2, R"(
+        sharedStorage.worklet.addModule('/shared_storage/simple_module.js');
+      )");
+
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("The \"shared-storage\" Permissions Policy "
+                                 "denied the method on window.sharedStorage."));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_ContentAttributeIncluded_Set) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  StartServerAndLoadMainURLWithSameOriginSubresourceOrSubframe(
+      /*main_hostname=*/"a.test",
+      /*main_path=*/
+      "/shared_storage/page-with-shared-storage-writable-iframe.html");
+
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("Iframe Loaded",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.log(await sharedStorage.get('a'));
+      console.log(await sharedStorage.length());
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("b", base::UTF16ToUTF8(console_observer.messages()[1].message));
+  EXPECT_EQ("1", base::UTF16ToUTF8(console_observer.messages()[2].message));
+
+  ASSERT_TRUE(observer_);
+  observer_->WaitForOperations(1);
+
+  EXPECT_EQ(observer_->header_results().size(), 1u);
+  EXPECT_EQ(observer_->header_results().front().first,
+            subresource_or_subframe_origin_);
+  EXPECT_THAT(observer_->header_results().front().second,
+              testing::ElementsAre(true));
+  EXPECT_THAT(observer_->operations(),
+              testing::ElementsAre(SetOperation(subresource_or_subframe_origin_,
+                                                "a", "b", absl::nullopt,
+                                                OperationResult::kSet)));
+}
+
+IN_PROC_BROWSER_TEST_F(SharedStorageHeaderObserverBrowserTest,
+                       Iframe_ContentAttributeNotIncluded_NotSet) {
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  StartServerAndLoadMainURLWithSameOriginSubresourceOrSubframe(
+      /*main_hostname=*/"a.test",
+      /*main_path=*/
+      "/shared_storage/page-with-non-shared-storage-writable-iframe.html");
+
+  EXPECT_TRUE(console_observer.Wait());
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ("Iframe Loaded",
             base::UTF16ToUTF8(console_observer.messages()[0].message));
 
   GURL out_script_url;

@@ -6769,7 +6769,9 @@ data/shared_storage/customizable_script.js
 data/shared_storage/erroneous_function_module.js
 data/shared_storage/erroneous_module.js
 data/shared_storage/getter_module.js
+data/shared_storage/page-with-non-shared-storage-writable-iframe.html
 data/shared_storage/page-with-non-shared-storage-writable-image.html
+data/shared_storage/page-with-shared-storage-writable-iframe.html
 data/shared_storage/page-with-shared-storage-writable-image.html
 data/shared_storage/pixel.png
 data/shared_storage/private_aggregation_permissions_policy_none.html
@@ -6777,6 +6779,8 @@ data/shared_storage/private_aggregation_permissions_policy_none.html.mock-http-h
 data/shared_storage/round_trip.js
 data/shared_storage/shared-storage-writable-pixel.png
 data/shared_storage/shared-storage-writable-pixel.png.mock-http-headers
+data/shared_storage/shared-storage-writable.html
+data/shared_storage/shared-storage-writable.html.mock-http-headers
 data/shared_storage/simple_module.js
 data/shared_storage/simple_module2.js
 data/shared_storage/slow_and_fast_module.js

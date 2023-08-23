@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: text/html
+Permissions-Policy: shared-storage=*
+Shared-Storage-Write: set;key=a;value=b
