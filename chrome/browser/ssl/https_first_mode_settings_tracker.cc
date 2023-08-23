@@ -376,7 +376,8 @@ HttpsFirstModeServiceFactory::HttpsFirstModeServiceFactory()
 
 HttpsFirstModeServiceFactory::~HttpsFirstModeServiceFactory() = default;
 
-KeyedService* HttpsFirstModeServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+HttpsFirstModeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return BuildService(context).release();
+  return BuildService(context);
 }
