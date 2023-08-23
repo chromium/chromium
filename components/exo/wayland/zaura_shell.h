@@ -173,6 +173,8 @@ class AuraToplevel {
   void OnRotatePaneFocus(uint32_t serial,
                          ash::FocusCycler::Direction direction,
                          bool restart);
+  void SetCanMaximize(bool can_maximize);
+  void SetCanFullscreen(bool can_fullscreen);
 
   raw_ptr<ShellSurface, DanglingUntriaged | ExperimentalAsh> shell_surface_;
   const raw_ptr<SerialTracker, ExperimentalAsh> serial_tracker_;

@@ -934,6 +934,14 @@ void AuraToplevel::AckRotateFocus(uint32_t serial, uint32_t h) {
   shell_surface_->AckRotateFocus(serial, handled);
 }
 
+void AuraToplevel::SetCanMaximize(bool can_maximize) {
+  shell_surface_->SetCanMaximize(can_maximize);
+}
+
+void AuraToplevel::SetCanFullscreen(bool can_fullscreen) {
+  shell_surface_->SetCanFullscreen(can_fullscreen);
+}
+
 void AuraToplevel::IntentToSnap(uint32_t snap_direction) {
   switch (snap_direction) {
     case ZAURA_SURFACE_SNAP_DIRECTION_NONE:
@@ -1557,6 +1565,25 @@ void aura_toplevel_ack_rotate_focus(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->AckRotateFocus(serial, handled);
 }
 
+void aura_toplevel_set_can_maximize(wl_client* client, wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetCanMaximize(true);
+}
+
+void aura_toplevel_unset_can_maximize(wl_client* client,
+                                      wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetCanMaximize(false);
+}
+
+void aura_toplevel_set_can_fullscreen(wl_client* client,
+                                      wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetCanFullscreen(true);
+}
+
+void aura_toplevel_unset_can_fullscreen(wl_client* client,
+                                        wl_resource* resource) {
+  GetUserDataAs<AuraToplevel>(resource)->SetCanFullscreen(false);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1584,6 +1611,10 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_shape,
     aura_toplevel_set_top_inset,
     aura_toplevel_ack_rotate_focus,
+    aura_toplevel_set_can_maximize,
+    aura_toplevel_unset_can_maximize,
+    aura_toplevel_set_can_fullscreen,
+    aura_toplevel_unset_can_fullscreen,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

@@ -449,5 +449,45 @@ TEST_F(WaylandAuraShellServerTest, OverviewMode) {
   EXPECT_EQ(2, observer->overview_exited_call_count);
 }
 
+TEST_F(WaylandAuraShellServerTest, SetCanMaximizeAndFullscreen) {
+  auto keys = SetupClientSurfaces();
+  AttachBufferToSurfaces();
+
+  std::unique_ptr<zaura_toplevel> zaura_toplevel;
+  PostToClientAndWait([&](test::TestClient* client) {
+    auto* data = client->GetDataAs<ClientData>();
+    zaura_toplevel.reset(zaura_shell_get_aura_toplevel_for_xdg_toplevel(
+        client->globals().aura_shell.get(),
+        data->test_surfaces_list[0].xdg_toplevel.get()));
+  });
+
+  WaylandXdgSurface* xdg_surface =
+      test::server_util::GetUserDataForResource<WaylandXdgSurface>(
+          server_.get(), keys[0].shell_surface_key);
+  ASSERT_TRUE(xdg_surface);
+
+  auto* widget = xdg_surface->shell_surface->GetWidget();
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_can_maximize(zaura_toplevel.get());
+  });
+  EXPECT_TRUE(widget->widget_delegate()->CanMaximize());
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_unset_can_maximize(zaura_toplevel.get());
+  });
+  EXPECT_FALSE(widget->widget_delegate()->CanMaximize());
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_set_can_fullscreen(zaura_toplevel.get());
+  });
+  EXPECT_TRUE(widget->widget_delegate()->CanFullscreen());
+
+  PostToClientAndWait([&](test::TestClient* client) {
+    zaura_toplevel_unset_can_fullscreen(zaura_toplevel.get());
+  });
+  EXPECT_FALSE(widget->widget_delegate()->CanFullscreen());
+}
+
 }  // namespace
 }  // namespace exo::wayland

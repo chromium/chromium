@@ -786,7 +786,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_toplevel" version="56">
+  <interface name="zaura_toplevel" version="58">
     <description summary="aura shell interface to the toplevel shell">
       An interface to the toplevel shell, which allows the
       client to access shell specific functionality.
@@ -1246,6 +1246,39 @@
       </description>
       <arg name="serial" type="uint" summary="serial for the original; rotation event" />
       <arg name="handled" type="uint" enum="rotate_handled_state" summary="whether or not the rotation was successful" />
+    </request>
+
+    <request name="set_can_maximize" since="58">
+      <description summary="Hint that the toplevel surface can be maximized">
+        Hints to the window manager that the toplevel surface can be maximized.
+      </description>
+    </request>
+
+    <request name="unset_can_maximize" since="58">
+      <description summary="Hint that the toplevel surface should not be maximized">
+        Hints to the window manager that the toplevel surface should not be
+        maximized. Note that the window manager might still request the client
+        to be maximized. In such an event, the client should respect the
+        window manager's request and maximize. It may unset the maximized state
+        afterwards.
+      </description>
+    </request>
+
+    <request name="set_can_fullscreen" since="58">
+      <description summary="Hint that the toplevel surface can enter fullscreen">
+        Hints to the window manager that the toplevel surface can enter
+        fullscreen.
+      </description>
+    </request>
+
+    <request name="unset_can_fullscreen" since="58">
+      <description summary="Hint that the toplevel surface should not enter fullscreen">
+        Hints to the window manager that the toplevel surface should not be
+        enter fullscreen. Note that the window manager might still request the
+        client enter fullscreen. In such an event, the client should respect the
+        window manager's request and enter fullscreen. It may exit fullscreen
+        afterwards.
+      </description>
     </request>
   </interface>
 
