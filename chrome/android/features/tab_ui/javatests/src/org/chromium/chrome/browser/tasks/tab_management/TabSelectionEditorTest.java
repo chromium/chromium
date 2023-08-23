@@ -64,7 +64,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -86,7 +85,6 @@ import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -299,13 +297,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({
-        ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testToolbarNavigationButtonHideTabSelectionEditor() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -351,7 +343,6 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testUndoToolbarGroup() {
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         prepareBlankTab(2, false);
@@ -1309,7 +1300,6 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance() throws IOException {
         prepareBlankTab(2, false);
@@ -1334,7 +1324,6 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewV2Shows() throws IOException {
         prepareBlankTab(2, false);
@@ -1349,7 +1338,6 @@ public class TabSelectionEditorTest {
     @MediumTest
     @Feature({"RenderTest"})
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListViewAppearance_oneSelectedTab() throws IOException {
         prepareBlankTab(2, false);
@@ -1375,7 +1363,6 @@ public class TabSelectionEditorTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_LOW_END_DEVICE})
     public void testListView_select() throws IOException {
         prepareBlankTab(2, false);
@@ -1521,12 +1508,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testToolbarNavigationButtonContentDescription() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs);
@@ -1553,12 +1535,7 @@ public class TabSelectionEditorTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testBackgroundViewAccessibilityImportance() {
-        // clang-format on
         prepareBlankTab(2, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 

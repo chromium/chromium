@@ -8,8 +8,6 @@ import android.content.Context;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -21,24 +19,14 @@ import org.chromium.ui.base.DeviceFormFactor;
  * devices.
  */
 public class DeviceClassManager {
-    // Params for controlling Grid Tab Switcher (GTS) rollout for accessibility and low-end device
-    // users.
-    // TODO(crbug/1466158): Remove and keep in true state for both.
-    private static final String GTS_ACCESSIBILITY_SUPPORT_PARAM = "gts-accessibility-support";
-    public static final BooleanCachedFieldTrialParameter GTS_ACCESSIBILITY_SUPPORT =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_ACCESSIBILITY_SUPPORT_PARAM, true);
-
-    private static final String GTS_LOW_END_SUPPORT_PARAM = "gts-low-end-support";
-    public static final BooleanCachedFieldTrialParameter GTS_LOW_END_SUPPORT =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    GTS_LOW_END_SUPPORT_PARAM, true);
-
     private static DeviceClassManager sInstance;
 
     // Set of features that can be enabled/disabled
     private boolean mEnableLayerDecorationCache;
+
+    // TODO(crbug/1466158): Remove this.
     private boolean mEnableAccessibilityLayout;
+
     private boolean mEnableAnimations;
     private boolean mEnablePrerendering;
     private boolean mEnableToolbarSwipe;
@@ -100,33 +88,8 @@ public class DeviceClassManager {
      * @param context The activity context.
      */
     public static boolean enableAccessibilityLayout(Context context) {
-        final boolean defaultBehavior = enableAccessibilityLayoutInternal();
-
-        // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        if (ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()) {
-            final boolean isLowEndDevice = SysUtils.isLowEndDevice();
-            final boolean isAccessibilityEnabled =
-                    ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-            if (isLowEndDevice && isAccessibilityEnabled) {
-                if (!GTS_LOW_END_SUPPORT.getValue() || !GTS_ACCESSIBILITY_SUPPORT.getValue()) {
-                    return defaultBehavior;
-                }
-            } else if (isLowEndDevice && !GTS_LOW_END_SUPPORT.getValue()) {
-                return defaultBehavior;
-            } else if (isAccessibilityEnabled && !GTS_ACCESSIBILITY_SUPPORT.getValue()) {
-                return defaultBehavior;
-            }
-            return false;
-        }
-
-        return defaultBehavior;
-    }
-
-    private static boolean enableAccessibilityLayoutInternal() {
-        if (getInstance().mEnableAccessibilityLayout) return true;
-        if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) return false;
-        return SharedPreferencesManager.getInstance().readBoolean(
-                ChromePreferenceKeys.ACCESSIBILITY_TAB_SWITCHER, true);
+        // TODO(crbug/1466158): Remove this.
+        return false;
     }
 
     /**

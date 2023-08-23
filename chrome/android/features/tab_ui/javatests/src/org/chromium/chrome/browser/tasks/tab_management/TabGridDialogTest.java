@@ -339,28 +339,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    public void testDisableTabGroupsContinuation() {
-        final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-
-        // Create a tab group.
-        mergeAllNormalTabsToAGroup(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-
-        // Open dialog and verify dialog is showing correct content.
-        openDialogFromTabSwitcherAndVerify(cta, 2, null);
-
-        // Verify TabGroupsContinuation related functionality is not exposed.
-        verifyTabGroupsContinuation(cta, false);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    public void testEnableTabGroupsContinuation() {
+    public void testTabGroupDialogUi() {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -374,7 +353,7 @@ public class TabGridDialogTest {
         openDialogFromTabSwitcherAndVerify(cta, 2, null);
 
         // Verify TabGroupsContinuation related functionality is exposed.
-        verifyTabGroupsContinuation(cta, true);
+        verifyTabGroupDialogUi(cta);
     }
 
     @Test
@@ -457,12 +436,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testSelectionEditorShowHide() throws ExecutionException {
-        // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -880,12 +854,9 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     // TODO(crbug.com/1380489): Re-enable once test is no longer flaky locally.
     @DisableFeatures({ContentFeatures.SURFACE_SYNC_FULLSCREEN_KILLSWITCH})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_launch_polish/true"})
     public void testSelectionEditorPosition() {
         // clang-format on;
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
@@ -947,7 +918,6 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testTabGroupNaming() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
@@ -985,10 +955,7 @@ public class TabGridDialogTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_KeyboardVisibility() throws ExecutionException {
-        // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 2);
         enterTabSwitcher(cta);
@@ -1017,10 +984,7 @@ public class TabGridDialogTest {
     // Regression test for https://crbug.com/1419842
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_afterFocusNoTitleSaved() throws ExecutionException {
-        // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
@@ -1072,7 +1036,6 @@ public class TabGridDialogTest {
     // Regression test for https://crbug.com/1378226.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testTabGroupNaming_afterMergeWithSelectionEditor() throws ExecutionException {
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 4);
@@ -1301,10 +1264,7 @@ public class TabGridDialogTest {
     @Test
     @MediumTest
     @DisabledTest(message = "TODO(crbug.com/1128345): Fix flakiness.")
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testAccessibilityString() throws ExecutionException {
-        // clang-format on
         final ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         createTabs(cta, false, 3);
         enterTabSwitcher(cta);
@@ -1629,8 +1589,7 @@ public class TabGridDialogTest {
                 .perform(click());
     }
 
-    private void verifyTabGroupsContinuation(ChromeTabbedActivity cta, boolean isEnabled) {
-        assertEquals(isEnabled, TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(cta));
+    private void verifyTabGroupDialogUi(ChromeTabbedActivity cta) {
 
         // Verify the menu button exists.
         onView(withId(R.id.toolbar_menu_button)).check(matches(isDisplayed()));
@@ -1643,12 +1602,12 @@ public class TabGridDialogTest {
                     if (noMatchException != null) throw noMatchException;
 
                     // Verify if we can grab focus on the editText or not.
-                    assertEquals(isEnabled, v.isFocused());
+                    assertTrue(v.isFocused());
                 });
         // Verify if the keyboard shows or not.
         CriteriaHelper.pollUiThread(()
-                                            -> isEnabled
-                        == KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
+                                            ->
+                       KeyboardVisibilityDelegate.getInstance().isKeyboardShowing(
                                 cta, cta.getCompositorViewHolderForTesting()));
     }
 

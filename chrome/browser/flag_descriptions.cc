@@ -3254,10 +3254,6 @@ const char kCommerceMerchantViewerAndroidName[] = "Merchant Viewer";
 const char kCommerceMerchantViewerAndroidDescription[] =
     "Allows users to view merchant trust signals on eligible pages.";
 
-const char kTabGroupsContinuationAndroidName[] = "Tab Groups Continuation";
-const char kTabGroupsContinuationAndroidDescription[] =
-    "Allows users to access continuation features in Tab Group on phones.";
-
 const char kTabGroupsSaveId[] = "tab-groups-save";
 const char kTabGroupsSaveName[] = "Tab Groups Save and Sync";
 const char kTabGroupsSaveDescription[] =

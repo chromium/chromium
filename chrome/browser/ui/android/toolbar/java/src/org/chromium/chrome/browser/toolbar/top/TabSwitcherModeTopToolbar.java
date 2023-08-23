@@ -18,7 +18,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -208,10 +207,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         // When animating into the TabSwitcherMode when the GTS supports accessibility then the
         // transition should also be immediate if touch exploration is enabled as the animation
         // causes races in the Android accessibility focus framework.
-        skipAnimation |=
-                (inTabSwitcherMode && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                        && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
-                        && AccessibilityState.isTouchExplorationEnabled());
+        skipAnimation |= (inTabSwitcherMode && AccessibilityState.isTouchExplorationEnabled());
 
         mVisiblityAnimator.start();
         if (skipAnimation) {

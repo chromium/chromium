@@ -1868,9 +1868,6 @@ extern const char kCommerceDeveloperDescription[];
 extern const char kCommerceMerchantViewerAndroidName[];
 extern const char kCommerceMerchantViewerAndroidDescription[];
 
-extern const char kTabGroupsContinuationAndroidName[];
-extern const char kTabGroupsContinuationAndroidDescription[];
-
 extern const char kTabGroupsSaveId[];
 extern const char kTabGroupsSaveName[];
 extern const char kTabGroupsSaveDescription[];

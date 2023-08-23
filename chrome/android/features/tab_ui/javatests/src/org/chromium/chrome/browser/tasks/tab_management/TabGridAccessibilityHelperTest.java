@@ -70,8 +70,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 // START_SURFACE_REFACTOR is required to have stable parent id logic.
-@EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR,
-                          ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+@EnableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Batch(Batch.PER_CLASS)
 public class TabGridAccessibilityHelperTest {
     // clang-format on

@@ -57,8 +57,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study",
-        ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID+"<Study"})
+@EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS+"<Study"})
 // Disable TAB_TO_GTS_ANIMATION to make it less flaky. When animation is enabled, the suggestion
 // cards will be removed temporarily, then append again.
 // TODO(https://crbug.com/1362059): The message cards aren't shown the first time when entering GTS

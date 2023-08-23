@@ -61,7 +61,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
@@ -74,7 +73,6 @@ import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -220,8 +218,7 @@ public class InstantStartTest {
     @SmallTest
     // clang-format off
     @EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
     // TODO(https://crbug.com/1315676): Removes this test once the start surface refactoring is
     // done, since the secondary tasks surface will go away.
     @DisableFeatures(ChromeFeatureList.START_SURFACE_REFACTOR)
@@ -315,38 +312,8 @@ public class InstantStartTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
-    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
-    // clang-format off
-    @CommandLineFlags.Add({ChromeSwitches.ENABLE_ACCESSIBILITY_TAB_SWITCHER,
-        INSTANT_START_TEST_BASE_PARAMS})
-    public void testInstantStartNotCrashWhenAccessibilityLayoutEnabled() throws IOException {
-        // clang-format on
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
-
-        StartSurfaceTestUtils.createTabStateFile(new int[] {123});
-        mActivityTestRule.startMainActivityFromLauncher();
-        Assert.assertTrue(
-                DeviceClassManager.enableAccessibilityLayout(mActivityTestRule.getActivity()));
-
-        Assert.assertFalse(
-                TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity()));
-        Assert.assertTrue(ChromeFeatureList.sInstantStart.isEnabled());
-
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Assert.assertFalse(ReturnToChromeUtil.isStartSurfaceEnabled(cta));
-        Assert.assertEquals(1, cta.getTabModelSelector().getCurrentModel().getCount());
-        Layout activeLayout = cta.getLayoutManager().getActiveLayout();
-        Assert.assertTrue(activeLayout instanceof StaticLayout);
-        Assert.assertEquals(123, ((StaticLayout) activeLayout).getCurrentTabIdForTesting());
-    }
-
-    @Test
-    @SmallTest
     @CommandLineFlags.Add(BaseSwitches.ENABLE_LOW_END_DEVICE_MODE)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testInstantStartDisabledOnLowEndDevice() throws IOException {
         // clang-format on
         StartSurfaceTestUtils.createTabStateFile(new int[] {123});

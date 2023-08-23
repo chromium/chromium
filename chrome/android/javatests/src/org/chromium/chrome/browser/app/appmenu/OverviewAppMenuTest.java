@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -163,29 +162,6 @@ public class OverviewAppMenuTest {
 
         assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mActivityTestRule.getAppMenuCoordinator(), R.id.new_tab_menu_id));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
-    public void
-    testSelectTabsIsDisabledWithOldAccessibilityLayout() throws Exception {
-        // Force accessibility mode as that is the only way to get a tab switcher with the flags on
-        // this test being disabled.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });
-
-        openTabSwitcher();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
-
-        assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
-                mActivityTestRule.getAppMenuCoordinator(), R.id.menu_select_tabs));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(false); });
     }
 
     @Test

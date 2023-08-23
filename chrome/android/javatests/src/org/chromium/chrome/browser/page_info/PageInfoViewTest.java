@@ -833,18 +833,12 @@ public class PageInfoViewTest {
      */
     @Test
     @MediumTest
-    // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
+    // When both START_SURFACE_ANDROID and START_SURFACE_WITH_ACCESSIBILITY are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:gts-low-end-support/true"
-                    + "/gts-accessibility-support/true"})
-    // clang-format off
-    public void testCloseButton() {
-        // clang-format on
+    public void
+    testCloseButton() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true); });
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));

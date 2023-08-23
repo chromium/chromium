@@ -38,7 +38,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
@@ -376,8 +375,6 @@ class StartSurfaceToolbarMediator implements ButtonDataProvider.ButtonDataObserv
         // transition should also be immediate if touch exploration is enabled as the animation
         // causes races in the Android accessibility focus framework.
         if (shouldShowAnimation && !wasOnGridTabSwitcher
-                && ChromeFeatureList.sTabGroupsContinuationAndroid.isEnabled()
-                && DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT.getValue()
                 && AccessibilityState.isTouchExplorationEnabled()) {
             shouldShowAnimation = false;
         }

@@ -1784,10 +1784,14 @@ class TabListMediator {
         if (!tab.isInitialized()) {
             return "";
         }
-        // TODO(crbug/783819): convert UrlUtilities to GURL
-        String domain = UrlUtilities.getDomainAndRegistry(tab.getUrl().getSpec(), false);
 
-        if (domain.isEmpty()) return tab.getUrl().getSpec();
+        String spec = tab.getUrl().getSpec();
+        if (spec == null) return "";
+
+        // TODO(crbug/783819): convert UrlUtilities to GURL
+        String domain = UrlUtilities.getDomainAndRegistry(spec, false);
+
+        if (domain == null || domain.isEmpty()) return spec;
         return domain;
     }
 

@@ -3641,11 +3641,6 @@
     "expiry_milestone": 90
   },
   {
-    "name": "enable-tab-groups-continuation",
-    "owners": [ "ckitagawa", "fredmello", "memex-team@google.com" ],
-    "expiry_milestone": 117
-  },
-  {
     "name": "enable-tab-groups-for-tablets",
     "owners": [ "skavuluru", "clank-app-team@google.com" ],
     "expiry_milestone": 114

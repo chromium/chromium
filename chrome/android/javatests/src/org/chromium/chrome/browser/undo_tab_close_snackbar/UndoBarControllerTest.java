@@ -141,17 +141,10 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
-    // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
+    // When both START_SURFACE_ANDROID and START_SURFACE_WITH_ACCESSIBILITY are enabled, changing
     // accessibility status won't recreate ChromeTabbedActivity.
     @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
-    // clang-format off
-    @CommandLineFlags.Add({
-            "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:gts-low-end-support/true" +
-                                               "/gts-accessibility-support/true"})
-    // clang-format on
     public void
     testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -173,15 +166,7 @@ public class UndoBarControllerTest {
     @SmallTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures({ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
-    // clang-format off
-    @CommandLineFlags.Add({
-            "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:gts-low-end-support/true" +
-                                               "/gts-accessibility-support/true"})
-    // clang-format on
-    public void
-    testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
+    public void testUndoSnackbarEnabled_AccessibilityEnabled() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
 

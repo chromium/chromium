@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
-import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.feed.FeedPlaceholderLayout;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
@@ -76,8 +75,6 @@ public class ChromeCachedFlags {
                 BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS,
                 BrandingController.USE_TEMPORARY_STORAGE,
                 BrandingController.ANIMATE_TOOLBAR_ICON_TRANSITION, ChimeFeatures.ALWAYS_REGISTER,
-                DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT,
-                DeviceClassManager.GTS_LOW_END_SUPPORT,
                 FeedPlaceholderLayout.ENABLE_INSTANT_START_ANIMATION,
                 FilePersistedTabDataStorage.DELAY_SAVES_UNTIL_DEFERRED_STARTUP_PARAM,
                 OptimizationGuidePushNotificationManager.MAX_CACHE_SIZE,
@@ -111,7 +108,6 @@ public class ChromeCachedFlags {
                 StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE,
                 StartSurfaceConfiguration.SURFACE_POLISH_USE_MAGIC_SPACE,
                 TabPersistentStore.CRITICAL_PERSISTED_TAB_DATA_SAVE_ONLY_PARAM,
-                TabUiFeatureUtilities.GTS_ACCESSIBILITY_LIST_MODE,
                 TabUiFeatureUtilities.ZOOMING_MIN_MEMORY, TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR,
                 TabUiFeatureUtilities.TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE,

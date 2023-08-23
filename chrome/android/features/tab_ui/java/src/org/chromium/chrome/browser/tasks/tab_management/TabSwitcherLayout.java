@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.chrome.browser.device.DeviceClassManager.GTS_ACCESSIBILITY_SUPPORT;
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
@@ -258,7 +256,6 @@ public class TabSwitcherLayout extends Layout {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
                 showOverviewWithTranslateUp(shouldAnimate);
             } else if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(getContext())
-                    && GTS_ACCESSIBILITY_SUPPORT.getValue()
                     && AccessibilityState.isTouchExplorationEnabled()) {
                 // Intentionally disable the shrinking animation when touch exploration is enabled.
                 // During the shrinking animation, since the ComponsitorViewHolder is not focusable,

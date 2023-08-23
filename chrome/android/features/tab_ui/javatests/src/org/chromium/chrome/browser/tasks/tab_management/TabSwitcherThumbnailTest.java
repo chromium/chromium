@@ -48,8 +48,7 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
-    ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
+@EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
 @Restriction(
     {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherThumbnailTest {

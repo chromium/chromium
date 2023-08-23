@@ -450,7 +450,6 @@ public abstract class ChromeFeatureList {
             "SyncEnableContactInfoDataTypeInTransportMode";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
-    public static final String TAB_GROUPS_CONTINUATION_ANDROID = "TabGroupsContinuationAndroid";
     public static final String TAB_STRIP_REDESIGN = "TabStripRedesign";
     public static final String TAB_STRIP_STARTUP_REFACTORING = "TabStripStartupRefactoring";
     public static final String TABLET_TOOLBAR_REORDERING = "TabletToolbarReordering";
@@ -594,8 +593,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSurfacePolish = new CachedFlag(SURFACE_POLISH, false);
     public static final CachedFlag sTabDragDropAndroid =
             new CachedFlag(TAB_DRAG_DROP_ANDROID, false);
-    public static final CachedFlag sTabGroupsContinuationAndroid =
-            new CachedFlag(TAB_GROUPS_CONTINUATION_ANDROID, true);
     public static final CachedFlag sTabStripRedesign = new CachedFlag(TAB_STRIP_REDESIGN, false);
     public static final CachedFlag sTabStripStartupRefactoring =
             new CachedFlag(TAB_STRIP_STARTUP_REFACTORING, false);
@@ -671,7 +668,6 @@ public abstract class ChromeFeatureList {
         sStoreHoursAndroid,
         sSurfacePolish,
         sTabDragDropAndroid,
-        sTabGroupsContinuationAndroid,
         sTabStripRedesign,
         sTabStripStartupRefactoring,
         sTabletToolbarReordering,

@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickNthTabInDialog;
@@ -60,7 +59,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
@@ -69,7 +67,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -88,7 +85,6 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@EnableFeatures({TAB_GROUPS_CONTINUATION_ANDROID})
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {
     // clang-format on
@@ -216,10 +212,7 @@ public class TabGroupUiTest {
 
     @Test
     @MediumTest
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
     public void testVisibilityChangeWithOmnibox() throws Exception {
-        // clang-format on
 
         // Create a tab group with 2 tabs.
         finishActivity(sActivityTestRule.getActivity());
@@ -256,7 +249,6 @@ public class TabGroupUiTest {
                     "event_used/" +
                     "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
                     "session_rate/<1"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testIphBottomSheetSuppression() throws Exception {
         // clang-format on
 

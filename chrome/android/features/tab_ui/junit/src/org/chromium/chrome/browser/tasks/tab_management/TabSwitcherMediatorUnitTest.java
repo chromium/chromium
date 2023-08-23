@@ -1163,7 +1163,6 @@ public class TabSwitcherMediatorUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
     public void testFocusTabForAccessibility_IsInvoked_OnOverviewModeFinishedShowing() {
         initAndAssertAllProperties();
 

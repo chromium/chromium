@@ -944,8 +944,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-                    ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForUndoableClosedTab(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
@@ -967,8 +966,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel(
             boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
@@ -1215,9 +1213,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @LargeTest
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
-            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1122657")
     public void testThumbnailAspectRatio_default(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
@@ -1352,8 +1348,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
-            ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
+    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testCloseTabViaCloseButton(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
@@ -1403,12 +1398,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @UseMethodParameter(RefactorTestParams.class)
-    // clang-format off
-    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
     public void testCloseButtonDescription(boolean isStartSurfaceRefactorEnabled) {
         String expectedDescription = "Close New tab tab";
-        // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
 
@@ -1694,13 +1685,6 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
-    // clang-format off
-    @CommandLineFlags.Add({
-            "enable-features=" + ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study",
-            "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:gts-low-end-support/true" +
-                                               "/gts-accessibility-support/true"})
-    // clang-format on
     public void
     testUndoClosure_AccessibilityMode(boolean isStartSurfaceRefactorEnabled) throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
