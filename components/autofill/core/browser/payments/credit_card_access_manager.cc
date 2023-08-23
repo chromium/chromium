@@ -417,8 +417,8 @@ void CreditCardAccessManager::StartAuthenticationFlowForVirtualCard(
   if (challenge_options.empty()) {
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                    nullptr, u"");
-    client_->ShowVirtualCardErrorDialog(
-        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/true));
     Reset();
     autofill_metrics::LogServerCardUnmaskResult(
@@ -733,8 +733,8 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     // If it is an virtual card retrieval error, we don't want to invoke the CVC
     // authentication afterwards. Instead reset all states, notify accessor and
     // invoke the error dialog.
-    client_->ShowVirtualCardErrorDialog(
-        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/response.failure_type ==
             payments::FullCardRequest::
                 VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE));
@@ -1260,11 +1260,11 @@ void CreditCardAccessManager::OnVirtualCardUnmaskResponseReceived(
     // Error fields returned in the server response are more detailed than the
     // virtual card temporary/permanent error messages stored on the client, so
     // prefer the server-returned fields if they exist.
-    client_->ShowVirtualCardErrorDialog(
+    client_->ShowAutofillErrorDialog(
         *response_details.autofill_error_dialog_context);
   } else {
-    client_->ShowVirtualCardErrorDialog(
-        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   }
@@ -1307,8 +1307,8 @@ void CreditCardAccessManager::OnUserAcceptedAuthenticationSelectionDialog(
     NOTREACHED();
     accessor_->OnCreditCardFetched(CreditCardFetchResult::kTransientError,
                                    nullptr, u"");
-    client_->ShowVirtualCardErrorDialog(
-        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/false));
     Reset();
     return;

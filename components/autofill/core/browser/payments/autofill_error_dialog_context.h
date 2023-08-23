@@ -35,7 +35,7 @@ struct AutofillErrorDialogContext {
   // Returns an AutofillErrorDialogContext that is type
   // kVirtualCardPermanentError if `is_permanent_error` is true, and type
   // kVirtualCardTemporaryError if `is_permanent_error` is false.
-  static AutofillErrorDialogContext WithPermanentOrTemporaryError(
+  static AutofillErrorDialogContext WithVirtualCardPermanentOrTemporaryError(
       bool is_permanent_error);
 
   AutofillErrorDialogContext();

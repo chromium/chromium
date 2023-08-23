@@ -180,8 +180,8 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   // Show the virtual card permanent error dialog if server explicitly returned
   // vcn permanent error, show temporary error dialog for the rest failure cases
   // since currently only virtual card is supported.
-  autofill_client_->ShowVirtualCardErrorDialog(
-      AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+  autofill_client_->ShowAutofillErrorDialog(
+      AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
           /*is_permanent_error=*/result ==
           AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   if (requester_) {
@@ -355,11 +355,11 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   // If the server returned error dialog fields to be displayed, we prefer them
   // since they will be more detailed to the specific error that occurred.
   if (response_details.autofill_error_dialog_context) {
-    autofill_client_->ShowVirtualCardErrorDialog(
+    autofill_client_->ShowAutofillErrorDialog(
         *response_details.autofill_error_dialog_context);
   } else {
-    autofill_client_->ShowVirtualCardErrorDialog(
-        AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+    autofill_client_->ShowAutofillErrorDialog(
+        AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
             AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   }

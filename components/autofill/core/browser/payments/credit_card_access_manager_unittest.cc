@@ -3079,7 +3079,7 @@ TEST_F(CreditCardAccessManagerTest,
   // Expect the CreditCardAccessManager to end the session.
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kTransientError);
   EXPECT_FALSE(otp_authenticator_->on_challenge_option_selected_invoked());
-  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(fido_authenticator().authenticate_invoked());
 #endif
@@ -3113,7 +3113,7 @@ TEST_F(CreditCardAccessManagerTest,
       AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
       response);
 
-  EXPECT_TRUE(autofill_client_.virtual_card_error_dialog_shown());
+  EXPECT_TRUE(autofill_client_.autofill_error_dialog_shown());
   const AutofillErrorDialogContext& displayed_error_dialog_context =
       autofill_client_.autofill_error_dialog_context();
   EXPECT_EQ(*displayed_error_dialog_context.server_returned_title,

@@ -190,7 +190,7 @@ void AutofillClient::OnVirtualCardDataAvailable(
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.
 }
 
-void AutofillClient::ShowVirtualCardErrorDialog(
+void AutofillClient::ShowAutofillErrorDialog(
     const AutofillErrorDialogContext& context) {
   // This is overridden by platform subclasses. Currently only
   // ChromeAutofillClient (Chrome Desktop & Android) implements this.

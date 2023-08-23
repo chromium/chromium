@@ -483,13 +483,13 @@ void ChromeAutofillClient::OnUnmaskVerificationResult(
   // updating the CVC unmask prompt with the error message.
   switch (result) {
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      ShowVirtualCardErrorDialog(
-          AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/true));
       break;
     case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-      ShowVirtualCardErrorDialog(
-          AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+      ShowAutofillErrorDialog(
+          AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
               /*is_permanent_error=*/false));
       break;
     case AutofillClient::PaymentsRpcResult::kSuccess:
@@ -1075,7 +1075,7 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
 #endif
 }
 
-void ChromeAutofillClient::ShowVirtualCardErrorDialog(
+void ChromeAutofillClient::ShowAutofillErrorDialog(
     const AutofillErrorDialogContext& context) {
   autofill_error_dialog_controller_.Show(context);
 }

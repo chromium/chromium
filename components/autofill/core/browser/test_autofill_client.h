@@ -442,9 +442,9 @@ class TestAutofillClientTemplate : public T {
 
   PopupHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowVirtualCardErrorDialog(
+  void ShowAutofillErrorDialog(
       const AutofillErrorDialogContext& context) override {
-    virtual_card_error_dialog_shown_ = true;
+    autofill_error_dialog_shown_ = true;
     autofill_error_dialog_context_ = context;
   }
 
@@ -616,14 +616,11 @@ class TestAutofillClientTemplate : public T {
     return offer_to_save_credit_card_bubble_was_shown_.value();
   }
 
-  void set_virtual_card_error_dialog_shown(
-      bool virtual_card_error_dialog_shown) {
-    virtual_card_error_dialog_shown_ = virtual_card_error_dialog_shown;
+  void set_autofill_error_dialog_shown(bool autofill_error_dialog_shown) {
+    autofill_error_dialog_shown_ = autofill_error_dialog_shown;
   }
 
-  bool virtual_card_error_dialog_shown() {
-    return virtual_card_error_dialog_shown_;
-  }
+  bool autofill_error_dialog_shown() { return autofill_error_dialog_shown_; }
 
   bool virtual_card_error_dialog_is_permanent_error() {
     return autofill_error_dialog_context().type ==
@@ -744,7 +741,7 @@ class TestAutofillClientTemplate : public T {
 
   bool confirm_save_iban_locally_called_ = false;
 
-  bool virtual_card_error_dialog_shown_ = false;
+  bool autofill_error_dialog_shown_ = false;
 
   // Context parameters that are used to display an error dialog during card
   // number retrieval. This context will have information that the autofill

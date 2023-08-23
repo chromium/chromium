@@ -8,7 +8,7 @@ namespace autofill {
 
 // static
 AutofillErrorDialogContext
-AutofillErrorDialogContext::WithPermanentOrTemporaryError(
+AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
     bool is_permanent_error) {
   AutofillErrorDialogContext autofill_error_dialog_context;
   autofill_error_dialog_context.type =

@@ -247,7 +247,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void DismissOfferNotification() override;
   void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options) override;
-  void ShowVirtualCardErrorDialog(
+  void ShowAutofillErrorDialog(
       const AutofillErrorDialogContext& context) override;
   void ShowAutofillProgressDialog(
       AutofillProgressDialogType autofill_progress_dialog_type,

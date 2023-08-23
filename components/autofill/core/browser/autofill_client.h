@@ -791,13 +791,12 @@ class AutofillClient : public RiskDataLoader {
   virtual void OnVirtualCardDataAvailable(
       const VirtualCardManualFallbackBubbleOptions& options);
 
-  // Called when some virtual card retrieval errors happened. Will show the
-  // error dialog with virtual card related messages. The type of error dialog
-  // that is shown will match the `type` in `context`. If the
+  // Shows an error dialog when card retrieval errors happen. The type of error
+  // dialog that is shown will match the `type` in `context`. If the
   // `server_returned_title` and `server_returned_description` in `context` are
-  // both set, the virtual card error dialog that is displayed will have these
-  // fields displayed for the title and description, respectively.
-  virtual void ShowVirtualCardErrorDialog(
+  // both set, the error dialog that is displayed will have these fields
+  // displayed for the title and description, respectively.
+  virtual void ShowAutofillErrorDialog(
       const AutofillErrorDialogContext& context);
 
   // Show/dismiss the progress dialog which contains a throbber and a text
