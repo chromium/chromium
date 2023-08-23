@@ -196,5 +196,6 @@ base::Value::Dict EncryptedMetadataToReadableDictionary(
   dict.Set("bluetooth_mac_address",
            TruncateString(Encode(data.bluetooth_mac_address())));
   dict.Set("obfuscated_gaia_id", data.obfuscated_gaia_id());
+  dict.Set("account_name", data.account_name());
   return dict;
 }
