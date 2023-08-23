@@ -53,7 +53,7 @@ class KerberosCredentialsManagerFactory : public ProfileKeyedServiceFactory {
 
   // Returns nullptr in case context is not a primary profile. Otherwise returns
   // a valid KerberosCredentialsManager.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
