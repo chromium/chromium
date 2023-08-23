@@ -19,20 +19,28 @@ enum VideoEncoderUseCase {
 
 // Provider interface to collect video encoder metrics.
 interface VideoEncoderMetricsProvider {
-  // Initialize() is called whenever the encoder configuration is changed.
+  // Initialize() is called whenever the encoder configuration is changed for
+  // the encoder whose id is |encoder_id|. This must be called for a new encoder
+  // before other calls. Otherwise, the other functions for the encoder is
+  // ignored.
   // The UKM about the encoding represented by the previous Initialize() is
   // reported if SetEncodedFrameCount() or SetError() is invoked. See
   // Media.VideoEncoderMetrics in ukm.xml for the detail about the recorded UKM.
-  Initialize(VideoEncoderUseCase encoder_use_case, VideoCodecProfile profile,
-             gfx.mojom.Size encode_size, bool is_hardware_encoder,
-             SVCScalabilityMode svc_mode);
+  Initialize(uint64 encoder_id, VideoEncoderUseCase encoder_use_case,
+             VideoCodecProfile profile, gfx.mojom.Size encode_size,
+             bool is_hardware_encoder, SVCScalabilityMode svc_mode);
 
   // SetEncodedFramesCount() updates the number of successfully encoded frames.
   // |num_encoded_frames| can be any value, but it is bucket by 100 when UKM
   // is recorded.
-  SetEncodedFrameCount(uint64 num_encoded_frames);
+  SetEncodedFrameCount(uint64 encoder_id, uint64 num_encoded_frames);
 
   // SetError() should be called when the encoder becomes in the error state. In
   // other words, |status| must not be kOk.
-  SetError(EncoderStatus status);
+  SetError(uint64 encoder_id, EncoderStatus status);
+
+  // Complete() is called when if the encoder whose id |encoder_id| is no longer
+  // used. This may not be called if the encoder is destroyed by destroying
+  // the renderer process (e.g. closing the tab).
+  Complete(uint64 encoder_id);
 };

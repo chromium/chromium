@@ -16,6 +16,8 @@ using ::testing::InSequence;
 
 namespace media {
 
+constexpr uint64_t kEncoderId = 0u;
+
 class MockMojomVideoEncoderMetricsProvider
     : public mojom::VideoEncoderMetricsProvider {
  public:
@@ -24,14 +26,19 @@ class MockMojomVideoEncoderMetricsProvider
   // mojom::VideoEncoderMetricsProvider implementation.
   MOCK_METHOD(void,
               Initialize,
-              (mojom::VideoEncoderUseCase,
+              (uint64_t,
+               mojom::VideoEncoderUseCase,
                VideoCodecProfile,
                const gfx::Size&,
                bool,
                SVCScalabilityMode),
               (override));
-  MOCK_METHOD(void, SetEncodedFrameCount, (uint64_t), (override));
-  MOCK_METHOD(void, SetError, (const media::EncoderStatus&), (override));
+  MOCK_METHOD(void, SetEncodedFrameCount, (uint64_t, uint64_t), (override));
+  MOCK_METHOD(void,
+              SetError,
+              (uint64_t, const media::EncoderStatus&),
+              (override));
+  MOCK_METHOD(void, Complete, (uint64_t), (override));
 };
 
 class MojoVideoEncoderMetricsProviderTest : public ::testing::Test {
@@ -83,10 +90,12 @@ TEST_F(MojoVideoEncoderMetricsProviderTest, CreateAndBoundAndInitialize) {
 
   InSequence s;
   EXPECT_CALL(*mock_mojo_receiver(),
-              Initialize(kUseCase, kCodecProfile, kEncodeSize,
+              Initialize(kEncoderId, kUseCase, kCodecProfile, kEncodeSize,
                          kIsHardwareEncoder, kSVCMode));
   mojo_encoder_metrics_provider_->Initialize(kCodecProfile, kEncodeSize,
                                              kIsHardwareEncoder, kSVCMode);
+  EXPECT_CALL(*mock_mojo_receiver(), Complete(kEncoderId));
+  mojo_encoder_metrics_provider_.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -99,26 +108,26 @@ TEST_F(MojoVideoEncoderMetricsProviderTest,
 
   InSequence s;
   EXPECT_CALL(*mock_mojo_receiver(),
-              Initialize(kUseCase, kCodecProfile, kEncodeSize,
+              Initialize(kEncoderId, kUseCase, kCodecProfile, kEncodeSize,
                          kIsHardwareEncoder, kSVCMode));
   mojo_encoder_metrics_provider_->Initialize(kCodecProfile, kEncodeSize,
                                              kIsHardwareEncoder, kSVCMode);
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(1u));
+  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(kEncoderId, 1u));
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   base::RunLoop().RunUntilIdle();
   for (size_t i = 0; i < 98; i++) {
     mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(100u));
+  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(kEncoderId, 100u));
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   base::RunLoop().RunUntilIdle();
   for (size_t i = 0; i < 99; i++) {
     mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(200u));
+  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(kEncoderId, 200u));
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   base::RunLoop().RunUntilIdle();
 }
@@ -132,12 +141,12 @@ TEST_F(MojoVideoEncoderMetricsProviderTest,
 
   InSequence s;
   EXPECT_CALL(*mock_mojo_receiver(),
-              Initialize(kUseCase, kCodecProfile, kEncodeSize,
+              Initialize(kEncoderId, kUseCase, kCodecProfile, kEncodeSize,
                          kIsHardwareEncoder, kSVCMode));
   mojo_encoder_metrics_provider_->Initialize(kCodecProfile, kEncodeSize,
                                              kIsHardwareEncoder, kSVCMode);
   base::RunLoop().RunUntilIdle();
-  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(1u));
+  EXPECT_CALL(*mock_mojo_receiver(), SetEncodedFrameCount(kEncoderId, 1u));
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
   mojo_encoder_metrics_provider_->IncrementEncodedFrameCount();
@@ -145,7 +154,7 @@ TEST_F(MojoVideoEncoderMetricsProviderTest,
   const media::EncoderStatus kErrorStatus(
       media::EncoderStatus::Codes::kEncoderFailedEncode, "Encoder failed");
   mojo_encoder_metrics_provider_->SetError(kErrorStatus);
-  EXPECT_CALL(*mock_mojo_receiver(), SetError(kErrorStatus));
+  EXPECT_CALL(*mock_mojo_receiver(), SetError(kEncoderId, kErrorStatus));
   base::RunLoop().RunUntilIdle();
 }
 

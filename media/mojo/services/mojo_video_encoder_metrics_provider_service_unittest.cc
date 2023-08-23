@@ -39,7 +39,8 @@ Create(const std::string& url) {
 }  // namespace
 
 class MojoVideoEncoderMetricsProviderServiceTest
-    : public TestWithParam<testing::tuple<mojom::VideoEncoderUseCase,
+    : public TestWithParam<testing::tuple<uint64_t,
+                                          mojom::VideoEncoderUseCase,
                                           VideoCodecProfile,
                                           gfx::Size,
                                           bool,
@@ -66,12 +67,13 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest, Create_NoUKMReport) {
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndInitialize_ReportUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1200, 700);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
   provider.reset();
   base::RunLoop().RunUntilIdle();
@@ -90,18 +92,48 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
   EXPECT_UKM(UkmEntry::kWidthName, kEncodeSize.width());
 }
 
-TEST_F(
-    MojoVideoEncoderMetricsProviderServiceTest,
-    CreateAndInitializeAndSetSmallNumberEncodedFrameCount_ReportUKMWithOneBucket) {
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
+       CreateAndInitializeAndComplete_ReportUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1200, 700);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
-  provider->SetEncodedFrameCount(10);
+  provider->Complete(kEncoderId);
+  base::RunLoop().RunUntilIdle();
+
+  const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries[0];
+  EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
+  EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
+  EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 0);
+  EXPECT_UKM(UkmEntry::kProfileName, kCodecProfile);
+  EXPECT_UKM(UkmEntry::kStatusName,
+             static_cast<int64_t>(EncoderStatus::Codes::kOk));
+  EXPECT_UKM(UkmEntry::kSVCModeName, static_cast<int64_t>(kSVCMode));
+  EXPECT_UKM(UkmEntry::kUseCaseName, static_cast<int64_t>(kEncoderUseCase));
+  EXPECT_UKM(UkmEntry::kWidthName, kEncodeSize.width());
+  provider.reset();
+}
+
+TEST_F(
+    MojoVideoEncoderMetricsProviderServiceTest,
+    CreateAndInitializeAndSetSmallNumberEncodedFrameCount_ReportUKMWithOneBucket) {
+  auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
+  constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
+  constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
+  constexpr gfx::Size kEncodeSize(1200, 700);
+  constexpr bool kIsHardwareEncoder = true;
+  constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
+                       kIsHardwareEncoder, kSVCMode);
+  provider->SetEncodedFrameCount(kEncoderId, 10);
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -122,15 +154,16 @@ TEST_F(
 TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndInitializeAndSetEncodedFrameCount_ReportUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
-  auto encoder_use_case = std::get<0>(GetParam());
-  auto codec_profile = std::get<1>(GetParam());
-  auto encode_size = std::get<2>(GetParam());
-  auto is_hardware_encoder = std::get<3>(GetParam());
-  auto svc_mode = std::get<4>(GetParam());
+  auto encoder_id = std::get<0>(GetParam());
+  auto encoder_use_case = std::get<1>(GetParam());
+  auto codec_profile = std::get<2>(GetParam());
+  auto encode_size = std::get<3>(GetParam());
+  auto is_hardware_encoder = std::get<4>(GetParam());
+  auto svc_mode = std::get<5>(GetParam());
   constexpr uint64_t kNumEncodedFrames = 100;
-  provider->Initialize(encoder_use_case, codec_profile, encode_size,
+  provider->Initialize(encoder_id, encoder_use_case, codec_profile, encode_size,
                        is_hardware_encoder, svc_mode);
-  provider->SetEncodedFrameCount(kNumEncodedFrames);
+  provider->SetEncodedFrameCount(encoder_id, kNumEncodedFrames);
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -153,7 +186,8 @@ TEST_P(MojoVideoEncoderMetricsProviderServiceTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MojoVideoEncoderMetricsProviderServiceTest,
-    ::testing::Combine(ValuesIn({
+    ::testing::Combine(ValuesIn(std::vector<uint64_t>{12ul, 100ul}),
+                       ValuesIn({
                            mojom::VideoEncoderUseCase::kCastMirroring,
                            mojom::VideoEncoderUseCase::kMediaRecorder,
                            mojom::VideoEncoderUseCase::kWebCodecs,
@@ -178,15 +212,16 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        InitializeWithVerfiyLargeResoloution_ReportCappedResolutionUKM) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size k16kEncodeSize(15360, 8640);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
   constexpr uint64_t kNumEncodedFrames = 100;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, k16kEncodeSize,
-                       kIsHardwareEncoder, kSVCMode);
-  provider->SetEncodedFrameCount(kNumEncodedFrames);
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile,
+                       k16kEncodeSize, kIsHardwareEncoder, kSVCMode);
+  provider->SetEncodedFrameCount(kEncoderId, kNumEncodedFrames);
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -209,16 +244,17 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CallSetEncodedFrameCounts_ReportUKMWithTheLastEncodedFrameCount) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1920, 1080);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
-  provider->SetEncodedFrameCount(100);
-  provider->SetEncodedFrameCount(200);
-  provider->SetEncodedFrameCount(300);
+  provider->SetEncodedFrameCount(kEncoderId, 100);
+  provider->SetEncodedFrameCount(kEncoderId, 200);
+  provider->SetEncodedFrameCount(kEncoderId, 300);
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -241,17 +277,19 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CreateAndInitializeAndCallSetErrors_ReportUKMWithTheFirstError) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1920, 1080);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
-  provider->SetError({EncoderStatus::Codes::kEncoderMojoConnectionError,
+  provider->SetError(kEncoderId,
+                     {EncoderStatus::Codes::kEncoderMojoConnectionError,
                       "mojo connection is disclosed"});
-  provider->SetError(
-      {EncoderStatus::Codes::kEncoderFailedEncode, "Encoder failed"});
+  provider->SetError(kEncoderId, {EncoderStatus::Codes::kEncoderFailedEncode,
+                                  "Encoder failed"});
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -275,17 +313,19 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
 TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
        CallErrorAndNoCallSetEncodedFramesCount_ReportUKMWithTheFirstError) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1920, 1080);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
-  provider->SetError({EncoderStatus::Codes::kEncoderMojoConnectionError,
+  provider->SetError(kEncoderId,
+                     {EncoderStatus::Codes::kEncoderMojoConnectionError,
                       "mojo connection is disclosed"});
-  provider->SetError(
-      {EncoderStatus::Codes::kEncoderFailedEncode, "Encoder failed"});
+  provider->SetError(kEncoderId, {EncoderStatus::Codes::kEncoderFailedEncode,
+                                  "Encoder failed"});
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -310,21 +350,22 @@ TEST_F(
     MojoVideoEncoderMetricsProviderServiceTest,
     CallSetEncodedFrameCountsAndSetError_ReportUKMWithTheFirstErrorAndTheLastEncodedFrameCount) {
   auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kEncoderId = 0;
   constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
   constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
   constexpr gfx::Size kEncodeSize(1920, 1080);
   constexpr bool kIsHardwareEncoder = true;
   constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
-  provider->Initialize(kEncoderUseCase, kCodecProfile, kEncodeSize,
+  provider->Initialize(kEncoderId, kEncoderUseCase, kCodecProfile, kEncodeSize,
                        kIsHardwareEncoder, kSVCMode);
-  provider->SetEncodedFrameCount(100);
-  provider->SetEncodedFrameCount(200);
-  provider->SetEncodedFrameCount(300);
-  provider->SetError(
-      {EncoderStatus::Codes::kEncoderFailedEncode, "Encoder failed"});
-  provider->SetError(
-      {EncoderStatus::Codes::kEncoderIllegalState, "Encoder illegal state"});
-  provider->SetEncodedFrameCount(400);
+  provider->SetEncodedFrameCount(kEncoderId, 100);
+  provider->SetEncodedFrameCount(kEncoderId, 200);
+  provider->SetEncodedFrameCount(kEncoderId, 300);
+  provider->SetError(kEncoderId, {EncoderStatus::Codes::kEncoderFailedEncode,
+                                  "Encoder failed"});
+  provider->SetError(kEncoderId, {EncoderStatus::Codes::kEncoderIllegalState,
+                                  "Encoder illegal state"});
+  provider->SetEncodedFrameCount(kEncoderId, 400);
   provider.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -374,13 +415,14 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
           300,
       },
   };
+  constexpr uint64_t kEncoderId = 0;
   auto [test_recorder, provider] = Create(kTestURL);
   for (const auto& metrics : kMetricsCases) {
-    provider->Initialize(metrics.use_case, metrics.profile, metrics.size,
-                         metrics.is_hardware, metrics.svc_mode);
-    provider->SetEncodedFrameCount(metrics.num_encoded_frames);
+    provider->Initialize(kEncoderId, metrics.use_case, metrics.profile,
+                         metrics.size, metrics.is_hardware, metrics.svc_mode);
+    provider->SetEncodedFrameCount(kEncoderId, metrics.num_encoded_frames);
     if (metrics.status != EncoderStatus::Codes::kOk) {
-      provider->SetError(metrics.status);
+      provider->SetError(kEncoderId, metrics.status);
     }
   }
   provider.reset();
@@ -402,5 +444,110 @@ TEST_F(MojoVideoEncoderMetricsProviderServiceTest,
   }
 }
 
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest, HandleTwoEncoders) {
+  const struct {
+    uint64_t encoder_id;
+    mojom::VideoEncoderUseCase use_case;
+    VideoCodecProfile profile;
+    gfx::Size size;
+    bool is_hardware;
+    SVCScalabilityMode svc_mode;
+    EncoderStatus::Codes status;
+    uint64_t num_encoded_frames;
+  } kMetricsCases[] = {
+      {
+          0,
+          mojom::VideoEncoderUseCase::kWebRTC,
+          VP9PROFILE_PROFILE0,
+          gfx::Size(600, 300),
+          true,
+          SVCScalabilityMode::kL2T3Key,
+          EncoderStatus::Codes::kEncoderIllegalState,
+          100,
+      },
+      {
+          1,
+          mojom::VideoEncoderUseCase::kMediaRecorder,
+          H264PROFILE_HIGH,
+          gfx::Size(1200, 700),
+          /*is_hardware=*/true,
+          SVCScalabilityMode::kL2T3Key,
+          EncoderStatus::Codes::kOk,
+          300,
+      },
+  };
+  auto [test_recorder, provider] = Create(kTestURL);
+  for (const auto& metrics : kMetricsCases) {
+    provider->Initialize(metrics.encoder_id, metrics.use_case, metrics.profile,
+                         metrics.size, metrics.is_hardware, metrics.svc_mode);
+  }
+  for (const auto& metrics : kMetricsCases) {
+    provider->SetEncodedFrameCount(metrics.encoder_id,
+                                   metrics.num_encoded_frames);
+  }
+  for (const auto& metrics : kMetricsCases) {
+    if (metrics.status != EncoderStatus::Codes::kOk) {
+      provider->SetError(metrics.encoder_id, metrics.status);
+    }
+  }
+  for (const auto& metrics : kMetricsCases) {
+    provider->Complete(metrics.encoder_id);
+  }
+  provider.reset();
+  base::RunLoop().RunUntilIdle();
+
+  const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(std::size(kMetricsCases), entries.size());
+  for (size_t i = 0; i < entries.size(); ++i) {
+    const auto* entry = entries[i];
+    const auto& metrics = kMetricsCases[i];
+    EXPECT_UKM(UkmEntry::kHeightName, metrics.size.height());
+    EXPECT_UKM(UkmEntry::kIsHardwareName, metrics.is_hardware);
+    EXPECT_UKM(UkmEntry::kNumEncodedFramesName, metrics.num_encoded_frames);
+    EXPECT_UKM(UkmEntry::kProfileName, metrics.profile);
+    EXPECT_UKM(UkmEntry::kStatusName, static_cast<int64_t>(metrics.status));
+    EXPECT_UKM(UkmEntry::kSVCModeName, static_cast<int64_t>(metrics.svc_mode));
+    EXPECT_UKM(UkmEntry::kUseCaseName, static_cast<int64_t>(metrics.use_case));
+    EXPECT_UKM(UkmEntry::kWidthName, metrics.size.width());
+  }
+}
+
+TEST_F(MojoVideoEncoderMetricsProviderServiceTest, IgnoreUnknownEncoderIds) {
+  auto [test_recorder, provider] = Create(kTestURL);
+  constexpr uint64_t kKnownEncoderId = 123;
+  constexpr uint64_t kUnknownEncoderId = 321;
+  constexpr auto kEncoderUseCase = mojom::VideoEncoderUseCase::kWebRTC;
+  constexpr auto kCodecProfile = VP9PROFILE_PROFILE0;
+  constexpr gfx::Size kEncodeSize(1200, 700);
+  constexpr bool kIsHardwareEncoder = true;
+  constexpr auto kSVCMode = SVCScalabilityMode::kL1T3;
+  provider->Initialize(kKnownEncoderId, kEncoderUseCase, kCodecProfile,
+                       kEncodeSize, kIsHardwareEncoder, kSVCMode);
+  provider->SetEncodedFrameCount(kUnknownEncoderId, 100);
+  provider->SetError(kUnknownEncoderId,
+                     EncoderStatus::Codes::kEncoderFailedEncode);
+  provider->Complete(kUnknownEncoderId);
+
+  provider->Complete(kKnownEncoderId);
+  // This should be ignored as Complete() is already called.
+  provider->SetError(kKnownEncoderId,
+                     EncoderStatus::Codes::kEncoderFailedEncode);
+
+  provider.reset();
+  base::RunLoop().RunUntilIdle();
+
+  const auto entries = test_recorder->GetEntriesByName(UkmEntry::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  const auto* entry = entries[0];
+  EXPECT_UKM(UkmEntry::kHeightName, kEncodeSize.height());
+  EXPECT_UKM(UkmEntry::kIsHardwareName, kIsHardwareEncoder);
+  EXPECT_UKM(UkmEntry::kNumEncodedFramesName, 0);
+  EXPECT_UKM(UkmEntry::kProfileName, kCodecProfile);
+  EXPECT_UKM(UkmEntry::kStatusName,
+             static_cast<int64_t>(EncoderStatus::Codes::kOk));
+  EXPECT_UKM(UkmEntry::kSVCModeName, static_cast<int64_t>(kSVCMode));
+  EXPECT_UKM(UkmEntry::kUseCaseName, static_cast<int64_t>(kEncoderUseCase));
+  EXPECT_UKM(UkmEntry::kWidthName, kEncodeSize.width());
+}
 #undef EXPECT_UKM
 }  // namespace media
