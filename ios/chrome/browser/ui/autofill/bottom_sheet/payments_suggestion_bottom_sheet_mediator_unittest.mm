@@ -35,10 +35,11 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PaymentsSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()),
-        web_state_list_(&web_state_list_delegate_),
         personal_data_manager_(
             std::make_unique<autofill::PersonalDataManager>("en",
                                                             std::string())) {
+    web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
+
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
 
     TestChromeBrowserState::Builder builder;
@@ -67,12 +68,12 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
 
   // Create a mediator.
   void CreateMediator() {
-    web_state_list_.InsertWebState(0, std::move(test_web_state_),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    web_state_list_->InsertWebState(0, std::move(test_web_state_),
+                                    WebStateList::INSERT_ACTIVATE,
+                                    WebStateOpener());
 
     mediator_ = [[PaymentsSuggestionBottomSheetMediator alloc]
-        initWithWebStateList:&web_state_list_
+        initWithWebStateList:web_state_list_.get()
                       params:autofill::FormActivityParams()
          personalDataManager:personal_data_manager_.get()];
   }
@@ -121,7 +122,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<web::FakeWebState> test_web_state_;
   FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
+  std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   syncer::TestSyncService sync_service_;
   id consumer_;
@@ -165,5 +166,19 @@ TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
   OCMExpect([consumer_ setCreditCardData:[OCMArg isNotNil]
                        showGooglePayLogo:NO]);
   [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the mediator is correctly cleaned up when the WebStateList is
+// destroyed. There are a lot of checked observer lists that could potentially
+// cause a crash in the process, so this test ensures they're executed.
+TEST_F(PaymentsSuggestionBottomSheetMediatorTest,
+       CleansUpWhenWebStateListDestroyed) {
+  CreateMediatorWithSuggestions();
+  ASSERT_TRUE(mediator_);
+  [mediator_ setConsumer:consumer_];
+
+  OCMExpect([consumer_ dismiss]);
+  web_state_list_.reset();
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

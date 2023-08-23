@@ -68,8 +68,18 @@ using ReauthenticationEvent::kSuccess;
 
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
-  std::unique_ptr<web::WebStateObserverBridge> _observer;
+
+  // Bridge and forwarder for observing WebState events. The forwarder is a
+  // scoped observation, so the bridge will automatically be removed from the
+  // relevant observer list.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
+
+  // Bridge for observing WebStateList events.
+  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  std::unique_ptr<
+      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
+      _webStateListObservation;
 
   // Vector of credentials related to the current page.
   std::vector<password_manager::CredentialUIEntry> _credentials;
@@ -121,9 +131,14 @@ using ReauthenticationEvent::kSuccess;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
 
     // Create and register the observers.
-    _observer = std::make_unique<web::WebStateObserverBridge>(self);
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
-        _webStateList, _observer.get());
+        _webStateList, _webStateObserver.get());
+    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
+    _webStateListObservation = std::make_unique<
+        base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
+        _webStateListObserver.get());
+    _webStateListObservation->Observe(_webStateList);
 
     if (activeWebState) {
       FormSuggestionTabHelper* tabHelper =
@@ -160,8 +175,11 @@ using ReauthenticationEvent::kSuccess;
 - (void)disconnect {
   _prefService = nullptr;
   _faviconLoader = nullptr;
+
+  _webStateListObservation = nullptr;
+  _webStateListObserver = nullptr;
   _forwarder = nullptr;
-  _observer = nullptr;
+  _webStateObserver = nullptr;
   _webStateList = nullptr;
 }
 
@@ -330,9 +348,9 @@ using ReauthenticationEvent::kSuccess;
 
 - (void)webStateListDestroyed:(WebStateList*)webStateList {
   DCHECK_EQ(webStateList, _webStateList);
-  _forwarder = nullptr;
-  _observer = nullptr;
-  _webStateList = nullptr;
+  // `disconnect` cleans up all references to `_webStateList` and objects that
+  // depend on it.
+  [self disconnect];
   [self onWebStateChange];
 }
 
