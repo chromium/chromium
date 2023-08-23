@@ -108,9 +108,11 @@ const CGFloat kReducedMotionDuration = 0.25;
   if (@available(iOS 17, *)) {
     // On iOS 17, there is an issue if the animation is run directly.
     // See crbug.com/1458980.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self.animation.animator startAnimation];
-    });
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                 static_cast<int64_t>(0.01 * NSEC_PER_SEC)),
+                   dispatch_get_main_queue(), ^{
+                     [self.animation.animator startAnimation];
+                   });
   } else {
     [self.animation.animator startAnimation];
   }
