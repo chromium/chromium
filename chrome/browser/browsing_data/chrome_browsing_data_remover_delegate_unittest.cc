@@ -3799,7 +3799,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
                                        some_value.Clone());
 
     // Check that the exception was created.
-    base::Value value = map->GetWebsiteSetting(url, url, info->type(), nullptr);
+    base::Value value = map->GetWebsiteSetting(url, url, info->type());
     EXPECT_FALSE(value.is_none()) << "Not created: " << info->name();
     EXPECT_EQ(some_value, value) << "Not created: " << info->name();
   }
@@ -3816,7 +3816,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
     if (base::Contains(non_deletable_types, info->type())) {
       continue;
     }
-    base::Value value = map->GetWebsiteSetting(url, url, info->type(), nullptr);
+    base::Value value = map->GetWebsiteSetting(url, url, info->type());
 
     if (value.is_int()) {
       EXPECT_EQ(CONTENT_SETTING_BLOCK, value.GetInt())

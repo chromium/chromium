@@ -168,10 +168,11 @@ class HostContentSettingsMap : public content_settings::Observer,
   // set to |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
   // patterns.
   // May be called on any thread.
-  base::Value GetWebsiteSetting(const GURL& primary_url,
-                                const GURL& secondary_url,
-                                ContentSettingsType content_type,
-                                content_settings::SettingInfo* info) const;
+  base::Value GetWebsiteSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // For a given content type, returns all patterns with a non-default setting,
   // mapped to their actual settings, in the precedence order of the rules.

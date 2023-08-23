@@ -51,7 +51,7 @@ constexpr char kActivationsCountKey[] = "activations_count_key";
 base::Value::Dict GetMetadata(HostContentSettingsMap* settings_map,
                               const GURL& url) {
   base::Value stored_value = settings_map->GetWebsiteSetting(
-      url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+      url, url, ContentSettingsType::COOKIE_CONTROLS_METADATA);
   if (!stored_value.is_dict()) {
     return base::Value::Dict();
   }

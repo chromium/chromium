@@ -867,9 +867,9 @@ TEST_P(CookieControlsUserBypassTest, FrequentPageReloads) {
 
   // After the entry point was animated (due to high confidence signal), a
   // setting is recorded.
-  base::Value stored_value = hcsm->GetWebsiteSetting(
-      GURL("https://example.com"), GURL(),
-      ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+  base::Value stored_value =
+      hcsm->GetWebsiteSetting(GURL("https://example.com"), GURL(),
+                              ContentSettingsType::COOKIE_CONTROLS_METADATA);
   EXPECT_TRUE(stored_value.is_dict());
   EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 
@@ -1091,9 +1091,9 @@ TEST_P(CookieControlsUserBypassTest, HighSiteEngagement) {
 
   // After the entry point was animated (due to high confidence signal), a
   // setting is recorded.
-  base::Value stored_value = hcsm->GetWebsiteSetting(
-      GURL("https://highengagement.com"), GURL(),
-      ContentSettingsType::COOKIE_CONTROLS_METADATA, nullptr);
+  base::Value stored_value =
+      hcsm->GetWebsiteSetting(GURL("https://highengagement.com"), GURL(),
+                              ContentSettingsType::COOKIE_CONTROLS_METADATA);
   EXPECT_TRUE(stored_value.is_dict());
   EXPECT_TRUE(stored_value.GetDict().FindBool("entry_point_animated").value());
 

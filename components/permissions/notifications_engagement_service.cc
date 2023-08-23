@@ -79,7 +79,7 @@ void NotificationsEngagementService::IncrementCounts(const GURL& url,
                                                      int display_count_delta,
                                                      int click_count_delta) {
   base::Value engagement_as_value = settings_map_->GetWebsiteSetting(
-      url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS, nullptr);
+      url, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
 
   base::Value::Dict engagement;
   if (engagement_as_value.is_dict())

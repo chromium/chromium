@@ -144,8 +144,7 @@ TEST_F(NotificationsEngagementServiceTest,
 
   base::Value website_engagement_value1 =
       host_content_settings_map->GetWebsiteSetting(
-          url1, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
-          nullptr);
+          url1, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_TRUE(website_engagement_value1.is_dict());
   base::Value::Dict& website_engagement_dict1 =
       website_engagement_value1.GetDict();
@@ -163,8 +162,7 @@ TEST_F(NotificationsEngagementServiceTest,
 
   base::Value website_engagement_value2 =
       host_content_settings_map->GetWebsiteSetting(
-          url2, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
-          nullptr);
+          url2, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_TRUE(website_engagement_value2.is_dict());
   base::Value::Dict& website_engagement_dict2 =
       website_engagement_value2.GetDict();
@@ -181,8 +179,7 @@ TEST_F(NotificationsEngagementServiceTest,
 
   base::Value website_engagement_value3 =
       host_content_settings_map->GetWebsiteSetting(
-          url3, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS,
-          nullptr);
+          url3, GURL(), ContentSettingsType::NOTIFICATION_INTERACTIONS);
   ASSERT_TRUE(website_engagement_value3.is_dict());
   base::Value::Dict& website_engagement_dict3 =
       website_engagement_value3.GetDict();
@@ -212,8 +209,7 @@ TEST_F(NotificationsEngagementServiceTest, EraseStaleEntries) {
   base::Value::Dict website_engagement =
       host_content_settings_map
           ->GetWebsiteSetting(url, GURL(),
-                              ContentSettingsType::NOTIFICATION_INTERACTIONS,
-                              nullptr)
+                              ContentSettingsType::NOTIFICATION_INTERACTIONS)
           .GetDict()
           .Clone();
 

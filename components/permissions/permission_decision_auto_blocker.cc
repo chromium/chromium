@@ -89,8 +89,7 @@ std::string GetStringForContentType(ContentSettingsType content_type) {
 base::Value::Dict GetOriginAutoBlockerData(HostContentSettingsMap* settings,
                                            const GURL& origin_url) {
   base::Value website_setting = settings->GetWebsiteSetting(
-      origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      nullptr);
+      origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
   if (!website_setting.is_dict()) {
     return base::Value::Dict();
   }

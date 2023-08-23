@@ -460,7 +460,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     for (const std::string& ignored_site : ignored_sites) {
       GURL origin("http://" + ignored_site);
       base::Value dict = map->GetWebsiteSetting(
-          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO, nullptr);
+          origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO);
 
       if (!dict.is_dict())
         dict = base::Value(base::Value::Type::DICT);

@@ -1029,10 +1029,10 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
   // USB chooser data defaults to |nullptr|.
   EXPECT_EQ(base::Value(),
             host_content_settings_map->GetWebsiteSetting(
-                host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
+                host, host, ContentSettingsType::USB_CHOOSER_DATA));
   EXPECT_EQ(base::Value(),
-            otr_map->GetWebsiteSetting(
-                host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
+            otr_map->GetWebsiteSetting(host, host,
+                                       ContentSettingsType::USB_CHOOSER_DATA));
 
   base::Value::Dict test_dict;
   test_dict.Set("test", "value");
@@ -1042,11 +1042,11 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
 
   // The setting is not inherted by |otr_map|.
   base::Value stored_value = host_content_settings_map->GetWebsiteSetting(
-      host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr);
+      host, host, ContentSettingsType::USB_CHOOSER_DATA);
   EXPECT_EQ(stored_value, test_dict);
   EXPECT_EQ(base::Value(),
-            otr_map->GetWebsiteSetting(
-                host, host, ContentSettingsType::USB_CHOOSER_DATA, nullptr));
+            otr_map->GetWebsiteSetting(host, host,
+                                       ContentSettingsType::USB_CHOOSER_DATA));
   {
     ContentSettingsForOneType otr_settings =
         otr_map->GetSettingsForOneType(ContentSettingsType::USB_CHOOSER_DATA);
@@ -1447,7 +1447,7 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
       base::Value(std::move(test_dict)));
   EXPECT_EQ(base::Value(), host_content_settings_map->GetWebsiteSetting(
                                unsupported_url, unsupported_url,
-                               ContentSettingsType::APP_BANNER, nullptr));
+                               ContentSettingsType::APP_BANNER));
 }
 
 TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {

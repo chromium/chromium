@@ -493,7 +493,7 @@ void UnusedSitePermissionsService::StorePermissionInRevokedPermissionSetting(
   // Get the current value of the setting to append the recently revoked
   // permissions.
   base::Value cur_value(hcsm_->GetWebsiteSetting(
-      url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, nullptr));
+      url, url, ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS));
 
   base::Value::Dict dict = cur_value.is_dict() ? std::move(cur_value.GetDict())
                                                : base::Value::Dict();
