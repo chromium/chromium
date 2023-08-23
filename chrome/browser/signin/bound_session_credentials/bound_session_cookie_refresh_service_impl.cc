@@ -30,10 +30,12 @@ const char kGoogleSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     PrefService* pref_service,
-    content::StoragePartition* storage_partion)
+    content::StoragePartition* storage_partion,
+    network::NetworkConnectionTracker* network_connection_tracker)
     : key_service_(key_service),
       pref_service_(pref_service),
-      storage_partition_(storage_partion) {}
+      storage_partition_(storage_partion),
+      network_connection_tracker_(network_connection_tracker) {}
 
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
@@ -204,7 +206,8 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
     const base::flat_set<std::string>& cookie_names) {
   return controller_factory_for_testing_.is_null()
              ? std::make_unique<BoundSessionCookieControllerImpl>(
-                   key_service_.get(), storage_partition_, registration_params,
+                   key_service_.get(), storage_partition_,
+                   network_connection_tracker_, registration_params,
                    cookie_names, this)
              : controller_factory_for_testing_.Run(registration_params,
                                                    cookie_names, this);

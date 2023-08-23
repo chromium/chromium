@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 #include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
 #include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace {
 using Result = BoundSessionRefreshCookieFetcher::Result;
@@ -23,12 +24,14 @@ using Result = BoundSessionRefreshCookieFetcher::Result;
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     unexportable_keys::UnexportableKeyService& key_service,
     content::StoragePartition* storage_partition,
+    network::NetworkConnectionTracker* network_connection_tracker,
     const bound_session_credentials::RegistrationParams& registration_params,
     const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
     : BoundSessionCookieController(registration_params, cookie_names, delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
+      network_connection_tracker_(network_connection_tracker),
       wait_for_network_callback_helper_(
           std::make_unique<WaitForNetworkCallbackHelperChrome>()) {
   CHECK(!registration_params.wrapped_key().empty());
@@ -47,8 +50,29 @@ BoundSessionCookieControllerImpl::~BoundSessionCookieControllerImpl() {
 }
 
 void BoundSessionCookieControllerImpl::Initialize() {
+  network_connection_observer_.Observe(network_connection_tracker_);
   CreateBoundCookiesObservers();
   MaybeRefreshCookie();
+}
+
+void BoundSessionCookieControllerImpl::OnConnectionChanged(
+    network::mojom::ConnectionType type) {
+  if (type == network::mojom::ConnectionType::CONNECTION_NONE) {
+    // Let network requests fail now while there is no internet connection,
+    // instead of holding them up until the network is back or timeout occurs.
+    // The network could come back shortly before the timeout which would result
+    // in requests being released without a valid cookie.
+    ResumeBlockedRequests();
+  }
+}
+
+bool BoundSessionCookieControllerImpl::IsConnectionTypeAvailableAndOffline() {
+  network::mojom::ConnectionType type;
+  return network_connection_tracker_->GetConnectionType(
+             &type, base::BindOnce(
+                        &BoundSessionCookieControllerImpl::OnConnectionChanged,
+                        weak_ptr_factory_.GetWeakPtr())) &&
+         type == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
 void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
@@ -61,6 +85,12 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
 
   resume_blocked_requests_.push_back(std::move(resume_blocked_request));
   MaybeRefreshCookie();
+
+  if (IsConnectionTypeAvailableAndOffline()) {
+    // See the comment in `OnConnectionChanged()` for explanation.
+    ResumeBlockedRequests();
+    return;
+  }
 
   if (!resume_blocked_requests_timer_.IsRunning() &&
       !resume_blocked_requests_.empty()) {

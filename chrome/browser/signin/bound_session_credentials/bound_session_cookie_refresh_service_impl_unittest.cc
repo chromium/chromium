@@ -21,6 +21,7 @@
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_storage_partition.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -140,7 +141,8 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
     if (!cookie_refresh_service_) {
       cookie_refresh_service_ =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
-              fake_unexportable_key_service_, &prefs_, &storage_partition_);
+              fake_unexportable_key_service_, &prefs_, &storage_partition_,
+              content::GetNetworkConnectionTracker());
       cookie_refresh_service_->set_controller_factory_for_testing(
           base::BindRepeating(&BoundSessionCookieRefreshServiceImplTest::
                                   GetBoundSessionCookieController,

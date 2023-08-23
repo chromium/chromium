@@ -22,12 +22,14 @@
 #include "components/unexportable_keys/unexportable_key_loader.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/test_storage_partition.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -64,9 +66,14 @@ class BoundSessionCookieControllerImplTest
         std::string(wrapped_key.begin(), wrapped_key.end()));
 
     storage_partition_.set_cookie_manager_for_browser_process(&cookie_manager_);
+
+    SetUpNetworkConnection(true,
+                           network::mojom::ConnectionType::CONNECTION_WIFI);
+
     bound_session_cookie_controller_ =
         std::make_unique<BoundSessionCookieControllerImpl>(
-            unexportable_key_service_, &storage_partition_, registration_params,
+            unexportable_key_service_, &storage_partition_,
+            content::GetNetworkConnectionTracker(), registration_params,
             base::flat_set<std::string>(
                 {k1PSIDTSCookieName, k3PSIDTSCookieName}),
             this);
@@ -230,6 +237,25 @@ class BoundSessionCookieControllerImplTest
     bound_session_cookie_controller_.reset();
   }
 
+  void SetUpNetworkConnection(bool respond_synchronously,
+                              network::mojom::ConnectionType connection_type) {
+    network::TestNetworkConnectionTracker* tracker =
+        network::TestNetworkConnectionTracker::GetInstance();
+    tracker->SetRespondSynchronously(respond_synchronously);
+    tracker->SetConnectionType(connection_type);
+  }
+
+  void SetConnectionType(network::mojom::ConnectionType connection_type) {
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        connection_type);
+  }
+
+  bool IsConnectionTypeAvailableAndOffline() {
+    CHECK(bound_session_cookie_controller_);
+    return bound_session_cookie_controller_
+        ->IsConnectionTypeAvailableAndOffline();
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -347,6 +373,7 @@ TEST_F(BoundSessionCookieControllerImplTest, CookieChange) {
 
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieWhenCookieFresh) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   // Set fresh cookie.
   CompletePendingRefreshRequestIfAny();
   BoundSessionCookieController* controller = bound_session_cookie_controller();
@@ -362,6 +389,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieWhenCookieStaleTriggersARefresh) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
 
   BoundSessionCookieController* controller = bound_session_cookie_controller();
@@ -390,6 +418,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedWhenNotAllCookiesFresh) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
   BoundSessionCookieController* controller = bound_session_cookie_controller();
 
@@ -415,6 +444,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieRefreshFailedWithPersistentError) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
   EXPECT_FALSE(on_cookie_refresh_persistent_failure_called());
 
@@ -445,6 +475,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
   task_environment()->FastForwardBy(base::Minutes(12));
   EXPECT_FALSE(AreAllCookiesFresh());
@@ -477,6 +508,7 @@ TEST_F(BoundSessionCookieControllerImplTest, RefreshFailedTransient) {
 
 TEST_F(BoundSessionCookieControllerImplTest,
        RequestBlockedOnCookieMultipleRequests) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
   ResetOnBoundSessionParamsChangedCallCount();
   // Cookie stale.
@@ -502,6 +534,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
 TEST_F(BoundSessionCookieControllerImplTest,
        CookieChangesToFreshWhileRequestBlockedOnCookieIsPending) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   CompletePendingRefreshRequestIfAny();
   // Stale cookie.
   task_environment()->FastForwardBy(base::Minutes(12));
@@ -528,6 +561,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 
 TEST_F(BoundSessionCookieControllerImplTest,
        ControllerDestroyedRequestBlockedOnCookieIsPending) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   std::array<base::test::TestFuture<void>, 5> futures;
   for (auto& future : futures) {
@@ -542,6 +576,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
   bound_session_cookie_controller()->OnRequestBlockedOnCookie(
       future.GetCallback());
@@ -558,6 +593,7 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
 
 TEST_F(BoundSessionCookieControllerImplTest,
        BlockedRequestsCalculateTimeoutFromFirstRequest) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   constexpr int kBlockedRequestCount = 2;
   constexpr base::TimeDelta kDeltaBetweenRequests = base::Seconds(1);
   BoundSessionCookieController* controller = bound_session_cookie_controller();
@@ -585,6 +621,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 }
 
 TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
   base::test::TestFuture<void> future;
   bound_session_cookie_controller()->OnRequestBlockedOnCookie(
       future.GetCallback());
@@ -593,6 +630,53 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsTimerReset) {
   SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result::kSuccess,
       GetTimeInTenMinutes());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       ResumeNewBlockedRequestsWhenOffline) {
+  SetUpNetworkConnection(true, network::mojom::ConnectionType::CONNECTION_NONE);
+  ASSERT_TRUE(IsConnectionTypeAvailableAndOffline());
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+      future.GetCallback());
+  EXPECT_FALSE(AreAllCookiesFresh());
+  EXPECT_TRUE(cookie_fetcher());
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       BlockRequestsWhenConnectionTypeUnavailable) {
+  SetUpNetworkConnection(false,
+                         network::mojom::ConnectionType::CONNECTION_WIFI);
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
+  CompletePendingRefreshRequestIfAny();
+  EXPECT_TRUE(future.IsReady());
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       ResumePendingBlockedRequestsOnNetworkConnectionChangedToOffline) {
+  ASSERT_FALSE(IsConnectionTypeAvailableAndOffline());
+  base::test::TestFuture<void> future;
+  bound_session_cookie_controller()->OnRequestBlockedOnCookie(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_TRUE(resume_blocked_requests_timer()->IsRunning());
+
+  SetConnectionType(network::mojom::ConnectionType::CONNECTION_NONE);
+  ASSERT_TRUE(IsConnectionTypeAvailableAndOffline());
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(AreAllCookiesFresh());
+  EXPECT_TRUE(cookie_fetcher());
   EXPECT_TRUE(future.IsReady());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
 }

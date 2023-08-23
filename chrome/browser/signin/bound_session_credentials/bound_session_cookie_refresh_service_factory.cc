@@ -14,6 +14,7 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/network_service_instance.h"
 
 // static
 BoundSessionCookieRefreshServiceFactory*
@@ -64,7 +65,8 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
       bound_session_cookie_refresh_service =
           std::make_unique<BoundSessionCookieRefreshServiceImpl>(
               *key_service, profile->GetPrefs(),
-              profile->GetDefaultStoragePartition());
+              profile->GetDefaultStoragePartition(),
+              content::GetNetworkConnectionTracker());
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
 }
