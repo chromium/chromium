@@ -164,6 +164,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     // weren't.
     bool transport_list_did_include_internal = false;
 
+    // transport_list_did_include_hybrid is set to true during a getAssertion
+    // request if at least one element of the allowList included the "hybrid"
+    // transport, or didn't have any transports.
+    bool transport_list_did_include_hybrid = false;
+
+    // transport_list_did_include_security_key is set to true during a
+    // getAssertion request if at least one element of the allowList included
+    // the "usb", "nfc", or "ble" transport, or didn't have any transports.
+    bool transport_list_did_include_security_key = false;
+
     // request_is_internal_only indicates that this request can only be serviced
     // by internal authenticators (e.g. due to the attachment setting).
     // See also `make_credential_attachment`.

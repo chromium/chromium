@@ -739,6 +739,10 @@ class AuthenticatorRequestDialogModel {
   // PopulateMechanisms fills in |mechanisms_|.
   void PopulateMechanisms();
 
+  // Adds a button that triggers Windows Hello with the specified string ID and
+  // transport icon.
+  void AddWindowsButton(int label, AuthenticatorTransport transport);
+
   // IndexOfPriorityMechanism returns the index, in |mechanisms_|, of the
   // Mechanism that should be triggered immediately, if any.
   absl::optional<size_t> IndexOfPriorityMechanism();

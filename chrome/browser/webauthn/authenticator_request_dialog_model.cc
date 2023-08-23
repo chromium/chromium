@@ -244,20 +244,82 @@ int GetHybridButtonLabel(bool has_security_key, bool specific_phones_listed) {
   }
 }
 
-// SourcePriority determines which credential will be used when doing a modal()
+// SourcePriority determines which credential will be used when doing a modal
 // get and multiple platform authenticators have credentials, all with the same
 // user ID.
 int SourcePriority(device::AuthenticatorType source) {
   switch (source) {
     case device::AuthenticatorType::kEnclave:
-      return 3;
+      return 4;
     case device::AuthenticatorType::kICloudKeychain:
-      return 2;
+      return 3;
     case device::AuthenticatorType::kTouchID:
+      return 2;
+    case device::AuthenticatorType::kWinNative:
       return 1;
     default:
       return 0;
   }
+}
+
+// Returns the ID of a string and authenticator transport to label a button that
+// triggers the Windows native WebAuthn API, or absl::nullopt if the button
+// should not be shown. The transport represents the option Windows will prefer
+// when tapping the button and is used to pick an icon and position on the list.
+absl::optional<std::pair<int, AuthenticatorTransport>> GetWindowsAPIButtonLabel(
+    const device::FidoRequestHandlerBase::TransportAvailabilityInfo&
+        transport_availability,
+    bool specific_phones_listed) {
+  if (!transport_availability.has_win_native_api_authenticator) {
+    return absl::nullopt;
+  }
+  bool win_handles_internal;
+  bool win_handles_hybrid;
+  bool win_handles_security_key;
+  if (transport_availability.request_type ==
+      device::FidoRequestType::kGetAssertion) {
+    win_handles_internal =
+        transport_availability.transport_list_did_include_internal &&
+        transport_availability.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::kUnknown;
+    win_handles_hybrid =
+        transport_availability.transport_list_did_include_hybrid &&
+        WebAuthnApiSupportsHybrid();
+    win_handles_security_key =
+        transport_availability.transport_list_did_include_security_key;
+  } else {
+    win_handles_internal = transport_availability.make_credential_attachment ==
+                               device::AuthenticatorAttachment::kPlatform ||
+                           transport_availability.make_credential_attachment ==
+                               device::AuthenticatorAttachment::kAny;
+    win_handles_security_key =
+        transport_availability.make_credential_attachment ==
+             device::AuthenticatorAttachment::kCrossPlatform ||
+         transport_availability.make_credential_attachment ==
+             device::AuthenticatorAttachment::kAny;
+    win_handles_hybrid =
+        WebAuthnApiSupportsHybrid() && win_handles_security_key;
+  }
+  if (win_handles_internal) {
+    if (win_handles_security_key) {
+      return std::make_pair(
+          IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY,
+          AuthenticatorTransport::kInternal);
+    } else {
+      return std::make_pair(IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO,
+                            AuthenticatorTransport::kInternal);
+    }
+  }
+  if (win_handles_hybrid) {
+    return std::make_pair(
+        GetHybridButtonLabel(win_handles_security_key, specific_phones_listed),
+        AuthenticatorTransport::kHybrid);
+  }
+  if (win_handles_security_key) {
+    return std::make_pair(IDS_WEBAUTHN_TRANSPORT_EXTERNAL_SECURITY_KEY,
+                          AuthenticatorTransport::kUsbHumanInterfaceDevice);
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -1620,29 +1682,19 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
             base::Unretained(this)));
   }
 
-  bool show_windows_button = true;
-  if (is_new_get_assertion_ui) {
-    if (transport_availability_.request_is_internal_only) {
-      show_windows_button =
-          transport_availability_.has_platform_authenticator_credential ==
-          device::FidoRequestHandlerBase::RecognizedCredential::kUnknown;
-    } else if (transport_availability_.is_only_hybrid_or_internal) {
-      show_windows_button =
-          transport_availability_.has_platform_authenticator_credential ==
-              device::FidoRequestHandlerBase::RecognizedCredential::kUnknown ||
-          windows_handles_hybrid;
-    }
+  absl::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
+  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+    windows_button_label = GetWindowsAPIButtonLabel(transport_availability_,
+                                                    specific_phones_listed);
+  } else if (win_native_api_enabled()) {
+    windows_button_label =
+        std::make_pair(IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY,
+                       AuthenticatorTransport::kInternal);
   }
-  if (win_native_api_enabled() && show_windows_button) {
-    const std::u16string desc = l10n_util::GetStringUTF16(
-        IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY);
-    // TODO(crbug.com/1459273): Update the label depending on transports that
-    // Windows can serve.
-    mechanisms_.emplace_back(
-        Mechanism::WindowsAPI(), desc, desc,
-        GetTransportIcon(AuthenticatorTransport::kInternal),
-        base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
-                            base::Unretained(this)));
+  if (windows_button_label &&
+      windows_button_label->second == AuthenticatorTransport::kInternal) {
+    // Add the Windows button before phones if it can trigger Windows Hello.
+    AddWindowsButton(windows_button_label->first, windows_button_label->second);
   }
 
   if (base::Contains(transport_availability_.available_transports, kCable) &&
@@ -1719,6 +1771,21 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
             &AuthenticatorRequestDialogModel::StartGuidedFlowForTransport,
             base::Unretained(this), transport));
   }
+  // Add the Windows native API button last if it does not do Windows Hello.
+  if (windows_button_label &&
+      windows_button_label->second != AuthenticatorTransport::kInternal) {
+    AddWindowsButton(windows_button_label->first, windows_button_label->second);
+  }
+}
+
+void AuthenticatorRequestDialogModel::AddWindowsButton(
+    int label,
+    AuthenticatorTransport transport) {
+  const std::u16string desc = l10n_util::GetStringUTF16(label);
+  mechanisms_.emplace_back(
+      Mechanism::WindowsAPI(), desc, desc, GetTransportIcon(transport),
+      base::BindRepeating(&AuthenticatorRequestDialogModel::StartWinNativeApi,
+                          base::Unretained(this)));
 }
 
 absl::optional<size_t>
