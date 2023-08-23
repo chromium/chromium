@@ -205,6 +205,7 @@ public class TemplateUrlServiceTest {
         Assert.assertEquals("keyword1", defaultSearchEngine.getKeyword());
         Assert.assertTrue(defaultSearchEngine.getIsPrepopulated());
         Assert.assertEquals(PLAY_API_SEARCH_URL, defaultSearchEngine.getURL());
+        Assert.assertEquals(PLAY_API_NEW_TAB_URL, defaultSearchEngine.getNewTabURL());
     }
 
     @Test

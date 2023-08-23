@@ -70,6 +70,14 @@ public class TemplateUrl {
         return TemplateUrlJni.get().getURL(mTemplateUrlPtr);
     }
 
+    /**
+     * @return The new Tab URL of the search engine. The format can be looked up in
+     *         prepopulated_engines.json.
+     */
+    public String getNewTabURL() {
+        return TemplateUrlJni.get().getNewTabURL(mTemplateUrlPtr);
+    }
+
     @Override
     public boolean equals(Object other) {
         if (!(other instanceof TemplateUrl)) return false;
@@ -93,5 +101,6 @@ public class TemplateUrl {
         long getLastVisitedTime(long templateUrlPtr);
         int getPrepopulatedId(long templateUrlPtr);
         String getURL(long templateUrlPtr);
+        String getNewTabURL(long templateUrlPtr);
     }
 }
