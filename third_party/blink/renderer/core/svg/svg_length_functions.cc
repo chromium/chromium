@@ -70,7 +70,6 @@ gfx::SizeF SVGViewportResolver::ResolveViewport() const {
       }
     }
   }
-  NOTREACHED();
   return gfx::SizeF();
 }
 
