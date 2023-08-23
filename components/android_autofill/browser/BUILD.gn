@@ -110,6 +110,8 @@ static_library("browser") {
     "android_autofill_manager.h",
     "autofill_provider.cc",
     "autofill_provider.h",
+    "form_event_logger_weblayer_android.cc",
+    "form_event_logger_weblayer_android.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
@@ -120,8 +122,12 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_provider_unittest.cc" ]
+  sources = [
+    "autofill_provider_unittest.cc",
+    "form_event_logger_weblayer_android_unittest.cc",
+  ]
   deps = [
+    ":browser",
     ":test_support",
     "//components/autofill/content/browser:test_support",
     "//content/test:test_support",

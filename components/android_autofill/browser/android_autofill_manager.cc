@@ -7,8 +7,8 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "components/android_autofill/browser/autofill_provider.h"
+#include "components/android_autofill/browser/form_event_logger_weblayer_android.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/metrics/form_events/form_event_logger_weblayer_android.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
