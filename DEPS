@@ -32,6 +32,10 @@
 # which is a bit incomplete but the best documentation we have at the
 # moment.
 
+# We expect all git dependencies specified in this file to be in sync with git
+# submodules (gitlinks).
+git_dependencies = 'SYNC'
+
 gclient_gn_args_file = 'src/build/config/gclient_args.gni'
 gclient_gn_args = [
   'build_with_chromium',
@@ -526,6 +530,10 @@ vars = {
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   # This has to stay in sync with the version in src/third_party/ninja/README.chromium.
   'ninja_version': 'version:2@1.11.1.chromium.6',
+
+  # 'magic' variable to tell depot_tools that git submodules should be accepted
+  # but parity with DEPS file is expected.
+  'SUBMODULE_MIGRATION': 'True',
 }
 
 # Only these hosts are allowed for dependencies in this DEPS file.
