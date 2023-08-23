@@ -1397,20 +1397,12 @@ function previewBlinkNode(node) {
     }
   }
 
-  let childNodes;
-  if (node.nodeName == "IFRAME" && node.contentDocument) {
-    // Treat an iframe's content document as one of its child nodes.
-    childNodes = [registerPlainObject(node.contentDocument)];
-  } else if (node.childNodes?.length) {
-    childNodes = [...node.childNodes].map((n) => registerPlainObject(n));
-  }
-
   let documentURL;
   if (node.nodeType == Node.DOCUMENT_NODE) {
     documentURL = node.URL;
   }
 
-  return {
+  const rv = {
     nodeType: node.nodeType,
     nodeName: node.nodeName,
     nodeValue: typeof node.nodeValue === "string" ? node.nodeValue : undefined,
@@ -1419,9 +1411,23 @@ function previewBlinkNode(node) {
     pseudoType,
     style,
     parentNode,
-    childNodes,
     documentURL,
   };
+  
+
+  let childNodes;
+  if (node.nodeName == "IFRAME" && node.contentDocument) {
+    // Treat an iframe's content document as one of its child nodes.
+    childNodes = [registerPlainObject(node.contentDocument)];
+  } else if (node.childNodes?.length) {
+    childNodes = [...node.childNodes].map((n) => registerPlainObject(n));
+  }
+
+  if (childNodes) {
+    rv.childNodes = childNodes;
+  }
+
+  return rv;
 }
 
 function previewBlinkStyle(style) {
