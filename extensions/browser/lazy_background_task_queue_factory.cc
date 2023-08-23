@@ -37,9 +37,10 @@ LazyBackgroundTaskQueueFactory::LazyBackgroundTaskQueueFactory()
 LazyBackgroundTaskQueueFactory::~LazyBackgroundTaskQueueFactory() {
 }
 
-KeyedService* LazyBackgroundTaskQueueFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LazyBackgroundTaskQueueFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
-  return new LazyBackgroundTaskQueue(context);
+  return std::make_unique<LazyBackgroundTaskQueue>(context);
 }
 
 BrowserContext* LazyBackgroundTaskQueueFactory::GetBrowserContextToUse(
