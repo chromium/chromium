@@ -857,6 +857,14 @@ public abstract class UrlBar extends AutocompleteEditText {
         if (mUrlBarDelegate == null || !mUrlBarDelegate.allowKeyboardLearning()) {
             outAttrs.imeOptions |= EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING;
         }
+        // Note: we apply this text variation here (as opposed to Constructor), because we want the
+        // Editor to behave slightly differently than Keyboards:
+        // - we want Editor to permit word selection on long-press, and
+        // - we want Soft keyboards to stop auto-correcting user input.
+        // This happens with certain modern soft keyboards, such as SwiftKey, that corrects spelling
+        // of some urls (e.g. "flipkart.com" -> "flip cart. com" or "flipkart. com") despite
+        // TYPE_TEXT_FLAG_NO_SUGGESTIONS and lack of TYPE_TEXT_FLAG_AUTO_CORRECT.
+        outAttrs.inputType |= EditorInfo.TYPE_TEXT_VARIATION_URI;
         return connection;
     }
 
