@@ -56,11 +56,12 @@ NoteServiceFactory::NoteServiceFactory()
 
 NoteServiceFactory::~NoteServiceFactory() = default;
 
-KeyedService* NoteServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NoteServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new NoteService(
+  return std::make_unique<NoteService>(
       std::make_unique<TemplateStore>(profile->GetPrefs(), GetCountryCode()));
 }
 
