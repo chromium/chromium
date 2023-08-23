@@ -26,7 +26,7 @@ class NotifierStateTrackerFactory : public ProfileKeyedServiceFactory {
   ~NotifierStateTrackerFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
