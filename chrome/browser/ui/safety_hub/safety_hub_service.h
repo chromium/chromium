@@ -16,20 +16,22 @@
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-// Base class for Safety Hub services. The Update() function of the derived
-// classes will be executed periodically, according to the time delta interval
-// returned by GetRepeatedUpdateInterval().
+// Base class for Safety Hub services. The background and UI tasks of the
+// derived classes will be executed periodically, according to the time delta
+// interval returned by GetRepeatedUpdateInterval().
 class SafetyHubService : public KeyedService,
                          public base::SupportsWeakPtr<SafetyHubService> {
  public:
   // Base class for results returned after the periodic execution of the Safety
   // Hub service. Each service should implement a derived class that captures
-  // the specific information that is retrieved.
+  // the specific information that is retrieved. Any intermediate data that is
+  // required for the background task, or that needs to passed through to the UI
+  // thread task should be included as well.
   class Result {
    public:
     explicit Result(base::TimeTicks timestamp = base::TimeTicks::Now());
 
-    Result(const Result&) = delete;
+    Result(const Result&) = default;
     Result& operator=(const Result&) = delete;
     virtual ~Result() = default;
 
@@ -52,8 +54,8 @@ class SafetyHubService : public KeyedService,
 
   ~SafetyHubService() override;
 
-  // Makes an asynchronous call to the Update function, and will call the
-  // callback function upon completion.
+  // Makes an asynchronous call to the background task, which will be followed
+  // by the UI task.
   void UpdateAsync();
 
   // Adds an observer to be notified when a new result is available.
@@ -62,11 +64,11 @@ class SafetyHubService : public KeyedService,
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
+  // Indicates whether the update process is currently running.
+  bool IsUpdateRunning();
+
   // KeyedService implementation.
   void Shutdown() override;
-
-  // Public version of UpdateOnBackgroundThread for testing purposes.
-  std::unique_ptr<Result> UpdateOnBackgroundThreadForTesting();
 
  protected:
   // Triggers the repeated update task that updates the state of the Safety Hub
@@ -79,9 +81,20 @@ class SafetyHubService : public KeyedService,
   // the Update function will be called.
   virtual base::TimeDelta GetRepeatedUpdateInterval() = 0;
 
-  // Contains the actual implementation to make updates to the Safety Hub
-  // service.
-  virtual std::unique_ptr<Result> UpdateOnBackgroundThread() = 0;
+  // Should return the background task that will be executed, containing the
+  // computation-heavy part of the update process. This task should be static
+  // and not be bound to the service, as it will be executed on a separate
+  // background thread. As such, only thread-safe parameters should be bound.
+  // The returned Result will be passed along to the UpdateOnUIThread function.
+  virtual base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() = 0;
+
+  // This function contains the part of the update task that will be executed
+  // synchronously on the UI thread. Hence, it should not be computation-heavy
+  // to avoid freezing the browser. It will be passed the intermediate result
+  // that was produced by the background task. The result returned by this UI
+  // task will be the final result that will be sent to the observers.
+  virtual std::unique_ptr<Result> UpdateOnUIThread(
+      std::unique_ptr<Result> result) = 0;
 
   virtual base::WeakPtr<SafetyHubService> GetAsWeakRef() = 0;
 
@@ -95,14 +108,17 @@ class SafetyHubService : public KeyedService,
   // Notifies each of the added observers that a new result is available.
   void NotifyObservers(Result* result);
 
+  // Posts the background task on a background thread.
+  void UpdateAsyncInternal();
+
   // Repeating timer that runs the recurring tasks.
   base::RepeatingTimer update_timer_;
 
-  // Timer used to delay the execution of the initial task with several minutes.
-  base::OneShotTimer delay_timer_;
-
   // List of observers that have to be notified when a new result is available.
   base::ObserverList<Observer> observers_;
+
+  // Indicator of how many requested updates are still pending.
+  int pending_updates_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_SAFETY_HUB_SERVICE_H_

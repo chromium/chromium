@@ -20,6 +20,8 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -56,14 +58,6 @@ class UnusedSitePermissionsServiceTest
     hcsm_->ShutdownOnUIThread();
     base::RunLoop().RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
-  }
-
-  void OnUpdateAsyncFinished(uint8_t expected_num_callbacks,
-                             const base::RepeatingClosure& quit_callback) {
-    callback_count_++;
-    if (callback_count_ == expected_num_callbacks) {
-      quit_callback.Run();
-    }
   }
 
   base::SimpleTestClock* clock() { return &clock_; }
@@ -136,7 +130,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
       url2, url2, type1, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
   hcsm()->SetContentSettingDefaultScope(
       url2, url2, type2, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
@@ -145,7 +139,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   base::Time future = clock()->Now();
 
   // The old settings should now be tracked as unused.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 3u);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
@@ -167,7 +161,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UnusedSitePermissionsServiceTest) {
   clock()->Advance(base::Days(50));
 
   // Unused permissions should be auto revoked.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   // url2 should be on tracked permissions list.
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 2u);
   std::string url2_str =
@@ -201,7 +195,7 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
       url2, url2, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
   hcsm()->SetContentSettingDefaultScope(
       url2, url3, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
@@ -209,7 +203,7 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackOnlySingleOriginTest) {
   clock()->Advance(base::Days(20));
 
   // Only `url1` should be tracked because it is the only single origin url.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   auto tracked_origin = service()->GetTrackedUnusedPermissionsForTesting()[0];
   EXPECT_EQ(GURL(tracked_origin.source.primary_pattern.ToString()), url1);
@@ -236,7 +230,7 @@ TEST_F(UnusedSitePermissionsServiceTest, TrackUnusedButDontRevoke) {
   // list as it is denied 20 days before. The permission is not suitable for
   // revocation and this test verifies that RevokeUnusedPermissions() does not
   // enter infinite loop in such case.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   auto unused_permissions = service()->GetTrackedUnusedPermissionsForTesting();
   ASSERT_EQ(unused_permissions.size(), 1u);
   EXPECT_EQ(unused_permissions[0].type, ContentSettingsType::GEOLOCATION);
@@ -272,12 +266,12 @@ TEST_F(UnusedSitePermissionsServiceTest, SecondaryPatternAlwaysWildcard) {
         ContentSetting::CONTENT_SETTING_ALLOW, constraint);
   }
 
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
   // Travel through time for 70 days so that permissions are revoked.
   clock()->Advance(base::Days(70));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
 
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 4u);
   for (auto unused_permission : GetRevokedUnusedPermissions(hcsm())) {
@@ -313,7 +307,7 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   // GEOLOCATION permission should be on the tracked unused site permissions
   // list as it is granted 20 days before. MEDIASTREAM_CAMERA permission should
   // not be tracked as it is just granted.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   EXPECT_EQ(service()->GetTrackedUnusedPermissionsForTesting()[0].type,
             ContentSettingsType::GEOLOCATION);
@@ -324,7 +318,7 @@ TEST_F(UnusedSitePermissionsServiceTest, MultipleRevocationsForSameOrigin) {
   // GEOLOCATION permission should be on the revoked permissions list as it is
   // granted 70 days before. MEDIASTREAM_CAMERA permission should be on the
   // recently unused permissions list as it is granted 50 days before.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 1u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
             static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
@@ -354,7 +348,7 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsListAfter30d) {
 
   // Both GEOLOCATION and MEDIASTREAM_CAMERA permissions should be on the
   // revoked permissions list as they are granted more than 60 days before.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 2u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
             static_cast<int32_t>(ContentSettingsType::GEOLOCATION));
@@ -366,7 +360,7 @@ TEST_F(UnusedSitePermissionsServiceTest, ClearRevokedPermissionsListAfter30d) {
 
   // No permission should be on the revoked permissions list as they are revoked
   // more than 30 days before.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 0u);
 }
 
@@ -435,7 +429,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
 
   // Travel 70 days through time so that the granted permission is revoked.
   clock()->Advance(base::Days(70));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
 
   // After regranting permissions they are not revoked again even after >60 days
@@ -444,7 +438,7 @@ TEST_F(UnusedSitePermissionsServiceTest, RegrantPreventsAutorevoke) {
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
   clock()->Advance(base::Days(70));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 }
 
@@ -464,7 +458,7 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
 
   // Travel 70 days through time so that the granted permission is revoked.
   clock()->Advance(base::Days(70));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
   const ContentSettingPatternSource revoked_permission =
       GetRevokedUnusedPermissions(hcsm())[0];
@@ -481,14 +475,14 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
 
   // Revoked permission is cleaned up after >30 days.
   clock()->Advance(base::Days(40));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 0u);
 
   // If that permission is granted again, it will still be autorevoked.
   hcsm()->SetContentSettingDefaultScope(
       url1, url1, type, ContentSetting::CONTENT_SETTING_ALLOW, constraint);
   clock()->Advance(base::Days(70));
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedUnusedPermissions(hcsm()).size(), 1u);
 }
 
@@ -517,7 +511,7 @@ TEST_F(UnusedSitePermissionsServiceTest, NotRevokeNotificationPermission) {
   // GEOLOCATION permission should be on the revoked permissions list, but
   // NOTIFICATION permissions should not be as notification permissions are out
   // of scope.
-  service()->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service());
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url).size(), 1u);
   EXPECT_EQ(GetRevokedPermissionsForOneOrigin(hcsm(), url)[0].GetInt(),
             static_cast<int32_t>(ContentSettingsType::GEOLOCATION));

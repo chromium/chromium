@@ -18,14 +18,13 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-class HostContentSettingsMap;
 
 namespace url {
 class Origin;
@@ -56,6 +55,11 @@ class UnusedSitePermissionsService : public SafetyHubService,
     base::Time expiration;
   };
 
+  struct ContentSettingEntry {
+    ContentSettingsType type;
+    ContentSettingPatternSource source;
+  };
+
   // The result of the periodic update of unused site permissions contains
   // the permissions that have been revoked. These revoked permissions will be
   // stored until the clean-up threshold has been reached.
@@ -69,19 +73,26 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
     ~UnusedSitePermissionsResult() override;
 
+    using UnusedPermissionMap =
+        std::map<std::string, std::list<ContentSettingEntry>>;
+
     void AddRevokedPermission(ContentSettingsPattern origin,
                               std::set<ContentSettingsType> permission_types,
                               base::Time expiration);
+
+    void SetRecentlyUnusedPermissions(UnusedPermissionMap map) {
+      recently_unused_permissions_ = map;
+    }
+
+    UnusedPermissionMap GetRecentlyUnusedPermissions() {
+      return recently_unused_permissions_;
+    }
 
     std::list<RevokedPermission> GetRevokedPermissions();
 
    private:
     std::list<RevokedPermission> revoked_permissions_;
-  };
-
-  struct ContentSettingEntry {
-    ContentSettingsType type;
-    ContentSettingPatternSource source;
+    UnusedPermissionMap recently_unused_permissions_;
   };
 
   class TabHelper : public content::WebContentsObserver,
@@ -150,7 +161,18 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const url::Origin origin);
 
   // Returns the list of all permissions that have been revoked.
-  std::unique_ptr<UnusedSitePermissionsService::Result> GetRevokedPermissions();
+  std::unique_ptr<Result> GetRevokedPermissions();
+
+  // Does most of the heavy lifting of the update process: for each permission,
+  // it determines whether it should be considered as recently unused (i.e. one
+  // week). This list will be further filtered in the UI task to determine which
+  // permissions should be revoked.
+  static std::unique_ptr<Result> UpdateOnBackgroundThread(
+      base::Clock* clock,
+      const scoped_refptr<HostContentSettingsMap> hcsm);
+
+  // Returns a weak pointer to the service.
+  base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 
   // Test support:
   void SetClockForTesting(base::Clock* clock);
@@ -158,8 +180,6 @@ class UnusedSitePermissionsService : public SafetyHubService,
 
   using UnusedPermissionMap =
       std::map<std::string, std::list<ContentSettingEntry>>;
-
-  base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 
  private:
   // Called by TabHelper when a URL was visited.
@@ -183,16 +203,21 @@ class UnusedSitePermissionsService : public SafetyHubService,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
-  // Safety Hub overrides
+  // SafetyHubService implementation
 
   // Returns the interval at which the repeated updates will be run.
   base::TimeDelta GetRepeatedUpdateInterval() override;
 
-  // This function is called periodically (every 24h and on browser start), and
-  // computes the permissions that need to be revoked. It returns an
-  // UnusedSitePermissionsResult with all permissions that have been revoked.
-  std::unique_ptr<UnusedSitePermissionsService::Result>
-  UpdateOnBackgroundThread() override;
+  // Returns a reference to the static |UpdateOnBackgroundThread| function,
+  // bound with a |Result| containing a reference to the clock and
+  // host content settings map.
+  base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() override;
+
+  // Uses the |UnusedPermissionMap| from the background task to determine which
+  // permissions should be revoked, revokes them and returns the list of revoked
+  // permissions.
+  std::unique_ptr<Result> UpdateOnUIThread(
+      std::unique_ptr<Result> result) override;
 
   // Set of permissions that haven't been used for at least a week.
   UnusedPermissionMap recently_unused_permissions_;

@@ -304,18 +304,26 @@ void UnusedSitePermissionsService::DeletePatternFromRevokedPermissionList(
       ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS, {});
 }
 
-std::unique_ptr<UnusedSitePermissionsService::Result>
-UnusedSitePermissionsService::UpdateOnBackgroundThread() {
+base::OnceCallback<std::unique_ptr<SafetyHubService::Result>()>
+UnusedSitePermissionsService::GetBackgroundTask() {
+  return base::BindOnce(&UnusedSitePermissionsService::UpdateOnBackgroundThread,
+                        clock_, hcsm_);
+}
+
+std::unique_ptr<SafetyHubService::Result>
+UnusedSitePermissionsService::UpdateOnBackgroundThread(
+    base::Clock* clock,
+    const scoped_refptr<HostContentSettingsMap> hcsm) {
   UnusedSitePermissionsService::UnusedPermissionMap recently_unused;
   base::Time threshold =
-      clock_->Now() - content_settings::GetCoarseVisitedTimePrecision();
+      clock->Now() - content_settings::GetCoarseVisitedTimePrecision();
   auto* registry = content_settings::ContentSettingsRegistry::GetInstance();
   for (const content_settings::ContentSettingsInfo* info : *registry) {
     ContentSettingsType type = info->website_settings_info()->type();
     if (!content_settings::CanTrackLastVisit(type)) {
       continue;
     }
-    ContentSettingsForOneType settings = hcsm_->GetSettingsForOneType(type);
+    ContentSettingsForOneType settings = hcsm->GetSettingsForOneType(type);
     for (const auto& setting : settings) {
       // Skip wildcard patterns that don't belong to a single origin. These
       // shouldn't track visit timestamps.
@@ -336,9 +344,20 @@ UnusedSitePermissionsService::UpdateOnBackgroundThread() {
     }
   }
 
-  recently_unused_permissions_ = recently_unused;
-  RevokeUnusedPermissions();
+  auto result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>();
+  result->SetRecentlyUnusedPermissions(recently_unused);
+  return std::move(result);
+}
 
+std::unique_ptr<SafetyHubService::Result>
+UnusedSitePermissionsService::UpdateOnUIThread(
+    std::unique_ptr<SafetyHubService::Result> result) {
+  auto* interim_result =
+      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
+          result.get());
+  recently_unused_permissions_ = interim_result->GetRecentlyUnusedPermissions();
+  RevokeUnusedPermissions();
   return GetRevokedPermissions();
 }
 

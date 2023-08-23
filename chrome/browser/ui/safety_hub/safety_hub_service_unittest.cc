@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/observer_list_types.h"
+#include "base/run_loop.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,13 +22,24 @@ constexpr base::TimeDelta kUpdateIntervalForTest = base::Days(7);
 class MockSafetyHubResult : public SafetyHubService::Result {
  public:
   ~MockSafetyHubResult() override = default;
+
+  int GetVal() { return val_; }
+
+  void IncreaseVal() { ++val_; }
+
+ private:
+  int val_ = 0;
 };
 
 class MockSafetyHubService : public SafetyHubService {
  public:
   // Returns the number of times that the UpdateOnBackgroundThread function was
   // called.
-  int GetNumUpdates() const { return num_updates_; }
+  int GetNumBackgroundUpdates() const { return num_updates_background_; }
+
+  // Returns the number of times that the UpdateOnBackgroundThread function was
+  // called.
+  int GetNumUIUpdates() const { return num_updates_ui_; }
 
  protected:
   // For testing purposes, the UpdateOnBackgroundThread function will be
@@ -35,8 +48,23 @@ class MockSafetyHubService : public SafetyHubService {
     return kUpdateIntervalForTest;
   }
 
-  std::unique_ptr<Result> UpdateOnBackgroundThread() override {
-    ++num_updates_;
+  base::OnceCallback<std::unique_ptr<Result>()> GetBackgroundTask() override {
+    auto init_result = std::make_unique<MockSafetyHubResult>();
+    return base::BindOnce(&UpdateOnBackgroundThread, std::move(init_result));
+  }
+
+  static std::unique_ptr<Result> UpdateOnBackgroundThread(
+      std::unique_ptr<Result> result) {
+    auto background_result = std::make_unique<MockSafetyHubResult>();
+    background_result->IncreaseVal();
+    return background_result;
+  }
+
+  std::unique_ptr<SafetyHubService::Result> UpdateOnUIThread(
+      std::unique_ptr<Result> result) override {
+    num_updates_background_ +=
+        static_cast<MockSafetyHubResult*>(result.get())->GetVal();
+    ++num_updates_ui_;
     return std::make_unique<MockSafetyHubResult>();
   }
 
@@ -45,7 +73,8 @@ class MockSafetyHubService : public SafetyHubService {
   }
 
  private:
-  int num_updates_ = 0;
+  int num_updates_background_ = 0;
+  int num_updates_ui_ = 0;
 
   base::WeakPtrFactory<MockSafetyHubService> weak_factory_{this};
 };
@@ -54,6 +83,13 @@ class MockObserver : public SafetyHubService::Observer {
  public:
   void OnResultAvailable(const SafetyHubService::Result* result) override {
     ++num_calls_;
+    if (callback_) {
+      callback_.Run();
+    }
+  }
+
+  void SetCallback(const base::RepeatingClosure& callback) {
+    callback_ = callback;
   }
 
   // Returns the number of times that the observer was notified.
@@ -61,6 +97,7 @@ class MockObserver : public SafetyHubService::Observer {
 
  private:
   int num_calls_ = 0;
+  base::RepeatingClosure callback_;
 };
 
 }  // namespace
@@ -78,8 +115,6 @@ class SafetyHubServiceTest : public testing::Test {
   void FastForwardBy(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
   }
-
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   MockSafetyHubService* service() { return service_.get(); }
 
@@ -116,21 +151,28 @@ TEST_F(SafetyHubServiceTest, ManageObservers) {
 }
 
 TEST_F(SafetyHubServiceTest, UpdateOnBackgroundThread) {
-  EXPECT_EQ(service()->GetNumUpdates(), 0);
+  EXPECT_EQ(service()->GetNumUIUpdates(), 0);
+  EXPECT_EQ(service()->GetNumBackgroundUpdates(), 0);
   // As long as StartRepeatedUpdates() has not been called, no updates should
   // be made.
   FastForwardBy(kUpdateIntervalForTest);
-  EXPECT_EQ(service()->GetNumUpdates(), 0);
+  EXPECT_EQ(service()->GetNumUIUpdates(), 0);
+  EXPECT_EQ(service()->GetNumBackgroundUpdates(), 0);
   // The update will be run asynchronously as soon as StartRepeatedUpdates() is
   // called.
+  base::RunLoop loop;
+  auto observer = std::make_shared<MockObserver>();
+  observer->SetCallback(loop.QuitClosure());
+  service()->AddObserver(observer.get());
   service()->StartRepeatedUpdates();
-  // TODO(tov): When we remove the delay for running the repeated updates, this
-  // should be removed.
-  FastForwardBy(base::Minutes(15));
-  RunUntilIdle();
-  EXPECT_EQ(service()->GetNumUpdates(), 1);
+  loop.Run();
+  EXPECT_EQ(service()->GetNumUIUpdates(), 1);
+  EXPECT_EQ(service()->GetNumBackgroundUpdates(), 1);
   // Move forward a full update interval, which will trigger another update.
+  base::RunLoop loop2;
+  observer->SetCallback(loop2.QuitClosure());
   FastForwardBy(kUpdateIntervalForTest);
-  RunUntilIdle();
-  EXPECT_EQ(service()->GetNumUpdates(), 2);
+  loop2.Run();
+  EXPECT_EQ(service()->GetNumUIUpdates(), 2);
+  EXPECT_EQ(service()->GetNumBackgroundUpdates(), 2);
 }

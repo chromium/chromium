@@ -10,6 +10,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   map->SetContentSettingDefaultScope(url, url, ContentSettingsType::GEOLOCATION,
                                      CONTENT_SETTING_ALLOW, constraints);
   clock.SetNow(now);
-  service->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
 
   // Check that the timestamp is initially in the past.
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.SetNow(now);
 
   // Check if the content setting is still ALLOW, before auto-revocation.
-  service->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 1u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 0u);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
@@ -134,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   clock.Advance(base::Days(40));
 
   // Check if the content setting turn to ASK, when auto-revocation happens.
-  service->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
   ASSERT_EQ(service->GetTrackedUnusedPermissionsForTesting().size(), 0u);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
   EXPECT_EQ(CONTENT_SETTING_ASK,
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
 
   // Travel through time for 70 days to make permissions be revoked.
   clock.Advance(base::Days(70));
-  service->UpdateOnBackgroundThreadForTesting();
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(service);
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
 
   // Navigate to content settings page.

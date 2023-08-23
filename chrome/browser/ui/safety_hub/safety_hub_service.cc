@@ -26,11 +26,7 @@ void SafetyHubService::Shutdown() {
 
 void SafetyHubService::StartRepeatedUpdates() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1443466): the 10 minute delay is a workaround of the task
-  // being posted to a different thread. This should be removed.
-  delay_timer_.Start(
-      FROM_HERE, base::Minutes(10),
-      base::BindOnce(&SafetyHubService::UpdateAsync, GetAsWeakRef()));
+  UpdateAsync();
   update_timer_.Start(FROM_HERE, GetRepeatedUpdateInterval(),
                       base::BindRepeating(&SafetyHubService::UpdateAsync,
                                           base::Unretained(this)));
@@ -38,16 +34,26 @@ void SafetyHubService::StartRepeatedUpdates() {
 
 void SafetyHubService::UpdateAsync() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (pending_updates_++) {
+    return;
+  }
+  UpdateAsyncInternal();
+}
+
+void SafetyHubService::UpdateAsyncInternal() {
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&SafetyHubService::UpdateOnBackgroundThread,
-                     base::Unretained(this)),
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT}, GetBackgroundTask(),
       base::BindOnce(&SafetyHubService::OnUpdateFinished, GetAsWeakRef()));
 }
 
-void SafetyHubService::OnUpdateFinished(std::unique_ptr<Result> result) {
+void SafetyHubService::OnUpdateFinished(
+    std::unique_ptr<SafetyHubService::Result> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  NotifyObservers(result.get());
+  std::unique_ptr<Result> final_result = UpdateOnUIThread(std::move(result));
+  NotifyObservers(final_result.get());
+  if (--pending_updates_) {
+    UpdateAsyncInternal();
+  }
 }
 
 void SafetyHubService::AddObserver(Observer* observer) {
@@ -64,7 +70,6 @@ void SafetyHubService::NotifyObservers(Result* result) {
   }
 }
 
-std::unique_ptr<SafetyHubService::Result>
-SafetyHubService::UpdateOnBackgroundThreadForTesting() {
-  return UpdateOnBackgroundThread();
+bool SafetyHubService::IsUpdateRunning() {
+  return pending_updates_ > 0;
 }

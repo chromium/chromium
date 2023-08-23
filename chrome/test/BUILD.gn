@@ -558,6 +558,8 @@ static_library("test_support") {
       "../browser/themes/test/theme_service_changed_waiter.cc",
       "../browser/themes/test/theme_service_changed_waiter.h",
       "../browser/ui/profiles/profile_ui_test_utils.h",
+      "../browser/ui/safety_hub/safety_hub_test_util.cc",
+      "../browser/ui/safety_hub/safety_hub_test_util.h",
       "../browser/ui/tabs/pinned_tab_test_utils.cc",
       "../browser/ui/tabs/pinned_tab_test_utils.h",
       "../browser/ui/test/pixel_test_configuration_mixin.cc",
