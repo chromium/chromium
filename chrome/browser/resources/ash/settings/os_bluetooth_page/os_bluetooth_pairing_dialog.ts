@@ -16,11 +16,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './os_bluetooth_pairing_dialog.html.js';
 
-interface SettingsBluetoothPairingDialogElement {
+export interface SettingsBluetoothPairingDialogElement {
   $: {dialog: CrDialogElement};
 }
 
-class SettingsBluetoothPairingDialogElement extends PolymerElement {
+export class SettingsBluetoothPairingDialogElement extends PolymerElement {
   static get is() {
     return 'os-settings-bluetooth-pairing-dialog' as const;
   }

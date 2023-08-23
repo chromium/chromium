@@ -617,7 +617,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'OsBluetoothPageOsBluetoothPairingDialog',
-   'os_bluetooth_page/os_bluetooth_pairing_dialog_tests.js'
+   'os_bluetooth_page/os_bluetooth_pairing_dialog_test.js'
  ],
  [
    'OsBluetoothPageOsBluetoothSummary',

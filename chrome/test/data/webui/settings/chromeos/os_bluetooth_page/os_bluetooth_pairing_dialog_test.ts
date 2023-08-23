@@ -3,22 +3,19 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/os_settings.js';
-import 'chrome://os-settings/strings.m.js';
 
+import {SettingsBluetoothPairingDialogElement} from 'chrome://os-settings/os_settings.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-suite('OsBluetoothPairingDialogTest', function() {
-  /** @type {?SettingsBluetoothPairingDialogElement} */
-  let bluetoothPairingDialog;
+suite('<os-settings-bluetooth-pairing-dialog>', () => {
+  let bluetoothPairingDialog: SettingsBluetoothPairingDialogElement;
+  let bluetoothConfig: FakeBluetoothConfig;
 
-  /** @type {!FakeBluetoothConfig} */
-  let bluetoothConfig;
-
-  setup(function() {
+  setup(() => {
     bluetoothConfig = new FakeBluetoothConfig();
     setBluetoothConfigForTesting(bluetoothConfig);
 
@@ -28,9 +25,13 @@ suite('OsBluetoothPairingDialogTest', function() {
     flush();
   });
 
-  test('Finished event is fired on close', async function() {
-    const pairingDialog =
-        bluetoothPairingDialog.shadowRoot.querySelector('bluetooth-pairing-ui');
+  teardown(() => {
+    bluetoothPairingDialog.remove();
+  });
+
+  test('Finished event is fired on close', async () => {
+    const pairingDialog = bluetoothPairingDialog.shadowRoot!.querySelector(
+        'bluetooth-pairing-ui');
     assertTrue(!!pairingDialog);
 
     const closeBluetoothPairingUiPromise =
