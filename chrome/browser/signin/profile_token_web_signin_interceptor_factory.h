@@ -28,7 +28,7 @@ class ProfileTokenWebSigninInterceptorFactory
   ~ProfileTokenWebSigninInterceptorFactory() override;
 
   // ProfileKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

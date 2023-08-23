@@ -29,9 +29,10 @@ ProfileTokenWebSigninInterceptorFactory::
 ProfileTokenWebSigninInterceptorFactory::
     ~ProfileTokenWebSigninInterceptorFactory() = default;
 
-KeyedService* ProfileTokenWebSigninInterceptorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProfileTokenWebSigninInterceptorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ProfileTokenWebSigninInterceptor(
+  return std::make_unique<ProfileTokenWebSigninInterceptor>(
       Profile::FromBrowserContext(context),
       std::make_unique<DiceWebSigninInterceptorDelegate>());
 }
