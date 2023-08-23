@@ -5,7 +5,7 @@
 import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataAction} from './actions/all_entries.js';
 import {AddAndroidAppsAction} from './ducks/android_apps.js';
 import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './actions/current_directory.js';
-import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './actions/folder_shortcuts.js';
+import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './ducks/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './actions/navigation.js';
 import {UpdatePreferencesAction} from './actions/preferences.js';
 import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';

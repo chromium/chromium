@@ -10,7 +10,7 @@ import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js'
 import {metrics} from '../../common/js/metrics.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
-import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/actions/folder_shortcuts.js';
+import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
 
 /**

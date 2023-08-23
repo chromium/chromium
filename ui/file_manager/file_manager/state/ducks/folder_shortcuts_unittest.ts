@@ -7,11 +7,11 @@ import '../store.js';
 
 import {MockFileSystem} from '../../common/js/mock_entry.js';
 import {State} from '../../externs/ts/state.js';
-import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../actions/folder_shortcuts.js';
 import {setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
+import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
-import {convertEntryToFileData} from './all_entries.js';
+import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 
 export function setUp() {
   setUpFileManagerOnWindow();

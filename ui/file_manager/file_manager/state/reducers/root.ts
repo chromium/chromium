@@ -6,13 +6,13 @@ import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
+import {folderShortcutsReducersMap} from '../ducks/folder_shortcuts.js';
 import {searchReducersMap} from '../ducks/search.js';
 import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
-import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from './folder_shortcuts.js';
 import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {updatePreferences} from './preferences.js';
 
@@ -23,6 +23,7 @@ const rootReducersMap = new Map([
   ...bulkPinningReducersMap,
   ...uiEntriesReducersMap,
   ...androidAppsReducersMap,
+  ...folderShortcutsReducersMap,
 ]);
 
 /**
@@ -61,12 +62,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return refreshNavigationRoots(currentState, action);
     case ActionType.UPDATE_NAVIGATION_ENTRY:
       return updateNavigationEntry(currentState, action);
-    case ActionType.REFRESH_FOLDER_SHORTCUT:
-      return refreshFolderShortcut(currentState, action);
-    case ActionType.ADD_FOLDER_SHORTCUT:
-      return addFolderShortcut(currentState, action);
-    case ActionType.REMOVE_FOLDER_SHORTCUT:
-      return removeFolderShortcut(currentState, action);
     case ActionType.ADD_CHILD_ENTRIES:
       return addChildEntries(currentState, action);
     case ActionType.UPDATE_PREFERENCES:

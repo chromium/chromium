@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerAndroidApps) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerFolderShortcuts) {
-  RunTestURL("state/reducers/folder_shortcuts_unittest.js");
+  RunTestURL("state/ducks/folder_shortcuts_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerCurrentDirectory) {
