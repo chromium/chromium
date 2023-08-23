@@ -39,13 +39,14 @@ bool DlpDownloadObserverFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-KeyedService* DlpDownloadObserverFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DlpDownloadObserverFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (profile->IsGuestSession()) {
     return nullptr;
   }
-  return new DlpDownloadObserver(profile->GetProfileKey());
+  return std::make_unique<DlpDownloadObserver>(profile->GetProfileKey());
 }
 
 }  // namespace policy
