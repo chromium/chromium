@@ -51,7 +51,6 @@
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
-#include "services/network/shared_storage/shared_storage_request_helper.h"
 #include "services/network/test/url_loader_context_for_tests.h"
 #include "services/network/url_loader.h"
 #include "services/network/url_request_context_owner.h"
@@ -129,9 +128,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         /*accept_ch_frame_observer=*/mojo::NullRemote(),
         net::CookieSettingOverrides(),
         /*attribution_request_helper=*/nullptr,
-        std::make_unique<network::SharedStorageRequestHelper>(
-            /*shared_storage_writable=*/false,
-            /*observer=*/nullptr));
+        /*shared_storage_writable=*/false);
   }
 
   bool MaybeCreateLoaderForResponse(
@@ -283,7 +280,8 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* is_pdf */,
             content::WeakDocumentPtr() /* initiator_document */,
             GlobalRenderFrameHostId() /* previous_render_frame_host_id */,
-            false /* allow_cookies_from_browser */, 0 /* navigation_id */));
+            false /* allow_cookies_from_browser */, 0 /* navigation_id */,
+            false /* shared_storage_writable */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
     most_recent_resource_request_ = absl::nullopt;
     interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(

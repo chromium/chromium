@@ -89,6 +89,7 @@
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
+#include "content/browser/shared_storage/shared_storage_header_observer.h"
 #include "content/browser/site_info.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
@@ -238,6 +239,8 @@ const char kIsolatedAppCSP[] =
     "font-src 'self' blob: data:;"
     "style-src 'self' 'unsafe-inline';"
     "require-trusted-types-for 'script';";
+
+const char kSharedStorageWritableRequestHeaderKey[] = "Shared-Storage-Writable";
 
 // Denotes the type of user agent string value sent in the User-Agent request
 // header.
@@ -1051,6 +1054,46 @@ network::mojom::WebSandboxFlags GetSandboxFlagsInitiator(
   return policy_container_host->policies().sandbox_flags;
 }
 
+bool IsSharedStorageWritableForNavigationRequest(FrameTreeNode* frame_tree_node,
+                                                 const GURL& url) {
+  // False if the <iframe> does not have the "sharedstoragewritable" opt-in
+  // attribute.
+  if (!frame_tree_node->shared_storage_writable()) {
+    return false;
+  }
+
+  // Only child frames should have the `sharedstoragewritable` attribute set to
+  // true.
+  CHECK(!frame_tree_node->IsMainFrame());
+
+  // Apart from fenced frames' frame trees, skip non-primary pages (e.g. portal,
+  // prerendered pages).
+  if (frame_tree_node->fenced_frame_status() !=
+          RenderFrameHostImpl::FencedFrameStatus::
+              kIframeNestedWithinFencedFrame &&
+      (frame_tree_node->frame_tree().type() != FrameTree::Type::kPrimary ||
+       !frame_tree_node->frame_tree().root()->IsOutermostMainFrame())) {
+    return false;
+  }
+
+  url::Origin origin = url::Origin::Create(url);
+  if (origin.opaque()) {
+    return false;
+  }
+
+  if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+    return false;
+  }
+
+  CHECK(frame_tree_node->parent());
+  const blink::PermissionsPolicy* parent_policy =
+      frame_tree_node->parent()->permissions_policy();
+
+  DCHECK(parent_policy);
+  return parent_policy->IsFeatureEnabledForOrigin(
+      blink::mojom::PermissionsPolicyFeature::kSharedStorage, origin);
+}
+
 }  // namespace
 
 NavigationRequest::PrerenderActivationNavigationState::
@@ -1665,6 +1708,12 @@ NavigationRequest::NavigationRequest(
   if (frame_tree_node_->IsInFencedFrameTree()) {
     commit_params_->frame_policy.sandbox_flags |=
         blink::kFencedFrameForcedSandboxFlags;
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI) &&
+      base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118)) {
+    shared_storage_writable_ = IsSharedStorageWritableForNavigationRequest(
+        frame_tree_node_, common_params_->url);
   }
 
   if (from_begin_navigation_) {
@@ -4897,7 +4946,7 @@ void NavigationRequest::OnStartChecksComplete(
           BuildClientSecurityStateForNavigationFetch(),
           devtools_accepted_stream_types, is_pdf_, initiator_document_,
           GetPreviousRenderFrameHostId(), allow_cookies_from_browser_,
-          navigation_id_),
+          navigation_id_, shared_storage_writable_),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       std::move(prefetched_signed_exchange_cache_), this, loader_type,
       CreateCookieAccessObserver(), CreateTrustTokenAccessObserver(),
@@ -5057,6 +5106,16 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (topics_eligible_) {
     modified_headers.SetHeader(kBrowsingTopicsRequestHeaderKey,
                                *topics_header_value);
+  }
+
+  if (shared_storage_writable_) {
+    // On a redirect, the PermissionsPolicy may change the status of this
+    // request's Shared Storage eligibility, so we need to re-compute it.
+    shared_storage_writable_ = IsSharedStorageWritableForNavigationRequest(
+        frame_tree_node_, common_params_->url);
+    if (!shared_storage_writable_) {
+      removed_headers.push_back(kSharedStorageWritableRequestHeaderKey);
+    }
   }
 
   // Removes all Client Hints from the request, that were passed on from the

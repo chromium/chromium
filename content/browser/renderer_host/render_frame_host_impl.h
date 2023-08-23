@@ -3227,6 +3227,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(
       NavigationBrowserTest,
       NavigationSuddenTerminationDisablerTypeRecordUmaActivation);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SharedStorageWritable);
 
   class SubresourceLoaderFactoriesConfig;
 

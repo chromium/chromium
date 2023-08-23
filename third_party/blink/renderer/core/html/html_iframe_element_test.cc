@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
@@ -338,6 +339,41 @@ TEST_F(HTMLIFrameElementSimTest, AllowAttributeParsingError) {
   EXPECT_TRUE(ConsoleMessages().front().StartsWith("Unrecognized feature"))
       << "Expect permissions policy parser raising error for unrecognized "
          "feature but got: "
+      << ConsoleMessages().front();
+}
+
+TEST_F(HTMLIFrameElementSimTest, Sharedstoragewritable_SecureContext_Allowed) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"(
+    <iframe
+      allow="shared-storage"
+      sharedstoragewritable></iframe>
+  )");
+
+  EXPECT_TRUE(ConsoleMessages().empty());
+}
+
+TEST_F(HTMLIFrameElementSimTest,
+       Sharedstoragewritable_InsecureContext_NotAllowed) {
+  WebRuntimeFeaturesBase::EnableSharedStorageAPI(true);
+  WebRuntimeFeaturesBase::EnableSharedStorageAPIM118(true);
+  SimRequest main_resource("http://example.com", "text/html");
+  LoadURL("http://example.com");
+  main_resource.Complete(R"(
+    <iframe
+      allow="shared-storage"
+      sharedstoragewritable></iframe>
+  )");
+
+  EXPECT_EQ(ConsoleMessages().size(), 1u);
+  EXPECT_TRUE(ConsoleMessages().front().StartsWith(
+      "sharedStorageWritable: sharedStorage operations are only available in "
+      "secure contexts."))
+      << "Expect error that Shared Storage operations are not allowed in "
+         "insecure contexts but got: "
       << ConsoleMessages().front();
 }
 

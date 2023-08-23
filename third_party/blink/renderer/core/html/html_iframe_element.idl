@@ -73,3 +73,6 @@
     [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginHeight;
     [CEReactions, Reflect] attribute [LegacyNullToEmptyString] DOMString marginWidth;
 };
+
+// Shared Storage API (https://github.com/WICG/shared-storage#from-response-headers)
+HTMLIFrameElement includes HTMLSharedStorageWritableElementUtils;

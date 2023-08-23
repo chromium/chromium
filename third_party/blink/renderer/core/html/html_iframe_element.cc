@@ -288,6 +288,18 @@ void HTMLIFrameElement::ParseAttribute(
         should_call_did_change_attributes = true;
       }
     }
+  } else if (name == html_names::kSharedstoragewritableAttr &&
+             RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+                 GetExecutionContext())) {
+    if (!GetExecutionContext()->IsSecureContext()) {
+      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kError,
+          WebString::FromUTF8("sharedStorageWritable: sharedStorage operations "
+                              "are only available in secure contexts.")));
+    } else if (params.new_value.IsNull() != params.old_value.IsNull()) {
+      should_call_did_change_attributes = true;
+    }
   } else if (name == html_names::kCredentiallessAttr &&
              RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
     bool new_value = !value.IsNull();
@@ -580,6 +592,13 @@ void HTMLIFrameElement::DidChangeAttributes() {
       GetExecutionContext()->IsSecureContext()) {
     attributes->browsing_topics =
         !FastGetAttribute(html_names::kBrowsingtopicsAttr).IsNull();
+  }
+
+  if (RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
+          GetExecutionContext()) &&
+      GetExecutionContext()->IsSecureContext()) {
+    attributes->shared_storage_writable =
+        !FastGetAttribute(html_names::kSharedstoragewritableAttr).IsNull();
   }
 
   attributes->id = ConvertToReportValue(id_);

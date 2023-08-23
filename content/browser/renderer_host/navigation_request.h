@@ -1244,6 +1244,8 @@ class CONTENT_EXPORT NavigationRequest
     return std::move(web_ui_);
   }
 
+  bool shared_storage_writable() const { return shared_storage_writable_; }
+
   enum ErrorPageProcess {
     kNotErrorPage,
     kPostCommitErrorPage,
@@ -2557,6 +2559,11 @@ class CONTENT_EXPORT NavigationRequest
   // the "Sec-Browsing-Topics" header, and if the corresponding response headers
   // contain "Observe-Browsing-Topics: ?1", a topic observation will be stored.
   bool topics_eligible_ = false;
+
+  // Whether or not the request is eligible to write to shared storage from
+  // response headers. See
+  // https://github.com/WICG/shared-storage#from-response-headers
+  bool shared_storage_writable_ = false;
 
   // A WeakPtr for the BindContext associated with the browser routing loader
   // factory for the committing document. This will be set in

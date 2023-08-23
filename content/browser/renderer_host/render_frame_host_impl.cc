@@ -7813,6 +7813,14 @@ void RenderFrameHostImpl::DidChangeIframeAttributes(
     return;
   }
 
+  if (attributes->shared_storage_writable &&
+      (!base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118))) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(),
+        bad_message::RFH_RECEIVED_INVALID_SHARED_STORAGE_WRITABLE_ATTRIBUTE);
+    return;
+  }
+
   auto* child = FindAndVerifyChild(
       child_frame_token, bad_message::RFH_DID_CHANGE_IFRAME_ATTRIBUTE);
   if (!child)

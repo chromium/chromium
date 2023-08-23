@@ -30,6 +30,7 @@
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
@@ -477,6 +478,92 @@ TEST_F(NavigationRequestTest, WillFailRequestSetsSSLInfo) {
             navigation->GetNavigationHandle()->GetSSLInfo()->cert_status);
   EXPECT_EQ(connection_status,
             navigation->GetNavigationHandle()->GetSSLInfo()->connection_status);
+}
+
+TEST_F(NavigationRequestTest, SharedStorageWritable) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kSharedStorageAPI,
+                            blink::features::kSharedStorageAPIM118,
+                            blink::features::kFencedFrames},
+      /*disabled_features=*/{});
+
+  // Create and start a simulated `NavigationRequest` for the main frame.
+  GURL main_url = GURL("https://main.com");
+  auto main_navigation =
+      NavigationSimulatorImpl::CreateBrowserInitiated(main_url, contents());
+  main_navigation->Start();
+  main_navigation->ReadyToCommit();
+
+  // Verify that the main frame's `NavigationRequest` will not be
+  // SharedStorageWritable.
+  ASSERT_TRUE(main_navigation->GetNavigationHandle());
+  EXPECT_FALSE(
+      main_navigation->GetNavigationHandle()->shared_storage_writable());
+
+  // Commit the navigation.
+  main_navigation->Commit();
+
+  // Append a child frame and set its `shared_storage_writable` attribute to
+  // true.
+  TestRenderFrameHost* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("child"));
+  blink::mojom::IframeAttributesPtr child_attributes =
+      blink::mojom::IframeAttributes::New();
+  child_attributes->shared_storage_writable = true;
+  child_frame->frame_tree_node()->SetAttributes(std::move(child_attributes));
+
+  // Create and start a simulated `NavigationRequest` for the child frame.
+  GURL a_url = GURL("https://a.com");
+  auto child_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(a_url, child_frame);
+  child_navigation->Start();
+
+  // Verify that the `NavigationRequest` will be SharedStorageWritable.
+  ASSERT_TRUE(child_navigation->GetNavigationHandle());
+  EXPECT_TRUE(
+      child_navigation->GetNavigationHandle()->shared_storage_writable());
+
+  // Commit the navigation.
+  child_navigation->Commit();
+
+  // Append a fenced frame and give it permission to access Shared Storage.
+  TestRenderFrameHost* fenced_frame_root = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame());
+  FrameTreeNode* fenced_frame_node =
+      static_cast<RenderFrameHostImpl*>(fenced_frame_root)->frame_tree_node();
+  absl::optional<FencedFrameProperties> new_props =
+      fenced_frame_node->GetFencedFrameProperties();
+  new_props->effective_enabled_permissions.push_back(
+      blink::mojom::PermissionsPolicyFeature::kSharedStorage);
+  fenced_frame_node->set_fenced_frame_properties(new_props);
+  fenced_frame_root->ResetPermissionsPolicy();
+
+  // Append a child frame to the fenced frame root and set its
+  // `shared_storage_writable` attribute to true.
+  TestRenderFrameHost* child_of_fenced_frame =
+      static_cast<TestRenderFrameHost*>(
+          fenced_frame_root->AppendChild("child_of_fenced"));
+  blink::mojom::IframeAttributesPtr child_of_fenced_frame_attributes =
+      blink::mojom::IframeAttributes::New();
+  child_of_fenced_frame_attributes->shared_storage_writable = true;
+  child_of_fenced_frame->frame_tree_node()->SetAttributes(
+      std::move(child_of_fenced_frame_attributes));
+
+  // Create and start a simulated `NavigationRequest` for the child frame.
+  GURL b_url = GURL("https://b.com");
+  auto child_of_fenced_frame_navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(b_url,
+                                                       child_of_fenced_frame);
+  child_of_fenced_frame_navigation->Start();
+
+  // Verify that the `NavigationRequest` will be SharedStorageWritable.
+  ASSERT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle());
+  EXPECT_TRUE(child_of_fenced_frame_navigation->GetNavigationHandle()
+                  ->shared_storage_writable());
+
+  // Commit the navigation.
+  child_of_fenced_frame_navigation->Commit();
 }
 
 namespace {

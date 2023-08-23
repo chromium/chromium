@@ -467,7 +467,7 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
-    std::unique_ptr<SharedStorageRequestHelper> shared_storage_request_helper)
+    bool shared_storage_writable)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -508,7 +508,6 @@ URLLoader::URLLoader(
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       attribution_request_helper_(std::move(attribution_request_helper)),
-      shared_storage_request_helper_(std::move(shared_storage_request_helper)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_remote_(std::move(cookie_observer)),
       cookie_observer_(PtrOrFallback(cookie_observer_remote_,
@@ -525,6 +524,10 @@ URLLoader::URLLoader(
       devtools_observer_remote_(std::move(devtools_observer)),
       devtools_observer_(PtrOrFallback(devtools_observer_remote_,
                                        context.GetDevToolsObserver())),
+      shared_storage_request_helper_(
+          std::make_unique<SharedStorageRequestHelper>(
+              shared_storage_writable,
+              url_loader_network_observer_)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&

@@ -154,7 +154,6 @@ specific_include_rules = {
   ],
   "navigation_url_loader_impl_unittest\.cc": [
     "+services/network/resource_scheduler/resource_scheduler_client.h",
-    "+services/network/shared_storage/shared_storage_request_helper.h",
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
   ],
