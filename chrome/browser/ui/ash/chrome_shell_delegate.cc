@@ -64,6 +64,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/user_manager/user_manager.h"
@@ -273,8 +274,19 @@ ChromeShellDelegate::GetMediaSessionService() {
 }
 
 bool ChromeShellDelegate::IsSessionRestoreInProgress() const {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  return SessionRestore::IsRestoring(profile);
+  // Must be called with an active user.
+  const user_manager::User* active_user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  CHECK(active_user);
+
+  // User profile is not yet loaded. Consider loading user profile is part of
+  // session restore.
+  if (!active_user->is_profile_created()) {
+    return true;
+  }
+
+  return SessionRestore::IsRestoring(Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user)));
 }
 
 void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(
