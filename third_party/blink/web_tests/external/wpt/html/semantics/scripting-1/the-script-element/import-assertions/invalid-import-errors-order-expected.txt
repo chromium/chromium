@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that the errors order for invalid import declarations is specifier, then attribute key, and then type attribute value. assert_equals: expected function "function SyntaxError() { [native code] }" but got function "function TypeError() { [native code] }"
+Harness: the test ran to completion.
+
