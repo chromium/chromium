@@ -8,6 +8,7 @@
 #include "base/check_is_test.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/drive_pinning_screen.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -52,6 +53,12 @@ PinManager* GetPinManager() {
 void RecordOOBEScreenSkippedMetric(drivefs::pinning::Stage stage) {
   base::UmaHistogramEnumeration(
       "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenStage", stage);
+}
+
+void RecordCHOOBEScreenBulkPinningInitializations(int initializations) {
+  base::UmaHistogramCounts100(
+      "FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenInitializations",
+      initializations);
 }
 
 void RecordSettingChanged(bool initial, bool current) {
@@ -100,8 +107,10 @@ DrivePinningScreen::DrivePinningScreen(
       exit_callback_(exit_callback) {}
 
 DrivePinningScreen::~DrivePinningScreen() {
-  if (PinManager* const pin_manager = GetPinManager()) {
-    pin_manager->RemoveObserver(this);
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (drive::DriveIntegrationService* const service =
+          drive::DriveIntegrationServiceFactory::FindForProfile(profile)) {
+    service->RemoveObserver(this);
   }
 }
 
@@ -136,28 +145,59 @@ bool DrivePinningScreen::MaybeSkip(WizardContext& context) {
   return false;
 }
 
-bool DrivePinningScreen::CalculateRequiredSpace() {
-  PinManager* const pin_manager = GetPinManager();
-  if (!pin_manager) {
-    return false;
+void DrivePinningScreen::StartCalculatingRequiredSpace() {
+  if (started_calculating_space_) {
+    return;
   }
+  started_calculating_space_ = true;
+  CalculateRequiredSpace();
+}
 
-  pin_manager->AddObserver(this);
-  return pin_manager->CalculateRequiredSpace();
+void DrivePinningScreen::CalculateRequiredSpace() {
+  drive::DriveIntegrationService* const service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(
+          ProfileManager::GetActiveUserProfile());
+  if (!service) {
+    return;
+  }
+  if (!service->HasObserver(this)) {
+    service->AddObserver(this);
+  }
+  if (PinManager* const pin_manager = GetPinManager()) {
+    RecordCHOOBEScreenBulkPinningInitializations(
+        bulk_pinning_initializations_ > 0 ? bulk_pinning_initializations_
+                                          : ++bulk_pinning_initializations_);
+    LOG_IF(ERROR, !pin_manager->CalculateRequiredSpace())
+        << "Failed to calculate required space";
+    return;
+  }
+  VLOG(1) << "Calculating required space called but manager is not initialized";
 }
 
 void DrivePinningScreen::OnProgressForTest(
     const drivefs::pinning::Progress& progress) {
   CHECK_IS_TEST();
-  OnProgress(progress);
+  OnBulkPinProgress(progress);
 }
 
-void DrivePinningScreen::OnProgress(const Progress& progress) {
+void DrivePinningScreen::OnBulkPinProgress(
+    const drivefs::pinning::Progress& progress) {
   drive_pinning_stage_ = progress.stage;
   if (progress.stage == drivefs::pinning::Stage::kSuccess) {
+    VLOG(1) << "Finished calculating required space";
     std::u16string free_space = ui::FormatBytes(progress.free_space);
     std::u16string required_space = ui::FormatBytes(progress.required_space);
     view_->SetRequiredSpaceInfo(required_space, free_space);
+  }
+}
+
+void DrivePinningScreen::OnBulkPinInitialized() {
+  VLOG_IF(1, !started_calculating_space_)
+      << "Bulk pinning initialized, but have not started calculating space";
+  if (started_calculating_space_) {
+    CalculateRequiredSpace();
+  } else {
+    ++bulk_pinning_initializations_;
   }
 }
 

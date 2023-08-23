@@ -541,6 +541,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenInitializations"
+    units="intializations" expires_after="2024-08-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    During CHOOBE (CHoose your own Out-Of-Box Experience) the Drive bulk pinning
+    screen lists all the users files to see if all eligible files can fit on the
+    device. This metric captures the number of times after the listing of
+    eligible files begun that bulk pinning had to initialize. Any number greater
+    than 1 indicates multiple restarts and possible recalculation. This does not
+    capture restarts that may have occurred prior to bulk pinning starting
+    calculation.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.CHOOBEScreenStage"
     enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-08-01">
   <owner>simmonsjosh@google.com</owner>

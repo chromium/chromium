@@ -21,7 +21,7 @@ class DrivePinningScreenView;
 
 // Controller for the Drive Pinning Screen.
 class DrivePinningScreen : public BaseScreen,
-                           drivefs::pinning::PinManager::Observer {
+                           drive::DriveIntegrationServiceObserver {
  public:
   using TView = DrivePinningScreenView;
 
@@ -50,15 +50,18 @@ class DrivePinningScreen : public BaseScreen,
     return exit_callback_;
   }
 
-  // Returns true if the bulk-pinning manager is in the right stage and started
-  // computing the required space.
-  [[nodiscard]] bool CalculateRequiredSpace();
+  // Starts calculating the required space. This should only be called once, in
+  // the event DriveFS restarts the `DrivePinningScreen` will handle restarting
+  // calculation.
+  void StartCalculatingRequiredSpace();
 
   std::string RetrieveChoobeSubtitle();
 
   void OnProgressForTest(const drivefs::pinning::Progress& progress);
 
  private:
+  void CalculateRequiredSpace();
+
   // BaseScreen:
   bool ShouldBeSkipped(const WizardContext& context) const override;
   bool MaybeSkip(WizardContext& context) override;
@@ -67,13 +70,18 @@ class DrivePinningScreen : public BaseScreen,
   void OnUserAction(const base::Value::List& args) override;
   ScreenSummary GetScreenSummary() override;
 
-  // drivefs::pinning::PinManager::Observer
-  void OnProgress(const drivefs::pinning::Progress& progress) override;
+  // drive::DriveIntegrationServiceObserver
+  void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
+  void OnBulkPinInitialized() override;
 
   void OnNext(bool drive_pinning);
 
   drivefs::pinning::Stage drive_pinning_stage_ =
       drivefs::pinning::Stage::kStopped;
+  bool started_calculating_space_ = false;
+
+  // The number of times bulk pinning is initialized.
+  int bulk_pinning_initializations_ = 0;
 
   base::WeakPtr<DrivePinningScreenView> view_;
   ScreenExitCallback exit_callback_;
