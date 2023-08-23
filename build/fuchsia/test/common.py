@@ -188,7 +188,7 @@ def start_ffx_daemon():
 
 def stop_ffx_daemon():
     """Stops the ffx daemon"""
-    run_ffx_command(cmd=('daemon', 'stop'))
+    run_ffx_command(cmd=('daemon', 'stop', '-t', '10000'))
     _wait_for_daemon(start=False)
 
 
