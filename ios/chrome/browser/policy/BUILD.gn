@@ -271,6 +271,7 @@ source_set("eg2_tests") {
     "//components/policy/test_support",
     "//components/safe_browsing/core/common",
     "//components/strings",
+    "//components/sync/base:features",
     "//google_apis",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:features",

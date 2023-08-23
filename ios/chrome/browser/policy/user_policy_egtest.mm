@@ -23,6 +23,7 @@
 #import "components/policy/test_support/policy_storage.h"
 #import "components/policy/test_support/signature_provider.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "google_apis/gaia/gaia_switches.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
@@ -230,6 +231,12 @@ void WaitForVisibleChromeManagementURL() {
       base::StrCat({"--", switches::kGoogleApisUrl, "=",
                     embedded_test_server_->base_url().spec()}));
   if ([self isRunningTest:@selector
+            (testThatPoliciesAreNotFetchedOnSigninWithSyncButSigninNoSyncFeature
+                )]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
             (testThatPoliciesAreFetchedOnSignInAndSigninNoSyncFeature)] ||
       [self isRunningTest:@selector
             (testThatPoliciesAreNotFetchedOnSigninWithSyncButSigninNoSyncFeature
@@ -284,8 +291,9 @@ void WaitForVisibleChromeManagementURL() {
   VerifyThatPoliciesAreSet();
 }
 
-// Tests that the user policies are not fetched when signed-in+sync but the
-// feature is only enabled for sign-in without sync.
+// Tests that the user policies are not fetched when signed-in+sync and
+// kReplaceSyncPromosWithSignInPromos is disabled. The feature is only
+// enabled for sign-in without sync.
 - (void)testThatPoliciesAreNotFetchedOnSigninWithSyncButSigninNoSyncFeature {
   // Turn on Sync for managed account to attempt to fetch user policies.
   FakeSystemIdentity* fakeManagedIdentity = [FakeSystemIdentity

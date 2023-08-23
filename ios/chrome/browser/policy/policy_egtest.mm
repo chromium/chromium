@@ -770,9 +770,12 @@ NSString* const kDomain2 = @"domain2.com";
   // Check that the prompt is presented.
   ConditionBlock condition = ^{
     NSError* error = nil;
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                     IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE))]
+    NSString* noticeTitle =
+        [ChromeEarlGrey isReplaceSyncWithSigninEnabled]
+            ? l10n_util::GetNSString(
+                  IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE_WITH_UNO)
+            : l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE);
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(noticeTitle)]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;
