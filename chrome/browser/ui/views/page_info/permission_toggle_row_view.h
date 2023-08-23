@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PERMISSION_TOGGLE_ROW_VIEW_H_
 
+#include <string>
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
@@ -50,7 +51,8 @@ class PermissionToggleRowView : public views::View {
   friend class test::PageInfoBubbleViewTestApi;
 
   void OnToggleButtonPressed();
-  void InitForUserSource(bool should_show_spacer_view);
+  void InitForUserSource(bool should_show_spacer_view,
+                         const std::u16string& toggle_accessible_name);
   void InitForManagedSource(ChromePageInfoUiDelegate* delegate);
   void UpdateUiOnPermissionChanged();
 

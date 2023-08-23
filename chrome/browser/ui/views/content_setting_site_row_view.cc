@@ -70,8 +70,7 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
       base::BindRepeating(&ContentSettingSiteRowView::OnToggleButtonPressed,
                           base::Unretained(this))));
   toggle_button_->SetIsOn(allowed);
-  toggle_button_->SetAccessibleName(
-      l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SELECTOR_TOOLTIP, title));
+  toggle_button_->SetAccessibleName(title);
 
   layout->SetInteriorMargin(ChromeLayoutProvider::Get()->GetInsetsMetric(
       ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON));

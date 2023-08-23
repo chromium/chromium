@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include <string>
+#include <string_view>
 
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/page_info.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,6 +25,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -43,7 +46,10 @@ PermissionToggleRowView::PermissionToggleRowView(
   // instead of adding it as the only child.
   SetUseDefaultFillLayout(true);
   row_view_ = AddChildView(std::make_unique<RichControlsContainerView>());
-  row_view_->SetTitle(PageInfoUI::PermissionTypeToUIString(permission.type));
+
+  std::u16string toggle_accessible_name =
+      PageInfoUI::PermissionTypeToUIString(permission.type);
+  row_view_->SetTitle(toggle_accessible_name);
 
   // Add extra details as sublabel.
   std::u16string detail = delegate->GetPermissionDetail(permission.type);
@@ -63,6 +69,9 @@ PermissionToggleRowView::PermissionToggleRowView(
         NOTREACHED();
     }
     row_view_->AddSecondaryLabel(requesting_origin_string);
+    toggle_accessible_name = l10n_util::GetStringFUTF16(
+        IDS_CONCAT_TWO_STRINGS_WITH_COMMA, toggle_accessible_name,
+        requesting_origin_string);
   }
 
   if (permission.source == content_settings::SETTING_SOURCE_USER) {
@@ -75,7 +84,7 @@ PermissionToggleRowView::PermissionToggleRowView(
           delegate->GetAutomaticallyBlockedReason(permission_.type),
           views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
     } else {
-      InitForUserSource(should_show_spacer_view);
+      InitForUserSource(should_show_spacer_view, toggle_accessible_name);
     }
   } else {
     InitForManagedSource(delegate);
@@ -109,7 +118,9 @@ void PermissionToggleRowView::OnToggleButtonPressed() {
   PermissionChanged();
 }
 
-void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
+void PermissionToggleRowView::InitForUserSource(
+    bool should_show_spacer_view,
+    const std::u16string& toggle_accessible_name) {
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
@@ -125,6 +136,7 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
                              gfx::Insets::VH(0, icon_label_spacing));
   toggle_button->SetTooltipText(PageInfoUI::PermissionTooltipUiString(
       permission_.type, permission_.requesting_origin));
+  toggle_button->SetAccessibleName(toggle_accessible_name);
 
   toggle_button_ = row_view_->AddControl(std::move(toggle_button));
 
