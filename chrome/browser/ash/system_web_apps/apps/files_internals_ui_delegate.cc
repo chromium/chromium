@@ -37,25 +37,28 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
   using JSONKeyValuePair =
       ash::FilesInternalsDebugJSONProvider::JSONKeyValuePair;
 
-  std::tuple<std::string_view,
-             ash::FilesInternalsDebugJSONProvider::FunctionPointerType,
-             ash::FilesInternalsDebugJSONProvider*>
-      named_providers[] = {
-          {
-              "execute_file_task",
-              &file_manager::file_tasks::GetDebugJSONForKeyForExecuteFileTask,
-              nullptr,
-          },
-          {
-              "fusebox",
-              nullptr,
-              fusebox::Server::GetInstance(),
-          },
-      };
+  struct NamedProvider {
+    std::string_view key;
+    ash::FilesInternalsDebugJSONProvider::FunctionPointerType function_ptr;
+    raw_ptr<ash::FilesInternalsDebugJSONProvider> object_ptr;
+  };
+
+  const NamedProvider kNamedProviders[] = {
+      {
+          "execute_file_task",
+          &file_manager::file_tasks::GetDebugJSONForKeyForExecuteFileTask,
+          nullptr,
+      },
+      {
+          "fusebox",
+          nullptr,
+          fusebox::Server::GetInstance(),
+      },
+  };
 
   base::RepeatingCallback<void(JSONKeyValuePair)> barrier_callback =
       base::BarrierCallback<JSONKeyValuePair>(
-          std::size(named_providers),
+          std::size(kNamedProviders),
           base::BindOnce(
               [](base::OnceCallback<void(const base::Value&)> callback,
                  std::vector<JSONKeyValuePair> key_value_pairs) {
@@ -67,14 +70,13 @@ void ChromeFilesInternalsUIDelegate::GetDebugJSON(
               },
               std::move(callback)));
 
-  for (auto& i : named_providers) {
-    std::string_view key = std::get<0>(i);
-    if (auto* function_ptr = std::get<1>(i)) {
-      (*function_ptr)(key, barrier_callback);
-    } else if (auto* object_ptr = std::get<2>(i)) {
-      object_ptr->GetDebugJSONForKey(key, barrier_callback);
+  for (auto& np : kNamedProviders) {
+    if (np.function_ptr) {
+      (*np.function_ptr)(np.key, barrier_callback);
+    } else if (np.object_ptr) {
+      np.object_ptr->GetDebugJSONForKey(np.key, barrier_callback);
     } else {
-      barrier_callback.Run(std::make_pair(key, base::Value()));
+      barrier_callback.Run(std::make_pair(np.key, base::Value()));
     }
   }
 }

@@ -151,25 +151,25 @@ constexpr auto kExtensionToOfficeOpenExtensionsEnum =
          {".xlsm", OfficeOpenExtensions::kXlsm},
          {".xlsx", OfficeOpenExtensions::kXlsx}});
 
-base::Value& GetDebugBaseValueForExecuteFileTask() {
+base::Value::Dict& GetDebugBaseValueDictForExecuteFileTask() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  static base::NoDestructor<base::Value> instance;
+  static base::NoDestructor<base::Value::Dict> instance;
   return *instance;
 }
 
 void UpdateDebugBaseValue(const TaskDescriptor& task,
                           const std::vector<FileSystemURL>& file_urls) {
-  base::Value::List urls_list;
+  auto urls_list = base::Value::List::with_capacity(file_urls.size());
   for (const auto& url : file_urls) {
     urls_list.Append(url.ToGURL().spec());
   }
-  GetDebugBaseValueForExecuteFileTask() = base::Value(
+  GetDebugBaseValueDictForExecuteFileTask() =
       base::Value::Dict()
           .Set("task", base::Value::Dict()
                            .Set("action_id", task.action_id)
                            .Set("app_id", task.app_id)
                            .Set("type", TaskTypeToString(task.task_type)))
-          .Set("urls", std::move(urls_list)));
+          .Set("urls", std::move(urls_list));
 }
 
 void RecordChangesInDefaultPdfApp(const std::string& new_default_app_id,
@@ -993,8 +993,8 @@ void GetDebugJSONForKeyForExecuteFileTask(
     std::string_view key,
     base::OnceCallback<void(std::pair<std::string_view, base::Value>)>
         callback) {
-  std::move(callback).Run(
-      std::make_pair(key, GetDebugBaseValueForExecuteFileTask().Clone()));
+  std::move(callback).Run(std::make_pair(
+      key, base::Value(GetDebugBaseValueDictForExecuteFileTask().Clone())));
 }
 
 void LaunchQuickOffice(Profile* profile,
