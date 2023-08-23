@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -87,9 +88,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
 #endif
 
-  static constexpr webui::LocalizedString kStrings[] = {
+  static const webui::LocalizedString kStrings[] = {
     {"accountStorageToggleLabel",
-     IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
+     base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
+         ? IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_WITH_PASSKEYS_TOGGLE_LABEL
+         : IDS_PASSWORD_MANAGER_UI_ACCOUNT_STORAGE_TOGGLE_LABEL},
     {"addPassword", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_BUTTON},
     {"addPasswordFooter", IDS_PASSWORD_MANAGER_UI_ADD_PASSWORD_FOOTNOTE},
     {"addPasswordStoreOptionAccount",
