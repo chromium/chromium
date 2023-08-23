@@ -200,7 +200,7 @@ BASE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment,
 // card but has a different expiration date.
 BASE_FEATURE(kAutofillOfferToSaveCardWithSameLastFour,
              "AutofillOfferToSaveCardWithSameLastFour",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, Autofill will attempt to find standalone CVC fields for VCN
 // card on file when parsing forms.
