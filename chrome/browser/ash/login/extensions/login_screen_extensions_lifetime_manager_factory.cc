@@ -47,9 +47,9 @@ LoginScreenExtensionsLifetimeManagerFactory::
 LoginScreenExtensionsLifetimeManagerFactory::
     ~LoginScreenExtensionsLifetimeManagerFactory() = default;
 
-KeyedService*
-LoginScreenExtensionsLifetimeManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> LoginScreenExtensionsLifetimeManagerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   // Exit early in unit tests that don't initialize prerequisites for the
   // manager.
   if (!session_manager::SessionManager::Get()) {
@@ -64,7 +64,7 @@ LoginScreenExtensionsLifetimeManagerFactory::BuildServiceInstanceFor(
     // The manager should only be created for the sign-in profile.
     return nullptr;
   }
-  return new LoginScreenExtensionsLifetimeManager(profile);
+  return std::make_unique<LoginScreenExtensionsLifetimeManager>(profile);
 }
 
 bool LoginScreenExtensionsLifetimeManagerFactory::
