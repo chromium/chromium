@@ -35,10 +35,11 @@ GuestOsMimeTypesServiceFactory::GuestOsMimeTypesServiceFactory()
 
 GuestOsMimeTypesServiceFactory::~GuestOsMimeTypesServiceFactory() = default;
 
-KeyedService* GuestOsMimeTypesServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GuestOsMimeTypesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new GuestOsMimeTypesService(profile);
+  return std::make_unique<GuestOsMimeTypesService>(profile);
 }
 
 }  // namespace guest_os
