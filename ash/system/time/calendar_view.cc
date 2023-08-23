@@ -1360,6 +1360,7 @@ void CalendarView::OnCalendarLoaded() {
 }
 
 void CalendarView::ScrollUpOneMonth() {
+  is_scrolling_up_ = true;
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetPreviousMonthFirstDayUTC(1));
   content_view_->RemoveChildViewT(next_next_label_.get());
@@ -1400,6 +1401,7 @@ void CalendarView::ScrollUpOneMonth() {
 }
 
 void CalendarView::ScrollDownOneMonth() {
+  is_scrolling_up_ = false;
   // Renders the next month if the next month label is moving up and passing
   // the top of the visible area, or the next month body's bottom is passing
   // the bottom of the visible area.

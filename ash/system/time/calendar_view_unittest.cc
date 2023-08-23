@@ -1626,6 +1626,56 @@ TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
+TEST_F(CalendarViewAnimationTest, HeaderAnimationDirection) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("24 Aug 2023 10:00 GMT", &date));
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
+  CreateCalendarView();
+
+  // Gives it a duration to let the animation finish and pass the cool down
+  // duration.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  UpdateMonth(date);
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Scrolls to the next month.
+  ScrollDownOneMonth();
+  EXPECT_FALSE(is_scrolling_up());
+
+  // Gives it a duration to let the animation finish.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Scrolls to the previous month.
+  ScrollUpOneMonth();
+  EXPECT_TRUE(is_scrolling_up());
+
+  // Gives it a duration to let the animation finish.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Opens the event list view by clicking on a non-grayed out cell on the next
+  // month, so that the header will animate to the next month's header.
+  const auto* date_cell = GetDateCell(/*month=*/next_month(), /*day=*/u"10");
+  ClickDateCell(date_cell);
+
+  // Gives it a duration to let the animation finish.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_FALSE(is_scrolling_up());
+  EXPECT_TRUE(event_list_view());
+
+  // Gives it a duration to let the animation finish.
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+}
+
 // The month views and header should animate when scrolling up or down.
 TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
