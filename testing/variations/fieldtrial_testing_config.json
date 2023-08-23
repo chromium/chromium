@@ -8400,6 +8400,22 @@
             ]
         }
     ],
+    "IOSWhatsNewM116": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Whats_New_M116",
+                    "enable_features": [
+                        "IPH_WhatsNew",
+                        "WhatsNewIOSM116"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [
