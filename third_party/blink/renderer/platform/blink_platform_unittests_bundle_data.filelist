@@ -214,6 +214,7 @@
 ../../web_tests/images/resources/bad-png.png
 ../../web_tests/images/resources/bad.ico
 ../../web_tests/images/resources/base-test-resources/success.png
+../../web_tests/images/resources/bee.jpg
 ../../web_tests/images/resources/blue-10.png
 ../../web_tests/images/resources/blue-100.png
 ../../web_tests/images/resources/blue-wheel-srgb-color-profile.jpg
@@ -284,6 +285,7 @@
 ../../web_tests/images/resources/green-256x256.jpg
 ../../web_tests/images/resources/green-circle.svg
 ../../web_tests/images/resources/green-half-stripe.png
+../../web_tests/images/resources/green-truncated.jpg
 ../../web_tests/images/resources/green.jpg
 ../../web_tests/images/resources/green.png
 ../../web_tests/images/resources/green_rectangle.pdf
@@ -318,6 +320,10 @@
 ../../web_tests/images/resources/oval.png
 ../../web_tests/images/resources/palatted-color-png-gamma-one-color-profile.png
 ../../web_tests/images/resources/pdf_test_landscape.pdf
+../../web_tests/images/resources/peach.jpg
+../../web_tests/images/resources/peach_13000000.jpg
+../../web_tests/images/resources/peach_13000002.jpg
+../../web_tests/images/resources/peach_900000.jpg
 ../../web_tests/images/resources/pixel-crack-image-background-webkit-transform-scale.png
 ../../web_tests/images/resources/pixelated-hdpi.png
 ../../web_tests/images/resources/png-16bit/2x2_16bit_AdobeRGB_opaque.png

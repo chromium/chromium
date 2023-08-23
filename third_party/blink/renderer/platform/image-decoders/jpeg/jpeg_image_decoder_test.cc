@@ -661,4 +661,204 @@ TEST(JPEGImageDecoderTest, Gainmap) {
   EXPECT_EQ(gfx::Size(33, 25), gainmap_decoder->DecodedSize());
 }
 
+TEST(JPEGImageDecoderTest, BppHistogramSmall) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/flowchart.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount(
+      "Blink.DecodedImage.JpegDensity.Count.0.4MP", 0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 500 * 644;  // = 322000
+  constexpr int kFileSize = 98527;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 245
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.0.4MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.4MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramSmall16x16) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/green.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount(
+      "Blink.DecodedImage.JpegDensity.Count.0.1MP", 0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  // The centi bpp = 764 * 100 * 8 / (16 * 16) ~= 2388, which is greater than
+  // the histogram's max value (1000), so this sample goes into the overflow
+  // bucket.
+  constexpr int kSample = 1000;
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.0.1MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.1MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramSmall900000) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/peach_900000.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount(
+      "Blink.DecodedImage.JpegDensity.Count.0.9MP", 0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 1200 * 750;  // = 900000
+  constexpr int kFileSize = 13726;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 12
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.0.9MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.0.9MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramBig) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/bee.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount("Blink.DecodedImage.JpegDensity.Count.13MP",
+                                    0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 4032 * 3024;  // = 12192768
+  constexpr int kFileSize = 54423;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 4
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.13MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.13MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramBig13000000) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/peach_13000000.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount("Blink.DecodedImage.JpegDensity.Count.13MP",
+                                    0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 4000 * 3250;  // = 13000000
+  constexpr int kFileSize = 49203;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.13MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.13MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramHuge) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/peach.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount(
+      "Blink.DecodedImage.JpegDensity.Count.14+MP", 0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 4624 * 3472;  // = 16054528
+  constexpr int kFileSize = 60007;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.14+MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramHuge13000002) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/peach_13000002.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  histogram_tester.ExpectTotalCount(
+      "Blink.DecodedImage.JpegDensity.Count.14+MP", 0);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  constexpr int kImageArea = 3961 * 3282;  // = 13000002
+  constexpr int kFileSize = 49325;
+  constexpr int kSample =
+      (kFileSize * 100 * 8 + kImageArea / 2) / kImageArea;  // = 3
+  histogram_tester.ExpectUniqueSample(
+      "Blink.DecodedImage.JpegDensity.Count.14+MP", kSample, 1);
+  base::HistogramTester::CountsMap expected_counts;
+  expected_counts["Blink.DecodedImage.JpegDensity.Count.14+MP"] = 1;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(expected_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/green-truncated.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->FrameCount(), 1u);
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_NE(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_TRUE(decoder->Failed());
+  const base::HistogramTester::CountsMap empty_counts;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(empty_counts));
+}
+
+TEST(JPEGImageDecoderTest, BppHistogramGrayscale) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
+  decoder->SetData(ReadFile("/images/resources/cs-uma-grayscale.jpg"), true);
+  ASSERT_TRUE(decoder->IsSizeAvailable());
+  ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
+  EXPECT_FALSE(decoder->Failed());
+  const base::HistogramTester::CountsMap empty_counts;
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "Blink.DecodedImage.JpegDensity.Count."),
+              testing::ContainerEq(empty_counts));
+}
+
 }  // namespace blink
