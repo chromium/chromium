@@ -440,6 +440,13 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Search.
     case kKeyboardShortcutSearch:
       return &kKsSearchIcon;
+    // Apps.
+    case kKeyboardShortcutAssistant:
+      return &kKsAssistantIcon;
+    case kKeyboardShortcutAllApps:
+      return &kKsAllAppsIcon;
+    case kKeyboardShortcutCalculator:
+      return &kKsCalculatorIcon;
     default:
       return nullptr;
   }

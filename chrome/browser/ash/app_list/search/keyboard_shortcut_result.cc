@@ -130,6 +130,12 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
                      ->HasLauncherButtonOnAnyKeyboard()
                  ? IconCode::kKeyboardShortcutLauncher
                  : IconCode::kKeyboardShortcutSearch;
+    case (KeyboardCode::VKEY_MEDIA_LAUNCH_APP2):
+      return IconCode::kKeyboardShortcutCalculator;
+    case (KeyboardCode::VKEY_ALL_APPLICATIONS):
+      return IconCode::kKeyboardShortcutAllApps;
+    case (KeyboardCode::VKEY_ASSISTANT):
+      return IconCode::kKeyboardShortcutAssistant;
     default:
       return absl::nullopt;
   }

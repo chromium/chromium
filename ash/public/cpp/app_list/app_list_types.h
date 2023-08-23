@@ -600,10 +600,13 @@ using SearchResultActions = std::vector<SearchResultAction>;
 class ASH_PUBLIC_EXPORT SearchResultTextItem {
  public:
   enum IconCode {
+    kKeyboardShortcutAssistant,
+    kKeyboardShortcutAllApps,
     kKeyboardShortcutBrowserBack,
     kKeyboardShortcutBrowserForward,
     kKeyboardShortcutBrowserRefresh,
     kKeyboardShortcutBrowserSearch,
+    kKeyboardShortcutCalculator,
     kKeyboardShortcutDictationToggle,
     kKeyboardShortcutEmojiPicker,
     kKeyboardShortcutZoom,
