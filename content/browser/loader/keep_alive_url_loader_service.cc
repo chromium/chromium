@@ -94,7 +94,9 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
       delete;
 
   // Returns the pointer to the context for this factory.
-  const std::unique_ptr<FactoryContext>& current_context() const;
+  const std::unique_ptr<FactoryContext>& current_context() const {
+    return loader_factory_receivers_.current_context();
+  }
 
   // Creates a `FactoryContext` to hold a refptr to
   // `network::SharedURLLoaderFactory`, which is constructed with
@@ -104,23 +106,123 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       scoped_refptr<network::SharedURLLoaderFactory>
           subresource_proxying_factory_bundle,
-      scoped_refptr<PolicyContainerHost> policy_container_host);
+      scoped_refptr<PolicyContainerHost> policy_container_host) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(policy_container_host);
+    TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::BindFactory");
+
+    // Adds a new factory receiver to the set, binding the pending `receiver`
+    // from to `this` with a new context that has frame-specific data and keeps
+    // reference to `subresource_proxying_factory_bundle`.
+    auto context = std::make_unique<FactoryContext>(
+        subresource_proxying_factory_bundle, std::move(policy_container_host));
+    loader_factory_receivers_.Add(this, std::move(receiver),
+                                  std::move(context));
+  }
 
   // `network::mojom::URLLoaderFactory` overrides:
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       int32_t request_id,
       uint32_t options,
-      const network::ResourceRequest& resource_request_in,
+      const network::ResourceRequest& resource_request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
-      override;
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::CreateLoaderAndStart",
+                "request_id", request_id);
+
+    if (!resource_request.keepalive) {
+      loader_factory_receivers_.ReportBadMessage(
+          "Unexpected `resource_request` in "
+          "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+          "resource_request.keepalive must be true");
+      return;
+    }
+    if (resource_request.trusted_params) {
+      // Must use untrusted URLLoaderFactory. If not, the requesting renderer
+      // should be aborted.
+      loader_factory_receivers_.ReportBadMessage(
+          "Unexpected `resource_request` in "
+          "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
+          "resource_request.trusted_params must not be set");
+      return;
+    }
+
+    // Creates a new KeepAliveURLLoader from the factory of the current context
+    // to load `resource_request`.
+    //
+    // At this point, the initiator renderer that triggers this factory method
+    // may have already be gone, e.g. a keepalive request initiated from an
+    // unload handler. But as long as `context` exists, the necessary data for a
+    // loader is ensured to exist.
+    const std::unique_ptr<FactoryContext>& context = current_context();
+
+    // Passes in the pending remote of `client` from a renderer so that `loader`
+    // can forward response back to the renderer.
+    CHECK(context->policy_container_host);
+    auto loader = std::make_unique<KeepAliveURLLoader>(
+        request_id, options, resource_request, std::move(client),
+        traffic_annotation, context->factory,
+        // `context` can be destroyed right at the end of this method if the
+        // caller renderer is already unloaded, meaning `loader` also needs to
+        // hold another refptr to ensure `PolicyContainerHost` alive.
+        context->policy_container_host, service_->browser_context_,
+        CreateThrottles(resource_request),
+        base::PassKey<KeepAliveURLLoaderService>());
+    // Adds a new loader receiver to the set, binding the pending `receiver`
+    // from a renderer to `raw_loader` with `loader` as its context. The set
+    // will keep `loader` alive.
+    auto* raw_loader = loader.get();
+    auto receiver_id = service_->loader_receivers_.Add(
+        raw_loader, std::move(receiver), std::move(loader));
+    raw_loader->set_on_delete_callback(
+        base::BindOnce(&KeepAliveURLLoaderService::RemoveLoader,
+                       base::Unretained(service_), receiver_id));
+
+    if (service_->loader_test_observer_) {
+      raw_loader->SetObserverForTesting(     // IN-TEST
+          service_->loader_test_observer_);  // IN-TEST
+    }
+
+    // `loader` must only be started after the above setup.
+    if (!resource_request.is_fetch_later_api) {
+      raw_loader->Start();
+    }
+  }
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override;
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    loader_factory_receivers_.Add(
+        this, std::move(receiver),
+        std::make_unique<FactoryContext>(current_context()));
+  }
 
  private:
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
-      const network::ResourceRequest& resource_request);
+      const network::ResourceRequest& resource_request) {
+    if (service_->url_loader_throttles_getter_for_testing_) {
+      return service_->url_loader_throttles_getter_for_testing_
+          .Run();  // IN-TEST
+    }
+
+    // These throttles are also run by `blink::ThrottlingURLLoader`. However,
+    // they have to be re-run here in case of handling in-browser redirects.
+    // There is already a similar use case that also runs throttles in browser
+    // in `SearchPrefetchRequest::StartPrefetchRequest()`. The review discussion
+    // in https://crrev.com/c/2552723/3 suggests that running them again in
+    // browser is fine.
+    return CreateContentBrowserURLLoaderThrottlesForKeepAlive(
+        resource_request, service_->browser_context_,
+        // The renderer might be gone at any point when a throttle is running in
+        // the KeepAliveURLLoader.
+        /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
+          return nullptr;
+        }),
+        FrameTreeNode::kFrameTreeNodeInvalidId);
+  }
 
   // Guaranteed to exist, as `service_` owns this object.
   raw_ptr<KeepAliveURLLoaderService> service_;
@@ -133,130 +235,6 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactory final
                     std::unique_ptr<FactoryContext>>
       loader_factory_receivers_;
 };
-
-const std::unique_ptr<FactoryContext>&
-KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::current_context() const {
-  return loader_factory_receivers_.current_context();
-}
-
-void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::BindFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-    scoped_refptr<network::SharedURLLoaderFactory>
-        subresource_proxying_factory_bundle,
-    scoped_refptr<PolicyContainerHost> policy_container_host) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(policy_container_host);
-  TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::BindFactory");
-
-  // Adds a new factory receiver to the set, binding the pending `receiver` from
-  // to `this` with a new context that has frame-specific data and keeps
-  // reference to `subresource_proxying_factory_bundle`.
-  auto context = std::make_unique<FactoryContext>(
-      subresource_proxying_factory_bundle, std::move(policy_container_host));
-  loader_factory_receivers_.Add(this, std::move(receiver), std::move(context));
-}
-
-void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateLoaderAndStart(
-    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    int32_t request_id,
-    uint32_t options,
-    const network::ResourceRequest& resource_request,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT("loading", "KeepAliveURLLoaderFactory::CreateLoaderAndStart",
-              "request_id", request_id);
-
-  if (!resource_request.keepalive) {
-    loader_factory_receivers_.ReportBadMessage(
-        "Unexpected `resource_request` in "
-        "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
-        "resource_request.keepalive must be true");
-    return;
-  }
-  if (resource_request.trusted_params) {
-    // Must use untrusted URLLoaderFactory. If not, the requesting renderer
-    // should be aborted.
-    loader_factory_receivers_.ReportBadMessage(
-        "Unexpected `resource_request` in "
-        "KeepAliveURLLoaderService::CreateLoaderAndStart(): "
-        "resource_request.trusted_params must not be set");
-    return;
-  }
-
-  // Creates a new KeepAliveURLLoader from the factory of the current context
-  // to load `resource_request`.
-  //
-  // At this point, the initiator renderer that triggers this factory method may
-  // have already be gone, e.g. a keepalive request initiated from an unload
-  // handler. But as long as `context` exists, the necessary data for a loader
-  // is ensured to exist.
-  const std::unique_ptr<FactoryContext>& context = current_context();
-
-  // Passes in the pending remote of `client` from a renderer so that `loader`
-  // can forward response back to the renderer.
-  CHECK(context->policy_container_host);
-  auto loader = std::make_unique<KeepAliveURLLoader>(
-      request_id, options, resource_request, std::move(client),
-      traffic_annotation, context->factory,
-      // `context` can be destroyed right at the end of this method if the
-      // caller renderer is already unloaded, meaning `loader` also needs to
-      // hold another refptr to ensure `PolicyContainerHost` alive.
-      context->policy_container_host, service_->browser_context_,
-      CreateThrottles(resource_request),
-      base::PassKey<KeepAliveURLLoaderService>());
-  // Adds a new loader receiver to the set, binding the pending `receiver` from
-  // a renderer to `raw_loader` with `loader` as its context. The set will keep
-  // `loader` alive.
-  auto* raw_loader = loader.get();
-  auto receiver_id = service_->loader_receivers_.Add(
-      raw_loader, std::move(receiver), std::move(loader));
-  raw_loader->set_on_delete_callback(
-      base::BindOnce(&KeepAliveURLLoaderService::RemoveLoader,
-                     base::Unretained(service_), receiver_id));
-
-  if (service_->loader_test_observer_) {
-    raw_loader->SetObserverForTesting(     // IN-TEST
-        service_->loader_test_observer_);  // IN-TEST
-  }
-
-  // `loader` must only be started after the above setup.
-  if (!resource_request.is_fetch_later_api) {
-    raw_loader->Start();
-  }
-}
-
-void KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  loader_factory_receivers_.Add(
-      this, std::move(receiver),
-      std::make_unique<FactoryContext>(current_context()));
-}
-
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-KeepAliveURLLoaderService::KeepAliveURLLoaderFactory::CreateThrottles(
-    const network::ResourceRequest& resource_request) {
-  if (service_->url_loader_throttles_getter_for_testing_) {
-    return service_->url_loader_throttles_getter_for_testing_.Run();  // IN-TEST
-  }
-
-  // These throttles are also run by `blink::ThrottlingURLLoader`. However, they
-  // have to be re-run here in case of handling in-browser redirects. There is
-  // already a similar use case that also runs throttles in browser in
-  // `SearchPrefetchRequest::StartPrefetchRequest()`. The review discussion in
-  // https://crrev.com/c/2552723/3 suggests that running them again in browser
-  // is fine.
-  return CreateContentBrowserURLLoaderThrottlesForKeepAlive(
-      resource_request, service_->browser_context_,
-      // The renderer might be gone at any point when a throttle is running in
-      // the KeepAliveURLLoader.
-      /*wc_getter=*/base::BindRepeating([]() -> WebContents* {
-        return nullptr;
-      }),
-      FrameTreeNode::kFrameTreeNodeInvalidId);
-}
 
 KeepAliveURLLoaderService::KeepAliveURLLoaderService(
     BrowserContext* browser_context)

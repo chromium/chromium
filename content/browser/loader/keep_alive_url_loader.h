@@ -41,27 +41,40 @@ class KeepAliveURLLoaderService;
 class PolicyContainerHost;
 
 // A URLLoader for loading a fetch keepalive request via the browser process,
-// including both `fetch(..., {keepalive: true})` and `navigator.sendBeacon()`
-// requests.
+// including requests generated from the following JS API calls:
+//   - fetch(..., {keepalive: true})
+//   - navigator.sendBeacon(...)
+//   - fetchLater(...)
 //
 // To load a keepalive request initiated by a renderer, this loader performs the
 // following logic:
-// 1. Forwards all request loading actions received from a remote of
-//    `mojom::URLLoader` in a renderer to a receiver of `mojom::URLLoader` in
-//    the network service connected by `loader_`.
-// 2. Receives request loading results from the network service, i.e. the remote
-//    of `loader_receiver_`. The URLLoaderClient overrides will be triggered to
-//    process results:
-//    A. For redirect, perform security checks and ask the network service to
-//       follow all subsequent redirects.
-//    B. For non-redirect,
-//       a. If the renderer is still alive, i.e. `forwarding_client_` is
-//          connected, ask it to process the results instead.
-//       b. If the renderer is dead, drop the results.
 //
-// Instances of this class must only be constructed via calling
-// `KeepAliveURLLoaderService`, such that the lifetime of the instances match
-// the lifetime of the keepalive requests.
+// 1. In ctor, stores request data sent from a renderer.
+// 2. In `Start()`, asks the network service to start loading the request, and
+//    then runs throttles to perform checks.
+// 3. Handles request loading results from the network service, i.e. from the
+//    remote of `loader_receiver_` (a mojom::URLLoaderClient):
+//    A. If it is `OnReceiveRedirect()`, this loader performs checks and runs
+//       throttles, and then asks the network service to proceed with redirects
+//       without interacting with renderer. The redirect params are stored for
+//       later use.
+//    B. If it is `OnReceiveResponse()` or `OnComplete()`, this loader does not
+//       process response. Instead, it calls `ForwardURLLoad()` to begin to
+//       forward previously saved mojom::URLLoaderClient calls to the renderer,
+//       if the renderer is still alive; Otherwise, terminating this loader.
+//    C. If a throttle asynchronously asks to cancel the request, similar to B,
+//       the previously stored calls will be forwarded to the renderer.
+//    D. The renderer's response to `ForwardURLLoad()` may be any of
+//       mojom::URLLoader calls, in which they should continue forwarding by
+//       calling `ForwardURLLoader()` again.
+//
+// See the "Longer Redirect Chain" section of the Design Doc for an example
+// call sequence diagram.
+//
+// This class must only be constructed by `KeepAliveURLLoaderService`.
+//
+// The lifetime of an instance is roughly equal to the lifetime of a keepalive
+// request, which may surpass the initiator renderer's lifetime.
 //
 // Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
@@ -82,7 +95,7 @@ class CONTENT_EXPORT KeepAliveURLLoader
   //
   // `resource_request` must be a keepalive request from a renderer.
   // `forwarding_client` should handle request loading results from the network
-  //     service if it is still connected.
+  // service if it is still connected.
   // `delete_callback` is a callback to delete this object.
   // `policy_container_host` must not be null.
   KeepAliveURLLoader(

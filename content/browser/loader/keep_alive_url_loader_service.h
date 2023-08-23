@@ -22,8 +22,9 @@ namespace content {
 class BrowserContext;
 class PolicyContainerHost;
 
-// A service that stores bound SharedURLLoaderFactory mojo pipes and the loaders
-// they have created to load fetch keepalive requests.
+// A service that stores bound SharedURLLoaderFactory mojo pipes from renderers
+// of the same storage partition, and the intermediate URLLoader receivers, i.e.
+// KeepAliveURLLoader, they have created to load fetch keepalive requests.
 //
 // A fetch keepalive request is originated from a JS call to
 // `fetch(..., {keepalive: true})` or `navigator.sendBeacon()`. A renderer can
@@ -31,20 +32,26 @@ class PolicyContainerHost;
 // mojom::URLLoaderFactory bound to this service by `BindFactory()`, which also
 // binds RenderFrameHostImpl-specific context with every receiver.
 //
-// Calling the remote `CreateLoaderAndStart()` will create a
-// `KeepAliveURLLoader` in browser. The service is also responsible for keeping
+// Calling the remote `CreateLoaderAndStart()` of a factory will create a
+// `KeepAliveURLLoader` here in browser. The service is responsible for keeping
 // these loaders in `loader_receivers_` until the corresponding request
 // completes or fails.
 //
 // Handling keepalive requests in this service allows a request to continue even
-// if a renderer unloads before completion, i.e. the request is "keepalive".
+// if a renderer unloads before completion, i.e. the request is "keepalive",
+// without needing the renderer to stay extra longer than the necessary time.
 //
 // This service is created and stored in every `StoragePartitionImpl` instance.
+// Hence, its lifetime is the same as the owner StoragePartition for a partition
+// domain, which should be generally longer than any of the renderers spawned
+// from the partition domain.
 //
 // Design Doc:
 // https://docs.google.com/document/d/1ZzxMMBvpqn8VZBZKnb7Go8TWjnrGcXuLS_USwVVRUvY
 class CONTENT_EXPORT KeepAliveURLLoaderService {
  public:
+  // `browser_context` owns the StoragePartition creating the instance of this
+  // service. It must not be null and surpass the lifetime of this service.
   explicit KeepAliveURLLoaderService(BrowserContext* browser_context);
   ~KeepAliveURLLoaderService();
 
@@ -53,12 +60,13 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
   KeepAliveURLLoaderService& operator=(const KeepAliveURLLoaderService&) =
       delete;
 
-  // Binds the pending `receiver` with this service, using `pending_factory`.
+  // Binds the pending `receiver` with this service, using
+  // `subresource_proxying_factory_bundle`.
   //
   // The remote of `receiver` can be passed to another process, i.e. renderer,
-  // to handle fetch keepalive requests.
+  // from which to create new fetch keepalive requests.
   //
-  // `policy_container_host` is the policy host of the frame that is going to
+  // `policy_container_host` is the policy host of the requester frame going to
   // use the remote of `receiver` to load requests. It must not be null.
   void BindFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
