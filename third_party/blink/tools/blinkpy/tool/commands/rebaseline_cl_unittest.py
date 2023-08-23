@@ -475,6 +475,33 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: Rebaselining two/image-fail.html\n'
         ])
 
+    def test_execute_with_only_unrelated_failing_suites(self):
+        """A build without web test failures should not be treated as missing.
+
+        The build may still fail because of other non-web test suites.
+
+        See Also:
+            crbug.com/1475247#c1
+        """
+        builds = {
+            Build('MOCK Try Win', 5000, 'Build-1'):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Mac', 4000, 'Build-2'):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+            Build('MOCK Try Linux', 6000, 'Build-3'):
+            TryJobStatus('COMPLETED', 'FAILURE'),
+        }
+        for build in builds:
+            self.tool.results_fetcher.set_results(
+                build,
+                WebTestResults([], step_name='blink_web_tests (with patch)'))
+        self.command.git_cl = MockGitCL(self.tool, builds)
+        exit_code = self.command.execute(self.command_options(), [], self.tool)
+        self.assertEqual(exit_code, 0)
+        self.assertLog([
+            'INFO: All builds finished.\n',
+        ])
+
     def test_execute_with_no_trigger_jobs_option(self):
         builds = {
             Build('MOCK Try Win', 5000, 'Build-1'):
@@ -618,9 +645,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         ])
 
     def test_execute_missing_results_with_no_fill_missing_prompts(self):
-        self.tool.results_fetcher.set_results(
-            Build('MOCK Try Win', 5000, 'Build-1'), WebTestResults([]),
-            'blink_web_tests (with patch)')
+        build = Build('MOCK Try Win', 5000, 'Build-1')
+        self.builds[build] = TryJobStatus.from_bb_status('CANCELED')
         exit_code = self.command.execute(self.command_options(), [], self.tool)
         self.assertEqual(exit_code, 1)
         self.assertLog([
@@ -810,9 +836,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         return b'diff', stats, None
 
     def test_execute_missing_results_with_fill_missing_continues(self):
-        self.tool.results_fetcher.set_results(
-            Build('MOCK Try Win', 5000, 'Build-1'), WebTestResults([]),
-            'blink_web_tests (with patch)')
+        build = Build('MOCK Try Win', 5000, 'Build-1')
+        self.builds[build] = TryJobStatus.from_bb_status('CANCELED')
         exit_code = self.command.execute(
             self.command_options(fill_missing=True), ['one/flaky-fail.html'],
             self.tool)

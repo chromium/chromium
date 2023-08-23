@@ -259,8 +259,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             lambda build_step: results_fetcher.gather_results(*build_step),
             build_steps)
         for (build, _), results in zip(build_steps, step_results):
-            if len(results) > 0:
-                builds_to_results[build].append(results)
+            builds_to_results[build].append(results)
         return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):
