@@ -141,6 +141,10 @@ bool WindowStateIs(const aura::Window* window, ui::WindowShowState state) {
   return window->GetProperty(aura::client::kShowStateKey) == state;
 }
 
+ui::WindowShowState GetWindowState(const aura::Window* window) {
+  return window->GetProperty(aura::client::kShowStateKey);
+}
+
 void SetWindowState(aura::Window* window, ui::WindowShowState state) {
   window->SetProperty(aura::client::kShowStateKey, state);
 }

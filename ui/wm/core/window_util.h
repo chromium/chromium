@@ -40,6 +40,10 @@ void SetWindowFullscreen(
 COMPONENT_EXPORT(UI_WM)
 bool WindowStateIs(const aura::Window* window, ui::WindowShowState state);
 
+// Returns |window|'s current show state.
+COMPONENT_EXPORT(UI_WM)
+ui::WindowShowState GetWindowState(const aura::Window* window);
+
 // Sets the window state to |state|.
 COMPONENT_EXPORT(UI_WM)
 void SetWindowState(aura::Window* window, ui::WindowShowState state);
