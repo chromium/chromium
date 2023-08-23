@@ -76,7 +76,7 @@ class SingleTypeMockServer {
   // Getters to return the commit messages sent to the server through
   // DoSuccessfulCommit().
   size_t GetNumCommitMessages() const;
-  sync_pb::ClientToServerMessage GetNthCommitMessage(size_t n) const;
+  const sync_pb::ClientToServerMessage& GetNthCommitMessage(size_t n) const;
 
   // Getters to return the most recently committed entities for a given
   // unique_client_tag hash.

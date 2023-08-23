@@ -306,6 +306,10 @@ class ModelTypeWorker : public UpdateHandler,
   // Encrypt the specifics and hide the title if necessary.
   void EncryptPasswordSpecificsData(CommitRequestDataList* request_data_list);
 
+  // Encrypts password sharing invitation using cross user sharing encryption.
+  void EncryptOutgoingPasswordSharingInvitations(
+      CommitRequestDataList* request_data_list);
+
   // The (up to kMaxPayloads) most recent invalidations received since the last
   // successful sync cycle.
   std::vector<PendingInvalidation> pending_invalidations_;

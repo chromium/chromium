@@ -4,13 +4,12 @@
 
 #include "components/sync/engine/commit_contribution_impl.h"
 
-#include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/uuid.h"
-#include "base/values.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"

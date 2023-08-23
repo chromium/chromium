@@ -27,7 +27,6 @@
 #include "components/sync/engine/commit_contribution.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/status_controller.h"
-#include "components/sync/engine/model_type_processor.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -209,7 +208,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
     initial_state.set_initial_sync_state(
         sync_pb::ModelTypeState_InitialSyncState_INITIAL_SYNC_DONE);
 
-    InitializeWithState(USER_EVENTS, initial_state);
+    InitializeWithState(model_type, initial_state);
   }
 
   // Initialize with a custom initial ModelTypeState and pending updates.
@@ -3004,6 +3003,30 @@ TEST_F(ModelTypeWorkerTest, DropHintsAtServer_WithOtherInvalidations) {
     EXPECT_FALSE(gu_trigger.server_dropped_hints());
     ASSERT_EQ(0, gu_trigger.notification_hint_size());
   }
+}
+
+TEST_F(ModelTypeWorkerTest, ShouldEncryptOutgoingPasswordSharingInvitation) {
+  InitializeCommitOnly(OUTGOING_PASSWORD_SHARING_INVITATION);
+
+  EntitySpecifics specifics;
+  specifics.mutable_outgoing_password_sharing_invitation()
+      ->mutable_client_only_unencrypted_data()
+      ->mutable_password_data()
+      ->set_password_value("password");
+  processor()->SetCommitRequest(GenerateCommitRequest(kHash1, specifics));
+  DoSuccessfulCommit();
+
+  ASSERT_EQ(1U, server()->GetNumCommitMessages());
+  ASSERT_EQ(1, server()->GetNthCommitMessage(0).commit().entries_size());
+  const SyncEntity& entity =
+      server()->GetNthCommitMessage(0).commit().entries(0);
+
+  EXPECT_TRUE(entity.specifics()
+                  .outgoing_password_sharing_invitation()
+                  .has_encrypted_password_sharing_invitation_data());
+  EXPECT_FALSE(entity.specifics()
+                   .outgoing_password_sharing_invitation()
+                   .has_client_only_unencrypted_data());
 }
 
 class ModelTypeWorkerAckTrackingTest : public ModelTypeWorkerTest {

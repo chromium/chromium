@@ -776,14 +776,19 @@ std::unique_ptr<CommitContribution> ModelTypeWorker::GetContribution(
     has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
   }
 
+  if (type_ == OUTGOING_PASSWORD_SHARING_INVITATION) {
+    // Password sharing invitation types have different encryption scheme and
+    // are handled separately.
+    EncryptOutgoingPasswordSharingInvitations(&response);
+  } else if (type_ == PASSWORDS) {
+    EncryptPasswordSpecificsData(&response);
+  }
+
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
   DCHECK(!encryption_enabled_ ||
          (model_type_state_.encryption_key_name() ==
           cryptographer_->GetDefaultEncryptionKeyName()));
 
-  if (type_ == PASSWORDS) {
-    EncryptPasswordSpecificsData(&response);
-  }
   return std::make_unique<CommitContributionImpl>(
       type_, model_type_state_.type_context(), std::move(response),
       base::BindOnce(&ModelTypeWorker::OnCommitResponse,
@@ -1302,6 +1307,40 @@ void ModelTypeWorker::EncryptPasswordSpecificsData(
     // client-only fields are cleared.
     entity_data->specifics = std::move(encrypted_password);
     entity_data->name = "encrypted";
+  }
+}
+
+void ModelTypeWorker::EncryptOutgoingPasswordSharingInvitations(
+    CommitRequestDataList* request_data_list) {
+  CHECK(cryptographer_);
+
+  for (std::unique_ptr<CommitRequestData>& request_data : *request_data_list) {
+    EntityData* entity_data = request_data->entity.get();
+    sync_pb::OutgoingPasswordSharingInvitationSpecifics* specifics =
+        entity_data->specifics.mutable_outgoing_password_sharing_invitation();
+
+    CHECK(specifics->has_client_only_unencrypted_data());
+    std::string serialized_password_data;
+    bool success = specifics->client_only_unencrypted_data().SerializeToString(
+        &serialized_password_data);
+    specifics->clear_client_only_unencrypted_data();
+    CHECK(success);
+
+    absl::optional<std::vector<uint8_t>> encrypted_data =
+        cryptographer_->AuthEncryptForCrossUserSharing(
+            base::as_bytes(base::make_span(serialized_password_data)),
+            base::as_bytes(base::make_span(
+                entity_data->recipient_public_key.x25519_public_key())));
+    // There should not be encryption failure but DCHECK is not used because
+    // it's not guaranteed. In the worst case, the entity will be committed with
+    // empty specifics (no unencrypted data will be committed to the server).
+    // TODO(crbug.com/1468523): add a metric to record encryption failures.
+    if (encrypted_data) {
+      specifics->set_encrypted_password_sharing_invitation_data(
+          encrypted_data->data(), encrypted_data->size());
+    } else {
+      DLOG(ERROR) << "Failed to encrypt outgoing password sharing invitation";
+    }
   }
 }
 

@@ -112,7 +112,7 @@ class CryptographerImpl : public Cryptographer {
   // Empty optional is returned upon failure.
   absl::optional<std::vector<uint8_t>> AuthEncryptForCrossUserSharing(
       base::span<const uint8_t> plaintext,
-      base::span<const uint8_t> recipient_public_key) const;
+      base::span<const uint8_t> recipient_public_key) const override;
 
   // Decrypts |encrypted_data| using Auth HPKE using the keys corresponding
   // to |recipient_key_version| and authenticates that the sender actually used
@@ -121,7 +121,7 @@ class CryptographerImpl : public Cryptographer {
   absl::optional<std::vector<uint8_t>> AuthDecryptForCrossUserSharing(
       base::span<const uint8_t> encrypted_data,
       base::span<const uint8_t> sender_public_key,
-      const uint32_t recipient_key_version) const;
+      const uint32_t recipient_key_version) const override;
 
   // Cryptographer overrides.
   bool CanEncrypt() const override;

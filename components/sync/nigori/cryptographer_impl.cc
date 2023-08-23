@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/sync/nigori/cross_user_sharing_keys.h"
 
@@ -184,6 +185,7 @@ CryptographerImpl::AuthEncryptForCrossUserSharing(
   absl::optional encryption_key_version =
       cross_user_sharing_keys_.GetEncryptionKeyPairVersion();
   if (!encryption_key_version.has_value()) {
+    DVLOG(1) << "Encryption key pair is not available";
     return absl::nullopt;
   }
   const CrossUserSharingPublicPrivateKeyPair& encryption_key_pair =
