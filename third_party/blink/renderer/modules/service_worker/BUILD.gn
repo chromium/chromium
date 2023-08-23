@@ -77,6 +77,7 @@ blink_modules_sources("service_worker") {
     "//third_party/blink/renderer/modules/content_index:content_index",
     "//third_party/blink/renderer/modules/cookie_store:cookie_store",
     "//third_party/blink/renderer/modules/hid:hid",
+    "//third_party/blink/renderer/modules/webusb:webusb",
     "//third_party/blink/renderer/modules/notifications:notifications",
     "//third_party/blink/renderer/modules/exported:exported",
     "//third_party/blink/renderer/modules/payments:payments",

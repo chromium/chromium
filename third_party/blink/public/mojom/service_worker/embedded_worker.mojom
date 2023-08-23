@@ -227,14 +227,14 @@ interface EmbeddedWorkerInstanceHost {
   // for the browser process to start enforcing timeouts on script execution.
   OnScriptEvaluationStart();
   // Indicates that the worker has started. |thread_id| is the platform
-  // thread id the worker runs on. |fetch_handler_type| represents the fetch
-  // handler type. The type is decided after initial script evaluation, and
-  // it can also represents the fetch event handler does not exist.
-  // |has_hid_event_handlers| represent any HID event handlers and is decided
-  // after initial script evaluation.
+  // thread id the worker runs on. |fetch_handler_type|,
+  // |has_hid_event_handlers|, and |has_usb_event_handlers| are determined
+  // after the initial script evaluation and used by the browser process to
+  // forward the corresponding events to the service worker.
   OnStarted(ServiceWorkerStartStatus status,
             blink.mojom.ServiceWorkerFetchHandlerType fetch_handler_type,
             bool has_hid_event_handlers,
+            bool has_usb_event_handlers,
             int32 thread_id,
             EmbeddedWorkerStartTiming start_timing);
 

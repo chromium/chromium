@@ -1351,6 +1351,7 @@ class FetchHandlerInstanceClient : public FakeEmbeddedWorkerInstanceClient {
     host()->OnScriptEvaluationStart();
     host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
                       fetch_handler_type_, /*has_hid_event_handlers=*/false,
+                      /*has_usb_event_handlers=*/false,
                       helper()->GetNextThreadId(),
                       blink::mojom::EmbeddedWorkerStartTiming::New());
   }
@@ -1546,7 +1547,8 @@ class UpdateJobTestHelper : public EmbeddedWorkerTestHelper,
       host()->OnStarted(
           blink::mojom::ServiceWorkerStartStatus::kAbruptCompletion,
           blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
-          /*has_hid_event_handlers=*/false, helper()->GetNextThreadId(),
+          /*has_hid_event_handlers=*/false, /*has_usb_event_handlers=*/false,
+          helper()->GetNextThreadId(),
           blink::mojom::EmbeddedWorkerStartTiming::New());
     }
 

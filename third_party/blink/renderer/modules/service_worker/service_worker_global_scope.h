@@ -334,6 +334,8 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
 
   bool HasHidEventHandlers();
 
+  bool HasUsbEventHandlers();
+
   // EventTarget
   bool SetAttributeEventListener(const AtomicString& event_type,
                                  EventListener* listener) override;

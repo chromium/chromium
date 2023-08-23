@@ -1517,6 +1517,7 @@ class NoFetchHandlerClient : public FakeEmbeddedWorkerInstanceClient {
     host()->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
                       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
                       /*has_hid_event_handlers=*/false,
+                      /*has_usb_event_handlers=*/false,
                       helper()->GetNextThreadId(),
                       blink::mojom::EmbeddedWorkerStartTiming::New());
   }
@@ -1994,7 +1995,8 @@ class HidEventHandlerClient : public FakeEmbeddedWorkerInstanceClient {
     host()->OnStarted(
         blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
         blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
-        has_hid_event_handlers_, helper()->GetNextThreadId(),
+        has_hid_event_handlers_, /*has_usb_event_handlers_=*/false,
+        helper()->GetNextThreadId(),
         blink::mojom::EmbeddedWorkerStartTiming::New());
   }
 
@@ -2014,6 +2016,45 @@ TEST_F(ServiceWorkerVersionTest, NoHidEventHandler) {
       helper_.get(), /*has_hid_event_handlers*/ false);
   StartServiceWorker(version_.get());
   EXPECT_FALSE(version_->has_hid_event_handlers());
+}
+
+// An instance client for controlling whether it has hid event handlers or not.
+class UsbEventHandlerClient : public FakeEmbeddedWorkerInstanceClient {
+ public:
+  UsbEventHandlerClient(EmbeddedWorkerTestHelper* helper,
+                        bool has_usb_event_handlers)
+      : FakeEmbeddedWorkerInstanceClient(helper),
+        has_usb_event_handlers_(has_usb_event_handlers) {}
+
+  UsbEventHandlerClient(const NoFetchHandlerClient&) = delete;
+  UsbEventHandlerClient& operator=(const NoFetchHandlerClient&) = delete;
+
+  void EvaluateScript() override {
+    host()->OnScriptEvaluationStart();
+    host()->OnStarted(
+        blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
+        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
+        /*has_hid_event_handlers_=*/false, has_usb_event_handlers_,
+        helper()->GetNextThreadId(),
+        blink::mojom::EmbeddedWorkerStartTiming::New());
+  }
+
+ private:
+  bool has_usb_event_handlers_;
+};
+
+TEST_F(ServiceWorkerVersionTest, HasUsbEventHandler) {
+  helper_->AddNewPendingInstanceClient<UsbEventHandlerClient>(
+      helper_.get(), /*has_usb_event_handlers*/ true);
+  StartServiceWorker(version_.get());
+  EXPECT_TRUE(version_->has_usb_event_handlers());
+}
+
+TEST_F(ServiceWorkerVersionTest, NoUsbEventHandler) {
+  helper_->AddNewPendingInstanceClient<UsbEventHandlerClient>(
+      helper_.get(), /*has_usb_event_handlers*/ false);
+  StartServiceWorker(version_.get());
+  EXPECT_FALSE(version_->has_usb_event_handlers());
 }
 
 }  // namespace service_worker_version_unittest

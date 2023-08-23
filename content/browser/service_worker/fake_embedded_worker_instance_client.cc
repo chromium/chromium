@@ -224,7 +224,8 @@ void FakeEmbeddedWorkerInstanceClient::EvaluateScript() {
   host_->OnScriptEvaluationStart();
   host_->OnStarted(blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
                    blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable,
-                   /*has_hid_event_handlers=*/false, helper_->GetNextThreadId(),
+                   /*has_hid_event_handlers=*/false,
+                   /*has_usb_event_handlers=*/false, helper_->GetNextThreadId(),
                    blink::mojom::EmbeddedWorkerStartTiming::New());
 }
 

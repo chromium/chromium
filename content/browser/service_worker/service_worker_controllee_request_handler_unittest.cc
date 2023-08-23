@@ -125,7 +125,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
       host()->OnStarted(
           blink::mojom::ServiceWorkerStartStatus::kNormalCompletion,
           fetch_handler_type_, /*has_hid_event_handlers=*/false,
-          helper()->GetNextThreadId(),
+          /*has_usb_event_handlers=*/false, helper()->GetNextThreadId(),
           blink::mojom::EmbeddedWorkerStartTiming::New());
     }
 

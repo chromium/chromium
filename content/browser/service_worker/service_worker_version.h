@@ -271,6 +271,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   bool has_hid_event_handlers() const { return has_hid_event_handlers_; }
   void set_has_hid_event_handlers(bool has_hid_event_handlers);
 
+  bool has_usb_event_handlers() const { return has_usb_event_handlers_; }
+  void set_has_usb_event_handlers(bool has_usb_event_handlers);
+
   // Returns true on setup success.
   // Otherwise, setup error, and subsequent `router_evaluator()` will return
   // `absl::nullopt`.
@@ -879,7 +882,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void OnStarting() override;
   void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
                  FetchHandlerType new_fetch_handler_type,
-                 bool new_has_hid_event_handlers) override;
+                 bool new_has_hid_event_handlers,
+                 bool new_has_usb_event_handlers) override;
   void OnStopping() override;
   void OnStopped(EmbeddedWorkerStatus old_status) override;
   void OnDetached(EmbeddedWorkerStatus old_status) override;
@@ -1037,6 +1041,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Whether the associated script has any HID event handlers after the script
   // is evaluated.
   bool has_hid_event_handlers_ = false;
+
+  // Whether the associated script has any USB event handlers after the script
+  // is evaluated.
+  bool has_usb_event_handlers_ = false;
 
   // The source of truth for navigation preload state is the
   // ServiceWorkerRegistration. |navigation_preload_state_| is essentially a

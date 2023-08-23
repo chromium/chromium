@@ -519,6 +519,11 @@ void ServiceWorkerVersion::set_has_hid_event_handlers(
   has_hid_event_handlers_ = has_hid_event_handlers;
 }
 
+void ServiceWorkerVersion::set_has_usb_event_handlers(
+    bool has_usb_event_handlers) {
+  has_usb_event_handlers_ = has_usb_event_handlers;
+}
+
 void ServiceWorkerVersion::StartWorker(ServiceWorkerMetrics::EventType purpose,
                                        StatusCallback callback) {
   TRACE_EVENT_INSTANT2(
@@ -1358,7 +1363,8 @@ void ServiceWorkerVersion::OnStarting() {
 void ServiceWorkerVersion::OnStarted(
     blink::mojom::ServiceWorkerStartStatus start_status,
     FetchHandlerType new_fetch_handler_type,
-    bool new_has_hid_event_handlers) {
+    bool new_has_hid_event_handlers,
+    bool new_has_usb_event_handlers) {
   DCHECK_EQ(EmbeddedWorkerStatus::RUNNING, running_status());
 
   // TODO(falken): This maps kAbruptCompletion to kErrorScriptEvaluated, which
@@ -1402,6 +1408,7 @@ void ServiceWorkerVersion::OnStarted(
     }
 
     has_hid_event_handlers_ = new_has_hid_event_handlers;
+    has_usb_event_handlers_ = new_has_usb_event_handlers;
   }
 
   // Update |sha256_script_checksum_| if it's empty. This can happen when the

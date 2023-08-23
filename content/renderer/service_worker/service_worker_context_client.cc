@@ -529,7 +529,8 @@ void ServiceWorkerContextClient::SendWorkerStarted(
 
   instance_host_->OnStarted(
       status, proxy_->FetchHandlerType(), proxy_->HasHidEventHandlers(),
-      WorkerThread::GetCurrentId(), std::move(start_timing_));
+      proxy_->HasUsbEventHandlers(), WorkerThread::GetCurrentId(),
+      std::move(start_timing_));
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "ServiceWorkerContextClient",
                                   this);
