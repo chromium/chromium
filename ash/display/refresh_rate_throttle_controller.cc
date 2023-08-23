@@ -22,6 +22,12 @@ const float kLowBatteryThreshold = 5.0f;
 
 display::RefreshRateThrottleState GetDesiredThrottleState(
     const PowerStatus* status) {
+  if (status->IsBatterySaverActive()) {
+    return display::kRefreshRateThrottleEnabled;
+  }
+
+  // TODO (b/296235469): Remove the below checks once Battery Saver Mode is
+  // launched.
   if (status->GetBatteryPercent() > kThrottleThreshold) {
     return display::kRefreshRateThrottleDisabled;
   }
