@@ -39,7 +39,7 @@ class SyncSessionsWebContentsRouterFactory : public ProfileKeyedServiceFactory {
   ~SyncSessionsWebContentsRouterFactory() override;
 
   // Overridden from BrowserContextKeyedServiceFactory.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
