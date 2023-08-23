@@ -76,8 +76,8 @@ function refreshModel() {
   const chartHeight = 96;
   const barHeight = 12;
 
-  const controlTitle =
-      new EventBandTitle(parent, 'Power control', 'arc-events-band-title');
+  const controlTitle = new EventBandTitle(
+      parent, undefined /* anchor */, 'Power control', 'arc-events-band-title');
   const controlBands =
       new EventBands(controlTitle, 'arc-events-band', resolution, 0, duration);
   controlBands.setWidth(controlBands.timestampToOffset(duration));
@@ -109,7 +109,8 @@ function refreshModel() {
           15 /* kThrottlingMode */),
       throttlingAttributes, barHeight /* y */, barHeight);
 
-  const cpusTitle = new EventBandTitle(parent, 'CPUs', 'arc-events-band-title');
+  const cpusTitle = new EventBandTitle(
+      parent, undefined /* anchor */, 'CPUs', 'arc-events-band-title');
   const cpusBands =
       new CpuEventBands(cpusTitle, 'arc-events-band', resolution, 0, duration);
   cpusBands.showDetailedInfo = false;
@@ -131,8 +132,8 @@ function refreshModel() {
           activeModel.system.memory, 10 /* kCpuPower */, 10 /* kCpuPower */)],
       true /* smooth */);
 
-  const memoryTitle =
-      new EventBandTitle(parent, 'Memory', 'arc-events-band-title');
+  const memoryTitle = new EventBandTitle(
+      parent, undefined /* anchor */, 'Memory', 'arc-events-band-title');
   const memoryBands =
       new EventBands(memoryTitle, 'arc-events-band', resolution, 0, duration);
   memoryBands.setWidth(memoryBands.timestampToOffset(duration));
@@ -166,8 +167,9 @@ function refreshModel() {
           12 /* kMemoryPower */)],
       true /* smooth */);
 
-  const chromeTitle =
-      new EventBandTitle(parent, 'Chrome graphics', 'arc-events-band-title');
+  const chromeTitle = new EventBandTitle(
+      parent, undefined /* anchor */, 'Chrome graphics',
+      'arc-events-band-title');
   const chromeBands =
       new EventBands(chromeTitle, 'arc-events-band', resolution, 0, duration);
   chromeBands.setWidth(chromeBands.timestampToOffset(duration));

@@ -1534,7 +1534,7 @@ class CpuDetailedInfoView extends DetailedInfoView {
         ' active processes/threads. Total cpu usage: ' + totalUsage.toFixed(2) +
         '%.';
     const title = new EventBandTitle(
-        this.overlay, undefined, cpuInfo, 'arc-cpu-view-title');
+        this.overlay, undefined /* anchor */, cpuInfo, 'arc-cpu-view-title');
     const bands = new EventBands(
         title, 'arc-events-cpu-detailed-band',
         overviewBand.resolution / zoomFactor, minTimestamp, maxTimestamp);
