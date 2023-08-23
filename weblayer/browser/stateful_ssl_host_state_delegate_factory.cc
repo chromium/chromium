@@ -38,9 +38,10 @@ StatefulSSLHostStateDelegateFactory::StatefulSSLHostStateDelegateFactory()
 StatefulSSLHostStateDelegateFactory::~StatefulSSLHostStateDelegateFactory() =
     default;
 
-KeyedService* StatefulSSLHostStateDelegateFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+StatefulSSLHostStateDelegateFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new StatefulSSLHostStateDelegate(
+  return std::make_unique<StatefulSSLHostStateDelegate>(
       context, user_prefs::UserPrefs::Get(context),
       HostContentSettingsMapFactory::GetForBrowserContext(context));
 }
