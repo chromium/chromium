@@ -11,11 +11,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -76,9 +74,11 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   }
 
   // probes
-  void WillHandlePromise(ExecutionContext*, ScriptPromiseResolver*);
-  void DidCreateScriptPromiseResolver(ExecutionContext*,
-                                      ScriptPromiseResolver*);
+  void WillHandlePromise(ExecutionContext*,
+                         ScriptState*,
+                         bool resolving,
+                         const char* class_like,
+                         const char* property_like);
   void Will(const probe::CompileAndRunScript&);
   void Did(const probe::CompileAndRunScript&);
   void Will(const probe::ExecuteScript&);
@@ -131,9 +131,6 @@ class CORE_EXPORT AnimationFrameTimingMonitor final
   void ApplyTaskDuration(base::TimeDelta task_duration);
 
   absl::optional<PendingScriptInfo> pending_script_info_;
-  HeapHashMap<WeakMember<ScriptPromiseResolver>,
-              ScriptTimingInfo::ScriptSourceLocation>
-      promise_resolver_source_location_map_;
   Client& client_;
 
   enum class State {
