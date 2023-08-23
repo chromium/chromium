@@ -32,8 +32,9 @@ PrimaryAccountPolicyManagerFactory::PrimaryAccountPolicyManagerFactory()
 PrimaryAccountPolicyManagerFactory::~PrimaryAccountPolicyManagerFactory() =
     default;
 
-KeyedService* PrimaryAccountPolicyManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrimaryAccountPolicyManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PrimaryAccountPolicyManager(profile);
+  return std::make_unique<PrimaryAccountPolicyManager>(profile);
 }
