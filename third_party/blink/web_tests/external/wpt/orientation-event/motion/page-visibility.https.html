@@ -3,9 +3,12 @@
 <body>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script type="module">
-import {generateMotionData, setMainWindowHidden, setMockMotionData, sleep, waitForMotion} from '../resources/device-orientation-helpers.js';
-import {sensor_test} from '../resources/sensor-helpers.js';
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/page-visibility/resources/window_state_context.js"></script>
+<script src="../resources/orientation-event-helpers.js"></script>
+<script>
+'use strict';
 
 sensor_test(async (t, sensorProvider) => {
   const motionData = generateMotionData(0, 0, 0,
@@ -13,15 +16,18 @@ sensor_test(async (t, sensorProvider) => {
                                         0, 0, 0);
 
   setMockMotionData(sensorProvider, motionData);
-  await waitForMotion(motionData);
+  const event = getExpectedMotionEvent(motionData);
+  await waitForEvent(event);
 
-  await setMainWindowHidden(true);
-  let hidden = true;
+  const {minimize, restore} = window_state_context(t);
+  await minimize();
+  assert_true(document.hidden);
+
   let hiddenEventPromise = new Promise((resolve, reject) => {
     window.addEventListener(
       'devicemotion',
       event => {
-        if (hidden) {
+        if (document.hidden) {
           reject();
         } else {
           resolve();
@@ -32,10 +38,10 @@ sensor_test(async (t, sensorProvider) => {
 
   // devicemotion events fire every 16ms when active, so we sleep for a while
   // here to make sure we're not actually getting any events.
-  await sleep(t, 100);
-  hidden = false;
-  await setMainWindowHidden(false);
-  return Promise.all([hiddenEventPromise, waitForMotion(motionData)]);
+  await new Promise(resolve => { t.step_timeout(resolve, 100); });
+  await restore();
+  assert_false(document.hidden);
+  return Promise.all([hiddenEventPromise, waitForEvent(event)]);
 }, 'Tests to check that devicemotion events are not fired when the page is not visible.');
 </script>
 </body>

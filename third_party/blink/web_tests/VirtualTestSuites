@@ -4279,7 +4279,6 @@
       "wpt_internal/geolocation-api/notimer-after-unload.https.html",
       "wpt_internal/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-coop-navigated-popup.https.html",
       "wpt_internal/long-animation-frame/loaf-ukm.html",
-      "wpt_internal/orientation-event/motion/page-visibility.https.html",
       "wpt_internal/payments/promises-keep-request-alive.https.html",
       "wpt_internal/prerender/restriction-web-auth.https.html",
       "wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html",

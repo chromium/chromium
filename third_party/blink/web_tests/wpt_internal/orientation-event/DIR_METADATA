@@ -1,4 +1,0 @@
-monorail {
-  component: "Blink>Sensor"
-}
-team_email: "device-dev@chromium.org"

@@ -1338,13 +1338,11 @@ external/wpt/html/canvas/offscreen/text/2d.text.draw.kern.consistent-manual.work
 external/wpt/html/canvas/offscreen/text/2d.text.draw.stroke.basic-manual.worker.js [ Skip ]
 external/wpt/html/canvas/element/manual/text/canvas.2d.disconnected.html [ Skip ]
 
-external/wpt/orientation-event/motion/page-visibility-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/t025-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/t028-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/free-fall-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/screen-upmost-manual.https.html [ Skip ]
 external/wpt/orientation-event/motion/screen-upright-manual.https.html [ Skip ]
-external/wpt/orientation-event/orientation/page-visibility-manual.https.html [ Skip ]
 external/wpt/orientation-event/orientation/t006-manual.https.html [ Skip ]
 external/wpt/orientation-event/orientation/t009-manual.https.html [ Skip ]
 external/wpt/orientation-event/orientation/t010-manual.https.html [ Skip ]

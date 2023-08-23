@@ -3093,7 +3093,6 @@ crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/binary/004.html?wpt_fla
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/websockets/constructor/013.html?wpt_flags=h2 [ Skip Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 # TODO(crbug.com/1358135, crbug.com/1358147): Re-enable this test: Re-enable this test
-crbug.com/626703 [ Win10.20h2 ] wpt_internal/orientation-event/motion/page-visibility.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/background-sync.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
@@ -6782,3 +6781,5 @@ crbug.com/1470610 http/tests/devtools/application-panel/resources-panel-websql.j
 crbug.com/1456636 [ Linux ] virtual/view-transition/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 crbug.com/1456636 [ Linux ] virtual/view-transition-wide-gamut/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
 crbug.com/1456636 [ Linux ] virtual/view-transition-mpa-serialization/view-transition/parent-transition-cancels-child.html [ Failure ]  # Reftest image failure
+
+crbug.com/1367789 [ Win10.20h2 ] external/wpt/orientation-event/motion/page-visibility.https.html [ Timeout ]
