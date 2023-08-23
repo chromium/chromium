@@ -428,10 +428,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   // by not posting the task).
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
 
-  // Track snapshot IDs not to release on low memory and to reload on
-  // `UIApplicationDidBecomeActiveNotification`.
-  std::vector<SnapshotID> _pinnedSnapshotIDs;
-
   // Check that public API is called from the correct sequence.
   SEQUENCE_CHECKER(_sequenceChecker);
 }
@@ -465,11 +461,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
         addObserver:self
            selector:@selector(handleEnterBackground)
                name:UIApplicationDidEnterBackgroundNotification
-             object:nil];
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(handleBecomeActive)
-               name:UIApplicationDidBecomeActiveNotification
              object:nil];
   }
   return self;
@@ -660,36 +651,16 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
   _backgroundingColorImage = [_lruCache objectForKey:snapshotID];
 }
 
-// Remove all but adjacent UIImages from `lruCache_`.
+// Remove all UIImages from `lruCache_`.
 - (void)handleLowMemory {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  std::map<SnapshotID, UIImage*> pinnedSnapshots;
-  for (SnapshotID snapshotID : _pinnedSnapshotIDs) {
-    UIImage* image = [_lruCache objectForKey:snapshotID];
-    if (image) {
-      pinnedSnapshots.insert(std::make_pair(snapshotID, image));
-    }
-  }
   [_lruCache removeAllObjects];
-  for (auto [snapshotID, image] : pinnedSnapshots) {
-    [_lruCache setObject:image forKey:snapshotID];
-  }
 }
 
 // Remove all UIImages from `lruCache_`.
 - (void)handleEnterBackground {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   [_lruCache removeAllObjects];
-}
-
-// Restore adjacent UIImages to `lruCache_`.
-- (void)handleBecomeActive {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  for (SnapshotID snapshotID : _pinnedSnapshotIDs) {
-    [self retrieveImageForSnapshotID:snapshotID
-                            callback:^(UIImage*){
-                            }];
-  }
 }
 
 // Save grey image to `greyImageDictionary_` and call into most recent
@@ -806,10 +777,6 @@ UIImage* GreyImageFromCachedImage(const base::FilePath& cache_directory,
       FROM_HERE,
       base::BindOnce(&ConvertAndSaveGreyImage, snapshotID, _snapshotsScale,
                      _backgroundingColorImage, _cacheDirectory));
-}
-
-- (void)setPinnedSnapshotIDs:(const std::vector<SnapshotID>&)pinnedSnapshotIDs {
-  _pinnedSnapshotIDs = pinnedSnapshotIDs;
 }
 
 - (void)addObserver:(id<SnapshotCacheObserver>)observer {

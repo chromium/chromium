@@ -99,10 +99,6 @@ class Time;
 // if a color version of the snapshot already exists in memory or on disk.
 - (void)saveGreyInBackgroundForSnapshotID:(SnapshotID)snapshotID;
 
-// Sets snapshot IDs not to release on low memory and to reload on
-// `UIApplicationDidBecomeActiveNotification`.
-- (void)setPinnedSnapshotIDs:(const std::vector<SnapshotID>&)pinnedSnapshotIDs;
-
 // Adds an observer to this snapshot cache.
 - (void)addObserver:(id<SnapshotCacheObserver>)observer;
 

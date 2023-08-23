@@ -437,36 +437,6 @@ TEST_F(SnapshotCacheTest, RenameSnapshots) {
   EXPECT_TRUE(base::PathExists(image2_path));
 }
 
-// Loads the color images into the cache, and pins two of them.  Ensures that
-// only the two pinned IDs remain in memory after a memory warning.
-TEST_F(SnapshotCacheTest, HandleMemoryWarning) {
-  ASSERT_TRUE(CreateSnapshotCache());
-  LoadAllColorImagesIntoCache(true);
-
-  SnapshotCache* cache = GetSnapshotCache();
-
-  std::vector<SnapshotID> pinned_snapshot_ids;
-  {
-    NSUInteger index = 0;
-    for (auto [snapshot_id, _] : test_images_) {
-      if (index == 4 || index == 6) {
-        pinned_snapshot_ids.push_back(snapshot_id);
-      }
-    }
-  }
-
-  [cache setPinnedSnapshotIDs:pinned_snapshot_ids];
-  TriggerMemoryWarning();
-
-  for (auto [snapshot_id, _] : test_images_) {
-    BOOL pinned = base::Contains(pinned_snapshot_ids, snapshot_id);
-    EXPECT_EQ(pinned, [cache hasImageInMemory:snapshot_id]);
-  }
-
-  // Wait for the final image to be pulled off disk.
-  FlushRunLoops(cache);
-}
-
 // Tests that createGreyCache creates the grey snapshots in the background,
 // from color images in the in-memory cache.  When the grey images are all
 // loaded into memory, tests that the request to retrieve the grey snapshot
