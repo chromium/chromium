@@ -16,8 +16,6 @@
 #import "ios/chrome/browser/ui/bring_android_tabs/constants.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_consumer.h"
 #import "ios/chrome/browser/ui/bring_android_tabs/tab_list_from_android_table_view_item.h"
-#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 namespace {
@@ -84,7 +82,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)tabListFromAndroidViewControllerDidTapOpenButtonWithTabIndices:
-    (NSArray*)tabIndices {
+    (NSArray<NSNumber*>*)tabIndices {
   base::UmaHistogramEnumeration(
       bring_android_tabs::kTabListActionHistogramName,
       bring_android_tabs::TabsListActionType::kOpenTabs);
@@ -95,11 +93,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   base::UmaHistogramCounts1000(
       bring_android_tabs::kDeselectedTabCountHistogramName, deselected);
 
+  std::vector<size_t> indicesVector;
   for (size_t i = 0; i < numTabs; i++) {
-    int index = [[tabIndices objectAtIndex:i] intValue];
-    OpenDistantTabInBackground(_bringAndroidTabsService->GetTabAtIndex(index),
-                               NO, _URLLoader, UrlLoadStrategy::NORMAL);
+    NSUInteger idx = [[tabIndices objectAtIndex:i] unsignedIntValue];
+    indicesVector.push_back(static_cast<size_t>(idx));
   }
+  _bringAndroidTabsService->OpenTabsAtIndices(indicesVector, _URLLoader);
 }
 
 #pragma mark - Private

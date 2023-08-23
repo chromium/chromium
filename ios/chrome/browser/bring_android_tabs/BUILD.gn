@@ -28,6 +28,8 @@ source_set("bring_android_tabs") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/synced_sessions",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/url_loading:url_loading_params_header",
   ]
 }
 

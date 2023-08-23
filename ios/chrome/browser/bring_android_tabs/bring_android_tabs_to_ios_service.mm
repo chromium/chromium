@@ -30,6 +30,9 @@
 #import "ios/chrome/browser/synced_sessions/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/synced_sessions.h"
+#import "ios/chrome/browser/synced_sessions/synced_sessions_util.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ui/base/device_form_factor.h"
 
 namespace {
@@ -42,6 +45,9 @@ const base::TimeDelta kTimeRangeOfTabsImported = base::Days(14);
 
 // Maximum number of tabs that should be imported.
 const size_t kMaxNumberOfTabs = 20;
+// Tabs that should be loaded as soon as imported; this corresponds to the
+// maximum number of tabs fully visible in the tab grid on an iPhone device.
+const size_t kMaxNumberOfTabsForInstantLoad = 6;
 
 // Logs `status` on UMA.
 void RecordPromptAttemptStatus(PromptAttemptStatus status) {
@@ -157,6 +163,30 @@ synced_sessions::DistantTab* BringAndroidTabsToIOSService::GetTabAtIndex(
   size_t session_idx = std::get<0>(indices);
   size_t tab_idx = std::get<1>(indices);
   return synced_sessions_->GetSession(session_idx)->tabs[tab_idx].get();
+}
+
+void BringAndroidTabsToIOSService::OpenTabsAtIndices(
+    const std::vector<size_t>& indices,
+    UrlLoadingBrowserAgent* url_loader) {
+  size_t tab_count = indices.size();
+  for (size_t i = 0; i < tab_count; i++) {
+    if (i < kMaxNumberOfTabsForInstantLoad) {
+      OpenDistantTabInBackground(GetTabAtIndex(indices[i]), NO, url_loader,
+                                 UrlLoadStrategy::NORMAL);
+    } else {
+      // TODO(crbug.com/1468596): Load as an unrealized web state instead of
+      // opening.
+      OpenDistantTabInBackground(GetTabAtIndex(indices[i]), NO, url_loader,
+                                 UrlLoadStrategy::NORMAL);
+    }
+  }
+}
+
+void BringAndroidTabsToIOSService::OpenAllTabs(
+    UrlLoadingBrowserAgent* url_loader) {
+  std::vector<size_t> indices(GetNumberOfAndroidTabs());
+  std::iota(std::begin(indices), std::end(indices), 0);
+  OpenTabsAtIndices(indices, url_loader);
 }
 
 void BringAndroidTabsToIOSService::OnBringAndroidTabsPromptDisplayed() {

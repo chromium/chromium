@@ -20,7 +20,7 @@
 // correspond to the indices of the tabs the user wants to open in the
 // BringAndroidTabsToIOSService.
 - (void)tabListFromAndroidViewControllerDidTapOpenButtonWithTabIndices:
-    (NSArray*)tabIndices;
+    (NSArray<NSNumber*>*)tabIndices;
 
 @end
 
