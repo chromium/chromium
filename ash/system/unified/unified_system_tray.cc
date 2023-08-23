@@ -687,14 +687,21 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
                        ? channel_indicator_view_->GetAccessibleNameString()
                        : base::EmptyString16());
 
-  status.push_back(network_tray_view_->GetVisible()
-                       ? network_tray_view_->GetAccessibleNameString()
-                       : base::EmptyString16());
-
-  if (hotspot_tray_view_) {
-    status.push_back(hotspot_tray_view_->GetVisible()
-                         ? hotspot_tray_view_->GetAccessibleNameString()
-                         : base::EmptyString16());
+  std::u16string network_string, hotspot_string;
+  if (network_tray_view_->GetVisible()) {
+    network_string = network_tray_view_->GetAccessibleNameString();
+  }
+  if (hotspot_tray_view_ && hotspot_tray_view_->GetVisible()) {
+    hotspot_string = hotspot_tray_view_->GetAccessibleNameString();
+  }
+  if (!network_string.empty() && !hotspot_string.empty()) {
+    status.push_back(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_NETWORK_ACCESSIBLE_DESCRIPTION,
+        {hotspot_string, network_string}, /*offsets=*/nullptr));
+  } else if (!hotspot_string.empty()) {
+    status.push_back(hotspot_string);
+  } else {
+    status.push_back(network_string);
   }
 
   // For privacy string, we use either `privacy_indicators_view_` or the combo

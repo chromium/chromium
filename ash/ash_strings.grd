@@ -306,6 +306,10 @@ Style notes:
         <ph name="ime">$8<ex>Using US keyboard</ex></ph>
         <ph name="locale">$9<ex>Using English</ex></ph>
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of hotspot and network in the status tray and the information on it.">
+        <ph name="hotspot">$1<ex>Hotspot on, no devices connected</ex></ph>,
+        <ph name="network">$2<ex>Connected to Google-A, Median signal</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of privacy in the status tray and the information on it.">
         <ph name="mic">$1<ex>A virtual machine is using your microphone</ex></ph>,
         <ph name="camera">$2<ex>A virtual machine is using your camera</ex></ph>
