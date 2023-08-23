@@ -3370,7 +3370,6 @@ if (!is_android) {
         "../browser/extensions/error_console/error_console_browsertest.cc",
         "../browser/extensions/error_console/error_console_test_observer.cc",
         "../browser/extensions/error_console/error_console_test_observer.h",
-        "../browser/extensions/event_metrics_browsertest.cc",
         "../browser/extensions/events_apitest.cc",
         "../browser/extensions/extension_action_runner_browsertest.cc",
         "../browser/extensions/extension_api_frame_id_map_browsertest.cc",

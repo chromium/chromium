@@ -1350,27 +1350,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Extensions.Events.DispatchToSendToRenderer.{BackgroundContextType}"
-    units="microseconds" expires_after="2024-08-18">
-  <owner>jlulejian@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Records the time it took for the event to start dispatch in the event
-    router, until it is dispatched to the renderer for background context of
-    type {BackgroundContextType}. Emitted in the browser immediately after the
-    dispatch has been sent to the renderer layer. Values are capped at 5 minutes
-    maximum to be in line with other dispatch time related metrics. This is
-    recorded only for clients with high-resolution clocks.
-  </summary>
-  <token key="BackgroundContextType">
-    <variant name="ExtensionEventPage" summary="event page"/>
-    <variant name="ExtensionPersistentBackgroundPage"
-        summary="persistent background page"/>
-    <variant name="ExtensionServiceWorker" summary="service worker"/>
-  </token>
-</histogram>
-
 <histogram name="Extensions.Events.DispatchWithPersistentBackgroundPage"
     enum="ExtensionEvents" expires_after="never">
 <!-- expires-never: Monitoring core extensions platform behavior. -->
