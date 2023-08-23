@@ -20,6 +20,9 @@ ash::DeskTemplate* FindOtherEntryWithName(
     const base::flat_map<base::Uuid, std::unique_ptr<ash::DeskTemplate>>&
         entries);
 
+bool AreDeskTemplatesEqual(const ash::DeskTemplate* template_one,
+                           const ash::DeskTemplate* template_two);
+
 }  // namespace desks_storage::desk_template_util
 
 #endif  // COMPONENTS_DESKS_STORAGE_CORE_DESK_TEMPLATE_UTIL_H_
