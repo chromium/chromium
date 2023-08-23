@@ -38,14 +38,6 @@ class BBGenErr(Exception):
     super(BBGenErr, self).__init__(message)
 
 
-# This class is only present to accommodate certain machines on
-# chromium.android.fyi which run certain tests as instrumentation
-# tests, but not as gtests. If this discrepancy were fixed then the
-# notion could be removed.
-class TestSuiteTypes(object):  # pylint: disable=useless-object-inheritance
-  GTEST = 'gtest'
-
-
 class BaseGenerator(object):  # pylint: disable=useless-object-inheritance
   def __init__(self, bb_gen):
     self.bb_gen = bb_gen
@@ -310,7 +302,6 @@ def check_matrix_identifier(sub_suite=None,
 
 class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
   def __init__(self, args):
-    self.this_dir = THIS_DIR
     self.args = args
     self.waterfalls = None
     self.test_suites = None
