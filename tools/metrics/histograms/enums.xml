@@ -6887,8 +6887,8 @@ Called by update_autofill_enums.py.-->
   <int value="2417" label="ADDRESS_HOME_BETWEEN_STREETS_1: accepted"/>
   <int value="2432" label="ADDRESS_HOME_BETWEEN_STREETS_2: edited"/>
   <int value="2433" label="ADDRESS_HOME_BETWEEN_STREETS_2: accepted"/>
-  <int value="2448" label="SINGLE_USERNAME_FORGOT_PASSWORD: edited"/>
-  <int value="2449" label="SINGLE_USERNAME_FORGOT_PASSWORD: accepted"/>
+  <int value="2464" label="SINGLE_USERNAME_FORGOT_PASSWORD: edited"/>
+  <int value="2465" label="SINGLE_USERNAME_FORGOT_PASSWORD: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -9203,22 +9203,22 @@ Called by update_autofill_enums.py.-->
   <int value="918"
       label="ADDRESS_HOME_BETWEEN_STREETS_2 - Predictions different - Value
              agrees with both predictions"/>
-  <int value="919"
+  <int value="925"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
              agrees"/>
-  <int value="920"
+  <int value="926"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions equal - Value
              disagrees"/>
-  <int value="921"
+  <int value="927"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
              agrees with old prediction"/>
-  <int value="922"
+  <int value="928"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
              agrees with new prediction"/>
-  <int value="923"
+  <int value="929"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
              agrees with neither prediction"/>
-  <int value="924"
+  <int value="930"
       label="SINGLE_USERNAME_FORGOT_PASSWORD - Predictions different - Value
              agrees with both predictions"/>
 </enum>
@@ -9502,7 +9502,7 @@ Called by update_autofill_enums.py.-->
   <int value="144" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
   <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
   <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
-  <int value="153" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
+  <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">
