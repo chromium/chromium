@@ -91,8 +91,8 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
     [self tapSigninBottomSheetAndHistoryConfirmationDialog];
   } else {
     [self tapSigninConfirmationDialog];
+    CloseSigninManagedAccountDialogIfAny(fakeIdentity);
   }
-  CloseSigninManagedAccountDialogIfAny(fakeIdentity);
 
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(
