@@ -5850,8 +5850,10 @@ TEST_P(WallpaperControllerTest,
                                       InfoWithType(WallpaperType::kDaily));
   SimulateUserLogin(kAccountId1);
   RunAllTasksUntilIdle();
-  // Expect that one signal is sent on login.
-  EXPECT_EQ(1, observer.daily_refresh_checkpoint_count());
+  // Expect that at least one signal is sent on login. Other checkpoints may be
+  // due to the randomized start and end check times of the daily refresh
+  // scheduler.
+  EXPECT_GE(observer.daily_refresh_checkpoint_count(), 1);
 }
 
 TEST_P(
