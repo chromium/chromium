@@ -7,5 +7,12 @@ source_set("util") {
     "parcel_tracking_util.h",
     "parcel_tracking_util.mm",
   ]
-  public_deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/signin/public/base",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/signin",
+  ]
 }

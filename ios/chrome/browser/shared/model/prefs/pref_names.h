@@ -53,6 +53,7 @@ extern const char
     kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[];
 extern const char
     kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[];
+extern const char kIosParcelTrackingOptInPromptDisplayed[];
 extern const char kIosPasswordBottomSheetDismissCount[];
 extern const char kIosPreRestoreAccountInfo[];
 extern const char kIosPromosManagerActivePromos[];

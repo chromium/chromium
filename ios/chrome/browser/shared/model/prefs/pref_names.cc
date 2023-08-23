@@ -185,6 +185,11 @@ const char kIosMagicStackSegmentationShortcutsImpressionsSinceFreshness[] =
 const char kIosMagicStackSegmentationSafetyCheckImpressionsSinceFreshness[] =
     "ios.magic_stack_segmentation.safety_check_freshness";
 
+// Boolean to represent if the parcel tracking opt-in prompt has been displayed
+// for the user.
+const char kIosParcelTrackingOptInPromptDisplayed[] =
+    "ios.parcel_tracking.opt_in_prompt_displayed";
+
 // The number of consecutive times the user dismissed the password bottom sheet.
 // This gets reset to 0 whenever the user selects a password from the bottom
 // sheet or from the keyboard accessory.
