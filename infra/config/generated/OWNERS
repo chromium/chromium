@@ -19,3 +19,4 @@ per-file testing/*.pyl=*
 # without requiring an owner review. Directives will be added to enable those
 # json files to be modified by the appropriate owners.
 per-file builders/*/*/properties.json=*
+per-file builders/*/*/shadow-properties.json=*
