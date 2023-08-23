@@ -81,14 +81,15 @@ const char* const kNudgeIds[] = {
     kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId,
     kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId};
 
-// The cool down duration for speak-on-mute detection notification in seconds.
-constexpr int KSpeakOnMuteNotificationCoolDownDuration = 60;
-
 constexpr auto kRepeatedShowTimerInterval = base::Milliseconds(100);
 constexpr auto kHandleDeviceUsedWhileDisabledWaitTime = base::Milliseconds(200);
 
 // The max amount of times the "Speak-on-mute opt-in" nudge can show.
 constexpr int kSpeakOnMuteOptInNudgeMaxShownCount = 3;
+
+// The max amount of times the "Speak-on-mute" nudge can show in a
+// single session.
+constexpr int kSpeakOnMuteDetectedNudgeMaxShownCount = 4;
 
 VideoConferenceTrayController* g_controller_instance = nullptr;
 
@@ -503,11 +504,10 @@ void VideoConferenceTrayController::OnInputMuteChanged(
       method == CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter;
 
   if (mute_on) {
-    // Updates the last mic muted time and resets the should show notification
-    // flag so user gets 60 seconds cool down before speak-on-mute notification
-    // can show when they mute their microphone.
-    last_mic_muted_time_ = base::TimeTicks::Now();
-    should_show_speak_on_mute_notification = true;
+    // Resets the speak-on-mute nudge status so that notification can pop-up
+    // when mic changes to muted.
+    last_speak_on_mute_nudge_shown_time_ = base::TimeTicks();
+    speak_on_mute_nudge_shown_count_ = 0;
 
     // Attempt showing the speak-on-mute opt-in nudge when input is muted.
     MaybeShowSpeakOnMuteOptInNudge(GetVcTrayInActiveWindow());
@@ -547,9 +547,15 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
 
   const base::TimeTicks current_time = base::TimeTicks::Now();
 
-  if (should_show_speak_on_mute_notification &&
-      (current_time - last_mic_muted_time_).InSeconds() >=
-          KSpeakOnMuteNotificationCoolDownDuration) {
+  // Only shows "Speak on mute" nudge if one of the following conditions meets:
+  // 1. The nudge has never shown in the current session.
+  // 2. The nudge has not shown for maximum times in the current session and the
+  // cool down has passed.
+  if (speak_on_mute_nudge_shown_count_ == 0 ||
+      (speak_on_mute_nudge_shown_count_ <
+           kSpeakOnMuteDetectedNudgeMaxShownCount &&
+       (current_time - last_speak_on_mute_nudge_shown_time_).InSeconds() >=
+           60 * std::pow(2, speak_on_mute_nudge_shown_count_))) {
     AnchoredNudgeData nudge_data(
         kVideoConferenceTraySpeakOnMuteDetectedNudgeId,
         NudgeCatalogName::kVideoConferenceTraySpeakOnMuteDetected,
@@ -567,9 +573,9 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
     nudge_data.anchored_to_shelf = true;
     AnchoredNudgeManager::Get()->Show(nudge_data);
 
-    // Notification has shown in the current session, and we should not show it
-    // again.
-    should_show_speak_on_mute_notification = false;
+    // Updates the counter and the nudge last shown time.
+    last_speak_on_mute_nudge_shown_time_ = current_time;
+    ++speak_on_mute_nudge_shown_count_;
   }
 }
 
@@ -660,9 +666,10 @@ void VideoConferenceTrayController::UpdateWithMediaState(
     ++count_repeated_shows_;
     repeated_shows_timer_.Reset();
 
-    // Resets the should show flag for speak-on-mute notification so that
-    // notification can pop-up when new VC tray appears.
-    should_show_speak_on_mute_notification = true;
+    // Resets the speak-on-mute nudge status so that notification can pop-up
+    // when new VC tray appears.
+    last_speak_on_mute_nudge_shown_time_ = base::TimeTicks();
+    speak_on_mute_nudge_shown_count_ = 0;
   }
 
   if (state_.has_media_app != old_state.has_media_app) {
