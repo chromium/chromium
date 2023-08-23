@@ -109,7 +109,8 @@ PageContentAnnotationsServiceFactory::PageContentAnnotationsServiceFactory()
 PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
     default;
 
-KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -133,7 +134,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
   ZeroSuggestCacheService* zero_suggest_cache_service =
       ZeroSuggestCacheServiceFactory::GetForProfile(profile);
   if (optimization_guide_keyed_service && history_service) {
-    return new optimization_guide::PageContentAnnotationsService(
+    return std::make_unique<optimization_guide::PageContentAnnotationsService>(
         std::make_unique<ChromeAutocompleteProviderClient>(profile),
         g_browser_process->GetApplicationLocale(),
         optimization_guide_keyed_service, history_service, template_url_service,
