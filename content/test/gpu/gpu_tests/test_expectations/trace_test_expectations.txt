@@ -234,9 +234,10 @@ crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP
 crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP9_VP_SCALING [ RetryOnFailure ]
 crbug.com/1453832 [ win nvidia ] OverlayModeTraceTest_DirectComposition_Video_VP9_YUY2 [ RetryOnFailure ]
 
-
 # Win AMD failure since test added
 crbug.com/1446057 [ win10 amd-0x7340 angle-d3d11 ] VideoPathTraceTest_DirectComposition_Video_SW_Decode [ Failure ]
+
+crbug.com/1475318 [ monterey amd-0x679e ] TraceTest_ReflectedDiv [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
