@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests that elements panel preserves selected shadow DOM node on page refresh.\n`);
@@ -15,7 +16,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   TestRunner.runTestSuite([
     function setup(next) {
-      Common.settingForTest('showUAShadowDOM').set(true);
+      Common.Settings.settingForTest('showUAShadowDOM').set(true);
       ElementsTestRunner.expandElementsTree(next);
     },
 

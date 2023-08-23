@@ -2,12 +2,12 @@ Tests the async call stacks and framework black-boxing features working together
 
 Set timer for test function.
 Call stack:
-    0) callback2 (frameworks-with-async-callstack.js:39)
+    0) callback2 (frameworks-with-async-callstack.js:41)
   * 1) Framework_inner1 (framework.js:59)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework_willSchedule (framework.js:51)
-    2) window.callbackFromFramework (frameworks-with-async-callstack.js:19)
+    2) window.callbackFromFramework (frameworks-with-async-callstack.js:21)
   * 3) Framework_inner2 (framework.js:63)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
@@ -15,26 +15,26 @@ Call stack:
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework.doSomeAsyncChainCalls (framework.js:67)
-    2) callback1 (frameworks-with-async-callstack.js:34)
+    2) callback1 (frameworks-with-async-callstack.js:36)
   * 3) Framework.safeRun (framework.js:8)
   * 4) Framework.safeRun (framework.js:10)
-    5) timeout1 (frameworks-with-async-callstack.js:29)
+    5) timeout1 (frameworks-with-async-callstack.js:31)
     [setTimeout]
-    0) testFunction (frameworks-with-async-callstack.js:24)
+    0) testFunction (frameworks-with-async-callstack.js:26)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Printing visible call stack:
 Call stack:
-    0) callback2 (frameworks-with-async-callstack.js:39)
+    0) callback2 (frameworks-with-async-callstack.js:41)
     [setTimeout]
-    0) window.callbackFromFramework (frameworks-with-async-callstack.js:19)
+    0) window.callbackFromFramework (frameworks-with-async-callstack.js:21)
     [setTimeout]
-    0) callback1 (frameworks-with-async-callstack.js:34)
-    1) timeout1 (frameworks-with-async-callstack.js:29)
+    0) callback1 (frameworks-with-async-callstack.js:36)
+    1) timeout1 (frameworks-with-async-callstack.js:31)
     [setTimeout]
-    0) testFunction (frameworks-with-async-callstack.js:24)
+    0) testFunction (frameworks-with-async-callstack.js:26)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests stepping into/over/out with framework black-boxing.\n`);
   await TestRunner.loadLegacyModule('sources');
@@ -50,7 +52,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
   `);
 
   var frameworkRegexString = '/framework\\.js$';
-  Common.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
+  Common.Settings.settingForTest('skipStackFramesPattern').set(frameworkRegexString);
 
   SourcesTestRunner.startDebuggerTest(step1, true);
 

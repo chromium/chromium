@@ -2,5 +2,5 @@ Tests that framework blackboxing skips instant pauses (e.g. breakpoints on conso
 
 Set timer for test function.
 Call stack:
-    0) stop (frameworks-skip-break-program.js:32)
+    0) stop (frameworks-skip-break-program.js:34)
 

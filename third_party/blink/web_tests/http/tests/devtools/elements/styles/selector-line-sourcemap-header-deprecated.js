@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests that sourcemap is applied correctly when specified by the respective HTTP header.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -24,7 +26,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       }
   `);
 
-  Common.settingForTest('cssSourceMapsEnabled').set(true);
+  Common.Settings.settingForTest('cssSourceMapsEnabled').set(true);
   TestRunner.addSniffer(Bindings.CSSWorkspaceBinding.prototype, 'updateLocations', step1);
   TestRunner.evaluateInPage('addStylesheet()');
 

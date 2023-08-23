@@ -1,5 +1,5 @@
 Tests console.log() anchor location when the skip-stack-frames feature is enabled.
 
-console-log-wrapped-in-framework.js:16 direct console.log()
-console-log-wrapped-in-framework.js:17 framework log
+console-log-wrapped-in-framework.js:18 direct console.log()
+console-log-wrapped-in-framework.js:19 framework log
 

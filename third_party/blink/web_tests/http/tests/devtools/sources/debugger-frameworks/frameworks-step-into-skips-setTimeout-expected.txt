@@ -2,44 +2,44 @@ Tests that stepping into blackboxed framework will not pause on setTimeout() ins
 
 Set timer for test function.
 Call stack:
-    0) stop (frameworks-step-into-skips-setTimeout.js:35)
-    1) callback (frameworks-step-into-skips-setTimeout.js:29)
+    0) stop (frameworks-step-into-skips-setTimeout.js:37)
+    1) callback (frameworks-step-into-skips-setTimeout.js:31)
   * 2) Framework_scheduleUntilDone (framework.js:142)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework.scheduleUntilDone (framework.js:138)
-    2) testFunction (frameworks-step-into-skips-setTimeout.js:22)
+    2) testFunction (frameworks-step-into-skips-setTimeout.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepOut...
 Call stack:
-    0) callback (frameworks-step-into-skips-setTimeout.js:30)
+    0) callback (frameworks-step-into-skips-setTimeout.js:32)
   * 1) Framework_scheduleUntilDone (framework.js:142)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework.scheduleUntilDone (framework.js:138)
-    2) testFunction (frameworks-step-into-skips-setTimeout.js:22)
+    2) testFunction (frameworks-step-into-skips-setTimeout.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) callback (frameworks-step-into-skips-setTimeout.js:30)
+    0) callback (frameworks-step-into-skips-setTimeout.js:32)
   * 1) Framework_scheduleUntilDone (framework.js:142)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework.scheduleUntilDone (framework.js:138)
-    2) testFunction (frameworks-step-into-skips-setTimeout.js:22)
+    2) testFunction (frameworks-step-into-skips-setTimeout.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) callback (frameworks-step-into-skips-setTimeout.js:27)
+    0) callback (frameworks-step-into-skips-setTimeout.js:29)
   * 1) Framework_scheduleUntilDone (framework.js:142)
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
@@ -47,7 +47,7 @@ Call stack:
     [setTimeout]
   * 0) Framework.schedule (framework.js:45)
   * 1) Framework.scheduleUntilDone (framework.js:138)
-    2) testFunction (frameworks-step-into-skips-setTimeout.js:22)
+    2) testFunction (frameworks-step-into-skips-setTimeout.js:24)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

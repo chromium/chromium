@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   await TestRunner.loadLegacyModule('console');
@@ -16,7 +17,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   TestRunner.addSniffer(Bindings.IgnoreListManager.prototype, 'patternChangeFinishedForTests', step1);
   var frameworkRegexString = '.*';
-  Common.settingForTest('skipStackFramesPattern').set('.*');
+  Common.Settings.settingForTest('skipStackFramesPattern').set('.*');
 
   async function step1() {
     TestRunner.addResult('Evaluating script with source map');

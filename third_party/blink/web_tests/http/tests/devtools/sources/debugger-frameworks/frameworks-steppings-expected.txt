@@ -2,7 +2,7 @@ Tests stepping into/over/out with framework black-boxing.
 
 Set timer for test function.
 Call stack:
-    0) testFunction (frameworks-steppings.js:19)
+    0) testFunction (frameworks-steppings.js:21)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
@@ -10,49 +10,49 @@ Call stack:
 Executing StepInto...
 Executing StepInto...
 Call stack:
-    0) callback1 (frameworks-steppings.js:21)
+    0) callback1 (frameworks-steppings.js:23)
   * 1) Framework.safeRun (framework.js:8)
-    2) testFunction (frameworks-steppings.js:20)
+    2) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) callback2 (frameworks-steppings.js:27)
-  * 1) Framework.safeRun (framework.js:8)
-  * 2) Framework.safeRun (framework.js:10)
-    3) callback1 (frameworks-steppings.js:21)
-  * 4) Framework.safeRun (framework.js:8)
-    5) testFunction (frameworks-steppings.js:20)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepInto...
-Call stack:
-    0) callback2 (frameworks-steppings.js:28)
+    0) callback2 (frameworks-steppings.js:29)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:10)
-    3) callback1 (frameworks-steppings.js:21)
+    3) callback1 (frameworks-steppings.js:23)
   * 4) Framework.safeRun (framework.js:8)
-    5) testFunction (frameworks-steppings.js:20)
+    5) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) callback3 (frameworks-steppings.js:33)
+    0) callback2 (frameworks-steppings.js:30)
+  * 1) Framework.safeRun (framework.js:8)
+  * 2) Framework.safeRun (framework.js:10)
+    3) callback1 (frameworks-steppings.js:23)
+  * 4) Framework.safeRun (framework.js:8)
+    5) testFunction (frameworks-steppings.js:22)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Call stack:
+    0) callback3 (frameworks-steppings.js:35)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:13)
   * 3) Framework.safeRun (framework.js:10)
-    4) callback2 (frameworks-steppings.js:28)
+    4) callback2 (frameworks-steppings.js:30)
   * 5) Framework.safeRun (framework.js:8)
   * 6) Framework.safeRun (framework.js:10)
-    7) callback1 (frameworks-steppings.js:21)
+    7) callback1 (frameworks-steppings.js:23)
   * 8) Framework.safeRun (framework.js:8)
-    9) testFunction (frameworks-steppings.js:20)
+    9) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
@@ -62,71 +62,50 @@ Executing StepInto...
 Executing StepInto...
 Executing StepInto...
 Call stack:
-    0) callback4 (frameworks-steppings.js:41)
+    0) callback4 (frameworks-steppings.js:43)
   * 1) Framework_bound (framework.js:105)
   * 2) Framework_bound (framework.js:105)
   * 3) Framework_bound (framework.js:105)
   * 4) Framework.safeRun (framework.js:8)
-    5) callback3 (frameworks-steppings.js:36)
+    5) callback3 (frameworks-steppings.js:38)
   * 6) Framework.safeRun (framework.js:8)
   * 7) Framework.safeRun (framework.js:13)
   * 8) Framework.safeRun (framework.js:10)
-    9) callback2 (frameworks-steppings.js:28)
+    9) callback2 (frameworks-steppings.js:30)
   * 10) Framework.safeRun (framework.js:8)
   * 11) Framework.safeRun (framework.js:10)
-    12) callback1 (frameworks-steppings.js:21)
+    12) callback1 (frameworks-steppings.js:23)
   * 13) Framework.safeRun (framework.js:8)
-    14) testFunction (frameworks-steppings.js:20)
+    14) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0)  (frameworks-steppings.js:42)
+    0)  (frameworks-steppings.js:44)
   * 1) Framework.safeRun (framework.js:8)
   * 2) Framework.safeRun (framework.js:10)
-    3) callback4 (frameworks-steppings.js:41)
+    3) callback4 (frameworks-steppings.js:43)
   * 4) Framework_bound (framework.js:105)
   * 5) Framework_bound (framework.js:105)
   * 6) Framework_bound (framework.js:105)
   * 7) Framework.safeRun (framework.js:8)
-    8) callback3 (frameworks-steppings.js:36)
+    8) callback3 (frameworks-steppings.js:38)
   * 9) Framework.safeRun (framework.js:8)
   * 10) Framework.safeRun (framework.js:13)
   * 11) Framework.safeRun (framework.js:10)
-    12) callback2 (frameworks-steppings.js:28)
+    12) callback2 (frameworks-steppings.js:30)
   * 13) Framework.safeRun (framework.js:8)
   * 14) Framework.safeRun (framework.js:10)
-    15) callback1 (frameworks-steppings.js:21)
+    15) callback1 (frameworks-steppings.js:23)
   * 16) Framework.safeRun (framework.js:8)
-    17) testFunction (frameworks-steppings.js:20)
+    17) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
-Executing StepInto...
-Call stack:
-    0) callback4 (frameworks-steppings.js:45)
-  * 1) Framework_bound (framework.js:105)
-  * 2) Framework_bound (framework.js:105)
-  * 3) Framework_bound (framework.js:105)
-  * 4) Framework.safeRun (framework.js:8)
-    5) callback3 (frameworks-steppings.js:36)
-  * 6) Framework.safeRun (framework.js:8)
-  * 7) Framework.safeRun (framework.js:13)
-  * 8) Framework.safeRun (framework.js:10)
-    9) callback2 (frameworks-steppings.js:28)
-  * 10) Framework.safeRun (framework.js:8)
-  * 11) Framework.safeRun (framework.js:10)
-    12) callback1 (frameworks-steppings.js:21)
-  * 13) Framework.safeRun (framework.js:8)
-    14) testFunction (frameworks-steppings.js:20)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
 Executing StepInto...
 Call stack:
     0) callback4 (frameworks-steppings.js:47)
@@ -134,53 +113,74 @@ Call stack:
   * 2) Framework_bound (framework.js:105)
   * 3) Framework_bound (framework.js:105)
   * 4) Framework.safeRun (framework.js:8)
-    5) callback3 (frameworks-steppings.js:36)
+    5) callback3 (frameworks-steppings.js:38)
   * 6) Framework.safeRun (framework.js:8)
   * 7) Framework.safeRun (framework.js:13)
   * 8) Framework.safeRun (framework.js:10)
-    9) callback2 (frameworks-steppings.js:28)
+    9) callback2 (frameworks-steppings.js:30)
   * 10) Framework.safeRun (framework.js:8)
   * 11) Framework.safeRun (framework.js:10)
-    12) callback1 (frameworks-steppings.js:21)
+    12) callback1 (frameworks-steppings.js:23)
   * 13) Framework.safeRun (framework.js:8)
-    14) testFunction (frameworks-steppings.js:20)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOut...
-Call stack:
-    0) callback3 (frameworks-steppings.js:37)
-  * 1) Framework.safeRun (framework.js:8)
-  * 2) Framework.safeRun (framework.js:13)
-  * 3) Framework.safeRun (framework.js:10)
-    4) callback2 (frameworks-steppings.js:28)
-  * 5) Framework.safeRun (framework.js:8)
-  * 6) Framework.safeRun (framework.js:10)
-    7) callback1 (frameworks-steppings.js:21)
-  * 8) Framework.safeRun (framework.js:8)
-    9) testFunction (frameworks-steppings.js:20)
-    [setTimeout]
-    0) scheduleTestFunction <omitted>
-    <... skipped remaining frames ...>
-
-Executing StepOver...
-Call stack:
-    0) callback2 (frameworks-steppings.js:29)
-  * 1) Framework.safeRun (framework.js:8)
-  * 2) Framework.safeRun (framework.js:10)
-    3) callback1 (frameworks-steppings.js:21)
-  * 4) Framework.safeRun (framework.js:8)
-    5) testFunction (frameworks-steppings.js:20)
+    14) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>
 
 Executing StepInto...
 Call stack:
-    0) callback1 (frameworks-steppings.js:22)
+    0) callback4 (frameworks-steppings.js:49)
+  * 1) Framework_bound (framework.js:105)
+  * 2) Framework_bound (framework.js:105)
+  * 3) Framework_bound (framework.js:105)
+  * 4) Framework.safeRun (framework.js:8)
+    5) callback3 (frameworks-steppings.js:38)
+  * 6) Framework.safeRun (framework.js:8)
+  * 7) Framework.safeRun (framework.js:13)
+  * 8) Framework.safeRun (framework.js:10)
+    9) callback2 (frameworks-steppings.js:30)
+  * 10) Framework.safeRun (framework.js:8)
+  * 11) Framework.safeRun (framework.js:10)
+    12) callback1 (frameworks-steppings.js:23)
+  * 13) Framework.safeRun (framework.js:8)
+    14) testFunction (frameworks-steppings.js:22)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOut...
+Call stack:
+    0) callback3 (frameworks-steppings.js:39)
   * 1) Framework.safeRun (framework.js:8)
-    2) testFunction (frameworks-steppings.js:20)
+  * 2) Framework.safeRun (framework.js:13)
+  * 3) Framework.safeRun (framework.js:10)
+    4) callback2 (frameworks-steppings.js:30)
+  * 5) Framework.safeRun (framework.js:8)
+  * 6) Framework.safeRun (framework.js:10)
+    7) callback1 (frameworks-steppings.js:23)
+  * 8) Framework.safeRun (framework.js:8)
+    9) testFunction (frameworks-steppings.js:22)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepOver...
+Call stack:
+    0) callback2 (frameworks-steppings.js:31)
+  * 1) Framework.safeRun (framework.js:8)
+  * 2) Framework.safeRun (framework.js:10)
+    3) callback1 (frameworks-steppings.js:23)
+  * 4) Framework.safeRun (framework.js:8)
+    5) testFunction (frameworks-steppings.js:22)
+    [setTimeout]
+    0) scheduleTestFunction <omitted>
+    <... skipped remaining frames ...>
+
+Executing StepInto...
+Call stack:
+    0) callback1 (frameworks-steppings.js:24)
+  * 1) Framework.safeRun (framework.js:8)
+    2) testFunction (frameworks-steppings.js:22)
     [setTimeout]
     0) scheduleTestFunction <omitted>
     <... skipped remaining frames ...>

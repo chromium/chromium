@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that XMLHttpRequest Logging works when Enabled and doesn't show logs when Disabled for asynchronous XHRs.\n`);
@@ -18,7 +20,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   }
 
   function step1() {
-    Common.settingForTest('monitoringXHREnabled').set(true);
+    Common.Settings.settingForTest('monitoringXHREnabled').set(true);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging enabled: ');
@@ -32,7 +34,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   }
 
   function step2() {
-    Common.settingForTest('monitoringXHREnabled').set(false);
+    Common.Settings.settingForTest('monitoringXHREnabled').set(false);
     makeRequest(() => {
       TestRunner.deprecatedRunAfterPendingDispatches(async () => {
         TestRunner.addResult('XHR with logging disabled: ');

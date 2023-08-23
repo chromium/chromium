@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Common from 'devtools/core/common/common.js';
 
 (async function() {
   TestRunner.addResult(`Tests the console timestamp setting.\n`);
@@ -18,7 +19,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   var tzOffset = new Date(baseDate).getTimezoneOffset() * 60 * 1000;
   var baseTimestamp = 1400000000000 + tzOffset;
 
-  Common.settingForTest('consoleGroupSimilar').set(false);
+  Common.Settings.settingForTest('consoleGroupSimilar').set(false);
 
   function addMessageWithFixedTimestamp(messageText, timestamp, type) {
     var message = new SDK.ConsoleModel.ConsoleMessage(
@@ -54,14 +55,14 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.addResult('Console messages with timestamps enabled:');
-  Common.settingForTest('consoleTimestampsEnabled').set(true);
+  Common.Settings.settingForTest('consoleTimestampsEnabled').set(true);
 
   addMessageWithFixedTimestamp('<After>', baseTimestamp + 1000);
   addMessageWithFixedTimestamp('<After>', baseTimestamp + 1000);
   addMessageWithFixedTimestamp('<After>', baseTimestamp + 1456);
 
-  Common.settingForTest('consoleTimestampsEnabled').set(false);
-  Common.settingForTest('consoleTimestampsEnabled').set(true);
+  Common.Settings.settingForTest('consoleTimestampsEnabled').set(false);
+  Common.Settings.settingForTest('consoleTimestampsEnabled').set(true);
 
   await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();

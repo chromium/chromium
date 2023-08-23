@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(`Tests event listeners output in the Elements sidebar panel.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -50,7 +52,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       setupEventListeners();
   `);
 
-  Common.settingForTest('showEventListenersForAncestors').set(true);
+  Common.Settings.settingForTest('showEventListenersForAncestors').set(true);
   ElementsTestRunner.selectNodeWithId('node', step1);
 
   function step1() {
@@ -62,7 +64,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   }
 
   function step3() {
-    Common.settingForTest('showEventListenersForAncestors').set(false);
+    Common.Settings.settingForTest('showEventListenersForAncestors').set(false);
     TestRunner.addResult('Listeners for selected node only(should be no listeners):');
     ElementsTestRunner.expandAndDumpSelectedElementEventListeners(step4);
   }

@@ -3,43 +3,43 @@ Tests event listeners output in the Elements sidebar panel.
 
 ======== click ========
 == Raw
-[expanded] documentRemoveevent-listener-sidebar.js:18
+[expanded] documentRemoveevent-listener-sidebar.js:20
     useCapture: false
     passive: false
     once: false
     handler: function documentClickHandler(event) { console.log("click - document - attribute"); }
 == Raw
-[expanded] documentRemoveevent-listener-sidebar.js:43
+[expanded] documentRemoveevent-listener-sidebar.js:45
     useCapture: true
     passive: false
     once: false
     handler: function() { console.log("click - document - handleEvent"); }
 == Raw
-[expanded] documentRemoveevent-listener-sidebar.js:31
+[expanded] documentRemoveevent-listener-sidebar.js:33
     useCapture: true
     passive: false
     once: false
     handler: function(event) { console.log("click - document - capturing"); }
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:29
+[expanded] button#nodeRemoveevent-listener-sidebar.js:31
     useCapture: false
     passive: false
     once: false
     handler: function(event) { console.log("click - button - bubbling (registered after attribute)"); }
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:28
+[expanded] button#nodeRemoveevent-listener-sidebar.js:30
     useCapture: false
     passive: false
     once: false
     handler: function(event) { console.log("click - button - attribute"); }
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:24
+[expanded] button#nodeRemoveevent-listener-sidebar.js:26
     useCapture: false
     passive: false
     once: false
     handler: function clickHandler(event) { console.log("click - button - bubbling (registered before attribute)"); }
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:27
+[expanded] button#nodeRemoveevent-listener-sidebar.js:29
     useCapture: true
     passive: false
     once: false
@@ -47,7 +47,7 @@ Tests event listeners output in the Elements sidebar panel.
 
 ======== custom event ========
 == Raw
-[expanded] bodyRemoveevent-listener-sidebar.js:22
+[expanded] bodyRemoveevent-listener-sidebar.js:24
     useCapture: true
     passive: false
     once: true
@@ -55,7 +55,7 @@ Tests event listeners output in the Elements sidebar panel.
 
 ======== hover ========
 == Raw
-[expanded] button#nodeRemoveevent-listener-sidebar.js:26
+[expanded] button#nodeRemoveevent-listener-sidebar.js:28
     useCapture: false
     passive: false
     once: false
@@ -63,7 +63,7 @@ Tests event listeners output in the Elements sidebar panel.
 
 ======== wheel ========
 == Raw
-[expanded] bodyRemoveToggle Passiveevent-listener-sidebar.js:22
+[expanded] bodyRemoveToggle Passiveevent-listener-sidebar.js:24
     useCapture: false
     passive: true
     once: false

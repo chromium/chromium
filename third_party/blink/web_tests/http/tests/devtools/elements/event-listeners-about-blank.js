@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Common from 'devtools/core/common/common.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests event listeners output in the Elements sidebar panel when the listeners are added on an element in about:blank page.\n`);
@@ -28,7 +30,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       }
   `);
 
-  Common.settingForTest('showEventListenersForAncestors').set(true);
+  Common.Settings.settingForTest('showEventListenersForAncestors').set(true);
   TestRunner.evaluateInPage('setupEventListeners()', step1);
 
   function step1() {
