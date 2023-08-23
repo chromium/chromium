@@ -111,7 +111,8 @@ class EventRouter : public KeyedService,
    public:
     virtual ~TestObserver() = default;
     virtual void OnWillDispatchEvent(const Event& event) = 0;
-    virtual void OnDidDispatchEventToProcess(const Event& event) = 0;
+    virtual void OnDidDispatchEventToProcess(const Event& event,
+                                             int process_id) = 0;
   };
 
   // Gets the EventRouter for |browser_context|.

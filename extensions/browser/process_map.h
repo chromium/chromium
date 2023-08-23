@@ -188,9 +188,9 @@ class ProcessMap : public KeyedService {
   //     moment, and once OOP iframes exist then there won't even be such a
   //     thing as an unblessed_extension context.
   //   - For anything else, web_page.
-  Feature::Context GetMostLikelyContextType(const Extension* extension,
-                                            int process_id,
-                                            const GURL* url) const;
+  virtual Feature::Context GetMostLikelyContextType(const Extension* extension,
+                                                    int process_id,
+                                                    const GURL* url) const;
 
   void set_is_lock_screen_context(bool is_lock_screen_context) {
     is_lock_screen_context_ = is_lock_screen_context;

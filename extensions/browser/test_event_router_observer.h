@@ -34,7 +34,7 @@ class TestEventRouterObserver : public EventRouter::TestObserver {
  private:
   // EventRouter::TestObserver:
   void OnWillDispatchEvent(const Event& event) override;
-  void OnDidDispatchEventToProcess(const Event& event) override;
+  void OnDidDispatchEventToProcess(const Event& event, int process_id) override;
 
   EventMap events_;
   EventMap dispatched_events_;

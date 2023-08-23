@@ -27,7 +27,8 @@ void TestEventRouterObserver::OnWillDispatchEvent(const Event& event) {
   events_[event.event_name] = event.DeepCopy();
 }
 
-void TestEventRouterObserver::OnDidDispatchEventToProcess(const Event& event) {
+void TestEventRouterObserver::OnDidDispatchEventToProcess(const Event& event,
+                                                          int process_id) {
   DCHECK(!event.event_name.empty());
   dispatched_events_[event.event_name] = event.DeepCopy();
 }

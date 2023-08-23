@@ -232,7 +232,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
   }
 
   // extensions::EventRouter::TestObserver:
-  void OnDidDispatchEventToProcess(const extensions::Event& event) override {}
+  void OnDidDispatchEventToProcess(const extensions::Event& event,
+                                   int process_id) override {}
 
   bool WaitFor(Profile* profile,
                const std::string& event_name,

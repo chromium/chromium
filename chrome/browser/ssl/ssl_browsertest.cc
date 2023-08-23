@@ -2335,7 +2335,8 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestExtensionEvents) {
       event_names_.push_back(event.event_name);
     }
 
-    void OnDidDispatchEventToProcess(const extensions::Event& event) override {}
+    void OnDidDispatchEventToProcess(const extensions::Event& event,
+                                     int process_id) override {}
 
     const std::vector<std::string>& event_names() const { return event_names_; }
 

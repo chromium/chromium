@@ -146,6 +146,15 @@ LazyContextId LazyContextIdForListener(const EventListener* listener,
 // A global identifier used to distinguish extension events.
 base::AtomicSequenceNumber g_extension_event_id;
 
+// Returns whether an event would cross the incognito boundary. e.g.
+// incognito->regular or regular->incognito. This is allowed for some extensions
+// that enable spanning-mode but is always disallowed for webUI.
+// |context| refers to the BrowserContext of the receiver of the event.
+bool CrossesIncognito(BrowserContext* context, const Event& event) {
+  return event.restrict_to_browser_context &&
+         context != event.restrict_to_browser_context;
+}
+
 }  // namespace
 
 const char EventRouter::kRegisteredLazyEvents[] = "events";
@@ -256,8 +265,7 @@ bool EventRouter::CanDispatchEventToBrowserContext(BrowserContext* context,
                                                    const Event& event) {
   // Is this event from a different browser context than the renderer (ie, an
   // incognito tab event sent to a normal process, or vice versa).
-  bool crosses_incognito = event.restrict_to_browser_context &&
-                           context != event.restrict_to_browser_context;
+  bool crosses_incognito = CrossesIncognito(context, event);
   if (!crosses_incognito)
     return true;
   return ExtensionsBrowserClient::Get()->CanExtensionCrossIncognito(extension,
@@ -1036,6 +1044,12 @@ void EventRouter::DispatchEventToProcess(
     if (!CanDispatchEventToBrowserContext(listener_context, extension, event)) {
       return;
     }
+  } else {
+    // Non-extension (e.g. WebUI and web pages) checks. In general we don't
+    // allow context-bound events to cross the incognito barrier.
+    if (CrossesIncognito(listener_context, event)) {
+      return;
+    }
   }
 
   // TODO(ortuno): |listener_url| is passed in from the renderer so it can't
@@ -1106,8 +1120,9 @@ void EventRouter::DispatchEventToProcess(
                                                 worker_thread_id});
   }
 
-  for (TestObserver& observer : test_observers_)
-    observer.OnDidDispatchEventToProcess(event);
+  for (TestObserver& observer : test_observers_) {
+    observer.OnDidDispatchEventToProcess(event, process->GetID());
+  }
 
   // TODO(lazyboy): This is wrong for extensions SW events. We need to:
   // 1. Increment worker ref count

@@ -294,7 +294,8 @@ class EventObserver : public EventRouter::TestObserver {
       run_loop_.Quit();
     }
   }
-  void OnDidDispatchEventToProcess(const Event& event) override {}
+  void OnDidDispatchEventToProcess(const Event& event,
+                                   int process_id) override {}
 
   std::map<std::string, size_t> event_count_;
   std::string expected_event_name_;

@@ -8510,6 +8510,7 @@ test("unit_tests") {
       "../browser/extensions/api/search/search_api_unittest.cc",
       "../browser/extensions/api/settings_private/generated_pref_test_base.cc",
       "../browser/extensions/api/settings_private/generated_pref_test_base.h",
+      "../browser/extensions/api/settings_private/settings_private_event_router_unittest.cc",
       "../browser/extensions/api/socket/socket_api_unittest.cc",
       "../browser/extensions/api/socket/tcp_socket_unittest.cc",
       "../browser/extensions/api/socket/tls_socket_unittest.cc",

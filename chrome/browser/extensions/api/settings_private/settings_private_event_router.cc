@@ -161,9 +161,10 @@ void SettingsPrivateEventRouter::SendPrefChange(const std::string& pref_name) {
 
   auto args(api::settings_private::OnPrefsChanged::Create(prefs));
 
-  std::unique_ptr<Event> extension_event(new Event(
-      events::SETTINGS_PRIVATE_ON_PREFS_CHANGED,
-      api::settings_private::OnPrefsChanged::kEventName, std::move(args)));
+  std::unique_ptr<Event> extension_event =
+      std::make_unique<Event>(events::SETTINGS_PRIVATE_ON_PREFS_CHANGED,
+                              api::settings_private::OnPrefsChanged::kEventName,
+                              std::move(args), context_);
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
