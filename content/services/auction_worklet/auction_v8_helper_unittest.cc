@@ -94,7 +94,11 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const absl::optional<std::string>& auction_signals_json,
       const absl::optional<std::string>& per_buyer_signals_json,
       const absl::optional<GURL>& direct_from_seller_per_buyer_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_per_buyer_signals_header_ad_slot,
       const absl::optional<GURL>& direct_from_seller_auction_signals,
+      const absl::optional<std::string>&
+          direct_from_seller_auction_signals_header_ad_slot,
       const std::string& seller_signals_json,
       mojom::KAnonymityBidMode kanon_mode,
       bool bid_is_kanon,

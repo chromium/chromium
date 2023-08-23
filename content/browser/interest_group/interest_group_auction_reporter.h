@@ -46,6 +46,7 @@ namespace content {
 class AuctionWorkletManager;
 struct BiddingAndAuctionResponse;
 class BrowserContext;
+class HeaderDirectFromSellerSignals;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
@@ -118,6 +119,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
         auction_config;
 
     std::unique_ptr<SubresourceUrlBuilder> subresource_url_builder;
+    std::unique_ptr<HeaderDirectFromSellerSignals>
+        direct_from_seller_signals_header_ad_slot;
 
     // Bid fed as input to the seller. If this is the top level seller and the
     // bid came from a component auction, it's the (optionally) modified bid

@@ -25,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/interest_group/auction_worklet_manager.h"
+#include "content/browser/interest_group/header_direct_from_seller_signals.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/mock_auction_process_manager.h"
@@ -65,6 +66,9 @@ InterestGroupAuctionReporter::SellerWinningBidInfo CreateSellerWinningBidInfo(
   // return nothing, though.
   out.subresource_url_builder = std::make_unique<SubresourceUrlBuilder>(
       /*direct_from_seller_signals=*/absl::nullopt);
+  // Also must not be null.
+  out.direct_from_seller_signals_header_ad_slot =
+      std::make_unique<HeaderDirectFromSellerSignals>();
 
   // The specific values these are assigned to don't matter for these tests, but
   // they don't have default initializers, so have to set them to placate memory

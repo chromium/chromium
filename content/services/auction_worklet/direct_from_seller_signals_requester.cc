@@ -132,6 +132,18 @@ v8::Local<v8::Value> DirectFromSellerSignalsRequester::Result::GetSignals(
   return v8_result.ToLocalChecked();
 }
 
+bool DirectFromSellerSignalsRequester::Result::IsNull() const {
+  if (absl::holds_alternative<ErrorString>(response_or_error_)) {
+    return false;
+  }
+
+  DCHECK(absl::holds_alternative<scoped_refptr<ResponseString>>(
+      response_or_error_));
+  scoped_refptr<ResponseString> response =
+      absl::get<scoped_refptr<ResponseString>>(response_or_error_);
+  return response == nullptr;
+}
+
 DirectFromSellerSignalsRequester::Result::ResponseString::ResponseString(
     std::string&& other)
     : value_(std::move(other)) {}

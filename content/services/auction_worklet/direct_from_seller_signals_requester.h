@@ -68,6 +68,10 @@ class CONTENT_EXPORT DirectFromSellerSignalsRequester {
                                     v8::Local<v8::Context> context,
                                     std::vector<std::string>& errors) const;
 
+    // Returns true if this Result is a null value, and false otherwise. Returns
+    // false if Result is an error.
+    bool IsNull() const;
+
    private:
     // Private methods are called by DirectFromSellerSignalsRequester.
     friend DirectFromSellerSignalsRequester;
