@@ -89,7 +89,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   friend class FedCmAccountSelectionViewBrowserTest;
 
   // Creates the bubble. Sets the bubble's accessible title. Registers any
-  // observers.
+  // observers. May fail and return nullptr if there is no browser or tab strip
+  // model.
   virtual views::Widget* CreateBubbleWithAccessibleTitle(
       const std::u16string& top_frame_etld_plus_one,
       const absl::optional<std::u16string>& iframe_etld_plus_one,
