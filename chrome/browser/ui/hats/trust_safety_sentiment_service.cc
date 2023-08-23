@@ -367,8 +367,7 @@ void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
       (chrome::GetChannel() == version_info::Channel::STABLE) ? true : false;
   bool blockCookies =
       HostContentSettingsMapFactory::GetForProfile(profile_)
-          ->GetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                     /*provider_id=*/nullptr) ==
+          ->GetDefaultContentSetting(ContentSettingsType::COOKIES) ==
       ContentSetting::CONTENT_SETTING_BLOCK;
   blockCookies =
       blockCookies ||

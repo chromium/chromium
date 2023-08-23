@@ -131,8 +131,9 @@ class HostContentSettingsMap : public content_settings::Observer,
   // assigned to it.
   //
   // This may be called on any thread.
-  ContentSetting GetDefaultContentSetting(ContentSettingsType content_type,
-                                          std::string* provider_id) const;
+  ContentSetting GetDefaultContentSetting(
+      ContentSettingsType content_type,
+      std::string* provider_id = nullptr) const;
 
   // Returns a single |ContentSetting| which applies to the given URLs.  Note
   // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,

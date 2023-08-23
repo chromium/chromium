@@ -74,8 +74,7 @@ constexpr char kIsPrivateAggregationAllowedHistogram[] =
     "PrivacySandbox.IsPrivateAggregationAllowed";
 
 bool IsCookiesClearOnExitEnabled(HostContentSettingsMap* map) {
-  return map->GetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                       /*provider_id=*/nullptr) ==
+  return map->GetDefaultContentSetting(ContentSettingsType::COOKIES) ==
          ContentSetting::CONTENT_SETTING_SESSION_ONLY;
 }
 
@@ -218,7 +217,7 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
       static_cast<content_settings::CookieControlsMode>(
           pref_service_->GetInteger(prefs::kCookieControlsMode));
   const auto default_content_setting =
-      cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+      cookie_settings_->GetDefaultCookieSetting();
 
   const bool third_party_cookies_blocked =
       default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK ||

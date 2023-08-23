@@ -209,12 +209,12 @@ TEST_F(HostContentSettingsMapTest, DefaultValues) {
   // Check setting defaults.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
   EXPECT_EQ(CONTENT_SETTING_ALLOW, host_content_settings_map->GetContentSetting(
                                        GURL(chrome::kChromeUINewTabURL),
                                        GURL(chrome::kChromeUINewTabURL),
@@ -224,7 +224,7 @@ TEST_F(HostContentSettingsMapTest, DefaultValues) {
       ContentSettingsType::POPUPS, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::POPUPS, nullptr));
+                ContentSettingsType::POPUPS));
 }
 
 TEST_F(HostContentSettingsMapTest, IndividualSettings) {
@@ -659,7 +659,7 @@ TEST_F(HostContentSettingsMapTest, NestedSettings) {
   // Test nested patterns for one type.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
   host_content_settings_map->SetContentSettingCustomScope(
       pattern1, ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
@@ -689,7 +689,7 @@ TEST_F(HostContentSettingsMapTest, NestedSettings) {
       ContentSettingsType::COOKIES);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 
   GURL https_host1("https://b.example.com/");
   GURL https_host2("https://a.b.example.com/");
@@ -970,13 +970,12 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritDefault) {
 
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::GEOLOCATION, nullptr));
+                ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(CONTENT_SETTING_ASK,
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::GEOLOCATION));
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            otr_map->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                              nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetDefaultContentSetting(
+                                     ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       otr_map->GetContentSetting(host, host, ContentSettingsType::GEOLOCATION));
@@ -986,13 +985,12 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritDefault) {
       ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::GEOLOCATION, nullptr));
+                ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::GEOLOCATION));
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            otr_map->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                              nullptr));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, otr_map->GetDefaultContentSetting(
+                                       ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       otr_map->GetContentSetting(host, host, ContentSettingsType::GEOLOCATION));
@@ -1003,13 +1001,12 @@ TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritDefault) {
       ContentSettingsType::GEOLOCATION, CONTENT_SETTING_ALLOW);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::GEOLOCATION, nullptr));
+                ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::GEOLOCATION));
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            otr_map->GetDefaultContentSetting(ContentSettingsType::GEOLOCATION,
-                                              nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetDefaultContentSetting(
+                                     ContentSettingsType::GEOLOCATION));
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       otr_map->GetContentSetting(host, host, ContentSettingsType::GEOLOCATION));
@@ -1178,37 +1175,37 @@ TEST_F(HostContentSettingsMapTest, ManagedDefaultContentSetting) {
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
 
   // Set managed-default-content-setting through the coresponding preferences.
   prefs->SetManagedPref(prefs::kManagedDefaultJavaScriptSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
 
   // Remove managed-default-content-settings-preferences.
   prefs->RemoveManagedPref(prefs::kManagedDefaultJavaScriptSetting);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::ADS, nullptr));
+                ContentSettingsType::ADS));
 
   // Set managed-default-content-setting through the coresponding preferences.
   prefs->SetManagedPref(prefs::kManagedDefaultAdsSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::ADS, nullptr));
+                ContentSettingsType::ADS));
 
   // Remove managed-default-content-settings-preferences.
   prefs->RemoveManagedPref(prefs::kManagedDefaultAdsSetting);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::ADS, nullptr));
+                ContentSettingsType::ADS));
 }
 
 TEST_F(HostContentSettingsMapTest,
@@ -1226,7 +1223,7 @@ TEST_F(HostContentSettingsMapTest,
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetContentSetting(
@@ -1262,7 +1259,7 @@ TEST_F(HostContentSettingsMapTest,
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::JAVASCRIPT, nullptr));
+                ContentSettingsType::JAVASCRIPT));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(
@@ -1296,20 +1293,20 @@ TEST_F(HostContentSettingsMapTest, OverwrittenDefaultContentSetting) {
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 
   // Set preference to manage the default-content-setting for Cookies.
   prefs->SetManagedPref(prefs::kManagedDefaultCookiesSetting,
                         std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 
   // Remove the preference to manage the default-content-setting for Cookies.
   prefs->RemoveManagedPref(prefs::kManagedDefaultCookiesSetting);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 }
 
 // If a setting for a default-content-setting-type is set while the type is
@@ -1326,18 +1323,18 @@ TEST_F(HostContentSettingsMapTest, SettingDefaultContentSettingsWhenManaged) {
                         std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 
   host_content_settings_map->SetDefaultContentSetting(
       ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 
   prefs->RemoveManagedPref(prefs::kManagedDefaultCookiesSetting);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             host_content_settings_map->GetDefaultContentSetting(
-                ContentSettingsType::COOKIES, nullptr));
+                ContentSettingsType::COOKIES));
 }
 
 TEST_F(HostContentSettingsMapTest, GetContentSetting) {

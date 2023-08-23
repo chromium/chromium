@@ -63,7 +63,7 @@ bool g_prompt_disabled_for_tests = false;
 bool AreThirdPartyCookiesBlocked(
     content_settings::CookieSettings* cookie_settings) {
   const auto default_content_setting =
-      cookie_settings->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+      cookie_settings->GetDefaultCookieSetting();
   return cookie_settings->ShouldBlockThirdPartyCookies() ||
          default_content_setting == ContentSetting::CONTENT_SETTING_BLOCK;
 }
@@ -826,8 +826,7 @@ void PrivacySandboxService::LogPrivacySandboxState() {
 
   auto fps_status = FirstPartySetsState::kFpsNotRelevant;
   if (cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
-          CONTENT_SETTING_BLOCK) {
+      cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK) {
     fps_status =
         pref_service_->GetBoolean(prefs::kPrivacySandboxFirstPartySetsEnabled)
             ? FirstPartySetsState::kFpsEnabled
@@ -1035,8 +1034,7 @@ absl::optional<net::SchemefulSite> PrivacySandboxService::GetFirstPartySetOwner(
   // If FPS is not affecting cookie access, then there are effectively no
   // first party sets.
   if (!(cookie_settings_->ShouldBlockThirdPartyCookies() &&
-        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr) !=
-            CONTENT_SETTING_BLOCK &&
+        cookie_settings_->GetDefaultCookieSetting() != CONTENT_SETTING_BLOCK &&
         base::FeatureList::IsEnabled(
             privacy_sandbox::kPrivacySandboxFirstPartySetsUI))) {
     return absl::nullopt;

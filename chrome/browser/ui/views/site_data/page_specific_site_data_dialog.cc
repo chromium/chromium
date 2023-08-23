@@ -441,7 +441,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     const bool block_third_party_cookies =
         cookie_settings_->ShouldBlockThirdPartyCookies();
     const auto default_content_setting =
-        cookie_settings_->GetDefaultCookieSetting(/*provider_id=*/nullptr);
+        cookie_settings_->GetDefaultCookieSetting();
     ContentSetting first_party_setting =
         host_content_settings_map_->GetContentSetting(
             current_url, GURL(), ContentSettingsType::COOKIES);

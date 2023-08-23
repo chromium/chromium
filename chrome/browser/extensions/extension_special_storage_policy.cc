@@ -168,7 +168,7 @@ bool ExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {
   if (!cookie_settings_) {
     return false;
   }
-  if (cookie_settings_->GetDefaultCookieSetting(nullptr) ==
+  if (cookie_settings_->GetDefaultCookieSetting() ==
       CONTENT_SETTING_SESSION_ONLY) {
     return true;
   }

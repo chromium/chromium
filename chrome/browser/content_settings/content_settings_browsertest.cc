@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, PRE_BlockCookies) {
 IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookies) {
   ASSERT_EQ(CONTENT_SETTING_BLOCK,
             CookieSettingsFactory::GetForProfile(browser()->profile())
-                ->GetDefaultCookieSetting(nullptr));
+                ->GetDefaultCookieSetting());
 }
 
 // Verify that cookies can be allowed and set using exceptions for particular

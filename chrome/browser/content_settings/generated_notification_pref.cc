@@ -76,7 +76,7 @@ extensions::settings_private::SetPrefResult GeneratedNotificationPref::SetPref(
 
   auto current_content_setting =
       host_content_settings_map_->GetDefaultContentSetting(
-          ContentSettingsType::NOTIFICATIONS, nullptr);
+          ContentSettingsType::NOTIFICATIONS);
   auto new_content_setting = selection == NotificationSetting::BLOCK
                                  ? ContentSetting::CONTENT_SETTING_BLOCK
                                  : ContentSetting::CONTENT_SETTING_ASK;
@@ -122,7 +122,7 @@ settings_api::PrefObject GeneratedNotificationPref::GetPrefObject() const {
           ->GetBool();
   const auto notification_content_setting =
       host_content_settings_map_->GetDefaultContentSetting(
-          ContentSettingsType::NOTIFICATIONS, nullptr);
+          ContentSettingsType::NOTIFICATIONS);
   const auto notification_content_setting_enabled =
       notification_content_setting != ContentSetting::CONTENT_SETTING_BLOCK;
 
