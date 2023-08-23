@@ -89,7 +89,8 @@ TestWindowBuilder& TestWindowBuilder::SetTestWindowDelegate() {
 TestWindowBuilder& TestWindowBuilder::AllowAllWindowStates() {
   DCHECK(!built_);
   init_properties_.SetProperty(aura::client::kResizeBehaviorKey,
-                               aura::client::kResizeBehaviorCanMaximize |
+                               aura::client::kResizeBehaviorCanFullscreen |
+                                   aura::client::kResizeBehaviorCanMaximize |
                                    aura::client::kResizeBehaviorCanMinimize |
                                    aura::client::kResizeBehaviorCanResize);
   return *this;

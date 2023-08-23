@@ -30,6 +30,7 @@ extern const ui::ClassProperty<ProtectedNativePixmapQueryDelegate*>* const
 // use the logic that if we can resize, we can maximise. Should only be set to
 // true for Sommelier-based windows.
 extern const ui::ClassProperty<bool>* const kMaximumSizeForResizabilityOnly;
+
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_WINDOW_PROPERTIES_H_

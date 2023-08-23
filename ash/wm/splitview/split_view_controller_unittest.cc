@@ -234,7 +234,8 @@ class SplitViewControllerTest : public AshTestBase {
     // Create non maximizable window so that it's centered when created,
     // then allow maximize/fullscreen state.
     window->SetProperty(aura::client::kResizeBehaviorKey,
-                        aura::client::kResizeBehaviorCanMaximize |
+                        aura::client::kResizeBehaviorCanFullscreen |
+                            aura::client::kResizeBehaviorCanMaximize |
                             aura::client::kResizeBehaviorCanMinimize |
                             aura::client::kResizeBehaviorCanResize);
     return window;

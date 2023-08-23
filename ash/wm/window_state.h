@@ -284,6 +284,7 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   bool IsUserPositionable() const;
 
   // Checks if the window can change its state accordingly.
+  bool CanFullscreen() const;
   bool CanMaximize() const;
   bool CanMinimize() const;
   bool CanResize() const;

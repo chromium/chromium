@@ -50,9 +50,10 @@ Window* CreateTestWindowWithDelegateAndType(WindowDelegate* delegate,
   Window* window = new Window(delegate, type);
   window->SetId(id);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(
-      client::kResizeBehaviorKey,
-      client::kResizeBehaviorCanResize | client::kResizeBehaviorCanMaximize);
+  window->SetProperty(client::kResizeBehaviorKey,
+                      client::kResizeBehaviorCanResize |
+                          client::kResizeBehaviorCanMaximize |
+                          client::kResizeBehaviorCanFullscreen);
   window->SetBounds(bounds);
   if (show_on_creation)
     window->Show();

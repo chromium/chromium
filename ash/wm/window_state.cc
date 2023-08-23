@@ -394,6 +394,11 @@ bool WindowState::IsUserPositionable() const {
   return window_util::IsWindowUserPositionable(window_);
 }
 
+bool WindowState::CanFullscreen() const {
+  return (window_->GetProperty(aura::client::kResizeBehaviorKey) &
+          aura::client::kResizeBehaviorCanFullscreen) != 0;
+}
+
 bool WindowState::CanMaximize() const {
   return (window_->GetProperty(aura::client::kResizeBehaviorKey) &
           aura::client::kResizeBehaviorCanMaximize) != 0;

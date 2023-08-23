@@ -104,6 +104,10 @@ bool WidgetDelegate::CanMinimize() const {
   return params_.can_minimize;
 }
 
+bool WidgetDelegate::CanFullscreen() const {
+  return params_.can_fullscreen;
+}
+
 bool WidgetDelegate::CanActivate() const {
   return can_activate_;
 }
@@ -375,8 +379,22 @@ void WidgetDelegate::SetAccessibleTitle(std::u16string title) {
   params_.accessible_title = std::move(title);
 }
 
+void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
+  bool old_can_fullscreen =
+      std::exchange(params_.can_fullscreen, can_fullscreen);
+  if (GetWidget() && params_.can_fullscreen != old_can_fullscreen) {
+    GetWidget()->OnSizeConstraintsChanged();
+  }
+}
+
 void WidgetDelegate::SetCanMaximize(bool can_maximize) {
   bool old_can_maximize = std::exchange(params_.can_maximize, can_maximize);
+  // TODO(b/256551737): Remove this. CanMaximize currently means that a window
+  // is also able to go into fullscreen. We'd like to split the logic, but
+  // this could introduce some defects. Retaining current behaviour at the
+  // moment, then change it in another CL, so that it'll be easier to rollback
+  // in case there is a regression.
+  params_.can_fullscreen = true;
   if (GetWidget() && params_.can_maximize != old_can_maximize)
     GetWidget()->OnSizeConstraintsChanged();
 }

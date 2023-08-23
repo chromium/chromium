@@ -1271,6 +1271,33 @@ TEST_F(WindowStateTest, WindowNoOffscreenInMultiDisplays) {
   EXPECT_TRUE(displays[0].bounds().Contains(window->bounds()));
 }
 
+TEST_F(WindowStateTest, CanFullscreen) {
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+  WindowState* window_state = WindowState::Get(window.get());
+
+  int behaviour = window->GetProperty(aura::client::kResizeBehaviorKey);
+
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      behaviour | aura::client::kResizeBehaviorCanFullscreen);
+  EXPECT_TRUE(window_state->CanFullscreen());
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_TRUE(window_state->IsFullscreen());
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_FALSE(window_state->IsFullscreen());
+
+  // TODO(ffred): remove this once we separate can maximize and can fullscreen
+  // concepts.
+  window->SetProperty(
+      aura::client::kResizeBehaviorKey,
+      behaviour & ~(aura::client::kResizeBehaviorCanMaximize |
+                    aura::client::kResizeBehaviorCanFullscreen));
+  EXPECT_FALSE(window_state->CanFullscreen());
+  EXPECT_FALSE(window_state->CanMaximize());
+  ToggleFullScreen(window_state, nullptr);
+  EXPECT_FALSE(window_state->IsFullscreen());
+}
+
 TEST_F(WindowStateTest, CanConsumeSystemKeys) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));

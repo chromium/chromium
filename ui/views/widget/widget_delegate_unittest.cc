@@ -15,6 +15,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
 
+#if !BUILDFLAG(IS_APPLE)
+#include "ui/aura/client/aura_constants.h"
+#endif
+
 namespace views {
 namespace {
 
@@ -226,6 +230,32 @@ TEST_F(WidgetDelegateTest, RotatePaneFocusFromView) {
 
   widget.Close();
 }
+
+#if !BUILDFLAG(IS_APPLE)
+TEST_F(WidgetDelegateTest, SetCanFullscreen) {
+  TestWidgetDelegate delegate;
+  Widget widget;
+  Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+  params.delegate = &delegate;
+  params.bounds = gfx::Rect(0, 0, 1024, 768);
+  params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  widget.Init(std::move(params));
+
+  auto GetWidgetResizeBehavior = [&]() {
+    return widget.GetNativeWindow()->GetProperty(
+        aura::client::kResizeBehaviorKey);
+  };
+
+  EXPECT_FALSE(delegate.CanFullscreen());
+  EXPECT_FALSE(GetWidgetResizeBehavior() &
+               aura::client::kResizeBehaviorCanFullscreen);
+
+  delegate.SetCanFullscreen(true);
+  EXPECT_TRUE(delegate.CanFullscreen());
+  EXPECT_TRUE(GetWidgetResizeBehavior() &
+              aura::client::kResizeBehaviorCanFullscreen);
+}
+#endif
 
 }  // namespace
 }  // namespace views

@@ -173,6 +173,9 @@ void NativeWidgetAura::SetResizeBehaviorFromDelegate(WidgetDelegate* delegate,
       behavior |= aura::client::kResizeBehaviorCanMaximize;
     if (delegate->CanMinimize())
       behavior |= aura::client::kResizeBehaviorCanMinimize;
+    if (delegate->CanFullscreen()) {
+      behavior |= aura::client::kResizeBehaviorCanFullscreen;
+    }
   }
   window->SetProperty(aura::client::kResizeBehaviorKey, behavior);
 }
