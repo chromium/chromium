@@ -9106,9 +9106,14 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
     for (const bool feature_enabled : {false, true}) {
       SCOPED_TRACE(feature_enabled);
 
-      absl::optional<base::test::ScopedFeatureList> scoped_feature_list;
+      base::test::ScopedFeatureList scoped_feature_list;
+      std::vector<base::test::FeatureRef> empty;
+      std::vector<base::test::FeatureRef> icloud_keychain_feature = {
+          device::kWebAuthnICloudKeychain};
       if (feature_enabled) {
-        scoped_feature_list.emplace(device::kWebAuthnICloudKeychain);
+        scoped_feature_list.InitWithFeatures(icloud_keychain_feature, empty);
+      } else {
+        scoped_feature_list.InitWithFeatures(empty, icloud_keychain_feature);
       }
 
       NavigateAndCommit(GURL(kTestOrigin1));
