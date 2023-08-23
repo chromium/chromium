@@ -32,7 +32,7 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
-import {updatePreferences} from '../../state/actions/preferences.js';
+import {updatePreferences} from '../../state/ducks/preferences.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';

@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerBulkPinning) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerPreferences) {
-  RunTestURL("state/reducers/preferences_unittest.js");
+  RunTestURL("state/ducks/preferences_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, NudgeContainer) {

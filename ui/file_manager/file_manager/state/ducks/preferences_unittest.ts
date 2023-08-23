@@ -7,10 +7,9 @@ import '../store.js';
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {updatePreferences} from '../actions/preferences.js';
 import {setupStore} from '../for_tests.js';
 
-import {Preferences} from './preferences.js';
+import {Preferences, updatePreferences} from './preferences.js';
 
 /**
  * Defines an initial state for user preferences that is used in all the tests.
