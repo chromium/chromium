@@ -27,6 +27,9 @@
 -BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
 -DesktopCaptureApiTest.ChooseDesktopMedia
 -IconLoaderBrowserTest.LoadGroup
+# crbug.com/1473417
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_default
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_on_navigation
 
 # TODO(https://crbug.com/1084469): fix these tests.
 

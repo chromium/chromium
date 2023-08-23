@@ -325,6 +325,9 @@
     <message name="IDS_DISCOUNT_CODE_COPY_BUTTON_TEXT" desc="The copy button text. User uses this button to copy the discount code, so that they can paste the code during checkout.">
       Copy
     </message>
+    <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
+      <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
+    </message>
     <if expr="use_titlecase">
       <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
         Terms and Conditions

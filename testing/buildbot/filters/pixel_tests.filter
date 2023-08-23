@@ -49,6 +49,7 @@ InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
+OfferNotificationBubbleViewPixelBrowserTest.*
 OneTimePermissionPromptBubbleViewBrowserTest.*
 OutdatedUpgradeBubbleTest.*
 PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*

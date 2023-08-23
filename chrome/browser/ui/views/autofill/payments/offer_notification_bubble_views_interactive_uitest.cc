@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,8 +40,17 @@
 
 namespace autofill {
 
-typedef std::tuple<AutofillOfferData::OfferType>
-    OfferNotificationBubbleViewsInteractiveUiTestData;
+struct OfferNotificationBubbleViewsInteractiveUiTestData {
+  std::string name;
+  AutofillOfferData::OfferType offer_type;
+  absl::optional<std::vector<base::test::FeatureRefAndParams>> enabled_features;
+};
+
+std::string GetTestName(
+    const ::testing::TestParamInfo<
+        OfferNotificationBubbleViewsInteractiveUiTestData>& info) {
+  return info.param.name;
+}
 
 class OfferNotificationBubbleViewsInteractiveUiTest
     : public OfferNotificationBubbleViewsTestBase,
@@ -47,7 +58,13 @@ class OfferNotificationBubbleViewsInteractiveUiTest
           OfferNotificationBubbleViewsInteractiveUiTestData> {
  public:
   OfferNotificationBubbleViewsInteractiveUiTest()
-      : test_offer_type_(std::get<0>(GetParam())) {}
+      : test_offer_type_(GetParam().offer_type) {
+    if (GetParam().enabled_features.has_value()) {
+      feature_list_.InitWithFeaturesAndParameters(
+          GetParam().enabled_features.value(),
+          /*disabled_features=*/{});
+    }
+  }
 
   ~OfferNotificationBubbleViewsInteractiveUiTest() override = default;
   OfferNotificationBubbleViewsInteractiveUiTest(
@@ -149,22 +166,35 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 
   TestAutofillClock test_clock_;
   const AutofillOfferData::OfferType test_offer_type_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(https://crbug.com/1334806): Split parameterized tests that are
 // applicable for only one offer type.
 INSTANTIATE_TEST_SUITE_P(
-    GpayCardLinked,
+    GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER));
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayCardLinked",
+        AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER}));
 INSTANTIATE_TEST_SUITE_P(
     FreeListingCoupon,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER));
+    testing::Values(
+        OfferNotificationBubbleViewsInteractiveUiTestData{
+            "FreeListingCoupon_default",
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER},
+        OfferNotificationBubbleViewsInteractiveUiTestData{
+            "FreeListingCoupon_on_navigation",
+            AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER,
+            absl::make_optional<std::vector<base::test::FeatureRefAndParams>>(
+                {{commerce::kShowDiscountOnNavigation, {}}})}),
+    GetTestName);
 INSTANTIATE_TEST_SUITE_P(
     GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTest,
-    testing::Values(AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER));
+    testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
+        "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}));
 
 // TODO(https://crbug.com/1289161): Flaky failures.
 #if BUILDFLAG(IS_LINUX)
@@ -321,8 +351,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        DismissBubble) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
-  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER) {
     return;
+  }
 
   ShowBubbleForOfferAndVerify();
 
@@ -364,8 +396,10 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        Logging_Acknowledged) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
-  if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER)
+  if (test_offer_type_ !=
+      AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER) {
     return;
+  }
 
   base::HistogramTester histogram_tester;
   ShowBubbleForOfferAndVerify();

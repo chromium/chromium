@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -73,11 +74,12 @@ void OfferNotificationBubbleViews::Init() {
 }
 
 void OfferNotificationBubbleViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
-
-  // Set the header image for free listing coupon notification bubble.
   if (controller_->GetOffer()->IsFreeListingCouponOffer()) {
+    GetBubbleFrameView()->SetTitleView(
+        std::make_unique<TitleWithIconAndSeparatorView>(
+            GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
+
+    // Set the header image.
     ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
     auto* autofill_offers_banner =
         bundle.GetImageSkiaNamed(IDR_AUTOFILL_OFFERS);
@@ -86,6 +88,9 @@ void OfferNotificationBubbleViews::AddedToWidget() {
         base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                             base::Unretained(this)));
     GetBubbleFrameView()->SetHeaderView(std::move(image_view));
+  } else {
+    GetBubbleFrameView()->SetTitleView(CreateTitleView(
+        GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
   }
 }
 
@@ -103,8 +108,9 @@ void OfferNotificationBubbleViews::WindowClosing() {
 
 void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   LocationBarBubbleDelegateView::OnWidgetDestroying(widget);
-  if (!widget->IsClosed())
+  if (!widget->IsClosed()) {
     return;
+  }
   DCHECK_NE(widget->closed_reason(),
             views::Widget::ClosedReason::kCancelButtonClicked);
 }
@@ -150,13 +156,35 @@ void OfferNotificationBubbleViews::InitWithFreeListingCouponOfferContent() {
               base::Unretained(this)),
           base::ASCIIToUTF16(offer->GetPromoCode())));
 
+  std::u16string promo_code_value_prop_string;
+
   if (!offer->GetDisplayStrings().value_prop_text.empty()) {
+    promo_code_value_prop_string =
+        base::ASCIIToUTF16(offer->GetDisplayStrings().value_prop_text);
+  }
+
+  if (base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation)) {
+    // TODO(b/296338434): Update the format of the date.
+    auto expiration_date_text = l10n_util::GetStringFUTF16(
+        IDS_DISCOUNT_EXPIRATION_DATE,
+        base::ASCIIToUTF16(TimeFormatHTTP(offer->GetExpiry())));
+    if (promo_code_value_prop_string.empty()) {
+      promo_code_value_prop_string = expiration_date_text;
+    } else {
+      promo_code_value_prop_string = l10n_util::GetStringFUTF16(
+          IDS_TWO_STRINGS_CONNECTOR, promo_code_value_prop_string,
+          expiration_date_text);
+    }
+  }
+
+  if (!promo_code_value_prop_string.empty()) {
     auto* promo_code_value_prop = AddChildView(std::make_unique<views::Label>(
-        base::ASCIIToUTF16(offer->GetDisplayStrings().value_prop_text),
-        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
+        promo_code_value_prop_string, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_SECONDARY));
     promo_code_value_prop->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     promo_code_value_prop->SetMultiLine(true);
   }
+
   UpdateButtonTooltipsAndAccessibleNames();
 }
 
@@ -230,8 +258,9 @@ void OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked() {
 }
 
 void OfferNotificationBubbleViews::UpdateButtonTooltipsAndAccessibleNames() {
-  if (!promo_code_label_button_)
+  if (!promo_code_label_button_) {
     return;
+  }
 
   std::u16string tooltip = controller_->GetPromoCodeButtonTooltip();
   promo_code_label_button_->SetTooltipText(tooltip);

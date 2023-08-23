@@ -3,3 +3,7 @@
 -All/HostedOrWebAppTest.CtrlClickLink/HostedApp
 -All/HostedOrWebAppTest.CtrlClickLink/WebApp
 -CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
+
+# crbug.com/1473417:
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_default
+-All/OfferNotificationBubbleViewPixelBrowserTest.InvokeUi_show_notification_bubble/FreeListingOffer_on_navigation
