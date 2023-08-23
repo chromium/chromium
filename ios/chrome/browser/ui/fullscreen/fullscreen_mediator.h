@@ -103,7 +103,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   bool scrolled_to_top_during_trait_collection_updates_ = false;
   // The FullscreenControllerObservers that need to get notified of model
   // changes.
-  base::ObserverList<FullscreenControllerObserver> observers_;
+  base::ObserverList<FullscreenControllerObserver, true> observers_;
 
   base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
 };
