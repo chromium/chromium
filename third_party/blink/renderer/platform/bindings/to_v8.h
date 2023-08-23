@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -323,26 +325,20 @@ inline v8::Local<v8::Array> ToV8SequenceInternal(
     v8::Isolate* isolate) {
   RUNTIME_CALL_TIMER_SCOPE(isolate,
                            RuntimeCallStats::CounterId::kToV8SequenceInternal);
-  v8::Local<v8::Array> array;
-  {
-    v8::Context::Scope context_scope(
-        creation_context->GetCreationContextChecked());
-    array = v8::Array::New(isolate, base::checked_cast<int>(sequence.size()));
-  }
-  v8::Local<v8::Context> context = isolate->GetCurrentContext();
-  uint32_t index = 0;
-  for (const auto& item : sequence) {
-    v8::Local<v8::Value> value = ToV8(item, array, isolate);
-    if (value.IsEmpty())
-      value = v8::Undefined(isolate);
-    bool created_property;
-    if (!array->CreateDataProperty(context, index++, value)
-             .To(&created_property) ||
-        !created_property) {
-      return v8::Local<v8::Array>();
-    }
-  }
-  return array;
+
+  Vector<v8::Local<v8::Value>> converted_sequence(
+      base::checked_cast<wtf_size_t>(sequence.size()));
+  base::ranges::transform(
+      sequence, converted_sequence.begin(), [&](const auto& item) {
+        v8::Local<v8::Value> value = ToV8(item, creation_context, isolate);
+        if (value.IsEmpty()) {
+          value = v8::Undefined(isolate);
+        }
+        return value;
+      });
+
+  return v8::Array::New(isolate, converted_sequence.data(),
+                        base::checked_cast<int>(converted_sequence.size()));
 }
 
 // Nullable
