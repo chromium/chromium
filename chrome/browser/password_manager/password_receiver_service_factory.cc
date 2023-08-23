@@ -4,11 +4,16 @@
 
 #include "chrome/browser/password_manager/password_receiver_service_factory.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
@@ -40,6 +45,7 @@ PasswordReceiverServiceFactory::PasswordReceiverServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
+  DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
 }
@@ -70,8 +76,32 @@ KeyedService* PasswordReceiverServiceFactory::BuildServiceInstanceFor(
       std::move(change_processor),
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 
+  // To avoid circular dependency between SyncService and
+  // PasswordReceiverService, PasswordReceiverService cannot depend on
+  // SyncService and hence during the construction of the
+  // PasswordReceiverService, the SyncService hasn't been necessarily
+  // constructed yet. Therefore, pass over a repeating callback that will fetch
+  // the SyncService on demand. This is expected to be called only after
+  // incoming password sharing invitations are downloaded from the sync server,
+  // at which time, the SyncService must have been constructed already.
+  auto sync_service_getter = base::BindRepeating(
+      [](Profile* profile) {
+        // Avoid creating the sync service here. Only return it if exists since
+        // it isn't necessarily safe to construct it because of the missing
+        // dependency.
+        return SyncServiceFactory::HasSyncService(profile)
+                   ? SyncServiceFactory::GetForProfile(profile)
+                   : nullptr;
+      },
+      profile);
+
   return new password_manager::PasswordReceiverServiceImpl(
-      std::move(sync_bridge), PasswordStoreFactory::GetForProfile(
-                                  profile, ServiceAccessType::EXPLICIT_ACCESS)
-                                  .get());
+      profile->GetPrefs(), std::move(sync_service_getter),
+      std::move(sync_bridge),
+      PasswordStoreFactory::GetForProfile(profile,
+                                          ServiceAccessType::EXPLICIT_ACCESS)
+          .get(),
+      AccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS)
+          .get());
 }

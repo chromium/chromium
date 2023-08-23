@@ -7,10 +7,17 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sharing/password_receiver_service.h"
 #include "components/password_manager/core/browser/sharing/sharing_invitations.h"
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+class PrefService;
 
 namespace password_manager {
 
@@ -56,10 +63,16 @@ class ProcessIncomingSharingInvitationTask : public PasswordStoreConsumer {
 
 class PasswordReceiverServiceImpl : public PasswordReceiverService {
  public:
-  // |sync_bridge| may be null in tests.
+  // Due to the dependency of keyed servivces, the SyncService is only
+  // constructed *after* the construction of the PasswordReceiverService, and
+  // hence `sync_service_getter` callback is provided to fetch the SyncService
+  // on demand during runtime. `sync_bridge` may be null in tests.
   explicit PasswordReceiverServiceImpl(
+      const PrefService* pref_service,
+      base::RepeatingCallback<syncer::SyncService*(void)> sync_service_getter,
       std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge,
-      PasswordStoreInterface* password_store);
+      PasswordStoreInterface* profile_password_store,
+      PasswordStoreInterface* account_password_store);
   PasswordReceiverServiceImpl(const PasswordReceiverServiceImpl&) = delete;
   PasswordReceiverServiceImpl& operator=(const PasswordReceiverServiceImpl&) =
       delete;
@@ -74,9 +87,14 @@ class PasswordReceiverServiceImpl : public PasswordReceiverService {
  private:
   void RemoveTaskFromTasksList(ProcessIncomingSharingInvitationTask* task);
 
+  const raw_ptr<const PrefService> pref_service_;
+
+  base::RepeatingCallback<syncer::SyncService*(void)> sync_service_getter_;
+
   std::unique_ptr<IncomingPasswordSharingInvitationSyncBridge> sync_bridge_;
 
-  raw_ptr<PasswordStoreInterface> password_store_;
+  raw_ptr<PasswordStoreInterface> profile_password_store_;
+  raw_ptr<PasswordStoreInterface> account_password_store_;
 
   // Used to keep track of the currently in-flight tasks processing the incoming
   // password sharing invitations. Once a task is completed it gets removed from
