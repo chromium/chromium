@@ -2077,11 +2077,6 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListIndex) {
   EXPECT_EQ("text/plain", new_file->type());
 }
 
-// Decode tests aren't included here because they're slightly non-trivial (an
-// element with the right ID must actually exist) and this feature is both
-// unshipped and likely to not use this mechanism when it does.
-// TODO(jbroman): Update this if that turns out not to be the case.
-
 TEST(V8ScriptValueSerializerTest, DecodeHardcodedNullValue) {
   V8TestingScope scope;
   EXPECT_TRUE(V8ScriptValueDeserializer(scope.GetScriptState(),
