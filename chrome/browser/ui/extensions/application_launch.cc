@@ -618,6 +618,7 @@ void LaunchAppWithCallback(
                           container);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShowBrowserForProfile(Profile* profile,
                            const apps::AppLaunchParams& params) {
   Browser* browser = chrome::FindTabbedBrowser(
@@ -640,3 +641,4 @@ bool ShowBrowserForProfile(Profile* profile,
 
   return false;
 }
+#endif
