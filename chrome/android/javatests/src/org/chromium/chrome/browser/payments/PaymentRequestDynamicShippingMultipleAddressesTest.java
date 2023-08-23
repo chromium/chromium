@@ -13,11 +13,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.components.autofill.AutofillProfile;
@@ -36,8 +36,7 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_dynamic_shipping_test.html");
 
-    private static final AutofillProfile[] AUTOFILL_PROFILES = {
-            // Incomplete profile_0 (missing phone number)
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_PHONE =
             AutofillProfile.builder()
                     .setFullName("Bart Simpson")
                     .setCompanyName("Acme Inc.")
@@ -47,9 +46,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setPostalCode("90210")
                     .setCountryCode("US")
                     .setEmailAddress("bart@simpson.com")
-                    .build(),
+                    .build();
 
-            // Incomplete profile_1 (missing street address).
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_STREET_ADDRESS =
             AutofillProfile.builder()
                     .setFullName("Homer Simpson")
                     .setCompanyName("Acme Inc.")
@@ -59,9 +58,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("US")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("homer@simpson.com")
-                    .build(),
+                    .build();
 
-            // Complete profile_2.
+    private static final AutofillProfile COMPLETE_PROFILE =
             AutofillProfile.builder()
                     .setFullName("Lisa Simpson")
                     .setCompanyName("Acme Inc.")
@@ -72,9 +71,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("US")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("lisa@simpson.com")
-                    .build(),
+                    .build();
 
-            // Complete profile_3 in another country.
+    private static final AutofillProfile COMPLETE_PROFILE_NON_US_COUNTRY =
             AutofillProfile.builder()
                     .setFullName("Maggie Simpson")
                     .setCompanyName("Acme Inc.")
@@ -85,9 +84,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("Uzbekistan")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("maggie@simpson.com")
-                    .build(),
+                    .build();
 
-            // Incomplete profile_4 (invalid address, missing city name).
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_CITY_NAME =
             AutofillProfile.builder()
                     .setFullName("Marge Simpson")
                     .setCompanyName("Acme Inc.")
@@ -97,9 +96,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("US")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("marge@simpson.com")
-                    .build(),
+                    .build();
 
-            // Incomplete profile_5 (missing recipient name).
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_NAME =
             AutofillProfile.builder()
                     .setCompanyName("Acme Inc.")
                     .setStreetAddress("123 Main")
@@ -109,9 +108,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("US")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("lisa@simpson.com")
-                    .build(),
+                    .build();
 
-            // Incomplete profile_6 (need more information: name and address both missing/invalid).
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_NAME_OR_LOCALITY =
             AutofillProfile.builder()
                     .setCompanyName("Acme Inc.")
                     .setStreetAddress("123 Main")
@@ -120,9 +119,11 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setCountryCode("US")
                     .setPhoneNumber("555 123-4567")
                     .setEmailAddress("lisa@simpson.com")
-                    .build(),
+                    .build();
 
-            // Incomplete profile_7 (missing phone number, different from AutofillProfile[0])
+    // This profile has the same details as INCOMPLETE_PROFILE_NO_PHONE, except it has a different
+    // name.
+    private static final AutofillProfile INCOMPLETE_PROFILE_NO_PHONE_2 =
             AutofillProfile.builder()
                     .setFullName("John Smith")
                     .setCompanyName("Acme Inc.")
@@ -132,34 +133,27 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                     .setPostalCode("90210")
                     .setCountryCode("US")
                     .setEmailAddress("bart@simpson.com")
-                    .build(),
-    };
-
-    private AutofillProfile[] mProfilesToAdd;
-    private int[] mCountsToSet;
-    private int[] mDatesToSet;
+                    .build();
 
     @Before
     public void setUp() throws TimeoutException {
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+    }
+
+    private void setUpAutofillProfiles(AutofillProfile[] profiles, int[] counts,
+            int[] daysSinceLastUsed) throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
         // Add the profiles.
         ArrayList<String> guids = new ArrayList<>();
-        for (int i = 0; i < mProfilesToAdd.length; i++) {
-            // The user has a shipping address on disk.
-            String billingAddressId = helper.setProfile(mProfilesToAdd[i]);
-            guids.add(billingAddressId);
-            helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
-                    "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                    billingAddressId, "" /* serverId */));
+        for (int i = 0; i < profiles.length; i++) {
+            guids.add(helper.setProfile(profiles[i]));
         }
 
         // Set up the profile use stats.
         for (int i = 0; i < guids.size(); i++) {
-            // TODO(crbug.com/1463732): Update Disabled Test Callsites of
-            // SetProfileUseStatsForTesting and SetCreditCardUseStatsForTesting since the underlying
-            // logic has changed.
-            helper.setProfileUseStatsForTesting(guids.get(i), mCountsToSet[i], mDatesToSet[i]);
+            helper.setProfileUseStatsForTesting(guids.get(i), counts[i], daysSinceLastUsed[i]);
         }
     }
 
@@ -170,18 +164,20 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionOrdering() throws TimeoutException {
         // Create two complete and two incomplete profiles. Values are set so that complete profiles
         // are ordered by frecency, incomplete profiles are sorted by their completeness score.
-        mProfilesToAdd = new AutofillProfile[] {
-                AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[2], AUTOFILL_PROFILES[3],
-                AUTOFILL_PROFILES[4]};
-        mCountsToSet = new int[] {20, 15, 10, 25};
-        mDatesToSet = new int[] {5000, 5000, 5000, 5000};
+        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE, COMPLETE_PROFILE,
+                COMPLETE_PROFILE_NON_US_COUNTRY, INCOMPLETE_PROFILE_NO_CITY_NAME};
+        int[] counts = new int[] {20, 15, 10, 25};
+        int[] daysSinceLastUsed = new int[] {5, 5, 5, 5};
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
@@ -203,15 +199,18 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEquallyIncompleteSuggestionsOrdering() throws TimeoutException {
         // Create two profiles both with missing phone numbers.
-        mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[7]};
-        mCountsToSet = new int[] {20, 30};
-        mDatesToSet = new int[] {5000, 5000};
+        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE, INCOMPLETE_PROFILE_NO_PHONE_2};
+        int[] counts = new int[] {20, 30};
+        int[] daysSinceLastUsed = new int[] {5, 5};
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
@@ -228,17 +227,20 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestionLimit() throws TimeoutException {
         // Create five profiles that can be suggested to the user.
-        mProfilesToAdd = new AutofillProfile[] {
-                AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[2], AUTOFILL_PROFILES[3],
-                AUTOFILL_PROFILES[4], AUTOFILL_PROFILES[5]};
-        mCountsToSet = new int[] {20, 15, 10, 5, 2, 1};
-        mDatesToSet = new int[] {5000, 5000, 5000, 5000, 2, 1};
+        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE, COMPLETE_PROFILE,
+                COMPLETE_PROFILE_NON_US_COUNTRY, INCOMPLETE_PROFILE_NO_CITY_NAME,
+                INCOMPLETE_PROFILE_NO_NAME};
+        int[] counts = new int[] {20, 15, 10, 5, 2, 1};
+        int[] daysSinceLastUsed = new int[] {5, 5, 5, 10, 15};
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         // Only four profiles should be suggested to the user.
@@ -263,19 +265,22 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressSuggestion_OnlyIncludeProfilesWithStreetAddress()
             throws TimeoutException {
         // Create two complete profiles and two incomplete profiles, one of which has no street
         // address.
-        mProfilesToAdd = new AutofillProfile[] {
-                AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[1], AUTOFILL_PROFILES[2],
-                AUTOFILL_PROFILES[3]};
-        mCountsToSet = new int[] {15, 10, 5, 1};
-        mDatesToSet = new int[] {5000, 5000, 5000, 1};
+        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE,
+                INCOMPLETE_PROFILE_NO_STREET_ADDRESS, COMPLETE_PROFILE,
+                COMPLETE_PROFILE_NON_US_COUNTRY};
+        int[] counts = new int[] {15, 10, 5, 1};
+        int[] daysSinceLastUsed = new int[] {5, 5, 5, 10};
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         // Only 3 profiles should be suggested, the two complete ones and the incomplete one that
@@ -296,20 +301,23 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
-    public void testShippingAddresNotAcceptedByMerchant() throws TimeoutException {
+    public void testShippingAddressNotAcceptedByMerchant() throws TimeoutException {
         // Add a profile that is not accepted by the website.
-        mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[3]};
-        mCountsToSet = new int[] {5};
-        mDatesToSet = new int[] {5000};
+        AutofillProfile[] profiles = {COMPLETE_PROFILE_NON_US_COUNTRY};
+        int[] counts = new int[] {5};
+        int[] daysSinceLastUsed = new int[] {5};
+
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
 
         // Click on the unacceptable shipping address.
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(0).contains(
-                AUTOFILL_PROFILES[3].getFullName()));
+                COMPLETE_PROFILE_NON_US_COUNTRY.getFullName()));
         mPaymentRequestTestRule.clickOnShippingAddressSuggestionOptionAndWait(
                 0, mPaymentRequestTestRule.getSelectionChecked());
 
@@ -325,17 +333,24 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressEditRequiredMessage() throws TimeoutException {
         // Create four incomplete profiles with different missing information. Profiles will be
         // sorted based on their missing fields.
-        mProfilesToAdd = new AutofillProfile[] {AUTOFILL_PROFILES[0], AUTOFILL_PROFILES[4],
-                AUTOFILL_PROFILES[5], AUTOFILL_PROFILES[6]};
-        mCountsToSet = new int[] {15, 10, 5, 25};
-        mDatesToSet = new int[] {5000, 5000, 5000, 5000};
+        AutofillProfile[] profiles = {
+                INCOMPLETE_PROFILE_NO_PHONE,
+                INCOMPLETE_PROFILE_NO_CITY_NAME,
+                INCOMPLETE_PROFILE_NO_NAME,
+                INCOMPLETE_PROFILE_NO_NAME_OR_LOCALITY,
+        };
+        int[] counts = new int[] {15, 10, 5, 25};
+        int[] daysSinceLastUsed = new int[] {5, 5, 5, 5};
 
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyForInput());
+        setUpAutofillProfiles(profiles, counts, daysSinceLastUsed);
+
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+                "buyWithMethods([{supportedMethods:'https://bobpay.test'}]);",
+                mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
 
