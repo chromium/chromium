@@ -38,10 +38,6 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Returns the number of profiles (addresses) in the data manager.
 + (NSInteger)profilesCount;
 
-// Used to automatically import addresses without a prompt when `autoAccept` is
-// YES.
-+ (void)setAutoAcceptAddressImports:(BOOL)autoAccept;
-
 // Clears the profiles (addresses) in the data manager.
 + (void)clearProfilesStore;
 
