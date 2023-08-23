@@ -788,6 +788,13 @@ void CollectAncestorRoles(
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
 
+    int leafTextLength = leafTextRange.GetText().length();
+    if (static_cast<unsigned long>(anchorStartOffset + leafTextLength) >
+        attributedString.length) {
+      // We've exceeded the maximum text requested by the caller.
+      break;
+    }
+
     ui::AXNode* anchor = leafTextRange.focus()->GetAnchor();
     DCHECK(anchor) << "A non-null position should have a non-null anchor node.";
 
@@ -821,9 +828,6 @@ void CollectAncestorRoles(
     }
 
     // Add annotation information
-    int leafTextLength = leafTextRange.GetText().length();
-    DCHECK_LE(static_cast<unsigned long>(anchorStartOffset + leafTextLength),
-              attributedString.length);
     NSRange leafRange = NSMakeRange(anchorStartOffset, leafTextLength);
 
     CollectAncestorRoles(*anchor, ancestor_roles);
