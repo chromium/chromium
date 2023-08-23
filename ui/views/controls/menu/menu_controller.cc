@@ -26,6 +26,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -560,7 +561,7 @@ MenuController* MenuController::GetActiveInstance() {
 void MenuController::Run(Widget* parent,
                          MenuButtonController* button_controller,
                          MenuItemView* root,
-                         const gfx::Rect& bounds,
+                         const gfx::Rect& anchor_bounds,
                          MenuAnchorPosition position,
                          bool context_menu,
                          bool is_nested_drag,
@@ -623,7 +624,7 @@ void MenuController::Run(Widget* parent,
   // Reset current state.
   pending_state_ = State();
   state_ = State();
-  UpdateInitialLocation(bounds, position, context_menu);
+  UpdateInitialLocation(anchor_bounds, position, context_menu);
 
   // Set the selection, which opens the initial menu.
   SetSelection(root, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
@@ -1816,27 +1817,26 @@ bool MenuController::SendAcceleratorToHotTrackedView(int event_flags) {
   return true;
 }
 
-void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
+void MenuController::UpdateInitialLocation(const gfx::Rect& anchor_bounds,
                                            MenuAnchorPosition position,
                                            bool context_menu) {
   pending_state_.context_menu = context_menu;
-  pending_state_.initial_bounds = bounds;
+  pending_state_.initial_bounds = anchor_bounds;
   pending_state_.anchor = AdjustAnchorPositionForRtl(position);
 
   // Calculate the bounds of the monitor we'll show menus on. Do this once to
   // avoid repeated system queries for the info.
-  pending_state_.monitor_bounds = display::Screen::GetScreen()
-                                      ->GetDisplayNearestPoint(bounds.origin())
-                                      .work_area();
+  const display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(
+          anchor_bounds.origin());
+  pending_state_.monitor_bounds = display.work_area();
 
-  if (!pending_state_.monitor_bounds.Contains(bounds)) {
+  if (!pending_state_.monitor_bounds.Contains(anchor_bounds)) {
     // Use the monitor area if the work area doesn't contain the bounds. This
     // handles showing a menu from the launcher.
-    gfx::Rect monitor_area = display::Screen::GetScreen()
-                                 ->GetDisplayNearestPoint(bounds.origin())
-                                 .bounds();
-    if (monitor_area.Contains(bounds))
-      pending_state_.monitor_bounds = monitor_area;
+    if (display.bounds().Contains(anchor_bounds)) {
+      pending_state_.monitor_bounds = display.bounds();
+    }
   }
 }
 
@@ -1959,14 +1959,11 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
   // Need to reset capture when we show the menu again, otherwise we aren't
   // going to get any events.
   did_capture_ = false;
-  gfx::Point screen_menu_loc;
-  View::ConvertPointToScreen(button, &screen_menu_loc);
 
   // It is currently not possible to show a submenu recursively in a bubble.
   DCHECK(!MenuItemView::IsBubble(anchor));
-  UpdateInitialLocation(gfx::Rect(screen_menu_loc.x(), screen_menu_loc.y(),
-                                  button->width(), button->height()),
-                        anchor, state_.context_menu);
+  UpdateInitialLocation(button->GetBoundsInScreen(), anchor,
+                        state_.context_menu);
   alt_menu->PrepareForRun(
       has_mnemonics, source->GetMenuItem()->GetRootMenuItem()->show_mnemonics_);
   alt_menu->controller_ = AsWeakPtr();
@@ -2363,20 +2360,23 @@ gfx::Rect MenuController::CalculateMenuBounds(
   SubmenuView* submenu = item->GetSubmenu();
   DCHECK(submenu);
 
-  // For the first menu, anchor_rect is initial bounds. If |item| is a child
-  // menu, anchor_rect will be recalculated.
-  anchor->anchor_rect = state_.initial_bounds;
+  // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
+  // of the menu item that spawned this menu.
+  // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
+  const bool is_child_menu = !!item->GetParentMenuItem();
+  gfx::Rect anchor_bounds =
+      is_child_menu ? item->GetBoundsInScreen() : state_.initial_bounds;
+  if (is_child_menu) {
+    anchor_bounds.set_height(1);
+  }
+  anchor->anchor_rect = anchor_bounds;
 
-  gfx::Point item_loc;
-  View::ConvertPointToScreen(item, &item_loc);
-  // Sets additional anchor parameters.
-  SetAnchorParametersForItem(item, item_loc, anchor);
+  SetAnchorParametersForItem(item, anchor_bounds.origin(), anchor);
 
   const auto* const scroll_view_container = submenu->GetScrollViewContainer();
   gfx::Rect menu_bounds = gfx::Rect(scroll_view_container->GetPreferredSize());
 
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
-  const gfx::Rect& anchor_bounds = state_.initial_bounds;
 
   // For comboboxes, ensure the menu is at least as wide as the anchor.
   if (IsCombobox()) {
@@ -2400,7 +2400,7 @@ gfx::Rect MenuController::CalculateMenuBounds(
 
   // Not the first menu; position it relative to the bounds of its parent menu
   // item.
-  if (item->GetParentMenuItem()) {
+  if (is_child_menu) {
     // We must make sure we take into account the UI layout. If the layout is
     // RTL, then a 'leading' menu is positioned to the left of the parent menu
     // item and not to the right.
@@ -2409,21 +2409,16 @@ gfx::Rect MenuController::CalculateMenuBounds(
         layout_is_rtl ? preferred_open_direction == MenuOpenDirection::kTrailing
                       : preferred_open_direction == MenuOpenDirection::kLeading;
 
-    const int left_of_parent = item_loc.x() - menu_bounds.width() +
+    const int left_of_parent = anchor_bounds.x() - menu_bounds.width() +
                                menu_config.submenu_horizontal_overlap;
     const int right_of_parent =
-        item_loc.x() + item->width() - menu_config.submenu_horizontal_overlap;
+        anchor_bounds.right() - menu_config.submenu_horizontal_overlap;
 
-    menu_bounds.set_y(item_loc.y() - scroll_view_container->GetInsets().top());
+    menu_bounds.set_y(anchor_bounds.y() -
+                      scroll_view_container->GetInsets().top());
 
     // Assume the menu can be placed in the preferred location.
     menu_bounds.set_x(create_on_right ? right_of_parent : left_of_parent);
-
-    // Calculate the anchor for `menu_bounds`. This is set in screen coordinates
-    // in dip and this is later translated as needed into appropriate relative
-    // bounds as needed by the platform.
-    anchor->anchor_rect.set_origin(item_loc);
-    anchor->anchor_rect.set_size({item->width(), 1});
 
     // Everything after this check requires monitor bounds to be non-empty.
     if (ShouldIgnoreScreenBoundsForMenus() || monitor_bounds.IsEmpty())
@@ -2541,12 +2536,18 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   DCHECK(item);
   DCHECK(anchor);
 
-  // TODO(msisov): Shall we also calculate anchor for bubble menus, which are
-  // used by ash? If there is a need. Fix that.
-  anchor->anchor_position = ui::OwnedWindowAnchorPosition::kTopLeft;
-  anchor->anchor_gravity = ui::OwnedWindowAnchorGravity::kBottomRight;
-  anchor->constraint_adjustment =
-      ui::OwnedWindowConstraintAdjustment::kAdjustmentNone;
+  // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
+  // of the menu item that spawned this menu.
+  // TODO(pkasting): Not clear to me why we want to set the height to 1 dip.
+  const bool is_child_menu = !!item->GetParentMenuItem();
+  gfx::Rect anchor_bounds =
+      is_child_menu ? item->GetBoundsInScreen() : state_.initial_bounds;
+  if (is_child_menu) {
+    anchor_bounds.set_height(1);
+  }
+  anchor->anchor_rect = anchor_bounds;
+
+  SetAnchorParametersForItem(item, anchor_bounds.origin(), anchor);
 
   // Assume we can honor `preferred_open_direction`.
   *resulting_direction = preferred_open_direction;
@@ -2560,7 +2561,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
                                item->GetDelegate()->GetMaxWidthForMenu(item)));
 
   // For comboboxes, ensure the menu is at least as wide as the anchor.
-  const gfx::Rect& anchor_bounds = state_.initial_bounds;
   const gfx::Insets border_insets =
       scroll_view_container->outside_border_insets();
   if (IsCombobox()) {
@@ -2573,7 +2573,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   const MenuConfig& menu_config = MenuConfig::instance();
   const int corner_radius = menu_config.CornerRadiusForMenu(this);
 
-  if (!item->GetParentMenuItem()) {
+  if (!is_child_menu) {
     // This is a top-level menu, position it relative to the anchor bounds.
     using MenuPosition = MenuItemView::MenuPosition;
 
@@ -2730,7 +2730,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     y = std::clamp(y, y_min, y_max);
   } else {
     // This is a sub-menu, position it relative to the parent menu.
-    const gfx::Rect item_bounds = item->GetBoundsInScreen();
     // If the layout is RTL, then a 'leading' menu is positioned to the left of
     // the parent menu item and not to the right.
     const bool create_on_right =
@@ -2741,12 +2740,11 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     const int width_with_right_inset =
         menu_size.width() - border_insets.right();
     const int x_max = monitor_bounds.right() - width_with_right_inset;
-    const int x_left = item_bounds.x() - width_with_right_inset +
+    const int x_left = anchor_bounds.x() - width_with_right_inset +
                        menu_config.submenu_horizontal_overlap;
-    const int x_right = item_bounds.right() - border_insets.left() -
+    const int x_right = anchor_bounds.right() - border_insets.left() -
                         menu_config.submenu_horizontal_overlap;
     if (create_on_right) {
-      x = x_right;
       if (monitor_bounds.width() == 0 || x_right <= x_max) {
         // Enough room on the right, show normally.
         x = x_right;
@@ -2779,7 +2777,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     // out the border and shadow at the top and bottom.
     menu_size.set_height(std::min(
         menu_size.height(), monitor_bounds.height() + border_insets.height()));
-    y = item_bounds.y() - border_insets.top() -
+    y = anchor_bounds.y() - border_insets.top() -
         (use_ash_system_ui_layout_
              ? menu_config.vertical_touchable_menu_item_padding
              : menu_config.rounded_menu_vertical_border_size.value_or(
@@ -2790,12 +2788,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     y = std::clamp(y, y_min, y_max);
   }
 
-  auto menu_bounds = gfx::Rect(x, y, menu_size.width(), menu_size.height());
-  // TODO(msisov): Shall we also calculate anchor for bubble menus, which are
-  // used by ash? If there is a need. Fix that.
-  anchor->anchor_rect = menu_bounds;
-  anchor->anchor_rect.set_size({1, 1});
-  return menu_bounds;
+  return gfx::Rect({x, y}, menu_size);
 }
 
 // static

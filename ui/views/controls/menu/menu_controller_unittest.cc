@@ -82,10 +82,6 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace views {
 namespace {
 
@@ -505,7 +501,8 @@ class MenuControllerTest : public ViewsTestBase,
 
   static bool SelectionWraps();
 
-  void OpenMenu(MenuItemView* parent);
+  void OpenMenu(MenuItemView* parent,
+                const MenuBoundsOptions& options = MenuBoundsOptions());
 
   gfx::Insets GetBorderAndShadowInsets(bool is_submenu);
 
@@ -611,10 +608,12 @@ gfx::Rect MenuControllerTest::CalculateBubbleMenuBoundsWithoutInsets(
 
 gfx::Rect MenuControllerTest::CalculateExpectedMenuAnchorRect(
     MenuItemView* menu_item) {
-  return menu_item->GetParentMenuItem()
-             ? gfx::Rect(menu_item->GetBoundsInScreen().origin(),
-                         {menu_item->width(), 1})
-             : menu_item->bounds();
+  if (!menu_item->GetParentMenuItem()) {
+    return menu_controller_->state_.initial_bounds;
+  }
+  gfx::Rect bounds = menu_item->GetBoundsInScreen();
+  bounds.set_height(1);
+  return bounds;
 }
 
 MenuController::MenuOpenDirection
@@ -906,9 +905,14 @@ void MenuControllerTest::StartDrag() {
 void MenuControllerTest::SetUpMenuControllerForCalculateBounds(
     const MenuBoundsOptions& options,
     MenuItemView* menu_item) {
-  menu_controller_->state_.anchor = options.menu_anchor;
-  menu_controller_->state_.initial_bounds = options.anchor_bounds;
-  menu_controller_->state_.monitor_bounds = options.monitor_bounds;
+  // Must set both `state_` and `pending_state_` in case, while processing, the
+  // controller commits the pending state.
+  menu_controller_->pending_state_.anchor = menu_controller_->state_.anchor =
+      options.menu_anchor;
+  menu_controller_->pending_state_.initial_bounds =
+      menu_controller_->state_.initial_bounds = options.anchor_bounds;
+  menu_controller_->pending_state_.monitor_bounds =
+      menu_controller_->state_.monitor_bounds = options.monitor_bounds;
   menu_item->set_actual_menu_position(options.menu_position);
   menu_item->GetSubmenu()->GetScrollViewContainer()->SetPreferredSize(
       options.menu_size);
@@ -961,7 +965,9 @@ bool MenuControllerTest::SelectionWraps() {
   return MenuConfig::instance().arrow_key_selection_wraps;
 }
 
-void MenuControllerTest::OpenMenu(MenuItemView* parent) {
+void MenuControllerTest::OpenMenu(MenuItemView* parent,
+                                  const MenuBoundsOptions& options) {
+  SetUpMenuControllerForCalculateBounds(options, parent);
   menu_controller_->OpenMenuImpl(parent, true);
 }
 
@@ -2535,7 +2541,7 @@ TEST_F(MenuControllerTest, RepostEventToEmptyMenuItem) {
 // the menu item view highlight should turn off
 TEST_F(MenuControllerTest, DragFromViewIntoMenuAndExit) {
   auto drag_view = std::make_unique<View>();
-  drag_view->SetBoundsRect(gfx::Rect(0, 500, 100, 100));
+  drag_view->SetBounds(0, 500, 100, 100);
   const gfx::Point press_location = drag_view->GetLocalBounds().CenterPoint();
   ShowSubmenu();
   SubmenuView* const submenu = menu_item()->GetSubmenu();
@@ -2583,18 +2589,11 @@ TEST_F(MenuControllerTest, AuraWindowIsInitializedWithMenuHostInitParams) {
 // Tests that |aura::Window| has the correct properties when a context menu is
 // shown.
 TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
-
   // Checking that context menu properties are calculated correctly.
-  menu_controller()->Run(owner(), nullptr, menu_item(), menu_item()->bounds(),
-                         MenuAnchorPosition::kTopLeft, true, false);
-  OpenMenu(menu_item());
+  MenuBoundsOptions options = {.menu_anchor = MenuAnchorPosition::kTopLeft};
+  SetUpMenuControllerForCalculateBounds(options, menu_item());
+  menu_controller()->Run(owner(), nullptr, menu_item(), options.anchor_bounds,
+                         options.menu_anchor, true, false);
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const aura::Window* window = submenu->GetWidget()->GetNativeWindow();
@@ -2616,9 +2615,11 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
   MenuItemView* const child_menu = submenu->GetMenuItemAt(0);
   child_menu->CreateSubmenu();
   ASSERT_NE(nullptr, child_menu->GetParentMenuItem());
-  menu_controller()->Run(owner(), nullptr, child_menu, child_menu->bounds(),
-                         MenuAnchorPosition::kTopRight, false, false);
-  OpenMenu(child_menu);
+  options.menu_anchor = MenuAnchorPosition::kTopRight;
+  SetUpMenuControllerForCalculateBounds(options, child_menu);
+  menu_controller()->Run(owner(), nullptr, child_menu,
+                         child_menu->GetBoundsInScreen(), options.menu_anchor,
+                         false, false);
 
   ASSERT_NE(nullptr, child_menu->GetWidget());
   window = child_menu->GetSubmenu()->GetWidget()->GetNativeWindow();
@@ -2640,19 +2641,14 @@ TEST_F(MenuControllerTest, ContextMenuInitializesAuraWindowWhenShown) {
 // Tests that |aura::Window| has the correct properties when a root or a child
 // menu is shown.
 TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
-
   // Checking that root menu properties are calculated correctly.
   SubmenuView* const submenu = menu_item()->GetSubmenu();
-  menu_controller()->Run(owner(), nullptr, menu_item(), menu_item()->bounds(),
-                         MenuAnchorPosition::kTopLeft, false, false);
-  OpenMenu(menu_item());
+  MenuBoundsOptions options = {
+      .menu_size = GetPreferredSizeForSubmenu(*submenu),
+      .menu_anchor = MenuAnchorPosition::kTopLeft};
+  SetUpMenuControllerForCalculateBounds(options, menu_item());
+  menu_controller()->Run(owner(), nullptr, menu_item(), options.anchor_bounds,
+                         options.menu_anchor, false, false);
 
   const aura::Window* window = submenu->GetWidget()->GetNativeWindow();
   const ui::OwnedWindowAnchor* anchor =
@@ -2670,15 +2666,19 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
   EXPECT_EQ(CalculateExpectedMenuAnchorRect(menu_item()), anchor->anchor_rect);
 
   // Checking that child menu properties are calculated correctly.
-  MenuItemView* const child_menu = submenu->GetMenuItemAt(0);
-  child_menu->CreateSubmenu();
-  ASSERT_NE(nullptr, child_menu->GetParentMenuItem());
-  menu_controller()->Run(owner(), nullptr, child_menu, child_menu->bounds(),
-                         MenuAnchorPosition::kTopRight, false, false);
-  OpenMenu(child_menu);
+  MenuItemView* const child_item = submenu->GetMenuItemAt(0);
+  child_item->AppendMenuItem(1, u"Child one");
+  SubmenuView* const child_submenu = child_item->GetSubmenu();
+  ASSERT_NE(nullptr, child_item->GetParentMenuItem());
+  options.menu_size = GetPreferredSizeForSubmenu(*child_submenu);
+  options.menu_anchor = MenuAnchorPosition::kTopRight;
+  SetUpMenuControllerForCalculateBounds(options, child_item);
+  menu_controller()->Run(owner(), nullptr, child_item,
+                         child_item->GetBoundsInScreen(), options.menu_anchor,
+                         false, false);
 
-  ASSERT_NE(nullptr, child_menu->GetWidget());
-  window = child_menu->GetSubmenu()->GetWidget()->GetNativeWindow();
+  ASSERT_NE(nullptr, child_item->GetWidget());
+  window = child_submenu->GetWidget()->GetNativeWindow();
 
   anchor = window->GetProperty(aura::client::kOwnedWindowAnchor);
   EXPECT_TRUE(anchor);
@@ -2692,15 +2692,16 @@ TEST_F(MenuControllerTest, RootAndChildMenusInitializeAuraWindowWhenShown) {
              ui::OwnedWindowConstraintAdjustment::kAdjustmentRezizeY),
             anchor->constraint_adjustment);
   const auto anchor_rect = anchor->anchor_rect;
-  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_menu), anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_item), anchor->anchor_rect);
 
   // Try to reposition the existing menu. Its anchor must change.
-  child_menu->SetY(menu_item()->bounds().y() + 2);
-  menu_controller()->Run(owner(), nullptr, child_menu, child_menu->bounds(),
+  child_item->SetY(child_item->y() + 2);
+  menu_controller()->Run(owner(), nullptr, child_item,
+                         child_item->GetBoundsInScreen(),
                          MenuAnchorPosition::kTopLeft, false, false);
-  MenuChildrenChanged(child_menu);
+  MenuChildrenChanged(child_item);
 
-  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_menu), anchor->anchor_rect);
+  EXPECT_EQ(CalculateExpectedMenuAnchorRect(child_item), anchor->anchor_rect);
   // New anchor mustn't be the same as the old one.
   EXPECT_NE(anchor->anchor_rect, anchor_rect);
 }
@@ -2739,13 +2740,6 @@ TEST_F(MenuControllerTest, NoUseAfterFreeWhenMenuCanceledOnMousePress) {
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_MenuItemsOnly) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuItemView* const item1 = submenu->GetMenuItemAt(0);
   MenuItemView* const item2 = submenu->GetMenuItemAt(1);
@@ -2773,13 +2767,6 @@ TEST_F(MenuControllerTest, SetSelectionIndices_MenuItemsOnly) {
 
 TEST_F(MenuControllerTest,
        SetSelectionIndices_MenuItemsOnly_SkipHiddenAndDisabled) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuItemView* const item1 = submenu->GetMenuItemAt(0);
   item1->SetEnabled(false);
@@ -2800,13 +2787,6 @@ TEST_F(MenuControllerTest,
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_Buttons) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   AddButtonMenuItems(/*single_child=*/false);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const MenuItemView* const item1 = submenu->GetMenuItemAt(0);
@@ -2850,13 +2830,6 @@ TEST_F(MenuControllerTest, SetSelectionIndices_Buttons) {
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_Buttons_SkipHiddenAndDisabled) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   AddButtonMenuItems(/*single_child=*/false);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const MenuItemView* const item1 = submenu->GetMenuItemAt(0);
@@ -2894,13 +2867,6 @@ TEST_F(MenuControllerTest, SetSelectionIndices_Buttons_SkipHiddenAndDisabled) {
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const MenuItemView* const item1 = submenu->GetMenuItemAt(0);
   const MenuItemView* const item2 = submenu->GetMenuItemAt(1);
@@ -2951,13 +2917,6 @@ TEST_F(MenuControllerTest, SetSelectionIndices_NestedButtons) {
 }
 
 TEST_F(MenuControllerTest, SetSelectionIndices_ChildrenChanged) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   AddButtonMenuItems(/*single_child=*/false);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuItemView* const item1 = submenu->GetMenuItemAt(0);
@@ -3049,13 +3008,6 @@ TEST_F(MenuControllerTest, AccessibilityEmitsSelectChildrenChanged) {
 // Test that in accessibility mode disabled menu items are taken into account
 // during items indices assignment.
 TEST_F(MenuControllerTest, AccessibilityDisabledItemsIndices) {
-#if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/1286137): This test is consistently failing on Win11.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN11) {
-    GTEST_SKIP() << "Skipping test for WIN11_21H2 and greater";
-  }
-#endif
   const ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
 
   SubmenuView* const submenu = menu_item()->GetSubmenu();
@@ -3113,12 +3065,7 @@ TEST_F(MenuControllerTest, BrowserHotkeysCancelMenusAndAreRedispatched) {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_SubmenuOpenByKey DISABLED_SubmenuOpenByKey
-#else
-#define MAYBE_SubmenuOpenByKey SubmenuOpenByKey
-#endif
-TEST_F(MenuControllerTest, MAYBE_SubmenuOpenByKey) {
+TEST_F(MenuControllerTest, SubmenuOpenByKey) {
   // Create a submenu.
   MenuItemView* const child_menu = menu_item()->GetSubmenu()->GetMenuItemAt(0);
   const SubmenuView* const submenu = child_menu->CreateSubmenu();

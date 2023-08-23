@@ -1384,7 +1384,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter",
           "--test-launcher-print-test-stdio=always",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
@@ -2706,7 +2705,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "ci_only": true,
@@ -7356,7 +7354,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter",
           "--test-launcher-print-test-stdio=always",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
@@ -8842,7 +8839,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter",
           "--test-launcher-print-test-stdio=always",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
@@ -10315,7 +10311,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.mac.cr23_views_unittests.filter",
           "--test-launcher-print-test-stdio=always",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
@@ -18353,7 +18348,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.linux.cr23_views_unittests.filter",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "ci_only": true,
@@ -19698,7 +19692,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/cr23.win.cr23_views_unittests.filter",
           "--enable-features=ChromeRefresh2023,ChromeRefreshSecondary2023,ChromeWebuiRefresh2023,Cr2023ActionChips,Cr2023ActionChipsIcons,kOmniboxCR23SteadyStateIcons,OmniboxExpandedLayout,OmniboxExpandedStateColors,OmniboxExpandedStateHeight,OmniboxExpandedStateShape,OmniboxExpandedStateSuggestIcons,OmniboxSteadyStateBackgroundColor,OmniboxSteadyStateHeight,OmniboxSteadyStateTextColor,OmniboxSuggestionHoverFillShape"
         ],
         "ci_only": true,

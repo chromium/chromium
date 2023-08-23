@@ -134,7 +134,7 @@ class VIEWS_EXPORT MenuController
   void Run(Widget* parent,
            MenuButtonController* button_controller,
            MenuItemView* root,
-           const gfx::Rect& bounds,
+           const gfx::Rect& anchor_bounds,
            MenuAnchorPosition position,
            bool context_menu,
            bool is_nested_drag,
@@ -388,7 +388,7 @@ class VIEWS_EXPORT MenuController
   // flags of the received key event.
   bool SendAcceleratorToHotTrackedView(int event_flags);
 
-  void UpdateInitialLocation(const gfx::Rect& bounds,
+  void UpdateInitialLocation(const gfx::Rect& anchor_bounds,
                              MenuAnchorPosition position,
                              bool context_menu);
 
