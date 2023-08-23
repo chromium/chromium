@@ -275,10 +275,10 @@ public class BookmarkFolderSelectActivity
         }
     }
 
-    private void moveBookmarksAndFinish(List<BookmarkId> bookmarks, BookmarkId parent) {
-        mModel.moveBookmarks(bookmarks, parent);
-        BookmarkUtils.setLastUsedParent(this, parent);
-        finishActivity(bookmarks);
+    private void moveBookmarksAndFinish(List<BookmarkId> bookmarkIds, BookmarkId parentId) {
+        BookmarkUtils.moveBookmarksToParent(mModel, bookmarkIds, parentId);
+        BookmarkUtils.setLastUsedParent(this, parentId);
+        finishActivity(bookmarkIds);
     }
 
     private void finishActivity(List<BookmarkId> bookmarks) {

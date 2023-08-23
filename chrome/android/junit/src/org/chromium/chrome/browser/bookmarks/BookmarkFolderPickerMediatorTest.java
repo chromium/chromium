@@ -234,15 +234,16 @@ public class BookmarkFolderPickerMediatorTest {
     }
 
     @Test
-    public void testCancel() {
+    public void testMove() {
         mMediator.populateFoldersForParentId(mUserFolderId2);
         mModel.get(BookmarkFolderPickerProperties.MOVE_CLICK_LISTENER).onClick(null);
-        verify(mBookmarkModel).moveBookmarks(Arrays.asList(mUserBookmarkId), mUserFolderId2);
         verify(mFinishRunnable).run();
+        verify(mBookmarkModel).moveBookmarks(Arrays.asList(mUserBookmarkId), mUserFolderId2);
+        assertEquals(mUserFolderId2, BookmarkUtils.getLastUsedParent(mActivity, mBookmarkModel));
     }
 
     @Test
-    public void testMove() {
+    public void testCancel() {
         mModel.get(BookmarkFolderPickerProperties.CANCEL_CLICK_LISTENER).onClick(null);
         verify(mFinishRunnable).run();
     }
