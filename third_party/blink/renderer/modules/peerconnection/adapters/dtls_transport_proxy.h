@@ -6,7 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/webrtc/api/dtls_transport_interface.h"
@@ -68,7 +68,7 @@ class DtlsTransportProxy : public webrtc::DtlsTransportObserverInterface {
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
   webrtc::DtlsTransportInterface* dtls_transport_;
-  CrossThreadPersistent<Delegate> delegate_;
+  CrossThreadHandle<Delegate> delegate_;
 };
 
 }  // namespace blink
