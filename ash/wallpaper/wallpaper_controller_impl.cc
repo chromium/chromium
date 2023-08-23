@@ -32,6 +32,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
+#include "ash/system/time/time_of_day.h"
 #include "ash/wallpaper/online_wallpaper_manager.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
@@ -1616,6 +1617,21 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     for (auto& observer : observers_) {
       observer.OnDailyRefreshCheckpointChanged();
     }
+    if (!features::IsWallpaperRefreshRevampEnabled()) {
+      return;
+    }
+    // Checks whether daily wallpaper should be refreshed by evaluating whether
+    // 23 hours (roughly a day) have elapsed since `info.date`.
+    if (info.type == WallpaperType::kDaily ||
+        info.type == WallpaperType::kDailyGooglePhotos) {
+      bool should_fetch_wallpaper =
+          info.date + base::Hours(23) <= base::Time::Now();
+      if (should_fetch_wallpaper) {
+        UpdateDailyRefreshWallpaper();
+      }
+    } else if (info.type == WallpaperType::kOnceGooglePhotos) {
+      CheckGooglePhotosStaleness(account_id, info);
+    }
     return;
   }
 
@@ -2700,6 +2716,27 @@ void WallpaperControllerImpl::OnTimeOfDayWallpaperSetAfterOobe(bool success) {
   wallpaper_metrics_manager_->LogSettingTimeOfDayWallpaperAfterOobe(success);
 }
 
+void WallpaperControllerImpl::OnDailyRefreshWallpaperUpdated(
+    RefreshWallpaperCallback callback,
+    bool success) {
+  if (success) {
+    // Updates the check times based on when the daily wallpaper is refreshed to
+    // prevent hotspotting. First check time is roughly 24 hours from now and
+    // the second check (retry) time is roughly 25 hours (or 1 hour) from now.";
+    auto first_check_time =
+        base::Time::Now() + base::Minutes(base::RandInt(1, 30));
+    auto second_check_time = first_check_time + base::Hours(1);
+    DVLOG(1) << __func__
+             << " updating check times - first_check_time=" << first_check_time
+             << " - second_check_time=" << second_check_time;
+    daily_refresh_scheduler_->SetCustomStartTime(
+        TimeOfDay::FromTime(first_check_time));
+    daily_refresh_scheduler_->SetCustomEndTime(
+        TimeOfDay::FromTime(second_check_time));
+  }
+  std::move(callback).Run(success);
+}
+
 void WallpaperControllerImpl::SetDailyRefreshCollectionId(
     const AccountId& account_id,
     const std::string& collection_id) {
@@ -2796,6 +2833,9 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
     return;
   }
 
+  auto on_done =
+      base::BindOnce(&WallpaperControllerImpl::OnDailyRefreshWallpaperUpdated,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
   AccountId account_id = GetActiveAccountId();
   WallpaperInfo info;
 
@@ -2808,14 +2848,14 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
               account_id, info.collection_id,
               /*daily_refresh_enabled=*/true, info.layout,
               /*preview_mode=*/false, /*dedup_key=*/absl::nullopt),
-          std::move(callback));
+          std::move(on_done));
     } else {
       DCHECK_EQ(info.type, WallpaperType::kDaily);
       OnlineWallpaperVariantInfoFetcher::FetchParamsCallback fetch_callback =
           base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
                          set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
                          /*start_daily_refresh_timer=*/true,
-                         std::move(callback));
+                         std::move(on_done));
       // Fetch can fail if wallpaper_controller_client has been cleared or
       // |info| is malformed.
       if (!variant_info_fetcher_->FetchDailyWallpaper(
@@ -2829,7 +2869,7 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
     }
   } else {
     StartDailyRefreshTimer();
-    std::move(callback).Run(false);
+    std::move(on_done).Run(false);
   }
 }
 
@@ -2851,6 +2891,12 @@ void WallpaperControllerImpl::OnFetchDailyWallpaperFailed() {
 }
 
 void WallpaperControllerImpl::StartUpdateWallpaperTimer(base::TimeDelta delay) {
+  // Timer is used for checking daily wallpaper refresh and Google photos
+  // staleness. When the revamp flag is enabled, these functionalities will be
+  // handled in `OnCheckpointChanged()`.
+  if (features::IsWallpaperRefreshRevampEnabled()) {
+    return;
+  }
   DCHECK(delay.is_positive());
   base::Time desired_run_time = base::Time::Now() + delay;
   update_wallpaper_timer_.Start(

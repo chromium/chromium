@@ -37,6 +37,7 @@
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 #include "ash/wallpaper/wallpaper_blur_manager.h"
 #include "ash/wallpaper/wallpaper_constants.h"
+#include "ash/wallpaper/wallpaper_daily_refresh_scheduler.h"
 #include "ash/wallpaper/wallpaper_pref_manager.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -412,6 +413,25 @@ std::vector<backdrop::Image> TimeOfDayImageSet() {
     image.set_asset_id(asset_id);
     image.set_unit_id(wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId);
     image.set_image_type(image_types[i]);
+    image.set_image_url(url);
+    images.push_back(image);
+  }
+  return images;
+}
+
+// Returns a collection of images with randomized asset ids.
+std::vector<backdrop::Image> ImageSet() {
+  const size_t image_size = 10;
+  const auto base_asset_id = rand() % 100;
+  std::vector<backdrop::Image> images;
+  for (size_t i = 0; i < image_size; ++i) {
+    const uint64_t asset_id = i + base_asset_id;
+    const std::string url =
+        base::StringPrintf("https://preferred_wallpaper/images/%zu", asset_id);
+    backdrop::Image image;
+    image.set_asset_id(asset_id);
+    image.set_unit_id(asset_id);
+    image.set_image_type(backdrop::Image::IMAGE_TYPE_UNKNOWN);
     image.set_image_url(url);
     images.push_back(image);
   }
@@ -5832,6 +5852,151 @@ TEST_P(WallpaperControllerTest,
   RunAllTasksUntilIdle();
   // Expect that one signal is sent on login.
   EXPECT_EQ(1, observer.daily_refresh_checkpoint_count());
+}
+
+TEST_P(
+    WallpaperControllerTest,
+    SetDailyRefreshCollectionId_UpdatesCheckTimes_WallpaperDailyRefreshScheduler) {
+  auto daily_refresh_scheduler =
+      controller_->daily_refresh_scheduler_for_testing();
+  auto first_check_time = daily_refresh_scheduler->GetCustomStartTime();
+  auto second_check_time = daily_refresh_scheduler->GetCustomEndTime();
+  // User's wallpaper info should exist.
+  pref_manager_->SetUserWallpaperInfo(kAccountId1,
+                                      InfoWithType(WallpaperType::kOnline));
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+  controller_->SetDailyRefreshCollectionId(
+      kAccountId1, TestWallpaperControllerClient::kDummyCollectionId);
+  controller_->UpdateDailyRefreshWallpaper();
+  WaitForWallpaperCount(1);
+  EXPECT_EQ(TestWallpaperControllerClient::kDummyCollectionId,
+            client_.get_fetch_daily_refresh_wallpaper_param());
+
+  WallpaperInfo expected;
+  ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &expected));
+  EXPECT_EQ(WallpaperType::kDaily, expected.type);
+
+  // Expect that scheduler check times are updated.
+  EXPECT_NE(first_check_time, daily_refresh_scheduler->GetCustomStartTime());
+  EXPECT_NE(second_check_time, daily_refresh_scheduler->GetCustomEndTime());
+}
+
+TEST_P(
+    WallpaperControllerTest,
+    SetGooglePhotosDailyRefreshAlbumId_UpdatesCheckTimes_WallpaperDailyRefreshScheduler) {
+  auto daily_refresh_scheduler =
+      controller_->daily_refresh_scheduler_for_testing();
+  auto first_check_time = daily_refresh_scheduler->GetCustomStartTime();
+  auto second_check_time = daily_refresh_scheduler->GetCustomEndTime();
+  // User's wallpaper info should exist.
+  pref_manager_->SetUserWallpaperInfo(kAccountId1,
+                                      InfoWithType(WallpaperType::kOnline));
+  SimulateUserLogin(kAccountId1);
+  ClearWallpaperCount();
+  controller_->SetGooglePhotosDailyRefreshAlbumId(
+      kAccountId1, TestWallpaperControllerClient::kDummyCollectionId);
+  controller_->UpdateDailyRefreshWallpaper();
+  WaitForWallpaperCount(1);
+
+  WallpaperInfo expected;
+  ASSERT_TRUE(pref_manager_->GetUserWallpaperInfo(kAccountId1, &expected));
+  EXPECT_EQ(WallpaperType::kDailyGooglePhotos, expected.type);
+
+  // Expect that scheduler check times are updated.
+  EXPECT_NE(first_check_time, daily_refresh_scheduler->GetCustomStartTime());
+  EXPECT_NE(second_check_time, daily_refresh_scheduler->GetCustomEndTime());
+}
+
+TEST_P(WallpaperControllerTest,
+       UpdateDailyRefreshWallpaper_OnLogin_WallpaperDailyRefreshScheduler) {
+  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
+      kAccountId1, kAssetId, GURL(kDummyUrl),
+      TestWallpaperControllerClient::kDummyCollectionId,
+      WALLPAPER_LAYOUT_CENTER_CROPPED, /*preview_mode=*/false,
+      /*from_user=*/false,
+      /*daily_refresh_enabled=*/true, kUnitId,
+      /*variants=*/std::vector<OnlineWallpaperVariant>()));
+  info.date = DayBeforeYesterdayish();
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
+
+  ClearLogin();
+  SimulateUserLogin(kAccountId1);
+
+  // Info is set as over a day old so we expect one task to run in under an hour
+  // (due to fuzzing) then it will idle.
+  task_environment()->FastForwardBy(base::Hours(1));
+  // Make sure all the tasks such as syncing, setting wallpaper complete.
+  RunAllTasksUntilIdle();
+
+  EXPECT_EQ(TestWallpaperControllerClient::kDummyCollectionId,
+            client_.get_fetch_daily_refresh_wallpaper_param());
+  EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
+}
+
+TEST_P(
+    WallpaperControllerTest,
+    UpdateDailyRefreshWallpaper_OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
+  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
+  auto images = ImageSet();
+  std::string collection_id{"my_wallpaper_collection"};
+  client_.AddCollection(collection_id, images);
+
+  // User's wallpaper info should exist.
+  pref_manager_->SetUserWallpaperInfo(kAccountId1,
+                                      InfoWithType(WallpaperType::kDaily));
+  SimulateUserLogin(kAccountId1);
+
+  base::RunLoop run_loop;
+  ClearWallpaperCount();
+  controller_->SetDailyRefreshCollectionId(kAccountId1, collection_id);
+  controller_->UpdateDailyRefreshWallpaper(
+      base::BindLambdaForTesting([quit = run_loop.QuitClosure()](bool success) {
+        EXPECT_TRUE(success);
+        std::move(quit).Run();
+      }));
+  run_loop.Run();
+  EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
+  EXPECT_EQ(1, GetWallpaperCount());
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDaily);
+  WallpaperInfo wallpaper_info_1;
+  ASSERT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info_1));
+  EXPECT_EQ(collection_id, wallpaper_info_1.collection_id);
+  EXPECT_EQ(WallpaperType::kDaily, wallpaper_info_1.type);
+
+  // Forward time to trigger checkpoints.
+  task_environment()->FastForwardBy(base::Hours(25));
+
+  WallpaperInfo wallpaper_info_2;
+  ASSERT_TRUE(
+      pref_manager_->GetUserWallpaperInfo(kAccountId1, &wallpaper_info_2));
+  // Expect a new daily wallpaper is set.
+  EXPECT_FALSE(wallpaper_info_1.MatchesSelection(wallpaper_info_2));
+  EXPECT_EQ(collection_id, wallpaper_info_2.collection_id);
+  EXPECT_EQ(WallpaperType::kDaily, wallpaper_info_2.type);
+  EXPECT_FALSE(controller_->GetUpdateWallpaperTimerForTesting().IsRunning());
+}
+
+TEST_P(
+    WallpaperControllerTest,
+    CheckGooglePhotosStaleness_OnCheckpointChanged_WallpaperDailyRefreshScheduler) {
+  base::test::ScopedFeatureList feature_list(features::kWallpaperRefreshRevamp);
+  SimulateUserLogin(kAccountId1);
+
+  WallpaperInfo info = {kFakeGooglePhotosPhotoId, WALLPAPER_LAYOUT_CENTER,
+                        WallpaperType::kOnceGooglePhotos,
+                        DayBeforeYesterdayish()};
+  pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
+  client_.set_google_photo_has_been_deleted(true);
+
+  // Forward time to trigger checkpoints.
+  task_environment()->FastForwardBy(base::Hours(25));
+
+  EXPECT_EQ(controller_->GetWallpaperType(), WallpaperType::kDefault);
 }
 
 }  // namespace ash
