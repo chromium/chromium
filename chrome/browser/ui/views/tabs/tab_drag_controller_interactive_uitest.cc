@@ -1041,10 +1041,10 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
   // Dragging the center of the first tab to the center of the third tab will
   // result in the tabs joining the end of Tab Group 4.
-  const gfx::Point left_center_third_tab =
-      test::GetLeftCenterInScreenCoordinates(tab_strip->tab_at(2));
+  const gfx::Point center_third_tab =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(2));
   ASSERT_TRUE(PressInput(GetCenterInScreenCoordinates(tab_strip->tab_at(0))));
-  ASSERT_TRUE(DragInputTo(left_center_third_tab));
+  ASSERT_TRUE(DragInputTo(center_third_tab));
   ASSERT_TRUE(ReleaseInput());
   StopAnimating(tab_strip);
 
