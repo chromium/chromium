@@ -1352,7 +1352,6 @@ const CGFloat kSymbolSize = 18;
 - (void)updateContentSizeAndRepositionViews {
   // TODO(rohitrao): The following lines are duplicated in
   // layoutTabStripSubviews.  Find a way to consolidate this logic.
-  [_buttonNewTab setNeedsUpdateConfiguration];
   const NSUInteger tabCount = [_tabArray count] - [_closingTabs count];
   if (!tabCount)
     return;
@@ -1761,6 +1760,8 @@ const CGFloat kSymbolSize = 18;
   newTabFrame.origin = CGPointMake(virtualMaxX - kNewTabOverlap, 0);
   if (!animate && moveNewTab)
     [_buttonNewTab setFrame:newTabFrame];
+
+  [_buttonNewTab setNeedsUpdateConfiguration];
 
   if (animate) {
     float delay = 0.0;
