@@ -31,6 +31,7 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSCanonCNColorMode[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSCanonCNIJGrayScale[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSEpsonInk[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSHpColorMode[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSHpPjlColorAsGray[];
 COMPONENT_EXPORT(PRINTING_BASE)
 extern const char kCUPSKonicaMinoltaSelectColor[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kCUPSLexmarkBLW[];
@@ -57,6 +58,8 @@ COMPONENT_EXPORT(PRINTING_BASE) extern const char kGreyscale[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kHighGray[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kHpColorPrint[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kHpGrayscalePrint[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kHpPjlColorAsGrayNo[];
+COMPONENT_EXPORT(PRINTING_BASE) extern const char kHpPjlColorAsGrayYes[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kKonicaMinoltaColor[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kKonicaMinoltaGrayscale[];
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kLexmarkBLWFalse[];

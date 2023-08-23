@@ -419,8 +419,9 @@ TEST(PrintBackendCupsHelperTest, PpdParsingBrotherPrinters) {
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingHpPrinters) {
-  constexpr char kTestPpdData[] =
-      R"(*PPD-Adobe: "4.3"
+  {
+    constexpr char kTestPpdData[] =
+        R"(*PPD-Adobe: "4.3"
 *ColorDevice: True
 *OpenUI *HPColorMode/Mode: PickOne
 *DefaultHPColorMode: ColorPrint
@@ -430,14 +431,35 @@ TEST(PrintBackendCupsHelperTest, PpdParsingHpPrinters) {
   << /ProcessColorModel /DeviceGray >> setpagedevice"
 *CloseUI: *HPColorMode)";
 
-  PrinterSemanticCapsAndDefaults caps;
-  EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
-                                   kTestPpdData, &caps));
-  EXPECT_TRUE(caps.color_changeable);
-  EXPECT_TRUE(caps.color_default);
-  EXPECT_EQ(mojom::ColorModel::kHPColorColor, caps.color_model);
-  EXPECT_EQ(mojom::ColorModel::kHPColorBlack, caps.bw_model);
-  VerifyCapabilityColorModels(caps);
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kTestPpdData, &caps));
+    EXPECT_TRUE(caps.color_changeable);
+    EXPECT_TRUE(caps.color_default);
+    EXPECT_EQ(mojom::ColorModel::kHPColorColor, caps.color_model);
+    EXPECT_EQ(mojom::ColorModel::kHPColorBlack, caps.bw_model);
+    VerifyCapabilityColorModels(caps);
+  }
+
+  {
+    constexpr char kTestPpdData[] =
+        R"(*PPD-Adobe: "4.3"
+*ColorDevice: True
+*OpenUI *HPPJLColorAsGray/Print Color as Gray: PickOne
+*DefaultHPPJLColorAsGray: no
+*HPPJLColorAsGray yes/On: " "
+*HPPJLColorAsGray no/Off: " "
+*CloseUI: *HPPJLColorAsGray)";
+
+    PrinterSemanticCapsAndDefaults caps;
+    EXPECT_TRUE(ParsePpdCapabilities(/*dest=*/nullptr, /*locale=*/"",
+                                     kTestPpdData, &caps));
+    EXPECT_TRUE(caps.color_changeable);
+    EXPECT_TRUE(caps.color_default);
+    EXPECT_EQ(mojom::ColorModel::kHpPjlColorAsGrayNo, caps.color_model);
+    EXPECT_EQ(mojom::ColorModel::kHpPjlColorAsGrayYes, caps.bw_model);
+    VerifyCapabilityColorModels(caps);
+  }
 }
 
 TEST(PrintBackendCupsHelperTest, PpdParsingCanonPrinters) {

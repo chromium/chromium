@@ -51,6 +51,8 @@ enum ColorModel {
   // Used in Xerox printer PPDs.
   [MinVersion=1] kXeroxXROutputColorPrintAsColor,
   [MinVersion=1] kXeroxXROutputColorPrintAsGrayscale,
+  [MinVersion=2] kHpPjlColorAsGrayNo,   // Used in HP printer PPDs.
+  [MinVersion=2] kHpPjlColorAsGrayYes,  // Used in HP printer PPDs.
 };
 
 // Print job duplex mode values.

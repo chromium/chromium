@@ -93,6 +93,14 @@ void GetColorModelForModel(mojom::ColorModel color_model,
       *color_setting_name = kColor;
       *color_value = kBlack;
       break;
+    case mojom::ColorModel::kHpPjlColorAsGrayNo:
+      *color_setting_name = kCUPSHpPjlColorAsGray;
+      *color_value = kHpPjlColorAsGrayNo;
+      break;
+    case mojom::ColorModel::kHpPjlColorAsGrayYes:
+      *color_setting_name = kCUPSHpPjlColorAsGray;
+      *color_value = kHpPjlColorAsGrayYes;
+      break;
     case mojom::ColorModel::kPrintoutModeNormal:
       *color_setting_name = kCUPSPrintoutMode;
       *color_value = kNormal;
@@ -223,6 +231,7 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
     case mojom::ColorModel::kRGBA:
     case mojom::ColorModel::kColorModeColor:
     case mojom::ColorModel::kHPColorColor:
+    case mojom::ColorModel::kHpPjlColorAsGrayNo:
     case mojom::ColorModel::kPrintoutModeNormal:
     case mojom::ColorModel::kProcessColorModelCMYK:
     case mojom::ColorModel::kProcessColorModelRGB:
@@ -242,6 +251,7 @@ absl::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
     case mojom::ColorModel::kGrayscale:
     case mojom::ColorModel::kColorModeMonochrome:
     case mojom::ColorModel::kHPColorBlack:
+    case mojom::ColorModel::kHpPjlColorAsGrayYes:
     case mojom::ColorModel::kPrintoutModeNormalGray:
     case mojom::ColorModel::kProcessColorModelGreyscale:
     case mojom::ColorModel::kBrotherCUPSMono:

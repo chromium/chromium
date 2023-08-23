@@ -403,6 +403,36 @@ bool GetHPColorModeSettings(ppd_file_t* ppd,
   return true;
 }
 
+bool GetHpPjlColorAsGrayModeSettings(ppd_file_t* ppd,
+                                     mojom::ColorModel* color_model_for_black,
+                                     mojom::ColorModel* color_model_for_color,
+                                     bool* color_is_default) {
+  // Some HP printers use "HPPJLColorAsGray" attribute in their PPDs.
+  ppd_option_t* color_mode_option = ppdFindOption(ppd, kCUPSHpPjlColorAsGray);
+  if (!color_mode_option) {
+    return false;
+  }
+
+  if (ppdFindChoice(color_mode_option, kHpPjlColorAsGrayYes)) {
+    *color_model_for_black = mojom::ColorModel::kHpPjlColorAsGrayYes;
+  }
+
+  if (ppdFindChoice(color_mode_option, kHpPjlColorAsGrayNo)) {
+    *color_model_for_color = mojom::ColorModel::kHpPjlColorAsGrayNo;
+  }
+
+  ppd_choice_t* marked_choice = ppdFindMarkedChoice(ppd, kCUPSHpPjlColorAsGray);
+  if (!marked_choice) {
+    marked_choice =
+        ppdFindChoice(color_mode_option, color_mode_option->defchoice);
+  }
+  if (marked_choice) {
+    *color_is_default =
+        EqualsCaseInsensitiveASCII(marked_choice->choice, kHpPjlColorAsGrayNo);
+  }
+  return true;
+}
+
 bool GetCanonCNColorModeSettings(ppd_file_t* ppd,
                                  mojom::ColorModel* color_model_for_black,
                                  mojom::ColorModel* color_model_for_color,
@@ -707,6 +737,7 @@ bool GetColorModelSettings(ppd_file_t* ppd,
          GetColorModeSettings(ppd, cm_black, cm_color, is_color) ||
          GetHPColorSettings(ppd, cm_black, cm_color, is_color) ||
          GetHPColorModeSettings(ppd, cm_black, cm_color, is_color) ||
+         GetHpPjlColorAsGrayModeSettings(ppd, cm_black, cm_color, is_color) ||
          GetBrotherColorSettings(ppd, cm_black, cm_color, is_color) ||
          GetCanonCNColorModeSettings(ppd, cm_black, cm_color, is_color) ||
          GetCanonCNIJGrayscaleSettings(ppd, cm_black, cm_color, is_color) ||
