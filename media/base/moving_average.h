@@ -43,8 +43,6 @@ class MEDIA_EXPORT MovingAverage {
 
   uint64_t count() const { return count_; }
 
-  base::TimeDelta max() const { return max_; }
-
   size_t depth() const { return depth_; }
 
   // |first| is min, |second| is max of all samples in the window.
