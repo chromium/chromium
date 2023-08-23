@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
+#include "ash/shell.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -36,6 +37,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -72,6 +74,8 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutBrowserForward;
     case (KeyboardCode::VKEY_BROWSER_REFRESH):
       return IconCode::kKeyboardShortcutBrowserRefresh;
+    case (KeyboardCode::VKEY_BROWSER_SEARCH):
+      return IconCode::kKeyboardShortcutBrowserSearch;
     case (KeyboardCode::VKEY_DICTATE):
       return IconCode::kKeyboardShortcutDictationToggle;
     case (KeyboardCode::VKEY_EMOJI_PICKER):
@@ -116,6 +120,16 @@ absl::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
       return IconCode::kKeyboardShortcutSettings;
     case (KeyboardCode::VKEY_SNAPSHOT):
       return IconCode::kKeyboardShortcutSnapshot;
+    case (KeyboardCode::VKEY_LWIN):
+    case (KeyboardCode::VKEY_RWIN):
+      // The search and launcher are the same. The icon we display is dependent
+      // on a best-attempt heuristic on whether the chromebook internal keyboard
+      // is a launcher or magnifier icon.
+      return ash::Shell::Get()
+                     ->keyboard_capability()
+                     ->HasLauncherButtonOnAnyKeyboard()
+                 ? IconCode::kKeyboardShortcutLauncher
+                 : IconCode::kKeyboardShortcutSearch;
     default:
       return absl::nullopt;
   }

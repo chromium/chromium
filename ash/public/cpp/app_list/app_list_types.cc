@@ -378,6 +378,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrowserForwardIcon;
     case kKeyboardShortcutBrowserRefresh:
       return &kKsvReloadIcon;
+    case kKeyboardShortcutBrowserSearch:
+      return &kKsBrowserSearchIcon;
     // Emoji picker.
     case kKeyboardShortcutEmojiPicker:
       return &kKsEmojiPickerIcon;
@@ -432,6 +434,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Snapshot.
     case kKeyboardShortcutSnapshot:
       return &kKsvSnapshotIcon;
+    // Launcher.
+    case kKeyboardShortcutLauncher:
+      return &kKsLauncherIcon;
+    // Search.
+    case kKeyboardShortcutSearch:
+      return &kKsSearchIcon;
     default:
       return nullptr;
   }

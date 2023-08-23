@@ -257,7 +257,7 @@ TEST_F(KeyboardShortcutResultTest, PopulateTextVector_ModifierKeysOrder) {
   PopulateTextVector(&text_vector, accelerator);
 
   ASSERT_EQ(text_vector.size(), 5u);
-  VerifyTextItem(text_vector[0], u"search", TextType::kIconifiedText);
+  VerifyTextItem(text_vector[0], u"search", TextType::kIconCode);
   VerifyTextItem(text_vector[1], u"ctrl", TextType::kIconifiedText);
   VerifyTextItem(text_vector[2], u"alt", TextType::kIconifiedText);
   VerifyTextItem(text_vector[3], u"shift", TextType::kIconifiedText);

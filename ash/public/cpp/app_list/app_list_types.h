@@ -603,6 +603,7 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutBrowserBack,
     kKeyboardShortcutBrowserForward,
     kKeyboardShortcutBrowserRefresh,
+    kKeyboardShortcutBrowserSearch,
     kKeyboardShortcutDictationToggle,
     kKeyboardShortcutEmojiPicker,
     kKeyboardShortcutZoom,
@@ -625,6 +626,8 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
     kKeyboardShortcutPrivacyScreenToggle,
     kKeyboardShortcutSettings,
     kKeyboardShortcutSnapshot,
+    kKeyboardShortcutLauncher,
+    kKeyboardShortcutSearch,
   };
 
   // Only used for SearchResultTextItemType kString
