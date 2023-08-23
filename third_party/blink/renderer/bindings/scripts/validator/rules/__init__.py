@@ -8,6 +8,7 @@ from . import rules_dictionaries
 from . import rules_extended_attributes
 from . import rules_function_like
 from . import rules_idl_types
+from . import rules_observable_arrays
 
 
 def register_all_rules(rule_store):
@@ -17,3 +18,4 @@ def register_all_rules(rule_store):
     rules_extended_attributes.register_rules(rule_store)
     rules_function_like.register_rules(rule_store)
     rules_idl_types.register_rules(rule_store)
+    rules_observable_arrays.register_rules(rule_store)

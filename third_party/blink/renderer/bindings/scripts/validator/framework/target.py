@@ -114,6 +114,10 @@ def _get_namespaces(target_store):
     return target_store.web_idl_database.namespaces
 
 
+def _get_observable_arrays(target_store):
+    return target_store.web_idl_database.observable_arrays
+
+
 def _get_objects_with_extended_attributes(target_store):
     objects = []
     objects.extend(target_store.get(ATTRIBUTES))
@@ -152,3 +156,4 @@ NAMESPACES = TargetType("namespaces", _get_namespaces)
 # Target objects which have extended attributes except for web_idl.IdlType
 OBJECTS_WITH_EXTENDED_ATTRIBUTES = TargetType(
     "objects_with_extended_attributes", _get_objects_with_extended_attributes)
+OBSERVABLE_ARRAYS = TargetType("observable_arrays", _get_observable_arrays)
