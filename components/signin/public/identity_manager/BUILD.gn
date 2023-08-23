@@ -64,6 +64,7 @@ source_set("identity_manager") {
   deps = [
     "//build:chromeos_buildflags",
     "//components/image_fetcher/core",
+    "//components/plus_addresses:features",
     "//components/prefs",
     "//components/signin/internal/identity_manager",
     "//components/signin/public/webdata",
