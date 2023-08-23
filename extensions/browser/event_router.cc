@@ -143,6 +143,43 @@ LazyContextId LazyContextIdForListener(const EventListener* listener,
   return LazyContextId(browser_context, listener->extension_id());
 }
 
+// If the event is for an extension, emit the appropriate dispatch to renderer
+// time UMA based on the background script type. Nothing will emit if
+// extension is null.
+void EmitEventDispatchToRendererTimeUMA(const Extension* extension,
+                                        base::TimeTicks dispatch_start_time) {
+  // These metrics are only relevant if the event is for an extension.
+  if (!extension) {
+    return;
+  }
+
+  const char* histogram_name = nullptr;
+  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
+    histogram_name =
+        "Extensions.Events.DispatchToSendToRenderer."
+        "ExtensionPersistentBackgroundPage";
+  } else if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    histogram_name =
+        "Extensions.Events.DispatchToSendToRenderer.ExtensionEventPage";
+  } else if (BackgroundInfo::IsServiceWorkerBased(extension)) {
+    histogram_name =
+        "Extensions.Events.DispatchToSendToRenderer.ExtensionServiceWorker";
+  }
+
+  // `histogram_name` may be nullptr for extension contexts outside the
+  // background page (e.g. a content script in an options page that can also
+  // listen for events).
+  if (histogram_name) {
+    const base::TimeDelta send_to_renderer_time =
+        base::TimeTicks::Now() - dispatch_start_time;
+    base::UmaHistogramCustomMicrosecondsTimes(histogram_name,
+                                              /*sample=*/send_to_renderer_time,
+                                              /*min=*/base::Microseconds(1),
+                                              /*max=*/base::Minutes(5),
+                                              /*buckets=*/100);
+  }
+}
+
 // A global identifier used to distinguish extension events.
 base::AtomicSequenceNumber g_extension_event_id;
 
@@ -1099,6 +1136,8 @@ void EventRouter::DispatchEventToProcess(
                            extension_id, event_id, event.event_name,
                            std::move(event_args_to_use), event.user_gesture,
                            std::move(filter_info));
+
+  EmitEventDispatchToRendererTimeUMA(extension, event.dispatch_start_time);
 
   if (!event.did_dispatch_callback.is_null()) {
     event.did_dispatch_callback.Run(EventTarget{extension_id, process->GetID(),
