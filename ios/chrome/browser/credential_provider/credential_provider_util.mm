@@ -252,6 +252,10 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
 
   for (id<Credential> credential : all_credentials_rank) {
     GURL url = GURL(base::SysNSStringToUTF8(credential.serviceIdentifier));
+    if (!url.is_valid()) {
+      // Skip fetching the favicon for credential with invalid URL.
+      continue;
+    }
     NSString* filename = credential.favicon;
     if (!credential.favicon) {
       // Add favicon name to the credential and update the store.
