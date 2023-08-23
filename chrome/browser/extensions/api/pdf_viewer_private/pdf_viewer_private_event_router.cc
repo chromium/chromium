@@ -12,11 +12,11 @@
 namespace extensions {
 
 // static
-PdfViewerPrivateEventRouter* PdfViewerPrivateEventRouter::Create(
-    content::BrowserContext* context) {
+std::unique_ptr<PdfViewerPrivateEventRouter>
+PdfViewerPrivateEventRouter::Create(content::BrowserContext* context) {
   DCHECK(context);
   Profile* profile = Profile::FromBrowserContext(context);
-  return new PdfViewerPrivateEventRouter(profile);
+  return std::make_unique<PdfViewerPrivateEventRouter>(profile);
 }
 
 PdfViewerPrivateEventRouter::PdfViewerPrivateEventRouter(Profile* profile)
