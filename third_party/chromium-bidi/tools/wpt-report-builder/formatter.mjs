@@ -55,6 +55,10 @@ export function flattenSingleTest(test) {
  *  is removed from the WPT test file, then the tests appear in the report
  *  as usual.
  */
+export function removeWebDriverBiDiPrefix(name) {
+  return name.replace('/webdriver/tests/bidi/', '');
+}
+
 export function excludeTentativeTests(test) {
   return !test.test.includes('_tentative.py');
 }
@@ -151,23 +155,63 @@ export function generateHtml(map) {
       .pass { background: #D5F2D7; }
       .part { background: #F2EDD5; }
       .fail { background: #F2D7D5; }
+      .hidden { display: none; }
+
+      .header {
+        display: flex;
+        align-items: center;
+      }
+
+      .headings {
+        flex-grow: 1;
+      }
     </style>
     <div class="top">
-      <h1>WPT test results (${date})</h1>
-      <h2>${map.stat.pass} / ${map.stat.all} (${
-        map.stat.all - map.stat.pass
-      } remaining)</h2>
+      <div class="header">
+        <div class="headings">
+          <h1>WPT test results (${date})</h1>
+          <h2>${map.stat.pass} / ${map.stat.all} (${
+            map.stat.all - map.stat.pass
+          } remaining)</h2>
+        </div>
+        <div>
+          <button class="toggle" type="button">Long</button>
+        </div>
+      </div>
       <div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
           .join('')}
       </div>
+      <script>
+        const button = document.querySelector('.toggle');
+        let state = 'short';
+        button.addEventListener('click', () => {
+          button.innerText = state.charAt(0).toUpperCase() + state.slice(1);
+
+          const toHide = document.querySelectorAll(\`.\${state}-name\`);
+          for(const element of toHide){
+            element.classList.add("hidden");
+          }
+
+          state = state === 'short' ? 'long' : 'short';
+          const toShow = document.querySelectorAll(\`.\${state}-name\`);
+          for(const element of toShow){
+            element.classList.remove("hidden");
+          }
+        })
+      </script>
     </div>`;
 }
 
-function generateTestReport(map) {
+function generateTestReport(map, parent) {
   if (!map.children) {
     return generateSubtestReport(map);
+  }
+
+  let name = removeWebDriverBiDiPrefix(map.path.replace(parent.path, ''));
+  if (name.startsWith('/')) {
+    name = name.replace('/', '');
   }
 
   return `
@@ -181,21 +225,30 @@ function generateTestReport(map) {
             ? 'fail'
             : 'part'
         }">
-          ${escapeHtml(map.path)}
-          <span class="stat" ><b>${map.stat.pass}/${map.stat.all}</b></span>
+          <span class="short-name">${escapeHtml(name)}</span>
+          <span class="long-name hidden">${escapeHtml(map.path)}</span>
+          <span class="stat"><b>${map.stat.pass}/${map.stat.all}</b></span>
         </summary>
-        ${map.children.map(generateTestReport).join('')}
+        ${map.children
+          .map((child) => {
+            return generateTestReport(child, map);
+          })
+          .join('')}
       </details>
     </div>`;
 }
 
 function generateSubtestReport(subtest) {
+  const name =
+    subtest.name ?? removeWebDriverBiDiPrefix(subtest.path).split('/').at(-1);
   return `<div class="divider"></div>
       <div class="test-card">
         <p class="non-collapsible-item path ${
           subtest.status === 'PASS' ? 'pass' : 'fail'
         }">
-          ${escapeHtml(subtest.name ?? subtest.path)} ${
+          <span class="short-name">${escapeHtml(name)}</span>
+          <span class="long-name hidden">${escapeHtml(subtest.path)}</span>
+          ${
             subtest.message
               ? `<br /><small>${escapeHtml(subtest.message)}</small>`
               : ''
