@@ -60,7 +60,12 @@ CaptivePortalDialogDelegate::CaptivePortalDialogDelegate(
   ash_util::SetupWidgetInitParamsForContainer(
       &params, kShellWindowId_LockSystemModalContainer);
 
-  widget_ = new views::Widget;
+  // The ownership of the `Widget` we're allocating here is a bit unclear --
+  // it's not deleted in this class, but we sometimes try to access the Widget
+  // in this class after the widget has been deleted elsewhere. By using a weak
+  // ptr to hold onto the widget, we can at least check whether it is still
+  // alive before accessing it.
+  widget_ = (new views::Widget)->GetWeakPtr();
   widget_->Init(std::move(params));
   widget_->SetBounds(display::Screen::GetScreen()
                          ->GetDisplayNearestWindow(widget_->GetNativeWindow())
@@ -86,11 +91,15 @@ void CaptivePortalDialogDelegate::Show() {
 }
 
 void CaptivePortalDialogDelegate::Hide() {
-  widget_->Hide();
+  if (widget_) {
+    widget_->Hide();
+  }
 }
 
 void CaptivePortalDialogDelegate::Close() {
-  widget_->Close();
+  if (widget_) {
+    widget_->Close();
+  }
 }
 
 ui::ModalType CaptivePortalDialogDelegate::GetDialogModalType() const {
