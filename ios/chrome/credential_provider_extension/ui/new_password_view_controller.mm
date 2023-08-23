@@ -82,6 +82,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   _passwordCreationType = CPEPasswordCreated::kPasswordManuallyEntered;
   _accessoryView = [[FormInputAccessoryView alloc] init];
   [_accessoryView setUpWithLeadingView:nil navigationDelegate:self];
+  _usernameText = @"";
+  _passwordText = @"";
+  _noteText = @"";
+  _isNoteFooterShown = NO;
   return self;
 }
 
