@@ -2065,6 +2065,10 @@ web::HttpsUpgradeType GetFailedHttpsUpgradeType(
       self.webStateImpl, failingURL, error, context->IsPost(),
       self.webStateImpl->GetBrowserState()->IsOffTheRecord(), ssl_info,
       context->GetNavigationId(), base::BindOnce(^(NSString* errorHTML) {
+        if (self.navigationStates.lastAddedNavigation != navigation) {
+          // Do not show the stale error page if the page has since navigated.
+          return;
+        }
         if (errorHTML) {
           CRWErrorPageHelper* errorPageHelper =
               [[CRWErrorPageHelper alloc] initWithError:context->GetError()];
