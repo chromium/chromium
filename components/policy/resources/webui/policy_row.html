@@ -125,6 +125,7 @@ a {
 .toggle,
 .source,
 .scope.row .name,
+.level.row .name,
 .messages.row .name,
 .value.row .name,
 .errors.row .name,
@@ -134,6 +135,7 @@ a {
 }
 
 .scope.row .value,
+.level.row .value,
 .messages.row .value,
 .value.row .value,
 .errors.row .value,
@@ -173,6 +175,10 @@ a {
 <if expr="is_android or is_ios">
   <div class="scope row" role="row" hidden>
     <div class="name" role="rowheader">$i18n{headerScope}</div>
+    <div class="value" role="cell"></div>
+  </div>
+  <div class="level row" role="row" hidden>
+    <div class="name" role="rowheader">$i18n{headerLevel}</div>
     <div class="value" role="cell"></div>
   </div>
 </if>
