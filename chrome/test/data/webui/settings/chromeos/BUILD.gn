@@ -98,6 +98,7 @@ build_webui_tests("build") {
 
     "device_page/audio_page_test.ts",
     "device_page/customize_button_row_test.ts",
+    "device_page/customize_buttons_subsection_test.ts",
     "device_page/customize_mouse_buttons_subpage_test.ts",
     "device_page/customize_tablet_buttons_subpage_test.ts",
     "device_page/customize_pen_buttons_subpage_test.ts",

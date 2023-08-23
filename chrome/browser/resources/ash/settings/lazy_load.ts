@@ -141,6 +141,7 @@ export {TimeZoneBrowserProxy, TimeZoneBrowserProxyImpl} from './date_time_page/t
 export {TimezoneSelectorElement} from './date_time_page/timezone_selector.js';
 export {TimezoneSubpageElement} from './date_time_page/timezone_subpage.js';
 export {CustomizeButtonRowElement} from './device_page/customize_button_row.js';
+export {CustomizeButtonsSubsectionElement} from './device_page/customize_buttons_subsection.js';
 export {SettingsCustomizeMouseButtonsSubpageElement} from './device_page/customize_mouse_buttons_subpage.js';
 export {SettingsCustomizePenButtonsSubpageElement} from './device_page/customize_pen_buttons_subpage.js';
 export {SettingsCustomizeTabletButtonsSubpageElement} from './device_page/customize_tablet_buttons_subpage.js';

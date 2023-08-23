@@ -205,6 +205,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
  ['DevicePageCustomizeButtonRow', 'device_page/customize_button_row_test.js'],
  [
+   'DevicePageCustomizeButtonsSubsection',
+   'device_page/customize_buttons_subsection_test.js'
+ ],
+ [
    'DevicePageCustomizeMouseButtonsSubpage',
    'device_page/customize_mouse_buttons_subpage_test.js', {
      enabled: [
