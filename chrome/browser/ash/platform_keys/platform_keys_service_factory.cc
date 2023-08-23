@@ -181,7 +181,8 @@ PlatformKeysServiceFactory::PlatformKeysServiceFactory()
 
 PlatformKeysServiceFactory::~PlatformKeysServiceFactory() = default;
 
-KeyedService* PlatformKeysServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   std::unique_ptr<PlatformKeysServiceImplDelegate> delegate;
   Profile* profile = Profile::FromBrowserContext(context);
@@ -191,8 +192,8 @@ KeyedService* PlatformKeysServiceFactory::BuildServiceInstanceFor(
     delegate = std::make_unique<DelegateForUser>(context);
   }
 
-  PlatformKeysServiceImpl* const platform_keys_service_impl =
-      new PlatformKeysServiceImpl(std::move(delegate));
+  std::unique_ptr<PlatformKeysServiceImpl> platform_keys_service_impl =
+      std::make_unique<PlatformKeysServiceImpl>(std::move(delegate));
   platform_keys_service_impl->SetMapToSoftokenAttrsForTesting(
       map_to_softoken_attrs_for_testing_);
 

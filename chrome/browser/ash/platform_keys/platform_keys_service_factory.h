@@ -63,7 +63,7 @@ class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
   ~PlatformKeysServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;
 
