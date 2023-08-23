@@ -25,10 +25,6 @@ EnterpriseDomainModel* GetEnterpriseDomainModel() {
 
 class QuickSettingsIntegrationTest : public InteractiveAshTest {
  public:
-  QuickSettingsIntegrationTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
-
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
     InteractiveAshTest::SetUpOnMainThread();
@@ -36,9 +32,6 @@ class QuickSettingsIntegrationTest : public InteractiveAshTest {
     // Ensure the OS Settings system web app (SWA) is installed.
     InstallSystemApps();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(QuickSettingsIntegrationTest, OpenOsSettings) {
