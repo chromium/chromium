@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight"
+    android:paddingStart="@dimen/button_end_padding">
+  <item
+      android:id="@android:id/content"
+      android:drawable="@drawable/toolbar_button_highlight_layer_list">
+  </item>
+</ripple>

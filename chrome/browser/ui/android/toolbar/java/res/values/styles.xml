@@ -15,14 +15,14 @@ found in the LICENSE file.
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
         <item name="tint">@color/default_icon_color_tint_list</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/omnibox_button_ripple</item>
     </style>
     <style name="LocationBarActionButtonPolish" parent="LocationBarActionButton">
         <item name="android:layout_height">@dimen/location_bar_action_icon_width</item>
         <item name="android:background">@drawable/single_tab_card_ripple</item>
     </style>
     <style name="ToolbarButton">
-        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/toolbar_button_ripple</item>
         <item name="android:layout_width">@dimen/toolbar_button_width</item>
         <item name="android:layout_height">56dp</item>
         <item name="android:scaleType">center</item>
@@ -30,6 +30,7 @@ found in the LICENSE file.
     <style name="ToolbarMenuButton" parent="ToolbarButton">
         <item name="android:layout_gravity">top</item>
         <item name="android:paddingEnd">@dimen/button_end_padding</item>
+        <item name="android:background">@drawable/toolbar_menu_button_ripple</item>
     </style>
     <style name="BottomToolbarButton" parent="ToolbarButton">
         <item name="android:layout_height">48dp</item>

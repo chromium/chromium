@@ -64,4 +64,7 @@ found in the LICENSE file.
 
     <!-- Padding between rightmost button and strip end -->
     <dimen name="button_end_padding">8dp</dimen>
+
+    <!-- Padding to visually position toolbar tab switcher we can get the min 48 x 48dp touch target. -->
+    <dimen name="toolbar_tab_switcher_button_padding">8dp</dimen>
 </resources>

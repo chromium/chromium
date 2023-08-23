@@ -72,13 +72,15 @@ found in the LICENSE file.
             android:inflatedId="@+id/optional_toolbar_button"
             android:layout="@layout/optional_toolbar_button"
             style="@style/ToolbarButton"
+            android:background="@drawable/toolbar_tab_switcher_button_ripple"
             android:paddingStart="8dp"
             android:visibility="gone" />
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarButton"
-            android:paddingStart="8dp"
+            android:background="@drawable/toolbar_tab_switcher_button_ripple"
+            android:paddingStart="@dimen/toolbar_tab_switcher_button_padding"
             android:layout_gravity="top"
             android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:visibility="visible" />

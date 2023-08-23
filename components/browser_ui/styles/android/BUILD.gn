@@ -56,6 +56,7 @@ android_resources("java_resources") {
     "java/res/color/target_view_color_list.xml",
     "java/res/color/text_button_ripple_color_list.xml",
     "java/res/color/text_highlight_color.xml",
+    "java/res/color/toolbar_button_highlight_color.xml",
     "java/res/drawable-hdpi/btn_star_filled.png",
     "java/res/drawable-hdpi/ic_chrome.png",
     "java/res/drawable-hdpi/ic_delete_white_24dp.png",

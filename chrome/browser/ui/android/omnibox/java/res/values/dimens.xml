@@ -121,4 +121,10 @@ found in the LICENSE file.
     <!-- Max size which will fit completely in the composed/rounded bg. -->
     <dimen name="omnibox_search_engine_logo_favicon_size">17dp</dimen>
     <dimen name="omnibox_search_engine_logo_composed_size">24dp</dimen>
+
+    <!-- Button highlight dimensions. -->
+    <dimen name="toolbar_button_highlight_size">40dp</dimen>
+    <dimen name="omnibox_button_highlight_width">40dp</dimen>
+    <dimen name="omnibox_button_highlight_height">32dp</dimen>
+    <dimen name="location_bar_url_action_padding_small">3dp</dimen>
 </resources>

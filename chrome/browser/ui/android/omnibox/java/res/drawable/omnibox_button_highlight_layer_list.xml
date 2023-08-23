@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Background for the hovered and pressed state -->
+  <item
+      android:width="@dimen/omnibox_button_highlight_width"
+      android:height="@dimen/omnibox_button_highlight_height"
+      android:gravity="center">
+
+    <shape android:shape="rectangle">
+      <solid android:color="@color/toolbar_button_highlight_color" />
+      <corners android:radius="@dimen/modern_toolbar_background_corner_radius"/>
+    </shape>
+  </item>
+</layer-list>
+

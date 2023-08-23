@@ -25,6 +25,7 @@ found in the LICENSE file.
        <ImageView
            android:id="@+id/menu_badge"
            style="@style/ToolbarMenuButton"
+           android:background="@drawable/toolbar_menu_button_ripple"
            android:src="@drawable/badge_update_dark"
            tools:ignore="ContentDescription"
            android:importantForAccessibility="no"
