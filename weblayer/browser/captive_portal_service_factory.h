@@ -35,7 +35,7 @@ class CaptivePortalServiceFactory : public BrowserContextKeyedServiceFactory {
       delete;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 
   // Incognito profiles have their own instance of
