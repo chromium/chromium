@@ -130,7 +130,7 @@ void Euicc::InstallProfileFromActivationCode(
     return;
   }
 
-  if (profile_info) {
+  if (!ash::features::IsSmdsSupportEnabled() && profile_info) {
     NET_LOG(USER) << "Installing profile with path "
                   << profile_info->path().value();
     profile_info->InstallProfile(

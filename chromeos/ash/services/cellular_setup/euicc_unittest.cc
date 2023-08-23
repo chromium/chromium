@@ -620,7 +620,7 @@ TEST_F(EuiccTest_SmdsSupportEnabled, InstallPendingProfileFromActivationCode) {
   EXPECT_EQ(dbus_properties->iccid().value(), mojo_properties->iccid);
 
   // Installing a profile causes a list change.
-  EXPECT_EQ(2u, observer()->profile_list_change_calls().size());
+  EXPECT_EQ(3u, observer()->profile_list_change_calls().size());
 }
 
 TEST_F(EuiccTest_SmdsSupportEnabled, RequestPendingProfiles) {
