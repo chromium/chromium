@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "google_apis/google_api_keys.h"
 
 HatsUIConfig::HatsUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
@@ -37,8 +36,6 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kHatsResources, kHatsResourcesSize),
       IDR_HATS_HATS_HTML);
-
-  source->AddString("hatsApiKey", google_apis::GetHatsAPIKey());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HatsUI)
