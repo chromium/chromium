@@ -449,7 +449,7 @@ bool IsWebDriveOfficeTask(const TaskDescriptor& task);
 
 bool IsOpenInOfficeTask(const TaskDescriptor& task);
 
-bool IsExtensionInstalled(Profile* profile, const std::string& extension_id);
+bool IsQuickOfficeInstalled(Profile* profile);
 
 // Returns whether |path| is an HTML file according to its extension.
 bool IsHtmlFile(const base::FilePath& path);

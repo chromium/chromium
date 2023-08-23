@@ -411,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
 
 // Check QuickOffice was observed by the dialog as it should always be shown.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ASSERT_TRUE(file_manager::file_tasks::IsExtensionInstalled(
-      profile(), extension_misc::kQuickOfficeComponentExtensionId));
+  ASSERT_TRUE(file_manager::file_tasks::IsQuickOfficeInstalled(profile()));
   ASSERT_GE(PositionInList(observed_app_ids,
                            extension_misc::kQuickOfficeComponentExtensionId),
             0);

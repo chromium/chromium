@@ -70,6 +70,7 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/drive/file_errors.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
@@ -78,6 +79,7 @@
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
 #include "net/base/mime_util.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -620,45 +622,6 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteChromeApp) {
   ASSERT_EQ("\"Received tiffAction with: test_small.tiff\"", message);
 }
 
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, IsExtensionInstalled) {
-  // TODO(b/287165243): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287165243.";
-  }
-
-  if (profile_type() == TestProfileType::kGuest) {
-    // The extension can't install in guest mode.
-    return;
-  }
-  Profile* const profile = browser()->profile();
-  // Install new extension.
-  auto extension = InstallTiffHandlerChromeApp(profile);
-  ASSERT_TRUE(IsExtensionInstalled(profile, extension->id()));
-
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  // Uninstall extension.
-  registry->RemoveEnabled(extension->id());
-  ASSERT_FALSE(IsExtensionInstalled(profile, extension->id()));
-}
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// This test only runs with the is_chrome_branded GN flag set because otherwise
-// QuickOffice is not installed.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, IsExtensionInstalledQuickOffice) {
-  // TODO(b/287165243): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287165243.";
-  }
-
-  Profile* const profile = browser()->profile();
-  ASSERT_TRUE(IsExtensionInstalled(
-      profile, extension_misc::kQuickOfficeComponentExtensionId));
-}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 const TaskDescriptor CreateWebDriveOfficeTask() {
   // The SWA actionId is prefixed with chrome://file-manager/?ACTION_ID.
   const std::string& full_action_id =
@@ -684,9 +647,33 @@ const FileSystemURL CreateOfficeFileSourceURL(Profile* profile) {
       file);
 }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// This test only runs with the is_chrome_branded GN flag set because otherwise
+// These tests only run with the is_chrome_branded GN flag set because otherwise
 // QuickOffice is not installed.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Test that the Fallback dialog can be shown when Quick Office is installed.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
+  // TODO(b/287165243): Fix the test and remove this.
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287165243.";
+  }
+
+  if (profile_type() == TestProfileType::kIncognito) {
+    GTEST_SKIP()
+        << "There is no AppServiceProxy for incognito profiles as they are "
+           "ephemeral and have no apps persisted inside them.";
+  }
+
+  storage::FileSystemURL test_url;
+  Profile* const profile = browser()->profile();
+
+  // GetUserFallbackChoice() returns `True` because the Fallback dialog can be
+  // shown.
+  ASSERT_TRUE(GetUserFallbackChoice(
+      profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
+      ash::office_fallback::FallbackReason::kOffline));
+}
+
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
   // TODO(b/287165243): Fix the test and remove this.
   if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
@@ -694,24 +681,25 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
         << "Skipping test body for CrosapiParam::kEnabled, see b/287165243.";
   }
 
+  if (profile_type() == TestProfileType::kIncognito) {
+    GTEST_SKIP()
+        << "There is no AppServiceProxy, which is required to check "
+           "QuickOffice is installed, for incognito profiles as they are "
+           "ephemeral and have no apps persisted inside them.";
+  }
+
   storage::FileSystemURL test_url;
   Profile* const profile = browser()->profile();
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  const extensions::Extension* quick_office = registry->GetInstalledExtension(
-      extension_misc::kQuickOfficeComponentExtensionId);
 
   // Uninstall QuickOffice.
-  registry->RemoveEnabled(extension_misc::kQuickOfficeComponentExtensionId);
+  extensions::ExtensionSystem::Get(profile)
+      ->extension_service()
+      ->RemoveComponentExtension(
+          extension_misc::kQuickOfficeComponentExtensionId);
+
   // GetUserFallbackChoice() returns `False` because QuickOffice is not
   // installed.
   ASSERT_FALSE(GetUserFallbackChoice(
-      profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
-      ash::office_fallback::FallbackReason::kOffline));
-  // Install QuickOffice.
-  registry->AddEnabled(quick_office);
-  // GetUserFallbackChoice() returns `True` because QuickOffice is installed.
-  ASSERT_TRUE(GetUserFallbackChoice(
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline));
 }

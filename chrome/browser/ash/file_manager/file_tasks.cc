@@ -81,6 +81,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
+#include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
 #include "extensions/browser/entry_info.h"
@@ -1067,8 +1068,7 @@ bool GetUserFallbackChoice(
     gfx::NativeWindow modal_parent,
     ash::office_fallback::FallbackReason fallback_reason) {
   // If QuickOffice is not installed, don't launch dialog.
-  if (!IsExtensionInstalled(profile,
-                            extension_misc::kQuickOfficeComponentExtensionId)) {
+  if (!IsQuickOfficeInstalled(profile)) {
     LOG(ERROR) << "Cannot fallback to QuickOffice when it is not installed";
     return false;
   }
@@ -1267,11 +1267,21 @@ bool IsOpenInOfficeTask(const TaskDescriptor& task) {
   return IsFilesAppId(task.app_id) && action_id == kActionIdOpenInOffice;
 }
 
-bool IsExtensionInstalled(Profile* profile, const std::string& extension_id) {
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(profile);
-  return registry->GetExtensionById(extension_id,
-                                    extensions::ExtensionRegistry::ENABLED);
+bool IsQuickOfficeInstalled(Profile* profile) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (!proxy) {
+    return false;
+  }
+  // The AppRegistryCache will contain the QuickOffice extension whether on Ash
+  // or Lacros.
+  bool installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      extension_misc::kQuickOfficeComponentExtensionId,
+      [&installed](const apps::AppUpdate& update) {
+        installed = apps_util::IsInstalled(update.Readiness());
+      });
+  return installed;
 }
 
 bool IsHtmlFile(const base::FilePath& path) {
