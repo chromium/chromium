@@ -253,6 +253,14 @@ public class TabBuilder {
     }
 
     /**
+     * Creates a TabBuilder for a tab from a web contents with no renderer. initialize()
+     * needs to be called afterwards to complete the second level initialization.
+     */
+    public static TabBuilder createLazyTabWithWebContents() {
+        return new TabBuilder().setCreationType(TabCreationState.FROZEN_FOR_LAZY_LOAD);
+    }
+
+    /**
      * Creates a TabBuilder for a fresh tab. initialize() needs to be called afterwards to
      * complete the second level initialization.
      * @param initiallyHidden true iff the tab being created is initially in background

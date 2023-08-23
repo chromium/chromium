@@ -219,11 +219,17 @@ public class TabStateAttributes extends TabWebContentsUserData {
         if (dirtiness == mDirtinessState) return;
         if (mTab.isBeingRestored()) return;
 
+        // Do not lower dirtiness to UNTIDY from DIRTY as we should wait for the state to be CLEAN.
+        if (dirtiness == DirtinessState.UNTIDY && mDirtinessState == DirtinessState.DIRTY) {
+            return;
+        }
         mDirtinessState = dirtiness;
-        if (dirtiness == DirtinessState.DIRTY) {
+        if (mDirtinessState == DirtinessState.DIRTY) {
             CriticalPersistedTabData.from(mTab).setShouldSave();
         }
-        for (Observer observer : mObservers) observer.onTabStateDirtinessChanged(mTab, dirtiness);
+        for (Observer observer : mObservers) {
+            observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
+        }
     }
 
     /**

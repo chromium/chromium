@@ -929,14 +929,19 @@ public class TabPersistentStore {
 
     private void addTabToSaveQueueIfApplicable(Tab tab) {
         if (tab == null || tab.isDestroyed()) return;
+        TabStateAttributes tabStateAttributes = TabStateAttributes.from(tab);
         if (mTabsToSave.contains(tab)
-                || TabStateAttributes.from(tab).getDirtinessState()
-                        == TabStateAttributes.DirtinessState.CLEAN
-                || isTabUrlContentScheme(tab)) {
+                || tabStateAttributes.getDirtinessState()
+                        == TabStateAttributes.DirtinessState.CLEAN) {
             return;
         }
 
-        if (UrlUtilities.isNTPUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward()) {
+        if (isTabUrlContentScheme(tab)
+                || (UrlUtilities.isNTPUrl(tab.getUrl()) && !tab.canGoBack()
+                        && !tab.canGoForward())) {
+            // At present the tab is not in a valid state to save. Reset dirtiness state so that the
+            // next dirtiness change will reattempt the save.
+            tabStateAttributes.clearTabStateDirtiness();
             return;
         }
         mTabsToSave.addLast(tab);

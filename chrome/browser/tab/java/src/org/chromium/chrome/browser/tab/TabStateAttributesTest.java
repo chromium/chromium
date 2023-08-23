@@ -456,4 +456,20 @@ public class TabStateAttributesTest {
         Assert.assertEquals(TabStateAttributes.DirtinessState.DIRTY,
                 TabStateAttributes.from(mTab).getDirtinessState());
     }
+
+    @Test
+    public void testDirtyCannotBecomeUntidy() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+        Assert.assertEquals(TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        TabStateAttributes.from(mTab).updateIsDirty(TabStateAttributes.DirtinessState.UNTIDY);
+        Assert.assertEquals(TabStateAttributes.DirtinessState.DIRTY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        Mockito.verifyNoMoreInteractions(mAttributesObserver);
+        Mockito.reset(mAttributesObserver);
+
+        mTab.getUserDataHost().removeUserData(TabStateAttributes.class);
+    }
 }
