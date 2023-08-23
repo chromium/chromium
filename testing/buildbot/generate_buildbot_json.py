@@ -434,7 +434,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       return fp.read()
 
   def write_file(self, file_path, contents):
-    with open(file_path, 'w') as fp:
+    with open(file_path, 'w', newline='') as fp:
       fp.write(contents)
 
   # pylint: disable=inconsistent-return-statements
