@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -87,7 +86,7 @@ class PepperMediaStreamAudioTrackHost : public PepperMediaStreamTrackHostBase {
     // host_->buffer_manager() to read some buffer properties. It is safe
     // because the buffer_manager()'s properties will not be changed after
     // initialization.
-    raw_ptr<PepperMediaStreamAudioTrackHost> host_;
+    PepperMediaStreamAudioTrackHost* host_;
 
     // The estimated capture time of the first sample frame of audio. This is
     // used as the timebase to compute the buffer timestamps.

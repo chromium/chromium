@@ -4,7 +4,6 @@
 
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
@@ -151,7 +150,7 @@ struct APIHooksPerContextData : public base::SupportsUserData::Data {
     }
   }
 
-  raw_ptr<v8::Isolate> isolate;
+  v8::Isolate* isolate;
 
   std::map<std::string, v8::Global<v8::Object>> hook_interfaces;
 

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
@@ -153,7 +152,7 @@ class UnfilteredEventListeners final : public APIEventListeners {
   // The listener tracker to notify of added or removed listeners. This may be
   // null if this is a set of listeners for an unmanaged event. If
   // non-null, required to outlive this object.
-  raw_ptr<ListenerTracker> listener_tracker_ = nullptr;
+  ListenerTracker* listener_tracker_ = nullptr;
 };
 
 // A listener list implementation that supports filtering. Events should only
@@ -221,7 +220,7 @@ class FilteredEventListeners final : public APIEventListeners {
 
   // The listener tracker to notify of added or removed listeners. Required to
   // outlive this object. Must be non-null.
-  raw_ptr<ListenerTracker> listener_tracker_ = nullptr;
+  ListenerTracker* listener_tracker_ = nullptr;
 };
 
 }  // namespace extensions

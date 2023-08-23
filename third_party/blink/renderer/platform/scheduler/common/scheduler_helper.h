@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -131,15 +130,14 @@ class PLATFORM_EXPORT SchedulerHelper
   virtual void ShutdownAllQueues() {}
 
   THREAD_CHECKER(thread_checker_);
-  raw_ptr<base::sequence_manager::SequenceManager>
-      sequence_manager_;  // NOT OWNED
+  base::sequence_manager::SequenceManager* sequence_manager_;  // NOT OWNED
 
  private:
   friend class SchedulerHelperTest;
 
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
-  raw_ptr<Observer> observer_;  // NOT OWNED
+  Observer* observer_;  // NOT OWNED
 
   UkmTaskSampler ukm_task_sampler_;
   // Depth of nested_runloop.

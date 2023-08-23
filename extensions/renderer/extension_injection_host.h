@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_EXTENSION_INJECTION_HOST_H_
 #define EXTENSIONS_RENDERER_EXTENSION_INJECTION_HOST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/common/extension.h"
 #include "extensions/renderer/injection_host.h"
 
@@ -38,7 +37,7 @@ class ExtensionInjectionHost : public InjectionHost {
       int tab_id,
       bool is_declarative) const override;
 
-  raw_ptr<const Extension> extension_;
+  const Extension* extension_;
 };
 
 }  // namespace extesions

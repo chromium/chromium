@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_computed_ax_tree.h"
 
 #include "content/renderer/render_frame_impl.h"
@@ -56,7 +55,7 @@ class AomContentAxTree : public blink::WebComputedAXTree {
                                   blink::WebAOMBoolAttribute,
                                   bool* out_param);
   ui::AXTree tree_;
-  raw_ptr<RenderFrameImpl> render_frame_;
+  RenderFrameImpl* render_frame_;
 };
 
 }  // namespace content

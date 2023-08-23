@@ -10,7 +10,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "media/base/ranges.h"
@@ -91,7 +90,7 @@ class PLATFORM_EXPORT BufferedDataSourceHostImpl
   base::circular_deque<std::pair<base::TimeTicks, uint64_t>> download_history_;
   base::RepeatingClosure progress_cb_;
 
-  raw_ptr<const base::TickClock> tick_clock_;
+  const base::TickClock* tick_clock_;
 
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest, CanPlayThrough);
   FRIEND_TEST_ALL_PREFIXES(BufferedDataSourceHostImplTest,

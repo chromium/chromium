@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/color_filter.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
@@ -129,7 +128,7 @@ class GraphicsContext::DarkModeFlags final {
   operator const cc::PaintFlags&() const { return *flags_; }
 
  private:
-  raw_ptr<const cc::PaintFlags> flags_;
+  const cc::PaintFlags* flags_;
   absl::optional<cc::PaintFlags> dark_mode_flags_;
 };
 
@@ -553,7 +552,7 @@ void GraphicsContext::DrawTextInternal(const Font& font,
                                        DOMNodeId node_id,
                                        const AutoDarkMode& auto_dark_mode) {
   DarkModeFlags dark_mode_flags(this, auto_dark_mode, flags);
-  if (sk_sp<SkTextBlob> text_blob = paint_controller_->CachedTextBlob()) {
+  if (sk_sp<SkTextBlob> text_blob = paint_controller_.CachedTextBlob()) {
     canvas_->drawTextBlob(text_blob, point.x(), point.y(), node_id,
                           dark_mode_flags);
     return;
@@ -664,7 +663,7 @@ void GraphicsContext::DrawBidiText(
                               custom_font_not_ready_action, flags,
                               printing_ ? Font::DrawType::kGlyphsAndClusters
                                         : Font::DrawType::kGlyphsOnly)) {
-          paint_controller_->SetTextPainted();
+          paint_controller_.SetTextPainted();
         }
       });
 }
@@ -773,7 +772,7 @@ void GraphicsContext::SetImagePainted(bool report_paint_timing) {
     return;
   }
 
-  paint_controller_->SetImagePainted();
+  paint_controller_.SetImagePainted();
 }
 
 cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(

@@ -31,8 +31,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -191,9 +189,9 @@ class PLATFORM_EXPORT GraphicsContext {
   cc::PaintCanvas* Canvas() { return canvas_; }
   const cc::PaintCanvas* Canvas() const { return canvas_; }
 
-  PaintController& GetPaintController() { return *paint_controller_; }
+  PaintController& GetPaintController() { return paint_controller_; }
   const PaintController& GetPaintController() const {
-    return *paint_controller_;
+    return paint_controller_;
   }
 
   DarkModeFilter* GetDarkModeFilter();
@@ -603,9 +601,9 @@ class PLATFORM_EXPORT GraphicsContext {
   // This is owned by paint_recorder_. Never delete this object.
   // Drawing operations are allowed only after the first BeginRecording() which
   // initializes this to not null.
-  raw_ptr<cc::PaintCanvas> canvas_ = nullptr;
+  cc::PaintCanvas* canvas_ = nullptr;
 
-  const raw_ref<PaintController> paint_controller_;
+  PaintController& paint_controller_;
 
   // Paint states stack. The state controls the appearance of drawn content, so
   // this stack enables local drawing state changes with Save()/Restore() calls.
@@ -616,12 +614,12 @@ class PLATFORM_EXPORT GraphicsContext {
   wtf_size_t paint_state_index_ = 0;
 
   // Raw pointer to the current state.
-  raw_ptr<GraphicsContextState> paint_state_ = nullptr;
+  GraphicsContextState* paint_state_ = nullptr;
 
   PaintRecorder paint_recorder_;
 
-  raw_ptr<printing::MetafileSkia> printing_metafile_ = nullptr;
-  raw_ptr<paint_preview::PaintPreviewTracker> paint_preview_tracker_ = nullptr;
+  printing::MetafileSkia* printing_metafile_ = nullptr;
+  paint_preview::PaintPreviewTracker* paint_preview_tracker_ = nullptr;
 
 #if DCHECK_IS_ON()
   int layer_count_ = 0;

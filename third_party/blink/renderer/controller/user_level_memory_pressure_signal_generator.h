@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -74,14 +73,14 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::TimeDelta inert_interval_ = base::TimeDelta();
   base::TimeDelta minimum_interval_ = base::TimeDelta();
-  raw_ptr<const base::TickClock> clock_;
+  const base::TickClock* clock_;
 
   bool is_loading_ = false;
   absl::optional<base::TimeTicks> last_loaded_;
   bool has_pending_request_ = false;
   base::TimeTicks last_requested_;
   absl::optional<base::TimeTicks> last_generated_;
-  raw_ptr<MainThreadScheduler> main_thread_scheduler_ = nullptr;
+  MainThreadScheduler* main_thread_scheduler_ = nullptr;
 };
 
 }  // namespace blink

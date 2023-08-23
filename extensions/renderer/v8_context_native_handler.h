@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_V8_CONTEXT_NATIVE_HANDLER_H_
 #define EXTENSIONS_RENDERER_V8_CONTEXT_NATIVE_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 #include "v8/include/v8-forward.h"
 
@@ -22,7 +21,7 @@ class V8ContextNativeHandler : public ObjectBackedNativeHandler {
   void GetAvailability(const v8::FunctionCallbackInfo<v8::Value>& args);
   void GetModuleSystem(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  raw_ptr<ScriptContext> context_;
+  ScriptContext* context_;
 };
 
 }  // namespace extensions

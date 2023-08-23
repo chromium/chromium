@@ -4,7 +4,6 @@
 
 #include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -77,7 +76,7 @@ class RendererCommandForwarder : public media::mojom::Renderer {
   }
 
  private:
-  const raw_ptr<PlaybackCommandForwardingRenderer> owning_renderer_;
+  PlaybackCommandForwardingRenderer* const owning_renderer_;
   mojo::Receiver<media::mojom::Renderer> playback_controller_;
 };
 

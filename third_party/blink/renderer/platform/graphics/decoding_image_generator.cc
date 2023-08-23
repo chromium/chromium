@@ -28,7 +28,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
@@ -51,7 +50,7 @@ class ScopedSegmentReaderDataLocker {
   ~ScopedSegmentReaderDataLocker() { segment_reader_->UnlockData(); }
 
  private:
-  const raw_ptr<blink::SegmentReader> segment_reader_;
+  blink::SegmentReader* const segment_reader_;
 };
 }  // namespace
 

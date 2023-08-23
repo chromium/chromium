@@ -32,7 +32,6 @@
 #include "base/check_op.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "cc/paint/paint_image_generator.h"
 #include "third_party/blink/renderer/platform/graphics/image_frame_generator.h"
@@ -53,7 +52,7 @@ namespace blink {
 // 2. Size of the image.
 // 3. ImageDecoder::AlphaOption
 struct DecoderCacheKey {
-  raw_ptr<const blink::ImageFrameGenerator> gen_;
+  const blink::ImageFrameGenerator* gen_;
   SkISize size_;
   blink::ImageDecoder::AlphaOption alpha_option_;
   cc::PaintImage::GeneratorClientId client_id_;
@@ -110,7 +109,7 @@ class CacheEntry : public DoublyLinkedListNode<CacheEntry> {
   virtual CacheType GetType() const = 0;
 
  protected:
-  raw_ptr<const ImageFrameGenerator> generator_;
+  const ImageFrameGenerator* generator_;
   int use_count_;
 
  private:
@@ -178,9 +177,9 @@ struct HashTraits<blink::DecoderCacheKey>
     : GenericHashTraits<blink::DecoderCacheKey> {
   STATIC_ONLY(HashTraits);
   static unsigned GetHash(const blink::DecoderCacheKey& p) {
-    auto first = HashInts(
-        WTF::GetHash(const_cast<blink::ImageFrameGenerator*>(p.gen_.get())),
-        WTF::GetHash(p.size_));
+    auto first =
+        HashInts(WTF::GetHash(const_cast<blink::ImageFrameGenerator*>(p.gen_)),
+                 WTF::GetHash(p.size_));
     auto second = HashInts(WTF::GetHash(static_cast<uint8_t>(p.alpha_option_)),
                            p.client_id_);
     return HashInts(first, second);

@@ -29,7 +29,6 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
@@ -91,7 +90,7 @@ class PLATFORM_EXPORT V8PerIsolateData final {
     }
 
    private:
-    raw_ptr<V8PerIsolateData> per_isolate_data_;
+    V8PerIsolateData* per_isolate_data_;
     const bool original_use_counter_disabled_;
   };
 

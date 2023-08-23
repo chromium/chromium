@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/renderer/web_test_spell_checker.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -57,7 +56,7 @@ class SpellCheckClient : public blink::WebTextCheckClient {
 
   void RequestResolved();
 
-  const raw_ptr<blink::WebLocalFrame> frame_;
+  blink::WebLocalFrame* const frame_;
 
   // Do not perform any checking when |enabled_ == false|.
   // Tests related to spell checking should enable it manually.

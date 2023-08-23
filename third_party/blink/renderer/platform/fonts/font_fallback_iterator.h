@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_FALLBACK_ITERATOR_H_
 
-#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_for_range_set.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
@@ -60,7 +59,7 @@ class FontFallbackIterator {
   scoped_refptr<SimpleFontData> UniqueSystemFontForHintList(
       const Vector<UChar32>& hint_list);
 
-  const raw_ref<const FontDescription> font_description_;
+  const FontDescription& font_description_;
   scoped_refptr<FontFallbackList> font_fallback_list_;
   int current_font_data_index_;
   unsigned segmented_face_index_;

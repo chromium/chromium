@@ -271,7 +271,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     return false;
 
   // sub-run painting is not supported for Bidi text.
-  const TextRun& run = run_info.run.get();
+  const TextRun& run = run_info.run;
   DCHECK_EQ(run_info.from, 0u);
   DCHECK_EQ(run_info.to, run.length());
   if (!run.length()) {
@@ -284,7 +284,7 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
     const String text_with_override =
         BidiParagraph::StringWithDirectionalOverride(run.ToStringView(),
                                                      run.Direction());
-    TextRun run_with_override = *run_info.run;
+    TextRun run_with_override = run_info.run;
     run_with_override.SetText(text_with_override);
     run_with_override.SetDirectionalOverride(false);
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,

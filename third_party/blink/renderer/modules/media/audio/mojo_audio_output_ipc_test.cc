@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "media/audio/audio_device_description.h"
@@ -94,7 +93,7 @@ class TestStreamProvider
   }
 
  private:
-  raw_ptr<media::mojom::blink::AudioOutputStream> stream_;
+  media::mojom::blink::AudioOutputStream* stream_;
   mojo::Remote<media::mojom::blink::AudioOutputStreamProviderClient>
       provider_client_;
   absl::optional<mojo::Receiver<media::mojom::blink::AudioOutputStream>>

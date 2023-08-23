@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -154,9 +153,9 @@ class MODULES_EXPORT OutgoingStream final
    private:
     // We need the isolate to call |AdjustAmountOfExternalAllocatedMemory| for
     // the memory stored in |buffer_|.
-    raw_ptr<v8::Isolate> isolate_;
+    v8::Isolate* isolate_;
     size_t length_ = 0u;
-    raw_ptr<uint8_t> buffer_ = nullptr;
+    uint8_t* buffer_ = nullptr;
   };
 
   const Member<ScriptState> script_state_;

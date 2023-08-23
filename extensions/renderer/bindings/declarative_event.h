@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
 
@@ -53,9 +52,9 @@ class DeclarativeEvent final : public gin::Wrappable<DeclarativeEvent> {
 
   std::string event_name_;
 
-  raw_ptr<APITypeReferenceMap> type_refs_;
+  APITypeReferenceMap* type_refs_;
 
-  raw_ptr<APIRequestHandler> request_handler_;
+  APIRequestHandler* request_handler_;
 
   const int webview_instance_id_;
 };

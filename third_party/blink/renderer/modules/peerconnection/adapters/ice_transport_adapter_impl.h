@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_ICE_TRANSPORT_ADAPTER_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/ice_transport_adapter.h"
 #include "third_party/webrtc/api/ice_transport_interface.h"
@@ -52,7 +51,7 @@ class IceTransportAdapterImpl final : public IceTransportAdapter,
       absl::optional<rtc::NetworkRoute> new_network_route);
   void OnRoleConflict(cricket::IceTransportInternal* transport);
 
-  const raw_ptr<Delegate> delegate_;
+  Delegate* const delegate_;
   rtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport_channel_;
 };
 

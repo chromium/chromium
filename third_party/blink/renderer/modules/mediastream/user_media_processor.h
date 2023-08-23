@@ -10,7 +10,6 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -300,8 +299,8 @@ class MODULES_EXPORT UserMediaProcessor
   WebMediaStreamDeviceObserver* GetMediaStreamDeviceObserver();
 
   // Owned by the test.
-  raw_ptr<WebMediaStreamDeviceObserver>
-      media_stream_device_observer_for_testing_ = nullptr;
+  WebMediaStreamDeviceObserver* media_stream_device_observer_for_testing_ =
+      nullptr;
 
   LocalStreamSources local_sources_;
   LocalStreamSources pending_local_sources_;

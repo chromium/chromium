@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/renderer/companion/visual_search/visual_search_classifier_agent.h"
@@ -146,25 +145,24 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   static bool IsAnimatedWebp(const std::vector<uint8_t>& image_data);
 
   // Have the same lifetime as us.
-  raw_ptr<translate::TranslateAgent> translate_agent_;
-  raw_ptr<optimization_guide::PageTextAgent> page_text_agent_;
+  translate::TranslateAgent* translate_agent_;
+  optimization_guide::PageTextAgent* page_text_agent_;
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  raw_ptr<safe_browsing::PhishingClassifierDelegate> phishing_classifier_ =
+  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+  safe_browsing::PhishingImageEmbedderDelegate* phishing_image_embedder_ =
       nullptr;
-  raw_ptr<safe_browsing::PhishingImageEmbedderDelegate>
-      phishing_image_embedder_ = nullptr;
 #endif
 
   // Owned by ChromeContentRendererClient and outlive us.
-  raw_ptr<web_cache::WebCacheImpl> web_cache_impl_;
+  web_cache::WebCacheImpl* web_cache_impl_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
   std::vector<std::u16string> webui_javascript_;
 
   // Add visual search agent to suggest visually relevant items on the page.
-  raw_ptr<companion::visual_search::VisualSearchClassifierAgent>
-      visual_classifier_ = nullptr;
+  companion::visual_search::VisualSearchClassifierAgent* visual_classifier_ =
+      nullptr;
 #endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;

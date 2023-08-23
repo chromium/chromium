@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
@@ -83,7 +82,7 @@ class SimpleMainThreadScheduler : public MainThreadScheduler {
   void StartIdlePeriodForTesting() override;
 
  private:
-  raw_ptr<v8::Isolate> isolate_ = nullptr;
+  v8::Isolate* isolate_ = nullptr;
 };
 
 }  // namespace scheduler

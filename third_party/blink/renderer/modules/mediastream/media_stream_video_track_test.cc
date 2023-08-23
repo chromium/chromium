@@ -8,7 +8,6 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -169,7 +168,7 @@ class MediaStreamVideoTrackTest
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
   Persistent<MediaStreamSource> source_;
   // |mock_source_| is owned by |source_|.
-  raw_ptr<MockMediaStreamVideoSource> mock_source_;
+  MockMediaStreamVideoSource* mock_source_;
   bool source_started_;
 };
 
@@ -208,7 +207,7 @@ class CheckThreadHelper {
 
  private:
   base::OnceClosure callback_;
-  raw_ptr<bool> correct_;
+  bool* correct_;
   THREAD_CHECKER(thread_checker_);
 };
 

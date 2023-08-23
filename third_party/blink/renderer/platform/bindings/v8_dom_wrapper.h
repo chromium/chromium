@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_V8_DOM_WRAPPER_H_
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/bindings/binding_security_for_platform.h"
 #include "third_party/blink/renderer/platform/bindings/custom_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
@@ -209,7 +208,7 @@ class V8WrapperInstantiationScope {
   bool did_enter_context_ = false;
   v8::Local<v8::Context> context_;
   v8::TryCatch try_catch_;
-  raw_ptr<const WrapperTypeInfo> type_;
+  const WrapperTypeInfo* type_;
   bool access_check_failed_ = false;
 };
 

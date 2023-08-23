@@ -37,7 +37,6 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
@@ -93,7 +92,7 @@ class TestingPlatformSupport : public Platform {
  protected:
   class TestingBrowserInterfaceBroker;
 
-  const raw_ptr<Platform> old_platform_;
+  Platform* const old_platform_;
   scoped_refptr<TestingBrowserInterfaceBroker> interface_broker_;
 
  private:
@@ -152,7 +151,7 @@ class ScopedTestingPlatformSupport final {
 
  private:
   std::unique_ptr<T> testing_platform_support_;
-  raw_ptr<Platform> original_platform_;
+  Platform* original_platform_;
 };
 
 class ScopedUnittestsEnvironmentSetup final {

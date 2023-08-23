@@ -4,7 +4,6 @@
 
 #include "content/renderer/worker/worker_thread_registry.h"
 
-#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/public/renderer/worker_thread.h"
@@ -31,7 +30,7 @@ class MockObserver : public WorkerThread::Observer {
         .WillByDefault(testing::Invoke(this, &MockObserver::RemoveSelf));
   }
   void RemoveSelf() { WorkerThread::RemoveObserver(this); }
-  raw_ptr<WorkerThreadRegistry> runner_;
+  WorkerThreadRegistry* runner_;
 };
 
 TEST_F(WorkerThreadRegistryTest, BasicObservingAndWorkerId) {

@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_WEBP_WEBP_IMAGE_DECODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_WEBP_WEBP_IMAGE_DECODER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -93,7 +92,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
     return false;
   }
 
-  raw_ptr<WebPIDecoder> decoder_;
+  WebPIDecoder* decoder_;
   WebPDecBuffer decoder_buffer_;
   int format_flags_;
   bool frame_background_has_alpha_;
@@ -120,7 +119,7 @@ class PLATFORM_EXPORT WEBPImageDecoder final : public ImageDecoder {
   void ApplyPostProcessing(wtf_size_t frame_index);
   void ClearFrameBuffer(wtf_size_t frame_index) override;
 
-  raw_ptr<WebPDemuxer> demux_;
+  WebPDemuxer* demux_;
   WebPDemuxState demux_state_;
   bool have_parsed_current_data_;
   int repetition_count_;

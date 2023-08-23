@@ -9,7 +9,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_RUNTIME_CALL_STATS_H_
 
 #include "base/check_op.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
@@ -334,12 +333,12 @@ class PLATFORM_EXPORT RuntimeCallStats {
   const base::TickClock* clock() const { return clock_; }
 
  private:
-  raw_ptr<RuntimeCallTimer> current_timer_ = nullptr;
+  RuntimeCallTimer* current_timer_ = nullptr;
   bool in_use_ = false;
   RuntimeCallCounter counters_[static_cast<int>(CounterId::kNumberOfCounters)];
   static const int number_of_counters_ =
       static_cast<int>(CounterId::kNumberOfCounters);
-  raw_ptr<const base::TickClock> clock_ = nullptr;
+  const base::TickClock* clock_ = nullptr;
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
   typedef HashMap<const char*, std::unique_ptr<RuntimeCallCounter>> CounterMap;
@@ -402,7 +401,7 @@ class PLATFORM_EXPORT RuntimeCallStatsScopedTracer {
   static const char* const s_category_group_;
   static const char* const s_name_;
 
-  raw_ptr<RuntimeCallStats> stats_ = nullptr;
+  RuntimeCallStats* stats_ = nullptr;
 };
 
 PLATFORM_EXPORT void LogRuntimeCallStats();

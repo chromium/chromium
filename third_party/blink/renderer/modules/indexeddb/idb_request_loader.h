@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -77,13 +75,13 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   // Transaction result queue item for the IDBRequest.
   //
   // The IDBRequestQueueItem owns this loader.
-  raw_ptr<IDBRequestQueueItem> queue_item_;
+  IDBRequestQueueItem* queue_item_;
 
   // All the values that will be passed back to the IDBRequest.
   //
   // The Vector is owned by the IDBRequestLoader owner, which is currently a
   // IDBRequestQueueItem.
-  const raw_ref<Vector<std::unique_ptr<IDBValue>>> values_;
+  Vector<std::unique_ptr<IDBValue>>& values_;
 
   // Buffer used to unwrap an IDBValue.
   Vector<char> wrapped_data_;

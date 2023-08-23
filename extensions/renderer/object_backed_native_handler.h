@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
@@ -132,7 +131,7 @@ class ObjectBackedNativeHandler : public NativeHandler {
   // Owned list of HandlerFunctions.
   std::vector<std::unique_ptr<HandlerFunction>> handler_functions_;
 
-  raw_ptr<ScriptContext> context_;
+  ScriptContext* context_;
 
   v8::Global<v8::ObjectTemplate> object_template_;
 };
