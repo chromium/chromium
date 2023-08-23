@@ -35,7 +35,11 @@ def ClangRevision():
 
 def NaclRevision():
     nacl_dir = os.path.join(CHROMIUM_SRC, 'native_client')
-    if not os.path.exists(nacl_dir):
+    # With git submodules, nacl_dir will always exist, regardless if it is
+    # cloned or not. To detect if nacl is actually cloned, check content of the
+    # repository. We assume that if README.md exists, then the repository is
+    # cloned.
+    if not os.path.exists(os.path.join(nacl_dir, 'README.md')):
       return None
     return subprocess.check_output(
         ['git', 'log', '-1', '--format=%H'],
