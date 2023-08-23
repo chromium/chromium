@@ -43,7 +43,7 @@ VSyncTickProvider::~VSyncTickProvider() {
 
 void VSyncTickProvider::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  vsync_provider_.Initialize(base::BindPostTask(
+  vsync_provider_->Initialize(base::BindPostTask(
       sequence_,
       base::BindRepeating(&VSyncTickProvider::OnTabVisibilityChange,
                           weak_factory_.GetWeakPtr()),
@@ -72,7 +72,7 @@ void VSyncTickProvider::ScheduleVSync() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("webrtc", "ScheduleVSync");
   DCHECK_NE(state_, State::kDrivenByDefault);
-  vsync_provider_.SetVSyncCallback(
+  vsync_provider_->SetVSyncCallback(
       base::BindPostTask(sequence_,
                          base::BindOnce(&VSyncTickProvider::OnVSync,
                                         weak_tick_factory_.GetWeakPtr()),

@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -366,7 +367,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
                                   // async onsuccess; ignore vs. assert.
   // Maintain the isolate so that all externally allocated memory can be
   // registered against it.
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
 
   AsyncTraceState metrics_;
 
@@ -427,7 +428,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   // getting post-processed.
   //
   // The IDBRequestQueueItem is owned by the result queue in IDBTransaction.
-  IDBRequestQueueItem* queue_item_ = nullptr;
+  raw_ptr<IDBRequestQueueItem> queue_item_ = nullptr;
 
   probe::AsyncTaskContext async_task_context_;
 };

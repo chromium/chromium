@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -108,7 +109,7 @@ class BLINK_PLATFORM_EXPORT MojoURLLoaderClient final
   bool has_received_complete_ = false;
   LoaderFreezeMode freeze_mode_ = LoaderFreezeMode::kNone;
   int32_t accumulated_transfer_size_diff_during_deferred_ = 0;
-  ResourceRequestSender* const resource_request_sender_;
+  const raw_ptr<ResourceRequestSender> resource_request_sender_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   bool bypass_redirect_checks_ = false;
   KURL last_loaded_url_;

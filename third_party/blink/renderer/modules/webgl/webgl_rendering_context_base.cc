@@ -30,6 +30,7 @@
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
@@ -431,7 +432,7 @@ class ScopedPixelLocalStorageInterrupt {
   }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
   bool needs_interrupt_;
 };
 
@@ -445,7 +446,7 @@ class ScopedTexture2DRestorer {
   ~ScopedTexture2DRestorer() { context_->RestoreCurrentTexture2D(); }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
 };
 
 class ScopedFramebufferRestorer {
@@ -458,7 +459,7 @@ class ScopedFramebufferRestorer {
   ~ScopedFramebufferRestorer() { context_->RestoreCurrentFramebuffer(); }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
 };
 
 class ScopedUnpackParametersResetRestore {
@@ -479,7 +480,7 @@ class ScopedUnpackParametersResetRestore {
   }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
   bool enabled_;
 };
 
@@ -502,7 +503,7 @@ class ScopedDisableRasterizerDiscard {
   }
 
  private:
-  WebGLRenderingContextBase* context_;
+  raw_ptr<WebGLRenderingContextBase> context_;
   bool was_enabled_;
 };
 

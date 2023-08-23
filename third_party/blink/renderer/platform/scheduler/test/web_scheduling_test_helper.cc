@@ -32,7 +32,7 @@ namespace blink::scheduler {
 WebSchedulingTestHelper::WebSchedulingTestHelper(Delegate& delegate)
     : delegate_(delegate) {
   FrameOrWorkerScheduler& frame_or_worker_scheduler =
-      delegate_.GetFrameOrWorkerScheduler();
+      delegate_->GetFrameOrWorkerScheduler();
   for (int i = 0; i <= static_cast<int>(WebSchedulingPriority::kLastPriority);
        i++) {
     WebSchedulingPriority priority = static_cast<WebSchedulingPriority>(i);
@@ -71,7 +71,7 @@ void WebSchedulingTestHelper::PostTestTasks(
               ->GetTaskRunner();
     } else {
       task_runner =
-          delegate_.GetTaskRunner(absl::get<TaskType>(entry.type_info));
+          delegate_->GetTaskRunner(absl::get<TaskType>(entry.type_info));
     }
     task_runner->PostDelayedTask(
         FROM_HERE,

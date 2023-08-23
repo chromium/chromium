@@ -105,10 +105,11 @@ Database::DatabaseOpenTask::DatabaseOpenTask(
 
 void Database::DatabaseOpenTask::DoPerformTask() {
   String error_message;
-  success_ = GetDatabase()->PerformOpenAndVerify(set_version_in_new_database_,
-                                                 error_, error_message);
-  if (!success_)
-    error_message_ = error_message;
+  *success_ = GetDatabase()->PerformOpenAndVerify(set_version_in_new_database_,
+                                                  *error_, error_message);
+  if (!*success_) {
+    (*error_message_) = error_message;
+  }
 }
 
 #if DCHECK_IS_ON()
@@ -180,7 +181,7 @@ Database::DatabaseTableNamesTask::DatabaseTableNamesTask(
 }
 
 void Database::DatabaseTableNamesTask::DoPerformTask() {
-  table_names_ = GetDatabase()->PerformGetTableNames();
+  (*table_names_) = GetDatabase()->PerformGetTableNames();
 }
 
 #if DCHECK_IS_ON()

@@ -83,7 +83,7 @@ std::string ComposeAlreadyInstalledString(bool is_starting_installed_worker) {
 // worker thread.
 struct ServiceWorkerContextClient::WorkerContextData {
   explicit WorkerContextData(ServiceWorkerContextClient* owner)
-      : weak_factory(owner), proxy_weak_factory(owner->proxy_) {}
+      : weak_factory(owner), proxy_weak_factory(owner->proxy_.get()) {}
 
   ~WorkerContextData() { DCHECK(thread_checker.CalledOnValidThread()); }
 

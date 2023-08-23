@@ -41,6 +41,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
@@ -195,8 +196,8 @@ struct RangeData {
   STACK_ALLOCATED();
 
  public:
-  hb_buffer_t* buffer;
-  const Font* font;
+  raw_ptr<hb_buffer_t> buffer;
+  raw_ptr<const Font> font;
   TextDirection text_direction;
   unsigned start;
   unsigned end;
