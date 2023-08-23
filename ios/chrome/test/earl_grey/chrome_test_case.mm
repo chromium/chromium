@@ -70,8 +70,9 @@ NSArray* multitaskingTests() {
     // UI tests
     @"testActivityServiceControllerPrintAfterRedirectionToUnprintablePage",
     // ActivityServiceControllerTestCase
-    @"testDismissOnDestroy",           // AlertCoordinatorTestCase
-    @"testAddRemoveBookmark",          // BookmarksTestCase
+    @"testDismissOnDestroy",  // AlertCoordinatorTestCase
+    // TODO(crbug.com/1475206): Re-enable this test.
+    // @"testAddRemoveBookmark",       // BookmarksTestCase
     @"testJavaScriptInOmnibox",        // BrowserViewControllerTestCase
     @"testChooseCastReceiverChooser",  // CastReceiverTestCase
     @"testErrorPage",                  // ErrorPageTestCase
