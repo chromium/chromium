@@ -62,20 +62,26 @@ export class Layout {
     const {width: boxW, height: boxH} = this.previewBox.getBoundingClientRect();
     const video = dom.get('#preview-video', HTMLVideoElement);
 
+    // When the app is minimized, the width and height of the video will be
+    // zero. Don't update the layout for such case.
+    const {videoWidth, videoHeight} = video;
+    if (videoWidth === 0 || videoHeight === 0) {
+      return;
+    }
+
     if (this.cameraManager.useSquareResolution()) {
       const viewportSize = Math.min(boxW, boxH);
       this.setViewportSize(viewportSize, viewportSize);
-      const scale =
-          viewportSize / Math.min(video.videoHeight, video.videoWidth);
-      const contentW = scale * video.videoWidth;
-      const contentH = scale * video.videoHeight;
+      const scale = viewportSize / Math.min(videoHeight, videoWidth);
+      const contentW = scale * videoWidth;
+      const contentH = scale * videoHeight;
       this.setContentSize(contentW, contentH);
       this.setContentOffset(
           (viewportSize - contentW) / 2, (viewportSize - contentH) / 2);
     } else {
-      const scale = Math.min(boxH / video.videoHeight, boxW / video.videoWidth);
-      const contentW = scale * video.videoWidth;
-      const contentH = scale * video.videoHeight;
+      const scale = Math.min(boxH / videoHeight, boxW / videoWidth);
+      const contentW = scale * videoWidth;
+      const contentH = scale * videoHeight;
       this.setViewportSize(contentW, contentH);
       this.setContentSize(contentW, contentH);
       this.setContentOffset(0, 0);
