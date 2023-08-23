@@ -37,10 +37,11 @@ BulkLeakCheckServiceFactory::GetForProfile(Profile* profile) {
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-KeyedService* BulkLeakCheckServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BulkLeakCheckServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new password_manager::BulkLeakCheckService(
+  return std::make_unique<password_manager::BulkLeakCheckService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
