@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,6 +54,12 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
   return result;
 }
 
+void SetDownloadItemWarningData(download::DownloadItem* item,
+                                const FileAnalyzer::Results& results) {
+  DownloadItemWarningData::SetIsEncryptedArchive(
+      item, results.encryption_info.is_encrypted);
+}
+
 }  // namespace
 
 // static
@@ -90,7 +97,11 @@ DownloadRequestMaker::CreateFromDownloadItem(
       item->GetHash(), item->GetReceivedBytes(), resources,
       item->HasUserGesture(),
       static_cast<ReferrerChainData*>(
-          item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey)));
+          item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey)),
+      // It's safe to use a raw pointer to `item` here because this class is
+      // owned by the CheckClientDownloadRequest, which observes for `item`
+      // being destroyed, and deletes this if it is.
+      base::BindOnce(&SetDownloadItemWarningData, item));
 }
 
 // static
@@ -116,7 +127,7 @@ DownloadRequestMaker::CreateFromFileSystemAccess(
       item.full_path, GetFileSystemAccessDownloadUrl(item.frame_url),
       item.sha256_hash, item.size,
       std::vector<ClientDownloadRequest::Resource>{resource},
-      item.has_user_gesture, referrer_chain_data.get());
+      item.has_user_gesture, referrer_chain_data.get(), base::DoNothing());
 }
 
 DownloadRequestMaker::DownloadRequestMaker(
@@ -130,13 +141,15 @@ DownloadRequestMaker::DownloadRequestMaker(
     int64_t length,
     const std::vector<ClientDownloadRequest::Resource>& resources,
     bool is_user_initiated,
-    ReferrerChainData* referrer_chain_data)
+    ReferrerChainData* referrer_chain_data,
+    base::OnceCallback<void(const FileAnalyzer::Results&)> on_results_callback)
     : browser_context_(browser_context),
       request_(std::make_unique<ClientDownloadRequest>()),
       binary_feature_extractor_(binary_feature_extractor),
       tab_urls_(tab_urls),
       target_file_path_(target_file_path),
-      full_path_(full_path) {
+      full_path_(full_path),
+      on_results_callback_(std::move(on_results_callback)) {
   request_->set_url(ShortURLForReporting(source_url));
   request_->mutable_digests()->set_sha256(sha256_hash);
   request_->set_length(length);
@@ -205,6 +218,10 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
         results.detached_code_signatures);
   }
 #endif
+
+  if (on_results_callback_) {
+    std::move(on_results_callback_).Run(results);
+  }
 
   GetTabRedirects();
 }

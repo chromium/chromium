@@ -180,6 +180,7 @@ void FileAnalyzer::OnZipAnalysisFinished(
 
   results_.archive_summary.set_file_count(archive_results.file_count);
   results_.archive_summary.set_directory_count(archive_results.directory_count);
+  results_.encryption_info = archive_results.encryption_info;
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -236,6 +237,7 @@ void FileAnalyzer::OnRarAnalysisFinished(
 
   results_.archive_summary.set_file_count(archive_results.file_count);
   results_.archive_summary.set_directory_count(archive_results.directory_count);
+  results_.encryption_info = archive_results.encryption_info;
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -306,6 +308,8 @@ void FileAnalyzer::OnDmgAnalysisFinished(
     results_.archive_summary.set_parser_status(
         ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
   }
+
+  results_.encryption_info = archive_results.encryption_info;
 
   std::move(callback_).Run(std::move(results_));
 }
@@ -408,6 +412,7 @@ void FileAnalyzer::OnSevenZipAnalysisFinished(
 
   results_.archive_summary.set_file_count(archive_results.file_count);
   results_.archive_summary.set_directory_count(archive_results.directory_count);
+  results_.encryption_info = archive_results.encryption_info;
 
   std::move(callback_).Run(std::move(results_));
 }

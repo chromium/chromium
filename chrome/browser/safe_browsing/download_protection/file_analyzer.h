@@ -80,6 +80,9 @@ class FileAnalyzer {
 
     // For archives, the features and metadata extracted from the file.
     ClientDownloadRequest::ArchiveSummary archive_summary;
+
+    // Information about the encryption on this file.
+    EncryptionInfo encryption_info;
   };
 
   explicit FileAnalyzer(
