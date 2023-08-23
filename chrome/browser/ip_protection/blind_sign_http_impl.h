@@ -18,14 +18,6 @@ class SimpleURLLoader;
 }  // namespace network
 class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
  public:
-  // TODO(https://crbug.com/1444621): Make these configurable via Finch.
-  static constexpr char kIpProtectionServerUrl[] =
-      "https://autopush-phosphor-pa.sandbox.googleapis.com";
-  static constexpr char kIpProtectionServerGetInitialDataPath[] =
-      "/v1/getInitialData";
-  static constexpr char kIpProtectionServerAuthAndSignPath[] =
-      "/v1/authWithHeaderCreds";
-
   explicit BlindSignHttpImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~BlindSignHttpImpl() override;
@@ -42,6 +34,8 @@ class BlindSignHttpImpl : public quiche::BlindSignHttpInterface {
   quiche::BlindSignHttpCallback callback_;
 
   const GURL ip_protection_server_url_;
+  const std::string ip_protection_server_get_initial_data_path_;
+  const std::string ip_protection_server_get_tokens_path_;
 
   base::WeakPtrFactory<BlindSignHttpImpl> weak_ptr_factory_{this};
 };

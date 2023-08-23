@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -57,7 +58,11 @@ const char kIpProtectionContentType[] = "application/x-protobuf";
 BlindSignHttpImpl::BlindSignHttpImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(std::move(url_loader_factory)),
-      ip_protection_server_url_(BlindSignHttpImpl::kIpProtectionServerUrl) {
+      ip_protection_server_url_(net::features::kIpPrivacyTokenServer.Get()),
+      ip_protection_server_get_initial_data_path_(
+          net::features::kIpPrivacyTokenServerGetInitialDataPath.Get()),
+      ip_protection_server_get_tokens_path_(
+          net::features::kIpPrivacyTokenServerGetTokensPath.Get()) {
   CHECK(url_loader_factory_);
 }
 
@@ -72,18 +77,24 @@ void BlindSignHttpImpl::DoRequest(quiche::BlindSignHttpRequestType request_type,
   GURL::Replacements replacements;
   switch (request_type) {
     case quiche::BlindSignHttpRequestType::kGetInitialData:
-      replacements.SetPathStr(kIpProtectionServerGetInitialDataPath);
+      replacements.SetPathStr(ip_protection_server_get_initial_data_path_);
       break;
     case quiche::BlindSignHttpRequestType::kAuthAndSign:
-      replacements.SetPathStr(kIpProtectionServerAuthAndSignPath);
+      replacements.SetPathStr(ip_protection_server_get_tokens_path_);
       break;
     case quiche::BlindSignHttpRequestType::kUnknown:
       NOTREACHED_NORETURN();
   }
 
+  GURL request_url = ip_protection_server_url_.ReplaceComponents(replacements);
+  if (!request_url.is_valid()) {
+    std::move(callback_)(
+        absl::InternalError("Invalid IP Protection Token URL"));
+    return;
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url =
-      ip_protection_server_url_.ReplaceComponents(replacements);
+  resource_request->url = std::move(request_url);
   resource_request->method = net::HttpRequestHeaders::kPostMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(

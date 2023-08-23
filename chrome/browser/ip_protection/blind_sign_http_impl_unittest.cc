@@ -5,11 +5,13 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "net/base/features.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -23,6 +25,14 @@ class BlindSignHttpImplTest : public testing::Test {
     http_fetcher_ = std::make_unique<BlindSignHttpImpl>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
+    token_server_get_initial_data_url_ = GURL(base::StrCat(
+        {net::features::kIpPrivacyTokenServer.Get(),
+         net::features::kIpPrivacyTokenServerGetInitialDataPath.Get()}));
+    ASSERT_TRUE(token_server_get_initial_data_url_.is_valid());
+    token_server_get_tokens_url_ = GURL(base::StrCat(
+        {net::features::kIpPrivacyTokenServer.Get(),
+         net::features::kIpPrivacyTokenServerGetTokensPath.Get()}));
+    ASSERT_TRUE(token_server_get_tokens_url_.is_valid());
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -30,6 +40,8 @@ class BlindSignHttpImplTest : public testing::Test {
   std::unique_ptr<BlindSignHttpImpl> http_fetcher_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  GURL token_server_get_initial_data_url_;
+  GURL token_server_get_tokens_url_;
 };
 
 TEST_F(BlindSignHttpImplTest, DoRequestSendsCorrectRequest) {
@@ -40,11 +52,8 @@ TEST_F(BlindSignHttpImplTest, DoRequestSendsCorrectRequest) {
   // Set up the response to return from the mock.
   auto head = network::mojom::URLResponseHead::New();
   std::string response_body = "Response body";
-  GURL test_url = GURL(
-      base::StrCat({BlindSignHttpImpl::kIpProtectionServerUrl,
-                    BlindSignHttpImpl::kIpProtectionServerGetInitialDataPath}));
   test_url_loader_factory_.AddResponse(
-      test_url, std::move(head), response_body,
+      token_server_get_initial_data_url_, std::move(head), response_body,
       network::URLLoaderCompletionStatus(net::OK));
 
   base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
@@ -75,11 +84,8 @@ TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
   // Mock no response from Authentication Server (such as a network error).
   std::string response_body;
   auto head = network::mojom::URLResponseHead::New();
-  GURL test_url = GURL(
-      base::StrCat({BlindSignHttpImpl::kIpProtectionServerUrl,
-                    BlindSignHttpImpl::kIpProtectionServerAuthAndSignPath}));
   test_url_loader_factory_.AddResponse(
-      test_url, std::move(head), response_body,
+      token_server_get_tokens_url_, std::move(head), response_body,
       network::URLLoaderCompletionStatus(net::ERR_FAILED));
 
   base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
@@ -99,6 +105,41 @@ TEST_F(BlindSignHttpImplTest, DoRequestFailsToConnectReturnsFailureStatus) {
   EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
 }
 
+TEST_F(BlindSignHttpImplTest, DoRequestInvalidFinchParametersFailsGracefully) {
+  std::map<std::string, std::string> parameters;
+  parameters["IpPrivacyTokenServer"] = "<(^_^)>";
+  parameters["IpPrivacyTokenServerGetInitialDataPath"] = "(>_<)";
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kEnableIpProtectionProxy, std::move(parameters));
+
+  // Create a new BlindSignHttpImpl for this test so that the new FeatureParams
+  // get used.
+  std::unique_ptr<BlindSignHttpImpl> http_fetcher =
+      std::make_unique<BlindSignHttpImpl>(
+          base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+              &test_url_loader_factory_));
+
+  auto request_type = quiche::BlindSignHttpRequestType::kGetInitialData;
+  std::string authorization_header = "token";
+  std::string body = "body";
+
+  base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
+      result_future;
+  auto callback =
+      [&result_future](absl::StatusOr<quiche::BlindSignHttpResponse> response) {
+        result_future.SetValue(std::move(response));
+      };
+
+  http_fetcher->DoRequest(request_type, authorization_header, body,
+                          std::move(callback));
+
+  absl::StatusOr<quiche::BlindSignHttpResponse> result = result_future.Get();
+
+  EXPECT_EQ("Invalid IP Protection Token URL", result.status().message());
+  EXPECT_EQ(absl::StatusCode::kInternal, result.status().code());
+}
+
 TEST_F(BlindSignHttpImplTest, DoRequestHttpFailureStatus) {
   auto request_type = quiche::BlindSignHttpRequestType::kAuthAndSign;
   std::string authorization_header = "token";
@@ -107,11 +148,8 @@ TEST_F(BlindSignHttpImplTest, DoRequestHttpFailureStatus) {
   // Mock a non-200 HTTP response from Authentication Server.
   std::string response_body;
   auto head = network::mojom::URLResponseHead::New();
-  GURL test_url = GURL(
-      base::StrCat({BlindSignHttpImpl::kIpProtectionServerUrl,
-                    BlindSignHttpImpl::kIpProtectionServerAuthAndSignPath}));
-  test_url_loader_factory_.AddResponse(test_url.spec(), response_body,
-                                       net::HTTP_BAD_REQUEST);
+  test_url_loader_factory_.AddResponse(token_server_get_tokens_url_.spec(),
+                                       response_body, net::HTTP_BAD_REQUEST);
 
   base::test::TestFuture<absl::StatusOr<quiche::BlindSignHttpResponse>>
       result_future;

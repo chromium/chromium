@@ -369,6 +369,19 @@ const base::FeatureParam<std::string> kIpPrivacyProxyAllowlist{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyProxyAllowlist",
     /*default_value=*/""};
 
+const base::FeatureParam<std::string> kIpPrivacyTokenServer{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServer",
+    /*default_value=*/"https://autopush-phosphor-pa.sandbox.googleapis.com"};
+
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetInitialDataPath{
+    &kEnableIpProtectionProxy,
+    /*name=*/"IpPrivacyTokenServerGetInitialDataPath",
+    /*default_value=*/"/v1/getInitialData"};
+
+const base::FeatureParam<std::string> kIpPrivacyTokenServerGetTokensPath{
+    &kEnableIpProtectionProxy, /*name=*/"IpPrivacyTokenServerGetTokensPath",
+    /*default_value=*/"/v1/authWithHeaderCreds"};
+
 const base::FeatureParam<int> kIpPrivacyAuthTokenCacheBatchSize{
     &kEnableIpProtectionProxy, /*name=*/"IpPrivacyAuthTokenCacheBatchSize",
     /*default_value=*/64};
