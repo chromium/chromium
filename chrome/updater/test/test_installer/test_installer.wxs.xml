@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?include PlatformDependentVariables.wxi?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <?define UpdateKeyPath = 'SOFTWARE\$(var.CompanyName)\Update'?>
-
-  <Product
-           Id='$(var.MsiProductId)'
+  <Product Id='$(var.MsiProductId)'
            Language="1033"
            Codepage='1252'
            Manufacturer='$(var.CompanyFullName)'
@@ -12,21 +8,21 @@
            UpgradeCode='$(var.MsiUpgradeCode)'
            Version='$(var.ProductVersion)'>
 
-    <?ifdef PerMachineInstall ?>
-        <Package InstallScope="perMachine" Compressed="yes" />
-    <?else?>
+    <?ifdef PerUserInstall ?>
         <Package InstallScope="perUser" Compressed="yes" />
+        <?define HKRoot = 'HKCU'?>
+    <?else?>
+        <Package InstallScope="perMachine" Compressed="yes" />
+        <?define HKRoot = 'HKLM'?>
     <?endif?>
 
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
-
-    <MediaTemplate EmbedCab="yes" />
 
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <!-- Use the ProductCode as the ComponentId since we want the latter to
            change for each version change in support of major upgrades. -->
       <Component Id='ProductClients' Guid='$(var.MsiProductId)' Win64='no'>
-        <RegistryKey Root='HKLM' Key='$(var.UpdateKeyPath)\Clients\$(var.ProductGuid)'>
+        <RegistryKey Root='$(var.HKRoot)' Key='SOFTWARE\$(var.CompanyName)\Update\Clients\$(var.ProductGuid)'>
           <RegistryValue KeyPath='yes' Type='string' Name='pv' Value='$(var.ProductVersion)' />
         </RegistryKey>
       </Component>
