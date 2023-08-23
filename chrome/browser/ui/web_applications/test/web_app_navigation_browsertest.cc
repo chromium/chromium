@@ -14,13 +14,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/profiles/profile_io_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -255,7 +255,7 @@ void WebAppNavigationBrowserTest::TearDownOnMainThread() {
     }
     const WebApp* app = registrar.GetAppById(app_id);
     DCHECK(app->CanUserUninstallWebApp());
-    AppReadinessWaiter app_readiness_waiter(
+    apps::AppReadinessWaiter app_readiness_waiter(
         profile(), app_id, apps::Readiness::kUninstalledByUser);
     base::RunLoop run_loop;
     provider->scheduler().UninstallWebApp(
@@ -297,7 +297,7 @@ AppId WebAppNavigationBrowserTest::InstallTestWebApp(
 
   AppId app_id = test::InstallWebApp(profile(), std::move(web_app_info));
   DCHECK(!app_id.empty());
-  AppReadinessWaiter(profile(), app_id).Await();
+  apps::AppReadinessWaiter(profile(), app_id).Await();
   return app_id;
 }
 

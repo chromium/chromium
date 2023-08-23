@@ -4,11 +4,11 @@
 #include "ash_requires_lacros_browsertestbase.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/test/browser_test.h"
 
@@ -31,7 +31,7 @@ class WebAppProviderBridgeBrowserTest
                                                         future.GetCallback());
     auto app_id = future.Take();
     CHECK(!app_id.empty());
-    web_app::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 
@@ -42,7 +42,7 @@ class WebAppProviderBridgeBrowserTest
         parent_app_id, sub_app_start_url, future.GetCallback());
     auto sub_app_id = future.Take();
     CHECK(!sub_app_id.empty());
-    web_app::AppReadinessWaiter(profile(), sub_app_id).Await();
+    apps::AppReadinessWaiter(profile(), sub_app_id).Await();
     return sub_app_id;
   }
 

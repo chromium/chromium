@@ -6,6 +6,7 @@
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/app_service/lacros_web_apps_controller.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, DefaultContextMenu) {
 IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, AppManagement) {
   InstallTestWebApp();
   const AppId app_id = test_web_app_id();
-  AppReadinessWaiter(profile(), kOsSettingsAppId).Await();
+  apps::AppReadinessWaiter(profile(), kOsSettingsAppId).Await();
 
   Browser* browser = OpenTestWebApp();
   content::WebContents* web_contents =

@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -55,7 +55,7 @@ class ChromeOsWebAppExperimentsBrowserTest
     app_id_ = InstallWebAppFromPageAndCloseAppBrowser(
         browser(), embedded_test_server()->GetURL(
                        "/web_apps/get_manifest.html?theme_color.json"));
-    AppReadinessWaiter(profile(), app_id_).Await();
+    apps::AppReadinessWaiter(profile(), app_id_).Await();
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     auto init_params = chromeos::BrowserInitParams::GetForTests()->Clone();

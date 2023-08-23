@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_REGISTRY_CACHE_WAITER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_REGISTRY_CACHE_WAITER_H_
 
 #include <string>
 
@@ -17,7 +17,7 @@
 
 class Profile;
 
-namespace web_app {
+namespace apps {
 
 class AppTypeInitializationWaiter : public apps::AppRegistryCache::Observer {
  public:
@@ -127,6 +127,6 @@ class AppWindowModeWaiter : public apps::AppRegistryCache::Observer {
       app_registry_cache_observer_{this};
 };
 
-}  // namespace web_app
+}  // namespace apps
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_TEST_APP_REGISTRY_CACHE_WAITER_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_REGISTRY_CACHE_WAITER_H_

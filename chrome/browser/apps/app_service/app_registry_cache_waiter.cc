@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
+
+#include <string>
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 
-namespace web_app {
+namespace apps {
 
 AppTypeInitializationWaiter::AppTypeInitializationWaiter(Profile* profile,
                                                          apps::AppType app_type)
@@ -17,8 +19,9 @@ AppTypeInitializationWaiter::AppTypeInitializationWaiter(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   app_registry_cache_observer_.Observe(&cache);
 
-  if (cache.IsAppTypeInitialized(app_type))
+  if (cache.IsAppTypeInitialized(app_type)) {
     run_loop_.Quit();
+  }
 }
 
 AppTypeInitializationWaiter::~AppTypeInitializationWaiter() = default;
@@ -30,8 +33,9 @@ void AppTypeInitializationWaiter::Await(const base::Location& location) {
 void AppTypeInitializationWaiter::OnAppUpdate(const apps::AppUpdate& update) {}
 
 void AppTypeInitializationWaiter::OnAppTypeInitialized(apps::AppType app_type) {
-  if (app_type == app_type_)
+  if (app_type == app_type_) {
     run_loop_.Quit();
+  }
 }
 
 void AppTypeInitializationWaiter::OnAppRegistryCacheWillBeDestroyed(
@@ -91,8 +95,9 @@ WebAppScopeWaiter::WebAppScopeWaiter(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   app_registry_cache_observer_.Observe(&cache);
   cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (ContainsExpectedIntentFilter(update))
+    if (ContainsExpectedIntentFilter(update)) {
       run_loop_.Quit();
+    }
   });
 }
 
@@ -119,8 +124,9 @@ bool WebAppScopeWaiter::ContainsExpectedIntentFilter(
       apps_util::MakeIntentFilterForUrlScope(scope_);
   for (auto& intent_filter : update.IntentFilters()) {
     DCHECK(!intent_filter->IsBrowserFilter());
-    if (*intent_filter == *expected)
+    if (*intent_filter == *expected) {
       return true;
+    }
   }
   return false;
 }
@@ -134,8 +140,9 @@ AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
       apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
   app_registry_cache_observer_.Observe(&cache);
   cache.ForOneApp(app_id, [this](const apps::AppUpdate& update) {
-    if (HasExpectedWindowMode(update))
+    if (HasExpectedWindowMode(update)) {
       run_loop_.Quit();
+    }
   });
 }
 
@@ -161,4 +168,4 @@ bool AppWindowModeWaiter::HasExpectedWindowMode(
   return update.WindowMode() == window_mode_;
 }
 
-}  // namespace web_app
+}  // namespace apps

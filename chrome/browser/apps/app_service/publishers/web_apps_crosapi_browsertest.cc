@@ -11,12 +11,12 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/crosapi/ash_requires_lacros_browsertestbase.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -102,8 +102,7 @@ class WebAppsCrosapiBrowserTest
       return;
     }
 
-    web_app::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb)
-        .Await();
+    apps::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb).Await();
   }
 
   std::string InstallWebApp(const std::string& start_url,
@@ -113,7 +112,7 @@ class WebAppsCrosapiBrowserTest
         start_url, mode, app_id_future.GetCallback());
     std::string app_id = app_id_future.Take();
     CHECK(!app_id.empty());
-    web_app::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(profile(), app_id).Await();
     return app_id;
   }
 
@@ -264,8 +263,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsCrosapiBrowserTest, Uninstall) {
     AppInstanceWaiter app_instance_waiter(AppServiceProxy()->InstanceRegistry(),
                                           app_id, apps::kDestroyed);
     AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
-    web_app::AppReadinessWaiter(profile(), app_id,
-                                apps::Readiness::kUninstalledByUser)
+    apps::AppReadinessWaiter(profile(), app_id,
+                             apps::Readiness::kUninstalledByUser)
         .Await();
     app_instance_waiter.Await();
   }

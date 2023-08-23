@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -34,7 +35,6 @@
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -141,15 +141,15 @@ class PreinstalledWebAppMigrationBrowserTest
       if (!registrar.IsInstalled(app_id)) {
         continue;
       }
-      AppReadinessWaiter(profile(), app_id).Await();
+      apps::AppReadinessWaiter(profile(), app_id).Await();
 
       const WebApp* app = registrar.GetAppById(app_id);
       DCHECK(app->CanUserUninstallWebApp());
       web_app::test::UninstallWebApp(profile(), app_id);
-      AppReadinessWaiter(profile(), app_id,
-                         base::BindRepeating([](apps::Readiness readiness) {
-                           return !apps_util::IsInstalled(readiness);
-                         }))
+      apps::AppReadinessWaiter(
+          profile(), app_id, base::BindRepeating([](apps::Readiness readiness) {
+            return !apps_util::IsInstalled(readiness);
+          }))
           .Await();
     }
 
@@ -568,8 +568,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigratePlatformAppBrowserTest,
 
   // Install platform app to migrate.
   {
-    AppReadinessWaiter extension_app_registration_waiter(profile(),
-                                                         kPlatformAppId);
+    apps::AppReadinessWaiter extension_app_registration_waiter(profile(),
+                                                               kPlatformAppId);
     ASSERT_EQ(InstallExtension(
                   test_data_dir_.AppendASCII("platform_apps/app_window_2"), 1)
                   ->id(),
@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     info->start_url = embedded_test_server()->GetURL("/webapps/migration/old/");
     info->title = u"Old app";
     old_app_id = web_app::test::InstallWebApp(profile(), std::move(info));
-    AppReadinessWaiter(profile(), old_app_id).Await();
+    apps::AppReadinessWaiter(profile(), old_app_id).Await();
 
     auto attributes = crosapi::mojom::AppListItemAttributes::New();
     attributes->item_position = "testapplistposition";
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
               webapps::InstallResultCode::kSuccessNewInstall);
     EXPECT_TRUE(future.Get<bool /*did_uninstall_and_replace*/>());
     new_app_id = future.Get<AppId>();
-    AppReadinessWaiter(profile(), new_app_id).Await();
+    apps::AppReadinessWaiter(profile(), new_app_id).Await();
   }
 
   base::test::TestFuture<crosapi::mojom::AppListItemAttributesPtr>

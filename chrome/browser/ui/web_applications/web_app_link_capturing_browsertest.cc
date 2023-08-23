@@ -7,6 +7,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/chromeos_apps_navigation_throttle.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -77,7 +77,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     scope_ = start_url_.GetWithoutFilename();
 
     app_id_ = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url_);
-    AppReadinessWaiter(profile(), app_id_).Await();
+    apps::AppReadinessWaiter(profile(), app_id_).Await();
   }
 
   WebAppProvider& provider() {

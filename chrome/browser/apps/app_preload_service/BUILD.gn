@@ -92,6 +92,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser/apps/app_preload_service/proto",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",

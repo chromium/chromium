@@ -36,6 +36,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
@@ -86,7 +87,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -580,7 +580,7 @@ class UninstallCompleteWaiter final : public BrowserListObserver,
   const AppId app_id_;
   bool uninstall_complete_ = false;
   base::RunLoop run_loop_;
-  AppReadinessWaiter app_unregistration_waiter_;
+  apps::AppReadinessWaiter app_unregistration_waiter_;
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
@@ -682,7 +682,7 @@ void ReinitializeAppService(Profile* profile) {
 
     apps::AppServiceProxyFactory::GetForProfile(profile)
         ->ReinitializeForTesting(profile);
-    AppTypeInitializationWaiter(profile, apps::AppType::kWeb).Await();
+    apps::AppTypeInitializationWaiter(profile, apps::AppType::kWeb).Await();
   } else {
     LOG(ERROR) << "Cannot ReinitializeAppService - Unsupported ash version.";
   }
@@ -983,8 +983,8 @@ void WebAppIntegrationTestDriver::AwaitManifestUpdate(Site site) {
     // Wait for the app's scope in the App Service app cache to be consistent
     // with the app's scope in the web app database. Returns immediately if they
     // are already consistent.
-    WebAppScopeWaiter(profile(), app_id,
-                      provider()->registrar_unsafe().GetAppScope(app_id))
+    apps::WebAppScopeWaiter(profile(), app_id,
+                            provider()->registrar_unsafe().GetAppScope(app_id))
         .Await();
   }
   AfterStateChangeAction();
@@ -1170,7 +1170,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
     ASSERT_TRUE(app_browser_);
     ActivateBrowserAndWait(app_browser_);
   }
-  AppReadinessWaiter(profile(), active_app_id_).Await();
+  apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -1197,7 +1197,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
   ActivateBrowserAndWait(app_browser_);
-  AppReadinessWaiter(profile(), active_app_id_).Await();
+  apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -1220,7 +1220,7 @@ void WebAppIntegrationTestDriver::InstallLocally(Site site) {
   observer.BeginListening();
   app_home_page_handler.InstallAppLocally(app_id);
   observer.Wait();
-  AppReadinessWaiter(profile(), app_id).Await();
+  apps::AppReadinessWaiter(profile(), app_id).Await();
   AfterStateChangeAction();
 }
 #endif
@@ -1263,7 +1263,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   active_app_id_ = install_observer.Wait();
   DCHECK_EQ(app_id, active_app_id_);
   ActivateBrowserAndWait(app_browser_);
-  AppReadinessWaiter(profile(), active_app_id_).Await();
+  apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
 
@@ -2107,7 +2107,8 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppHome(Site site) {
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
                                     true);
-  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
+  apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
+      .Await();
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -2133,7 +2134,8 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppSettings(Site site) {
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kBrowser,
                                     true);
-  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser).Await();
+  apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser)
+      .Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kBrowser);
@@ -2153,7 +2155,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppHome(Site site) {
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
                                     true);
-  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
+  apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
+      .Await();
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -2181,7 +2184,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppSettings(Site site) {
       WebAppProvider::GetForTest(profile())->sync_bridge_unsafe();
   sync_bridge.SetAppUserDisplayMode(app_id, mojom::UserDisplayMode::kStandalone,
                                     true);
-  AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow).Await();
+  apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
+      .Await();
 #else
   auto app_management_page_handler = CreateAppManagementPageHandler(profile());
   app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kWindow);
@@ -3969,7 +3973,7 @@ void WebAppIntegrationTestDriver::InstallPolicyAppInternal(
     update->Append(std::move(item));
   }
   active_app_id_ = observer.Wait();
-  AppReadinessWaiter(profile(), active_app_id_).Await();
+  apps::AppReadinessWaiter(profile(), active_app_id_).Await();
 }
 
 void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
@@ -3993,7 +3997,7 @@ void WebAppIntegrationTestDriver::ApplyRunOnOsLoginPolicy(Site site,
 void WebAppIntegrationTestDriver::UninstallPolicyAppById(Profile* profile,
                                                          const AppId& id) {
   base::RunLoop run_loop;
-  AppReadinessWaiter app_registration_waiter(
+  apps::AppReadinessWaiter app_registration_waiter(
       profile, id, apps::Readiness::kUninstalledByNonUser);
   WebAppInstallManagerObserverAdapter observer(profile);
   observer.SetWebAppUninstalledDelegate(

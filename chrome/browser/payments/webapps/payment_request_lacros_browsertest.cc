@@ -9,12 +9,12 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -136,13 +136,13 @@ class PaymentRequestLacrosBrowserTest
 
     app_id_ =
         web_app::test::InstallWebApp(browser()->profile(), std::move(app_info));
-    web_app::AppReadinessWaiter(browser()->profile(), app_id_).Await();
+    apps::AppReadinessWaiter(browser()->profile(), app_id_).Await();
   }
 
   void UninstallTestApp() {
     web_app::test::UninstallWebApp(browser()->profile(), app_id_);
-    web_app::AppReadinessWaiter(browser()->profile(), app_id_,
-                                apps::Readiness::kUninstalledByUser)
+    apps::AppReadinessWaiter(browser()->profile(), app_id_,
+                             apps::Readiness::kUninstalledByUser)
         .Await();
   }
 

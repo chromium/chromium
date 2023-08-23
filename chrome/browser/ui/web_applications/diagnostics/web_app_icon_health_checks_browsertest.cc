@@ -9,12 +9,12 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_metrics.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -85,7 +85,8 @@ class WebAppIconHealthChecksBrowserTest : public WebAppControllerBrowserTest {
   AppId InstallWebAppAndAwaitAppService(const char* path) {
     AppId app_id =
         InstallWebAppFromPage(browser(), embedded_test_server()->GetURL(path));
-    AppReadinessWaiter(profile(), app_id, apps::Readiness::kReady).Await();
+    apps::AppReadinessWaiter(profile(), app_id, apps::Readiness::kReady)
+        .Await();
     return app_id;
   }
 };

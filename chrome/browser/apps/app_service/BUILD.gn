@@ -477,3 +477,20 @@ source_set("test_support") {
     ]
   }
 }
+
+source_set("app_registry_cache_waiter") {
+  testonly = true
+
+  sources = [
+    "app_registry_cache_waiter.cc",
+    "app_registry_cache_waiter.h",
+  ]
+
+  public_deps = [ "//components/services/app_service" ]
+
+  deps = [
+    ":app_service",
+    "//build:chromeos_buildflags",
+    "//url",
+  ]
+}

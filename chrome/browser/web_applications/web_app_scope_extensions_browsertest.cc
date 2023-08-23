@@ -24,8 +24,8 @@
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -118,7 +118,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
 
     // Turn on link capturing.
 #if BUILDFLAG(IS_CHROMEOS)
-    AppReadinessWaiter(browser()->profile(), app_id).Await();
+    apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
     apps_util::SetSupportedLinksPreferenceAndWait(browser()->profile(), app_id);
 #else
     static_assert(

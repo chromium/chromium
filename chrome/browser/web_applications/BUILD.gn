@@ -535,8 +535,6 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    "test/app_registry_cache_waiter.cc",
-    "test/app_registry_cache_waiter.h",
     "test/debug_info_printer.cc",
     "test/debug_info_printer.h",
     "test/external_app_registration_waiter.cc",
@@ -895,6 +893,7 @@ source_set("web_applications_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools:test_support",
@@ -956,6 +955,7 @@ source_set("app_service_browser_tests") {
     ":web_applications_test_support",
     "//base",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
   ]

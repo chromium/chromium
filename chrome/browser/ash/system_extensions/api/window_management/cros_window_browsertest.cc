@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/token.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -263,7 +263,7 @@ class CrosWindowManagementBrowserTest : public SystemExtensionsApiBrowserTest {
     web_app_info->user_display_mode = web_app::mojom::UserDisplayMode::kBrowser;
     const web_app::AppId app_id = web_app::test::InstallWebApp(
         browser()->profile(), std::move(web_app_info));
-    web_app::AppReadinessWaiter(browser()->profile(), app_id).Await();
+    apps::AppReadinessWaiter(browser()->profile(), app_id).Await();
 
     // Launch app through App Service proxy and wait for it to open.
     auto* const proxy =

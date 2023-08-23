@@ -20,6 +20,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_test_util.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -197,8 +197,7 @@ class BrowserAppShelfControllerBrowserTest
       return;
     }
 
-    web_app::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb)
-        .Await();
+    apps::AppTypeInitializationWaiter(profile(), apps::AppType::kWeb).Await();
 
     auto* registry = AppServiceProxy()->BrowserAppInstanceRegistry();
     ASSERT_NE(registry, nullptr);
@@ -222,8 +221,8 @@ class BrowserAppShelfControllerBrowserTest
     for (const std::string& app_id : app_ids) {
       AppServiceProxy()->UninstallSilently(app_id,
                                            apps::UninstallSource::kShelf);
-      web_app::AppReadinessWaiter(profile(), app_id,
-                                  apps::Readiness::kUninstalledByUser)
+      apps::AppReadinessWaiter(profile(), app_id,
+                               apps::Readiness::kUninstalledByUser)
           .Await();
     }
   }
@@ -253,7 +252,7 @@ class BrowserAppShelfControllerBrowserTest
     // Wait until the app is installed: app service publisher updates may arrive
     // out of order with the web app installation reply, so we wait until the
     // state of the app service is consistent.
-    web_app::AppReadinessWaiter(profile(), app_id).Await();
+    apps::AppReadinessWaiter(profile(), app_id).Await();
     AppServiceProxy()->AppRegistryCache().ForOneApp(
         app_id, [mode](const apps::AppUpdate& update) {
           EXPECT_EQ(update.AppType(), apps::AppType::kWeb);

@@ -6,6 +6,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/badging/test_badge_manager_delegate.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -58,9 +58,9 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     sub_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
     sub_app_id_ = InstallWebApp(std::move(sub_app_info));
 
-    AppReadinessWaiter(profile(), cross_site_app_id_).Await();
-    AppReadinessWaiter(profile(), main_app_id_).Await();
-    AppReadinessWaiter(profile(), sub_app_id_).Await();
+    apps::AppReadinessWaiter(profile(), cross_site_app_id_).Await();
+    apps::AppReadinessWaiter(profile(), main_app_id_).Await();
+    apps::AppReadinessWaiter(profile(), sub_app_id_).Await();
 
     content::WebContents* web_contents = OpenApplication(main_app_id_);
     // There should be exactly 4 frames:
@@ -127,7 +127,8 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
     WebAppRegistrar& registrar = provider().registrar_unsafe();
     for (const auto& app_id : registrar.GetAppIds()) {
       web_app::test::UninstallWebApp(profile(), app_id);
-      AppReadinessWaiter(profile(), app_id, apps::Readiness::kUninstalledByUser)
+      apps::AppReadinessWaiter(profile(), app_id,
+                               apps::Readiness::kUninstalledByUser)
           .Await();
     }
 

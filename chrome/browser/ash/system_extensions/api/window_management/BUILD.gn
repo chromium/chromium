@@ -51,6 +51,7 @@ source_set("browser_tests") {
     ":test_helper_js_data_deps",
     ":window_management",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash/system_extensions",
     "//chrome/browser/ash/system_extensions/api/test_support",
     "//chrome/browser/ash/system_web_apps/test_support",

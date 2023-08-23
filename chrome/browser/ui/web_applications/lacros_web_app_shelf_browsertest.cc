@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/lacros/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
   const AppId app2_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app2_url);
 
-  AppReadinessWaiter(profile(), app1_id).Await();
+  apps::AppReadinessWaiter(profile(), app1_id).Await();
   Browser* app_browser1 = LaunchWebAppBrowser(app1_id);
   EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser1, app1_id));
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
 
   ASSERT_TRUE(AddTabAtIndex(/*index=*/1, app1_url, ui::PAGE_TRANSITION_TYPED));
 
-  AppReadinessWaiter(profile(), app2_id).Await();
+  apps::AppReadinessWaiter(profile(), app2_id).Await();
   LaunchWebAppBrowser(app2_id);
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app2_id, static_cast<uint32_t>(ShelfItemState::kActive)));
@@ -113,7 +113,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, Activation) {
       app1_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
 
   test::UninstallWebApp(profile(), app2_id);
-  AppReadinessWaiter(profile(), app2_id, apps::Readiness::kUninstalledByUser)
+  apps::AppReadinessWaiter(profile(), app2_id,
+                           apps::Readiness::kUninstalledByUser)
       .Await();
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
       app2_id, static_cast<uint32_t>(ShelfItemState::kNormal)));
@@ -182,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, BadgeShown) {
   const AppId app_id =
       InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
 
-  AppReadinessWaiter(profile(), app_id).Await();
+  apps::AppReadinessWaiter(profile(), app_id).Await();
   Browser* app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
@@ -238,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     CloseAndWait(app_browser1);
     sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
-    AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
+    apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
+        .Await();
 
     Browser* app_browser2 = LaunchWebAppBrowser(app2_id);
     ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -252,7 +254,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, RunningInTab) {
     CloseAndWait(app_browser2);
     sync_bridge.SetAppUserDisplayMode(app2_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/true);
-    AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser).Await();
+    apps::AppWindowModeWaiter(profile(), app2_id, apps::WindowMode::kBrowser)
+        .Await();
   }
 
   ASSERT_TRUE(browser_test_util::WaitForShelfItemState(
@@ -378,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppShelfBrowserTest, CreateShortcut) {
   {
     sync_bridge.SetAppUserDisplayMode(app1_id, mojom::UserDisplayMode::kBrowser,
                                       /*is_user_action=*/false);
-    AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser).Await();
+    apps::AppWindowModeWaiter(profile(), app1_id, apps::WindowMode::kBrowser)
+        .Await();
 
     app1_browser->window()->Close();
 

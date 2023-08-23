@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
-#include "chrome/browser/web_applications/test/app_registry_cache_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -135,7 +135,7 @@ class IntentChipButtonBrowserTest
     overlapping_app_id_ =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     DCHECK(!overlapping_app_id_.empty());
-    web_app::AppReadinessWaiter(profile(), overlapping_app_id_).Await();
+    apps::AppReadinessWaiter(profile(), overlapping_app_id_).Await();
   }
 
  private:
