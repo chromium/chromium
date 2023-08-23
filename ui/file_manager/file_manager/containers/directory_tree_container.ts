@@ -20,8 +20,8 @@ import {Command} from '../foreground/js/ui/command.js';
 import {contextMenuHandler} from '../foreground/js/ui/context_menu_handler.js';
 import {Menu} from '../foreground/js/ui/menu.js';
 import {changeDirectory} from '../state/actions/current_directory.js';
-import {refreshNavigationRoots, updateNavigationEntry} from '../state/actions/navigation.js';
 import {readSubDirectories} from '../state/actions_producers/all_entries.js';
+import {refreshNavigationRoots, updateNavigationEntry} from '../state/ducks/navigation.js';
 import {driveRootEntryListKey} from '../state/ducks/volumes.js';
 import {convertEntryToFileData} from '../state/reducers/all_entries.js';
 import {getEntry, getFileData, getStore, Store} from '../state/store.js';
@@ -146,7 +146,8 @@ export class DirectoryTreeContainer {
 
   onStateChanged(state: State) {
     if (this.shouldRefreshNavigationRoots_(state)) {
-      this.store_.dispatch(refreshNavigationRoots());
+      // TODO(b/296792757)
+      this.store_.dispatch(refreshNavigationRoots({}));
       // Skip this render, and the refreshNavigationRoots() action will trigger
       // another call of `onStateChanged`, which will run the re-render logic
       // below.

@@ -12,12 +12,12 @@ import {TrashRootEntry} from '../../common/js/trash.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
-import {refreshNavigationRoots, updateNavigationEntry} from '../actions/navigation.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';
+import {convertEntryToFileData} from '../reducers/all_entries.js';
 import {getEmptyState} from '../store.js';
 
-import {convertEntryToFileData} from './all_entries.js';
-import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
+import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
+import {convertVolumeInfoAndMetadataToVolume, driveRootEntryListKey, myFilesEntryListKey, recentRootKey, trashRootKey} from './volumes.js';
 
 export function setUp() {
   setUpFileManagerOnWindow();
@@ -209,7 +209,8 @@ export async function testNavigationRoots(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect navigation roots being built in the store:
   //  1.  fake-entry://recent
@@ -377,7 +378,8 @@ export async function testNavigationRootsWithoutRecents(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -418,7 +420,8 @@ export async function testNavigationRootsWithFakeMyFiles(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect 2 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -486,7 +489,8 @@ export async function testNavigationRootsWithVolumes(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect 6 navigation roots.
   const want: State['navigation']['roots'] = [
@@ -580,7 +584,8 @@ export async function testMultipleUsbPartitionsGrouping(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect only the parent entry and MyFiles being added to the navigation
   // roots.
@@ -632,7 +637,8 @@ export async function testNavigationRootsWithFilteredVolume(done: () => void) {
   const store = setupStore(initialState);
 
   // Dispatch an action to refresh navigation roots.
-  store.dispatch(refreshNavigationRoots());
+  // TODO(b/296792757)
+  store.dispatch(refreshNavigationRoots({}));
 
   // Expect only volume1 and MyFiles in the navigation roots.
   const want: State['navigation']['roots'] = [

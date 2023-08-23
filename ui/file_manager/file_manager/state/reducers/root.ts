@@ -7,13 +7,13 @@ import {Action, ActionType} from '../actions.js';
 import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
 import {folderShortcutsReducersMap} from '../ducks/folder_shortcuts.js';
+import {navigationReducersMap} from '../ducks/navigation.js';
 import {searchReducersMap} from '../ducks/search.js';
 import {uiEntriesReducersMap} from '../ducks/ui_entries.js';
 import {volumesReducersMap} from '../ducks/volumes.js';
 
 import {addChildEntries, cacheEntries, clearCachedEntries, updateMetadata} from './all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateFileTasks, updateSelection} from './current_directory.js';
-import {refreshNavigationRoots, updateNavigationEntry} from './navigation.js';
 import {updatePreferences} from './preferences.js';
 
 // Reducers map created from merging together each slice's exported reducersMap.
@@ -24,6 +24,7 @@ const rootReducersMap = new Map([
   ...uiEntriesReducersMap,
   ...androidAppsReducersMap,
   ...folderShortcutsReducersMap,
+  ...navigationReducersMap,
 ]);
 
 /**
@@ -58,10 +59,6 @@ export function rootReducer(currentState: State, action: Action): State {
       return updateDirectoryContent(state, action);
     case ActionType.UPDATE_METADATA:
       return updateMetadata(state, action);
-    case ActionType.REFRESH_NAVIGATION_ROOTS:
-      return refreshNavigationRoots(currentState, action);
-    case ActionType.UPDATE_NAVIGATION_ENTRY:
-      return updateNavigationEntry(currentState, action);
     case ActionType.ADD_CHILD_ENTRIES:
       return addChildEntries(currentState, action);
     case ActionType.UPDATE_PREFERENCES:

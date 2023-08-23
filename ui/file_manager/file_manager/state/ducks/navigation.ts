@@ -7,11 +7,12 @@ import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {NavigationKey, NavigationRoot, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
-import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from '../actions/navigation.js';
+import {addReducer, BaseAction, Reducer, ReducersMap} from '../../lib/base_store.js';
+import {Action, ActionType} from '../actions.js';
 import {driveRootEntryListKey, recentRootKey, trashRootKey} from '../ducks/volumes.js';
+import {FileKey} from '../file_key.js';
+import {getMyFiles} from '../reducers/all_entries.js';
 import {getEntry, getFileData} from '../store.js';
-
-import {getMyFiles} from './all_entries.js';
 
 const VolumeType = VolumeManagerCommon.VolumeType;
 
@@ -43,6 +44,15 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
   return entry as VolumeEntry | EntryList | null;
 }
 
+/** Map of actions to reducers for the navigation slice. */
+export const navigationReducersMap: ReducersMap<State, Action> = new Map();
+
+/** Action to refresh all navigation roots. */
+export interface RefreshNavigationRootsAction extends BaseAction {
+  type: ActionType.REFRESH_NAVIGATION_ROOTS;
+  payload: {};
+}
+
 /**
  * Reducer for refresh navigation roots, it will construct the
  * navigation roots with Entries/Volume in desired order:
@@ -57,8 +67,8 @@ function getPrefixEntryOrEntry(state: State, volume: Volume): VolumeEntry|
  *  9. Android apps.
  *  10. Trash.
  */
-export function refreshNavigationRoots(
-    currentState: State, _action: RefreshNavigationRootsAction): State {
+function refreshNavigationRootsReducer(
+    currentState: State, _: RefreshNavigationRootsAction['payload']): State {
   const {
     navigation: {roots: previousRoots},
     folderShortcuts,
@@ -236,9 +246,30 @@ export function refreshNavigationRoots(
   };
 }
 
-export function updateNavigationEntry(
-    currentState: State, action: UpdateNavigationEntryAction): State {
-  const {key, expanded} = action.payload;
+/**
+ * Action factory to refresh all navigation roots. This will clear all existing
+ * navigation roots in the store and regenerate them with the current state
+ * data.
+ */
+export const refreshNavigationRoots = addReducer(
+    ActionType.REFRESH_NAVIGATION_ROOTS,
+    refreshNavigationRootsReducer as Reducer<State, Action>,
+    navigationReducersMap);
+
+
+/** Action to update the navigation data in FileData for a given entry. */
+export interface UpdateNavigationEntryAction extends BaseAction {
+  type: ActionType.UPDATE_NAVIGATION_ENTRY;
+  payload: {
+    key: FileKey,
+    expanded: boolean,
+  };
+}
+
+function updateNavigationEntryReducer(
+    currentState: State,
+    payload: UpdateNavigationEntryAction['payload']): State {
+  const {key, expanded} = payload;
   const fileData = getFileData(currentState, key);
   if (!fileData) {
     return currentState;
@@ -250,3 +281,11 @@ export function updateNavigationEntry(
   };
   return {...currentState};
 }
+
+/**
+ * Action factory to update the navigation data in FileData for a given entry.
+ */
+export const updateNavigationEntry = addReducer(
+    ActionType.UPDATE_NAVIGATION_ENTRY,
+    updateNavigationEntryReducer as Reducer<State, Action>,
+    navigationReducersMap);

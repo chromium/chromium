@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerCurrentDirectory) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerNavigation) {
-  RunTestURL("state/reducers/navigation_unittest.js");
+  RunTestURL("state/ducks/navigation_unittest.js");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ReducerSearch) {
