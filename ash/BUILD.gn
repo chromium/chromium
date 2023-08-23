@@ -4173,6 +4173,8 @@ static_library("test_support") {
     "game_dashboard/game_dashboard_context_test_api.h",
     "game_dashboard/test_game_dashboard_delegate.cc",
     "game_dashboard/test_game_dashboard_delegate.h",
+    "glanceables/classroom/fake_glanceables_classroom_client.cc",
+    "glanceables/classroom/fake_glanceables_classroom_client.h",
     "glanceables/tasks/fake_glanceables_tasks_client.cc",
     "glanceables/tasks/fake_glanceables_tasks_client.h",
     "glanceables/test_glanceables_delegate.cc",

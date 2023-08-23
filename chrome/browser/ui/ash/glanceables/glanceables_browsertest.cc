@@ -7,7 +7,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
+#include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
@@ -17,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/style/combobox.h"
 #include "ash/system/status_area_widget_test_helper.h"
+#include "ash/system/unified/classroom_bubble_student_view.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/system/unified/tasks_bubble_view.h"
@@ -186,10 +189,14 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
     fake_glanceables_tasks_client_ =
         std::make_unique<FakeGlanceablesTasksClient>(date);
+    fake_glanceables_classroom_client_ =
+        std::make_unique<FakeGlanceablesClassroomClient>(
+            glanceables_controller()->GetClassroomClient());
+
     Shell::Get()->glanceables_v2_controller()->UpdateClientsRegistration(
         account_id_,
         GlanceablesV2Controller::ClientsRegistration{
-            .classroom_client = glanceables_controller()->GetClassroomClient(),
+            .classroom_client = fake_glanceables_classroom_client_.get(),
             .tasks_client = fake_glanceables_tasks_client_.get()});
     Shell::Get()->glanceables_v2_controller()->OnActiveUserSessionChanged(
         account_id_);
@@ -251,25 +258,170 @@ class GlanceablesV2BrowserTest : public InProcessBrowserTest {
         GetTasksItemContainerView()->children()[item_index]);
   }
 
+  ClassroomBubbleStudentView* GetStudentView() const {
+    return GetGlanceableTrayBubble()->GetClassroomStudentView();
+  }
+
+  views::View* GetStudentComboBoxView() const {
+    return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kClassroomBubbleComboBox)));
+  }
+
+  views::View* GetStudentItemContainerView() const {
+    return views::AsViewClass<views::View>(GetStudentView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kClassroomBubbleListContainer)));
+  }
+
+  std::vector<std::string> GetCurrentStudentAssignmentCourseWorkTitles() const {
+    std::vector<std::string> assignment_titles;
+    for (views::View* child : GetStudentItemContainerView()->children()) {
+      if (views::View* assignment = views::AsViewClass<views::View>(child)) {
+        assignment_titles.push_back(base::UTF16ToUTF8(
+            views::AsViewClass<views::Label>(
+                assignment->GetViewByID(base::to_underlying(
+                    GlanceablesViewId::kClassroomItemCourseWorkTitleLabel)))
+                ->GetText()));
+      }
+    }
+    return assignment_titles;
+  }
+
+  GlanceablesClassroomItemView* GetClassroomItemView(int item_index) {
+    return views::AsViewClass<GlanceablesClassroomItemView>(
+        GetStudentItemContainerView()->children()[item_index]);
+  }
+
+  views::LabelButton* GetStudentFooterSeeAllButton() const {
+    return views::AsViewClass<views::LabelButton>(GetStudentView()->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kListFooterSeeAllButton)));
+  }
+
  private:
   raw_ptr<DateTray, ExperimentalAsh> date_tray_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
   std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<FakeGlanceablesClassroomClient>
+      fake_glanceables_classroom_client_;
 
   base::test::ScopedFeatureList features_{features::kGlanceablesV2};
 };
 
-IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpensClassroomUrlInBrowser) {
-  const auto classroom_url = GURL("https://classroom.google.com/u/0/h");
-
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, OpenStudentCourseItemURL) {
   ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
 
-  glanceables_controller()->GetClassroomClient()->OpenUrl(classroom_url);
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetStudentView());
+
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetStudentView()->GetBoundsInScreen()));
+
+  // Check that the approaching course work items are shown.
+  EXPECT_EQ(GetCurrentStudentAssignmentCourseWorkTitles(),
+            std::vector<std::string>({"Approaching Course Work 0",
+                                      "Approaching Course Work 1",
+                                      "Approaching Course Work 2"}));
+
+  // Click the first item view assignment and check that its url was opened.
+  GetEventGenerator()->MoveMouseTo(GetClassroomItemView(/*item_index=*/0)
+                                       ->GetBoundsInScreen()
+                                       .CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
   EXPECT_EQ(
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
-      classroom_url);
+      "https://classroom.google.com/c/test/a/test_course_id_0/details");
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllStudentButton) {
+  ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetStudentView());
+
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetStudentView()->GetBoundsInScreen()));
+
+  // Check that the approaching course work items are shown.
+  EXPECT_EQ(GetCurrentStudentAssignmentCourseWorkTitles(),
+            std::vector<std::string>({"Approaching Course Work 0",
+                                      "Approaching Course Work 1",
+                                      "Approaching Course Work 2"}));
+
+  // Click the "See All" button in the student glanceable footer, and check that
+  // the correct URL is opened.
+  GetEventGenerator()->MoveMouseTo(
+      GetStudentFooterSeeAllButton()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      "https://classroom.google.com/u/0/a/not-turned-in/all");
+}
+
+IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest,
+                       ViewAndSwitchStudentClassroomLists) {
+  ASSERT_TRUE(glanceables_controller()->GetClassroomClient());
+
+  // Click the date tray to show the glanceable bubbles.
+  GetEventGenerator()->MoveMouseTo(
+      GetDateTray()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  EXPECT_TRUE(GetGlanceableTrayBubble());
+  EXPECT_TRUE(GetStudentView());
+
+  EXPECT_TRUE(
+      Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
+          GetStudentView()->GetBoundsInScreen()));
+
+  // Check that the approaching course work items are shown.
+  EXPECT_EQ(GetCurrentStudentAssignmentCourseWorkTitles(),
+            std::vector<std::string>({"Approaching Course Work 0",
+                                      "Approaching Course Work 1",
+                                      "Approaching Course Work 2"}));
+
+  // Click on the combo box to show the student classroom lists.
+  GetEventGenerator()->MoveMouseTo(
+      GetStudentComboBoxView()->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Expect that the correct menu items are shown for the student glanceable.
+  const views::View* const due_soon_menu_item =
+      WaitForMenuItemWithLabel(u"Due soon");
+  const views::View* const no_due_date_menu_item =
+      WaitForMenuItemWithLabel(u"No due date");
+  const views::View* const missing_menu_item =
+      WaitForMenuItemWithLabel(u"Missing");
+  const views::View* const done_menu_item = WaitForMenuItemWithLabel(u"Done");
+  EXPECT_TRUE(due_soon_menu_item);
+  EXPECT_TRUE(no_due_date_menu_item);
+  EXPECT_TRUE(missing_menu_item);
+  EXPECT_TRUE(done_menu_item);
+
+  // Click on the no due date label to switch to a new assignment list.
+  ASSERT_TRUE(no_due_date_menu_item);
+  GetEventGenerator()->MoveMouseTo(
+      no_due_date_menu_item->GetBoundsInScreen().CenterPoint());
+  GetEventGenerator()->ClickLeftButton();
+
+  // Check that the no due date course work items are shown after switching
+  // lists.
+  EXPECT_EQ(GetCurrentStudentAssignmentCourseWorkTitles(),
+            std::vector<std::string>({"No Due Date Course Work 0",
+                                      "No Due Date Course Work 1",
+                                      "No Due Date Course Work 2"}));
 }
 
 IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ViewAndSwitchTaskLists) {
@@ -284,6 +436,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ViewAndSwitchTaskLists) {
   EXPECT_TRUE(GetTasksView());
 
   // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
   EXPECT_TRUE(
       Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
           GetTasksView()->GetBoundsInScreen()));
@@ -327,6 +480,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllTasksButton) {
   EXPECT_TRUE(GetTasksView());
 
   // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
   EXPECT_TRUE(
       Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
           GetTasksView()->GetBoundsInScreen()));
@@ -342,7 +496,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, ClickSeeAllTasksButton) {
       GetTaskListFooterSeeAllButton()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_EQ(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetURL().spec(),
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
       "https://calendar.google.com/calendar/u/0/r/week?opentasks=1");
 }
 
@@ -359,6 +513,7 @@ IN_PROC_BROWSER_TEST_F(GlanceablesV2BrowserTest, CheckOffTaskItems) {
   EXPECT_TRUE(GetTasksView());
 
   // Check that the tasks glanceable is completely shown on the primary screen.
+  GetTasksView()->ScrollViewToVisible();
   EXPECT_TRUE(
       Shell::Get()->GetPrimaryRootWindow()->GetBoundsInScreen().Contains(
           GetTasksView()->GetBoundsInScreen()));
