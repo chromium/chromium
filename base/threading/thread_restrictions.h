@@ -130,15 +130,16 @@ class BrowserThemePack;
 class ChromeNSSCryptoModuleDelegate;
 class DesktopNotificationBalloon;
 class FirefoxProfileLock;
+class GaiaConfig;
 class KeyStorageLinux;
 class NativeBackendKWallet;
 class NativeDesktopMediaList;
+class PartnerBookmarksReader;
 class Profile;
 class ProfileImpl;
-class StartupTabProviderImpl;
-class GaiaConfig;
-class WebEngineBrowserMainParts;
 class ScopedAllowBlockingForProfile;
+class StartupTabProviderImpl;
+class WebEngineBrowserMainParts;
 
 namespace base {
 class File;
@@ -738,6 +739,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBaseSyncPrimitives {
   // Allowed usage:
   // Sorted by class name (with namespace).
   friend class ::ChromeNSSCryptoModuleDelegate;
+  friend class ::PartnerBookmarksReader;
   friend class ::tracing::FuchsiaPerfettoProducerConnector;
   friend class android_webview::JsSandboxIsolate;
   friend class base::SimpleThread;

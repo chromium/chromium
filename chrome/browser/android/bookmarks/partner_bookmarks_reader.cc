@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/uuid.h"
 #include "chrome/android/chrome_jni_headers/PartnerBookmarksReader_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
@@ -69,33 +70,6 @@ void SetFaviconCallback(Profile* profile,
   SetFaviconTask(profile, page_url, icon_url, image_data, icon_type);
   if (bookmark_added_event)
     bookmark_added_event->Signal();
-}
-
-void PrepareAndSetFavicon(jbyte* icon_bytes,
-                          int icon_len,
-                          BookmarkNode* node,
-                          Profile* profile,
-                          favicon_base::IconType icon_type) {
-  SkBitmap icon_bitmap;
-  if (!gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(icon_bytes),
-      icon_len, &icon_bitmap))
-    return;
-  std::vector<unsigned char> image_data;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(icon_bitmap, false, &image_data))
-    return;
-  // TODO(aruslan): TODO(tedchoc): Follow up on how to avoid this through js.
-  // Since the favicon URL is used as a key in the history's thumbnail DB,
-  // this gives us a value which does not collide with others.
-  GURL fake_icon_url = node->url();
-
-  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&SetFaviconCallback, profile, node->url(),
-                                fake_icon_url, image_data, icon_type, &event));
-  // TODO(aruslan): http://b/6397072 If possible - avoid using favicon service
-  event.Wait();
 }
 
 const BookmarkNode* GetNodeByID(const BookmarkNode* parent, int64_t id) {
@@ -364,6 +338,41 @@ void PartnerBookmarksReader::OnFaviconFetched(
   JNIEnv* env = AttachCurrentThread();
   Java_FetchFaviconCallback_onFaviconFetched(env, j_callback,
                                              static_cast<int>(result));
+}
+
+// static
+void PartnerBookmarksReader::PrepareAndSetFavicon(
+    jbyte* icon_bytes,
+    int icon_len,
+    BookmarkNode* node,
+    Profile* profile,
+    favicon_base::IconType icon_type) {
+  SkBitmap icon_bitmap;
+  if (!gfx::PNGCodec::Decode(reinterpret_cast<const unsigned char*>(icon_bytes),
+                             icon_len, &icon_bitmap)) {
+    return;
+  }
+  std::vector<unsigned char> image_data;
+  if (!gfx::PNGCodec::EncodeBGRASkBitmap(icon_bitmap, false, &image_data)) {
+    return;
+  }
+  // Since the bookmark URL is used as a key in the history's thumbnail DB,
+  // this gives us a value which does not collide with others.
+  GURL fake_icon_url = node->url();
+
+  base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SetFaviconCallback, profile, node->url(),
+                                fake_icon_url, image_data, icon_type, &event));
+
+  {
+    // Waiting is okay here because this is called from a background thread
+    // in Java.
+    DCHECK(!::content::BrowserThread::CurrentlyOn(BrowserThread::UI));
+    base::ScopedAllowBaseSyncPrimitives allow_sync;
+    event.Wait();
+  }
 }
 
 // ----------------------------------------------------------------
