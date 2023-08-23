@@ -2747,7 +2747,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="32101887417650595">No es posible establecer conexión con la impresora</translation>
 <translation id="3210736980143419785">No se pudo completar la descarga.</translation>
 <translation id="321084946921799184">Amarillo y blanco</translation>
-<translation id="3211126692872351610">&amp;Buscar "<ph name="SEARCH_TERMS" />" en una nueva pestaña de <ph name="SEARCH_ENGINE" /></translation>
+<translation id="3211126692872351610">&amp;Buscar <ph name="SEARCH_TERMS" /> en <ph name="SEARCH_ENGINE" /> en una nueva pestaña</translation>
 <translation id="321356136776075234">UO del dispositivo (p. ej., OU=Chromebooks,DC=example,DC=com)</translation>
 <translation id="321367297115597343">Agrega un favorito a esta carpeta</translation>
 <translation id="3214531106883826119"><ph name="BEGIN_BOLD" />Nota:<ph name="END_BOLD" /> Es posible que alguien con una grabación o una voz similares también pueda acceder a los resultados personales de <ph name="SUPERVISED_USER_NAME" />.</translation>

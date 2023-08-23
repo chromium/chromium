@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhed (port foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> blev ændret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheden "<ph name="DEVICE_NAME" />" vil gerne have parringstilladelse. Angiv denne pinkode på den pågældende enhed: <ph name="PINCODE" /></translation>
-<translation id="1014722676793506285">Dette giver <ph name="APP_NAME" />, alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
+<translation id="1014722676793506285">Dette giver <ph name="APP_NAME" />, alle apps og websites med lokationstilladelse og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="1017556409696559990">Minimer det øverste vindue, når der ikke er noget at gå tilbage til i Chrome</translation>
 <translation id="1024364763893396229">Gem dine <ph name="NAME" /></translation>
 <translation id="1032891413405719768">Styluspennen er ved at løbe tør for batteri</translation>
@@ -633,7 +633,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
 <translation id="3666266999138159418">Stryg for at skjule det svævende vindue</translation>
 <translation id="367531336287639526">Vælg det første ikon til venstre for adresselinjen</translation>
-<translation id="3677931086890821290">Dette giver alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
+<translation id="3677931086890821290">Dette giver alle apps og websites med lokationstilladelse og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="3679827876008292680">Gå til den sidste fane i vinduet</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
 <translation id="3682279812299376603"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> efterfulgt af <ph name="KEY_TWO" /></translation>
@@ -1899,7 +1899,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="9198992156681343238">Opløsningen for <ph name="DISPLAY_NAME" /> er blevet ændret til <ph name="RESOLUTION" />. Klik på Bekræft for at gemme ændringerne. De tidligere indstillinger gendannes om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="9201044636667689546">Opret forbindelse mellem <ph name="NAME" /> og denne Chromebook</translation>
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, administreret af din administrator</translation>
-<translation id="9207682216934703221">Dette giver <ph name="APP_NAME" />, <ph name="APP2_NAME" />, alle apps og websites med adgangstilladelse til lokation og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
+<translation id="9207682216934703221">Dette giver <ph name="APP_NAME" />, <ph name="APP2_NAME" />, alle apps og websites med lokationstilladelse og ChromeOS tilladelse til at bruge lokation baseret på Wi-Fi- og mobilnetværk.</translation>
 <translation id="9210037371811586452">Lukker tilstanden Kombineret skrivebord</translation>
 <translation id="9211490828691860325">Alle skriveborde</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> til batteriet er fuldt opladet.</translation>

@@ -1072,6 +1072,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6649642165559792194">Bildvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659594942844771486">Tab</translation>
+<translation id="6662119761881114773">Derzeit können auf diesem Gerät gespeicherte Passwörter nicht für alle Chrome-Release-Versionen verwendet werden. Nach Chrome 121 werden die für Chrome und <ph name="CHROME_CHANNEL" /> auf deinem Gerät gespeicherten Passwörter zusammengeführt und können in beiden Apps verwendet werden.</translation>
 <translation id="666731172850799929">In <ph name="APP_NAME" /> öffnen</translation>
 <translation id="6671495933530132209">Bild kopieren</translation>
 <translation id="6672917148207387131"><ph name="DOMAIN" /> hinzufügen</translation>
