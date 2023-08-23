@@ -53,6 +53,23 @@ header {
   display: none;
 }
 
+cr-button {
+  height: 35px;
+  padding: 5px;
+  width: 150px;
+}
+
+#buttons {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+#execute-button {
+  margin-bottom: 0px;
+  padding-bottom: 6px;
+}
+
 /** CSS for controls panel */
 #controls, #logs {
   width: 50%;
@@ -89,6 +106,16 @@ header {
   flex-direction: row;
 }
 
+np-object:last-child {
+  border-bottom: var(--standard-border);
+}
+
+np-object {
+  border-inline-end: var(--standard-border);
+  border-inline-start: var(--standard-border);
+  border-top: var(--standard-border);
+}
+
 /** CSS for logs panel */
 #logs-panel {
   width: 50%;
@@ -97,4 +124,29 @@ header {
   display: flex;
   flex-direction: column;
   border-left: 1px solid rgba(0,0,0,0.12);
+}
+
+#devices-section {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 6px;
+  white-space: pre-wrap;
+}
+
+.select-div {
+  padding: 6px;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+}
+
+log-object {
+  border-inline-end: var(--standard-border);
+  border-inline-start: var(--standard-border);
+  border-top: var(--standard-border);
+}
+
+log-object:last-child {
+  border-bottom: var(--standard-border);
 }

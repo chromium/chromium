@@ -95,6 +95,14 @@ Polymer({
       value: [],
     },
 
+    /**
+     * @private {!Array<!LogMessage>}
+     */
+    filteredLogList_: {
+      type: Array,
+      value: [],
+    },
+
     /** @private {!string} */
     feature: {
       type: String,
@@ -130,12 +138,37 @@ Polymer({
   },
 
   /**
-   * Saves and downloads javascript logs that appear on the page.
+   * Saves and downloads all javascript logs.
    * @private
    */
-  onSaveLogsButtonClicked_() {
-    const blob = new Blob(
-        this.getSerializedLogStrings_(), {type: 'text/plain;charset=utf-8'});
+  onSaveUnfilteredLogsButtonClicked_() {
+    this.onSaveLogsButtonClicked_(false);
+  },
+
+  /**
+   * Saves and downloads javascript logs that currently appear on the page.
+   * @private
+   */
+  onSaveFilteredLogsButtonClicked_() {
+    this.onSaveLogsButtonClicked_(true);
+  },
+
+  /**
+   * Saves and downloads javascript logs.
+   * @param {!boolean} filtered
+   * @private
+   */
+  onSaveLogsButtonClicked_(filtered) {
+    let blob;
+    if (filtered) {
+      blob = new Blob(
+          this.filteredLogList_.map(logToSavedString_),
+          {type: 'text/plain;charset=utf-8'});
+    } else {
+      blob = new Blob(
+          this.logList_.map(logToSavedString_),
+          {type: 'text/plain;charset=utf-8'});
+    }
     const url = URL.createObjectURL(blob);
 
     const anchorElement = document.createElement('a');
@@ -152,24 +185,14 @@ Polymer({
   },
 
   /**
-   * Iterates through log messages in |logList_| and prepares them for download.
-   * @private
-   * @return {!Array<string>}
-   */
-  getSerializedLogStrings_() {
-    // Reverse the logs so that the oldest logs appear first and the newest logs
-    // appear last.
-    return this.logList_.map(logToSavedString_).reverse();
-  },
-
-  /**
    * Adds a log message to the javascript log list displayed. Called from the
    * C++ WebUI handler when a log message is added to the log buffer.
-   * @param {!Array<!LogMessage>} log
+   * @param {!LogMessage} log
    * @private
    */
   onLogMessageAdded_(log) {
-    this.unshift('logList_', log);
+    this.push('logList_', log);
+    this.push('filteredLogList_', log);
   },
 
   /**
@@ -187,7 +210,8 @@ Polymer({
    * @private
    */
   onGetLogMessages_(logs) {
-    this.logList_ = logs.reverse().concat(this.logList_);
+    this.logList_ = logs.concat(this.logList_);
+    this.filteredLogList_ = logs.concat(this.filteredLogList_);
   },
 
   /**
@@ -196,5 +220,6 @@ Polymer({
    */
   clearLogBuffer_() {
     this.logList_ = [];
+    this.filteredLogList_ = [];
   },
 });
