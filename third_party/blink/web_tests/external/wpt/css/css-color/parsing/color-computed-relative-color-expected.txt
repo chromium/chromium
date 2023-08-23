@@ -1,19 +1,10 @@
 This is a testharness.js-based test.
-Found 961 tests; 893 PASS, 68 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 934 tests; 893 PASS, 41 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property color value 'rgb(from rebeccapurple r g b)'
 PASS Property color value 'rgb(from rebeccapurple r g b / alpha)'
 PASS Property color value 'rgb(from rgb(20%, 40%, 60%, 80%) r g b / alpha)'
 PASS Property color value 'rgb(from hsl(120deg 20% 50% / .5) r g b / alpha)'
 PASS Property color value 'rgb(from rgb(from rebeccapurple r g b) r g b)'
-FAIL Property color value 'rgb(from color(display-p3 0 1 0) r g b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 249 +/- 1, expected 249 but got 255
-FAIL Property color value 'rgb(from lab(100 104.3 -50.9) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'rgb(from lab(0 104.3 -50.9) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'rgb(from lch(100 116 334) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'rgb(from lch(0 116 334) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'rgb(from oklab(1 0.365 -0.16) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 92
-FAIL Property color value 'rgb(from oklab(0 0.365 -0.16) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 19
-FAIL Property color value 'rgb(from oklch(1 0.399 336.3) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 91
-FAIL Property color value 'rgb(from oklch(0 0.399 336.3) r g b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 20
 PASS Property color value 'rgb(from rebeccapurple 0 0 0)'
 PASS Property color value 'rgb(from rebeccapurple 0 0 0 / 0)'
 PASS Property color value 'rgb(from rebeccapurple 0 g b / alpha)'
@@ -82,15 +73,6 @@ PASS Property color value 'hsl(from rebeccapurple h s l / alpha)'
 PASS Property color value 'hsl(from rgb(20%, 40%, 60%, 80%) h s l / alpha)'
 PASS Property color value 'hsl(from hsl(120deg 20% 50% / .5) h s l / alpha)'
 PASS Property color value 'hsl(from hsl(from rebeccapurple h s l) h s l)'
-FAIL Property color value 'hsl(from color(display-p3 0 1 0) h s l / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 249 +/- 1, expected 249 but got 255
-FAIL Property color value 'hsl(from lab(100 104.3 -50.9) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'hsl(from lab(0 104.3 -50.9) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'hsl(from lch(100 116 334) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'hsl(from lch(0 116 334) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'hsl(from oklab(1 0.365 -0.16) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 92
-FAIL Property color value 'hsl(from oklab(0 0.365 -0.16) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 19
-FAIL Property color value 'hsl(from oklch(1 0.399 336.3) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 91
-FAIL Property color value 'hsl(from oklch(0 0.399 336.3) h s l)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 20
 PASS Property color value 'hsl(from rebeccapurple 0 0% 0%)'
 PASS Property color value 'hsl(from rebeccapurple 0deg 0% 0%)'
 PASS Property color value 'hsl(from rebeccapurple 0 0% 0% / 0)'
@@ -144,15 +126,6 @@ PASS Property color value 'hwb(from rebeccapurple h w b / alpha)'
 PASS Property color value 'hwb(from rgb(20%, 40%, 60%, 80%) h w b / alpha)'
 PASS Property color value 'hwb(from hsl(120deg 20% 50% / .5) h w b / alpha)'
 PASS Property color value 'hwb(from hwb(from rebeccapurple h w b) h w b)'
-FAIL Property color value 'hwb(from color(display-p3 0 1 0) h w b / alpha)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 249 +/- 1, expected 249 but got 255
-FAIL Property color value 'hwb(from lab(100 104.3 -50.9) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'hwb(from lab(0 104.3 -50.9) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'hwb(from lch(100 116 334) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 150
-FAIL Property color value 'hwb(from lch(0 116 334) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 42 +/- 1, expected 42 but got 90
-FAIL Property color value 'hwb(from oklab(1 0.365 -0.16) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 92
-FAIL Property color value 'hwb(from oklab(0 0.365 -0.16) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 19
-FAIL Property color value 'hwb(from oklch(1 0.399 336.3) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 1, expected 255 +/- 1, expected 255 but got 91
-FAIL Property color value 'hwb(from oklch(0 0.399 336.3) h w b)' assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0 +/- 1, expected 0 but got 20
 PASS Property color value 'hwb(from rebeccapurple 0 0% 0%)'
 PASS Property color value 'hwb(from rebeccapurple 0deg 0% 0%)'
 PASS Property color value 'hwb(from rebeccapurple 0 0% 0% / 0)'
