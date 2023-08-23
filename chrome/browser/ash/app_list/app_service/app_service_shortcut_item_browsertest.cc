@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -34,6 +35,8 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/vector_icons.h"
 
 namespace apps {
 
@@ -184,6 +187,54 @@ IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest, Activate) {
       app_url, content::NotificationService::AllSources());
   item->PerformActivate(ui::EF_NONE);
   url_observer.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutItemBrowserTest,
+                       ContextMenuTooglePin) {
+  GURL app_url = GURL("https://example.org/");
+  std::u16string shortcut_name = u"Example";
+  apps::ShortcutId shortcut_id =
+      CreateWebAppBasedShortcut(app_url, shortcut_name);
+
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ChromeAppListItem* item = model_updater->FindItem(shortcut_id.value());
+  ASSERT_TRUE(item);
+
+  base::test::TestFuture<std::unique_ptr<ui::SimpleMenuModel>> future;
+  item->GetContextMenuModel(ash::AppListItemContext::kNone,
+                            future.GetCallback());
+
+  std::unique_ptr<ui::SimpleMenuModel> menu_model = future.Take();
+
+  auto tootle_pin_command_index =
+      menu_model->GetIndexOfCommandId(ash::CommandId::TOGGLE_PIN);
+  ASSERT_TRUE(tootle_pin_command_index);
+  EXPECT_EQ(tootle_pin_command_index.value(), 1u);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN),
+            menu_model->GetLabelAt(tootle_pin_command_index.value()));
+  EXPECT_EQ(&views::kPinIcon,
+            menu_model->GetIconAt(tootle_pin_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  menu_model->ActivatedAt(tootle_pin_command_index.value());
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_UNPIN),
+            menu_model->GetLabelAt(tootle_pin_command_index.value()));
+  EXPECT_EQ(&views::kUnpinIcon,
+            menu_model->GetIconAt(tootle_pin_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
+
+  menu_model->ActivatedAt(tootle_pin_command_index.value());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN),
+            menu_model->GetLabelAt(tootle_pin_command_index.value()));
+  EXPECT_EQ(&views::kPinIcon,
+            menu_model->GetIconAt(tootle_pin_command_index.value())
+                .GetVectorIcon()
+                .vector_icon());
 }
 
 }  // namespace apps

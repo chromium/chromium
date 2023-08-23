@@ -59,6 +59,11 @@ void AppServiceShortcutContextMenu::GetMenuModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kLaunchIcon,
                                      ui::kColorAshSystemUIMenuIcon,
                                      ash::kAppContextMenuIconSize));
+
+  AddContextMenuOption(menu_model.get(),
+                       static_cast<ash::CommandId>(ash::CommandId::TOGGLE_PIN),
+                       IDS_APP_LIST_CONTEXT_MENU_PIN);
+
   std::move(callback).Run(std::move(menu_model));
 }
 
@@ -67,5 +72,8 @@ void AppServiceShortcutContextMenu::ExecuteCommand(int command_id,
   switch (command_id) {
     case ash::LAUNCH_NEW:
       delegate()->ExecuteLaunchCommand(event_flags);
+      break;
+    default:
+      AppContextMenu::ExecuteCommand(command_id, event_flags);
   }
 }
