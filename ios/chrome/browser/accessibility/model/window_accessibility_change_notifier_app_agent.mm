@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/accessibility/window_accessibility_change_notifier_app_agent.h"
+#import "ios/chrome/browser/accessibility/model/window_accessibility_change_notifier_app_agent.h"
 
 #import "base/check.h"
 #import "base/i18n/message_formatter.h"
@@ -19,7 +19,7 @@ namespace {
 // Delay between events and notification.
 const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 
-}
+}  // namespace
 
 @interface WindowAccessibilityChangeNotifierAppAgent () <AppStateObserver,
                                                          SceneStateObserver>
@@ -146,8 +146,9 @@ const NSTimeInterval kWindowNotifcationDelay = 0.5;  // seconds
 - (void)updateWindowCount {
   NSUInteger windowCount = 0;
   for (SceneState* scene in [self.appState connectedScenes]) {
-    if (scene.activationLevel >= SceneActivationLevelForegroundInactive)
+    if (scene.activationLevel >= SceneActivationLevelForegroundInactive) {
       windowCount++;
+    }
   }
   self.visibleWindowCount = windowCount;
 }

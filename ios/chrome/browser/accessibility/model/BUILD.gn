@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("accessibility") {
+source_set("model") {
   sources = [
     "window_accessibility_change_notifier_app_agent.h",
     "window_accessibility_change_notifier_app_agent.mm",

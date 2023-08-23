@@ -463,7 +463,7 @@ source_set("app_internal") {
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/accessibility",
+    "//ios/chrome/browser/accessibility/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browsing_data",
