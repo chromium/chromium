@@ -2427,6 +2427,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     (*out)->has_hid_event_handlers = data.has_hid_event_handlers();
   }
 
+  if (data.has_has_usb_event_handlers()) {
+    (*out)->has_usb_event_handlers = data.has_usb_event_handlers();
+  }
+
   return Status::kOk;
 }
 
@@ -2873,6 +2877,7 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   }
 
   data.set_has_hid_event_handlers(registration.has_hid_event_handlers);
+  data.set_has_usb_event_handlers(registration.has_usb_event_handlers);
 
   std::string value;
   bool success = data.SerializeToString(&value);

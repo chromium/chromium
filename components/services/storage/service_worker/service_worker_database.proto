@@ -22,7 +22,7 @@ message ServiceWorkerNavigationPreloadState {
   optional string header = 2;
 }
 
-// NEXT ID TO USE: 25
+// NEXT ID TO USE: 27
 message ServiceWorkerRegistrationData {
   enum ServiceWorkerScriptType {
     CLASSIC = 0;
@@ -263,6 +263,8 @@ message ServiceWorkerRegistrationData {
   optional RouterRules router_rules = 24;
 
   optional bool has_hid_event_handlers = 25;
+
+  optional bool has_usb_event_handlers = 26;
 }
 
 message ServiceWorkerResourceRecord {

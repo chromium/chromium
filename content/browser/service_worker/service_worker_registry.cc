@@ -605,6 +605,7 @@ void ServiceWorkerRegistry::StoreRegistration(
           : blink::mojom::PolicyContainerPolicies::New();
 
   data->has_hid_event_handlers = version->has_hid_event_handlers();
+  data->has_usb_event_handlers = version->has_usb_event_handlers();
 
   ResourceList resources = version->script_cache_map()->GetResources();
   if (resources.empty()) {
@@ -1110,6 +1111,9 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     // `has_hid_event_handlers_` in ServiceWorkerVersion should be set before
     // changing the status to ACTIVATED.
     version->set_has_hid_event_handlers(data.has_hid_event_handlers);
+    // `has_usb_event_handlers_` in ServiceWorkerVersion should be set before
+    // changing the status to ACTIVATED.
+    version->set_has_usb_event_handlers(data.has_usb_event_handlers);
     // Set resources before changing the status to ACTIVATED/INSTALLED.
     // |sha256_script_checksum_| in ServiceWorkerVersion should be set before
     // changing the status.
