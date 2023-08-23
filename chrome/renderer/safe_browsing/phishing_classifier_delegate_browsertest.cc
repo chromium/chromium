@@ -13,9 +13,7 @@
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -103,7 +101,7 @@ class MockPhishingClassifier : public PhishingClassifier {
   MockPhishingClassifier(const MockPhishingClassifier&) = delete;
   MockPhishingClassifier& operator=(const MockPhishingClassifier&) = delete;
 
-  ~MockPhishingClassifier() override {}
+  ~MockPhishingClassifier() override = default;
 
   MOCK_METHOD2(BeginClassification, void(const std::u16string*, DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
@@ -115,8 +113,6 @@ class MockScorer : public Scorer {
 
   MockScorer(const MockScorer&) = delete;
   MockScorer& operator=(const MockScorer&) = delete;
-
-  ~MockScorer() override {}
 
   MOCK_CONST_METHOD1(ComputeScore, double(const FeatureMap&));
   MOCK_CONST_METHOD3(
@@ -332,19 +328,6 @@ TEST_F(PhishingClassifierDelegateTest, NoPhishingModel) {
   ASSERT_FALSE(classifier_->is_ready());
 }
 
-TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
-  ASSERT_FALSE(classifier_->is_ready());
-
-  ClientSideModel model;
-  model.set_max_words_per_term(1);
-  ScorerStorage::GetInstance()->SetScorer(
-      ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
-  ASSERT_TRUE(classifier_->is_ready());
-
-  // The delegate will cancel pending classification on destruction.
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
-}
-
 TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
   ASSERT_FALSE(classifier_->is_ready());
 
@@ -353,8 +336,8 @@ TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
       base::ReadOnlySharedMemoryRegion::Create(model_str.length());
   memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
 
-  ScorerStorage::GetInstance()->SetScorer(FlatBufferModelScorer::Create(
-      mapped_region.region.Duplicate(), base::File()));
+  ScorerStorage::GetInstance()->SetScorer(
+      Scorer::Create(mapped_region.region.Duplicate(), base::File()));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
@@ -374,10 +357,12 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   std::string file_contents = "visual model file";
   file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
 
-  ClientSideModel model;
-  model.set_max_words_per_term(1);
+  std::string model_str = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(model_str.length());
+  memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
   ScorerStorage::GetInstance()->SetScorer(
-      ProtobufModelScorer::Create(model.SerializeAsString(), std::move(file)));
+      Scorer::Create(mapped_region.region.Duplicate(), std::move(file)));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.

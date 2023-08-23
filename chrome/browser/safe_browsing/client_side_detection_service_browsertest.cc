@@ -56,8 +56,9 @@ class PhishingModelWaiter : public mojom::PhishingModelSetterTestObserver {
 
   // mojom::PhishingModelSetterTestObserver
   void PhishingModelUpdated() override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run();
+    }
   }
 
  private:

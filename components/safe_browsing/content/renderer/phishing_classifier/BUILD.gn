@@ -13,8 +13,6 @@ source_set("phishing_classifier") {
     sources = [
       "features.cc",
       "features.h",
-      "flatbuffer_scorer.cc",
-      "flatbuffer_scorer.h",
       "murmurhash3_util.cc",
       "murmurhash3_util.h",
       "phishing_classifier.cc",
@@ -35,8 +33,6 @@ source_set("phishing_classifier") {
       "phishing_url_feature_extractor.h",
       "phishing_visual_feature_extractor.cc",
       "phishing_visual_feature_extractor.h",
-      "protobuf_scorer.cc",
-      "protobuf_scorer.h",
       "scorer.cc",
       "scorer.h",
     ]
@@ -110,21 +106,19 @@ source_set("unit_tests_support") {
   ]
 }
 
-if (use_fuzzing_engine_with_lpm) {
-  # TODO(crbug.com/1353965): Re-enable for Linux ASAN Debug build.
-  if (!is_linux || !is_debug || !is_asan) {
-    fuzzer_test("client_side_phishing_fuzzer") {
-      sources = [ "client_side_phishing_fuzzer.cc" ]
-      deps = [
-        ":client_side_phishing_fuzzer_proto",
-        ":phishing_classifier",
-        "//base:base",
-        "//components/safe_browsing/core/common/fbs:client_model",
-        "//components/safe_browsing/core/common/proto:client_model_proto",
-        "//skia",
-        "//third_party/libprotobuf-mutator",
-      ]
-    }
+# TODO(crbug.com / 1475062, crbug.com / 1353965): Re - enable after scorer correction with flatbuffer model.
+if (false && use_fuzzing_engine_with_lpm) {
+  fuzzer_test("client_side_phishing_fuzzer") {
+    sources = [ "client_side_phishing_fuzzer.cc" ]
+    deps = [
+      ":client_side_phishing_fuzzer_proto",
+      ":phishing_classifier",
+      "//base:base",
+      "//components/safe_browsing/core/common/fbs:client_model",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//skia",
+      "//third_party/libprotobuf-mutator",
+    ]
   }
 
   fuzzable_proto_library("client_side_phishing_fuzzer_proto") {

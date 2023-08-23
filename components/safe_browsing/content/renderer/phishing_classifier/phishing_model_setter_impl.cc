@@ -4,37 +4,33 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
 
-#include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace safe_browsing {
 
-std::unique_ptr<FlatBufferModelScorer> CreateFlatBufferModelScorer(
+std::unique_ptr<Scorer> CreateFlatBufferModelScorer(
     base::ReadOnlySharedMemoryRegion flatbuffer_region,
     base::File tflite_visual_model) {
-  std::unique_ptr<FlatBufferModelScorer> scorer;
+  std::unique_ptr<Scorer> scorer;
   // An invalid region means we should disable client-side phishing detection.
   if (flatbuffer_region.IsValid()) {
-    scorer = safe_browsing::FlatBufferModelScorer::Create(
-        std::move(flatbuffer_region), std::move(tflite_visual_model));
+    scorer = safe_browsing::Scorer::Create(std::move(flatbuffer_region),
+                                           std::move(tflite_visual_model));
   }
   return scorer;
 }
 
-std::unique_ptr<FlatBufferModelScorer>
-CreateFlatBufferModelWithImageEmbeddingScorer(
+std::unique_ptr<Scorer> CreateScorerWithImageEmbeddingModel(
     base::ReadOnlySharedMemoryRegion flatbuffer_region,
     base::File tflite_visual_model,
     base::File image_embedding_model) {
-  std::unique_ptr<FlatBufferModelScorer> scorer;
+  std::unique_ptr<Scorer> scorer;
   // An invalid region means we should disable client-side phishing detection.
   if (flatbuffer_region.IsValid()) {
-    scorer = safe_browsing::FlatBufferModelScorer::
-        CreateFlatBufferModelWithImageEmbeddingScorer(
-            std::move(flatbuffer_region), std::move(tflite_visual_model),
-            std::move(image_embedding_model));
+    scorer = safe_browsing::Scorer::CreateScorerWithImageEmbeddingModel(
+        std::move(flatbuffer_region), std::move(tflite_visual_model),
+        std::move(image_embedding_model));
   }
   return scorer;
 }
@@ -58,35 +54,15 @@ void PhishingModelSetterImpl::SetImageEmbeddingAndPhishingFlatBufferModel(
     base::ReadOnlySharedMemoryRegion flatbuffer_region,
     base::File tflite_visual_model,
     base::File image_embedding_model) {
-  std::unique_ptr<FlatBufferModelScorer> scorer =
-      CreateFlatBufferModelWithImageEmbeddingScorer(
-          std::move(flatbuffer_region), std::move(tflite_visual_model),
-          std::move(image_embedding_model));
+  std::unique_ptr<Scorer> scorer = CreateScorerWithImageEmbeddingModel(
+      std::move(flatbuffer_region), std::move(tflite_visual_model),
+      std::move(image_embedding_model));
 
   if (!scorer) {
     // Log here that the image embedder creation has failed.
     return;
   }
 
-  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
-
-  if (observer_for_testing_.is_bound()) {
-    observer_for_testing_->PhishingModelUpdated();
-  }
-}
-
-void PhishingModelSetterImpl::SetPhishingModel(const std::string& model,
-                                               base::File tflite_visual_model) {
-  std::unique_ptr<Scorer> scorer;
-
-  // An empty model string means we should disable client-side phishing
-  // detection.
-  if (!model.empty()) {
-    scorer = safe_browsing::ProtobufModelScorer::Create(
-        model, std::move(tflite_visual_model));
-    if (!scorer)
-      return;
-  }
   ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
 
   if (observer_for_testing_.is_bound()) {

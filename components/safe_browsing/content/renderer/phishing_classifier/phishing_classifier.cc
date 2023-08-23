@@ -166,14 +166,10 @@ void PhishingClassifier::TermExtractionFinished(bool success) {
         base::BindOnce(&PhishingClassifier::OnPlaybackDone,
                        base::Unretained(this)));
 #else
-    if (ScorerStorage::GetInstance()->GetScorer()->HasVisualTfLiteModel()) {
-      visual_extractor_->ExtractFeatures(
-          render_frame_->GetWebFrame(),
-          base::BindOnce(&PhishingClassifier::OnPlaybackDone,
-                         base::Unretained(this)));
-    } else {
-      VisualExtractionFinished(true);
-    }
+    visual_extractor_->ExtractFeatures(
+        render_frame_->GetWebFrame(),
+        base::BindOnce(&PhishingClassifier::OnPlaybackDone,
+                       base::Unretained(this)));
 #endif
   } else {
     RunFailureCallback();

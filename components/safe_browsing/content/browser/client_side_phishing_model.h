@@ -30,7 +30,7 @@ class OptimizationGuideModelProvider;
 
 namespace safe_browsing {
 
-enum class CSDModelType { kNone = 0, kProtobuf = 1, kFlatbuffer = 2 };
+enum class CSDModelType { kNone = 0, kFlatbuffer = 1 };
 
 // This holds the currently active client side phishing detection model.
 //
@@ -73,11 +73,8 @@ class ClientSidePhishingModel
   static bool VerifyCSDFlatBufferIndicesAndFields(
       const flat::ClientSideModel* model);
 
-  // Returns model type (protobuf or flatbuffer).
+  // Returns model type (flatbuffer or none).
   CSDModelType GetModelType() const;
-
-  // Returns the model string, as a serialized protobuf or flatbuffer.
-  const std::string& GetModelStr() const;
 
   // Returns the shared memory region for the flatbuffer.
   base::ReadOnlySharedMemoryRegion GetModelSharedMemoryRegion() const;
@@ -90,8 +87,6 @@ class ClientSidePhishingModel
 
   bool IsModelMetadataImageEmbeddingVersionMatching();
 
-  // Overrides the model string for use in tests.
-  void SetModelStrForTesting(const std::string& model_str);
   void SetVisualTfLiteModelForTesting(base::File file);
   // Overrides model type.
   void SetModelTypeForTesting(CSDModelType model_type);

@@ -34,8 +34,6 @@ class PhishingModelSetterImpl : public mojom::PhishingModelSetter,
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model,
       base::File image_embedding_model_data) override;
-  void SetPhishingModel(const std::string& model,
-                        base::File tflite_visual_model) override;
   void SetPhishingFlatBufferModel(
       base::ReadOnlySharedMemoryRegion flatbuffer_region,
       base::File tflite_visual_model) override;

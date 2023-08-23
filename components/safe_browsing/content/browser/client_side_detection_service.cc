@@ -475,10 +475,6 @@ GURL ClientSideDetectionService::GetClientReportUrl(
   return url;
 }
 
-const std::string& ClientSideDetectionService::GetModelStr() {
-  return client_side_phishing_model_->GetModelStr();
-}
-
 CSDModelType ClientSideDetectionService::GetModelType() {
   return client_side_phishing_model_
              ? client_side_phishing_model_->GetModelType()
@@ -522,17 +518,14 @@ void ClientSideDetectionService::SetPhishingModel(
   if (!IsModelAvailable()) {
     return;
   }
-  if (!rph->GetChannel())
+  if (!rph->GetChannel()) {
     return;
+  }
 
   mojo::AssociatedRemote<mojom::PhishingModelSetter> model_setter;
   rph->GetChannel()->GetRemoteAssociatedInterface(&model_setter);
   switch (GetModelType()) {
     case CSDModelType::kNone:
-      return;
-    case CSDModelType::kProtobuf:
-      model_setter->SetPhishingModel(GetModelStr(),
-                                     GetVisualTfLiteModel().Duplicate());
       return;
     case CSDModelType::kFlatbuffer:
       if (delegate_ && delegate_->GetPrefs() &&

@@ -146,10 +146,6 @@ class ClientSideDetectionService
   // Sends a model to each renderer.
   virtual void SendModelToRenderers();
 
-  // Returns the model string. Used only for protobuf model. Virtual so that
-  // mock implementation can override it.
-  virtual const std::string& GetModelStr();
-
   // Returns the model type (protobuf or flatbuffer). Virtual so that mock
   // implementation can override it.
   virtual CSDModelType GetModelType();

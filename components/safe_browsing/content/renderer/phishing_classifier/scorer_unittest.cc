@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 
 #include <stdint.h>
 
@@ -155,76 +153,25 @@ TEST_F(PhishingScorerTest, HasValidFlatBufferModel) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // Invalid region.
-  scorer = FlatBufferModelScorer::Create(base::ReadOnlySharedMemoryRegion(),
-                                         base::File());
+  scorer = Scorer::Create(base::ReadOnlySharedMemoryRegion(), base::File());
   EXPECT_FALSE(scorer.get());
 
   // Invalid buffer in region.
   mapped_region = GetMappedReadOnlyRegionWithData("bogus string");
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
-  EXPECT_FALSE(scorer.get());
-}
-
-TEST_F(PhishingScorerTest, HasValidModel) {
-  std::unique_ptr<Scorer> scorer;
-  scorer =
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
-  EXPECT_TRUE(scorer.get() != nullptr);
-
-  // Invalid model string.
-  scorer = ProtobufModelScorer::Create("bogus string", base::File());
-  EXPECT_FALSE(scorer.get());
-
-  // Mode is missing a required field.
-  model_.clear_max_words_per_term();
-  scorer = ProtobufModelScorer::Create(model_.SerializePartialAsString(),
-                                       base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   EXPECT_FALSE(scorer.get());
 }
 
 TEST_F(PhishingScorerTest, PageTerms) {
-  std::unique_ptr<ProtobufModelScorer> scorer(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
-  ASSERT_TRUE(scorer.get());
-
-  base::RepeatingCallback<bool(const std::string&)> page_terms_callback(
-      scorer->find_page_term_callback());
-  EXPECT_FALSE(page_terms_callback.Run("a"));
-  EXPECT_FALSE(page_terms_callback.Run(""));
-  EXPECT_TRUE(page_terms_callback.Run("token one"));
-  EXPECT_FALSE(page_terms_callback.Run("token onetwo"));
-  EXPECT_TRUE(page_terms_callback.Run("token two"));
-  EXPECT_FALSE(page_terms_callback.Run("token ZZ"));
-
-  // Use std::vector instead of std::unordered_set for comparison.
-  // On Android, EXPECT_THAT(..., ContainerEq(...)) doesn't support
-  // std::hash_set, but std::vector works fine.
-  std::vector<std::string> expected_page_terms;
-  expected_page_terms.push_back("token one");
-  expected_page_terms.push_back("token two");
-  std::sort(expected_page_terms.begin(), expected_page_terms.end());
-
-  std::unordered_set<std::string> page_terms =
-      scorer->get_page_terms_for_test();
-  std::vector<std::string> page_terms_v(page_terms.begin(), page_terms.end());
-  std::sort(page_terms_v.begin(), page_terms_v.end());
-
-  EXPECT_THAT(page_terms_v, ::testing::ContainerEq(expected_page_terms));
-}
-
-TEST_F(PhishingScorerTest, PageTermsFlat) {
   std::unique_ptr<Scorer> scorer;
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(const std::string&)> page_terms_callback(
       scorer->find_page_term_callback());
@@ -234,38 +181,6 @@ TEST_F(PhishingScorerTest, PageTermsFlat) {
   EXPECT_FALSE(page_terms_callback.Run("token onetwo"));
   EXPECT_TRUE(page_terms_callback.Run("token two"));
   EXPECT_FALSE(page_terms_callback.Run("token ZZ"));
-}
-
-TEST_F(PhishingScorerTest, PageWords) {
-  std::unique_ptr<ProtobufModelScorer> scorer(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
-  ASSERT_TRUE(scorer.get());
-
-  base::RepeatingCallback<bool(uint32_t)> page_words_callback(
-      scorer->find_page_word_callback());
-  EXPECT_FALSE(page_words_callback.Run(0U));
-  EXPECT_TRUE(page_words_callback.Run(1000U));
-  EXPECT_FALSE(page_words_callback.Run(1500U));
-  EXPECT_TRUE(page_words_callback.Run(2000U));
-  EXPECT_TRUE(page_words_callback.Run(3000U));
-  EXPECT_FALSE(page_words_callback.Run(4000U));
-
-  std::vector<uint32_t> expected_page_words;
-  expected_page_words.push_back(1000U);
-  expected_page_words.push_back(2000U);
-  expected_page_words.push_back(3000U);
-  std::sort(expected_page_words.begin(), expected_page_words.end());
-
-  std::unordered_set<uint32_t> page_words = scorer->get_page_words_for_test();
-  std::vector<uint32_t> page_words_v(page_words.begin(), page_words.end());
-  std::sort(page_words_v.begin(), page_words_v.end());
-
-  EXPECT_THAT(page_words_v, ::testing::ContainerEq(expected_page_words));
-
-  EXPECT_EQ(2U, scorer->max_words_per_term());
-  EXPECT_EQ(12345U, scorer->murmurhash3_seed());
-  EXPECT_EQ(10U, scorer->max_shingles_per_page());
-  EXPECT_EQ(3U, scorer->shingle_size());
 }
 
 TEST_F(PhishingScorerTest, PageWordsFlat) {
@@ -273,8 +188,7 @@ TEST_F(PhishingScorerTest, PageWordsFlat) {
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   ASSERT_TRUE(scorer.get());
   base::RepeatingCallback<bool(uint32_t)> page_words_callback(
       scorer->find_page_word_callback());
@@ -290,41 +204,12 @@ TEST_F(PhishingScorerTest, PageWordsFlat) {
   EXPECT_EQ(3U, scorer->shingle_size());
 }
 
-TEST_F(PhishingScorerTest, ComputeScore) {
-  std::unique_ptr<Scorer> scorer(
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File()));
-  ASSERT_TRUE(scorer.get());
-
-  // An empty feature map should match the empty rule.
-  FeatureMap features;
-  // The expected logodds is 0.5 (empty rule) => p = exp(0.5) / (exp(0.5) + 1)
-  // => 0.62245933120185459
-  EXPECT_DOUBLE_EQ(0.62245933120185459, scorer->ComputeScore(features));
-  // Same if the feature does not match any rule.
-  EXPECT_TRUE(features.AddBooleanFeature("not existing feature"));
-  EXPECT_DOUBLE_EQ(0.62245933120185459, scorer->ComputeScore(features));
-
-  // Feature 1 matches which means that the logodds will be:
-  //   0.5 (empty rule) + 2.0 (rule weight) * 0.15 (feature weight) = 0.8
-  //   => p = 0.6899744811276125
-  EXPECT_TRUE(features.AddRealFeature("feature1", 0.15));
-  EXPECT_DOUBLE_EQ(0.6899744811276125, scorer->ComputeScore(features));
-
-  // Now, both feature 1 and feature 2 match.  Expected logodds:
-  //   0.5 (empty rule) + 2.0 (rule weight) * 0.15 (feature weight) +
-  //   3.0 (rule weight) * 0.15 (feature1 weight) * 1.0 (feature2) weight = 9.8
-  //   => p = 0.99999627336071584
-  EXPECT_TRUE(features.AddBooleanFeature("feature2"));
-  EXPECT_DOUBLE_EQ(0.77729986117469119, scorer->ComputeScore(features));
-}
-
 TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   std::unique_ptr<Scorer> scorer;
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   EXPECT_TRUE(scorer.get() != nullptr);
 
   // An empty feature map should match the empty rule.
@@ -350,21 +235,12 @@ TEST_F(PhishingScorerTest, ComputeScoreFlat) {
   EXPECT_DOUBLE_EQ(0.77729986117469119, scorer->ComputeScore(features));
 }
 
-TEST_F(PhishingScorerTest, DomModelVersionProtobuffer) {
-  std::unique_ptr<Scorer> scorer;
-  scorer =
-      ProtobufModelScorer::Create(model_.SerializeAsString(), base::File());
-  ASSERT_TRUE(scorer.get() != nullptr);
-  EXPECT_EQ(scorer->dom_model_version(), 123);
-}
-
 TEST_F(PhishingScorerTest, DomModelVersionFlatbuffer) {
   std::unique_ptr<Scorer> scorer;
   std::string flatbuffer = GetFlatBufferString();
   base::MappedReadOnlyRegion mapped_region =
       GetMappedReadOnlyRegionWithData(flatbuffer);
-  scorer = FlatBufferModelScorer::Create(mapped_region.region.Duplicate(),
-                                         base::File());
+  scorer = Scorer::Create(mapped_region.region.Duplicate(), base::File());
   ASSERT_TRUE(scorer.get() != nullptr);
   EXPECT_EQ(scorer->dom_model_version(), 123);
 }

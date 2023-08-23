@@ -410,8 +410,7 @@ bool ClientSidePhishingModel::IsEnabled() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return (model_type_ == CSDModelType::kFlatbuffer &&
           mapped_region_.IsValid() && visual_tflite_model_ &&
-          visual_tflite_model_->IsValid()) ||
-         (model_type_ == CSDModelType::kProtobuf && !model_str_.empty());
+          visual_tflite_model_->IsValid());
 }
 
 // static
@@ -479,12 +478,6 @@ ClientSidePhishingModel::GetVisualTfLiteModelThresholds() const {
   return thresholds_;
 }
 
-const std::string& ClientSidePhishingModel::GetModelStr() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(model_type_ != CSDModelType::kFlatbuffer);
-  return model_str_;
-}
-
 const base::File& ClientSidePhishingModel::GetVisualTfLiteModel() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(visual_tflite_model_ && visual_tflite_model_->IsValid());
@@ -529,35 +522,23 @@ void ClientSidePhishingModel::SetModelStringForTesting(
           kOverrideCsdModelFlag) &&
       !model_str.empty()) {
     model_type_ = CSDModelType::kNone;
-    if (base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)) {
-      flatbuffers::Verifier verifier(
-          reinterpret_cast<const uint8_t*>(model_str.data()),
-          model_str.length());
-      model_valid = flat::VerifyClientSideModelBuffer(verifier);
-      if (model_valid) {
-        mapped_region_ =
-            base::ReadOnlySharedMemoryRegion::Create(model_str.length());
-        if (mapped_region_.IsValid()) {
-          model_type_ = CSDModelType::kFlatbuffer;
-          model_version_field =
-              flat::GetClientSideModel(model_str.data())->version();
-          memcpy(mapped_region_.mapping.memory(), model_str.data(),
-                 model_str.length());
-        } else {
-          model_valid = false;
-        }
-        base::UmaHistogramBoolean(
-            "SBClientPhishing.FlatBufferMappedRegionValid",
-            mapped_region_.IsValid());
+    flatbuffers::Verifier verifier(
+        reinterpret_cast<const uint8_t*>(model_str.data()), model_str.length());
+    model_valid = flat::VerifyClientSideModelBuffer(verifier);
+    if (model_valid) {
+      mapped_region_ =
+          base::ReadOnlySharedMemoryRegion::Create(model_str.length());
+      if (mapped_region_.IsValid()) {
+        model_type_ = CSDModelType::kFlatbuffer;
+        model_version_field =
+            flat::GetClientSideModel(model_str.data())->version();
+        memcpy(mapped_region_.mapping.memory(), model_str.data(),
+               model_str.length());
+      } else {
+        model_valid = false;
       }
-    } else {
-      ClientSideModel model_proto;
-      model_valid = model_proto.ParseFromString(model_str);
-      if (model_valid) {
-        model_type_ = CSDModelType::kProtobuf;
-        model_version_field = model_proto.version();
-        model_str_ = model_str;
-      }
+      base::UmaHistogramBoolean("SBClientPhishing.FlatBufferMappedRegionValid",
+                                mapped_region_.IsValid());
     }
 
     base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
@@ -588,12 +569,6 @@ void ClientSidePhishingModel::NotifyCallbacksOnUI() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   callbacks_.Notify();
-}
-
-void ClientSidePhishingModel::SetModelStrForTesting(
-    const std::string& model_str) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  model_str_ = model_str;
 }
 
 void ClientSidePhishingModel::SetVisualTfLiteModelForTesting(base::File file) {
@@ -633,7 +608,7 @@ void ClientSidePhishingModel::MaybeOverrideModel() {
     CSDModelType model_type =
         base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)
             ? CSDModelType::kFlatbuffer
-            : CSDModelType::kProtobuf;
+            : CSDModelType::kNone;
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
@@ -656,17 +631,6 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
   }
 
   switch (model_type) {
-    case CSDModelType::kProtobuf: {
-      std::unique_ptr<ClientSideModel> model =
-          std::make_unique<ClientSideModel>();
-      if (!model->ParseFromArray(model_data.data(), model_data.size())) {
-        VLOG(2) << "Overriden model data is not a valid ClientSideModel proto";
-        return;
-      }
-      model_type_ = model_type;
-      model_str_ = model_data;
-      break;
-    }
     case CSDModelType::kFlatbuffer: {
       flatbuffers::Verifier verifier(
           reinterpret_cast<const uint8_t*>(model_data.data()),
@@ -688,7 +652,7 @@ void ClientSidePhishingModel::OnGetOverridenModelData(
       break;
     }
     case CSDModelType::kNone:
-      VLOG(2) << "Model type should have been either proto or flatbuffer";
+      VLOG(2) << "Model type should have been a flatbuffer";
       return;
   }
 

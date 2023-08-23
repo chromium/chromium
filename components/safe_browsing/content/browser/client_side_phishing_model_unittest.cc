@@ -257,60 +257,15 @@ TEST_P(ClientSidePhishingModelTest, InvalidModelDueToInvalidPath) {
   EXPECT_FALSE(service()->IsEnabled());
 }
 
-TEST_P(ClientSidePhishingModelTest, NotifiesOnUpdate) {
-  service()->SetModelStrForTesting("");
-  service()->SetVisualTfLiteModelForTesting(base::File());
-  service()->ClearMappedRegionForTesting();
-  service()->SetModelTypeForTesting(CSDModelType::kNone);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kClientSideDetectionModelIsFlatBuffer);
-
-  base::RunLoop run_loop;
-  bool called = false;
-  base::CallbackListSubscription subscription =
-      service()->RegisterCallback(base::BindRepeating(
-          [](base::RepeatingClosure quit_closure, bool* called) {
-            *called = true;
-            std::move(quit_closure).Run();
-          },
-          run_loop.QuitClosure(), &called));
-
-  ClientSideModel model;
-  model.set_max_words_per_term(0);  // Required field.
-  service()->SetModelStringForTesting(model.SerializeAsString(), base::File());
-
-  run_loop.Run();
-
-  EXPECT_TRUE(called);
-  EXPECT_EQ(model.SerializeAsString(), service()->GetModelStr());
-  EXPECT_TRUE(service()->IsEnabled());
-}
-
-TEST_P(ClientSidePhishingModelTest, RejectsInvalidProto) {
-  service()->SetModelStrForTesting("");
-  service()->SetVisualTfLiteModelForTesting(base::File());
-  service()->ClearMappedRegionForTesting();
-  service()->SetModelTypeForTesting(CSDModelType::kNone);
-  service()->SetModelStringForTesting("bad proto", base::File());
-  EXPECT_FALSE(service()->IsEnabled());
-}
-
 TEST_P(ClientSidePhishingModelTest, RejectsInvalidFlatbuffer) {
-  service()->SetModelStrForTesting("");
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
-      /*disabled_features=*/{});
   service()->SetModelStringForTesting("bad flatbuffer", base::File());
   EXPECT_FALSE(service()->IsEnabled());
 }
 
 TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
-  service()->SetModelStrForTesting("");
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -345,7 +300,6 @@ TEST_P(ClientSidePhishingModelTest, NotifiesForFile) {
 }
 
 TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
-  service()->SetModelStrForTesting("");
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -369,7 +323,6 @@ TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadInitialUpdate) {
 }
 
 TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
-  service()->SetModelStrForTesting("");
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
@@ -411,14 +364,9 @@ TEST_P(ClientSidePhishingModelTest, DoesNotNotifyOnBadFollowingUpdate) {
 }
 
 TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
-  service()->SetModelStrForTesting("");
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
-      /*disabled_features=*/{});
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath file_path = temp_dir.GetPath();
@@ -456,16 +404,11 @@ TEST_P(ClientSidePhishingModelTest, CanOverrideFlatBufferWithFlag) {
   EXPECT_TRUE(called);
 }
 
-TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbufferIfFeatureEnabled) {
-  service()->SetModelStrForTesting("");
+TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbuffer) {
   service()->SetVisualTfLiteModelForTesting(base::File());
   service()->ClearMappedRegionForTesting();
   service()->SetModelTypeForTesting(CSDModelType::kNone);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
-      /*disabled_features=*/{});
   base::RunLoop run_loop;
   bool called = false;
   base::CallbackListSubscription subscription =
@@ -489,89 +432,84 @@ TEST_P(ClientSidePhishingModelTest, AcceptsValidFlatbufferIfFeatureEnabled) {
   service()->SetModelStringForTesting(model_str, std::move(file));
   run_loop.Run();
 
-    EXPECT_TRUE(service()->IsEnabled());
+  EXPECT_TRUE(service()->IsEnabled());
 
-    std::string model_str_from_shared_mem;
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
-    EXPECT_EQ(model_str, model_str_from_shared_mem);
-    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+  std::string model_str_from_shared_mem;
+  ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
+      service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem));
+  EXPECT_EQ(model_str, model_str_from_shared_mem);
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
 
-    EXPECT_TRUE(called);
+  EXPECT_TRUE(called);
 }
 
-TEST_P(ClientSidePhishingModelTest, FlatbufferonFollowingUpdate) {
-    service()->SetModelStrForTesting("");
-    service()->SetVisualTfLiteModelForTesting(base::File());
-    service()->ClearMappedRegionForTesting();
-    service()->SetModelTypeForTesting(CSDModelType::kNone);
+TEST_P(ClientSidePhishingModelTest, FlatbufferOnFollowingUpdate) {
+  service()->SetVisualTfLiteModelForTesting(base::File());
+  service()->ClearMappedRegionForTesting();
+  service()->SetModelTypeForTesting(CSDModelType::kNone);
 
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatures(
-        /*enabled_features=*/{kClientSideDetectionModelIsFlatBuffer},
-        /*disabled_features=*/{});
-    base::RunLoop run_loop;
+  base::RunLoop run_loop;
 
-    const std::string model_str1 = CreateFlatBufferString();
-    base::ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-    const base::FilePath file_path =
-        temp_dir.GetPath().AppendASCII("visual_model.tflite");
-    base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
-                                   base::File::FLAG_READ |
-                                   base::File::FLAG_WRITE);
-    const std::string file_contents = "visual model file";
-    file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
-    service()->SetModelStringForTesting(model_str1, std::move(file));
+  const std::string model_str1 = CreateFlatBufferString();
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("visual_model.tflite");
+  base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+  const std::string file_contents = "visual model file";
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+  service()->SetModelStringForTesting(model_str1, std::move(file));
 
-    run_loop.RunUntilIdle();
-    EXPECT_TRUE(service()->IsEnabled());
+  run_loop.RunUntilIdle();
+  EXPECT_TRUE(service()->IsEnabled());
 
   std::string model_str_from_shared_mem1;
 
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem1));
-    EXPECT_EQ(model_str1, model_str_from_shared_mem1);
-    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
-    // Should be able to write to memory with WritableSharedMemoryMapping field.
-    void* memory_addr = service()->GetFlatBufferMemoryAddressForTesting();
+  ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
+      service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem1));
+  EXPECT_EQ(model_str1, model_str_from_shared_mem1);
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+  // Should be able to write to memory with WritableSharedMemoryMapping field.
+  void* memory_addr = service()->GetFlatBufferMemoryAddressForTesting();
 
-    EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
+  EXPECT_EQ(memset(memory_addr, 'G', 1), memory_addr);
 
-    bool called = false;
-    base::CallbackListSubscription subscription =
-        service()->RegisterCallback(base::BindRepeating(
-            [](base::RepeatingClosure quit_closure, bool* called) {
-              *called = true;
-              std::move(quit_closure).Run();
-            },
-            run_loop.QuitClosure(), &called));
+  bool called = false;
+  base::CallbackListSubscription subscription =
+      service()->RegisterCallback(base::BindRepeating(
+          [](base::RepeatingClosure quit_closure, bool* called) {
+            *called = true;
+            std::move(quit_closure).Run();
+          },
+          run_loop.QuitClosure(), &called));
 
-    const std::string model_str2 = CreateFlatBufferString();
-    base::ScopedTempDir temp_dir2;
-    ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
-    const base::FilePath file_path2 =
-        temp_dir2.GetPath().AppendASCII("visual_model.tflite");
-    base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
-                                     base::File::FLAG_READ |
-                                     base::File::FLAG_WRITE);
-    const std::string file_contents2 = "visual model file";
-    file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
-    service()->SetModelStringForTesting(model_str2, std::move(file2));
+  const std::string model_str2 = CreateFlatBufferString();
+  base::ScopedTempDir temp_dir2;
+  ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
+  const base::FilePath file_path2 =
+      temp_dir2.GetPath().AppendASCII("visual_model.tflite");
+  base::File file2(file_path2, base::File::FLAG_OPEN_ALWAYS |
+                                   base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE);
+  const std::string file_contents2 = "visual model file";
+  file2.WriteAtCurrentPos(file_contents2.data(), file_contents2.size());
+  service()->SetModelStringForTesting(model_str2, std::move(file2));
 
-    run_loop.RunUntilIdle();
-    EXPECT_TRUE(called);
-    EXPECT_TRUE(service()->IsEnabled());
-    std::string model_str_from_shared_mem2;
-    ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
-        service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem2));
-    EXPECT_EQ(model_str2, model_str_from_shared_mem2);
-    EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
+  run_loop.RunUntilIdle();
+  EXPECT_TRUE(called);
+  EXPECT_TRUE(service()->IsEnabled());
+  std::string model_str_from_shared_mem2;
+  ASSERT_NO_FATAL_FAILURE(GetFlatBufferStringFromMappedMemory(
+      service()->GetModelSharedMemoryRegion(), &model_str_from_shared_mem2));
+  EXPECT_EQ(model_str2, model_str_from_shared_mem2);
+  EXPECT_EQ(service()->GetModelType(), CSDModelType::kFlatbuffer);
 
-    // Mapping should be undone automatically, even with a region copy lying
-    // around.
-    // Can remove this if flaky.
-    // Windows ASAN flake: crbug.com/1234652
+  // Mapping should be undone automatically, even with a region copy lying
+  // around.
+  // Can remove this if flaky.
+  // Windows ASAN flake: crbug.com/1234652
 #if !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
   BASE_EXPECT_DEATH(memset(memory_addr, 'G', 1), "");
 #endif
