@@ -3258,6 +3258,7 @@ const char kTabGroupsContinuationAndroidName[] = "Tab Groups Continuation";
 const char kTabGroupsContinuationAndroidDescription[] =
     "Allows users to access continuation features in Tab Group on phones.";
 
+const char kTabGroupsSaveId[] = "tab-groups-save";
 const char kTabGroupsSaveName[] = "Tab Groups Save and Sync";
 const char kTabGroupsSaveDescription[] =
     "Enable saving and recalling of tab groups. Right click a tab group to "

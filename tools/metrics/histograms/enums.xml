@@ -15878,6 +15878,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="6" label="User selected the WebUI Tab Strip lab"/>
   <int value="7" label="User selected the Tab Search Media Tabs lab"/>
   <int value="8" label="User selected the Chrome Refresh lab"/>
+  <int value="9" label="User selected the Tab Groups Save lab"/>
 </enum>
 
 <enum name="ChromeMLServiceDecisionTreePredictionResult">

@@ -6491,7 +6491,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
+    {flag_descriptions::kTabGroupsSaveId, flag_descriptions::kTabGroupsSaveName,
      flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsSave)},
 

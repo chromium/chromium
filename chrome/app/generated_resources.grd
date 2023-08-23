@@ -15472,6 +15472,13 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name = "IDS_CHROMELABS_ENABLED_WITH_VARIATION_NAME" desc="Label for combobox option for an enabled variation that will have a description describing what variation is enabled in the placeholder.">
       Enabled – <ph name="VARIATION_NAME">$1<ex>tabs shrink to pinned tab width</ex></ph>
     </message>
+    <!-- ChromeLabs Tab Groups Save-->
+    <message name="IDS_TAB_GROUPS_SAVE_EXPERIMENT_NAME" desc="The name for the Tab Groups Save experiment.">
+      Tab Groups Save and Sync
+    </message>
+    <message name="IDS_TAB_GROUPS_SAVE_DESCRIPTION" desc="The description for the Tab Groups Save experiment.">
+      Enables saving and recalling of tab groups. Right click a tab group to save it. Recall groups from the bookmarks bar.
+    </message>
     <!-- ChromeLabs ChromeRefresh2023-->
     <message name="IDS_CHROMEREFRESH2023_EXPERIMENT_NAME" desc="The name of the project for Chrome's desktop UI redesign.">
       Chrome Refresh 2023
