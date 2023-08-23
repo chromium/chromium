@@ -70,9 +70,10 @@ class RemoteSupportHostAsh {
       const absl::optional<ConnectionDetails>& reconnect_params,
       StartSessionCallback callback);
 
-  void OnClientConnected(mojom::SupportSessionParams,
-                         absl::optional<ChromeOsEnterpriseParams>,
-                         ConnectionDetails details);
+  void OnHostStateConnected(mojom::SupportSessionParams,
+                            absl::optional<ChromeOsEnterpriseParams>,
+                            ConnectionDetails details);
+  void OnHostStateDisconnected();
   void OnSessionDisconnected();
 
   SEQUENCE_CHECKER(sequence_checker_);

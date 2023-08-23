@@ -44,7 +44,8 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       delete;
   ~It2MeNativeMessageHostAsh() override;
 
-  using ClientConnectedCallback = base::OnceCallback<void(ConnectionDetails)>;
+  using HostStateConnectedCallback =
+      base::OnceCallback<void(ConnectionDetails)>;
 
   // Creates a new NMH instance, creates a new SupportHostObserver remote and
   // returns the pending_remote.  Start() must be called before the first call
@@ -66,7 +67,8 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
       const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
       const absl::optional<ConnectionDetails>& reconnect_params,
       base::OnceClosure connected_callback,
-      ClientConnectedCallback client_connected_callback,
+      HostStateConnectedCallback host_state_connected_callback,
+      base::OnceClosure host_state_disconnected_callback,
       base::OnceClosure disconnected_callback);
   // Disconnects an active session if one exists.
   void Disconnect();
@@ -84,7 +86,10 @@ class It2MeNativeMessageHostAsh : public extensions::NativeMessageHost::Client {
 
   base::OnceClosure connected_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  ClientConnectedCallback client_connected_callback_
+  HostStateConnectedCallback host_state_connected_callback_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  base::OnceClosure host_state_disconnected_callback_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::OnceClosure disconnected_callback_

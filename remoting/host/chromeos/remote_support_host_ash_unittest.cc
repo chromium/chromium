@@ -73,7 +73,11 @@ class FakeIt2MeHost : public It2MeHost {
     enterprise_params_ = value;
   }
 
-  bool WaitForConnectCall() { return connect_waiter_.Wait(); }
+  bool WaitForConnectCall() {
+    bool success = connect_waiter_.Wait();
+    connect_waiter_.Clear();
+    return success;
+  }
 
   std::string user_name() const { return user_name_; }
   ChromeOsEnterpriseParams enterprise_params() const {
@@ -81,7 +85,8 @@ class FakeIt2MeHost : public It2MeHost {
   }
 
   It2MeHost::Observer& observer() {
-    CHECK(observer_) << "`Connect()` has not been invoked";
+    CHECK(observer_) << "`Connect()` has not been invoked (or `Disconnect()` "
+                        "was already called)";
     CHECK(observer_.MaybeValid());
     return *observer_;
   }
@@ -237,8 +242,17 @@ class RemoteSupportHostAshTest : public testing::TestWithParam<bool> {
     return connect_result.Take();
   }
 
-  void SignalClientIsConnected() {
+  // This signal is normally sent from the chromoting code when the remote
+  // user has connected.
+  void SignalHostStateConnected() {
     it2me_host().observer().OnStateChanged(It2MeHostState::kConnected,
+                                           protocol::ErrorCode::OK);
+  }
+
+  // This signal is normally sent from the chromoting code when the remote
+  // user has disconnected.
+  void SignalHostStateDisconnected() {
+    it2me_host().observer().OnStateChanged(It2MeHostState::kDisconnected,
                                            protocol::ErrorCode::OK);
   }
 
@@ -414,7 +428,7 @@ TEST_F(RemoteSupportHostAshTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
-  SignalClientIsConnected();
+  SignalHostStateConnected();
 
   ASSERT_TRUE(HasSession(session_storage()));
 }
@@ -423,7 +437,7 @@ TEST_F(RemoteSupportHostAshTest, ShouldNotStoreSessionInfoIfFeatureIsDisabled) {
   DisableFeature(kEnableCrdAdminRemoteAccessV2);
 
   StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
-  SignalClientIsConnected();
+  SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
 }
@@ -433,7 +447,7 @@ TEST_F(RemoteSupportHostAshTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   StartSession(ChromeOsEnterpriseParams{.allow_reconnections = false});
-  SignalClientIsConnected();
+  SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
 }
@@ -443,7 +457,7 @@ TEST_F(RemoteSupportHostAshTest,
   EnableFeature(kEnableCrdAdminRemoteAccessV2);
 
   StartSession(absl::nullopt);
-  SignalClientIsConnected();
+  SignalHostStateConnected();
 
   ASSERT_FALSE(HasSession(session_storage()));
 }
@@ -633,6 +647,32 @@ TEST_F(RemoteSupportHostAshTest,
   ReconnectToSession(kEnterpriseSessionId);
 
   EXPECT_EQ(it2me_host().authorized_helper(), "the-remote-user@domain.com");
+}
+
+TEST_F(RemoteSupportHostAshTest,
+       ShouldClearReconnectableInformationWhenClientDisconnectsCleanly) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+
+  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
+  SignalHostStateConnected();
+  ASSERT_TRUE(HasSession(session_storage()));
+
+  SignalHostStateDisconnected();
+  EXPECT_FALSE(HasSession(session_storage()));
+}
+
+TEST_F(RemoteSupportHostAshTest,
+       ShouldClearReconnectableInformationWhenAnotherSessionIsStarted) {
+  EnableFeature(kEnableCrdAdminRemoteAccessV2);
+
+  StartSession(ChromeOsEnterpriseParams{.allow_reconnections = true});
+  SignalHostStateConnected();
+  it2me_host().WaitForConnectCall();
+  ASSERT_TRUE(HasSession(session_storage()));
+
+  StartSession(/*enterprise_params=*/absl::nullopt);
+
+  EXPECT_FALSE(HasSession(session_storage()));
 }
 
 INSTANTIATE_TEST_SUITE_P(RemoteSupportHostAshTest,

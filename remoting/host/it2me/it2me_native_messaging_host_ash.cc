@@ -156,7 +156,8 @@ void It2MeNativeMessageHostAsh::Connect(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params,
     const absl::optional<ConnectionDetails>& reconnect_params,
     base::OnceClosure connected_callback,
-    ClientConnectedCallback client_connected_callback,
+    HostStateConnectedCallback host_state_connected_callback,
+    base::OnceClosure host_state_disconnected_callback,
     base::OnceClosure disconnected_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(native_message_host_);
@@ -164,8 +165,10 @@ void It2MeNativeMessageHostAsh::Connect(
   DCHECK(!disconnected_callback_);
 
   connected_callback_ = std::move(connected_callback);
-  client_connected_callback_ = std::move(client_connected_callback);
   disconnected_callback_ = std::move(disconnected_callback);
+  host_state_connected_callback_ = std::move(host_state_connected_callback);
+  host_state_disconnected_callback_ =
+      std::move(host_state_disconnected_callback);
 
   auto message =
       base::Value::Dict()
@@ -297,6 +300,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     remote_->OnHostStateDisconnected(
         disconnect_reason ? *disconnect_reason
                           : ErrorCodeToString(protocol::ErrorCode::OK));
+    std::move(host_state_disconnected_callback_).Run();
   } else if (*new_state == kHostStateRequestedAccessCode) {
     remote_->OnHostStateRequestedAccessCode();
   } else if (*new_state == kHostStateReceivedAccessCode) {
@@ -332,7 +336,7 @@ void It2MeNativeMessageHostAsh::HandleHostStateChangeMessage(
     // TODO(b/283091055): Update the client connected response to contain
     // reconnection information (if the session is reconnectable), and add
     // this information to `ConnectionDetail`.
-    std::move(client_connected_callback_)
+    std::move(host_state_connected_callback_)
         .Run(ConnectionDetails(*remote_username));
 
   } else if (*new_state == kHostStateError) {

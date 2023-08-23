@@ -250,7 +250,7 @@ class CrdAdminSessionController::CrdHostSession {
   }
 
   void TryToReconnect(base::OnceClosure done_callback) {
-    CRD_DVLOG(3) << "Trying to reconnect to previous CRD session (if any)";
+    CRD_DVLOG(3) << "Checking for reconnectable session";
     remoting_service_->GetReconnectableSessionId(
         base::BindOnce(&CrdHostSession::ReconnectToSession,
                        weak_factory_.GetWeakPtr())
@@ -267,7 +267,7 @@ class CrdAdminSessionController::CrdHostSession {
           base::BindOnce(&CrdHostSession::OnStartSupportSessionResponse,
                          weak_factory_.GetWeakPtr()));
     } else {
-      CRD_DVLOG(1) << "No reconnectable CRD session found.";
+      CRD_DVLOG(3) << "No reconnectable CRD session found.";
     }
   }
 
