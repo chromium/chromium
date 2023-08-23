@@ -275,9 +275,10 @@ class LocationBarMediator
 
         if (hasFocus) {
             if (mNativeInitialized) RecordUserAction.record("FocusLocation");
-            UrlBarData urlBarData = mLocationBarDataProvider.getUrlBarData();
-            if (urlBarData.editingText != null) {
-                setUrlBarText(urlBarData, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+            // Don't clear Omnibox if the user just pasted text to NTP Omnibox.
+            if (mShouldClearOmniboxOnFocus) {
+                setUrlBarText(
+                        UrlBarData.EMPTY, UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_END);
             }
         } else {
             mUrlFocusedFromFakebox = false;
@@ -908,10 +909,6 @@ class LocationBarMediator
         mAutocompleteCoordinator.onTextChanged(textWithoutAutocomplete);
     }
 
-    /* package */ boolean shouldClearOmniboxOnFocus() {
-        return mShouldClearOmniboxOnFocus;
-    }
-
     // Private methods
 
     private void setProfile(Profile profile) {
@@ -1387,9 +1384,8 @@ class LocationBarMediator
     }
 
     @Override
-    public void gestureDetected(boolean isLongPress) {
-        recordOmniboxFocusReason(isLongPress ? OmniboxFocusReason.OMNIBOX_LONG_PRESS
-                                             : OmniboxFocusReason.OMNIBOX_TAP);
+    public void onFocusByTouch() {
+        recordOmniboxFocusReason(OmniboxFocusReason.OMNIBOX_TAP);
     }
 
     // BackPressHandler implementation.

@@ -77,10 +77,6 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             return false;
         }
 
-        if (!mHasClearedOmniboxForFocus && mUrlBarDelegate.shouldClearOmniboxOnFocus()) {
-            mHasClearedOmniboxForFocus = true;
-            mUrlBarDelegate.setOmniboxEditingText("");
-        }
         return true;
     }
 

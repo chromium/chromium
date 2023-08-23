@@ -1084,7 +1084,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         }
 
         @Override
-        public void gestureDetected(boolean isLongPress) {}
+        public void onFocusByTouch() {}
 
         // LocationBarDataProvider.Observer implementation
         // Using the default empty onIncognitoStateChanged.

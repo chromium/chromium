@@ -78967,7 +78967,7 @@ Called by update_net_trust_anchors.py.-->
 
 <enum name="OmniboxFocusReason">
   <int value="0" label="Omnibox tapped."/>
-  <int value="1" label="Omnibox long-pressed."/>
+  <int value="1" label="Omnibox long-pressed (obsolete)."/>
   <int value="2" label="NTP omnibox tapped."/>
   <int value="3" label="NTP omnibox long-pressed (from paste action)."/>
   <int value="4" label="Accelerator tapped."/>

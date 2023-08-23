@@ -18,7 +18,6 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.ReplacementSpan;
 import android.util.AttributeSet;
-import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,7 +38,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -93,8 +91,6 @@ public abstract class UrlBar extends AutocompleteEditText {
      * The gesture detector is used to detect long presses. Long presses require special treatment
      * because the URL bar has custom touch event handling. See: {@link #onTouchEvent}.
      */
-    private final GestureDetector mGestureDetector;
-
     private final KeyboardHideHelper mKeyboardHideHelper;
 
     private boolean mFocused;
@@ -165,10 +161,9 @@ public abstract class UrlBar extends AutocompleteEditText {
         void backKeyPressed();
 
         /**
-         * Called to notify that a tap or long press gesture has been detected.
-         * @param isLongPress Whether or not is a long press gesture.
+         * Called to notify that UrlBar has been focused by touch.
          */
-        void gestureDetected(boolean isLongPress);
+        void onFocusByTouch();
     }
 
     /** Provides updates about the URL text changes. */
@@ -221,24 +216,6 @@ public abstract class UrlBar extends AutocompleteEditText {
 
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
 
-        mGestureDetector =
-                new GestureDetector(getContext(), new GestureDetector.SimpleOnGestureListener() {
-                    @Override
-                    public void onLongPress(MotionEvent e) {
-                        if (mUrlBarDelegate == null) return;
-                        mUrlBarDelegate.gestureDetected(true);
-                        performLongClick();
-                    }
-
-                    @Override
-                    public boolean onSingleTapUp(MotionEvent e) {
-                        if (mUrlBarDelegate == null) return true;
-                        requestFocus();
-                        mUrlBarDelegate.gestureDetected(false);
-                        return true;
-                    }
-                }, ThreadUtils.getUiThreadHandler());
-        mGestureDetector.setOnDoubleTapListener(null);
         mKeyboardHideHelper = new KeyboardHideHelper(this, () -> {
             if (mUrlBarDelegate != null && !BackPressManager.isEnabled()) {
                 mUrlBarDelegate.backKeyPressed();
@@ -399,21 +376,11 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (!mFocused) {
-            mGestureDetector.onTouchEvent(event);
-            return true;
+        if (!mFocused && event.getActionMasked() == MotionEvent.ACTION_UP
+                && mUrlBarDelegate != null) {
+            mUrlBarDelegate.onFocusByTouch();
         }
-
-        // Working around a platform bug (b/25562038) that was fixed in N that can throw
-        // NullPointerException during text selection. We let it happen rather than catching it
-        // since there can be a different issue here that we might want to know about.
-        try {
-            return super.onTouchEvent(event);
-        } catch (IndexOutOfBoundsException e) {
-            // Work around crash of unknown origin (https://crbug.com/837419).
-            Log.w(TAG, "Ignoring IndexOutOfBoundsException in UrlBar#onTouchEvent.", e);
-            return true;
-        }
+        return super.onTouchEvent(event);
     }
 
     @Override
