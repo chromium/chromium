@@ -57,15 +57,17 @@ LogoServiceFactory::LogoServiceFactory()
 
 LogoServiceFactory::~LogoServiceFactory() = default;
 
-KeyedService* LogoServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LogoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   DCHECK(!profile->IsOffTheRecord());
-  return new LogoServiceImpl(profile->GetPath().Append(kCachedLogoDirectory),
-                             IdentityManagerFactory::GetForProfile(profile),
-                             TemplateURLServiceFactory::GetForProfile(profile),
-                             std::make_unique<ImageDecoderImpl>(),
-                             profile->GetDefaultStoragePartition()
-                                 ->GetURLLoaderFactoryForBrowserProcess(),
-                             base::BindRepeating(&UseGrayLogo));
+  return std::make_unique<LogoServiceImpl>(
+      profile->GetPath().Append(kCachedLogoDirectory),
+      IdentityManagerFactory::GetForProfile(profile),
+      TemplateURLServiceFactory::GetForProfile(profile),
+      std::make_unique<ImageDecoderImpl>(),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      base::BindRepeating(&UseGrayLogo));
 }
