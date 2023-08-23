@@ -41,7 +41,7 @@ class MediaRouterUIServiceFactory : public ProfileKeyedServiceFactory {
   ~MediaRouterUIServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory interface.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 #if !BUILDFLAG(IS_ANDROID)
   bool ServiceIsCreatedWithBrowserContext() const override;
