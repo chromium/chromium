@@ -23,6 +23,10 @@ class Profile;
 // prompts to be low.
 class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
  public:
+  // Uses ProfileKeyedServiceFactory instead.
+  explicit AdaptiveQuietNotificationPermissionUiEnabler(Profile* profile);
+  ~AdaptiveQuietNotificationPermissionUiEnabler() override;
+
   class Factory : public ProfileKeyedServiceFactory {
    public:
     static AdaptiveQuietNotificationPermissionUiEnabler* GetForProfile(
@@ -37,7 +41,7 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
     ~Factory() override;
 
     // BrowserContextKeyedServiceFactory
-    KeyedService* BuildServiceInstanceFor(
+    std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const override;
   };
 
@@ -64,9 +68,6 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   }
 
  private:
-  explicit AdaptiveQuietNotificationPermissionUiEnabler(Profile* profile);
-  ~AdaptiveQuietNotificationPermissionUiEnabler() override;
-
   // Called when the quiet UI state is updated in preferences.
   void OnQuietUiStateChanged();
 

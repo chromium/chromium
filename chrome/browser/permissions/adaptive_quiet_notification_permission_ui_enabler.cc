@@ -116,10 +116,10 @@ AdaptiveQuietNotificationPermissionUiEnabler::Factory::Factory()
 
 AdaptiveQuietNotificationPermissionUiEnabler::Factory::~Factory() = default;
 
-KeyedService*
-AdaptiveQuietNotificationPermissionUiEnabler::Factory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new AdaptiveQuietNotificationPermissionUiEnabler(
+std::unique_ptr<KeyedService> AdaptiveQuietNotificationPermissionUiEnabler::
+    Factory::BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<AdaptiveQuietNotificationPermissionUiEnabler>(
       static_cast<Profile*>(context));
 }
 
