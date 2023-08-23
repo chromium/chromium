@@ -43,7 +43,7 @@ class UserPolicySigninServiceFactory : public ProfileKeyedServiceFactory {
 
  protected:
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 
   // Overridden to cause this object to be created when the profile is created.
