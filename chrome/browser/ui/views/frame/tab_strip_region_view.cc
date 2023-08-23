@@ -194,12 +194,9 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
     if (features::IsChromeRefresh2023()) {
       tab_search_button_->SetProperty(
           views::kMarginsKey,
-          gfx::Insets::TLBR(GetLayoutConstant(TAB_STRIP_PADDING), 0,
-                            GetLayoutConstant(TAB_STRIP_PADDING) +
-                                GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
-                            GetLayoutConstant(TAB_STRIP_PADDING)));
+          gfx::Insets::TLBR(0, 0, 0, GetLayoutConstant(TAB_STRIP_PADDING)));
     } else {
-      const auto control_padding = gfx::Insets::TLBR(
+      const gfx::Insets control_padding = gfx::Insets::TLBR(
           0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING));
 
       tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
@@ -220,8 +217,6 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
       tab_strip_right_margin = new_tab_button_->GetPreferredSize().width() +
                                GetLayoutConstant(TAB_STRIP_PADDING);
-    } else {
-      UpdateNewTabButtonBorder();
     }
   }
 
@@ -242,6 +237,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
                             GetLayoutConstant(TAB_STRIP_PADDING) -
                             TabStyle::Get()->GetBottomCornerRadius();
   }
+
+  UpdateButtonBorders();
 
   if (tab_strip_left_margin.has_value() || tab_strip_right_margin.has_value()) {
     tab_strip_container_->SetProperty(
@@ -340,9 +337,6 @@ views::View::Views TabStripRegionView::GetChildrenInZOrder() {
 void TabStripRegionView::Layout() {
   views::AccessiblePaneView::Layout();
 
-  const int bottom_padding = (GetLayoutConstant(TAB_STRIP_PADDING) +
-                              GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
-
   if (tab_search_button_ && render_tab_search_before_tab_strip_) {
     const gfx::Size tab_search_button_size =
         tab_search_button_->GetPreferredSize();
@@ -353,13 +347,8 @@ void TabStripRegionView::Layout() {
         tab_strip_container_->x() + TabStyle::Get()->GetBottomCornerRadius() -
         GetLayoutConstant(TAB_STRIP_PADDING) - tab_search_button_size.width();
 
-    // The y position is measured from the bottom of the tabstrip, and then
-    // pading and button height are removed.
-    const int y = tab_strip_container_->y() + tab_strip_container_->height() -
-                  bottom_padding - tab_search_button_size.height();
-
     const gfx::Rect tab_search_new_bounds =
-        gfx::Rect(gfx::Point(x, y), tab_search_button_size);
+        gfx::Rect(gfx::Point(x, 0), tab_search_button_size);
 
     tab_search_button_->SetBoundsRect(tab_search_new_bounds);
   }
@@ -375,8 +364,7 @@ void TabStripRegionView::Layout() {
         gfx::Point(tab_strip_container_->bounds().right() -
                        TabStyle::Get()->GetBottomCornerRadius() +
                        GetLayoutConstant(TAB_STRIP_PADDING),
-                   tab_strip_container_->y() + tab_strip_container_->height() -
-                       bottom_padding - new_tab_button_size.height());
+                   0);
 
     gfx::Rect new_tab_button_new_bounds =
         gfx::Rect(new_tab_button_new_position, new_tab_button_size);
@@ -441,11 +429,13 @@ void TabStripRegionView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kTabList;
 }
 
-void TabStripRegionView::UpdateNewTabButtonBorder() {
+void TabStripRegionView::UpdateButtonBorders() {
   const int extra_vertical_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
                                    GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
                                    NewTabButton::kButtonSize.height();
-  constexpr int kHorizontalInset = 8;
+  const int top_inset = extra_vertical_space / 2;
+  const int bottom_inset = extra_vertical_space - top_inset +
+                           GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
   // The new tab button is placed vertically exactly in the center of the
   // tabstrip. Extend the border of the button such that it extends to the top
   // of the tabstrip bounds. This is essential to ensure it is targetable on the
@@ -459,8 +449,16 @@ void TabStripRegionView::UpdateNewTabButtonBorder() {
   // definitely isn't what we want in the scrolling case, so this naive approach
   // should be improved, likely by taking the scroll state of the tabstrip into
   // account.
-  new_tab_button_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(extra_vertical_space / 2, 0, 0, kHorizontalInset)));
+  if (new_tab_button_) {
+    constexpr int kHorizontalInset = 8;
+    new_tab_button_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
+        top_inset, 0, bottom_inset,
+        features::IsChromeRefresh2023() ? 0 : kHorizontalInset)));
+  }
+  if (tab_search_button_) {
+    tab_search_button_->SetBorder(views::CreateEmptyBorder(
+        gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0)));
+  }
 }
 
 BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)

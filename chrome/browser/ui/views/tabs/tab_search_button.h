@@ -31,7 +31,7 @@ class TabSearchButton : public TabStripControlButton {
   void NotifyClick(const ui::Event& event) final;
 
  protected:
-  int GetCornerRadius() override;
+  int GetCornerRadius() const override;
 
  private:
 

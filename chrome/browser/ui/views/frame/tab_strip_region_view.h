@@ -81,9 +81,10 @@ class TabStripRegionView final : public views::AccessiblePaneView {
   views::View* GetTabStripContainerForTesting() { return tab_strip_container_; }
 
  private:
-  // Updates the border padding for |new_tab_button_|.  This should be called
-  // whenever any input of the computation of the border's sizing changes.
-  void UpdateNewTabButtonBorder();
+  // Updates the border padding for `new_tab_button_` and `tab_search_button_`,
+  // if present.  This should be called whenever any input of the computation of
+  // the border's sizing changes.
+  void UpdateButtonBorders();
 
   raw_ptr<views::FlexLayout, DanglingUntriaged> layout_manager_ = nullptr;
   raw_ptr<views::View, AcrossTasksDanglingUntriaged> tab_strip_container_ =
@@ -108,7 +109,7 @@ class TabStripRegionView final : public views::AccessiblePaneView {
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
-          base::BindRepeating(&TabStripRegionView::UpdateNewTabButtonBorder,
+          base::BindRepeating(&TabStripRegionView::UpdateButtonBorders,
                               base::Unretained(this)));
 };
 
