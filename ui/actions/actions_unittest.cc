@@ -35,7 +35,7 @@ TEST_F(ActionManagerTest, Harness) {
 TEST_F(ActionManagerTest, InitializerTest) {
   bool initializer_called = false;
   auto& manager = ActionManager::GetForTesting();
-  manager.AppendActionManagerInitializer(base::BindRepeating(
+  manager.AppendActionItemInitializer(base::BindRepeating(
       [](bool* called, ActionManager* manager) { *called = true; },
       &initializer_called));
   EXPECT_FALSE(initializer_called);
@@ -47,7 +47,7 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
   const std::u16string text = u"Test Action";
   int action_invoked_count = 0;
   auto& manager = ActionManager::GetForTesting();
-  manager.AppendActionManagerInitializer(base::BindRepeating(
+  manager.AppendActionItemInitializer(base::BindRepeating(
       [](int* invoked_count, const std::u16string& text,
          ActionManager* manager) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(

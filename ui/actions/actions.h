@@ -112,7 +112,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
  public:
   METADATA_HEADER_BASE(ActionManager);
 
-  using ActionManagerInitializerList =
+  using ActionItemInitializerList =
       base::RepeatingCallbackList<void(ActionManager*)>;
 
   ActionManager(const ActionManager&) = delete;
@@ -134,11 +134,11 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   void ResetActions();
 
   // Resets the current `initializer_list_`.
-  void ResetActionManagerInitializerList();
+  void ResetActionItemInitializerList();
 
   // Appends `initializer` to the end of the current `initializer_list_`.
-  void AppendActionManagerInitializer(
-      ActionManagerInitializerList::CallbackType initializer);
+  void AppendActionItemInitializer(
+      ActionItemInitializerList::CallbackType initializer);
 
  protected:
   ActionManager();
@@ -149,7 +149,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
  private:
   // Holds the chain of ActionManager initializer callbacks.
-  std::unique_ptr<ActionManagerInitializerList> initializer_list_;
+  std::unique_ptr<ActionItemInitializerList> initializer_list_;
 
   // Holds the subscriptions for initializers in the `initializer_list_`.
   std::vector<base::CallbackListSubscription> initializer_subscriptions_;

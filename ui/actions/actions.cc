@@ -202,7 +202,7 @@ ADD_PROPERTY_METADATA(bool, Visible)
 END_METADATA
 
 ActionManager::ActionManager() {
-  ResetActionManagerInitializerList();
+  ResetActionItemInitializerList();
 }
 
 ActionManager::~ActionManager() = default;
@@ -269,14 +269,14 @@ void ActionManager::ResetActions() {
   root_action_list_ = std::make_unique<ActionList>(this);
 }
 
-void ActionManager::ResetActionManagerInitializerList() {
+void ActionManager::ResetActionItemInitializerList() {
   ResetActions();
-  initializer_list_ = std::make_unique<ActionManagerInitializerList>();
+  initializer_list_ = std::make_unique<ActionItemInitializerList>();
   initializer_subscriptions_.clear();
 }
 
-void ActionManager::AppendActionManagerInitializer(
-    ActionManagerInitializerList::CallbackType initializer) {
+void ActionManager::AppendActionItemInitializer(
+    ActionItemInitializerList::CallbackType initializer) {
   DCHECK(initializer_list_);
   ResetActions();
 
