@@ -250,6 +250,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kInstantStart,
     &kLensCameraAssistedSearch,
     &kLensOnQuickActionSearchWidget,
+    &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
     &kPageAnnotationsService,
@@ -774,6 +775,10 @@ BASE_FEATURE(kInfobarScrollOptimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kInstantStart, "InstantStart", base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNewTabSearchEngineUrlAndroid,
+             "NewTabSearchEngineUrlAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationPermissionVariant,
              "NotificationPermissionVariant",

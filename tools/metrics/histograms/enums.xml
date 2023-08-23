@@ -66753,6 +66753,7 @@ from previous Chrome versions.
   <int value="1193940165" label="NotificationPermissionBottomSheet:disabled"/>
   <int value="1194345470" label="EnableExternalDisplayHDR10Mode:disabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>
+  <int value="1194624684" label="NewTabSearchEngineUrlAndroid:enabled"/>
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
   <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
@@ -67640,6 +67641,7 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityDictationCommands:enabled"/>
   <int value="1637615389" label="PrintServerScaling:enabled"/>
   <int value="1638123293" label="DeprecateAltClick:disabled"/>
+  <int value="1638327428" label="NewTabSearchEngineUrlAndroid:disabled"/>
   <int value="1638582559" label="UpdatedCellularActivationUi:disabled"/>
   <int value="1638617234" label="GetTheMostOutOfChrome:disabled"/>
   <int value="1638927687" label="AutofillRichMetadataQueries:disabled"/>

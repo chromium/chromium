@@ -3175,6 +3175,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-new-tab-search-engine-url-android",
+    "owners": [ "hanxi", "xinyiji", "clank-start@google.com" ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-notification-image-drag",
     "owners": ["andrewxu", "dmblack"],
     "expiry_milestone": 118

@@ -4057,6 +4057,12 @@ const char kNetworkServiceInProcessDescription[] =
     "When enabled, the network service runs on the browser process. Otherwise, "
     "it runs on a dedicated process.";
 
+const char kNewTabSearchEngineUrlAndroidName[] =
+    "Enable new Tab Urls of customized search engines";
+const char kNewTabSearchEngineUrlAndroidDescription[] =
+    "Swap out NTP and Start surface according to a user's default search "
+    "engine.";
+
 const char kNotificationPermissionRationaleName[] =
     "Notification Permission Rationale UI";
 const char kNotificationPermissionRationaleDescription[] =
