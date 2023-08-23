@@ -36,8 +36,9 @@ struct GL_EXPORT DCLayerOverlayParams {
   int z_order = 1;
 
   // What part of |overlay_image| to display in pixels. Ignored, if this overlay
-  // represents a solid color.
-  gfx::Rect content_rect;
+  // represents a solid color. Usually integral, but can be non-integral in the
+  // case of combining occlusion with scaling.
+  gfx::RectF content_rect;
 
   // Bounds of the overlay in pre-transform space.
   gfx::Rect quad_rect;

@@ -232,7 +232,7 @@ class GL_EXPORT DCLayerTree {
           Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
           uint64_t dcomp_surface_serial,
           const gfx::Size& image_size,
-          const gfx::Rect& content_rect,
+          const gfx::RectF& content_rect,
           Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface,
           const SkColor4f& background_color,
           const gfx::Rect& quad_rect,
@@ -298,7 +298,7 @@ class GL_EXPORT DCLayerTree {
 
       // The portion of |dcomp_visual_content_| to display. This area will be
       // mapped to |quad_rect_|'s bounds.
-      gfx::Rect content_rect_;
+      gfx::RectF content_rect_;
 
       // The surface containing solid white for the background color fill to be
       // placed at a leaf of the visual subtree. Will be tinted by

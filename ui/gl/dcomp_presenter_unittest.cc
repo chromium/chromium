@@ -29,6 +29,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/test/sk_color_eq.h"
@@ -184,6 +185,18 @@ DCLayerOverlayImage CreateDCompSurface(
   return DCLayerOverlayImage(surface_size, surface);
 }
 
+// Create a |DCLayerOverlayParams| from an |image| and set the |content_rect| to
+// the bounds of |image|, or |content_rect_override|, if set.
+std::unique_ptr<DCLayerOverlayParams> CreateParamsFromImage(
+    DCLayerOverlayImage image,
+    absl::optional<gfx::RectF> content_rect_override = {}) {
+  auto params = std::make_unique<DCLayerOverlayParams>();
+  params->content_rect =
+      content_rect_override.value_or(gfx::RectF(image.size()));
+  params->overlay_image = std::move(image);
+  return params;
+}
+
 }  // namespace
 
 class DCompPresenterTest : public testing::Test {
@@ -281,9 +294,8 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   ASSERT_NE(texture, nullptr);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -307,9 +319,8 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   EXPECT_EQ(2u, last_present_count);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -331,9 +342,8 @@ TEST_F(DCompPresenterTest, NoPresentTwice) {
   ASSERT_NE(texture, nullptr);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(100, 100);
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -368,9 +378,8 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   gfx::Rect quad_rect = gfx::Rect(100, 100);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -396,9 +405,8 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithScaledOverlays) {
   quad_rect = gfx::Rect(32, 48);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -430,9 +438,8 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   gfx::Rect quad_rect = gfx::Rect(42, 42);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -453,9 +460,8 @@ TEST_F(DCompPresenterTest, SwapchainSizeWithoutScaledOverlays) {
   quad_rect = gfx::Rect(124, 136);
 
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -487,10 +493,9 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
   // Clear video
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
-    params->content_rect = gfx::Rect(texture_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
     params->protected_video_type = gfx::ProtectedVideoType::kClear;
 
@@ -510,10 +515,9 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
   // Software protected video
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
-    params->content_rect = gfx::Rect(texture_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
     params->protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
 
@@ -560,11 +564,10 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
   void InitializeRootAndScheduleRootSurface(const gfx::Size& window_size,
                                             SkColor4f initial_color) {
     // Schedule the root surface as a normal overlay
-    std::unique_ptr<DCLayerOverlayParams> params =
-        std::make_unique<DCLayerOverlayParams>();
+    auto params =
+        CreateParamsFromImage(CreateDCompSurface(window_size, initial_color));
     params->z_order = 0;
     params->quad_rect = gfx::Rect(window_size);
-    params->content_rect = params->quad_rect;
     params->overlay_image = CreateDCompSurface(window_size, initial_color);
     EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));
   }
@@ -584,9 +587,9 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
         CreateNV12Texture(d3d11_device, texture_size);
     ASSERT_NE(texture, nullptr);
 
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = content_rect;
+    auto params = CreateParamsFromImage(
+        DCLayerOverlayImage(texture_size, texture),
+        /*content_rect_override=*/gfx::RectF(content_rect));
     params->quad_rect = quad_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -606,14 +609,12 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
 
     InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->content_rect = gfx::Rect(2, 2);
-    dc_layer_params->overlay_image = CreateDCompSurface(
-        dc_layer_params->content_rect.size(), SkColors::kBlack,
-        {{gfx::Rect(0, 0, 1, 1), SkColors::kRed},
-         {gfx::Rect(1, 0, 1, 1), SkColors::kGreen},
-         {gfx::Rect(0, 1, 1, 1), SkColors::kBlue},
-         {gfx::Rect(1, 1, 1, 1), SkColors::kBlack}});
+    auto dc_layer_params = CreateParamsFromImage(
+        CreateDCompSurface(gfx::Size(2, 2), SkColors::kBlack,
+                           {{gfx::Rect(0, 0, 1, 1), SkColors::kRed},
+                            {gfx::Rect(1, 0, 1, 1), SkColors::kGreen},
+                            {gfx::Rect(0, 1, 1, 1), SkColors::kBlue},
+                            {gfx::Rect(1, 1, 1, 1), SkColors::kBlack}}));
     dc_layer_params->z_order = 1;
     dc_layer_params->nearest_neighbor_filter = true;
 
@@ -623,7 +624,8 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     } else {
       // Pick a small quad rect and assign a transform so the quad rect is
       // scaled up
-      dc_layer_params->quad_rect = dc_layer_params->content_rect;
+      dc_layer_params->quad_rect =
+          gfx::ToNearestRect(dc_layer_params->content_rect);
       dc_layer_params->transform = gfx::Transform::MakeScale(
           window_size.width() / dc_layer_params->quad_rect.width(),
           window_size.height() / dc_layer_params->quad_rect.height());
@@ -681,12 +683,10 @@ class DCompPresenterPixelTest : public DCompPresenterTest {
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
     EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
 
-    auto root_surface = std::make_unique<DCLayerOverlayParams>();
-    root_surface->quad_rect = gfx::Rect(window_size);
-    root_surface->content_rect = gfx::Rect(window_size);
-    root_surface->overlay_image =
+    auto root_surface = CreateParamsFromImage(
         CreateDCompSurface(window_size, kRootSurfaceInitialColor,
-                           {{root_surface_hole, kRootSurfaceHiddenColor}});
+                           {{root_surface_hole, kRootSurfaceHiddenColor}}));
+    root_surface->quad_rect = gfx::Rect(window_size);
     root_surface->z_order = 0;
     presenter_->ScheduleDCLayer(std::move(root_surface));
 
@@ -748,9 +748,8 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     ASSERT_NE(texture, nullptr);
 
     {
-      auto params = std::make_unique<DCLayerOverlayParams>();
-      params->overlay_image.emplace(texture_size, texture);
-      params->content_rect = gfx::Rect(texture_size);
+      auto params =
+          CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
       params->quad_rect = gfx::Rect(texture_size);
       params->color_space = color_space;
       presenter_->ScheduleDCLayer(std::move(params));
@@ -761,9 +760,8 @@ class DCompPresenterVideoPixelTest : public DCompPresenterPixelTest {
     // Scaling up the swapchain with the same image should cause it to be
     // transformed again, but not presented again.
     {
-      auto params = std::make_unique<DCLayerOverlayParams>();
-      params->overlay_image.emplace(texture_size, texture);
-      params->content_rect = gfx::Rect(texture_size);
+      auto params =
+          CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
       params->quad_rect = gfx::Rect(window_size);
       params->color_space = color_space;
       presenter_->ScheduleDCLayer(std::move(params));
@@ -818,10 +816,8 @@ TEST_F(DCompPresenterPixelTest, SoftwareVideoSwapchain) {
 
   std::vector<uint8_t> nv12_pixmap(stride * 3 * y_size.height() / 2, 0xff);
 
-  auto params = std::make_unique<DCLayerOverlayParams>();
-  params->overlay_image =
-      DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride);
-  params->content_rect = gfx::Rect(y_size);
+  auto params = CreateParamsFromImage(
+      DCLayerOverlayImage(y_size, nv12_pixmap.data(), stride));
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
   presenter_->ScheduleDCLayer(std::move(params));
@@ -886,8 +882,9 @@ TEST_F(DCompPresenterPixelTest, SkipVideoLayerEmptyContentsRect) {
   ASSERT_NE(texture, nullptr);
 
   // Layer with empty content rect.
-  auto params = std::make_unique<DCLayerOverlayParams>();
-  params->overlay_image.emplace(texture_size, texture);
+  auto params =
+      CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
+                            /*content_rect_override=*/gfx::RectF());
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
   presenter_->ScheduleDCLayer(std::move(params));
@@ -1034,9 +1031,8 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 
   // (1) Test if swap chain is overridden to window size (100, 100).
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(texture_size);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = gfx::Rect(window_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -1056,9 +1052,9 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
 
   // (2) Test if swap chain is overridden to window size (100, 100).
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(30, 30);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture),
+                              /*content_rect_override=*/gfx::RectF(30, 30));
     params->quad_rect = gfx::Rect(window_size);
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -1080,9 +1076,8 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   gfx::Rect on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() - 2, monitor_size.height() - 2);
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(50, 50);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = on_screen_rect;
     params->clip_rect = on_screen_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
@@ -1112,9 +1107,8 @@ TEST_F(DCompPresenterPixelTest, ResizeVideoLayer) {
   on_screen_rect =
       gfx::Rect(0, 0, monitor_size.width() + 2, monitor_size.height() + 2);
   {
-    auto params = std::make_unique<DCLayerOverlayParams>();
-    params->overlay_image.emplace(texture_size, texture);
-    params->content_rect = gfx::Rect(50, 50);
+    auto params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
     params->quad_rect = on_screen_rect;
     params->color_space = gfx::ColorSpace::CreateREC709();
     presenter_->ScheduleDCLayer(std::move(params));
@@ -1210,10 +1204,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     ASSERT_HRESULT_SUCCEEDED(swap_chain->Present1(0, 0, &present_params));
 
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->overlay_image =
-        DCLayerOverlayImage(swap_chain_size, swap_chain);
-    dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
     dc_layer_params->z_order = 1;
@@ -1235,10 +1227,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
 
     ASSERT_HRESULT_SUCCEEDED(swap_chain->Present1(0, 0, &present_params));
 
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->overlay_image =
-        DCLayerOverlayImage(swap_chain_size, swap_chain);
-    dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -1257,10 +1247,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
   {
     ASSERT_HRESULT_SUCCEEDED(swap_chain->Present1(0, 0, &present_params));
 
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->overlay_image =
-        DCLayerOverlayImage(swap_chain_size, swap_chain);
-    dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -1279,10 +1267,8 @@ TEST_F(DCompPresenterPixelTest, SwapChainImage) {
     float clear_color[] = {0.0, 0.0, 1.0, 1.0};
     context->ClearRenderTargetView(rtv.Get(), clear_color);
 
-    auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-    dc_layer_params->overlay_image =
-        DCLayerOverlayImage(swap_chain_size, swap_chain);
-    dc_layer_params->content_rect = gfx::Rect(swap_chain_size);
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(swap_chain_size, swap_chain));
     dc_layer_params->quad_rect = gfx::Rect(window_size);
     dc_layer_params->color_space = gfx::ColorSpace::CreateSRGB();
 
@@ -1312,10 +1298,8 @@ TEST_F(DCompPresenterPixelTest, QuadOffsetAppliedAfterTransform) {
 
   InitializeRootAndScheduleRootSurface(window_size, SkColors::kBlack);
 
-  auto dc_layer_params = std::make_unique<DCLayerOverlayParams>();
-  dc_layer_params->overlay_image =
-      CreateDCompSurface(quad_rect.size(), SkColors::kRed);
-  dc_layer_params->content_rect = gfx::Rect(quad_rect.size());
+  auto dc_layer_params = CreateParamsFromImage(
+      CreateDCompSurface(quad_rect.size(), SkColors::kRed));
   dc_layer_params->quad_rect = quad_rect;
   dc_layer_params->transform = quad_to_root_transform;
   dc_layer_params->z_order = 1;
@@ -1372,11 +1356,9 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesUpBuffer) {
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
   // Provide an overlay that's smaller than the hole it needs to fill
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(1, 1);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(1, 1), kOverlayExpectedColor));
   overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), kOverlayExpectedColor);
   overlay->z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
@@ -1389,11 +1371,9 @@ TEST_F(DCompPresenterPixelTest, ContentRectScalesDownBuffer) {
   const gfx::Rect root_surface_hole = gfx::Rect(5, 10, 50, 75);
 
   // Provide an overlay that's larger than the hole it needs to fill
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(75, 100);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(75, 100), kOverlayExpectedColor));
   overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), kOverlayExpectedColor);
   overlay->z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
@@ -1412,12 +1392,11 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsBuffer) {
 
   // Provide an overlay that is the right size, but has extra data that is
   // clipped via content rect
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = tex_coord;
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
+  auto overlay = CreateParamsFromImage(
       CreateDCompSurface(window_size, kOverlayImageHiddenColor,
-                         {{tex_coord, kOverlayExpectedColor}});
+                         {{tex_coord, kOverlayExpectedColor}}),
+      /*content_rect_override=*/gfx::RectF(tex_coord));
+  overlay->quad_rect = root_surface_hole;
   overlay->z_order = 1;
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
@@ -1437,12 +1416,11 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 
   // Provide an overlay that needs to be scaled and has extra data that is
   // clipped via content rect
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = tex_coord;
-  overlay->quad_rect = root_surface_hole;
-  overlay->overlay_image =
+  auto overlay = CreateParamsFromImage(
       CreateDCompSurface(window_size, kOverlayImageHiddenColor,
-                         {{tex_coord, kOverlayExpectedColor}});
+                         {{tex_coord, kOverlayExpectedColor}}),
+      /*content_rect_override=*/gfx::RectF(tex_coord));
+  overlay->quad_rect = root_surface_hole;
   overlay->z_order = 1;
 
   // Use nearest neighbor to avoid interpolation at the edges of the content
@@ -1578,11 +1556,9 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformTranslate) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(50, 50);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->overlay_image =
-      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite);
   overlay->z_order = 1;
 
   overlay->transform.Translate(25, 25);
@@ -1598,11 +1574,9 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformScale) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(50, 50);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->overlay_image =
-      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite);
   overlay->z_order = 1;
 
   overlay->transform.Translate(50, 50);
@@ -1620,11 +1594,9 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(50, 50);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->overlay_image =
-      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite);
   overlay->z_order = 1;
 
   // Center and partially rotate the overlay
@@ -1644,11 +1616,9 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(50, 50);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(50, 50);
-  overlay->overlay_image =
-      CreateDCompSurface(gfx::Size(50, 50), SkColors::kWhite);
   overlay->z_order = 1;
   overlay->transform.Translate(50, 50);
   overlay->transform.Skew(15, 30);
@@ -1694,11 +1664,9 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromOverlay) {
 
   AddOverlaysForOpacityTest(
       base::BindRepeating([](const gfx::Rect& quad_rect, float opacity) {
-        auto overlay = std::make_unique<DCLayerOverlayParams>();
+        auto overlay = CreateParamsFromImage(
+            CreateDCompSurface(quad_rect.size(), SkColors::kWhite));
         overlay->quad_rect = quad_rect;
-        overlay->content_rect = gfx::Rect(quad_rect.size());
-        overlay->overlay_image =
-            CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
         overlay->opacity = opacity;
         return overlay;
       }));
@@ -1717,11 +1685,9 @@ TEST_F(DCompPresenterSkiaGoldTest, OpacityFromImage) {
         SkColor4f overlay_color = SkColors::kWhite;
         overlay_color.fA = opacity;
 
-        auto overlay = std::make_unique<DCLayerOverlayParams>();
+        auto overlay = CreateParamsFromImage(
+            CreateDCompSurface(quad_rect.size(), overlay_color));
         overlay->quad_rect = quad_rect;
-        overlay->content_rect = gfx::Rect(quad_rect.size());
-        overlay->overlay_image =
-            CreateDCompSurface(overlay->content_rect.size(), overlay_color);
         return overlay;
       }));
 
@@ -1774,11 +1740,9 @@ TEST_F(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
     ClearRect(surface.Get(), gfx::Rect(i * 10, i * 5, 15, 15), color);
     surface_serial++;
 
-    auto overlay = std::make_unique<DCLayerOverlayParams>();
-    overlay->content_rect = gfx::Rect(current_window_size());
+    auto overlay = CreateParamsFromImage(
+        DCLayerOverlayImage(current_window_size(), surface, surface_serial));
     overlay->quad_rect = gfx::Rect(current_window_size());
-    overlay->overlay_image =
-        DCLayerOverlayImage(current_window_size(), surface, surface_serial);
     overlay->z_order = 0;
     presenter_->ScheduleDCLayer(std::move(overlay));
 
@@ -1792,12 +1756,10 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(current_window_size(), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(current_window_size());
   overlay->quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
   overlay->z_order = 1;
   overlay->rounded_corner_bounds =
       gfx::RRectF(gfx::RectF(overlay->quad_rect), 25.f);
@@ -1812,12 +1774,10 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(current_window_size(), SkColors::kWhite));
   overlay->quad_rect = gfx::Rect(current_window_size());
   overlay->quad_rect.Inset(kPaddingFromEdgeForAntiAliasedOutput);
-  overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
   overlay->z_order = 1;
 
   gfx::RRectF bounds = gfx::RRectF(gfx::RectF(overlay->quad_rect));
@@ -1846,8 +1806,7 @@ TEST_F(DCompPresenterSkiaGoldTest,
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  gfx::RRectF bounds =
-      gfx::RRectF(gfx::RectF(gfx::Rect(current_window_size())), 0);
+  gfx::RRectF bounds = gfx::RRectF(gfx::RectF(current_window_size()), 0);
   // Give the rounded rect a radius, but ensure that it is not visible so AA
   // doesn't affect this test.
   bounds.Outset(5);
@@ -1882,11 +1841,9 @@ TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralTranslation) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->quad_rect = gfx::Rect(0, 0, 20, 20);
-  overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(20, 20), SkColors::kWhite));
+  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
   overlay->transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
                                kPaddingFromEdgeForAntiAliasedOutput);
   overlay->transform.Translate(0.5, 0);
@@ -1903,11 +1860,9 @@ TEST_F(DCompPresenterSkiaGoldTest, SoftBordersFromNonIntegralScaling) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->quad_rect = gfx::Rect(0, 0, 20, 20);
-  overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(20, 20), SkColors::kWhite));
+  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
   overlay->transform.Translate(kPaddingFromEdgeForAntiAliasedOutput,
                                kPaddingFromEdgeForAntiAliasedOutput);
   overlay->transform.Scale(
@@ -1928,11 +1883,9 @@ TEST_F(DCompPresenterSkiaGoldTest,
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->quad_rect = gfx::Rect(0, 0, 21, 20);
-  overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-  overlay->overlay_image =
-      CreateDCompSurface(overlay->content_rect.size(), SkColors::kWhite);
+  auto overlay = CreateParamsFromImage(
+      CreateDCompSurface(gfx::Size(21, 20), SkColors::kWhite));
+  overlay->quad_rect = gfx::Rect(overlay->overlay_image->size());
 
   // DComp seems to not actually use soft borders unless there's a non-zero
   // radius.
@@ -1965,11 +1918,10 @@ TEST_F(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
   };
 
   for (const auto& [color, z_order] : color_and_z_order) {
-    auto overlay = std::make_unique<DCLayerOverlayParams>();
-    overlay->quad_rect = gfx::Rect(15 + z_order * 5, 15 + z_order * 5, 30, 30);
-    overlay->content_rect = gfx::Rect(overlay->quad_rect.size());
-    overlay->overlay_image =
-        CreateDCompSurface(overlay->content_rect.size(), color);
+    gfx::Rect quad_rect = gfx::Rect(15 + z_order * 5, 15 + z_order * 5, 30, 30);
+    auto overlay =
+        CreateParamsFromImage(CreateDCompSurface(quad_rect.size(), color));
+    overlay->quad_rect = quad_rect;
     overlay->z_order = z_order;
 
     presenter_->ScheduleDCLayer(std::move(overlay));
@@ -1984,11 +1936,9 @@ TEST_F(DCompPresenterSkiaGoldTest, OverlaysAreSortedByZOrder) {
     // Insert a black backdrop since our root surface is not opaque. This is not
     // strictly required, but it ensures that we explicitly make all pixels in
     // our output opaque.
-    auto overlay = std::make_unique<DCLayerOverlayParams>();
+    auto overlay = CreateParamsFromImage(
+        CreateDCompSurface(current_window_size(), SkColors::kBlack));
     overlay->quad_rect = gfx::Rect(current_window_size());
-    overlay->content_rect = gfx::Rect(current_window_size());
-    overlay->overlay_image =
-        CreateDCompSurface(current_window_size(), SkColors::kBlack);
     overlay->z_order = INT_MIN;
     presenter_->ScheduleDCLayer(std::move(overlay));
   }
@@ -2002,21 +1952,41 @@ TEST_F(DCompPresenterSkiaGoldTest, ImageWithBackgroundColor) {
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
-  auto overlay = std::make_unique<DCLayerOverlayParams>();
-  overlay->content_rect = gfx::Rect(100, 50);
-  overlay->quad_rect = gfx::Rect(100, 50);
-  overlay->overlay_image = CreateDCompSurface(
+  auto overlay = CreateParamsFromImage(CreateDCompSurface(
       gfx::Size(100, 50), SkColors::kTransparent,
       {
           {gfx::Rect(5, 5, 20, 20),
            SkColor4f::FromColor(SkColorSetA(SK_ColorRED, 0x80))},
           {gfx::Rect(15, 15, 20, 20),
            SkColor4f::FromColor(SkColorSetA(SK_ColorBLUE, 0x80))},
-      });
+      }));
+  overlay->quad_rect = gfx::Rect(100, 50);
   overlay->background_color = SkColors::kGreen;
   overlay->z_order = 1;
 
   EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(overlay)));
+
+  PresentAndCheckScreenshot();
+}
+
+// Test that we support sampling from overlay images with non-integral content
+// rects. This test should output a blue square with a faint green outline.
+TEST_F(DCompPresenterSkiaGoldTest, NonIntegralContentRectHalfCoverage) {
+  InitializeTest(gfx::Size(100, 100));
+
+  InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
+
+  gfx::Size image_size = gfx::Size(50, 50);
+  gfx::Rect image_inner_rect = gfx::Rect(image_size);
+  image_inner_rect.Inset(1);
+  auto overlay = CreateParamsFromImage(CreateDCompSurface(
+      image_size, SkColors::kGreen, {{image_inner_rect, SkColors::kBlue}}));
+  overlay->content_rect.Inset(0.5);
+  overlay->quad_rect = gfx::Rect(
+      gfx::Point(20, 20),
+      gfx::Size(overlay->content_rect.width(), overlay->content_rect.height()));
+  overlay->z_order = 1;
+  presenter_->ScheduleDCLayer(std::move(overlay));
 
   PresentAndCheckScreenshot();
 }
@@ -2062,9 +2032,8 @@ TEST_P(DCompPresenterBufferCountTest, VideoSwapChainBufferCount) {
       CreateNV12Texture(d3d11_device, texture_size);
   ASSERT_NE(texture, nullptr);
 
-  auto params = std::make_unique<DCLayerOverlayParams>();
-  params->overlay_image.emplace(texture_size, texture);
-  params->content_rect = gfx::Rect(texture_size);
+  auto params =
+      CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
   params->quad_rect = gfx::Rect(window_size);
   params->color_space = gfx::ColorSpace::CreateREC709();
   EXPECT_TRUE(presenter_->ScheduleDCLayer(std::move(params)));

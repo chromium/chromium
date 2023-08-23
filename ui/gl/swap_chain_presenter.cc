@@ -1069,7 +1069,7 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // the video processor can do the minimal amount of work and the overlay has
   // to read the minimal amount of data. DWM is also less likely to promote a
   // surface to an overlay if it's much larger than its area on-screen.
-  gfx::Size swap_chain_size = params.content_rect.size();
+  gfx::Size swap_chain_size = gfx::ToNearestRect(params.content_rect).size();
   if (swap_chain_size.IsEmpty())
     return gfx::Size();
   if (params.quad_rect.IsEmpty())
@@ -1340,6 +1340,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   DCHECK(params.overlay_image);
   DCHECK_NE(params.overlay_image->type(),
             gl::DCLayerOverlayType::kDCompVisualContent);
+  CHECK(gfx::IsNearestRectWithinDistance(params.content_rect, 0.01f));
 
   gl::DCLayerOverlayType overlay_type = params.overlay_image->type();
 
@@ -1425,9 +1426,9 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   unsigned input_level = params.overlay_image->texture_array_slice();
 
   if (TryPresentToDecodeSwapChain(input_texture, input_level, input_color_space,
-                                  params.content_rect, swap_chain_size,
-                                  swap_chain_format, params.transform,
-                                  dest_size, target_rect)) {
+                                  gfx::ToNearestRect(params.content_rect),
+                                  swap_chain_size, swap_chain_format,
+                                  params.transform, dest_size, target_rect)) {
     last_overlay_image_ = std::move(params.overlay_image);
     // Only NV12 format is supported in zero copy presentation path.
     if (dest_size.has_value() && target_rect.has_value() &&
@@ -1468,8 +1469,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   if (!VideoProcessorBlt(std::move(input_texture), input_level,
-                         params.content_rect, input_color_space,
-                         stream_metadata, use_vp_auto_hdr)) {
+                         gfx::ToNearestRect(params.content_rect),
+                         input_color_space, stream_metadata, use_vp_auto_hdr)) {
     return false;
   }
 

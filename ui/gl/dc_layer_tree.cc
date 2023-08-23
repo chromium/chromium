@@ -268,7 +268,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
     uint64_t dcomp_surface_serial,
     const gfx::Size& image_size,
-    const gfx::Rect& content_rect,
+    const gfx::RectF& content_rect,
     Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface,
     const SkColor4f& background_color,
     const gfx::Rect& quad_rect,
@@ -483,7 +483,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
   }
 
   if (image_size_changed || content_rect_changed || quad_rect_changed) {
-    if (content_rect_.Contains(gfx::Rect(image_size_))) {
+    if (content_rect_.Contains(gfx::RectF(image_size_))) {
       // No need to set clip to content if the whole image is inside the content
       // rect region.
       hr = content_visual_->SetClip(nullptr);
@@ -500,13 +500,14 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     // Transform the (clipped) content so that it fills |quad_rect_|'s bounds.
     // |quad_rect_|'s offset is handled below, so we exclude it from the matrix.
     const bool needs_offset = !content_rect_.OffsetFromOrigin().IsZero();
-    const bool needs_scale = quad_rect_.width() != content_rect_.width() ||
-                             quad_rect_.height() != content_rect_.height();
+    const bool needs_scale =
+        static_cast<float>(quad_rect_.width()) != content_rect_.width() ||
+        static_cast<float>(quad_rect_.height()) != content_rect_.height();
     if (needs_offset || needs_scale) {
-      const float scale_x = static_cast<float>(quad_rect_.width()) /
-                            static_cast<float>(content_rect_.width());
-      const float scale_y = static_cast<float>(quad_rect_.height()) /
-                            static_cast<float>(content_rect_.height());
+      const float scale_x =
+          static_cast<float>(quad_rect_.width()) / content_rect_.width();
+      const float scale_y =
+          static_cast<float>(quad_rect_.height()) / content_rect_.height();
       const D2D_MATRIX_3X2_F matrix =
           D2D1::Matrix3x2F::Translation(-content_rect_.x(),
                                         -content_rect_.y()) *
@@ -1116,7 +1117,8 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       root_params->overlay_image = DCLayerOverlayImage(
           root_surface->GetSize(), std::move(root_visual_content),
           root_surface->dcomp_surface_serial());
-      root_params->content_rect = gfx::Rect(root_params->overlay_image->size());
+      root_params->content_rect =
+          gfx::RectF(root_params->overlay_image->size());
       root_params->quad_rect = gfx::Rect(root_params->overlay_image->size());
       ScheduleDCLayer(std::move(root_params));
     } else {
@@ -1202,13 +1204,13 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
       // rect, e.g. to present to a swap chain exactly the size of the display
       // rect when the source video is larger.
       overlay->transform = transform;
-      overlay->content_rect = gfx::Rect(video_swap_chain->content_size());
       overlay->quad_rect.set_size(video_swap_chain->content_size());
       if (overlay->clip_rect.has_value()) {
         overlay->clip_rect = clip_rect;
       }
       overlay->overlay_image = DCLayerOverlayImage(
           video_swap_chain->content_size(), video_swap_chain->content());
+      overlay->content_rect = gfx::RectF(video_swap_chain->content_size());
     }
   }
 

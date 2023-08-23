@@ -200,9 +200,9 @@ void SkiaOutputDeviceDComp::ScheduleOverlays(
     // SwapChainPresenter uses the size of the overlay's resource in pixels to
     // calculate its swap chain size. `uv_rect` maps the portion of
     // `resource_size_in_pixels` that will be displayed.
-    params->content_rect = gfx::ToNearestRect(gfx::ScaleRect(
+    params->content_rect = gfx::ScaleRect(
         dc_layer.uv_rect, dc_layer.resource_size_in_pixels.width(),
-        dc_layer.resource_size_in_pixels.height()));
+        dc_layer.resource_size_in_pixels.height());
 
     params->quad_rect = gfx::ToEnclosingRect(dc_layer.display_rect);
     DCHECK(absl::holds_alternative<gfx::Transform>(dc_layer.transform));
