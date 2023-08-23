@@ -161,9 +161,16 @@ constexpr char kLacrosCannotLaunchNotificationID[] =
 constexpr char kLacrosLauncherNotifierID[] = "lacros_launcher";
 
 base::FilePath LacrosLogDirectory() {
+  // When pre-launching Lacros at login screen is enabled:
+  // - In test images, we always save Lacros logs in /var/log/lacros.
+  // - In non-test images, we save Lacros logs in /var/log/lacros
+  //   only when Lacros is running at login screen. Lacros will
+  //   redirect user-specific logs to the cryptohome after login.
   if (base::FeatureList::IsEnabled(kLacrosLaunchAtLoginScreen) &&
-      session_manager::SessionManager::Get()->session_state() ==
-          session_manager::SessionState::LOGIN_PRIMARY) {
+      (base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kDisableLoggingRedirect) ||
+       session_manager::SessionManager::Get()->session_state() ==
+           session_manager::SessionState::LOGIN_PRIMARY)) {
     return base::FilePath("/var/log/lacros");
   }
   return browser_util::GetUserDataDir();
