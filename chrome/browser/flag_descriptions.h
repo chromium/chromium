@@ -1612,9 +1612,6 @@ extern const char kPowerBookmarkBackendDescription[];
 extern const char kPowerBookmarksSidePanel[];
 extern const char kPowerBookmarksSidePanelDescription[];
 
-extern const char kOmniboxTriggerForPrerender2Name[];
-extern const char kOmniboxTriggerForPrerender2Description[];
-
 extern const char kSupportSearchSuggestionForPrerender2Name[];
 extern const char kSupportSearchSuggestionForPrerender2Description[];
 

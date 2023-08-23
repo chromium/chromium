@@ -8667,10 +8667,6 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kDisableBufferBWCompression)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"omnibox-trigger-for-prerender2",
-     flag_descriptions::kOmniboxTriggerForPrerender2Name,
-     flag_descriptions::kOmniboxTriggerForPrerender2Description, kOsAll,
-     FEATURE_VALUE_TYPE(features::kOmniboxTriggerForPrerender2)},
     {"search-suggestion-for-prerender2",
      flag_descriptions::kSupportSearchSuggestionForPrerender2Name,
      flag_descriptions::kSupportSearchSuggestionForPrerender2Description,

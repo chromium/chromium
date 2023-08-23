@@ -2824,11 +2824,6 @@ const char kBookmarksRefreshName[] = "Bookmarks refresh";
 const char kBookmarksRefreshDescription[] =
     "Enable various changes to bookmarks.";
 
-const char kOmniboxTriggerForPrerender2Name[] =
-    "Omnibox trigger for Prerender2";
-const char kOmniboxTriggerForPrerender2Description[] =
-    "Enables the new omnibox trigger prerenderer implementation.";
-
 const char kSupportSearchSuggestionForPrerender2Name[] =
     "Prerender search suggestions";
 const char kSupportSearchSuggestionForPrerender2Description[] =

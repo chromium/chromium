@@ -6242,11 +6242,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-trigger-for-prerender2",
-    "owners": [ "//content/browser/preloading/prerender/OWNERS" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120
