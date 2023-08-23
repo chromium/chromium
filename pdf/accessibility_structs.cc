@@ -77,11 +77,11 @@ AccessibilityImageInfo::AccessibilityImageInfo() = default;
 AccessibilityImageInfo::AccessibilityImageInfo(const std::string& alt_text,
                                                uint32_t text_run_index,
                                                const gfx::RectF& bounds,
-                                               const SkBitmap& image_data)
+                                               int32_t page_object_index)
     : alt_text(alt_text),
       text_run_index(text_run_index),
       bounds(bounds),
-      image_data(image_data) {}
+      page_object_index(page_object_index) {}
 
 AccessibilityImageInfo::AccessibilityImageInfo(
     const AccessibilityImageInfo& other) = default;

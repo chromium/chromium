@@ -27,6 +27,7 @@
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_accessibility_action_handler.h"
+#include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/post_message_receiver.h"
@@ -82,6 +83,7 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
                                public PostMessageReceiver::Client,
                                public PaintManager::Client,
                                public PdfAccessibilityActionHandler,
+                               public PdfAccessibilityImageFetcher,
                                public PreviewModeClient::Client {
  public:
   // Do not save files larger than 100 MB. This cap should be kept in sync with
@@ -219,7 +221,8 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
     // client.
     virtual std::unique_ptr<PdfAccessibilityDataHandler>
     CreateAccessibilityDataHandler(
-        PdfAccessibilityActionHandler* action_handler);
+        PdfAccessibilityActionHandler* action_handler,
+        PdfAccessibilityImageFetcher* image_fetcher);
   };
 
   PdfViewWebPlugin(std::unique_ptr<Client> client,
@@ -380,6 +383,10 @@ class PdfViewWebPlugin final : public PDFEngine::Client,
   void HandleAccessibilityAction(
       const AccessibilityActionData& action_data) override;
   void LoadOrReloadAccessibility() override;
+
+  // PdfAccessibilityImageFetcher:
+  SkBitmap GetImageForOcr(int32_t page_index,
+                          int32_t page_object_index) override;
 
   // PreviewModeClient::Client:
   void PreviewDocumentLoadComplete() override;

@@ -158,6 +158,7 @@ class PDFiumEngine : public PDFEngine,
   std::vector<AccessibilityImageInfo> GetImageInfo(
       int page_index,
       uint32_t text_run_count) override;
+  SkBitmap GetImageForOcr(int page_index, int image_index) override;
   std::vector<AccessibilityHighlightInfo> GetHighlightInfo(
       int page_index,
       const std::vector<AccessibilityTextRunInfo>& text_runs) override;

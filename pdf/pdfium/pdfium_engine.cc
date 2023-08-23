@@ -2618,6 +2618,11 @@ std::vector<AccessibilityImageInfo> PDFiumEngine::GetImageInfo(
   return pages_[page_index]->GetImageInfo(text_run_count);
 }
 
+SkBitmap PDFiumEngine::GetImageForOcr(int page_index, int image_index) {
+  DCHECK(PageIndexInBounds(page_index));
+  return pages_[page_index]->GetImageForOcr(image_index);
+}
+
 std::vector<AccessibilityHighlightInfo> PDFiumEngine::GetHighlightInfo(
     int page_index,
     const std::vector<AccessibilityTextRunInfo>& text_runs) {
