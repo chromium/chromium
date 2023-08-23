@@ -238,6 +238,8 @@ void WaitForVisibleChromeManagementURL() {
         policy::kUserPolicyForSigninAndNoSyncConsentLevel);
   } else {
     config.features_enabled.push_back(
+        policy::kUserPolicyForSigninAndNoSyncConsentLevel);
+    config.features_enabled.push_back(
         policy::kUserPolicyForSigninOrSyncConsentLevel);
   }
   return config;
@@ -325,13 +327,6 @@ void WaitForVisibleChromeManagementURL() {
   [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   VerifyThatPoliciesAreSet();
-
-  // Set the notice as already shown as the show managed account dialog isn't
-  // yet part of the sign-in without sync flow.
-  [ChromeEarlGreyAppInterface
-      setBoolValue:YES
-       forUserPref:base::SysUTF8ToNSString(
-                       policy::policy_prefs::kUserPolicyNotificationWasShown)];
 
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.
@@ -426,7 +421,7 @@ void WaitForVisibleChromeManagementURL() {
       identityWithEmail:base::SysUTF8ToNSString(GetTestEmail().c_str())
                  gaiaID:@"exampleManagedID"
                    name:@"Fake Managed"];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   // Restart the browser while keeping Sync ON by preserving the identity of the
   // managed account.

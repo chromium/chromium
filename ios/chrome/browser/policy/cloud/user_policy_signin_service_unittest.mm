@@ -129,10 +129,6 @@ class UserPolicySigninServiceTest : public PlatformTest {
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     RegisterBrowserStatePrefs(prefs->registry());
 
-    // Set the User Policy notification as seen by default.
-    prefs->SetBoolean(policy::policy_prefs::kUserPolicyNotificationWasShown,
-                      true);
-
     TestChromeBrowserState::Builder builder;
     builder.SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(
@@ -399,33 +395,6 @@ TEST_F(UserPolicySigninServiceTest, DontRegister_BecauseFeatureDisabled) {
   // Expect that the UserCloudPolicyManager isn't initialized because the user
   // was signed in with a managed account but the user policy feature was
   // disabled.
-  EXPECT_FALSE(manager_->core()->service());
-}
-
-// Tests that the user policy manager isn't initialized if the user hasn't seen
-// the User Policy notification, even if the user if the feature is enabled.
-TEST_F(UserPolicySigninServiceTest,
-       DontRegister_BecauseUserHasntSeenNotification) {
-  // Set the managed account as signed in and syncing.
-  AccountInfo account_info =
-      identity_test_env()->MakeAccountAvailable(kManagedTestUser);
-  identity_test_env()->SetPrimaryAccount(kManagedTestUser,
-                                         signin::ConsentLevel::kSync);
-
-  // Mark the store as loaded to allow registration during the initialization of
-  // the user policy service.
-  mock_store_->NotifyStoreLoaded();
-
-  // Set the User Policy notification has not seen.
-  browser_state_->GetPrefs()->SetBoolean(
-      policy::policy_prefs::kUserPolicyNotificationWasShown, false);
-
-  // Initialize the UserPolicySigninService while the user has sync enabled,
-  // but hasn't seen the notification.
-  InitUserPolicySigninService();
-
-  // Expect that the UserCloudPolicyManager isn't initialized because the user
-  // hasn't seen the notification yet.
   EXPECT_FALSE(manager_->core()->service());
 }
 

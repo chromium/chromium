@@ -110,13 +110,6 @@ bool UserPolicySigninService::CanApplyPolicies(bool check_for_refresh_token) {
     return false;
   }
 
-  if (!browser_state_prefs_->GetBoolean(
-          policy::policy_prefs::kUserPolicyNotificationWasShown)) {
-    // Return false if the user hasn't yet seen the notification about User
-    // Policy.
-    return false;
-  }
-
   return CanApplyPoliciesForSignedInUser(check_for_refresh_token,
                                          GetConsentLevelForRegistration(),
                                          identity_manager());
