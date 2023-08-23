@@ -5729,11 +5729,12 @@
     "EnableImmediateDrawDuringScrollInteraction": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "DrawImmediatelyWhenInteractive",
+                    "name": "Enabled",
                     "enable_features": [
                         "DrawImmediatelyWhenInteractive"
                     ]
