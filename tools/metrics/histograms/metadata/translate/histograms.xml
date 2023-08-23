@@ -699,18 +699,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks"
-    units="requests" expires_after="2023-05-07">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-language@chromium.org</owner>
-  <summary>
-    Records the number of requests that were pending when the language detection
-    model was provided and ready to be returned to requesters. Recorded once per
-    model update by the OptimizationGuide.
-  </summary>
-</histogram>
-
 <histogram name="TranslateModelService.LanguageDetectionModel.WasLoaded"
     enum="BooleanLoaded" expires_after="2024-02-11">
   <owner>mcrouse@chromium.org</owner>

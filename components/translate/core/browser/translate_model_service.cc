@@ -129,9 +129,6 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
   UnloadModelFile();
   language_detection_model_file_ = std::move(model_file);
   result_recorder.set_was_loaded();
-  UMA_HISTOGRAM_COUNTS_100(
-      "TranslateModelService.LanguageDetectionModel.PendingRequestCallbacks",
-      pending_model_requests_.size());
   NotifyModelUpdatesAndClear(true);
 }
 
