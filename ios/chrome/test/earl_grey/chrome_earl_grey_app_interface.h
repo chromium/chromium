@@ -466,6 +466,9 @@
 // passphrase to start.
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
 
+// Returns whether UserSelectableType::kHistory is among the selected types.
++ (BOOL)isSyncHistoryDataTypeSelected;
+
 #pragma mark - JavaScript Utilities (EG2)
 
 // Executes JavaScript through the WebState's WebFrame and waits for either the

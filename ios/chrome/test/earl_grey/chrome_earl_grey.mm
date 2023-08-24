@@ -1008,6 +1008,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   EG_TEST_HELPER_ASSERT_TRUE(success, errorString);
 }
 
+- (BOOL)isSyncHistoryDataTypeSelected {
+  return [ChromeEarlGreyAppInterface isSyncHistoryDataTypeSelected];
+}
+
 #pragma mark - Window utilities (EG2)
 
 - (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber {

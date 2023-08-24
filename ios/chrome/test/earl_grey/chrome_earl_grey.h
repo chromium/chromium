@@ -293,6 +293,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // server.
 - (void)waitForSyncInvalidationFields;
 
+// Returns whether UserSelectableType::kHistory is among the selected types.
+- (BOOL)isSyncHistoryDataTypeSelected;
+
 #pragma mark - Tab Utilities (EG2)
 
 // Opens a new tab and waits for the new tab animation to complete within a

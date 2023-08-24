@@ -28,6 +28,8 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/pref_names.h"
+#import "components/sync/service/sync_service.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "components/unified_consent/unified_consent_service.h"
 #import "components/variations/variations_associated_data.h"
 #import "components/variations/variations_ids_provider.h"
@@ -1024,6 +1026,16 @@ NSString* SerializedValue(const base::Value* value) {
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase {
   chrome_test_util::AddBookmarkWithSyncPassphrase(
       base::SysNSStringToUTF8(syncPassphrase));
+}
+
++ (BOOL)isSyncHistoryDataTypeSelected {
+  ChromeBrowserState* browser_state =
+      chrome_test_util::GetOriginalBrowserState();
+  DCHECK(browser_state);
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browser_state);
+  return syncService->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kHistory);
 }
 
 #pragma mark - JavaScript Utilities (EG2)

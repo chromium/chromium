@@ -209,11 +209,14 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
                                           WebSigninPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
-  // Now the history opt-in dialog should show up. Tap the "Yes, I'm In" button.
   [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryOptInPrimaryButtonMatcher()]
-      performAction:grey_tap()];
+  // If the history type isn't enabled yet, the history opt-in dialog should
+  // show up now. Tap the "Yes, I'm In" button.
+  if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            HistoryOptInPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  }
 }
 
 + (void)tapAddAccountButton {
