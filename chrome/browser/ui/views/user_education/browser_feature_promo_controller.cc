@@ -11,6 +11,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -80,6 +81,15 @@ bool BrowserFeaturePromoController::CanShowPromo(
           PrivacySandboxService::PromptType::kNone) {
     return false;
   }
+
+  // Turn off IPH while a required search engine choice dialog is visible or
+  // pending.
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  if (SearchEngineChoiceService::ShouldDisplayDialog(
+          (*browser_view_->browser()))) {
+    return false;
+  }
+#endif
 
   // Don't show IPH if the anchor view is in an inactive window.
   auto* const anchor_view = anchor_element->AsA<views::TrackedElementViews>();
