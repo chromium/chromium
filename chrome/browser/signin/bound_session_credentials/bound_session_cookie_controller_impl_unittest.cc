@@ -112,11 +112,8 @@ class BoundSessionCookieControllerImplTest
       const GURL& url,
       base::flat_set<std::string> cookie_names) {
     // `SimulateCompleteRefreshRequest()` must be called for the
-    // refresh request to complete.
-    auto fetcher = std::make_unique<FakeBoundSessionRefreshCookieFetcher>(
+    return std::make_unique<FakeBoundSessionRefreshCookieFetcher>(
         cookie_manager, url, std::move(cookie_names));
-    cookie_fetcher_ = fetcher.get();
-    return fetcher;
   }
 
   void MaybeRefreshCookie() {
@@ -128,7 +125,7 @@ class BoundSessionCookieControllerImplTest
   }
 
   bool CompletePendingRefreshRequestIfAny() {
-    if (!cookie_fetcher_) {
+    if (!cookie_fetcher()) {
       return false;
     }
     SimulateCompleteRefreshRequest(
@@ -141,11 +138,10 @@ class BoundSessionCookieControllerImplTest
   void SimulateCompleteRefreshRequest(
       BoundSessionRefreshCookieFetcher::Result result,
       absl::optional<base::Time> cookie_expiration) {
-    EXPECT_TRUE(cookie_fetcher_);
-    cookie_fetcher_->SimulateCompleteRefreshRequest(result, cookie_expiration);
-    // It is not safe to access the `cookie_fetcher_` after the request has been
-    // completed. The controller will destroy the fetcher upon completion.
-    cookie_fetcher_ = nullptr;
+    ASSERT_TRUE(cookie_fetcher());
+    FakeBoundSessionRefreshCookieFetcher* fetcher =
+        static_cast<FakeBoundSessionRefreshCookieFetcher*>(cookie_fetcher());
+    fetcher->SimulateCompleteRefreshRequest(result, cookie_expiration);
   }
 
   void SimulateCookieChange(const std::string& cookie_name,
@@ -177,8 +173,8 @@ class BoundSessionCookieControllerImplTest
     return bound_session_cookie_controller_.get();
   }
 
-  FakeBoundSessionRefreshCookieFetcher* cookie_fetcher() {
-    return cookie_fetcher_;
+  BoundSessionRefreshCookieFetcher* cookie_fetcher() {
+    return bound_session_cookie_controller_->refresh_cookie_fetcher_.get();
   }
 
   std::vector<std::unique_ptr<BoundSessionCookieObserver>>*
@@ -265,8 +261,6 @@ class BoundSessionCookieControllerImplTest
   UnexportableKeyId key_id_;
   std::unique_ptr<BoundSessionCookieControllerImpl>
       bound_session_cookie_controller_;
-  raw_ptr<FakeBoundSessionRefreshCookieFetcher, DanglingUntriaged>
-      cookie_fetcher_ = nullptr;
   size_t on_bound_session_throttler_params_changed_call_count_ = 0;
   bool on_terminate_session_called_ = false;
 };
@@ -581,12 +575,14 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   EXPECT_FALSE(future.IsReady());
 
   task_environment()->FastForwardBy(kResumeBlockedRequestTimeout);
-  // The fetch hasn't completed nor are the required cookies fresh, but the
-  // request is resumed due to timeout.
+  // The required cookies are stale, but the request is resumed due to timeout.
   EXPECT_FALSE(AreAllCookiesFresh());
-  EXPECT_TRUE(cookie_fetcher());
+  // Request resumed.
   EXPECT_TRUE(future.IsReady());
+  // Fetcher reset.
+  EXPECT_FALSE(cookie_fetcher());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
+  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -608,10 +604,9 @@ TEST_F(BoundSessionCookieControllerImplTest,
   task_environment()->FastForwardBy(kResumeBlockedRequestTimeout -
                                     kDeltaBetweenRequests *
                                         kBlockedRequestCount);
-  // The fetch hasn't completed nor are the required cookies fresh, but the
-  // requests are resumed due to timeout.
+  // The required cookies are stale, but requests are resumed due to timeout.
   EXPECT_FALSE(AreAllCookiesFresh());
-  EXPECT_TRUE(cookie_fetcher());
+  EXPECT_FALSE(cookie_fetcher());
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
   }

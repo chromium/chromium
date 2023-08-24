@@ -83,6 +83,7 @@ class BoundSessionCookieControllerImpl
   void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
   void MaybeScheduleCookieRotation();
   void ResumeBlockedRequests();
+  void OnResumeBlockedRequestsTimeout();
 
   void set_refresh_cookie_fetcher_factory_for_testing(
       RefreshCookieFetcherFactoryForTesting

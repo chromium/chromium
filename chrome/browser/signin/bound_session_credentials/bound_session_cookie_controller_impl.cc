@@ -101,7 +101,7 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
     resume_blocked_requests_timer_.Start(
         FROM_HERE, kResumeBlockedRequestTimeout,
         base::BindRepeating(
-            &BoundSessionCookieControllerImpl::ResumeBlockedRequests,
+            &BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout,
             base::Unretained(this)));
   }
 }
@@ -223,4 +223,12 @@ void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {
   for (auto& callback : callbacks) {
     std::move(callback).Run();
   }
+}
+
+void BoundSessionCookieControllerImpl::OnResumeBlockedRequestsTimeout() {
+  // TODO(b/292511796): Add a histogram.
+  // Reset the fetcher, it has been taking at least
+  // kResumeBlockedRequestTimeout. New requests will trigger a new fetch.
+  refresh_cookie_fetcher_.reset();
+  ResumeBlockedRequests();
 }
