@@ -98,6 +98,36 @@ class WebAppScopeWaiter : public apps::AppRegistryCache::Observer {
       app_registry_cache_observer_{this};
 };
 
+class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
+ public:
+  AppUpdateWaiter(
+      Profile* profile,
+      const std::string& app_id,
+      base::RepeatingCallback<bool(const apps::AppUpdate&)> condition =
+          base::BindRepeating([](const apps::AppUpdate& update) {
+            return true;
+          }));
+  ~AppUpdateWaiter() override;
+
+  void Wait();
+
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+
+  // apps::AppRegistryCache::Observer:
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
+
+ private:
+  std::string app_id_;
+  base::OnceClosure callback_;
+  base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
+  bool condition_met_ = false;
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observation_{this};
+};
+
 // Waits for the app's window mode in the App Service app cache to match the
 // expected |window_mode|.
 class AppWindowModeWaiter : public apps::AppRegistryCache::Observer {

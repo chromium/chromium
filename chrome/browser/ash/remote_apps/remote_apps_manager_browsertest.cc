@@ -32,6 +32,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
@@ -82,65 +83,11 @@ constexpr char kMissingId[] = "missing_id";
 constexpr char kExtensionId1[] = "extension_id1";
 constexpr char kExtensionId2[] = "extension_id2";
 
-class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
- public:
-  static base::RepeatingCallback<bool(const apps::AppUpdate&)> IconChanged() {
-    return base::BindRepeating([](const apps::AppUpdate& update) {
-      return !update.StateIsNull() && update.IconKeyChanged();
-    });
-  }
-
-  AppUpdateWaiter(
-      Profile* profile,
-      const std::string& id,
-      base::RepeatingCallback<bool(const apps::AppUpdate&)> condition =
-          base::BindRepeating([](const apps::AppUpdate& update) {
-            return true;
-          }))
-      : id_(id), condition_(condition) {
-    app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                               ->AppRegistryCache();
-    app_registry_cache_observation_.Observe(app_registry_cache_.get());
-  }
-
-  void Wait() {
-    if (!condition_met_) {
-      base::RunLoop run_loop;
-      callback_ = run_loop.QuitClosure();
-      run_loop.Run();
-    }
-    // Allow updates to propagate to other observers.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  // apps::AppRegistryCache::Observer:
-  void OnAppUpdate(const apps::AppUpdate& update) override {
-    if (condition_met_ || update.AppId() != id_ || !condition_.Run(update))
-      return;
-
-    app_registry_cache_observation_.Reset();
-    condition_met_ = true;
-    if (callback_)
-      std::move(callback_).Run();
-  }
-
-  // apps::AppRegistryCache::Observer:
-  void OnAppRegistryCacheWillBeDestroyed(
-      apps::AppRegistryCache* cache) override {
-    app_registry_cache_observation_.Reset();
-  }
-
- private:
-  std::string id_;
-  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
-      nullptr;
-  base::OnceClosure callback_;
-  base::RepeatingCallback<bool(const apps::AppUpdate&)> condition_;
-  bool condition_met_ = false;
-  base::ScopedObservation<apps::AppRegistryCache,
-                          apps::AppRegistryCache::Observer>
-      app_registry_cache_observation_{this};
-};
+static base::RepeatingCallback<bool(const apps::AppUpdate&)> IconChanged() {
+  return base::BindRepeating([](const apps::AppUpdate& update) {
+    return !update.StateIsNull() && update.IconKeyChanged();
+  });
+}
 
 class MockImageDownloader : public RemoteAppsManager::ImageDownloader {
  public:
@@ -294,7 +241,7 @@ class RemoteAppsManagerBrowsertest
                                   const gfx::ImageSkia& icon,
                                   bool add_to_front) {
     ExpectImageDownloaderDownload(icon_url, icon);
-    AppUpdateWaiter waiter(profile_, app_id, AppUpdateWaiter::IconChanged());
+    apps::AppUpdateWaiter waiter(profile_, app_id, IconChanged());
     AddApp(source_id, name, folder_id, icon_url, add_to_front);
     waiter.Wait();
   }

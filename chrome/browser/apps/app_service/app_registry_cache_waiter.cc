@@ -131,6 +131,45 @@ bool WebAppScopeWaiter::ContainsExpectedIntentFilter(
   return false;
 }
 
+AppUpdateWaiter::AppUpdateWaiter(
+    Profile* profile,
+    const std::string& app_id,
+    base::RepeatingCallback<bool(const apps::AppUpdate&)> condition)
+    : app_id_(app_id), condition_(condition) {
+  raw_ptr<apps::AppRegistryCache, ExperimentalAsh> app_registry_cache_ =
+      &apps::AppServiceProxyFactory::GetForProfile(profile)->AppRegistryCache();
+  app_registry_cache_observation_.Observe(app_registry_cache_.get());
+}
+
+AppUpdateWaiter::~AppUpdateWaiter() = default;
+
+void AppUpdateWaiter::Wait() {
+  if (!condition_met_) {
+    base::RunLoop run_loop;
+    callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  // Allow updates to propagate to other observers.
+  base::RunLoop().RunUntilIdle();
+}
+
+void AppUpdateWaiter::OnAppUpdate(const apps::AppUpdate& update) {
+  if (condition_met_ || update.AppId() != app_id_ || !condition_.Run(update)) {
+    return;
+  }
+
+  app_registry_cache_observation_.Reset();
+  condition_met_ = true;
+  if (callback_) {
+    std::move(callback_).Run();
+  }
+}
+
+void AppUpdateWaiter::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observation_.Reset();
+}
+
 AppWindowModeWaiter::AppWindowModeWaiter(Profile* profile,
                                          const std::string& app_id,
                                          apps::WindowMode window_mode)
