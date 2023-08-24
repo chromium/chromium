@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/barrier_callback.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 
 #include <utility>
@@ -20,7 +21,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_shim_registry_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #import "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/pref_names.h"
@@ -123,6 +126,30 @@ void UpdateShortcutsForAllApps(Profile* profile, base::OnceClosure callback) {
 
 namespace chrome {
 
+namespace {
+
+// Return a barrier callback that runs once the current state of the web_app DB
+// is set and once after shortcuts have been created.
+base::RepeatingCallback<void(bool)> GetOsIntegrationSynchronizeBarrier(
+    base::OnceCallback<void(bool)> shortcut_creation_callback) {
+  int num_barriers = 2;
+
+  auto barrier_callback_for_synchronize = base::BarrierCallback<bool>(
+      num_barriers,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback,
+             std::vector<bool> received_bools) {
+            // received_bools is guaranteed to have the same number of values as
+            // num_barriers.
+            CHECK_EQ(2u, received_bools.size());
+            std::move(callback).Run(received_bools[0] && received_bools[1]);
+          },
+          std::move(shortcut_creation_callback)));
+
+  return barrier_callback_for_synchronize;
+}
+}  // namespace
+
 void ShowCreateChromeAppShortcutsDialog(
     gfx::NativeWindow /*parent_window*/,
     Profile* profile,
@@ -142,15 +169,37 @@ void ShowCreateChromeAppShortcutsDialog(
     base::OnceCallback<void(bool)> close_callback) {
   // On Mac, the Applications folder is the only option, so don't bother asking
   // the user anything. Just create shortcuts.
-  CreateShortcutsForWebApp(web_app::SHORTCUT_CREATION_BY_USER,
-                           web_app::ShortcutLocations(), profile, app_id,
-                           base::BindOnce(std::move(close_callback)));
-  // Also inform AppShimRegistry about the created shortcut. For anything other
-  // than default apps this is a no-op, as you can't create shortcuts without
-  // the app already having been installed (at which point AppShimRegistry would
-  // have been informed). But for default apps this is required to make sure the
-  // created shortcut opens the app in the correct profile.
-  AppShimRegistry::Get()->OnAppInstalledForProfile(app_id, profile->GetPath());
+  // If sub managers are enabled, directly invoke OS integration so that
+  // shortcuts are created and the web_app DB is kept in sync. If that is not
+  // enabled, then keeping both values in sync would need to be handled
+  // separately via the barrier method.
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  CHECK(provider);
+  if (web_app::AreSubManagersExecuteEnabled()) {
+    provider->scheduler().SynchronizeOsIntegration(
+        app_id, base::BindOnce(std::move(close_callback), true),
+        web_app::ConvertShortcutLocationsToSynchronizeOptions(
+            web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER));
+  } else {
+    auto synchronize_barrier =
+        GetOsIntegrationSynchronizeBarrier(std::move(close_callback));
+    provider->scheduler().SynchronizeOsIntegration(
+        app_id, base::BindOnce(synchronize_barrier, true),
+        web_app::ConvertShortcutLocationsToSynchronizeOptions(
+            web_app::ShortcutLocations(), web_app::SHORTCUT_CREATION_BY_USER));
+    CreateShortcutsForWebApp(web_app::SHORTCUT_CREATION_BY_USER,
+                             web_app::ShortcutLocations(), profile, app_id,
+                             synchronize_barrier);
+
+    // Also inform AppShimRegistry about the created shortcut. For anything
+    // other than default apps this is a no-op, as you can't create shortcuts
+    // without the app already having been installed (at which point
+    // AppShimRegistry would have been informed). But for default apps this is
+    // required to make sure the created shortcut opens the app in the correct
+    // profile.
+    AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
+                                                     profile->GetPath());
+  }
 }
 
 }  // namespace chrome

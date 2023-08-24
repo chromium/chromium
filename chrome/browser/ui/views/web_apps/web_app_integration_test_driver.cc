@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
 #include <codecvt>
+#include <map>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
@@ -81,12 +83,15 @@
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_handler.h"
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
+#include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -143,6 +148,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -1284,6 +1290,32 @@ void WebAppIntegrationTestDriver::InstallPolicyApp(Site site,
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::InstallPreinstalledApp(Site site) {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  // Many CUJs rely on operating on an opened window / tab after installation,
+  // and this state is true for all installations except for policy install. To
+  // help keep CUJs combined for all installs, do a navigation here.
+  MaybeNavigateTabbedBrowserInScope(site);
+  GURL url = GetUrlForSite(site);
+  WebAppTestInstallObserver observer(profile());
+  observer.BeginListening();
+
+  constexpr char kAppConfigTemplate[] =
+      R"({
+        "app_url": "$1",
+        "launch_container": "window",
+        "user_type": ["unmanaged"]
+      })";
+  std::string app_config = base::ReplaceStringPlaceholders(
+      kAppConfigTemplate, {url.spec()}, nullptr);
+  SyncAndInstallPreinstalledAppConfig(url, app_config);
+  active_app_id_ = observer.Wait();
+  apps::AppReadinessWaiter(profile(), active_app_id_).Await();
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::InstallSubApp(
     Site parentapp,
     Site subapp,
@@ -1938,6 +1970,40 @@ std::vector<base::FilePath> WebAppIntegrationTestDriver::GetTestFilePaths(
       break;
   }
   return file_paths;
+}
+
+// TODO(b/240449120): Remove for testing behavior when preinstalled app
+// CUJs are implemented.
+void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
+    const GURL& install_url,
+    base::StringPiece app_config_string) {
+  base::AutoReset<bool> bypass_offline_manifest_requirement =
+      PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
+  base::FilePath test_config_dir = GetResourceFile(
+      FILE_PATH_LITERAL("webapps_integration/preinstalled_config_dir/"));
+  web_app::SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
+
+  base::Value::List app_configs;
+  auto json_parse_result =
+      base::JSONReader::ReadAndReturnValueWithError(app_config_string);
+  EXPECT_TRUE(json_parse_result.has_value())
+      << "JSON parse error: " << json_parse_result.error().message;
+  if (!json_parse_result.has_value()) {
+    return;
+  }
+  app_configs.Append(std::move(*json_parse_result));
+  base::AutoReset<const base::Value::List*> configs_for_testing =
+      PreinstalledWebAppManager::SetConfigsForTesting(&app_configs);
+
+  using InstallAppsResults =
+      std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>;
+  using UninstallAppsResults = std::map<GURL, bool>;
+  base::test::TestFuture<InstallAppsResults, UninstallAppsResults> test_future;
+  provider()->preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
+      test_future.GetCallback());
+  EXPECT_TRUE(test_future.Wait());
+  web_app::SetPreinstalledWebAppConfigDirForTesting(nullptr);
 }
 
 void WebAppIntegrationTestDriver::NavigateAppHome() {

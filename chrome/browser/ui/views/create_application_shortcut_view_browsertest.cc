@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
-class CreateAppShortcutDialogTest : public DialogBrowserTest {
+class CreateAppShortcutDialogTest : public DialogBrowserTest,
+                                    public testing::WithParamInterface<bool> {
  public:
   CreateAppShortcutDialogTest() = default;
   CreateAppShortcutDialogTest(const CreateAppShortcutDialogTest&) = delete;
@@ -22,13 +24,16 @@ class CreateAppShortcutDialogTest : public DialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     constrained_window::CreateBrowserModalDialogViews(
-        new CreateChromeApplicationShortcutView(
-            browser()->profile()->GetPrefs(), base::DoNothing()),
+        new CreateChromeApplicationShortcutView(browser()->profile(),
+                                                /*is_extension=*/GetParam(),
+                                                base::DoNothing()),
         browser()->window()->GetNativeWindow())
         ->Show();
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CreateAppShortcutDialogTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(CreateAppShortcutDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }
+
+INSTANTIATE_TEST_SUITE_P(All, CreateAppShortcutDialogTest, ::testing::Bool());

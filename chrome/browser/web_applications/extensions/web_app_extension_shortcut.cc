@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -323,5 +324,20 @@ void UpdateRelaunchDetailsForApp(Profile* profile,
                      hwnd));
 }
 #endif
+
+SynchronizeOsOptions ConvertShortcutLocationsToSynchronizeOptions(
+    const ShortcutLocations& locations,
+    ShortcutCreationReason reason) {
+  SynchronizeOsOptions options;
+  options.reason = reason;
+  options.add_shortcut_to_desktop = locations.on_desktop;
+  options.add_to_quick_launch_bar = locations.in_quick_launch_bar;
+  // Since shortcuts can be manually deleted by thd end user, there
+  // is no way to listen to that information and update that in the
+  // web_app DB. Setting this flag allows shortcuts to always
+  // be force created.
+  options.force_create_shortcuts = true;
+  return options;
+}
 
 }  // namespace web_app

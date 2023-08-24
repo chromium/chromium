@@ -13,6 +13,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/web_applications/extensions/web_app_extension_shortcut.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -62,7 +65,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const extensions::Extension* app,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+    : CreateChromeApplicationShortcutView(profile,
+                                          /*is_extension=*/true,
                                           std::move(close_callback)) {
   // Get shortcut and icon information; needed for creating the shortcut.
   web_app::GetShortcutInfoForApp(
@@ -75,7 +79,8 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
     Profile* profile,
     const std::string& web_app_id,
     base::OnceCallback<void(bool)> close_callback)
-    : CreateChromeApplicationShortcutView(profile->GetPrefs(),
+    : CreateChromeApplicationShortcutView(profile,
+                                          /*is_extension=*/false,
                                           std::move(close_callback)) {
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForWebApps(profile);
@@ -86,9 +91,13 @@ CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
 }
 
 CreateChromeApplicationShortcutView::CreateChromeApplicationShortcutView(
-    PrefService* prefs,
+    Profile* profile,
+    bool is_extension,
     base::OnceCallback<void(bool)> close_callback)
-    : prefs_(prefs), close_callback_(std::move(close_callback)) {
+    : profile_(profile),
+      prefs_(profile->GetPrefs()),
+      is_extension_(is_extension),
+      close_callback_(std::move(close_callback)) {
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_CREATE_SHORTCUTS_COMMIT));
@@ -203,9 +212,23 @@ void CreateChromeApplicationShortcutView::OnDialogAccepted() {
   creation_locations.in_quick_launch_bar = false;
 #endif
 
-  web_app::CreateShortcutsWithInfo(web_app::SHORTCUT_CREATION_BY_USER,
-                                   creation_locations, base::DoNothing(),
-                                   std::move(shortcut_info_));
+  // If the dialog has been triggered from a web_app and the sub manager
+  // architecture for OS integration is enabled, then we need to perform OS
+  // integration using sub managers so that shortcuts can be properly added,
+  // updated or deleted.
+  if (!shortcut_info_->app_id.empty() && !is_extension_ &&
+      web_app::AreSubManagersExecuteEnabled()) {
+    auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    CHECK(provider);
+    provider->scheduler().SynchronizeOsIntegration(
+        shortcut_info_->app_id, base::DoNothing(),
+        web_app::ConvertShortcutLocationsToSynchronizeOptions(
+            creation_locations, web_app::SHORTCUT_CREATION_BY_USER));
+  } else {
+    web_app::CreateShortcutsWithInfo(web_app::SHORTCUT_CREATION_BY_USER,
+                                     creation_locations, base::DoNothing(),
+                                     std::move(shortcut_info_));
+  }
 }
 
 std::unique_ptr<views::Checkbox>

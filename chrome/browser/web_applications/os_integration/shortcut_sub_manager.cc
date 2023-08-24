@@ -83,18 +83,29 @@ void ShortcutSubManager::Execute(
       profile_->GetPath(), app_id,
       provider_->registrar_unsafe().GetAppStartUrl(app_id));
 
+  bool force_create_shortcuts =
+      synchronize_options.has_value() &&
+      synchronize_options.value().force_create_shortcuts;
+
   const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
   DCHECK(app);
 
   // First, handle the case where both current & desired don't have shortcuts,
   // which should be a no-op.
-  if (!desired_state.has_shortcut() && !current_state.has_shortcut()) {
+  if (!desired_state.has_shortcut() && !current_state.has_shortcut() &&
+      !force_create_shortcuts) {
     std::move(callback).Run();
     return;
   }
 
-  // Second, handle shortcut creation.
-  if (desired_state.has_shortcut() && !current_state.has_shortcut()) {
+  // Second, handle shortcut creation if either one of the following conditions
+  // match:
+  // 1. current_state is empty but desired_state has shortcut information.
+  // 2. desired_state has value and force_create_shortcuts is true. This is
+  // necessary for use-cases where the user might have deleted shortcuts
+  // manually but the current_state has not been updated to show that.
+  if ((desired_state.has_shortcut() && !current_state.has_shortcut()) ||
+      (desired_state.has_shortcut() && force_create_shortcuts)) {
 #if BUILDFLAG(IS_MAC)
     AppShimRegistry::Get()->OnAppInstalledForProfile(app_id,
                                                      profile_->GetPath());

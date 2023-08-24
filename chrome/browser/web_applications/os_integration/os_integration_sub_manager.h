@@ -27,6 +27,9 @@ struct SynchronizeOsOptions {
   // Adds a shortcut to the quick launch bar IFF this call to synchronize
   // creates shortcuts fresh for the given app (it's not an update).
   bool add_to_quick_launch_bar = false;
+  // This is used for the "Create Shortcuts" option from App Home, allowing to
+  // recreate shortcuts if they deleted them.
+  bool force_create_shortcuts = false;
   // The reason synchronize is called, used to possibly show the location of the
   // shortcut to the user (this happen on Mac).
   ShortcutCreationReason reason = SHORTCUT_CREATION_AUTOMATED;

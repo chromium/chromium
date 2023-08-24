@@ -170,6 +170,17 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, AppLaunchedInTab) {
   helper_.CheckAppLoadedInTab(Site::kStandalone);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegration,
+                       PreinstalledWebAppCreateShortcutFlow) {
+  helper_.InstallPreinstalledApp(Site::kStandalone);
+  helper_.CheckAppInListWindowed(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+  helper_.CreateShortcutsFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutAndIcon(Site::kStandalone);
+  helper_.UninstallFromList(Site::kStandalone);
+  helper_.CheckPlatformShortcutNotExists(Site::kStandalone);
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

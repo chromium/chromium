@@ -29,6 +29,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -279,6 +280,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
                         ShortcutOptions shortcut,
                         WindowOptions window,
                         InstallMode mode);
+  // TODO(b/240449120): Standardize behavior to install preinstalled apps when
+  // CUJs for that are added.
+  void InstallPreinstalledApp(Site site);
   void InstallSubApp(Site parentapp,
                      Site subapp,
                      SubAppInstallDialogOptions option);
@@ -472,6 +476,9 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   base::FilePath GetResourceFile(base::FilePath::StringPieceType relative_path);
 
   std::vector<base::FilePath> GetTestFilePaths(FilesOptions file_options);
+
+  void SyncAndInstallPreinstalledAppConfig(const GURL& install_url,
+                                           base::StringPiece app_config_string);
 
   Browser* browser();
   Profile* profile();

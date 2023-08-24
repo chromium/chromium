@@ -57,7 +57,8 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
  private:
   friend class CreateAppShortcutDialogTest;
 
-  CreateChromeApplicationShortcutView(PrefService* prefs,
+  CreateChromeApplicationShortcutView(Profile* profile,
+                                      bool is_extension,
                                       base::OnceCallback<void(bool)> cb);
 
   // Creates a new check-box with the given text and checked state.
@@ -71,7 +72,9 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
 
   void OnDialogAccepted();
 
+  raw_ptr<Profile> profile_;
   raw_ptr<PrefService> prefs_;
+  bool is_extension_;
 
   base::OnceCallback<void(bool)> close_callback_;
 

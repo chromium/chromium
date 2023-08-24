@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -438,22 +439,13 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateWebAppShortcut) {
   FlushShortcutTasks();
   std::move(waiter).WaitForAndAccept();
   FlushShortcutTasks();
+  web_app::WebAppProvider::GetForTest(profile())
+      ->command_manager()
+      .AwaitAllCommandsCompleteForTesting();
 #endif
   EXPECT_CALL(page_, RemoveApp(MatchAppId(installed_app_id)))
       .Times(testing::AtLeast(1));
   UninstallTestWebApp(installed_app_id);
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
-  // If SubManagersExecuteEnabled is false, the shortcuts should have been
-  // cleaned up when the web app is uninstalled by
-  // OsIntegrationManager::UninstallOsHooks.
-  // TODO(http://b/289136332) Remove this when the dialog correctly integrates
-  // with the WebAppProvider's sub-manager system.
-  if (web_app::AreSubManagersExecuteEnabled()) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    override_registration_->test_override->SimulateDeleteShortcutsByUser(
-        profile(), installed_app_id, kTestAppName);
-  }
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(AppHomePageHandlerTest, CreateExtensionAppShortcut) {
