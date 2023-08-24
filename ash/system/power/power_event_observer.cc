@@ -251,6 +251,8 @@ PowerEventObserver::PowerEventObserver()
           << static_cast<int>(lock_state_) << ", can_lock="
           << Shell::Get()->session_controller()->CanLockScreen();
   chromeos::PowerManagerClient::Get()->AddObserver(this);
+  chromeos::PowerManagerClient::Get()->GetSwitchStates(base::BindOnce(
+      &PowerEventObserver::OnGetSwitchStates, weak_factory_.GetWeakPtr()));
 
   if (Shell::Get()->session_controller()->CanLockScreen())
     lock_on_suspend_usage_ = std::make_unique<LockOnSuspendUsage>();
@@ -258,6 +260,15 @@ PowerEventObserver::PowerEventObserver()
 
 PowerEventObserver::~PowerEventObserver() {
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+}
+
+void PowerEventObserver::OnGetSwitchStates(
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
+  if (!result.has_value()) {
+    return;
+  }
+  lid_state_ = result->lid_state;
+  VLOG(1) << "Obtained lid state=" << static_cast<uint32_t>(lid_state_);
 }
 
 void PowerEventObserver::OnLockAnimationsComplete() {
