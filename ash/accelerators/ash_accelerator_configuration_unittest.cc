@@ -2454,4 +2454,75 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefReleasedState) {
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 }
 
+TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
+  SimulateNewUserFirstLogin(kFakeUserEmail);
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_D,
+       ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kMagnifierZoomIn},
+  };
+
+  config_->Initialize(test_data);
+
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
+  const ui::Accelerator new_accelerator(ui::VKEY_A, ui::EF_COMMAND_DOWN);
+  AcceleratorConfigResult result = config_->AddUserAccelerator(
+      AcceleratorAction::kMagnifierZoomIn, new_accelerator);
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `AcceleratorAction::kSwitchToLastUsedIme`.
+  const base::Value::List* accelerator_overrides = updated_overrides.FindList(
+      base::NumberToString(AcceleratorAction::kMagnifierZoomIn));
+  // Expect 1 override accelerator for
+  // `AcceleratorAction::kSwitchToLastUsedIme`.
+  EXPECT_EQ(1u, accelerator_overrides->size());
+
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_D,
+       ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kMagnifierZoomIn},
+      {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kMagnifierZoomIn},
+  };
+
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  EXPECT_TRUE(CompareAccelerators(
+      {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kMagnifierZoomIn},
+      override_data.accelerator));
+  EXPECT_EQ(AcceleratorModificationAction::kAdd, override_data.action);
+
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+
+  // Simulate login on another account, expect the pref to not be present.
+  GetSessionControllerClient()->LockScreen();
+  SimulateNewUserFirstLogin(kFakeUserEmail2);
+  const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(other_user_pref_overrides.empty());
+
+  // Expect the second user to have all defaults.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+
+  // Now re-login to the original profile.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& original_pref_overrides = GetOverridePref();
+  EXPECT_FALSE(original_pref_overrides.empty());
+
+  const base::Value::Dict& relogin_overrides = GetOverridePref();
+  EXPECT_EQ(1u, relogin_overrides.size());
+  // Verify pref overrides were loaded correctly.
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+}
+
 }  // namespace ash

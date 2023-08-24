@@ -174,6 +174,9 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   // the default state and clear the override prefs.
   bool AreAcceleratorsValid();
 
+  // Resets all accelerator mappings to the the system default.
+  void ResetAllAccelerators();
+
   // A local copy of the pref overrides, allows modifying the overrides before
   // updating the override pref.
   base::Value::Dict accelerator_overrides_;

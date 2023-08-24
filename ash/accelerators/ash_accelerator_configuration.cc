@@ -221,6 +221,8 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
   // Store a copy of the pref overrides.
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
+  // Reset to default first.
+  ResetAllAccelerators();
   ApplyPrefOverrides();
 }
 
@@ -372,17 +374,7 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
-  accelerators_.clear();
-  id_to_accelerators_.clear();
-  accelerator_to_id_.Clear();
-  deprecated_accelerators_to_id_.Clear();
-  actions_with_deprecations_.clear();
-
-  id_to_accelerators_ = default_id_to_accelerators_cache_;
-  accelerator_to_id_ = default_accelerators_to_id_cache_;
-
-  deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
-  actions_with_deprecations_ = default_actions_with_deprecations_cache_;
+  ResetAllAccelerators();
 
   // Clear the prefs to be back to default.
   accelerator_overrides_.clear();
@@ -816,6 +808,20 @@ bool AshAcceleratorConfiguration::AreAcceleratorsValid() {
   }
 
   return true;
+}
+
+void AshAcceleratorConfiguration::ResetAllAccelerators() {
+  accelerators_.clear();
+  id_to_accelerators_.clear();
+  accelerator_to_id_.Clear();
+  deprecated_accelerators_to_id_.Clear();
+  actions_with_deprecations_.clear();
+
+  id_to_accelerators_ = default_id_to_accelerators_cache_;
+  accelerator_to_id_ = default_accelerators_to_id_cache_;
+
+  deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
+  actions_with_deprecations_ = default_actions_with_deprecations_cache_;
 }
 
 }  // namespace ash
