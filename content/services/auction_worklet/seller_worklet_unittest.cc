@@ -2769,7 +2769,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   browser_signal_render_url_ = GURL("https://foo/");
   RunReportResultCreatedScriptExpectingResult(
@@ -2780,7 +2780,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       });
       sendReportTo(browserSignals.renderURL))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/browser_signal_render_url_,
+      /*expected_report_url=*/browser_signal_render_url_,
       expected_ad_beacon_map);
 
   RunReportResultCreatedScriptExpectingResult(
@@ -2791,7 +2791,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/browser_signal_render_url_,
+      /*expected_report_url=*/browser_signal_render_url_,
       expected_ad_beacon_map);
 
   // Don't call twice.
@@ -2803,7 +2803,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
       });
       registerAdBeacon())",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:14 Uncaught TypeError: registerAdBeacon may be "
@@ -2819,7 +2819,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          try { registerAdBeacon() }
          catch (e) {})",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   // If error on first call, can be called again.
   RunReportResultCreatedScriptExpectingResult(
@@ -2831,13 +2831,13 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
            'view': "https://view.example.com/",
          }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   // Error if no parameters
   RunReportResultCreatedScriptExpectingResult(
       R"(5)", R"(registerAdBeacon())",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): at least "
@@ -2847,7 +2847,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
   RunReportResultCreatedScriptExpectingResult(
       R"(5)", R"(registerAdBeacon("foo"))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): Cannot "
@@ -2861,7 +2861,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         1: "https://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/"5",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/
       {
           {"click", GURL("https://click.example.com/")},
@@ -2878,7 +2878,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          map[Symbol('a')] = "https://view.example.com/";
          registerAdBeacon(map))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:14 Uncaught TypeError: Cannot convert a Symbol value "
@@ -2892,7 +2892,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "gopher://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
@@ -2906,7 +2906,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
         'view': "http://view.example.com/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "
@@ -2919,7 +2919,7 @@ TEST_F(SellerWorkletTest, ReportResultRegisterAdBeacon) {
          '\ud835': "http://127.0.0.1/",
       }))",
       /*expected_signals_for_winner=*/{},
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:10 Uncaught TypeError: registerAdBeacon(): invalid "

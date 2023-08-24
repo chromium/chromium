@@ -5079,10 +5079,10 @@ TEST_F(BidderWorkletTest, GenerateBidSetPrioritySignalsOverrides) {
 
 TEST_F(BidderWorkletTest, ReportWin) {
   RunReportWinWithFunctionBodyExpectingResult(
-      "", /*expected_report_url =*/absl::nullopt);
+      "", /*expected_report_url=*/absl::nullopt);
   RunReportWinWithFunctionBodyExpectingResult(
       R"(return "https://ignored.test/")",
-      /*expected_report_url =*/absl::nullopt);
+      /*expected_report_url=*/absl::nullopt);
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test"))", GURL("https://foo.test/"));
@@ -5091,7 +5091,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("http://http.not.allowed.test"))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -5099,7 +5099,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
        "valid HTTPS url."});
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("file:///file.not.allowed.test"))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -5107,7 +5107,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
        "valid HTTPS url."});
 
   RunReportWinWithFunctionBodyExpectingResult(
-      R"(sendReportTo(""))", /*expected_report_url =*/absl::nullopt,
+      R"(sendReportTo(""))", /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -5116,7 +5116,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test");sendReportTo("https://foo.test"))",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/:11 Uncaught TypeError: sendReportTo may be called at "
@@ -5126,7 +5126,7 @@ TEST_F(BidderWorkletTest, ReportWin) {
       R"(sendReportTo({
               toString:() => {while(true) {}}
          }))",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       {"https://url.test/ execution of `reportWin` timed out."});
@@ -5315,7 +5315,7 @@ TEST_F(BidderWorkletTest, ReportWinParallelLoadFails) {
 TEST_F(BidderWorkletTest, ReportWinDateNotAvailable) {
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://foo.test/" + Date().toString()))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6818,7 +6818,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
         'click': "https://click.example.com/",
         'view': "https://view.example.com/",
       }))",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   // Don't call twice.
   RunReportWinWithFunctionBodyExpectingResult(
@@ -6827,7 +6827,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
         'view': "https://view.example.com/",
       });
       registerAdBeacon())",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6842,7 +6842,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
          });
          try { registerAdBeacon() }
          catch (e) {})",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   // If error on first call, can be called again.
   RunReportWinWithFunctionBodyExpectingResult(
@@ -6852,12 +6852,12 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
            'click': "https://click.example.com/",
            'view': "https://view.example.com/",
          }))",
-      /*expected_report_url =*/absl::nullopt, expected_ad_beacon_map);
+      /*expected_report_url=*/absl::nullopt, expected_ad_beacon_map);
 
   // Error if no parameters
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon())",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6867,7 +6867,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
   // Error if parameter is not an object
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdBeacon("foo"))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6880,7 +6880,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
         'click': "https://click.example.com/",
         1: "https://view.example.com/",
       }))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/
       {{"click", GURL("https://click.example.com/")},
        {"1", GURL("https://view.example.com/")}},
@@ -6894,7 +6894,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
          }
          map[Symbol('a')] = "https://view.example.com/";
          registerAdBeacon(map))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6907,7 +6907,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
         'click': "https://click.example.com/",
         'view': "gopher://view.example.com/",
       }))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6920,7 +6920,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
         'click': "https://127.0.0.1/",
         'view': "http://view.example.com/",
       }))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6932,7 +6932,7 @@ TEST_F(BidderWorkletTest, ReportWinRegisterAdBeacon) {
       R"(registerAdBeacon({
         '\ud835': "http://127.0.0.1/",
       }))",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
@@ -6972,7 +6972,7 @@ TEST_F(BidderWorkletSharedStorageAPIDisabledTest, SharedStorageNotExposed) {
       R"(
         sharedStorage.clear();
       )",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_errors=*/
@@ -7106,7 +7106,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
           sharedStorage.delete('a');
           sharedStorage.clear();
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/{});
@@ -7156,7 +7156,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
         R"(
           sharedStorage.clear();
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
@@ -7181,7 +7181,7 @@ TEST_F(BidderWorkletSharedStorageAPIEnabledTest,
             }
           });
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
@@ -7655,7 +7655,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         R"(
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
@@ -7672,7 +7672,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
         R"(
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         /*expected_pa_requests=*/{},
         /*expected_errors=*/
@@ -7695,7 +7695,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogram(
               {bucket: 18446744073709551616n, value: 1});
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
@@ -7719,7 +7719,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 18446744073709551616n, value: 2});
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
@@ -7736,7 +7736,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
           error;
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/
@@ -7814,7 +7814,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
           privateAggregation.contributeToHistogramOnEvent(
               "reserved.win", {bucket: 234n, value: 56});
         )",
-        /*expected_report_url =*/absl::nullopt,
+        /*expected_report_url=*/absl::nullopt,
         /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
         std::move(expected_pa_requests),
         /*expected_errors=*/{});
@@ -7855,7 +7855,7 @@ TEST_F(BidderWorkletPrivateAggregationDisabledTest, ReportWin) {
       R"(
           privateAggregation.contributeToHistogram({bucket: 123n, value: 45});
         )",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{}, /*expected_ad_macro_map=*/{},
       /*expected_pa_requests=*/{},
       /*expected_errors=*/
@@ -9072,24 +9072,24 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
         registerAdMacro('', '111');
         registerAdMacro('empty_value', '');
         )",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}, {"", "111"}, {"empty_value", ""}});
 
   // Any additional arguments after the first 2 are ignored.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro('campaign', '111', ['https://test.example'], 'a');)",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}});
 
   // Type conversions happen.
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro('campaign', 111);)",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}});
 
   RunReportWinWithFunctionBodyExpectingResult(
       R"(registerAdMacro(null, 234);)",
-      /*expected_report_url =*/absl::nullopt, /*expected_ad_beacon_map=*/{},
+      /*expected_report_url=*/absl::nullopt, /*expected_ad_beacon_map=*/{},
       {{"null", "234"}});
 
   // Key is case sensitive.
@@ -9097,7 +9097,7 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
       R"(registerAdMacro('campaign', '111');
         registerAdMacro('CAMPAIGN', '111');
         )",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}, {"CAMPAIGN", "111"}});
 
@@ -9106,7 +9106,7 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
       R"(registerAdMacro('uppercase', 'ABC');
         registerAdMacro('lowercase', 'abc');
       )",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       {{"uppercase", "ABC"}, {"lowercase", "abc"}});
 
@@ -9117,7 +9117,7 @@ TEST_F(BidderWorkletAdMacroReportingEnabledTest, ReportWinRegisterAdMacro) {
         registerAdMacro('campaign', '111');
         registerAdMacro('publisher', 'abc');
         )",
-      /*expected_report_url =*/absl::nullopt,
+      /*expected_report_url=*/absl::nullopt,
       /*expected_ad_beacon_map=*/{},
       {{"campaign", "111"}, {"publisher", "abc"}});
 

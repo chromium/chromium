@@ -17504,7 +17504,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*report_post_auction_signals=*/true,
           /*debug_loss_report_url=*/"https://component1-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component1-win-reporting.test/",
-          /*report_top_level_post_auction_signals*/ true));
+          /*report_top_level_post_auction_signals=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
@@ -17530,7 +17530,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*report_post_auction_signals=*/true,
           /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component2-win-reporting.test/",
-          /*report_top_level_post_auction_signals*/ true));
+          /*report_top_level_post_auction_signals=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
       MakeBidScript(kComponentSeller2, "2", "https://ad2.com/",
@@ -17678,7 +17678,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*report_post_auction_signals=*/true,
           /*debug_loss_report_url=*/"https://component2-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component2-win-reporting.test/",
-          /*report_top_level_post_auction_signals*/ true));
+          /*report_top_level_post_auction_signals=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
       MakeBidScript(kComponentSeller2, "2", "https://ad2.com/",
@@ -17785,7 +17785,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
           /*report_post_auction_signals=*/true,
           /*debug_loss_report_url=*/"https://component-loss-reporting.test/",
           /*debug_win_report_url=*/"https://component-win-reporting.test/",
-          /*report_top_level_post_auction_signals*/ true));
+          /*report_top_level_post_auction_signals=*/true));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder1Url,
       MakeBidScript(kComponentSeller1, "1", "https://ad1.com/",
@@ -17905,14 +17905,14 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
       MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
                     kBidder1, kBidder1Name,
                     /*has_signals=*/false, "k1", "a",
-                    /*report_post_auction_signals*/ false,
+                    /*report_post_auction_signals=*/false,
                     kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
   auction_worklet::AddJavascriptResponse(
       &url_loader_factory_, kBidder2Url,
       MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
                     kBidder2, kBidder2Name,
                     /*has_signals=*/false, "l2", "b",
-                    /*report_post_auction_signals*/ false,
+                    /*report_post_auction_signals=*/false,
                     kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
 
   StartStandardAuction();

@@ -2732,8 +2732,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                              test_origin.Serialize().c_str(),
-                                              url.spec().c_str())));
+                                              test_origin, url)));
   WaitForAccessObserved({
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
@@ -2744,15 +2743,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupMissingLifetimeMs) {
   GURL url = https_server_->GetURL("a.test", "/echo");
-  url::Origin test_origin = url::Origin::Create(url);
   ASSERT_TRUE(NavigateToURL(shell(), url));
   AttachInterestGroupObserver();
 
   EXPECT_EQ(
       "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
       "Missing required field lifetimeMs",
-      EvalJs(shell(),
-             JsReplace(R"(
+      EvalJs(shell(), JsReplace(R"(
 (async function() {
   try {
     await navigator.joinAdInterestGroup(
@@ -2765,7 +2762,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                       test_origin.Serialize().c_str(), url.spec().c_str())));
+                                url::Origin::Create(url))));
   WaitForAccessObserved({});
 }
 
@@ -2789,8 +2786,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinInterestGroupLifetimeMs) {
   }
   return 'done';
 })())",
-                                              test_origin.Serialize().c_str(),
-                                              url.spec().c_str())));
+                                              test_origin)));
   WaitForAccessObserved({
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
@@ -2823,8 +2819,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                              test_origin.Serialize().c_str(),
-                                              url.spec().c_str())));
+                                              test_origin)));
   WaitForAccessObserved({
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
@@ -3023,7 +3018,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidSellerCapabilities) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::string origin_string = origin.Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(kSuccess,
@@ -3056,7 +3050,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidSizeFields) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::string origin_string = origin.Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
@@ -3103,7 +3096,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupWithAuctionServerRequestFlags) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::string origin_string = origin.Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(kSuccess,
@@ -3129,7 +3121,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidReportingIds) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::string origin_string = origin.Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
@@ -3169,7 +3160,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                        JoinInterestGroupValidAdRenderId) {
   GURL url = https_server_->GetURL("a.test", "/echo");
   auto origin = url::Origin::Create(url);
-  std::string origin_string = origin.Serialize();
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(kSuccess,
@@ -3277,7 +3267,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
   return 'done';
 })())",
-                                              origin.Serialize().c_str())));
+                                              origin)));
   WaitForAccessObserved({
       {TestInterestGroupObserver::kJoin, origin, "cars"},
   });
@@ -5565,12 +5555,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       directFromSellerSignals: $4
   });
 })())",
-                     seller_origin.Serialize().c_str(),
+                     seller_origin,
                      https_server_->GetURL(
                          kSellerHost,
                          "/interest_group/"
                          "decision_no_direct_from_seller_signals_validator.js"),
-                     bidder_origin.Serialize().c_str(),
+                     bidder_origin,
                      https_server_->GetURL(kSellerHost,
                                            "/direct_from_seller_signals")))
               .ExtractString()),
@@ -5647,12 +5637,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       directFromSellerSignals: $4
   });
 })())",
-                     seller_origin.Serialize().c_str(),
+                     seller_origin,
                      https_server_->GetURL(
                          kSellerHost,
                          "/interest_group/"
                          "decision_no_direct_from_seller_signals_validator.js"),
-                     bidder_origin.Serialize().c_str(),
+                     bidder_origin,
                      https_server_->GetURL(kSellerHost,
                                            "/direct_from_seller_signals")))
               .ExtractString()),
@@ -5733,12 +5723,12 @@ IN_PROC_BROWSER_TEST_F(
       directFromSellerSignals: $4
   });
 })())",
-                     seller_origin.Serialize().c_str(),
+                     seller_origin,
                      https_server_->GetURL(
                          kSellerHost,
                          "/interest_group/"
                          "decision_no_direct_from_seller_signals_validator.js"),
-                     bidder_origin.Serialize().c_str(),
+                     bidder_origin,
                      https_server_->GetURL(kSellerHost,
                                            "/direct_from_seller_signals")))
               .ExtractString()),
@@ -5821,12 +5811,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       directFromSellerSignals: maybePromise($4)
   });
 })())",
-                     seller_origin.Serialize().c_str(),
+                     seller_origin,
                      https_server_->GetURL(kSellerHost,
                                            "/interest_group/"
                                            "decision_simple_direct_from_"
                                            "seller_signals_validator.js"),
-                     bidder_origin.Serialize().c_str(),
+                     bidder_origin,
                      https_server_->GetURL(kSellerHost,
                                            "/direct_from_seller_signals")))
                  .ExtractString()),
@@ -5907,12 +5897,12 @@ IN_PROC_BROWSER_TEST_F(
       directFromSellerSignalsHeaderAdSlot: "adSlot1"
   });
 })())",
-                      seller_origin.Serialize().c_str(),
+                      seller_origin,
                       https_server_->GetURL(kSellerHost,
                                             "/interest_group/"
                                             "decision_simple_direct_from_"
                                             "seller_signals_validator.js"),
-                      bidder_origin.Serialize().c_str()))
+                      bidder_origin))
                .ExtractString()),
       &observer);
   EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
@@ -5980,12 +5970,12 @@ IN_PROC_BROWSER_TEST_F(
       directFromSellerSignalsHeaderAdSlot: "adSlot1"
   });
 })())",
-                         seller_origin.Serialize().c_str(),
+                         seller_origin,
                          https_server_->GetURL(kSellerHost,
                                                "/interest_group/"
                                                "decision_simple_direct_from_"
                                                "seller_signals_validator.js"),
-                         bidder_origin.Serialize().c_str()));
+                         bidder_origin));
 
   // Navigate away without waiting for the auction to complete. Nothing should
   // crash.
