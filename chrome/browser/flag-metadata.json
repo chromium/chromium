@@ -449,7 +449,7 @@
   {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 123
   },
   {
     "name": "audio-a2dp-advanced-codecs",
