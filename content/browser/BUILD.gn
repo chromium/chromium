@@ -3251,6 +3251,10 @@ source_set("browser") {
       "service_worker/service_worker_hid_delegate_observer.cc",
       "service_worker/service_worker_hid_delegate_observer.h",
 
+      # WebUSB on extension service workers is non-Android
+      "service_worker/service_worker_usb_delegate_observer.cc",
+      "service_worker/service_worker_usb_delegate_observer.h",
+
       # Most speech code is non-Android.
       "speech/endpointer/endpointer.cc",
       "speech/endpointer/endpointer.h",

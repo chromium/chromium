@@ -361,7 +361,11 @@ TEST_P(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
 
 INSTANTIATE_TEST_SUITE_P(WebUsbServiceImplTests,
                          WebUsbServiceImplTest,
-                         Values(kCreateForFrame, kCreateForServiceWorker),
+                          #if !BUILDFLAG(IS_ANDROID)
+                            Values(kCreateForFrame, kCreateForServiceWorker),
+                          #else
+                            Values(kCreateForFrame),
+                          #endif
                          [](const auto& info) {
                            return ServiceCreationTypeToString(info.param);
                          });
@@ -510,7 +514,11 @@ TEST_P(WebUsbServiceImplProtectedInterfaceTest, BlockProtectedInterface) {
 INSTANTIATE_TEST_SUITE_P(
     WebUsbServiceImplProtectedInterfaceTests,
     WebUsbServiceImplProtectedInterfaceTest,
+#if !BUILDFLAG(IS_ANDROID)
     Combine(Values(kCreateForFrame, kCreateForServiceWorker),
+#else
+    Combine(Values(kCreateForFrame),
+#endif
             Values(device::mojom::kUsbAudioClass,
                    device::mojom::kUsbHidClass,
                    device::mojom::kUsbMassStorageClass,

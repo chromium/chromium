@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -135,14 +136,29 @@ WebUsbServiceImpl::WebUsbServiceImpl(
       service_worker_version_(std::move(service_worker_version)),
       origin_(origin) {
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
-  if (delegate)
+  if (delegate && render_frame_host_) {
     delegate->AddObserver(GetBrowserContext(), this);
+  } else if (service_worker_version_) {
+#if !BUILDFLAG(IS_ANDROID)
+    // For service worker case, it relies on ServiceWorkerUsbDelegateObserver to
+    // be the broker between UsbDelegate and UsbService.
+    auto context = service_worker_version_->context();
+    if (context) {
+      context->usb_delegate_observer()->RegisterUsbService(
+          service_worker_version_->registration_id(),
+          weak_factory_.GetWeakPtr());
+    }
+#else
+    NOTREACHED_NORETURN();
+#endif  // !BUILDFLAG(IS_ANDROID)
+  }
 }
 
 WebUsbServiceImpl::~WebUsbServiceImpl() {
   auto* delegate = GetContentClient()->browser()->GetUsbDelegate();
-  if (delegate)
+  if (delegate && render_frame_host_) {
     delegate->RemoveObserver(GetBrowserContext(), this);
+  }
 }
 
 // static

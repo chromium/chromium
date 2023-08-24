@@ -690,7 +690,12 @@ void UsbChooserContext::OnDeviceManagerConnectionError() {
 
 void UsbChooserContext::SetDeviceManagerForTesting(
     mojo::PendingRemote<device::mojom::UsbDeviceManager> fake_device_manager) {
-  DCHECK(!device_manager_);
+  // `device_manager_` can be bound in some test scenarios, in that case, just
+  // reset the connection.
+  if (device_manager_) {
+    device_manager_.reset();
+    client_receiver_.reset();
+  }
   DCHECK(fake_device_manager);
   device_manager_.Bind(std::move(fake_device_manager));
   SetUpDeviceManagerConnection();

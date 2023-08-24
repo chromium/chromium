@@ -67,6 +67,22 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
       mojo::PendingAssociatedRemote<device::mojom::UsbDeviceManagerClient>
           client) override;
 
+  // UsbDelegate::Observer implementation:
+  void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override;
+  void OnDeviceRemoved(
+      const device::mojom::UsbDeviceInfo& device_info) override;
+  void OnDeviceManagerConnectionError() override;
+  void OnPermissionRevoked(const url::Origin& origin) override;
+
+  const mojo::AssociatedRemoteSet<device::mojom::UsbDeviceManagerClient>&
+  clients() const {
+    return clients_;
+  }
+
+  base::WeakPtr<content::ServiceWorkerVersion> service_worker_version() {
+    return service_worker_version_;
+  }
+
  private:
   class UsbDeviceClient;
 
@@ -79,13 +95,6 @@ class CONTENT_EXPORT WebUsbServiceImpl : public blink::mojom::WebUsbService,
   void OnGetDevices(
       GetDevicesCallback callback,
       std::vector<device::mojom::UsbDeviceInfoPtr> device_info_list);
-
-  // UsbDelegate::Observer implementation:
-  void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override;
-  void OnDeviceRemoved(
-      const device::mojom::UsbDeviceInfo& device_info) override;
-  void OnDeviceManagerConnectionError() override;
-  void OnPermissionRevoked(const url::Origin& origin) override;
 
   void IncrementConnectionCount();
   void DecrementConnectionCount();

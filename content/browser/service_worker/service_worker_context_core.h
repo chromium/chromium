@@ -50,6 +50,7 @@ class ServiceWorkerQuotaClient;
 class ServiceWorkerRegistration;
 #if !BUILDFLAG(IS_ANDROID)
 class ServiceWorkerHidDelegateObserver;
+class ServiceWorkerUsbDelegateObserver;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // This class manages data associated with service workers.
@@ -413,6 +414,14 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
   void SetServiceWorkerHidDelegateObserverForTesting(
       std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer);
+
+  // In the service worker case, WebUSB is only available in extension service
+  // workers. Since extension isn't available in ANDROID, guard
+  // ServiceWorkerUsbDelegateObserver within non-android platforms.
+  ServiceWorkerUsbDelegateObserver* usb_delegate_observer();
+
+  void SetServiceWorkerUsbDelegateObserverForTesting(
+      std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
  private:
@@ -549,6 +558,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer_;
+  std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<ServiceWorkerContextCore> weak_factory_{this};

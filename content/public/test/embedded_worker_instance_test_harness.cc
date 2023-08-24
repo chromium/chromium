@@ -12,6 +12,7 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_hid_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_test_utils.h"
+#include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,6 +60,12 @@ void EmbeddedWorkerInstanceTestHarness::CreateAndStartWorker(
       content::GetContentClientForTesting()->browser()->GetHidDelegate();
   worker_version_->set_has_hid_event_handlers(
       hid_delegate && hid_delegate->IsServiceWorkerAllowedForOrigin(
+                          url::Origin::Create(origin)));
+
+  content::UsbDelegate* usb_delegate =
+      content::GetContentClientForTesting()->browser()->GetUsbDelegate();
+  worker_version_->set_has_usb_event_handlers(
+      usb_delegate && usb_delegate->IsServiceWorkerAllowedForOrigin(
                           url::Origin::Create(origin)));
 
   worker_version_->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);

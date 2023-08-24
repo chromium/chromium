@@ -13,11 +13,13 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/usb_chooser.h"
 #include "content/public/browser/usb_delegate.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-forward.h"
 #include "services/device/public/mojom/usb_manager.mojom-forward.h"
+#include "services/device/public/mojom/usb_manager_client.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/origin.h"
@@ -25,6 +27,43 @@
 namespace content {
 
 class RenderFrameHost;
+
+// A mock UsbDeviceManagerClient implementation that can be used to listen for
+// USB device connection events.
+class MockDeviceManagerClient : public device::mojom::UsbDeviceManagerClient {
+ public:
+  MockDeviceManagerClient();
+  MockDeviceManagerClient(MockDeviceManagerClient&) = delete;
+  MockDeviceManagerClient& operator=(MockDeviceManagerClient&) = delete;
+  ~MockDeviceManagerClient() override;
+
+  void Bind(
+      mojo::PendingAssociatedReceiver<device::mojom::UsbDeviceManagerClient>
+          receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
+  mojo::PendingAssociatedRemote<device::mojom::UsbDeviceManagerClient>
+  CreateInterfacePtrAndBind() {
+    auto client = receiver_.BindNewEndpointAndPassRemote();
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &MockDeviceManagerClient::OnConnectionError, base::Unretained(this)));
+    return client;
+  }
+
+  MOCK_METHOD(void, OnDeviceAdded, (device::mojom::UsbDeviceInfoPtr));
+  MOCK_METHOD(void, OnDeviceRemoved, (device::mojom::UsbDeviceInfoPtr));
+
+  MOCK_METHOD(void, ConnectionError, ());
+  void OnConnectionError() {
+    receiver_.reset();
+    ConnectionError();
+  }
+
+ private:
+  mojo::AssociatedReceiver<device::mojom::UsbDeviceManagerClient> receiver_{
+      this};
+};
 
 // A UsbDelegate implementation that can be mocked for tests.
 class MockUsbDelegate : public UsbDelegate {
@@ -51,6 +90,7 @@ class MockUsbDelegate : public UsbDelegate {
   void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device);
   void OnDeviceRemoved(const device::mojom::UsbDeviceInfo& device);
   void OnPermissionRevoked(const url::Origin& origin);
+  void OnDeviceManagerConnectionError();
 
   MOCK_METHOD0(RunChooserInternal, device::mojom::UsbDeviceInfoPtr());
   MOCK_METHOD4(AdjustProtectedInterfaceClasses,
@@ -90,6 +130,8 @@ class MockUsbDelegate : public UsbDelegate {
                void(BrowserContext*, const url::Origin&));
   MOCK_METHOD2(DecrementConnectionCount,
                void(BrowserContext*, const url::Origin&));
+
+  const base::ObserverList<Observer>& observer_list() { return observer_list_; }
 
  private:
   base::ObserverList<UsbDelegate::Observer> observer_list_;

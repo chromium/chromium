@@ -10,6 +10,10 @@
 
 namespace content {
 
+MockDeviceManagerClient::MockDeviceManagerClient() = default;
+
+MockDeviceManagerClient::~MockDeviceManagerClient() = default;
+
 MockUsbDelegate::MockUsbDelegate() = default;
 
 MockUsbDelegate::~MockUsbDelegate() = default;
@@ -47,6 +51,12 @@ void MockUsbDelegate::OnDeviceRemoved(
 void MockUsbDelegate::OnPermissionRevoked(const url::Origin& origin) {
   for (auto& observer : observer_list_)
     observer.OnPermissionRevoked(origin);
+}
+
+void MockUsbDelegate::OnDeviceManagerConnectionError() {
+  for (auto& observer : observer_list_) {
+    observer.OnDeviceManagerConnectionError();
+  }
 }
 
 }  // namespace content

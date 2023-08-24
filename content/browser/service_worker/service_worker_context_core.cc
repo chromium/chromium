@@ -35,6 +35,7 @@
 #include "content/browser/service_worker/service_worker_register_job.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
+#include "content/browser/service_worker/service_worker_usb_delegate_observer.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -1314,6 +1315,19 @@ void ServiceWorkerContextCore::SetServiceWorkerHidDelegateObserverForTesting(
     std::unique_ptr<ServiceWorkerHidDelegateObserver> hid_delegate_observer) {
   hid_delegate_observer_ = std::move(hid_delegate_observer);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
+ServiceWorkerUsbDelegateObserver*
+ServiceWorkerContextCore::usb_delegate_observer() {
+  if (!usb_delegate_observer_) {
+    usb_delegate_observer_ =
+        std::make_unique<ServiceWorkerUsbDelegateObserver>(this);
+  }
+  return usb_delegate_observer_.get();
+}
+
+void ServiceWorkerContextCore::SetServiceWorkerUsbDelegateObserverForTesting(
+    std::unique_ptr<ServiceWorkerUsbDelegateObserver> usb_delegate_observer) {
+  usb_delegate_observer_ = std::move(usb_delegate_observer);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace content
