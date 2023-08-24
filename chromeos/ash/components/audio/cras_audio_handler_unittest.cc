@@ -79,7 +79,8 @@ const uint64_t kMicJackId = 10011;
 const uint64_t kKeyboardMicId = 10012;
 const uint64_t kFrontMicId = 10013;
 const uint64_t kRearMicId = 10014;
-const uint64_t kOtherId = 10015;
+const uint64_t kBluetoothNbMicId = 10015;
+const uint64_t kOtherId = 10016;
 const uint64_t kUSBJabraSpeakerOutputId1 = 90003;
 const uint64_t kUSBJabraSpeakerOutputId2 = 90004;
 const uint64_t kUSBJabraSpeakerInputId1 = 90005;
@@ -139,6 +140,10 @@ const AudioNodeInfo kOther[] = {
 const AudioNodeInfo kBluetoothHeadset[] = {{false, kBluetoothHeadsetId,
                                             "Bluetooth Headset", "BLUETOOTH",
                                             "Bluetooth Headset 1", 25}};
+
+const AudioNodeInfo kBluetoothNbMic[] = {{true, kBluetoothNbMicId,
+                                          "Fake Bt Mic", "BLUETOOTH_NB_MIC",
+                                          "Bluetooth Nb Mic", 0}};
 
 const AudioNodeInfo kHDMIOutput[] = {
     {false, kHDMIOutputId, "HDMI output", "HDMI", "HDMI output", 25}};
@@ -215,6 +220,10 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return noise_cancellation_state_change_count_;
   }
 
+  int hfp_mic_sr_state_change_count() const {
+    return hfp_mic_sr_state_change_count_;
+  }
+
   int output_started_change_count() const {
     return output_started_change_count_;
   }
@@ -275,6 +284,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     ++noise_cancellation_state_change_count_;
   }
 
+  void OnHfpMicSrStateChanged() override { ++hfp_mic_sr_state_change_count_; }
+
   void OnOutputStarted() override { ++output_started_change_count_; }
 
   void OnOutputStopped() override { ++output_stopped_change_count_; }
@@ -299,6 +310,7 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int input_gain_changed_count_ = 0;
   int output_channel_remixing_changed_count_ = 0;
   int noise_cancellation_state_change_count_ = 0;
+  int hfp_mic_sr_state_change_count_ = 0;
   int output_started_change_count_ = 0;
   int output_stopped_change_count_ = 0;
   int nonchrome_output_stopped_change_count_ = 0;
@@ -487,6 +499,25 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
         /*noise_cancellation_supported=*/true);
     audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
     audio_pref_handler_->SetNoiseCancellationState(noise_cancellation_enabled);
+    CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
+                                 audio_pref_handler_);
+    cras_audio_handler_ = CrasAudioHandler::Get();
+    test_observer_ = std::make_unique<TestObserver>();
+    cras_audio_handler_->AddAudioObserver(test_observer_.get());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      const AudioNodeList& audio_nodes,
+      const AudioNode& primary_active_node,
+      bool hfp_mic_sr_enabled) {
+    CrasAudioClient::InitializeFake();
+    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
+    fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
+    fake_cras_audio_client()->SetHfpMicSrSupported(
+        /*hfp_mic_sr_supported=*/true);
+    audio_pref_handler_ = base::MakeRefCounted<AudioDevicesPrefHandlerStub>();
+    audio_pref_handler_->SetHfpMicSrState(hfp_mic_sr_enabled);
     CrasAudioHandler::Initialize(fake_manager_->MakeRemote(),
                                  audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
@@ -1538,6 +1569,71 @@ TEST_P(CrasAudioHandlerTest, NoiseCancellationRefreshPrefDisableWithNC) {
   // Noise cancellation should still be disabled since the pref is disabled.
   EXPECT_FALSE(fake_cras_audio_client()->noise_cancellation_enabled());
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
+}
+
+TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefEnabledNoHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with bluetooth mic.
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Clear the audio effect, no hfp_mic_sr supported.
+  bt_nb_mic.audio_effect = 0u;
+  audio_nodes.push_back(bt_nb_mic);
+  // Simulate enable pref for hfp_mic_sr.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, bt_nb_mic, /*hfp_mic_sr_enabled=*/true);
+
+  // hfp_mic_sr should still be disabled despite the pref being enabled
+  // since the audio_effect of the hfp mic sr is unavailable.
+  EXPECT_FALSE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+  EXPECT_TRUE(audio_pref_handler_->GetHfpMicSrState());
+}
+
+TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefEnabledWithHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with bluetooth mic.
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Enable hfp_mic_sr effect.
+  bt_nb_mic.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(bt_nb_mic);
+  // Simulate enable pref for hfp_mic_sr.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, bt_nb_mic, /*hfp_mic_sr_enabled=*/true);
+
+  // hfp_mic_sr is enabled.
+  EXPECT_TRUE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+  EXPECT_TRUE(audio_pref_handler_->GetHfpMicSrState());
+}
+
+TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefDisableNoHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with bluetooth mic.
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Clear audio effect, no hfp_mic_sr.
+  bt_nb_mic.audio_effect = 0u;
+  audio_nodes.push_back(bt_nb_mic);
+  // Simulate enable pref for hfp_mic_sr.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, bt_nb_mic, /*hfp_mic_sr_enabled=*/false);
+
+  // hfp_mic_sr should still be disabled since the pref is disabled.
+  EXPECT_FALSE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+  EXPECT_FALSE(audio_pref_handler_->GetHfpMicSrState());
+}
+
+TEST_P(CrasAudioHandlerTest, HfpMicSrRefreshPrefDisableWithHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with bluetooth mic.
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Enable hfp_mic_sr effect.
+  bt_nb_mic.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(bt_nb_mic);
+  // Simulate enable pref for hfp_mic_sr.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, bt_nb_mic, /*hfp_mic_sr_enabled=*/false);
+
+  // hfp_mic_sr should still be disabled since the pref is disabled.
+  EXPECT_FALSE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+  EXPECT_FALSE(audio_pref_handler_->GetHfpMicSrState());
 }
 
 TEST_P(CrasAudioHandlerTest, BluetoothSpeakerIdChangedOnFly) {
@@ -5221,6 +5317,102 @@ TEST_P(CrasAudioHandlerTest, SetNoiseCancellationStateObserver) {
       false, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
 
   EXPECT_EQ(1, test_observer_->noise_cancellation_state_change_count());
+}
+
+TEST_P(CrasAudioHandlerTest, IsHfpMicSrSupportedForDeviceNoHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  // Set up initial audio devices, only with bluetooth mic.
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Clear the audio effect, no hfp_mic_sr supported.
+  bt_nb_mic.audio_effect = 0u;
+  audio_nodes.push_back(bt_nb_mic);
+  // Disable hfp_mic_sr for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*hfp_mic_sr_enabled=*/false);
+
+  EXPECT_FALSE(
+      cras_audio_handler_->IsHfpMicSrSupportedForDevice(kBluetoothNbMicId));
+}
+
+TEST_P(CrasAudioHandlerTest, IsHfpMicSrSupportedForDeviceWithHfpMicSr) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Set the audio effect, hfp_mic_sr supported.
+  bt_nb_mic.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(bt_nb_mic);
+  AudioNode micJack = GenerateAudioNode(kMicJack);
+  // Clear the audio effect, no hfp_mic_sr supported.
+  micJack.audio_effect = 0u;
+  audio_nodes.push_back(micJack);
+  AudioNode internalSpeaker = GenerateAudioNode(kInternalSpeaker);
+  // Force audio_effect value to verify output nodes always return false.
+  internalSpeaker.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(internalSpeaker);
+
+  // Enable hfp_mic_sr for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*hfp_mic_sr_enabled=*/true);
+
+  EXPECT_TRUE(
+      cras_audio_handler_->IsHfpMicSrSupportedForDevice(kBluetoothNbMicId));
+  EXPECT_FALSE(cras_audio_handler_->IsHfpMicSrSupportedForDevice(kMicJackId));
+  EXPECT_FALSE(
+      cras_audio_handler_->IsHfpMicSrSupportedForDevice(kInternalSpeakerId));
+}
+
+TEST_P(CrasAudioHandlerTest, SetHfpMicSrStateUpdatesAudioPrefAndClient) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Set the audio effect, hfp_mic_sr supported.
+  bt_nb_mic.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(bt_nb_mic);
+
+  // Enable hfp_mic_sr for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*hfp_mic_sr_enabled=*/true);
+
+  EXPECT_TRUE(audio_pref_handler_->GetHfpMicSrState());
+  EXPECT_TRUE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+
+  // Turn off hfp_mic_sr.
+  cras_audio_handler_->SetHfpMicSrState(
+      /*hfp_mic_sr_on=*/false,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
+
+  EXPECT_FALSE(audio_pref_handler_->GetHfpMicSrState());
+  EXPECT_FALSE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+
+  // Turn on hfp_mic_sr.
+  cras_audio_handler_->SetHfpMicSrState(
+      /*hfp_mic_sr_on=*/true,
+      CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
+
+  EXPECT_TRUE(audio_pref_handler_->GetHfpMicSrState());
+  EXPECT_TRUE(fake_cras_audio_client()->hfp_mic_sr_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, SetHfpMicSrStateObserver) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList({});
+  AudioNode bt_nb_mic = GenerateAudioNode(kBluetoothNbMic);
+  // Set the audio effect, hfp_mic_sr supported.
+  bt_nb_mic.audio_effect = cras::EFFECT_TYPE_HFP_MIC_SR;
+  audio_nodes.push_back(bt_nb_mic);
+
+  // Enable hfp_mic_sr for board.
+  SetUpCrasAudioHandlerWithPrimaryActiveNodeAndHfpMicSrState(
+      audio_nodes, /*primary_active_node=*/audio_nodes[0],
+      /*hfp_mic_sr_enabled=*/true);
+
+  EXPECT_EQ(0, test_observer_->hfp_mic_sr_state_change_count());
+
+  // Change hfp_mic_sr state to trigger observer.
+  cras_audio_handler_->SetHfpMicSrState(
+      false, CrasAudioHandler::AudioSettingsChangeSource::kSystemTray);
+
+  EXPECT_EQ(1, test_observer_->hfp_mic_sr_state_change_count());
 }
 
 TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionSwitchTest) {

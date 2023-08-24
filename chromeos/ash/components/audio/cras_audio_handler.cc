@@ -110,6 +110,8 @@ void CrasAudioHandler::AudioObserver::OnNoiseCancellationStateChanged() {}
 
 void CrasAudioHandler::AudioObserver::OnForceRespectUiGainsStateChanged() {}
 
+void CrasAudioHandler::AudioObserver::OnHfpMicSrStateChanged() {}
+
 void CrasAudioHandler::AudioObserver::OnHotwordTriggered(
     uint64_t /* tv_sec */,
     uint64_t /* tv_nsec */) {}
@@ -619,6 +621,69 @@ void CrasAudioHandler::SetForceRespectUiGainsState(bool state) {
 
   for (auto& observer : observers_) {
     observer.OnForceRespectUiGainsStateChanged();
+  }
+}
+
+bool CrasAudioHandler::IsHfpMicSrSupportedForDevice(uint64_t device_id) {
+  if (!hfp_mic_sr_supported()) {
+    return false;
+  }
+
+  const AudioDevice* device = GetDeviceFromId(device_id);
+  if (!device || device->type != AudioDeviceType::kBluetoothNbMic) {
+    return false;
+  }
+
+  return device->audio_effect & cras::EFFECT_TYPE_HFP_MIC_SR;
+}
+
+void CrasAudioHandler::RequestHfpMicSrSupported(
+    OnHfpMicSrSupportedCallback callback) {
+  CrasAudioClient::Get()->GetHfpMicSrSupported(
+      base::BindOnce(&CrasAudioHandler::HandleGetHfpMicSrSupported,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void CrasAudioHandler::HandleGetHfpMicSrSupported(
+    OnHfpMicSrSupportedCallback callback,
+    absl::optional<bool> hfp_mic_sr_supported) {
+  if (!hfp_mic_sr_supported.has_value()) {
+    LOG(ERROR) << "cras_audio_handler: Failed to retrieve hfp_mic_sr support";
+  } else {
+    hfp_mic_sr_supported_ = hfp_mic_sr_supported.value();
+  }
+
+  std::move(callback).Run();
+}
+
+bool CrasAudioHandler::GetHfpMicSrState() const {
+  return audio_pref_handler_->GetHfpMicSrState();
+}
+
+void CrasAudioHandler::RefreshHfpMicSrState() {
+  if (!hfp_mic_sr_supported()) {
+    return;
+  }
+
+  const AudioDevice* device = GetDeviceByType(AudioDeviceType::kBluetoothNbMic);
+  if (!device) {
+    return;
+  }
+
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetHfpMicSrEnabled(
+      GetHfpMicSrState() &&
+      (device->audio_effect & cras::EFFECT_TYPE_HFP_MIC_SR));
+}
+
+void CrasAudioHandler::SetHfpMicSrState(bool hfp_mic_sr_on,
+                                        AudioSettingsChangeSource source) {
+  CrasAudioClient::Get()->SetHfpMicSrEnabled(hfp_mic_sr_on);
+  audio_pref_handler_->SetHfpMicSrState(hfp_mic_sr_on);
+
+  for (auto& observer : observers_) {
+    observer.OnHfpMicSrStateChanged();
   }
 }
 
@@ -1436,6 +1501,8 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetSystemAgcSupported();
   RequestNoiseCancellationSupported(base::BindOnce(
       &CrasAudioHandler::GetNodes, weak_ptr_factory_.GetWeakPtr()));
+  RequestHfpMicSrSupported(base::BindOnce(&CrasAudioHandler::GetNodes,
+                                          weak_ptr_factory_.GetWeakPtr()));
   GetNumberOfOutputStreams();
   GetNumberOfNonChromeOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
@@ -2139,6 +2206,9 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
   // Always set the input noise cancellation state on NodesChange event.
   RefreshNoiseCancellationState();
 
+  // Always set the hfp_mic_sr state on NodesChange event.
+  RefreshHfpMicSrState();
+
   for (auto& observer : observers_)
     observer.OnAudioNodesChanged();
 }
@@ -2424,6 +2494,10 @@ void CrasAudioHandler::HandleGetDefaultOutputBufferSize(
 
 bool CrasAudioHandler::noise_cancellation_supported() const {
   return noise_cancellation_supported_;
+}
+
+bool CrasAudioHandler::hfp_mic_sr_supported() const {
+  return hfp_mic_sr_supported_;
 }
 
 bool CrasAudioHandler::system_aec_supported() const {
