@@ -270,17 +270,6 @@ function createLinkPair(textContent: string, href: string) {
 }
 
 /**
- * Adds hidden spans to an existing heading. Used when the text is
- * copied to make the heading appear like markdown
- */
-function addMarkdownHeading(padChar: string) {
-  return function(el: Element) {
-    el.appendChild(
-        createHidden(`\n${''.padEnd(el.textContent!.length, padChar)}`));
-  };
-}
-
-/**
  * Get a string data value
  */
 function getDataValue(data: Data|ArrayData): string {
@@ -318,6 +307,39 @@ function safeString(value: any) {
   return typeof value === 'undefined' || value === null ? '' : value.toString();
 }
 
+const kSections = {
+  featureStatus: ['Graphics Feature Status', 'ul'],
+  workarounds: ['Driver Bug Workarounds', 'ul'],
+  problems: ['Problems Detected', 'ul'],
+  angleFeatures: ['ANGLE Features', 'ul'],
+  dawnInfo: ['DAWN Info', 'ul'],
+  clientInfo: ['Version Information', 'div'],
+  basicInfo: ['Driver Information', 'div'],
+  compositorInfo: ['Compositor Information', 'div'],
+  gpuMemoryBufferInfo: ['GpuMemoryBuffers Status', 'div'],
+  displayInfo: ['Display(s) Information', 'div'],
+  videoAccelerationInfo: ['Video Acceleration Information', 'div'],
+  vulkanInfo: ['Vulkan Information', 'div'],
+  devicePerfInfo: ['Device Performance Information', 'div'],
+  diagnostics: ['Diagnostics', 'div'],
+  basicInfoForHardwareGpu: ['Driver Information for Hardware GPU', 'div'],
+  featureStatusForHardwareGpu:
+      ['Graphics Feature Status for Hardware GPU', 'ul'],
+  workaroundsForHardwareGpu: ['Driver Bug Workarounds for Hardware GPU', 'ul'],
+  problemsForHardwareGpu: ['Problems Detected for Hardware GPU', 'ul'],
+  logMessages: ['Log Messages', 'ul'],
+} as const;
+
+interface Section {
+  div: HTMLElement;
+  list: HTMLElement;
+  wrap: HTMLElement;
+}
+
+type Sections = {
+  [key in keyof typeof kSections]: Section
+};
+
 /**
  * @fileoverview This view displays information on the current GPU
  * hardware.  Its primary usefulness is to allow users to copy-paste
@@ -325,6 +347,7 @@ function safeString(value: any) {
  */
 export class InfoViewElement extends CustomElement {
   browserBridge?: BrowserBridge;
+  sections?: Sections;
 
   static override get template() {
     return getTemplate();
@@ -455,10 +478,18 @@ export class InfoViewElement extends CustomElement {
       event.preventDefault();
     });
 
-    this.shadowRoot!.querySelectorAll('h1, h2, h3')
-        .forEach(addMarkdownHeading('='));
-    this.shadowRoot!.querySelectorAll('h4, h5, h6')
-        .forEach(addMarkdownHeading('-'));
+    const contentDiv = this.getRequiredElement('#content')!;
+    this.sections = Object.fromEntries(Object.entries(kSections).map(
+                        ([propName, [title, tag]]) => {
+                          const div = createHeading('h3', '=', title);
+                          const list = createElem(tag);
+                          const wrap = createElem('div', {}, [
+                            div,
+                            list,
+                          ]);
+                          contentDiv.appendChild(wrap);
+                          return [propName, {div, list, wrap}];
+                        })) as Sections;
   }
 
   /**
@@ -478,11 +509,13 @@ export class InfoViewElement extends CustomElement {
           revisionIdentifier}/${filepath}`;
     }
 
+    const sections = this.sections!;
+
     // Client info
     if (browserBridge.clientInfo) {
       clientInfo = browserBridge.clientInfo;
 
-      this.setTable_('client-info', [
+      this.setTable_(sections.clientInfo, [
         {description: 'Data exported', value: (new Date()).toISOString()},
         {description: 'Chrome version', value: clientInfo.version},
         {description: 'Operating system', value: clientInfo.operating_system},
@@ -506,40 +539,8 @@ export class InfoViewElement extends CustomElement {
         {description: 'Command Line', value: clientInfo.command_line},
       ]);
     } else {
-      this.setText_('client-info', '... loading...');
+      sections.clientInfo.list.textContent = '... loading ...';
     }
-
-
-    // GPU info, basic
-    const diagnosticsDiv = this.getRequiredElement('.diagnostics');
-    const diagnosticsLoadingDiv =
-        this.getRequiredElement('.diagnostics-loading');
-    const featureStatusList = this.getRequiredElement('.feature-status-list');
-    const problemsDiv = this.getRequiredElement('.problems-div');
-    const problemsList = this.getRequiredElement('.problems-list');
-    const workaroundsDiv = this.getRequiredElement('.workarounds-div');
-    const workaroundsList = this.getRequiredElement('.workarounds-list');
-    const angleFeaturesDiv = this.getRequiredElement('.angle-features-div');
-    const angleFeaturesList = this.getRequiredElement('.angle-features-list');
-    const dawnInfoDiv = this.getRequiredElement('.dawn-info-div');
-    const dawnInfoList = this.getRequiredElement('.dawn-info-list');
-
-
-
-    const basicInfoForHardwareGpuDiv =
-        this.getRequiredElement('.basic-info-for-hardware-gpu-div');
-    const featureStatusForHardwareGpuDiv =
-        this.getRequiredElement('.feature-status-for-hardware-gpu-div');
-    const featureStatusForHardwareGpuList =
-        this.getRequiredElement('.feature-status-for-hardware-gpu-list');
-    const problemsForHardwareGpuDiv =
-        this.getRequiredElement('.problems-for-hardware-gpu-div');
-    const problemsForHardwareGpuList =
-        this.getRequiredElement('.problems-for-hardware-gpu-list');
-    const workaroundsForHardwareGpuDiv =
-        this.getRequiredElement('.workarounds-for-hardware-gpu-div');
-    const workaroundsForHardwareGpuList =
-        this.getRequiredElement('.workarounds-for-hardware-gpu-list');
 
     const gpuInfo = browserBridge.gpuInfo;
     if (gpuInfo) {
@@ -547,77 +548,52 @@ export class InfoViewElement extends CustomElement {
       // href from data, which jstemplate can't seem to do.
       if (gpuInfo.featureStatus) {
         this.appendFeatureInfo_(
-            gpuInfo.featureStatus, featureStatusList, problemsDiv, problemsList,
-            workaroundsDiv, workaroundsList);
+            gpuInfo.featureStatus, sections.featureStatus.list,
+            sections.problems, sections.workarounds);
       } else {
-        featureStatusList.textContent = '';
-        problemsList.hidden = true;
-        workaroundsList.hidden = true;
+        sections.featureStatus.list.textContent = '';
+        sections.problems.list.hidden = true;
+        sections.workarounds.list.hidden = true;
       }
 
-      if (gpuInfo.featureStatusForHardwareGpu) {
-        basicInfoForHardwareGpuDiv.hidden = false;
-        featureStatusForHardwareGpuDiv.hidden = false;
-        problemsForHardwareGpuDiv.hidden = false;
-        workaroundsForHardwareGpuDiv.hidden = false;
+      const hideHardware = !gpuInfo.featureStatusForHardwareGpu;
+      sections.basicInfoForHardwareGpu.div.hidden = hideHardware;
+      sections.featureStatusForHardwareGpu.div.hidden = hideHardware;
+      sections.problemsForHardwareGpu.div.hidden = hideHardware;
+      sections.workaroundsForHardwareGpu.div.hidden = hideHardware;
+      if (!hideHardware) {
         this.appendFeatureInfo_(
             gpuInfo.featureStatusForHardwareGpu,
-            featureStatusForHardwareGpuList, problemsForHardwareGpuDiv,
-            problemsForHardwareGpuList, workaroundsForHardwareGpuDiv,
-            workaroundsForHardwareGpuList);
+            sections.featureStatusForHardwareGpu.list,
+            sections.problemsForHardwareGpu,
+            sections.workaroundsForHardwareGpu);
         this.setTable_(
-            'basic-info-for-hardware-gpu', gpuInfo.basicInfoForHardwareGpu);
-      } else {
-        basicInfoForHardwareGpuDiv.hidden = true;
-        featureStatusForHardwareGpuDiv.hidden = true;
-        problemsForHardwareGpuDiv.hidden = true;
-        workaroundsForHardwareGpuDiv.hidden = true;
+            sections.basicInfoForHardwareGpu, gpuInfo.basicInfoForHardwareGpu);
       }
 
-      this.setTable_('basic-info', gpuInfo.basicInfo);
-      this.setTable_('compositor-info', gpuInfo.compositorInfo);
-      this.setTable_('gpu-memory-buffer-info', gpuInfo.gpuMemoryBufferInfo);
-      this.setTable_('display-info', gpuInfo.displayInfo);
-      this.setTable_('video-acceleration-info', gpuInfo.videoAcceleratorsInfo);
+      this.setTable_(sections.basicInfo, gpuInfo.basicInfo);
+      this.setTable_(sections.compositorInfo, gpuInfo.compositorInfo);
+      this.setTable_(sections.gpuMemoryBufferInfo, gpuInfo.gpuMemoryBufferInfo);
+      this.setTable_(sections.displayInfo, gpuInfo.displayInfo);
+      this.setTable_(
+          sections.videoAccelerationInfo, gpuInfo.videoAcceleratorsInfo);
 
-      if (gpuInfo.ANGLEFeatures) {
-        if (gpuInfo.ANGLEFeatures.length) {
-          angleFeaturesDiv.hidden = false;
-          angleFeaturesList.textContent = '';
-          for (const angleFeature of gpuInfo.ANGLEFeatures) {
-            angleFeaturesList.appendChild(
-                this.createAngleFeatureEl_(angleFeature));
-          }
-        } else {
-          angleFeaturesDiv.hidden = true;
+      this.updateSectionList_(
+          sections.angleFeatures, gpuInfo.ANGLEFeatures,
+          angleFeature => this.createAngleFeatureEl_(angleFeature));
+
+      this.updateSection_(sections.dawnInfo, () => {
+        const show = !!gpuInfo.dawnInfo && gpuInfo.dawnInfo.length > 0;
+        if (show) {
+          this.createDawnInfoEl_(sections.dawnInfo.list, gpuInfo.dawnInfo!);
         }
-      }
+        return show;
+      });
 
-      if (gpuInfo.dawnInfo) {
-        if (gpuInfo.dawnInfo.length) {
-          dawnInfoDiv.hidden = false;
-          this.createDawnInfoEl_(dawnInfoList, gpuInfo.dawnInfo);
-        } else {
-          dawnInfoDiv.hidden = true;
-        }
-      }
-
-      if (gpuInfo.diagnostics) {
-        diagnosticsDiv.hidden = false;
-        diagnosticsLoadingDiv.hidden = true;
-        this.getRequiredElement('#diagnostics-table').hidden = false;
-        this.setTable_('diagnostics-table', gpuInfo.diagnostics);
-      } else if (gpuInfo.diagnostics === null) {
-        // gpu_internals.cc sets diagnostics to null when it is being loaded
-        diagnosticsDiv.hidden = false;
-        diagnosticsLoadingDiv.hidden = false;
-        this.getRequiredElement('#diagnostics-table').hidden = true;
-      } else {
-        diagnosticsDiv.hidden = true;
-      }
+      this.updateSectionTable_(sections.diagnostics, gpuInfo.diagnostics);
 
       this.setTable_(
-          'vulkan-info',
+          sections.vulkanInfo,
           gpuInfo.vulkanInfo ? [{
             'description': 'info',
             'value': new VulkanInfo(gpuInfo.vulkanInfo).toString(),
@@ -625,28 +601,61 @@ export class InfoViewElement extends CustomElement {
           }] :
                                []);
 
-      this.setTable_('device-perf-info', gpuInfo.devicePerfInfo);
+      this.setTable_(sections.devicePerfInfo, gpuInfo.devicePerfInfo);
     } else {
-      this.setText_('basic-info', '... loading ...');
-      diagnosticsDiv.hidden = true;
-      featureStatusList.textContent = '';
-      problemsDiv.hidden = true;
-      dawnInfoDiv.hidden = true;
+      sections.basicInfo.list.textContent = '... loading ...';
+      sections.diagnostics.div.hidden = true;
+      sections.featureStatus.list.textContent = '';
+      sections.problems.div.hidden = true;
+      sections.dawnInfo.div.hidden = true;
     }
 
     // Log messages
-    const messageList = this.getRequiredElement('#log-messages > ul');
-    messageList.innerHTML = window.trustedTypes!.emptyHTML;
+    sections.logMessages.list.textContent = '';
     browserBridge.logMessages.forEach(messageObj => {
-      messageList.appendChild(
+      sections.logMessages.list.appendChild(
           createElem('li', `${messageObj.header}: ${messageObj.message}`));
+    });
+  }
+
+  /**
+   * Clears a section and then updates it by calling fn. If fn returns false
+   * it hides the section.
+   */
+  private updateSection_(section: Section, fn: () => boolean) {
+    section.list.textContent = '';
+    const show = fn();
+    section.div.hidden = !show;
+  }
+
+  /**
+   * Clears and and updates a section from a list. If the list is empty it
+   * hides the section
+   */
+  private updateSectionList_<T>(
+      section: Section, list: T[]|undefined, fn: (item: T) => HTMLElement) {
+    this.updateSection_(section, () => {
+      if (list) {
+        for (const item of list) {
+          section.list.appendChild(fn(item));
+        }
+      }
+      return !!list && list.length > 0;
+    });
+  }
+
+  /** Update a table, hiding it of the table has no elements */
+  private updateSectionTable_(
+      section: Section, inputData: Data[]|ArrayData[]|undefined) {
+    this.updateSection_(section, () => {
+      this.setTable_(section, inputData);
+      return !!inputData && inputData.length > 0;
     });
   }
 
   private appendFeatureInfo_(
       featureInfo: FeatureStatus, featureStatusList: HTMLElement,
-      problemsDiv: HTMLElement, problemsList: HTMLElement,
-      workaroundsDiv: HTMLElement, workaroundsList: HTMLElement) {
+      problems: Section, workarounds: Section) {
     // Feature map
     const featureLabelMap: Record<string, string> = {
       '2d_canvas': 'Canvas',
@@ -736,26 +745,14 @@ export class InfoViewElement extends CustomElement {
     }
 
     // problems list
-    if (featureInfo.problems.length) {
-      problemsDiv.hidden = false;
-      problemsList.textContent = '';
-      for (const problem of featureInfo.problems) {
-        problemsList.appendChild(this.createProblemEl_(problem));
-      }
-    } else {
-      problemsDiv.hidden = true;
-    }
+    this.updateSectionList_(
+        problems, featureInfo.problems,
+        problem => this.createProblemEl_(problem));
 
     // driver bug workarounds list
-    if (featureInfo.workarounds.length) {
-      workaroundsDiv.hidden = false;
-      workaroundsList.textContent = '';
-      for (const workaround of featureInfo.workarounds) {
-        workaroundsList.appendChild(createLi(workaround));
-      }
-    } else {
-      workaroundsDiv.hidden = true;
-    }
+    this.updateSectionList_(
+        workarounds, featureInfo.workarounds,
+        workaround => createLi(workaround));
   }
 
   private createProblemEl_(problem: Problem): HTMLElement {
@@ -873,21 +870,9 @@ export class InfoViewElement extends CustomElement {
     ]);
   }
 
-  private setText_(outputElementId: string, text: string) {
-    this.getRequiredElement(`#${outputElementId}`).textContent = text;
-  }
-
-  private setTable_(
-      outputElementId: string, inputData: Data[]|ArrayData[]|undefined) {
-    const table = createInfoTable(inputData || []);
-
-    const peg = this.$(`#${outputElementId}`);
-    if (!peg) {
-      throw new Error('Node ' + outputElementId + ' not found');
-    }
-
-    peg.textContent = '';
-    peg.appendChild(table);
+  private setTable_(section: Section, inputData: Data[]|ArrayData[]|undefined) {
+    section.list.textContent = '';
+    section.list.appendChild(createInfoTable(inputData || []));
   }
 
   private createDawnInfoEl_(dawnInfoList: HTMLElement, gpuDawnInfo: string[]) {

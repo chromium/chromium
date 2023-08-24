@@ -4944,10 +4944,10 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, WebUiReloadAfterCrash) {
   // violation due to eval.
   EXPECT_THAT(EvalJs(main_document,
                      "document.querySelector('info-view').shadowRoot"
-                     ".querySelector('h3').textContent",
+                     ".querySelector('#used-only-by-test').text",
                      EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1)
                   .ExtractString(),
-              testing::StartsWith("Graphics Feature Status"));
+              testing::StartsWith("GPU Info"));
 }
 
 // Start with A(B), navigate A to C. By emulating a slow unload handler B, check
