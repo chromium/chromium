@@ -53,6 +53,7 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(
       SafetyHubHandlerTest,
       SendNotificationPermissionReviewList_FeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SafetyHubHandlerTest, RevokeAllContentSettingTypes);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptAllowed() override;
