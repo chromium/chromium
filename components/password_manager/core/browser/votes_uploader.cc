@@ -309,7 +309,7 @@ SingleUsernameVoteData::SingleUsernameVoteData(
   base::TrimWhitespace(username_value, base::TrimPositions::TRIM_ALL,
                        &username_candidate_value);
   value_type = GetValueType(username_candidate_value, stored_credentials);
-  prompt_edit = autofill::AutofillUploadContents::EDIT_UNSPECIFIED;
+  prompt_edit = AutofillUploadContents::EDIT_UNSPECIFIED;
 }
 
 SingleUsernameVoteData::SingleUsernameVoteData(
@@ -671,43 +671,11 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
 #if !BUILDFLAG(IS_ANDROID)
 void VotesUploader::CalculateUsernamePromptEditState(
     const std::u16string& saved_username) {
-  if (!single_username_vote_data_ ||
-      single_username_vote_data_->username_candidate_value.empty()) {
-    return;
+  if (single_username_vote_data_ &&
+      !single_username_vote_data_->username_candidate_value.empty()) {
+    single_username_vote_data_->prompt_edit = CalculateUsernamePromptEdit(
+        saved_username, single_username_vote_data_->username_candidate_value);
   }
-  const auto& single_username_value =
-      single_username_vote_data_->username_candidate_value;
-
-  autofill::AutofillUploadContents::SingleUsernamePromptEdit prompt_edit =
-      autofill::AutofillUploadContents::EDIT_UNSPECIFIED;
-  if (saved_username != suggested_username_) {
-    // In this branch, the user edited the username in a prompt before accepting
-    // it.
-
-    // The user removed some suggested username and that username wasn't the
-    // possible single username (|single_username_value|) => this is neither
-    // negative nor positive vote. If the user removes |single_username_value|,
-    // then it is a negative signal and will be reported below.
-    if (saved_username.empty() &&
-        suggested_username_ != single_username_value) {
-      return;
-    }
-
-    if (saved_username == single_username_value)
-      prompt_edit = autofill::AutofillUploadContents::EDITED_POSITIVE;
-    else
-      prompt_edit = autofill::AutofillUploadContents::EDITED_NEGATIVE;
-
-  } else {  // saved_username == suggested_username
-    // In this branch the user did NOT edit the username in prompt and accepted
-    // it as it is.
-
-    if (saved_username == single_username_value)
-      prompt_edit = autofill::AutofillUploadContents::NOT_EDITED_POSITIVE;
-    else
-      prompt_edit = autofill::AutofillUploadContents::NOT_EDITED_NEGATIVE;
-  }
-  single_username_vote_data_->prompt_edit = prompt_edit;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -958,6 +926,43 @@ void VotesUploader::SetSingleUsernameVoteOnPasswordForm(
   single_username_data.set_prompt_edit(single_username_vote_data_->prompt_edit);
 
   form_structure.set_single_username_data(single_username_data);
+}
+
+AutofillUploadContents::SingleUsernamePromptEdit
+VotesUploader::CalculateUsernamePromptEdit(
+    const std::u16string& saved_username,
+    const std::u16string& potential_username) {
+  AutofillUploadContents::SingleUsernamePromptEdit prompt_edit =
+      AutofillUploadContents::EDIT_UNSPECIFIED;
+  if (saved_username != suggested_username_) {
+    // In this branch, the user edited the username in a prompt before accepting
+    // it.
+
+    // The user removed some suggested username and that username wasn't the
+    // |potential_username| => this is neither negative nor positive vote. If
+    // the user removes |potential_username|, then it is a negative signal and
+    // will be reported below.
+    if (saved_username.empty() && suggested_username_ != potential_username) {
+      return prompt_edit;
+    }
+
+    if (saved_username == potential_username) {
+      prompt_edit = AutofillUploadContents::EDITED_POSITIVE;
+    } else {
+      prompt_edit = AutofillUploadContents::EDITED_NEGATIVE;
+    }
+
+  } else {  // saved_username == suggested_username
+    // In this branch the user did NOT edit the username in prompt and accepted
+    // it as it is.
+
+    if (saved_username == potential_username) {
+      prompt_edit = AutofillUploadContents::NOT_EDITED_POSITIVE;
+    } else {
+      prompt_edit = AutofillUploadContents::NOT_EDITED_NEGATIVE;
+    }
+  }
+  return prompt_edit;
 }
 
 }  // namespace password_manager

@@ -266,6 +266,14 @@ class VotesUploader {
   void SetSingleUsernameVoteOnPasswordForm(
       autofill::FormStructure& form_structure);
 
+  // Calculates whether the |saved_username| (the value actually saved in the
+  // Password Manager) confirms or contradicts |potential_username| (Password
+  // Manager's guess based on preceding text fields that the user has interacted
+  // with).
+  autofill::AutofillUploadContents::SingleUsernamePromptEdit
+  CalculateUsernamePromptEdit(const std::u16string& saved_username,
+                              const std::u16string& potential_username);
+
   // The client which implements embedder-specific PasswordManager operations.
   raw_ptr<PasswordManagerClient> client_ = nullptr;
 
