@@ -51,8 +51,15 @@ class SafeBrowsingApiHandlerBridge {
 
   bool StartCSDAllowlistCheck(const GURL& url);
 
+  // Called when a non-recoverable failure is encountered from SafeBrowsing API.
+  void OnSafeBrowsingApiNonRecoverableFailure();
+
   void SetInterceptorForTesting(UrlCheckInterceptor* interceptor) {
     interceptor_for_testing_ = interceptor;
+  }
+
+  void ResetSafeBrowsingApiAvailableForTesting() {
+    is_safe_browsing_api_available_ = true;
   }
 
  private:
@@ -75,6 +82,12 @@ class SafeBrowsingApiHandlerBridge {
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore SafeBrowsing API.
   jlong next_safe_browsing_callback_id_ = 0;
+
+  // Whether SafeBrowsing API is available. Set to false if previous call to
+  // SafeBrowsing API has encountered a non-recoverable failure. If set to
+  // false, future calls to SafeBrowsing API will fall back to SafetyNet API.
+  // Once set to false, it will remain false until browser restarts.
+  bool is_safe_browsing_api_available_ = true;
 
   raw_ptr<UrlCheckInterceptor> interceptor_for_testing_ = nullptr;
 };

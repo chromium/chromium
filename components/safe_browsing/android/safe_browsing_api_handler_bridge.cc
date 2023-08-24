@@ -62,6 +62,9 @@ bool IsResponseFromJavaValid(SafeBrowsingApiLookupResult lookup_result,
   switch (lookup_result) {
     case SafeBrowsingApiLookupResult::SUCCESS:
     case SafeBrowsingApiLookupResult::FAILURE:
+    case SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT:
+    case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
+    case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
       is_lookup_result_recognized = true;
       break;
   }
@@ -114,6 +117,9 @@ bool IsLookupSuccessful(SafeBrowsingApiLookupResult lookup_result,
       is_lookup_result_success = true;
       break;
     case SafeBrowsingApiLookupResult::FAILURE:
+    case SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT:
+    case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
+    case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
       break;
   }
   if (!is_lookup_result_success) {
@@ -138,6 +144,18 @@ bool IsLookupSuccessful(SafeBrowsingApiLookupResult lookup_result,
       break;
   }
   return is_response_status_success;
+}
+
+bool IsSafeBrowsingNonRecoverable(SafeBrowsingApiLookupResult lookup_result) {
+  switch (lookup_result) {
+    case SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED:
+    case SafeBrowsingApiLookupResult::FAILURE_API_NOT_AVAILABLE:
+      return true;
+    case SafeBrowsingApiLookupResult::SUCCESS:
+    case SafeBrowsingApiLookupResult::FAILURE:
+    case SafeBrowsingApiLookupResult::FAILURE_API_CALL_TIMEOUT:
+      return false;
+  }
 }
 
 // Convert a SBThreatType to a Java SafetyNet API threat type.  We only support
@@ -408,6 +426,10 @@ void OnUrlCheckDoneOnSBThreadBySafeBrowsingApi(
   }
 
   if (!IsLookupSuccessful(lookup_result, response_status)) {
+    if (IsSafeBrowsingNonRecoverable(lookup_result)) {
+      SafeBrowsingApiHandlerBridge::GetInstance()
+          .OnSafeBrowsingApiNonRecoverableFailure();
+    }
     std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
     return;
   }
@@ -532,13 +554,14 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
   DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                           ? content::BrowserThread::UI
                           : content::BrowserThread::IO);
+  if (!is_safe_browsing_api_available_) {
+    // Fall back to SafetyNet if SafeBrowsing API is not available.
+    // TODO(crbug.com/1444511): Add a histogram to track how often it happens.
+    StartUrlCheckBySafetyNet(std::move(callback), url, threat_types);
+    return;
+  }
+
   JNIEnv* env = AttachCurrentThread();
-
-  // TODO(crbug.com/1444511): Check if the device has required GMSCore version.
-  // If not, fall back to hash database check through SafetyNet API. Also add a
-  // histogram to track the proportion of users who don't have required version
-  // to inform when we can remove the fallback.
-
   jlong callback_id = next_safe_browsing_callback_id_++;
   GetPendingSafeBrowsingCallbacksMapOnSBThread().insert(
       {callback_id, std::move(callback)});
@@ -558,6 +581,14 @@ bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
   if (interceptor_for_testing_)
     return false;
   return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
+}
+
+void SafeBrowsingApiHandlerBridge::OnSafeBrowsingApiNonRecoverableFailure() {
+  DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
+                          ? content::BrowserThread::UI
+                          : content::BrowserThread::IO);
+
+  is_safe_browsing_api_available_ = false;
 }
 
 }  // namespace safe_browsing

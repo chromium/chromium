@@ -63,6 +63,8 @@ class SafeBrowsingApiHandlerBridgeTest : public testing::Test {
   }
 
   void TearDown() override {
+    SafeBrowsingApiHandlerBridge::GetInstance()
+        .ResetSafeBrowsingApiAvailableForTesting();
     Java_SafeBrowsingApiHandlerBridgeNativeUnitTestHelper_tearDown(env_);
   }
 
@@ -415,6 +417,31 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
   RunHashRealTimeUrlCheck(url,
                           /*threat_types=*/GetAllThreatTypes(),
                           /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashRealTimeUrlCheck_NonRecoverableLookupResultAndFallback) {
+  GURL url1("https://example1.com");
+  AddSafeBrowsingResponse(
+      url1, SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED,
+      SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      GetAllSafeBrowsingThreatTypes(), SafeBrowsingJavaProtocol::REAL_TIME);
+
+  RunHashRealTimeUrlCheck(url1,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+
+  GURL url2("https://example2.com");
+  std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
+  AddSafetyNetBlocklistResponse(url2, metadata,
+                                GetAllSafetyNetThreatsOfInterest());
+
+  // The response should come from SafetyNet because FAILURE_API_UNSUPPORTED is
+  // a non-recoverable failure.
+  RunHashRealTimeUrlCheck(url2,
+                          /*threat_types=*/GetAllThreatTypes(),
+                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,

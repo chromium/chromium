@@ -40,8 +40,18 @@ enum class SafetyNetJavaThreatType {
 // while |SafeBrowsingJavaResponseStatus| is obtained directly from the API
 // response in a successful call. In other words, ResponseStatus is valid only
 // when LookupResult is SUCCESS.
-// TODO(crbug.com/1444511): Break down FAILURE into more granular buckets.
-enum class SafeBrowsingApiLookupResult { SUCCESS = 0, FAILURE = 1 };
+enum class SafeBrowsingApiLookupResult {
+  SUCCESS = 0,
+  // General failure bucket. This is set if none of the more granular failure
+  // buckets fits.
+  FAILURE = 1,
+  // The API call to the Safe Browsing API timed out.
+  FAILURE_API_CALL_TIMEOUT = 2,
+  // The API throws an UnsupportedApiCallException.
+  FAILURE_API_UNSUPPORTED = 3,
+  // The API throws an ApiException with API_UNAVAILABLE status code.
+  FAILURE_API_NOT_AVAILABLE = 4
+};
 
 // Must match the definition in SafeBrowsing::ThreatType in SafeBrowsing API.
 enum class SafeBrowsingJavaThreatType {
