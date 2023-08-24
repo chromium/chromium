@@ -2039,7 +2039,7 @@
   {
     "name": "enable-android-gamepad-vibration",
     "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-app-service-in-kiosk",
