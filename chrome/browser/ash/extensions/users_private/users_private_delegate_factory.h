@@ -34,7 +34,7 @@ class UsersPrivateDelegateFactory : public ProfileKeyedServiceFactory {
   ~UsersPrivateDelegateFactory() override;
 
   // BrowserContextKeyedServiceFactory implementation.
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
