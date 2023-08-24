@@ -22,6 +22,7 @@ class DriveFsCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
 class FullscreenControllerClientLacros;
+class LacrosAppsPublisher;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
 class LacrosFileSystemProvider;
@@ -142,6 +143,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Receives web app control commands from ash.
   std::unique_ptr<crosapi::WebAppProviderBridgeLacros> web_app_provider_bridge_;
+
+  // Sends Lacros events to ash.
+  std::unique_ptr<LacrosAppsPublisher> lacros_apps_publisher_;
 
   // Sends Chrome app (AKA extension app) events to ash.
   std::unique_ptr<LacrosExtensionAppsPublisher> chrome_apps_publisher_;

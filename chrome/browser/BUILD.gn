@@ -5484,6 +5484,8 @@ static_library("browser") {
       "lacros/geolocation/system_geolocation_source_lacros.h",
       "lacros/identity_manager_lacros.cc",
       "lacros/identity_manager_lacros.h",
+      "lacros/lacros_apps_publisher.cc",
+      "lacros/lacros_apps_publisher.h",
       "lacros/lacros_extension_apps_controller.cc",
       "lacros/lacros_extension_apps_controller.h",
       "lacros/lacros_extension_apps_publisher.cc",

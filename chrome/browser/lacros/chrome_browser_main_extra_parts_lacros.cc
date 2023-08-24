@@ -32,6 +32,7 @@
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 #include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
+#include "chrome/browser/lacros/lacros_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_file_system_provider.h"
@@ -166,6 +167,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     monitor->SetSystemEvaluator(std::make_unique<LacrosMemoryPressureEvaluator>(
         monitor->CreateVoter()));
   }
+
+  lacros_apps_publisher_ = std::make_unique<LacrosAppsPublisher>();
+  lacros_apps_publisher_->Initialize();
 
   if (chromeos::BrowserParamsProxy::Get()->PublishChromeApps()) {
     chrome_apps_publisher_ = LacrosExtensionAppsPublisher::MakeForChromeApps();
