@@ -1159,6 +1159,37 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Wait for the feedback panel to show an item with the provided messages.
+   * @param {!string} appId app window ID
+   * @param {!RegExp} expectedPrimaryMessageRegex The expected primary-text of
+   *     the item.
+   * @param {!RegExp} expectedSecondaryMessageRegex The expected secondary-text
+   *     of the item.
+   */
+  async waitForFeedbackPanelItem(
+      appId, expectedPrimaryMessageRegex, expectedSecondaryMessageRegex) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const element = await this.waitForElement(
+          appId, ['#progress-panel', 'xf-panel-item']);
+
+      const actualPrimaryText = element.attributes['primary-text'];
+      const actualSecondaryText = element.attributes['secondary-text'];
+
+      if (expectedPrimaryMessageRegex.test(actualPrimaryText) &&
+          expectedSecondaryMessageRegex.test(actualSecondaryText)) {
+        return;
+      }
+      return pending(
+          caller,
+          `Expected feedback panel item with primary-text regex:"${
+              expectedPrimaryMessageRegex}" and secondary-text regex:"${
+              expectedSecondaryMessageRegex}", got item with primary-text "${
+              actualPrimaryText}" and secondary-text "${actualSecondaryText}"`);
+    });
+  }
+
+  /**
    * Clicks the enabled and visible move to trash button and ensures the delete
    * button is hidden.
    * @param {string} appId

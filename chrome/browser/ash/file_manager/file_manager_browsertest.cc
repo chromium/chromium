@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
+#include "chrome/browser/ash/policy/dlp/dialogs/files_policy_warn_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
@@ -1068,6 +1069,10 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       *output = base::NumberToString(expected_blocked_files_.size());
       return true;
     }
+    if (name == "getExpectedNumberOfWarnedFilesByConnectors") {
+      *output = base::NumberToString(expected_warned_files_.size());
+      return true;
+    }
     if (name == "setupScanningRunLoop") {
       // Set the number of expected `FileTransferAnalysisDelegate`s. This is
       // done to correctly notify when scanning has completed.
@@ -1082,6 +1087,12 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       const std::string* app_id = value.FindString("app_id");
       CHECK_NE(app_id, nullptr);
       VerifyFileTransferErrorDialogAndDismiss(*app_id);
+      return true;
+    }
+    if (name == "verifyFileTransferWarningDialogAndProceed") {
+      const std::string* app_id = value.FindString("app_id");
+      CHECK_NE(app_id, nullptr);
+      VerifyFileTransferWarningDialogAndProceed(*app_id);
       return true;
     }
     if (name == "waitForFileTransferScanningToComplete") {
@@ -1100,6 +1111,10 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
       CHECK(destination_volume_name);
       const base::Value::List* entry_paths = value.FindList("entry_paths");
       CHECK(entry_paths);
+      absl::optional<bool> expect_proceed_warning_reports_optional =
+          value.FindBool("expect_proceed_warning_reports");
+      bool expect_proceed_warning_reports =
+          expect_proceed_warning_reports_optional.value_or(false);
 
       std::vector<std::string> file_names;
       std::vector<std::string> shas;
@@ -1114,8 +1129,20 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
         base::FilePath path(*path_str);
 
         auto file_name = path.BaseName().AsUTF8Unsafe();
-        if (!base::Contains(file_name, "blocked")) {
-          // If a file name does not contain blocked, expect no report.
+
+        bool should_block = base::Contains(file_name, "blocked");
+        bool should_warn = base::Contains(file_name, "warned");
+        CHECK(!(should_block && should_warn))
+            << "A file shouldn't be both blocked and warned.";
+        if (!should_block && !should_warn) {
+          // If a file name contains neither blocked nor warned, expect no
+          // report.
+          continue;
+        }
+
+        if (expect_proceed_warning_reports && !should_warn) {
+          // If we are expecting proceed warning reports, then we can ignore
+          // blocked files.
           continue;
         }
 
@@ -1129,13 +1156,23 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
         expected_dlp_verdicts.push_back(
             ConnectorStatusCallback(path).results()[0]);
 
-        expected_blocked_files_.push_back(file_name);
+        if (!expect_proceed_warning_reports) {
+          if (should_block) {
+            expected_blocked_files_.push_back(file_name);
+          } else if (should_warn) {
+            expected_warned_files_.push_back(file_name);
+          }
+        }
 
         // For report-only mode, the transfer is always allowed. It's blocked,
         // otherwise.
         expected_results.push_back(safe_browsing::EventResultToString(
-            IsReportOnlyMode() ? safe_browsing::EventResult::ALLOWED
-                               : safe_browsing::EventResult::BLOCKED));
+            IsReportOnlyMode()
+                ? safe_browsing::EventResult::ALLOWED
+                : (should_warn ? (expect_proceed_warning_reports
+                                      ? safe_browsing::EventResult::BYPASSED
+                                      : safe_browsing::EventResult::WARNED)
+                               : safe_browsing::EventResult::BLOCKED)));
         expected_scan_ids.push_back(GetScanIDForFileName(file_name));
       }
 
@@ -1256,6 +1293,47 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
     EXPECT_TRUE(widget->IsClosed());
   }
 
+  void VerifyFileTransferWarningDialogAndProceed(const std::string& app_id) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    content::WebContents* web_contents = GetWebContentsForId(app_id);
+    CHECK_NE(web_contents, nullptr);
+    gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
+
+    std::set<views::Widget*> owned_widgets;
+    views::Widget::GetAllOwnedWidgets(native_window, &owned_widgets);
+
+    // Verify that the FilesPolicyWarnDialog widget is displayed.
+    ASSERT_EQ(owned_widgets.size(), 1ul);
+    auto* widget = *owned_widgets.begin();
+    ASSERT_EQ(widget->GetName(), "FilesPolicyWarnDialog");
+
+    auto* view = widget->GetRootView()->GetViewByID(
+        policy::PolicyDialogBase::kScrollViewId);
+    ASSERT_TRUE(view);
+
+    // Verify the displayed blocked files shown in the dialog.
+    std::vector<std::string> displayed_files;
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+    for (const auto* row_view : view->children()) {
+      const views::Label* label =
+          static_cast<const views::Label*>(row_view->GetViewByID(
+              policy::PolicyDialogBase::kConfidentialRowTitleViewId));
+      if (label) {
+        displayed_files.push_back(converter.to_bytes(label->GetText()));
+      }
+    }
+    EXPECT_THAT(displayed_files,
+                ::testing::UnorderedElementsAreArray(expected_warned_files_));
+
+    // Close the dialog.
+    auto* dialog = static_cast<policy::FilesPolicyWarnDialog*>(
+        widget->widget_delegate()->AsDialogDelegate());
+    dialog->AcceptDialog();
+
+    // Verify that the dialog is closed.
+    EXPECT_TRUE(widget->IsClosed());
+  }
+
   enterprise_connectors::ContentAnalysisResponse ConnectorStatusCallback(
       const base::FilePath& path) {
     enterprise_connectors::ContentAnalysisResponse response;
@@ -1265,6 +1343,11 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
           FakeContentAnalysisDelegate::DlpResponse(
               enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
               "rule", enterprise_connectors::TriggeredRule::BLOCK);
+    } else if (base::Contains(path.BaseName().value(), "warned")) {
+      response = enterprise_connectors::test::FakeContentAnalysisDelegate::
+          FakeContentAnalysisDelegate::DlpResponse(
+              enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS,
+              "rule", enterprise_connectors::TriggeredRule::WARN);
     } else {
       response = enterprise_connectors::test::FakeContentAnalysisDelegate::
           SuccessfulResponse({"dlp"});
@@ -1295,6 +1378,7 @@ class FileTransferConnectorFilesAppBrowserTest : public FilesAppBrowserTest {
   size_t expected_number_of_file_transfer_analysis_delegates_ = 0;
 
   std::vector<std::string> expected_blocked_files_;
+  std::vector<std::string> expected_warned_files_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 };
@@ -2122,7 +2206,15 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsDeepMoveNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
-            "transferConnectorFromUsbToDownloadsFlatMoveNewUX")));
+            "transferConnectorFromUsbToDownloadsFlatMoveNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX")));
 
 #undef FILE_TRANSFER_TEST_CASE
 #undef FILE_TRANSFER_TEST_CASE_NEW_UX
