@@ -21,6 +21,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
 
@@ -46,6 +47,7 @@ import java.util.List;
  * system, such as whether Chrome was installed through the system image.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class OmahaBaseTest {
     private static class TimestampPair {

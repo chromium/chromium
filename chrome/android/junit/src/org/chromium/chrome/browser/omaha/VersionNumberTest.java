@@ -9,12 +9,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /**
  * Unit tests for VersionNumber.
  */
 @RunWith(BlockJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class VersionNumberTest {
     private static final String DEVELOPER_BUILD = "0.1 Developer Build";
     private static final String BUILD_BOGUS_1_2_3_4 = "Bogus-1.2.3.4";

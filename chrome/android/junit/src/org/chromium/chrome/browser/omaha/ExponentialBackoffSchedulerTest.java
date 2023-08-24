@@ -12,10 +12,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 /** Tests the ExponentialBackoffScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class ExponentialBackoffSchedulerTest {
     private static final String PREFERENCE_NAME = "scheduler";

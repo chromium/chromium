@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import java.io.StringWriter;
  * Unit tests for the Omaha ResponseParser.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public class ResponseParserTest {
     // Note that the Omaha server appends "/" to the end of the URL codebase.
