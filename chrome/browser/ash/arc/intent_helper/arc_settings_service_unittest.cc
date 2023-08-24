@@ -18,6 +18,7 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_backup_settings_instance.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
@@ -374,6 +375,34 @@ TEST_F(ArcSettingsServiceTest, CaptionStyleNotSetReturnEmpty) {
   EXPECT_EQ(nullptr, style->background_color.get());
   EXPECT_EQ("", style->user_locale);
   EXPECT_EQ(arc::mojom::CaptionTextShadowType::kNone, style->text_shadow_type);
+}
+
+TEST_F(ArcSettingsServiceTest, EnableAccessibilityFeatures) {
+  arc_session_manager()->RequestEnable();
+  SetInstances();
+  FakeIntentHelperInstance* intent_helper = intent_helper_instance();
+
+  PrefService* pref_service = profile()->GetPrefs();
+  pref_service->SetBoolean(ash::prefs::kAccessibilityFocusHighlightEnabled,
+                           true);
+  pref_service->SetBoolean(ash::prefs::kAccessibilityScreenMagnifierEnabled,
+                           true);
+  pref_service->SetBoolean(ash::prefs::kAccessibilitySelectToSpeakEnabled,
+                           true);
+  pref_service->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+                           false);
+  pref_service->SetBoolean(ash::prefs::kAccessibilitySwitchAccessEnabled,
+                           false);
+  pref_service->SetBoolean(ash::prefs::kDockedMagnifierEnabled, false);
+
+  auto features = intent_helper->GetAccessibilityFeatures();
+
+  ASSERT_TRUE(features->focus_highlight_enabled);
+  ASSERT_TRUE(features->screen_magnifier_enabled);
+  ASSERT_TRUE(features->select_to_speak_enabled);
+  ASSERT_FALSE(features->spoken_feedback_enabled);
+  ASSERT_FALSE(features->switch_access_enabled);
+  ASSERT_FALSE(features->docked_magnifier_enabled);
 }
 
 }  // namespace arc

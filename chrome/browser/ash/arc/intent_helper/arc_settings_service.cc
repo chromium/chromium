@@ -272,6 +272,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // Send particular settings to Android.
   // Keep these lines ordered lexicographically.
   void SyncAccessibilityLargeMouseCursorEnabled() const;
+  void SyncAccessibilityFeatures() const;
   void SyncAccessibilityVirtualKeyboardEnabled() const;
   void SyncBackupEnabled() const;
   void SyncCaptionStyle() const;
@@ -309,8 +310,15 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // This should be used when dealing with pref per device.
   void AddLocalStatePrefToObserve(const std::string& pref_name);
 
+  // Returns whether client supports `EnableAccessibilityFeatures` method or
+  // not.
+  bool IsEnableAccessibilityFeaturesMethodAvailable() const;
+
   // Returns the integer value of the pref.  pref_name must exist.
   int GetIntegerPref(const std::string& pref_name) const;
+
+  // Returns the boolean value of the pref. pref_name must exist.
+  bool GetBooleanPref(const std::string& pref_name) const;
 
   // Gets whether this is a managed pref.
   bool IsBooleanPrefManaged(const std::string& pref_name) const;
@@ -403,22 +411,37 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
              pref_name == ::prefs::kAccessibilityCaptionsTextShadow ||
              pref_name == ::prefs::kAccessibilityCaptionsTextSize) {
     SyncCaptionStyle();
-  } else if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled) {
-    SyncFocusHighlightEnabled();
+  } else if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled ||
+             pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled ||
+             pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled ||
+             pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled ||
+             pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled ||
+             pref_name == ash::prefs::kDockedMagnifierEnabled) {
+    SyncAccessibilityFeatures();
+    if (IsEnableAccessibilityFeaturesMethodAvailable()) {
+      return;
+    }
+
+    // TODO(b/296330419): Keeping these for backward compatibility until all
+    // client has supported the new way to update enable accessibility features.
+    // Clean up afterwards.
+    if (pref_name == ash::prefs::kAccessibilityFocusHighlightEnabled) {
+      SyncFocusHighlightEnabled();
+    } else if (pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled) {
+      SyncScreenMagnifierEnabled();
+    } else if (pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled) {
+      SyncSelectToSpeakEnabled();
+    } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
+      SyncSpokenFeedbackEnabled();
+    } else if (pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled) {
+      SyncSwitchAccessEnabled();
+    } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
+      SyncDockedMagnifierEnabled();
+    }
   } else if (pref_name == ash::prefs::kAccessibilityLargeCursorEnabled) {
     SyncAccessibilityLargeMouseCursorEnabled();
-  } else if (pref_name == ash::prefs::kAccessibilityScreenMagnifierEnabled) {
-    SyncScreenMagnifierEnabled();
-  } else if (pref_name == ash::prefs::kAccessibilitySelectToSpeakEnabled) {
-    SyncSelectToSpeakEnabled();
-  } else if (pref_name == ash::prefs::kAccessibilitySpokenFeedbackEnabled) {
-    SyncSpokenFeedbackEnabled();
-  } else if (pref_name == ash::prefs::kAccessibilitySwitchAccessEnabled) {
-    SyncSwitchAccessEnabled();
   } else if (pref_name == ash::prefs::kAccessibilityVirtualKeyboardEnabled) {
     SyncAccessibilityVirtualKeyboardEnabled();
-  } else if (pref_name == ash::prefs::kDockedMagnifierEnabled) {
-    SyncDockedMagnifierEnabled();
   } else if (pref_name == ash::prefs::kUserGeolocationAllowed) {
     SyncUserGeolocation();
   } else if (pref_name == ::language::prefs::kApplicationLocale ||
@@ -583,19 +606,14 @@ void ArcSettingsServiceImpl::SyncInitialSettings() const {
 void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // Keep these lines ordered lexicographically.
   SyncAccessibilityLargeMouseCursorEnabled();
+  SyncAccessibilityFeatures();
   SyncAccessibilityVirtualKeyboardEnabled();
   SyncCaptionStyle();
   SyncConsumerAutoUpdateToggle();
-  SyncDockedMagnifierEnabled();
-  SyncFocusHighlightEnabled();
   SyncGIOBetaEnabled();
   SyncProxySettings();
   SyncReportingConsent(/*initial_sync=*/false);
   SyncPictureInPictureEnabled();
-  SyncScreenMagnifierEnabled();
-  SyncSelectToSpeakEnabled();
-  SyncSpokenFeedbackEnabled();
-  SyncSwitchAccessEnabled();
   SyncTimeZone();
   SyncTimeZoneByGeolocation();
   SyncUse24HourClock();
@@ -604,6 +622,15 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // https://crbug.com/955071
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
+
+  if (!IsEnableAccessibilityFeaturesMethodAvailable()) {
+    SyncDockedMagnifierEnabled();
+    SyncFocusHighlightEnabled();
+    SyncScreenMagnifierEnabled();
+    SyncSelectToSpeakEnabled();
+    SyncSpokenFeedbackEnabled();
+    SyncSwitchAccessEnabled();
+  }
 }
 
 void ArcSettingsServiceImpl::SyncAppTimeSettings() {
@@ -664,6 +691,31 @@ void ArcSettingsServiceImpl::SyncCaptionStyle() const {
   CHECK(caption_style);
 
   instance->SetCaptionStyle(std::move(caption_style));
+}
+
+void ArcSettingsServiceImpl::SyncAccessibilityFeatures() const {
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->intent_helper(), EnableAccessibilityFeatures);
+  if (!instance) {
+    return;
+  }
+
+  arc::mojom::AccessibilityFeaturesPtr features =
+      arc::mojom::AccessibilityFeatures::New();
+  features->docked_magnifier_enabled =
+      GetBooleanPref(ash::prefs::kDockedMagnifierEnabled);
+  features->focus_highlight_enabled =
+      GetBooleanPref(ash::prefs::kAccessibilityFocusHighlightEnabled);
+  features->screen_magnifier_enabled =
+      GetBooleanPref(ash::prefs::kAccessibilityScreenMagnifierEnabled);
+  features->select_to_speak_enabled =
+      GetBooleanPref(ash::prefs::kAccessibilitySelectToSpeakEnabled);
+  features->spoken_feedback_enabled =
+      GetBooleanPref(ash::prefs::kAccessibilitySpokenFeedbackEnabled);
+  features->switch_access_enabled =
+      GetBooleanPref(ash::prefs::kAccessibilitySwitchAccessEnabled);
+
+  instance->EnableAccessibilityFeatures(std::move(features));
 }
 
 void ArcSettingsServiceImpl::SyncFocusHighlightEnabled() const {
@@ -945,12 +997,28 @@ void ArcSettingsServiceImpl::AddLocalStatePrefToObserve(
                                      base::Unretained(this)));
 }
 
+bool ArcSettingsServiceImpl::IsEnableAccessibilityFeaturesMethodAvailable()
+    const {
+  auto* const instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->intent_helper(), EnableAccessibilityFeatures);
+  return instance;
+}
+
 int ArcSettingsServiceImpl::GetIntegerPref(const std::string& pref_name) const {
   const PrefService::Preference* pref =
       registrar_.prefs()->FindPreference(pref_name);
   DCHECK(pref);
   DCHECK(pref->GetValue()->is_int());
   return pref->GetValue()->GetIfInt().value_or(-1);
+}
+
+bool ArcSettingsServiceImpl::GetBooleanPref(
+    const std::string& pref_name) const {
+  const PrefService::Preference* pref =
+      registrar_.prefs()->FindPreference(pref_name);
+  DCHECK(pref);
+  DCHECK(pref->GetValue()->is_bool());
+  return pref->GetValue()->GetBool();
 }
 
 bool ArcSettingsServiceImpl::IsBooleanPrefManaged(

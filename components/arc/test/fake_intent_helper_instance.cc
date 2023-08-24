@@ -156,4 +156,9 @@ void FakeIntentHelperInstance::SetCaptionStyle(
   caption_style_ = std::move(caption_style);
 }
 
+void FakeIntentHelperInstance::EnableAccessibilityFeatures(
+    arc::mojom::AccessibilityFeaturesPtr accessibility_features) {
+  accessibility_features_ = std::move(accessibility_features);
+}
+
 }  // namespace arc

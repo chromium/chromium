@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 53
+// Next MinVersion: 54
 
 module arc.mojom;
 
@@ -304,6 +304,16 @@ struct CaptionStyle {
   CaptionTextShadowType text_shadow_type;
 };
 
+// Accessibility features supported by ARC AccessibilityService.
+struct AccessibilityFeatures {
+  bool docked_magnifier_enabled;
+  bool focus_highlight_enabled;
+  bool screen_magnifier_enabled;
+  bool select_to_speak_enabled;
+  bool spoken_feedback_enabled;
+  bool switch_access_enabled;
+};
+
 // Interface to interact with a custom tab.
 // Close the interface pointer to close the custom tab.
 // Next method ID: 1
@@ -424,7 +434,7 @@ interface IntentHelperHost {
 
 // Sends intents to ARC on behalf of Chrome.
 // Deprecated method ID: 0, 7, 11, 12, 14, 17, 18
-// Next method ID: 23
+// Next method ID: 24
 interface IntentHelperInstance {
   // Sets the given package as a preferred package. The next time an ACTION_VIEW
   // intent is sent with a URL that requires disambiguation, instead of opening
@@ -505,4 +515,8 @@ interface IntentHelperInstance {
 
   // Requests the service to set the caption style.
   [MinVersion=52] SetCaptionStyle@22(CaptionStyle style);
+
+  // Send list of enabled accessibility features to ARC.
+  [MinVersion=53] EnableAccessibilityFeatures@23(AccessibilityFeatures
+      features);
 };
