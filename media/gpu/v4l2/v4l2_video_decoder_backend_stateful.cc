@@ -212,6 +212,7 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
 
     // Record timestamp of the input buffer so it propagates to the decoded
     // frames.
+    // TODO(mcasas): Consider using TimeDeltaToTimeVal().
     const struct timespec timespec =
         current_decode_request_->buffer->timestamp().ToTimeSpec();
     struct timeval timestamp = {
@@ -439,6 +440,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
 
   // Zero-bytes buffers are returned as part of a flush and can be dismissed.
   if (buffer->GetPlaneBytesUsed(0) > 0) {
+    // TODO(mcasas): Consider using TimeValToTimeDelta().
     const struct timeval timeval = buffer->GetTimeStamp();
     const struct timespec timespec = {
         .tv_sec = timeval.tv_sec,

@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -110,6 +111,13 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
 // V4L2_PIX_FMT_INVALID otherwise.
 uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
                                        bool slice_based);
+
+// Translates a POSIX |timeval| to Chrome's base::TimeDelta.
+base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval);
+
+// Translates a Chrome |time_delta| to a POSIX struct timeval.
+struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

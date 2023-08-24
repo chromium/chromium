@@ -462,4 +462,15 @@ uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
   return slice_based ? v4l2_pix_fmt.first : v4l2_pix_fmt.second;
 }
 
+base::TimeDelta TimeValToTimeDelta(const struct timeval& timeval) {
+  struct timespec ts;
+  const struct timeval temp_timeval = timeval;
+  TIMEVAL_TO_TIMESPEC(&temp_timeval, &ts);
+  return base::TimeDelta::FromTimeSpec(ts);
+}
+
+struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
+  return base::Time::FromTimeSpec(time_delta.ToTimeSpec()).ToTimeVal();
+}
+
 }  // namespace media

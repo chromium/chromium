@@ -744,6 +744,9 @@ void V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers() {
       scoped_refptr<VideoFrame> video_frame = dequeued_buffer->GetVideoFrame();
       CHECK(video_frame);
 
+      video_frame->set_timestamp(
+          TimeValToTimeDelta(dequeued_buffer->GetTimeStamp()));
+
       //  For a V4L2_MEMORY_MMAP |CAPTURE_queue_| we wrap |video_frame| to
       //  return |dequeued_buffer| to |CAPTURE_queue_|, where they are "pooled".
       //  For a V4L2_MEMORY_DMABUF |CAPTURE_queue_|, we don't do that because
@@ -927,6 +930,7 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
     CHECK_GE(v4l2_buffer->GetPlaneSize(/*plane=*/0), media_buffer->data_size());
     memcpy(dst, media_buffer->data(), media_buffer->data_size());
     v4l2_buffer->SetPlaneBytesUsed(0, media_buffer->data_size());
+    v4l2_buffer->SetTimeStamp(TimeDeltaToTimeVal(media_buffer->timestamp()));
 
     if (!std::move(*v4l2_buffer).QueueMMap()) {
       LOG(ERROR) << "Error while queuing input |media_buffer|!";

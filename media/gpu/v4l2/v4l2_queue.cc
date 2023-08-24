@@ -91,6 +91,7 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
                        v4l2_buffer->type);
 
+  // TODO(mcasas): Consider using TimeValToTimeDelta().
   const int64_t timestamp = V4L2BufferTimestampInMilliseconds(v4l2_buffer);
   if (timestamp <= 0) {
     return;
