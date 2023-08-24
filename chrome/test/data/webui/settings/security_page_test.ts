@@ -162,6 +162,7 @@ suite('FlagsDisabled', function() {
     loadTimeData.overrideValues({
       enableSecurityKeysSubpage: false,
       enableFriendlierSafeBrowsingSettings: false,
+      enableHashPrefixRealTimeLookups: false,
     });
   });
 
@@ -202,6 +203,13 @@ suite('FlagsDisabled', function() {
     const standardProtection = page.$.safeBrowsingStandard;
     const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
     assertEquals(spSubLabel, standardProtection.subLabel);
+
+    const safeBrowsingStandardBulTwo =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#safeBrowsingStandardBulTwo')!;
+    const subBulTwoLabel = loadTimeData.getString('safeBrowsingStandardBulTwo');
+    assertEquals(
+        subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
 
     const passwordsLeakToggle = page.$.passwordsLeakToggle;
     const passwordLeakLabel =
@@ -270,6 +278,19 @@ suite('SafeBrowsing', function() {
   let openWindowProxy: TestOpenWindowProxy;
   // </if>
 
+  function setUpPage() {
+    page = document.createElement('settings-security-page');
+    page.prefs = pagePrefs();
+    document.body.appendChild(page);
+    page.$.safeBrowsingEnhanced.updateCollapsed();
+    page.$.safeBrowsingStandard.updateCollapsed();
+    flush();
+  }
+  function resetPage() {
+    page.remove();
+    setUpPage();
+  }
+
   setup(function() {
     testMetricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
@@ -280,12 +301,7 @@ suite('SafeBrowsing', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     // </if>
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-security-page');
-    page.prefs = pagePrefs();
-    document.body.appendChild(page);
-    page.$.safeBrowsingEnhanced.updateCollapsed();
-    page.$.safeBrowsingStandard.updateCollapsed();
-    flush();
+    setUpPage();
   });
 
   teardown(function() {
@@ -781,6 +797,10 @@ suite('SafeBrowsing', function() {
   });
 
   test('UpdatedStandardProtectionDropdown', function() {
+    loadTimeData.overrideValues({
+      enableHashPrefixRealTimeLookups: false,
+    });
+    resetPage();
     const standardProtection = page.$.safeBrowsingStandard;
     const updatedSpSubLabel =
         loadTimeData.getString('safeBrowsingStandardDescUpdated');
@@ -811,4 +831,49 @@ suite('SafeBrowsing', function() {
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
+
+  // <if expr="_google_chrome">
+  test('StandardProtectionDropdownWithProxyString', function() {
+    loadTimeData.overrideValues({
+      enableHashPrefixRealTimeLookups: true,
+    });
+    resetPage();
+    const standardProtection = page.$.safeBrowsingStandard;
+    const subLabel =
+        loadTimeData.getString('safeBrowsingStandardDescUpdatedProxy');
+    assertEquals(subLabel, standardProtection.subLabel);
+  });
+
+  // TODO(crbug.com/1466292): Remove once friendlier safe browsing settings
+  // standard protection is launched.
+  test(
+      'FriendlierSettingsDisabledStandardProtectionDropdownWithProxyString',
+      function() {
+        loadTimeData.overrideValues({
+          enableFriendlierSafeBrowsingSettings: false,
+          enableHashPrefixRealTimeLookups: true,
+        });
+        resetPage();
+        const standardProtection = page.$.safeBrowsingStandard;
+        const subLabel = loadTimeData.getString('safeBrowsingStandardDesc');
+        assertEquals(subLabel, standardProtection.subLabel);
+        const safeBrowsingStandardBulTwo =
+            page.shadowRoot!.querySelector<HTMLElement>(
+                '#safeBrowsingStandardBulTwo')!;
+        const subBulTwoLabel =
+            loadTimeData.getString('safeBrowsingStandardBulTwoProxy');
+        assertEquals(
+            subBulTwoLabel, safeBrowsingStandardBulTwo.textContent!.trim());
+      });
+  // </if>
+  // <if expr="not _google_chrome">
+  test('StandardProtectionDropdownNoProxyStringForChromium', function() {
+    // If this test fails, it may be because hash-prefix real-time lookups have
+    // been enabled for Chromium. The settings strings only currently support
+    // Chrome, so this must be addressed to support Chromium as well.
+    const standardProtection = page.$.safeBrowsingStandard;
+    const subLabel = loadTimeData.getString('safeBrowsingStandardDescUpdated');
+    assertEquals(subLabel, standardProtection.subLabel);
+  });
+  // </if>
 });

@@ -163,6 +163,13 @@ export class SettingsSecurityPageElement extends
         },
       },
 
+      enableHashPrefixRealTimeLookups_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableHashPrefixRealTimeLookups');
+        },
+      },
+
       showDisableSafebrowsingDialog_: Boolean,
     };
   }
@@ -179,6 +186,7 @@ export class SettingsSecurityPageElement extends
   focusConfig: FocusConfig;
   private showDisableSafebrowsingDialog_: boolean;
   private enableFriendlierSafeBrowsingSettings_: boolean;
+  private enableHashPrefixRealTimeLookups_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -295,8 +303,17 @@ export class SettingsSecurityPageElement extends
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
         this.enableFriendlierSafeBrowsingSettings_ ?
+            this.enableHashPrefixRealTimeLookups_ ?
+            'safeBrowsingStandardDescUpdatedProxy' :
             'safeBrowsingStandardDescUpdated' :
             'safeBrowsingStandardDesc');
+  }
+
+  private getSafeBrowsingStandardBulTwo_(): string {
+    return this.i18n(
+        this.enableHashPrefixRealTimeLookups_ ?
+            'safeBrowsingStandardBulTwoProxy' :
+            'safeBrowsingStandardBulTwo');
   }
 
   private getPasswordsLeakToggleLabel_(): string {

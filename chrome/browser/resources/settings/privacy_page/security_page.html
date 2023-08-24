@@ -194,7 +194,8 @@
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"
             sub-label="[[getSafeBrowsingStandardSubLabel_(
-                        enableFriendlierSafeBrowsingSettings_)]]"
+                        enableFriendlierSafeBrowsingSettings_,
+                        enableHashPrefixRealTimeLookups_)]]"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
             expand-aria-label="$i18n{safeBrowsingStandardExpandA11yLabel}"
             info-opened="{{infoOpened_}}"
@@ -210,8 +211,10 @@
               </div>
               <div class="bullet-line">
                 <iron-icon icon="settings20:data"></iron-icon>
-                <div class="cr-secondary-text cr-padded-text">
-                  $i18n{safeBrowsingStandardBulTwo}
+                <div id="safeBrowsingStandardBulTwo"
+                    class="cr-secondary-text cr-padded-text">
+                  [[getSafeBrowsingStandardBulTwo_(
+                    enableHashPrefixRealTimeLookups_)]]
                 </div>
               </div>
             </div>

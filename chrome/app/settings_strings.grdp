@@ -2649,6 +2649,14 @@
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED" desc="Description for safe browsing standard protection mode">
     Protects against sites, downloads, and extensions that are known to be dangerous. If a page does something suspicious, URLs and bits of page content are sent to Google Safe Browsing.
   </message>
+  <if expr="_google_chrome">
+    <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED_PROXY" desc="Description for safe browsing standard protection mode">
+      Protects against sites, downloads, and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.
+    </message>
+    <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO_PROXY" desc="First bullet point under the safe browsing standard protection mode">
+      Sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Google.
+    </message>
+  </if>
   <message name="IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing standard protection. Only visible by screen reader software.">
     Show standard protection details
   </message>

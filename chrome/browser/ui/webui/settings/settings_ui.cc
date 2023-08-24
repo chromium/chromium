@@ -86,6 +86,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/features.h"
@@ -354,6 +355,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           base::FeatureList::IsEnabled(
               safe_browsing::
                   kFriendlierSafeBrowsingSettingsStandardProtection));
+
+  html_source->AddBoolean("enableHashPrefixRealTimeLookups",
+                          safe_browsing::hash_realtime_utils::
+                              IsHashRealTimeLookupEligibleInSession());
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",

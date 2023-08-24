@@ -79,6 +79,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -1867,12 +1868,20 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
     {"safeBrowsingStandardDesc", IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC},
     {"safeBrowsingStandardDescUpdated",
      IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"safeBrowsingStandardDescUpdatedProxy",
+     IDS_SETTINGS_SAFEBROWSING_STANDARD_DESC_UPDATED_PROXY},
+#endif
     {"safeBrowsingStandardExpandA11yLabel",
      IDS_SETTINGS_SAFEBROWSING_STANDARD_EXPAND_ACCESSIBILITY_LABEL},
     {"safeBrowsingStandardBulOne",
      IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_ONE},
     {"safeBrowsingStandardBulTwo",
      IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"safeBrowsingStandardBulTwoProxy",
+     IDS_SETTINGS_SAFEBROWSING_STANDARD_BULLET_TWO_PROXY},
+#endif
     {"safeBrowsingStandardReportingLabel",
      IDS_SETTINGS_SAFEBROWSING_STANDARD_HELP_IMPROVE},
     {"safeBrowsingNone", IDS_SETTINGS_SAFEBROWSING_NONE},
@@ -1966,13 +1975,16 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
   html_source->AddString("firstPartySetsLearnMoreURL",
                          chrome::kFirstPartySetsLearnMoreURL);
 
-  html_source->AddString(
-      "safeBrowsingHelpCenterURL",
+  bool are_friendlier_settings_enabled =
       base::FeatureList::IsEnabled(
           safe_browsing::kFriendlierSafeBrowsingSettingsEnhancedProtection) &&
-              base::FeatureList::IsEnabled(
-                  safe_browsing::
-                      kFriendlierSafeBrowsingSettingsStandardProtection)
+      base::FeatureList::IsEnabled(
+          safe_browsing::kFriendlierSafeBrowsingSettingsStandardProtection);
+  bool are_hash_realtime_lookups_enabled = safe_browsing::hash_realtime_utils::
+      IsHashRealTimeLookupEligibleInSession();
+  html_source->AddString(
+      "safeBrowsingHelpCenterURL",
+      are_friendlier_settings_enabled || are_hash_realtime_lookups_enabled
           ? chrome::kSafeBrowsingHelpCenterUpdatedURL
           : chrome::kSafeBrowsingHelpCenterURL);
 
