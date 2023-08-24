@@ -52,11 +52,11 @@ class SpacingApplier {
  public:
   void SetSpacing(const Vector<wtf_size_t, 16>& offsets,
                   float spacing,
-                  const NGInlineItem& item) {
-    DCHECK(item.TextShapeResult());
+                  const NGInlineItem* current_item) {
+    DCHECK(current_item->TextShapeResult());
     const wtf_size_t* offset = offsets.begin();
-    if (!offsets.empty() && *offset == item.StartOffset()) {
-      DCHECK(shape_result_);
+    if (!offsets.empty() && *offset == current_item->StartOffset()) {
+      DCHECK(last_item_);
       offsets_with_spacing_.emplace_back(
           OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
       ++offset;
@@ -66,8 +66,7 @@ class SpacingApplier {
     offsets_with_spacing_.Shrink(0);
 
     // Update the previous item in prepare for the next iteration.
-    shape_result_ = const_cast<ShapeResult*>(item.TextShapeResult());
-    DCHECK(shape_result_);
+    last_item_ = current_item;
     for (; offset != offsets.end(); ++offset) {
       offsets_with_spacing_.emplace_back(
           OffsetWithSpacing({.offset = *offset - 1, .spacing = spacing}));
@@ -78,12 +77,23 @@ class SpacingApplier {
     if (offsets_with_spacing_.empty()) {
       return;
     }
-    DCHECK(shape_result_);
-    shape_result_->ApplyTextAutoSpacing(offsets_with_spacing_);
+    DCHECK(last_item_);
+
+    // TODO(https://crbug.com/1463890): Using `const_cast` does not look good,
+    // consider refactoring.
+    // TODO(https://crbug.com/1463890): Instead of recreating a new
+    // `ShapeResult`, maybe we can reuse the `ShapeResult` and skip the applying
+    // text-space step.
+    ShapeResult* shape_result =
+        const_cast<ShapeResult*>(last_item_->TextShapeResult());
+    DCHECK(shape_result);
+    shape_result->ApplyTextAutoSpacing(offsets_with_spacing_);
+    NGInlineItem* item = const_cast<NGInlineItem*>(last_item_);
+    item->SetUnsafeToReuseShapeResult();
   }
 
  private:
-  ShapeResult* shape_result_ = nullptr;
+  const NGInlineItem* last_item_ = nullptr;
   // Stores the spacing (1/8 ic) and auto-space points's previous positions, for
   // the previous item.
   Vector<OffsetWithSpacing, 16> offsets_with_spacing_;
@@ -227,7 +237,7 @@ void TextAutoSpace::ApplyIfNeeded(NGInlineItemsData& data,
     if (!offsets_out) {
       DCHECK(item.TextShapeResult());
       float spacing = GetSpacingWidth(style);
-      applier.SetSpacing(offsets, spacing, item);
+      applier.SetSpacing(offsets, spacing, &item);
     } else {
       offsets_out->AppendVector(offsets);
     }
