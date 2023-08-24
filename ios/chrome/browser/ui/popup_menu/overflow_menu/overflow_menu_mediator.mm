@@ -971,8 +971,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
       overflow_menu::Destination::Settings,
   };
 
-  if (IsPriceNotificationsEnabled() &&
-      IsSmartSortingPriceTrackingDestinationEnabled()) {
+  if (IsPriceNotificationsEnabled()) {
     destinations.push_back(overflow_menu::Destination::PriceNotifications);
   }
 

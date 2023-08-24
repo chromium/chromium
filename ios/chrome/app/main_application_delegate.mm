@@ -413,7 +413,7 @@ const int kMainIntentCheckDelay = 1;
 // delegate which enables the application to display push notifications that
 // were received while Chrome was open.
 - (void)registerDeviceForPushNotifications {
-  if (!_didRegisterDeviceWithAPNS && IsPriceNotificationsEnabled()) {
+  if (!_didRegisterDeviceWithAPNS) {
     [PushNotificationUtil registerDeviceWithAPNS];
   }
 }

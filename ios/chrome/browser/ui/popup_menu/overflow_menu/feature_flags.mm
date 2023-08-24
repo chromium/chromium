@@ -31,10 +31,6 @@ bool IsNewOverflowMenuEnabled() {
   return false;
 }
 
-bool IsSmartSortingPriceTrackingDestinationEnabled() {
-  return base::FeatureList::IsEnabled(kSmartSortingPriceTrackingDestination);
-}
-
 bool IsNewOverflowMenuShareChromeActionEnabled() {
   return IsNewOverflowMenuEnabled() &&
          base::FeatureList::IsEnabled(kNewOverflowMenuShareChromeAction);

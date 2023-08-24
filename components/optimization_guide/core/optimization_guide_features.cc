@@ -45,6 +45,13 @@ constexpr auto enabled_by_default_mobile_only =
     false;
 #endif
 
+constexpr auto enabled_by_default_ios_only =
+#if BUILDFLAG(IS_IOS)
+    base::FEATURE_ENABLED_BY_DEFAULT;
+#else
+    base::FEATURE_DISABLED_BY_DEFAULT;
+#endif
+
 // Returns whether |locale| is a supported locale for |feature|.
 //
 // This matches |locale| with the "supported_locales" feature param value in
@@ -160,7 +167,7 @@ BASE_FEATURE(kPageEntitiesModelResetOnShutdown,
 // Enables push notification of hints.
 BASE_FEATURE(kPushNotifications,
              "OptimizationGuidePushNotifications",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_ios_only);
 
 // This feature flag does not turn off any behavior, it is only used for
 // experiment parameters.

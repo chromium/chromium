@@ -5,14 +5,13 @@
 #import "ios/chrome/browser/commerce/push_notification/push_notification_feature.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/shopping_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-
-namespace {
-const char kPriceTrackingNotifications[] = "enable_price_notification";
-}  // namespace
 
 bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
   if (!IsPriceNotificationsEnabled()) {
@@ -28,7 +27,15 @@ bool IsPriceTrackingEnabled(ChromeBrowserState* browser_state) {
 }
 
 bool IsPriceNotificationsEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      commerce::kCommercePriceTracking, kPriceTrackingNotifications,
-      /** default_value */ false);
+  std::string country = base::ToLowerASCII(commerce::GetCurrentCountryCode(
+      GetApplicationContext()->GetVariationsService()));
+  std::string current_locale = base::ToLowerASCII(
+      base::SysNSStringToUTF8([NSLocale currentLocale].localeIdentifier));
+
+  // commerce::IsEnabledForCountryAndLocale expectes format with "-", not "_"
+  // (as observed locally). E.g. "en-US", not "en_US".
+  // https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPInternational/LanguageandLocaleIDs/LanguageandLocaleIDs.html
+  base::ReplaceChars(current_locale, "_", "-", &current_locale);
+  return commerce::IsEnabledForCountryAndLocale(
+      commerce::kCommercePriceTrackingRegionLaunched, country, current_locale);
 }
