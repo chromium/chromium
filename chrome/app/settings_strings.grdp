@@ -1593,11 +1593,17 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_HEADER" desc="Heading for the exceptions list for tab discarding in the performance settings. Tabs will not be discarded by memory saver mode if on a site matching a rule in this list.">
     Always keep these sites active
   </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_DESCRIPTION" desc="Description for the exceptions list for tab discarding in the performance settings. Tabs will not be discarded by memory saver mode if on a site matching a rule in this list.">
+    Sites you add will always stay active and memory won't be freed up from them
+  </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADDITIONAL_SITES" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver.">
     Additional sites
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS" desc="Label for the first tab of the tab discarding exception list add dialog, that allows users to pick sites from currently opened tabs to add to the list.">
     Add current sites
+  </message>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_CURRENT_TABS_EMPTY" desc="Message shown in the first tab of the tab discarding exception list add dialog, when the list of sites from currently opened tabs is empty.">
+    No sites currently available. Visit a site to add it to this list.
   </message>
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_MANUAL" desc="Label for the second tab of the tab discarding exception list add dialog, where users can manually input a site to be added to the list.">
     Add sites manually
@@ -1605,8 +1611,8 @@
   <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ACTIVE_SITE_ARIA_DESCRIPTION" desc="Accessibilty description which will be read by screen readers when focusing a currently opened site in the list under the first tab of the add exception dialog.">
     Active site
   </message>
-  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP" desc="Label for button that expands the tab discarding exceptions list to show all entries. Sites added to the list will not be discarded by memory saver.">
-    Sites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about site exclusion<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_PERFORMANCE_TAB_DISCARDING_EXCEPTIONS_ADD_DIALOG_HELP" desc="Help text shown on the second tab of the tab discarding exception list add dialog. Explains how to use the filter format to add an exclusion rule to the list.">
+    Sites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>Learn more about keeping specific sites active<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_BATTERY_PAGE_TITLE" desc="Title of the power section of the performance settings page">
     Power

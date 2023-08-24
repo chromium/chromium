@@ -1,3 +1,14 @@
+<style>
+  /*
+   * adds horizontal padding to account for the removed padding from the dialog
+   * body
+   */
+   #emptyText {
+    padding-inline-end: 20px;
+    padding-inline-start: 20px;
+    padding-top: 20px;
+  }
+</style>
 <div id="container" scrollable>
   <iron-list id="list" scroll-target="container" role="listbox"
       items="[[currentSites_]]" selected-items="{{selectedSites_}}"
@@ -11,4 +22,7 @@
       </tab-discard-exception-current-sites-entry>
     </template>
   </iron-list>
+  <div id="emptyText" hidden="[[currentSites_.length]]">
+    $i18n{tabDiscardingExceptionsAddDialogCurrentTabsEmpty}
+  </div>
 </div>
