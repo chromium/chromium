@@ -91,8 +91,11 @@ TEST_F(GraphImplTest, GetAllCUsByType) {
   MockMultiplePagesInSingleProcessGraph mock_graph(graph());
 
   std::vector<ProcessNodeImpl*> processes = graph()->GetAllProcessNodeImpls();
-  ASSERT_EQ(1u, processes.size());
+
+  // Graph contains a browser process and 1 renderer process.
+  ASSERT_EQ(2u, processes.size());
   EXPECT_NE(nullptr, processes[0]);
+  EXPECT_NE(nullptr, processes[1]);
 
   std::vector<FrameNodeImpl*> frames = graph()->GetAllFrameNodeImpls();
   ASSERT_EQ(2u, frames.size());

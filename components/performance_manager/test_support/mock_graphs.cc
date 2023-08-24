@@ -8,17 +8,45 @@
 #include <utility>
 
 #include "base/process/process.h"
+#include "base/process/process_handle.h"
 #include "base/time/time.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/graph/system_node_impl.h"
+#include "components/performance_manager/public/browser_child_process_host_id.h"
+#include "components/performance_manager/public/browser_child_process_host_proxy.h"
+#include "components/performance_manager/public/render_process_host_id.h"
+#include "components/performance_manager/public/render_process_host_proxy.h"
+#include "content/public/common/process_type.h"
 
 namespace performance_manager {
 
+namespace {
+
+// Returns a new RenderProcessHostProxy with a unique RenderProcessHostId.
+RenderProcessHostProxy CreateRenderProcessHostProxy() {
+  static RenderProcessHostId::Generator id_generator;
+  return RenderProcessHostProxy::CreateForTesting(
+      id_generator.GenerateNextId());
+}
+
+// Returns a new BrowserChildProcessHostProxy with a unique
+// BrowserChildProcessHostId.
+BrowserChildProcessHostProxy CreateBrowserChildProcessHostProxy() {
+  static BrowserChildProcessHostId::Generator id_generator;
+  return BrowserChildProcessHostProxy::CreateForTesting(
+      id_generator.GenerateNextId());
+}
+
+}  // namespace
+
 TestProcessNodeImpl::TestProcessNodeImpl()
-    : ProcessNodeImpl(RenderProcessHostProxy()) {}
+    : ProcessNodeImpl(CreateRenderProcessHostProxy()) {}
+
+TestProcessNodeImpl::TestProcessNodeImpl(content::ProcessType process_type)
+    : ProcessNodeImpl(process_type, CreateBrowserChildProcessHostProxy()) {}
 
 void TestProcessNodeImpl::SetProcessWithPid(base::ProcessId pid,
                                             base::Process process,
@@ -29,11 +57,14 @@ void TestProcessNodeImpl::SetProcessWithPid(base::ProcessId pid,
 MockSinglePageInSingleProcessGraph::MockSinglePageInSingleProcessGraph(
     TestGraphImpl* graph)
     : system(TestNodeWrapper<SystemNodeImpl>::Create(graph)),
+      browser_process(TestNodeWrapper<TestProcessNodeImpl>::Create(
+          graph,
+          BrowserProcessNodeTag{})),
       process(TestNodeWrapper<TestProcessNodeImpl>::Create(graph)),
       page(TestNodeWrapper<PageNodeImpl>::Create(graph)),
       frame(graph->CreateFrameNodeAutoId(process.get(), page.get())) {
-  process->SetProcessWithPid(1, base::Process::Current(),
-                             /* launch_time=*/base::TimeTicks::Now());
+  browser_process->SetProcessWithPid(1);
+  process->SetProcessWithPid(2);
 }
 
 MockSinglePageInSingleProcessGraph::~MockSinglePageInSingleProcessGraph() {
@@ -63,8 +94,7 @@ MockSinglePageWithMultipleProcessesGraph::
       child_frame(graph->CreateFrameNodeAutoId(other_process.get(),
                                                page.get(),
                                                frame.get())) {
-  other_process->SetProcessWithPid(2, base::Process::Current(),
-                                   /* launch_time=*/base::TimeTicks::Now());
+  other_process->SetProcessWithPid(3);
 }
 
 MockSinglePageWithMultipleProcessesGraph::
@@ -77,8 +107,7 @@ MockMultiplePagesWithMultipleProcessesGraph::
       child_frame(graph->CreateFrameNodeAutoId(other_process.get(),
                                                other_page.get(),
                                                other_frame.get())) {
-  other_process->SetProcessWithPid(2, base::Process::Current(),
-                                   /* launch_time=*/base::TimeTicks::Now());
+  other_process->SetProcessWithPid(3);
 }
 
 MockMultiplePagesWithMultipleProcessesGraph::
@@ -126,5 +155,17 @@ MockMultiplePagesAndWorkersWithMultipleProcessesGraph::
   other_worker->RemoveClientFrame(child_frame.get());
   worker->RemoveClientFrame(frame.get());
 }
+
+MockUtilityAndMultipleRenderProcessesGraph::
+    MockUtilityAndMultipleRenderProcessesGraph(TestGraphImpl* graph)
+    : MockMultiplePagesAndWorkersWithMultipleProcessesGraph(graph),
+      utility_process(TestNodeWrapper<TestProcessNodeImpl>::Create(
+          graph,
+          content::ProcessType::PROCESS_TYPE_UTILITY)) {
+  utility_process->SetProcessWithPid(4);
+}
+
+MockUtilityAndMultipleRenderProcessesGraph::
+    ~MockUtilityAndMultipleRenderProcessesGraph() = default;
 
 }  // namespace performance_manager
