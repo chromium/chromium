@@ -259,6 +259,10 @@ void FakeSystemInterface::GetAssertion(
   std::move(callback).Run(authorization, nullptr);
 }
 
+void FakeSystemInterface::Cancel() {
+  cancel_count_++;
+}
+
 FakeSystemInterface::~FakeSystemInterface() = default;
 
 }  // namespace device::fido::icloud_keychain

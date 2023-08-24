@@ -184,7 +184,12 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
     sys_interface->GetPlatformCredentials(rp_id, handler);
   }
 
-  void Cancel() override {}
+  void Cancel() override {
+    cancelled_ = true;
+    GetSystemInterface()->Cancel();
+    // If a request was outstanding, `OnMakeCredentialComplete` or
+    // `OnGetAssertionComplete` will be called with a generic error.
+  }
 
   AuthenticatorType GetType() const override {
     return AuthenticatorType::kICloudKeychain;
@@ -212,6 +217,13 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   void OnMakeCredentialComplete(MakeCredentialCallback callback,
                                 ASAuthorization* authorization,
                                 NSError* error) {
+    if (cancelled_) {
+      cancelled_ = false;
+      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel,
+                              {});
+      return;
+    }
+
     if (error) {
       const std::string domain = base::SysNSStringToUTF8(error.domain);
       FIDO_LOG(ERROR) << "iCKC: makeCredential failed, domain: " << domain
@@ -285,6 +297,13 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   void OnGetAssertionComplete(GetAssertionCallback callback,
                               ASAuthorization* authorization,
                               NSError* error) {
+    if (cancelled_) {
+      cancelled_ = false;
+      std::move(callback).Run(CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel,
+                              {});
+      return;
+    }
+
     if (error) {
       FIDO_LOG(ERROR) << "iCKC: getAssertion failed, domain: "
                       << base::SysNSStringToUTF8(error.domain)
@@ -339,6 +358,7 @@ class API_AVAILABLE(macos(13.3)) Authenticator : public FidoAuthenticator {
   }
 
   NSWindow* __strong window_;
+  bool cancelled_ = false;
   base::WeakPtrFactory<Authenticator> weak_factory_{this};
 };
 

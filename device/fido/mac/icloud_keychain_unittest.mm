@@ -270,6 +270,20 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
     }
 
     {
+      // This is a little odd because we call `Cancel` before `MakeCredential`
+      // rather than during it, but our fake doesn't support blocking
+      // operations.
+      fake_->SetMakeCredentialError(1001 /* generic error */);
+      EXPECT_EQ(fake_->cancel_count(), 0u);
+      authenticator_->Cancel();
+      EXPECT_EQ(fake_->cancel_count(), 1u);
+      auto result = make_credential();
+      EXPECT_EQ(std::get<0>(result),
+                CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel);
+      EXPECT_FALSE(std::get<1>(result).has_value());
+    }
+
+    {
       static const uint8_t kWrongCredentialID[] = {1, 2, 3, 4};
       fake_->SetMakeCredentialResult(kAttestationObjectBytes,
                                      kWrongCredentialID);
@@ -351,6 +365,20 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
       auto result = get_assertion();
       EXPECT_EQ(std::get<0>(result),
                 CtapDeviceResponseCode::kCtap2ErrOperationDenied);
+      EXPECT_TRUE(std::get<1>(result).empty());
+    }
+
+    {
+      // This is a little odd because we call `Cancel` before `GetAssertion`
+      // rather than during it, but our fake doesn't support blocking
+      // operations.
+      fake_->SetMakeCredentialError(1001 /* generic error */);
+      EXPECT_EQ(fake_->cancel_count(), 0u);
+      authenticator_->Cancel();
+      EXPECT_EQ(fake_->cancel_count(), 1u);
+      auto result = get_assertion();
+      EXPECT_EQ(std::get<0>(result),
+                CtapDeviceResponseCode::kCtap2ErrKeepAliveCancel);
       EXPECT_TRUE(std::get<1>(result).empty());
     }
 

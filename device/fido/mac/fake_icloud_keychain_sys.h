@@ -35,6 +35,9 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   // `AuthorizeAndContinue`.
   void set_next_auth_state(AuthState next_auth_state);
 
+  // cancel_count returns the number of times that `Cancel` has been called.
+  unsigned cancel_count() const { return cancel_count_; }
+
   // SetMakeCredentialResult sets the values that will be returned from the next
   // call to `MakeCredential`. If not set, `MakeCredential` will return an
   // error.
@@ -79,6 +82,8 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
       CtapGetAssertionRequest request,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) override;
 
+  void Cancel() override;
+
  protected:
   friend class base::RefCounted<SystemInterface>;
   friend class base::RefCounted<FakeSystemInterface>;
@@ -96,6 +101,8 @@ class API_AVAILABLE(macos(13.3)) FakeSystemInterface : public SystemInterface {
   absl::optional<std::vector<uint8_t>> get_assertion_signature_;
   absl::optional<std::vector<uint8_t>> get_assertion_user_id_;
   absl::optional<std::vector<uint8_t>> get_assertion_credential_id_;
+
+  unsigned cancel_count_ = 0;
 
   std::vector<DiscoverableCredentialMetadata> creds_;
 };

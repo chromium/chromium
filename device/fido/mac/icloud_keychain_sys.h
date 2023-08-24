@@ -66,6 +66,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) API_AVAILABLE(macos(13.3)) SystemInterface
       CtapGetAssertionRequest request,
       base::OnceCallback<void(ASAuthorization*, NSError*)> callback) = 0;
 
+  virtual void Cancel() = 0;
+
  protected:
   friend class base::RefCounted<SystemInterface>;
   virtual ~SystemInterface();

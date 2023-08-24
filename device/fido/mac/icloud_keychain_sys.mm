@@ -334,6 +334,17 @@ class API_AVAILABLE(macos(13.3)) NativeSystemInterface
     [get_controller_ performRequests];
   }
 
+  void Cancel() override {
+    // Sending `cancel` will cause the controller to resolve the delegate with
+    // an error. That will end up calling `Cleanup` to drop these references.
+    if (create_controller_) {
+      [create_controller_ cancel];
+    }
+    if (get_controller_) {
+      [get_controller_ cancel];
+    }
+  }
+
  protected:
   ~NativeSystemInterface() override = default;
 
