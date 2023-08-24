@@ -400,6 +400,12 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     WaitForOverviewEnterAnimation();
     EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
+    // When the first window is snapped, it takes exactly half the width.
+    gfx::Rect expected_bounds(work_area_bounds());
+    gfx::Rect left_bounds, right_bounds;
+    expected_bounds.SplitVertically(&left_bounds, &right_bounds);
+    EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
+
     // The `window2` gets selected in the overview will be snapped to the
     // non-occupied snap position and the overview session will end.
     OverviewItem* item2 = GetOverviewItemForWindow(window2);
@@ -421,6 +427,15 @@ class SnapGroupEntryPointArm1Test : public SnapGroupTest {
     EXPECT_TRUE(kebab_button());
     EXPECT_EQ(0.5f, *WindowState::Get(window1)->snap_ratio());
     EXPECT_EQ(0.5f, *WindowState::Get(window2)->snap_ratio());
+
+    // Now that two windows are snapped, the divider is between them.
+    gfx::Rect divider_bounds(
+        split_view_divider()->GetDividerBoundsInScreen(/*is_dragging=*/false));
+    left_bounds.set_width(left_bounds.width() - divider_bounds.width() / 2);
+    right_bounds.set_x(right_bounds.x() + divider_bounds.width() / 2);
+    right_bounds.set_width(right_bounds.width() - divider_bounds.width() / 2);
+    EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
+    EXPECT_EQ(right_bounds, window2->GetBoundsInScreen());
   }
 
   // Returns true if the union bounds of the `w1`, `w2` and split view
@@ -636,6 +651,41 @@ TEST_F(SnapGroupEntryPointArm1Test,
   EXPECT_FALSE(split_view_divider());
   EXPECT_TRUE(snap_groups.empty());
   EXPECT_TRUE(window_to_snap_group_map.empty());
+}
+
+// Tests that, after a window is snapped with overview on the other side,
+// resizing overview works as expected.
+TEST_F(SnapGroupEntryPointArm1Test, ResizeSplitViewOverviewAndWindow) {
+  auto* snap_group_controller = SnapGroupController::Get();
+  // TODO(sophiewen): Make this the default for SnapGroupEntryPointArm1Test.
+  snap_group_controller->set_can_enter_overview_for_testing(
+      /*can_enter_overview=*/true);
+
+  // Snap one test window to start the snap group creation session.
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  const gfx::Rect initial_bounds(w1->GetBoundsInScreen());
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Drag the right edge of the window to resize the window and overview at the
+  // same time. Test that the bounds are updated.
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w1.get());
+  generator.set_current_screen_location(w1->GetBoundsInScreen().right_center());
+  generator.DragMouseBy(50, 0);
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  gfx::Rect expected_window_bounds(initial_bounds);
+  expected_window_bounds.set_width(initial_bounds.width() + 50);
+  EXPECT_EQ(expected_window_bounds, w1->GetBoundsInScreen());
+
+  gfx::Rect expected_grid_bounds(work_area_bounds());
+  expected_grid_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds());
+
+  // Drag past the 2/3 divider position. Test no crash.
+  generator.DragMouseBy(600, 0);
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_EQ(work_area_bounds(), w1->GetBoundsInScreen());
 }
 
 // Tests that the split view divider will be stacked on top of both windows in

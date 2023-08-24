@@ -1801,12 +1801,14 @@ void SplitViewController::OnWindowBoundsChanged(
     return;
   }
 
-  // Temporarily early exit for now as `StartResizeWithDivider` only works with
-  // `split_view_divider_` and it will fail the
-  // DCHECK(presentation_time_recorder_) otherwise.
-  // TODO(michelefan): move this logic to `StartResizeWithDivider` after the
-  // divider bar has been implemented.
-  if (!InClamshellSplitViewMode() || IsSnapGroupEnabledInClamshellMode()) {
+  if (!InClamshellSplitViewMode()) {
+    return;
+  }
+
+  if (IsSnapGroupEnabledInClamshellMode() && BothSnapped()) {
+    // When the second window is snapped in a snap group, we *don't* want to
+    // override `divider_position_` with `new_bounds` below, which don't take
+    // into account the divider width.
     return;
   }
 
@@ -1901,10 +1903,9 @@ void SplitViewController::OnResizeLoopStarted(aura::Window* window) {
 }
 
 void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
-  if (!InClamshellSplitViewMode())
+  if (!InClamshellSplitViewMode()) {
     return;
-
-  presentation_time_recorder_.reset();
+  }
 
   NotifyWindowResized();
 
@@ -1918,6 +1919,10 @@ void SplitViewController::OnResizeLoopEnded(aura::Window* window) {
         OverviewEndAction::kSplitView);
     WindowState::Get(window)->Maximize();
   }
+
+  // `presentation_time_recorder_` must be reset after
+  // `WindowState::Maximize()`, which will trigger `OnWindowBoundsChanged()`.
+  presentation_time_recorder_.reset();
 }
 
 void SplitViewController::OnPostWindowStateTypeChange(
