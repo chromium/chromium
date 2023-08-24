@@ -33,11 +33,13 @@
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "components/reporting/proto/synced/configuration_file.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
+#include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -203,6 +205,80 @@ StatusOr<std::tuple<int64_t, int64_t>> ParseSequencingIdAndGenerationId(
     gen_id = static_cast<int64_t>(unsigned_gen_id);
   }
   return std::make_tuple(seq_id, gen_id);
+}
+
+// Destination comes back as a string from the server, transform it into a
+// proto.
+StatusOr<Destination> GetDestinationProto(
+    const std::string& destination_string) {
+  if (destination_string == "") {
+    return Status(error::NOT_FOUND,
+                  "Field destination is missing from ConfigFile");
+  }
+
+  Destination destination;
+  if (!Destination_Parse(destination_string, &destination)) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Unable to parse destination from ConfigFile");
+  }
+
+  // Reject undefined destination.
+  if (destination == UNDEFINED_DESTINATION) {
+    return Status(error::INVALID_ARGUMENT, "Received UNDEFINED_DESTINATION");
+  }
+
+  return destination;
+}
+
+StatusOr<ConfigFile> GetConfigurationProtoFromDict(
+    const base::Value::Dict& file) {
+  ConfigFile config_file;
+
+  // Handle the signature.
+  const std::string* config_file_signature =
+      file.FindString("configFileSignature");
+  if (config_file_signature->empty()) {
+    return Status(
+        error::INVALID_ARGUMENT,
+        "Field configFileSignature is missing from configurationFile");
+  }
+  config_file.set_config_file_signature(*config_file_signature);
+
+  auto* const event_config_result = file.FindList("eventConfigs");
+  if (!event_config_result) {
+    return Status(error::INVALID_ARGUMENT,
+                  "Field eventConfigs is missing from configurationFile");
+  }
+
+  // Parse the list of event configs.
+  for (auto& entry : *event_config_result) {
+    auto* const current_config = config_file.add_event_configs();
+    auto* const dict = entry.GetIfDict();
+    if (dict->empty()) {
+      return Status(error::INVALID_ARGUMENT,
+                    "Empty event config in configurationFile");
+    }
+
+    // Find destination and turn it into a proto.
+    auto* const destination = dict->FindString("destination");
+    ASSIGN_OR_RETURN(const auto proto_destination,
+                     GetDestinationProto(*destination));
+    current_config->set_destination(proto_destination);
+
+    // Check if there are minimum and/or maximum release versions
+    // specified, if there are then we parse them and add them to the proto.
+    // This fields are optional so if they are not present it is okay.
+    const auto min_version = dict->FindInt("minimumReleaseVersion");
+    if (min_version.has_value()) {
+      current_config->set_minimum_release_version(min_version.value());
+    }
+    const auto max_version = dict->FindInt("maximumReleaseVersion");
+    if (max_version.has_value()) {
+      current_config->set_maximum_release_version(max_version.value());
+    }
+  }
+
+  return config_file;
 }
 }  // namespace
 
@@ -510,6 +586,7 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
   //    "encryptionSettings": ... // EncryptionSettings proto
   //    "forceConfirm": true, // if present, flag that lastSucceedUploadedRecord
   //                          // is to be accepted unconditionally by client
+  //    "configurationFile": ... // ConfigurationFile proto
   //    // Internal control
   //    "enableUploadSizeAdjustment": true,  // If present, upload size
   //                                         // adjustment is enabled.
@@ -574,17 +651,37 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
     }
   }
 
+  // Handle the configuration file.
+  // The server attaches the configuration file if it was requested
+  // by the client. Adding a check to make sure to only process it if the
+  // feature is enabled on the client side.
+  const base::Value::Dict* signed_configuration_file_record =
+      last_response.FindDict("configurationFile");
+  if (signed_configuration_file_record != nullptr &&
+      base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
+    auto seq_info_result =
+        GetConfigurationProtoFromDict(*signed_configuration_file_record);
+    if (seq_info_result.ok()) {
+      // TODO(b/289117140): Call the callback when it is in place.
+    } else {
+      base::UmaHistogramEnumeration("Browser.ERP.ConfigFileParsingError",
+                                    seq_info_result.status().code(),
+                                    error::Code::MAX_VALUE);
+    }
+  }
+
   // Check if a record was unprocessable on the server.
   const base::Value::Dict* failed_uploaded_record =
       last_response.FindDictByDottedPath(
           "firstFailedUploadedRecord.failedUploadedRecord");
   if (!force_confirm_ && failed_uploaded_record != nullptr) {
-    // The record we uploaded previously was unprocessable by the server, if
-    // the record was after the current |highest_sequence_information_| we
-    // should return a gap record. A gap record consists of an EncryptedRecord
-    // with just SequenceInformation. The server will report success for the
-    // gap record and |highest_sequence_information_| will be updated in the
-    // next response. In the future there may be recoverable |failureStatus|,
+    // The record we uploaded previously was unprocessable by the server,
+    // if the record was after the current |highest_sequence_information_|
+    // we should return a gap record. A gap record consists of an
+    // EncryptedRecord with just SequenceInformation. The server will
+    // report success for the gap record and
+    // |highest_sequence_information_| will be updated in the next
+    // response. In the future there may be recoverable |failureStatus|,
     // but for now all the device can do is delete the record.
     auto gap_record_result =
         HandleFailedUploadedSequenceInformation(*failed_uploaded_record);
@@ -601,8 +698,8 @@ void RecordHandlerImpl::ReportUploader::HandleSuccessfulUpload(
     return;
   }
 
-  // No more records to process. Return the highest_sequence_information_ if
-  // available.
+  // No more records to process. Return the highest_sequence_information_
+  // if available.
   if (highest_sequence_information_.has_value()) {
     Complete(SuccessfulUploadResponse{
         .sequence_information =
@@ -633,8 +730,9 @@ RecordHandlerImpl::ReportUploader::HandleFailedUploadedSequenceInformation(
 
   SequenceInformation& seq_info = seq_info_result.ValueOrDie();
 
-  // |seq_info| should be of the same generation, generation guid, and priority
-  // as highest_sequence_information_, and have the next sequencing_id.
+  // |seq_info| should be of the same generation, generation guid, and
+  // priority as highest_sequence_information_, and have the next
+  // sequencing_id.
   if (seq_info.generation_id() !=
           highest_sequence_information_->generation_id() ||
       seq_info.generation_guid() !=

@@ -92,6 +92,59 @@ std::string NoAttachEncryptionSettingsMatcher::Name() const {
   return "no-attach-encryption-settings-matcher";
 }
 
+bool AttachConfigurationFileMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  const auto attach_configuration_file =
+      arg.FindBool("attachConfigurationFile");
+  if (!attach_configuration_file) {
+    *listener << "No key named \"attachConfigurationFile\" in the argument or "
+                 "the value is not of bool type.";
+    return false;
+  }
+  if (!attach_configuration_file.value()) {
+    *listener << "The value of \"attachConfigurationFile\" is false.";
+    return false;
+  }
+  return true;
+}
+
+void AttachConfigurationFileMatcher::DescribeTo(std::ostream* os) const {
+  *os << "has a valid attachConfigurationFile field.";
+}
+
+void AttachConfigurationFileMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "has an invalid attachConfigurationFile field.";
+}
+
+std::string AttachConfigurationFileMatcher::Name() const {
+  return "attach-configuration-file-matcher";
+}
+
+bool NoAttachConfigurationFileMatcher::MatchAndExplain(
+    const base::Value::Dict& arg,
+    MatchResultListener* listener) const {
+  if (arg.Find("attachConfigurationFile") != nullptr) {
+    *listener << "Found \"attachConfigurationFile\" in the argument.";
+    return false;
+  }
+  return true;
+}
+
+void NoAttachConfigurationFileMatcher::DescribeTo(std::ostream* os) const {
+  *os << "expectedly has no attachConfigurationFile field.";
+}
+
+void NoAttachConfigurationFileMatcher::DescribeNegationTo(
+    std::ostream* os) const {
+  *os << "unexpectedly has an attachConfigurationFile field.";
+}
+
+std::string NoAttachConfigurationFileMatcher::Name() const {
+  return "no-attach-configuration-file-matcher";
+}
+
 void CompressionInformationMatcher::DescribeTo(std::ostream* os) const {
   *os << "has a valid compression information field.";
 }

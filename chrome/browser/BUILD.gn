@@ -2273,6 +2273,7 @@ static_library("browser") {
     "//components/reporting/encryption:encryption_module",
     "//components/reporting/encryption:encryption_module_interface",
     "//components/reporting/encryption:verification",
+    "//components/reporting/proto:configuration_file_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/proto:status_proto",

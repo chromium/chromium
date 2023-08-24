@@ -24,6 +24,7 @@ constexpr char kSequenceInformationKey[] = "sequenceInformation";
 constexpr char kSequenceId[] = "sequencingId";
 constexpr char kGenerationId[] = "generationId";
 constexpr char kPriority[] = "priority";
+constexpr char kAttachConfigurationFileKey[] = "attachConfigurationFile";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
 constexpr char kDeviceKey[] = "device";
 constexpr char kBrowserKey[] = "browser";
@@ -321,8 +322,12 @@ std::string EncryptedReportingJobConfiguration::GetUmaString() const {
 std::set<std::string>
 EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
   static std::set<std::string> kTopLevelKeyAllowList{
-      kEncryptedRecordListKey, kAttachEncryptionSettingsKey, kDeviceKey,
-      kBrowserKey, kRequestId};
+      kAttachConfigurationFileKey,
+      kAttachEncryptionSettingsKey,
+      kBrowserKey,
+      kDeviceKey,
+      kEncryptedRecordListKey,
+      kRequestId};
   return kTopLevelKeyAllowList;
 }
 

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
 #include "base/values.h"
@@ -23,6 +24,7 @@ namespace {
 // UploadEncryptedReportingRequestBuilder list key
 constexpr char kEncryptedRecordListKey[] = "encryptedRecord";
 constexpr char kAttachEncryptionSettingsKey[] = "attachEncryptionSettings";
+constexpr char kAttachConfigurationFile[] = "attachConfigurationFile";
 
 // EncryptedRecordDictionaryBuilder strings
 constexpr char kEncryptedWrappedRecord[] = "encryptedWrappedRecord";
@@ -41,11 +43,24 @@ constexpr char kCompressionAlgorithmKey[] = "compressionAlgorithm";
 
 }  // namespace
 
+// Feature that controls if the configuration file should be requested
+// from the server.
+BASE_FEATURE(kShouldRequestConfigurationFile,
+             "ShouldRequestConfigurationFile",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 UploadEncryptedReportingRequestBuilder::UploadEncryptedReportingRequestBuilder(
     bool attach_encryption_settings) {
   result_.emplace();
   if (attach_encryption_settings) {
     result_->Set(GetAttachEncryptionSettingsPath(), true);
+  }
+
+  // Only request the configuration file from the server if the feature is
+  // enabled. The server will only return the configuration file if there is
+  // something to be blocked at that point.s
+  if (base::FeatureList::IsEnabled(kShouldRequestConfigurationFile)) {
+    result_->Set(GetAttachConfigurationFilePath(), true);
   }
 }
 
@@ -120,6 +135,12 @@ UploadEncryptedReportingRequestBuilder::GetEncryptedRecordListPath() {
 std::string_view
 UploadEncryptedReportingRequestBuilder::GetAttachEncryptionSettingsPath() {
   return kAttachEncryptionSettingsKey;
+}
+
+// static
+std::string_view
+UploadEncryptedReportingRequestBuilder::GetAttachConfigurationFilePath() {
+  return kAttachConfigurationFile;
 }
 
 EncryptedRecordDictionaryBuilder::EncryptedRecordDictionaryBuilder(

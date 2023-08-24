@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/values.h"
 
 #include "components/reporting/proto/synced/record.pb.h"
@@ -62,7 +63,10 @@ namespace reporting {
 //   // optional field, corresponding to |need_encryption_keys| in
 //   // components/reporting/proto/interface.proto
 //   "attachEncryptionSettings": true,
-//   "requestId": "SomeString"
+//   "requestId": "SomeString",
+//   // optional field, corresponding to the configuration file that the
+//   // server provides to the client.
+//   "attachConfigurationFile": true
 // }
 //
 // This payload is added to the common payload of all reporting jobs, which
@@ -81,6 +85,8 @@ namespace reporting {
 // The value of an "encryptedRecord" must be a list, in which each element is a
 // dictionary that represents a record. The details of each record is documented
 // in record.proto.
+
+BASE_DECLARE_FEATURE(kShouldRequestConfigurationFile);
 
 class UploadEncryptedReportingRequestBuilder {
  public:
@@ -113,6 +119,7 @@ class UploadEncryptedReportingRequestBuilder {
 
   static std::string_view GetEncryptedRecordListPath();
   static std::string_view GetAttachEncryptionSettingsPath();
+  static std::string_view GetAttachConfigurationFilePath();
 
   absl::optional<base::Value::Dict> result_;
 };

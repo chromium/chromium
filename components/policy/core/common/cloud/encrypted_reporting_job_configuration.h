@@ -57,6 +57,7 @@ namespace policy {
 //     }
 //   ],
 //   "attachEncryptionSettings": true,  // optional field
+//   "attachConfigurationFile": true, // optional field
 //   "requestId": "SomeString",
 //   "device": {
 //     "client_id": "abcdef1234",

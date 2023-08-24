@@ -10,10 +10,12 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
@@ -331,6 +333,24 @@ TEST_P(RecordUploadRequestBuilderTest, IncludeCompressionRequest) {
           .AppendMatcher(RecordMatcher::SetMode(
               CompressionInformationMatcher(), RecordMatcher::Mode::RecordOnly))
           .Build());
+}
+
+TEST_P(RecordUploadRequestBuilderTest, ConfigFileRequestExperimentEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kShouldRequestConfigurationFile);
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
+
+  EXPECT_THAT(builder.Build().value(),
+              IsConfigurationFileRequestUploadRequestValid(true));
+}
+
+TEST_P(RecordUploadRequestBuilderTest, ConfigFileRequestExperimentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kShouldRequestConfigurationFile);
+  UploadEncryptedReportingRequestBuilder builder(need_encryption_key());
+
+  EXPECT_THAT(builder.Build().value(),
+              IsConfigurationFileRequestUploadRequestValid(false));
 }
 
 INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,

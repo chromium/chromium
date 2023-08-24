@@ -143,6 +143,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.ConfigFileParsingError"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2024-06-01">
+  <owner>albertojuarez@google.com</owner>
+  <owner>src/components/reporting/OWNERS</owner>
+  <summary>
+    Recorded when RecordHandlerImpl catches an error while trying to parse the
+    configuration file that was sent from the reporting server.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2024-01-21">
   <owner>lbaraz@chromium.org</owner>

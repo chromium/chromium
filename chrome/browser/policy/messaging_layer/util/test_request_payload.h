@@ -61,6 +61,27 @@ class NoAttachEncryptionSettingsMatcher
   std::string Name() const override;
 };
 
+// attachConfigurationFile must be of bool type and true.
+class AttachConfigurationFileMatcher : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
+// attachConfigurationFile must be absent.
+class NoAttachConfigurationFileMatcher
+    : public RequestValidityMatcherInterface {
+ public:
+  bool MatchAndExplain(const base::Value::Dict& arg,
+                       MatchResultListener* listener) const override;
+  void DescribeTo(std::ostream* os) const override;
+  void DescribeNegationTo(std::ostream* os) const override;
+  std::string Name() const override;
+};
+
 // encryptedRecord must be a list. This matcher is recommended to be applies
 // before verifying the details of any record (e.g., via |RecordMatcher|) to
 // generate more readable error messages.
@@ -226,6 +247,22 @@ class RequestValidityMatcherBuilder {
   }
 
   // Creates and returns a |RequestValidityMatcherBuilder| instance that
+  // contains a matcher that is suited for verifying a configuration file
+  // request. If need_config_file is false the matcher will ensure the
+  // request does not request the configuration file.
+  static RequestValidityMatcherBuilder<T> CreateConfigurationFileRequestUpload(
+      bool need_config_file) {
+    auto builder = RequestValidityMatcherBuilder<T>::CreateEmpty();
+    builder.AppendMatcher(RequestIdMatcher());
+    if (need_config_file) {
+      builder.AppendMatcher(AttachConfigurationFileMatcher());
+    } else {
+      builder.AppendMatcher(NoAttachConfigurationFileMatcher());
+    }
+    return builder;
+  }
+
+  // Creates and returns a |RequestValidityMatcherBuilder| instance that
   // contains a matcher that is suited for verifying a single record.
   static RequestValidityMatcherBuilder<T> CreateRecord() {
     return std::move(RequestValidityMatcherBuilder<T>::CreateEmpty()
@@ -334,6 +371,17 @@ template <class T = base::Value::Dict>
 Matcher<T> IsEncryptionKeyRequestUploadRequestValid(bool need_key = true) {
   return RequestValidityMatcherBuilder<T>::CreateEncryptionKeyRequestUpload(
              need_key)
+      .Build();
+}
+
+// Match a configuration file request upload request that is valid. If
+// need_config_file is false, this matcher will ensure the request does not
+// request a configuration file.
+template <class T = base::Value::Dict>
+Matcher<T> IsConfigurationFileRequestUploadRequestValid(
+    bool need_config_file = false) {
+  return RequestValidityMatcherBuilder<T>::CreateConfigurationFileRequestUpload(
+             need_config_file)
       .Build();
 }
 
