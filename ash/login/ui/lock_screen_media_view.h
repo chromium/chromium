@@ -19,6 +19,10 @@
 
 namespace ash {
 
+namespace {
+class DismissButton;
+}
+
 // View for media controls that appear on the lock screen if it is enabled. This
 // replaces the old LockScreenMediaControlsView if the flag
 // media::kGlobalMediaControlsCrOSUpdatedUI is enabled. It registers for media
@@ -84,6 +88,17 @@ class ASH_EXPORT LockScreenMediaView
   // base::PowerSuspendObserver:
   void OnSuspend() override;
 
+  // Helper functions for testing:
+  void FlushForTesting();
+
+  void SetMediaControllerForTesting(
+      mojo::Remote<media_session::mojom::MediaController> media_controller);
+
+  views::Button* GetDismissButtonForTesting();
+
+  global_media_controls::MediaNotificationViewAshImpl*
+  GetMediaNotificationViewForTesting();
+
  private:
   friend class LockScreenMediaViewTest;
 
@@ -118,6 +133,7 @@ class ASH_EXPORT LockScreenMediaView
   const base::RepeatingClosure show_media_view_callback_;
   const base::RepeatingClosure hide_media_view_callback_;
 
+  raw_ptr<DismissButton> dismiss_button_;
   raw_ptr<global_media_controls::MediaNotificationViewAshImpl> view_;
 
   base::WeakPtrFactory<LockScreenMediaView> weak_ptr_factory_{this};

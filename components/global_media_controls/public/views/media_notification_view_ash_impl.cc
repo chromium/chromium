@@ -602,6 +602,11 @@ views::Button* MediaNotificationViewAshImpl::GetActionButtonForTesting(
   return (i == action_buttons_.end()) ? nullptr : *i;
 }
 
+media_session::MediaPosition
+MediaNotificationViewAshImpl::GetPositionForTesting() {
+  return position_;
+}
+
 views::Button* MediaNotificationViewAshImpl::GetStartCastingButtonForTesting() {
   return start_casting_button_;
 }

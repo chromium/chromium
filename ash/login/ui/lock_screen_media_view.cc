@@ -83,6 +83,23 @@ LockScreenMediaView::LockScreenMediaView(
   // Media controls have not been dismissed initially.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(false);
 
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  const auto media_color_theme = GetCrosMediaColorTheme();
+
+  auto dismiss_button = std::make_unique<DismissButton>(
+      base::BindRepeating(&LockScreenMediaView::Hide, base::Unretained(this)),
+      media_color_theme.primary_foreground_color_id,
+      media_color_theme.secondary_foreground_color_id,
+      media_color_theme.focus_ring_color_id);
+  dismiss_button_ = dismiss_button.get();
+
+  view_ = AddChildView(
+      std::make_unique<global_media_controls::MediaNotificationViewAshImpl>(
+          this, /*item=*/nullptr, /*footer_view=*/nullptr,
+          /*device_selector_view=*/nullptr, std::move(dismiss_button),
+          media_color_theme,
+          global_media_controls::MediaDisplayPage::kLockScreenMediaView));
+
   // |service| can be null in tests.
   media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
@@ -109,22 +126,6 @@ LockScreenMediaView::LockScreenMediaView(
       global_media_controls::kMediaItemArtworkMinSize,
       global_media_controls::kMediaItemArtworkDesiredSize,
       artwork_observer_receiver_.BindNewPipeAndPassRemote());
-
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-  const auto media_color_theme = GetCrosMediaColorTheme();
-
-  auto dismiss_button = std::make_unique<DismissButton>(
-      base::BindRepeating(&LockScreenMediaView::Hide, base::Unretained(this)),
-      media_color_theme.primary_foreground_color_id,
-      media_color_theme.secondary_foreground_color_id,
-      media_color_theme.focus_ring_color_id);
-
-  view_ = AddChildView(
-      std::make_unique<global_media_controls::MediaNotificationViewAshImpl>(
-          this, /*item=*/nullptr, /*footer_view=*/nullptr,
-          /*device_selector_view=*/nullptr, std::move(dismiss_button),
-          media_color_theme,
-          global_media_controls::MediaDisplayPage::kLockScreenMediaView));
 }
 
 LockScreenMediaView::~LockScreenMediaView() {
@@ -269,6 +270,27 @@ void LockScreenMediaView::SeekTo(base::TimeDelta time) {
 
 void LockScreenMediaView::OnSuspend() {
   Hide();
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// Helper functions for testing:
+
+void LockScreenMediaView::FlushForTesting() {
+  media_controller_remote_.FlushForTesting();  // IN-TEST
+}
+
+void LockScreenMediaView::SetMediaControllerForTesting(
+    mojo::Remote<media_session::mojom::MediaController> media_controller) {
+  media_controller_remote_ = std::move(media_controller);
+}
+
+views::Button* LockScreenMediaView::GetDismissButtonForTesting() {
+  return dismiss_button_;
+}
+
+global_media_controls::MediaNotificationViewAshImpl*
+LockScreenMediaView::GetMediaNotificationViewForTesting() {
+  return view_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

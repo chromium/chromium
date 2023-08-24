@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaNotificationViewAshImpl
   views::ImageView* GetChevronIconForTesting();
   views::Button* GetActionButtonForTesting(
       media_session::mojom::MediaSessionAction action);
+  media_session::MediaPosition GetPositionForTesting();
   views::Button* GetStartCastingButtonForTesting();
   MediaItemUIFooter* GetFooterForTesting();
   MediaItemUIDeviceSelector* GetDeviceSelectorForTesting();
