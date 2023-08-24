@@ -2289,7 +2289,7 @@ bool NavigationRequest::MaybeStartPrerenderingActivationChecks() {
   }
 
   // Run CommitDeferringConditions before activating the prerendered page. See
-  // the comemnt on RunCommitDeferringConditions() for detials.
+  // the comemnt on RunCommitDeferringConditions() for details.
   //
   // The prerendered page can be destroyed while the conditions are running.
   // In that case, this request gives up activating it and instead falls back to
@@ -5414,8 +5414,6 @@ void NavigationRequest::OnWillCommitWithoutUrlLoaderChecksComplete(
 }
 
 void NavigationRequest::RunCommitDeferringConditions() {
-  // TODO(nhiroki): Make RegisterDeferringConditions() private and have
-  // ProcessChecks() call it for code cleanup.
   commit_deferrer_->RegisterDeferringConditions(*this);
   commit_deferrer_->ProcessChecks();
   // DO NOT ADD CODE after this. The previous call to ProcessChecks may have
