@@ -34,11 +34,11 @@ SafeBrowsingNavigationObserverManagerFactory::
           "SafeBrowsingNavigationObserverManager",
           BrowserContextDependencyManager::GetInstance()) {}
 
-KeyedService*
-SafeBrowsingNavigationObserverManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService> SafeBrowsingNavigationObserverManagerFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   BrowserContextImpl* context_impl = static_cast<BrowserContextImpl*>(context);
-  return new safe_browsing::SafeBrowsingNavigationObserverManager(
+  return std::make_unique<safe_browsing::SafeBrowsingNavigationObserverManager>(
       context_impl->pref_service());
 }
 
