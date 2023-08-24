@@ -91,12 +91,6 @@ class CSSSelector;
 class MediaQueryEvaluator;
 class StyleSheetContents;
 
-// See `RuleSet::bucket_data_`.
-struct BucketData {
-  unsigned bucket_number;
-  unsigned order_in_bucket;
-};
-
 // This is a wrapper around a StyleRule, pointing to one of the N complex
 // selectors in the StyleRule. This allows us to treat each selector
 // independently but still tie them back to the original StyleRule. If multiple
@@ -290,11 +284,11 @@ class RuleMap {
   base::span<const RuleData> GetRulesFromExtent(Extent extent) const {
     return {backing.begin() + extent.start_index, extent.length};
   }
-  base::span<BucketData> GetBucketDataFromExtent(Extent extent) {
-    return {bucket_data_.begin() + extent.start_index, extent.length};
+  base::span<unsigned> GetBucketNumberFromExtent(Extent extent) {
+    return {bucket_number_.begin() + extent.start_index, extent.length};
   }
-  base::span<const BucketData> GetBucketDataFromExtent(Extent extent) const {
-    return {bucket_data_.begin() + extent.start_index, extent.length};
+  base::span<const unsigned> GetBucketNumberFromExtent(Extent extent) const {
+    return {bucket_number_.begin() + extent.start_index, extent.length};
   }
 
   HashMap<AtomicString, Extent> buckets;
@@ -302,9 +296,7 @@ class RuleMap {
   // Contains all the rules from all the buckets; after compaction,
   // they will be contiguous in memory and you can do easily lookups
   // on them through Find(); before, they are identified
-  // by having the group number stored in the RuleData itself
-  // (where the hashes for the fast-rejection Bloom filter would
-  // normally live; we delay their computation to after compaction).
+  // by having the group number in bucket_data_.
   //
   // The inline size is, perhaps surprisingly, to reduce GC pressure
   // for _large_ vectors. Setting an inline size (other than zero)
@@ -320,9 +312,9 @@ class RuleMap {
   HeapVector<RuleData, 4> backing;
 
   // Used by RuleMap before compaction, to hold what bucket the corresponding
-  // RuleData (by index) is to be sorted into. After compaction, the vector is
-  // emptied to save memory.
-  Vector<BucketData> bucket_data_;
+  // RuleData (by index) is to be sorted into (this member is 1:1 with backing).
+  // After compaction, the vector is emptied to save memory.
+  Vector<unsigned> bucket_number_;
 
   wtf_size_t num_buckets = 0;
   bool compacted = false;

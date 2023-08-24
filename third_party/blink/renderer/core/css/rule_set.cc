@@ -922,8 +922,8 @@ void RuleMap::Add(const AtomicString& key, const RuleData& rule_data) {
   if (RuntimeEnabledFeatures::CSSEasySelectorsEnabled()) {
     rule_data_copy.ComputeEntirelyCoveredByBucketing();
   }
-  bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
-                                    .order_in_bucket = rules.length++});
+  bucket_number_.push_back(rules.bucket_number);
+  ++rules.length;
   backing.push_back(std::move(rule_data_copy));
 }
 
@@ -932,7 +932,7 @@ void RuleMap::Compact() {
     return;
   }
   if (backing.empty()) {
-    DCHECK(bucket_data_.empty());
+    DCHECK(bucket_number_.empty());
     // Nothing to do.
     compacted = true;
     return;
@@ -944,10 +944,13 @@ void RuleMap::Compact() {
   // in-place counting sort (which is O(n), because our highest bucket
   // number is always less than or equal to the number of elements).
   // First, we make an array that contains the number of elements in each
-  // bucket, indexed by the bucket number.
-  std::unique_ptr<unsigned[]> counts(new unsigned[num_buckets]());
-  for (const BucketData& bucket_data : bucket_data_) {
-    ++counts[bucket_data.bucket_number];
+  // bucket, indexed by the bucket number. We also find each element's
+  // position within that bucket.
+  std::unique_ptr<unsigned[]> counts(
+      new unsigned[num_buckets]());  // Zero-initialized.
+  std::unique_ptr<unsigned[]> order_in_bucket(new unsigned[backing.size()]);
+  for (wtf_size_t i = 0; i < bucket_number_.size(); ++i) {
+    order_in_bucket[i] = counts[bucket_number_[i]]++;
   }
 
   // Do the prefix sum. After this, counts[i] is the desired start index
@@ -971,38 +974,36 @@ void RuleMap::Compact() {
   // because we put it there earlier), skip to the next array slot.
   // These will happen exactly n times each, giving us our O(n) runtime.
   for (wtf_size_t i = 0; i < backing.size();) {
-    const BucketData& bucket_data = bucket_data_[i];
-    wtf_size_t correct_pos =
-        counts[bucket_data.bucket_number] + bucket_data.order_in_bucket;
+    wtf_size_t correct_pos = counts[bucket_number_[i]] + order_in_bucket[i];
     if (i == correct_pos) {
       ++i;
     } else {
       using std::swap;
       swap(backing[i], backing[correct_pos]);
-      swap(bucket_data_[i], bucket_data_[correct_pos]);
+      swap(bucket_number_[i], bucket_number_[correct_pos]);
+      swap(order_in_bucket[i], order_in_bucket[correct_pos]);
     }
   }
 
-  // We're done with the bucket data, so we can release the memory.
-  // If we need the bucket data again, it will be reconstructed by
+  // We're done with the bucket numbers, so we can release the memory.
+  // If we need the bucket numbers again, they will be reconstructed by
   // RuleMap::Uncompact.
-  bucket_data_.clear();
+  bucket_number_.clear();
 
   compacted = true;
 }
 
 void RuleMap::Uncompact() {
-  bucket_data_.resize(backing.size());
+  bucket_number_.resize(backing.size());
 
   num_buckets = 0;
   for (auto& [key, value] : buckets) {
-    unsigned i = 0;
-    for (BucketData& bucket_data : GetBucketDataFromExtent(value)) {
-      bucket_data =
-          BucketData{.bucket_number = num_buckets, .order_in_bucket = i++};
+    for (unsigned& bucket_number : GetBucketNumberFromExtent(value)) {
+      bucket_number = num_buckets;
     }
     value.bucket_number = num_buckets++;
-    value.length = i;
+    value.length =
+        static_cast<unsigned>(GetBucketNumberFromExtent(value).size());
   }
   compacted = false;
 }
@@ -1026,8 +1027,8 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
       for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
         backing.push_back(rule_data);
         backing.back().AdjustPosition(offset);
-        bucket_data_.push_back(BucketData{.bucket_number = rules.bucket_number,
-                                          .order_in_bucket = rules.length++});
+        bucket_number_.push_back(rules.bucket_number);
+        ++rules.length;
       }
     }
   } else {
@@ -1053,14 +1054,12 @@ void RuleMap::Merge(const RuleMap& other, int offset) {
     // Now that we have the mapping, we can just copy over all the RuleData
     // and adjust the buckets/positions as we go.
     for (wtf_size_t i = 0; i < other.backing.size(); ++i) {
-      const BucketData& bucket_data = other.bucket_data_[i];
+      const unsigned bucket_number = other.bucket_number_[i];
       const RuleData& rule_data = other.backing[i];
-      const RuleMap::Extent& extent = extents[bucket_data.bucket_number];
+      const RuleMap::Extent& extent = extents[bucket_number];
       backing.push_back(rule_data);
       backing.back().AdjustPosition(offset);
-      bucket_data_.push_back(BucketData{
-          .bucket_number = extent.bucket_number,
-          .order_in_bucket = bucket_data.order_in_bucket + extent.length});
+      bucket_number_.push_back(extent.bucket_number);
     }
   }
 }
