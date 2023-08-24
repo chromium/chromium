@@ -54,16 +54,10 @@ class PlusAddressService : public KeyedService {
   // Check whether the passed-in string is a known plus address.
   bool IsPlusAddress(std::string potential_plus_address);
 
-  // Eventually, will orchestrate UI elements to inform the user of the plus
-  // address being created on their behalf, calling `PlusAddressCallback` on
-  // confirmation. For now, however, simply generates a fake plus address and
-  // runs `callback` with it immediately.
-  // Virtual to allow overriding the behavior in tests. This is a
-  // future-proofing mechanism for when UI elements (and possibly other side
-  // effects) are added. This way, the tests external to this directory can stay
-  // the same.
-  virtual void OfferPlusAddressCreation(url::Origin origin,
-                                        PlusAddressCallback callback);
+  // For now, simply generates a fake plus address and runs `callback` with it
+  // immediately.
+  void OfferPlusAddressCreation(const url::Origin& origin,
+                                PlusAddressCallback callback);
 
   // The label for an autofill suggestion offering to create a new plus address.
   // While only debatably relevant to this class, this function allows for

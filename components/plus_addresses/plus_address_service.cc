@@ -100,7 +100,7 @@ bool PlusAddressService::IsPlusAddress(std::string potential_plus_address) {
 }
 
 void PlusAddressService::OfferPlusAddressCreation(
-    url::Origin origin,
+    const url::Origin& origin,
     PlusAddressCallback callback) {
   if (!identity_manager_ ||
       !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
