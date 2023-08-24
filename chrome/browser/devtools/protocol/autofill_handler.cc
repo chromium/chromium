@@ -86,43 +86,54 @@ void AutofillHandler::FinishTrigger(
 
   content::RenderFrameHost* outermost_primary_rfh =
       host->GetWebContents()->GetOutermostWebContents()->GetPrimaryMainFrame();
+  content::RenderFrameHost* frame_rfh = nullptr;
 
-  autofill::LocalFrameToken frame_token(
-      outermost_primary_rfh->GetFrameToken().value());
   if (frame_id.has_value()) {
-    bool found = false;
     outermost_primary_rfh->ForEachRenderFrameHost(
-        [&frame_token, &frame_id, &found](content::RenderFrameHost* rfh) {
+        [&frame_id, &frame_rfh](content::RenderFrameHost* rfh) {
           if (rfh->GetDevToolsFrameToken().ToString() == frame_id.value()) {
-            frame_token =
-                autofill::LocalFrameToken(rfh->GetFrameToken().value());
-            found = true;
+            frame_rfh = rfh;
           }
         });
-
-    if (!found) {
+    if (!frame_rfh) {
       std::move(callback)->sendFailure(
           Response::ServerError("Frame not found"));
       return;
     }
+  } else {
+    frame_rfh = outermost_primary_rfh;
   }
 
-  autofill::ContentAutofillDriver* autofill_driver = GetAutofillDriver();
-  if (!autofill_driver) {
-    std::move(callback)->sendFailure(
-        Response::ServerError("RenderFrameHost is being destroyed"));
-    return;
-  }
-
+  autofill::LocalFrameToken frame_token(frame_rfh->GetFrameToken().value());
   autofill::FieldGlobalId global_field_id = {
       frame_token, autofill::FieldRendererId(field_id)};
 
-  const auto& field_data =
-      FindFieldWithFormData(autofill_driver, global_field_id);
+  autofill::ContentAutofillDriver* autofill_driver = nullptr;
+  absl::optional<std::pair<FormData, FormFieldData>> field_data;
+  while (frame_rfh) {
+    autofill_driver =
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(frame_rfh);
+
+    if (!autofill_driver) {
+      continue;
+    }
+
+    field_data = FindFieldWithFormData(autofill_driver, global_field_id);
+    if (field_data.has_value()) {
+      break;
+    }
+    frame_rfh = frame_rfh->GetParent();
+  }
 
   if (!field_data.has_value()) {
     std::move(callback)->sendFailure(
-        Response::InvalidRequest("field not found."));
+        Response::InvalidRequest("Field not found"));
+    return;
+  }
+
+  if (!autofill_driver) {
+    std::move(callback)->sendFailure(
+        Response::ServerError("RenderFrameHost is being destroyed"));
     return;
   }
 

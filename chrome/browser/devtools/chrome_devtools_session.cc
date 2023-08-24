@@ -66,6 +66,10 @@ ChromeDevToolsSession::ChromeDevToolsSession(
       storage_handler_ = std::make_unique<StorageHandler>(
           agent_host->GetWebContents(), &dispatcher_);
     }
+  }
+  if (agent_host->GetWebContents() &&
+      (agent_host->GetType() == content::DevToolsAgentHost::kTypePage ||
+       agent_host->GetType() == content::DevToolsAgentHost::kTypeFrame)) {
     if (IsDomainAvailableToUntrustedClient<AutofillHandler>() ||
         channel->GetClient()->IsTrusted()) {
       autofill_handler_ =
