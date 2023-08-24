@@ -182,6 +182,9 @@ class FakeProvidedFileSystem : public ProvidedFileSystemInterface {
  private:
   using Entries = std::map<base::FilePath, std::unique_ptr<FakeEntry>>;
 
+  base::File::Error DoDeleteEntry(const base::FilePath& entry_path,
+                                  bool recursive);
+
   // Utility function for posting a task which can be aborted by calling the
   // returned callback.
   AbortCallback PostAbortableTask(base::OnceClosure callback);

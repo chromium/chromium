@@ -216,6 +216,8 @@ class AsyncFileUtil {
   //
   // FileSystemOperationImpl::Copy calls this for same-filesystem copy case.
   //
+  // It should succeed (and overwrite) if |dest_url| exists and is a file.
+  //
   // This reports following error code via |callback|:
   // - File::FILE_ERROR_NOT_FOUND if |src_url|
   //   or the parent directory of |dest_url| does not exist.
@@ -238,6 +240,8 @@ class AsyncFileUtil {
   // (i.e. type() and origin() of the |src_url| and |dest_url| must match).
   //
   // FileSystemOperationImpl::Move calls this for same-filesystem move case.
+  //
+  // It should succeed (and overwrite) if |dest_url| exists and is a file.
   //
   // This reports following error code via |callback|:
   // - File::FILE_ERROR_NOT_FOUND if |src_url|
