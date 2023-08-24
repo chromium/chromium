@@ -616,10 +616,20 @@ TEST_F(GameDashboardCaptureModeTest, SettingsMenuHeightMinimumAboveBar) {
 TEST_F(GameDashboardCaptureModeTest, StopOnWindowSentToDifferentDesk) {
   NewDesk();
   auto* controller = StartGameCaptureModeSession();
-  ASSERT_TRUE(controller->IsActive());
 
   // Send the window to a different desk using the accelerator.
   PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN);
+  EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(GameDashboardCaptureModeTest, StopOnActiveDeskChanged) {
+  NewDesk();
+  auto* controller = StartGameCaptureModeSession();
+
+  // Switch to the new desk using the accelerator.
+  DeskSwitchAnimationWaiter waiter;
+  PressAndReleaseKey(ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN);
+  waiter.Wait();
   EXPECT_FALSE(controller->IsActive());
 }
 
