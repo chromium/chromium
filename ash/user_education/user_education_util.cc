@@ -185,6 +185,16 @@ views::View* GetMatchingViewInRootWindow(int64_t display_id,
   return nullptr;
 }
 
+absl::optional<user_manager::UserType> GetUserType(
+    const AccountId& account_id) {
+  if (const auto* ctrlr = Shell::Get()->session_controller()) {
+    if (const auto* session = ctrlr->GetUserSessionByAccountId(account_id)) {
+      return session->user_info.type;
+    }
+  }
+  return absl::nullopt;
+}
+
 bool IsPrimaryAccountActive() {
   const auto* session_controller = Shell::Get()->session_controller();
   return IsPrimaryAccountId(GetActiveAccountId(session_controller)) &&

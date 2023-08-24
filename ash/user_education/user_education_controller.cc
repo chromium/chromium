@@ -112,6 +112,12 @@ void UserEducationController::OnUserSessionAdded(const AccountId& account_id) {
 
   session_observation_.Reset();
 
+  // User education services are not currently supported for irregular profiles.
+  if (user_education_util::GetUserType(account_id) !=
+      user_manager::USER_TYPE_REGULAR) {
+    return;
+  }
+
   // TODO(http://b/289292432): Move to `UserEducationTutorialController`.
   // Register all tutorials with user education services in the browser.
   for (auto& feature_controller : feature_controllers_) {

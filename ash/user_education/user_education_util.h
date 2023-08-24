@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "base/values.h"
 #include "components/user_education/common/help_bubble_params.h"
+#include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/ui_base_types.h"
@@ -115,6 +116,11 @@ ASH_EXPORT absl::optional<HelpBubbleStyle> GetHelpBubbleStyle(
 ASH_EXPORT views::View* GetMatchingViewInRootWindow(
     int64_t display_id,
     ui::ElementIdentifier element_id);
+
+// Returns the user type associated with the specified `account_id`, or
+// `absl::nullopt` if type cannot be determined.
+ASH_EXPORT absl::optional<user_manager::UserType> GetUserType(
+    const AccountId& account_id);
 
 // Returns whether the primary user account is active.
 ASH_EXPORT bool IsPrimaryAccountActive();
