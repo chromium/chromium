@@ -11923,8 +11923,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
                    web_contents_impl());
 }
 
+// TODO(crbug.com/1475447): Re-enable this test
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
-                       BackNavigationOfCloneWebContents) {
+                       DISABLED_BackNavigationOfCloneWebContents) {
   const GURL url1 = GetUrl("/title1.html");
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   PerformInitialNavigations(web_contents_impl(), url1, url2);
