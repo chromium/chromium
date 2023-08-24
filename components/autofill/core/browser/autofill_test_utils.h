@@ -167,6 +167,7 @@ CreditCard GetIncompleteCreditCard();
 // Returns a masked server card full of dummy info.
 CreditCard GetMaskedServerCard();
 CreditCard GetMaskedServerCard2();
+CreditCard GetMaskedServerCardWithCvc();
 CreditCard GetMaskedServerCardWithNonLegacyId();
 CreditCard GetMaskedServerCardWithLegacyId();
 CreditCard GetMaskedServerCardVisa();
@@ -278,7 +279,8 @@ void SetCreditCardInfo(CreditCard* credit_card,
                        const char* card_number,
                        const char* expiration_month,
                        const char* expiration_year,
-                       const std::string& billing_address_id);
+                       const std::string& billing_address_id,
+                       const std::u16string& cvc = u"");
 
 // TODO(isherman): We should do this automatically for all tests, not manually
 // on a per-test basis: http://crbug.com/57221

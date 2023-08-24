@@ -477,8 +477,7 @@ class BrowserAutofillManager : public AutofillManager,
 
   // CreditCardAccessManager::Accessor
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card,
-                           const std::u16string& cvc) override;
+                           const CreditCard* credit_card) override;
 
   // Returns false if Autofill is disabled or if no Autofill data is available.
   bool RefreshDataModels();
