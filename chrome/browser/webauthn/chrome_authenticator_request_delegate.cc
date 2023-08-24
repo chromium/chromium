@@ -684,7 +684,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   device::WinWebAuthnApi* const webauthn_api =
       device::WinWebAuthnApi::GetDefault();
   const bool system_handles_cable =
-      webauthn_api && webauthn_api->SupportsHybrid();
+      webauthn_api && webauthn_api->SupportsHybrid() &&
+      // For now, Chrome handles hybrid even if Windows supports it for synced
+      // GPM passkeys.
+      !base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys);
 #else
   constexpr bool system_handles_cable = false;
 #endif
