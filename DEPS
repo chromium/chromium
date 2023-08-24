@@ -4218,6 +4218,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/test/data/autofill/heuristics-json/internal': {
+      'url': Var('chrome_git') + '/chrome/test/autofill/structured_forms.git' + '@' +
+        'fc9323141d970c474cb466c32c9be6cfcf20e549',
+      'condition': 'checkout_chromium_autofill_test_dependencies',
+  },
+
   'src/components/vector_icons/google_chrome': {
       'url': Var('chrome_git') + '/chrome/vector_icons/google_chrome.git' + '@' +
         'dbf059ca9ed5a4da6ae628042a2797e822a53d79',

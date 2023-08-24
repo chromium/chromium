@@ -223,6 +223,7 @@ vs-chromium-project.txt
 /components/resources/default_300_percent/google_chrome
 /components/search_engines/prepopulated_engines.xml
 /components/site_isolation/internal
+/components/test/data/autofill/heuristics-json/internal
 /components/suggestions.xml
 /components/variations.xml
 /components/vector_icons/google_chrome/
