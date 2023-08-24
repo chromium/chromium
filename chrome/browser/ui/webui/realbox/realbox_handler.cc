@@ -125,6 +125,8 @@ constexpr char kGoogleKeepNoteIconResourceName[] =
 constexpr char kGoogleSitesIconResourceName[] =
     "//resources/cr_components/omnibox/icons/sites.svg";
 #endif
+constexpr char kHistoryIconResourceName[] =
+    "//resources/images/icon_history.svg";
 constexpr char kIncognitoIconResourceName[] =
     "//resources/cr_components/omnibox/icons/incognito.svg";
 constexpr char kJourneysIconResourceName[] =
@@ -651,6 +653,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     return kDriveVideoIconResourceName;
   } else if (icon.name == omnibox::kExtensionAppIcon.name) {
     return kExtensionAppIconResourceName;
+  } else if (icon.name == vector_icons::kHistoryIcon.name ||
+             icon.name == vector_icons::kHistoryChromeRefreshIcon.name) {
+    return kHistoryIconResourceName;
   } else if (icon.name == omnibox::kJourneysIcon.name ||
              icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;

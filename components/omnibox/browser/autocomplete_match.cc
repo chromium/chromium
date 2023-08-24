@@ -541,8 +541,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::SEARCH_HISTORY:
     case Type::SEARCH_SUGGEST_PERSONALIZED: {
       DCHECK(IsSearchHistoryType(type));
-      return use_chrome_refresh_icons ? omnibox::kClockChromeRefreshIcon
-                                      : omnibox::kClockIcon;
+      return use_chrome_refresh_icons ? vector_icons::kHistoryChromeRefreshIcon
+                                      : vector_icons::kHistoryIcon;
     }
 
     case Type::EXTENSION_APP_DEPRECATED:
