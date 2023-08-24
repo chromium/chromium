@@ -6405,6 +6405,12 @@ const char kImeSystemEmojiPickerGIFSupportName[] =
 const char kImeSystemEmojiPickerGIFSupportDescription[] =
     "Emoji picker gif support allows users to select gifs to input.";
 
+const char kImeSystemEmojiPickerJellySupportName[] =
+    "Enable jelly colors for the System Emoji Picker";
+const char kImeSystemEmojiPickerJellySupportDescription[] =
+    "Enable jelly colors for the System Emoji Picker. Requires "
+    "jelly-colors flag to be enabled.";
+
 const char kImeSystemEmojiPickerSearchExtensionName[] =
     "System emoji picker search extension";
 const char kImeSystemEmojiPickerSearchExtensionDescription[] =

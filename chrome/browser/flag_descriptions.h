@@ -3695,6 +3695,9 @@ extern const char kImeSystemEmojiPickerExtensionDescription[];
 extern const char kImeSystemEmojiPickerGIFSupportName[];
 extern const char kImeSystemEmojiPickerGIFSupportDescription[];
 
+extern const char kImeSystemEmojiPickerJellySupportName[];
+extern const char kImeSystemEmojiPickerJellySupportDescription[];
+
 extern const char kImeSystemEmojiPickerClipboardName[];
 extern const char kImeSystemEmojiPickerClipboardDescription[];
 
