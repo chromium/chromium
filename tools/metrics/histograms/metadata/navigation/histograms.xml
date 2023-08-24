@@ -678,7 +678,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.EngagementTime.Ratio" units="%"
-    expires_after="2023-12-17">
+    expires_after="2024-02-20">
   <owner>estark@chromium.org</owner>
   <owner>security-enamel@chromium.org</owner>
   <summary>
@@ -1254,7 +1254,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Navigation.Prerender.ActivationCommitDeferTime{PrerenderTriggerType}"
-    units="ms" expires_after="2023-11-23">
+    units="ms" expires_after="2024-02-20">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@chromium.org</owner>
   <summary>
@@ -1415,7 +1415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.SuddenTerminationDisabler.{Origins}"
-    enum="NavigationSuddenTerminationDisabler" expires_after="2023-10-11">
+    enum="NavigationSuddenTerminationDisabler" expires_after="2024-02-20">
   <owner>fergal@chromium.org</owner>
   <owner>rakina@chromium.org</owner>
   <summary>
@@ -1686,7 +1686,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationNavigationParamsMatch{PrerenderTriggerType}"
-    enum="PrerenderActivationNavigationParamsMatch" expires_after="2023-12-03">
+    enum="PrerenderActivationNavigationParamsMatch" expires_after="2024-02-20">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1699,7 +1699,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.ActivationTransitionMismatch{PrerenderTriggerType}"
-    enum="PrerenderActivationTransitionMismatchType" expires_after="2023-10-26">
+    enum="PrerenderActivationTransitionMismatchType" expires_after="2024-02-20">
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
@@ -1845,7 +1845,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderCancelledUnknownInterface{PrerenderTriggerType}"
-    enum="PrerenderCancelledUnknownInterface" expires_after="2023-12-05">
+    enum="PrerenderCancelledUnknownInterface" expires_after="2024-02-20">
   <owner>nhiroki@chromium.org</owner>
   <owner>toyoshim@chromium.org</owner>
   <owner>lingqi@chromium.org</owner>
@@ -1908,7 +1908,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Prerender.Experimental.PrerenderLoadingFailureError{PrerenderTriggerType}"
-    enum="NetErrorCodes" expires_after="2023-10-31">
+    enum="NetErrorCodes" expires_after="2024-02-20">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.0.TotalIOTimeRead" units="ms"
-    expires_after="2023-12-17">
+    expires_after="2024-02-20">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DiskCache.0.TotalIOTimeWrite" units="ms"
-    expires_after="2023-12-17">
+    expires_after="2024-02-20">
   <owner>jam@chromium.org</owner>
   <owner>swarm-team@google.com</owner>
   <summary>
