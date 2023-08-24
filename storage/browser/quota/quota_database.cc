@@ -936,28 +936,31 @@ QuotaError QuotaDatabase::EnsureOpened() {
 
   // Migrate an existing database from the old path.
   if (!db_file_path_.empty() && !MoveLegacyDatabase()) {
-    if (!ResetStorage()) {
-      is_disabled_ = true;
-      db_.reset();
-      meta_table_.reset();
-      return QuotaError::kDatabaseError;
+    if (ResetStorage()) {
+      // ResetStorage() has succeeded and database is already open.
+      return QuotaError::kNone;
     }
-    // ResetStorage() has succeeded and database is already open.
-    return QuotaError::kNone;
+    is_disabled_ = true;
+    db_.reset();
+    meta_table_.reset();
+    return QuotaError::kDatabaseError;
   }
 
   if (!OpenDatabase() || !EnsureDatabaseVersion()) {
     LOG(ERROR) << "Could not open the quota database, resetting.";
-    if (db_file_path_.empty() || !ResetStorage()) {
-      LOG(ERROR) << "Failed to reset the quota database.";
-      is_disabled_ = true;
-      db_.reset();
-      meta_table_.reset();
-      return QuotaError::kDatabaseError;
+    if (!db_file_path_.empty() && ResetStorage()) {
+      // ResetStorage() has succeeded and database is already open.
+      return QuotaError::kNone;
     }
+    LOG(ERROR) << "Failed to reset the quota database.";
+    is_disabled_ = true;
+    db_.reset();
+    meta_table_.reset();
+    return QuotaError::kDatabaseError;
   }
 
   // Start a long-running transaction.
+  DCHECK_EQ(0, db_->transaction_nesting());
   db_->BeginTransaction();
 
   return QuotaError::kNone;

@@ -96,6 +96,11 @@ class QuotaDatabaseTest : public testing::TestWithParam<bool> {
     return db->EnsureOpened() == QuotaError::kNone;
   }
 
+  int GetTransactionNesting(QuotaDatabase* db) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(db->sequence_checker_);
+    return db->db_->transaction_nesting();
+  }
+
   template <typename EntryType>
   struct EntryVerifier {
     std::set<EntryType> table;
@@ -963,6 +968,9 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
     histograms.ExpectBucketCount("Quota.DatabaseSpecificError.Open",
                                  sql::SqliteLoggedResultCode::kCorrupt, 1);
     EXPECT_TRUE(expecter.SawExpectedErrors());
+
+    // Ensure no nested transactions after reentrant calls to EnsureOpened()
+    EXPECT_EQ(GetTransactionNesting(db.get()), 1);
 
     // Ensure data is deleted.
     base::FilePath storage_path = db->GetStoragePath();
