@@ -104,7 +104,7 @@ $ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_
     --out_dir out/Linux \
     --findings_file all_findings.json \
     --clang_tidy_binary $PWD/third_party/llvm-build/Release+Asserts/bin/clang-tidy \
-    --tidy_checks '-*,YOUR-NEW-CHECK-NAME-HERE'
+    --tidy_checks='-*,YOUR-NEW-CHECK-NAME-HERE'
     --all
 ```
 
