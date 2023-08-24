@@ -26,6 +26,7 @@
 
 namespace blink {
 
+class CSSMathFunctionValue;
 class ComputedStyle;
 class Element;
 class LayoutObject;
@@ -45,7 +46,7 @@ class CORE_EXPORT SVGLengthContext {
   float ConvertValueFromUserUnits(float,
                                   SVGLengthMode,
                                   CSSPrimitiveValue::UnitType to_unit) const;
-  float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
+  float ResolveValue(const CSSMathFunctionValue&, SVGLengthMode) const;
 
   static const ComputedStyle* ComputedStyleForLengthResolving(
       const SVGElement&);

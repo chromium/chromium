@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_length.h"
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/animation/svg_interpolation_environment.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
@@ -52,8 +53,8 @@ SVGLength* SVGLengthInterpolationType::ResolveInterpolableSVGLength(
   // TODO(crbug.com/991672): This code path uses |primitive_value| as a
   // temporary object to calculate the pixel values. Try to avoid that.
   const auto unit_type = CSSPrimitiveValue::UnitType::kUserUnits;
-  const double value = length_context.ResolveValue(*primitive_value, unit_mode);
-
+  const double value = length_context.ResolveValue(
+      To<CSSMathFunctionValue>(*primitive_value), unit_mode);
   auto* result =
       MakeGarbageCollected<SVGLength>(unit_mode);  // defaults to the length 0
   result->NewValueSpecifiedUnits(unit_type, value);

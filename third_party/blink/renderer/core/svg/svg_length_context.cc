@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -85,7 +86,7 @@ const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
   return &document.GetStyleResolver().InitialStyle();
 }
 
-float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
+float SVGLengthContext::ResolveValue(const CSSMathFunctionValue& math_function,
                                      SVGLengthMode mode) const {
   if (!context_) {
     return 0;
@@ -95,7 +96,7 @@ float SVGLengthContext::ResolveValue(const CSSPrimitiveValue& primitive_value,
     return 0;
   }
   const SVGLengthConversionData conversion_data(*context_, *style);
-  const Length& length = primitive_value.ConvertToLength(conversion_data);
+  const Length& length = math_function.ConvertToLength(conversion_data);
   const SVGViewportResolver viewport_resolver(*context_);
   return ValueForLength(length, viewport_resolver, 1.0f, mode);
 }
