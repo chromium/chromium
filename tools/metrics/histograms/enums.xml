@@ -12586,6 +12586,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Has CRC"/>
 </enum>
 
+<enum name="BooleanHasData">
+  <int value="0" label="No data"/>
+  <int value="1" label="Has data"/>
+</enum>
+
 <enum name="BooleanHasDiscount">
   <int value="0" label="No discount"/>
   <int value="1" label="has discount"/>
@@ -12594,6 +12599,11 @@ Called by update_bad_message_reasons.py.-->
 <enum name="BooleanHasDistilledData">
   <int value="0" label="No distilled data"/>
   <int value="1" label="Has distilled data"/>
+</enum>
+
+<enum name="BooleanHasFetchers">
+  <int value="0" label="Missing fetchers"/>
+  <int value="1" label="Has fetchers"/>
 </enum>
 
 <enum name="BooleanHasKey">
