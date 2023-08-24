@@ -19,9 +19,7 @@
             "(display-mode: minimal-ui)",
             "(display-mode: standalone)",
             "(display-mode: fullscreen)",
-            "(display-mode: window-controls-overlay)",
-            "(display-mode: borderless)",
-        ];
+            ];
         for (var index=0; index < queries.length; index++) {
             log("Query &quot;" + queries[index] + "&quot: " +
                 window.matchMedia(queries[index]).matches);
@@ -51,7 +49,7 @@
 </script>
 </head>
 <body onload="runTests()">
-    <p>Test the <a href="http://www.w3.org/TR/mediaqueries-5/#display-mode">(display-mode: ...)</a>
+    <p>Test the <a href="http://w3c.github.io/manifest/#the-display-mode-media-feature">(display-mode: ...)</a>
     media features while the browser window entering/leaving fullscreen mode.</p>
     <div id="results"></div>
 </body>
