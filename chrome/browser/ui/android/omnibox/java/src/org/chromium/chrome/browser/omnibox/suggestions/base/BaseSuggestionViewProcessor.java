@@ -167,10 +167,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
      * Process the long-click event.
      *
      * @param suggestion Selected suggestion.
-     * @param position Position of the suggestion on the list.
      */
-    protected void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion, int position) {
-        mSuggestionHost.onDeleteMatch(suggestion, suggestion.getDisplayText(), position);
+    protected void onSuggestionLongClicked(@NonNull AutocompleteMatch suggestion) {
+        mSuggestionHost.onDeleteMatch(suggestion, suggestion.getDisplayText());
     }
 
     /**
@@ -190,7 +189,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(BaseSuggestionViewProperties.ON_CLICK,
                 () -> onSuggestionClicked(suggestion, position));
         model.set(BaseSuggestionViewProperties.ON_LONG_CLICK,
-                () -> onSuggestionLongClicked(suggestion, position));
+                () -> onSuggestionLongClicked(suggestion));
         model.set(BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION,
                 () -> mSuggestionHost.setOmniboxEditingText(suggestion.getFillIntoEdit()));
         setActionButtons(model, null);

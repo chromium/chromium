@@ -393,18 +393,21 @@ jboolean AutocompleteControllerAndroid::OnSuggestionTouchDown(
   return false;
 }
 
-void AutocompleteControllerAndroid::DeleteMatch(JNIEnv* env, jint match_index) {
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
-  if (match.SupportsDeletion())
-    autocomplete_controller_->DeleteMatch(match);
+void AutocompleteControllerAndroid::DeleteMatch(JNIEnv* env,
+                                                uintptr_t match_ptr) {
+  const auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
+  if (match->SupportsDeletion()) {
+    autocomplete_controller_->DeleteMatch(*match);
+  }
 }
 
 void AutocompleteControllerAndroid::DeleteMatchElement(JNIEnv* env,
-                                                       jint match_index,
+                                                       uintptr_t match_ptr,
                                                        jint element_index) {
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
-  if (match.SupportsDeletion())
-    autocomplete_controller_->DeleteMatchElement(match, element_index);
+  const auto* match = reinterpret_cast<AutocompleteMatch*>(match_ptr);
+  if (match->SupportsDeletion()) {
+    autocomplete_controller_->DeleteMatchElement(*match, element_index);
+  }
 }
 
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::

@@ -118,8 +118,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
             final int elementIndexForDeletion = elementIndex;
             tileModel.set(TileViewProperties.ON_LONG_CLICK, v -> {
-                mSuggestionHost.onDeleteMatchElement(
-                        suggestion, title, matchIndex, elementIndexForDeletion);
+                mSuggestionHost.onDeleteMatchElement(suggestion, title, elementIndexForDeletion);
                 return true;
             });
 

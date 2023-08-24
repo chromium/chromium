@@ -52,10 +52,8 @@ public interface SuggestionHost {
      *
      * @param suggestion Long-pressed Suggestion.
      * @param titleText The title to display in the delete dialog.
-     * @param position The position of the suggestion on the list.
      */
-    void onDeleteMatch(
-            @NonNull AutocompleteMatch suggestion, @NonNull String titleText, int position);
+    void onDeleteMatch(@NonNull AutocompleteMatch suggestion, @NonNull String titleText);
 
     /**
      * Triggered when the user long presses the omnibox suggestion element (eg. tile).
@@ -64,11 +62,10 @@ public interface SuggestionHost {
      *
      * @param suggestion Long-pressed Suggestion.
      * @param titleText The title to display in the delete dialog.
-     * @param position The position of the suggestion on the list.
      * @param element Element of the suggestion to be deleted.
      */
-    void onDeleteMatchElement(@NonNull AutocompleteMatch suggestion, @NonNull String titleText,
-            int position, int element);
+    void onDeleteMatchElement(
+            @NonNull AutocompleteMatch suggestion, @NonNull String titleText, int element);
 
     /**
      * Triggered when the user selects a switch to tab action.

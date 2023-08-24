@@ -547,26 +547,23 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * Triggered when the user long presses the omnibox suggestion.
      * @param suggestion The suggestion selected.
      * @param titleText The title to display in the delete dialog.
-     * @param matchIndex The position of the suggestion.
      */
     @Override
-    public void onDeleteMatch(
-            @NonNull AutocompleteMatch suggestion, @NonNull String titleText, int matchIndex) {
-        showDeleteDialog(suggestion, titleText, () -> mAutocomplete.deleteMatch(matchIndex));
+    public void onDeleteMatch(@NonNull AutocompleteMatch suggestion, @NonNull String titleText) {
+        showDeleteDialog(suggestion, titleText, () -> mAutocomplete.deleteMatch(suggestion));
     }
 
     /**
      * Triggered when the user long presses the omnibox suggestion element (eg. a tile).
      * @param suggestion The suggestion selected.
      * @param titleText The title to display in the delete dialog.
-     * @param matchIndex The position of the suggestion.
      * @param elementIndex The element of the suggestion to be deleted.
      */
     @Override
-    public void onDeleteMatchElement(@NonNull AutocompleteMatch suggestion,
-            @NonNull String titleText, int matchIndex, int elementIndex) {
+    public void onDeleteMatchElement(
+            @NonNull AutocompleteMatch suggestion, @NonNull String titleText, int elementIndex) {
         showDeleteDialog(suggestion, titleText,
-                () -> mAutocomplete.deleteMatchElement(matchIndex, elementIndex));
+                () -> mAutocomplete.deleteMatchElement(suggestion, elementIndex));
     }
 
     /**

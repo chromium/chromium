@@ -188,30 +188,32 @@ public class AutocompleteController implements Destroyable {
      * Partially deletes an omnibox suggestion.
      * This call should be used by compound suggestion types (such as carousel) that host multiple
      * components inside (eg. MostVisitedTiles).
-     * @param matchIndex The position at which the match is located.
-     * @param elementIndex The element within the match that needs to be deleted.
+     * @param match the match to delete elements of
+     * @param elementIndex the element within the match that needs to be deleted
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void deleteMatchElement(int matchIndex, int elementIndex) {
+    public void deleteMatchElement(AutocompleteMatch match, int elementIndex) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.DELETE_MATCH)) {
+        if (!mAutocompleteResult.verifyCoherency(
+                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
             return;
         }
         AutocompleteControllerJni.get().deleteMatchElement(
-                mNativeController, matchIndex, elementIndex);
+                mNativeController, match.getNativeObjectRef(), elementIndex);
     }
 
     /**
      * Deletes an omnibox suggestion, if possible.
-     * @param matchIndex The position at which the match is located.
+     * @param match the match to delete
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void deleteMatch(int matchIndex) {
+    public void deleteMatch(AutocompleteMatch match) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.DELETE_MATCH)) {
+        if (!mAutocompleteResult.verifyCoherency(
+                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
             return;
         }
-        AutocompleteControllerJni.get().deleteMatch(mNativeController, matchIndex);
+        AutocompleteControllerJni.get().deleteMatch(mNativeController, match.getNativeObjectRef());
     }
 
     @CalledByNative
@@ -380,9 +382,9 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteControllerAndroid, int matchIndex, WebContents webContents);
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,
                 String currentUrl, int pageClassification, String currentTitle);
-        void deleteMatchElement(
-                long nativeAutocompleteControllerAndroid, int matchIndex, int elementIndex);
-        void deleteMatch(long nativeAutocompleteControllerAndroid, int matchIndex);
+        void deleteMatchElement(long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch, int elementIndex);
+        void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
         GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
                 long nativeAutocompleteControllerAndroid, int matchIndex,
                 long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);

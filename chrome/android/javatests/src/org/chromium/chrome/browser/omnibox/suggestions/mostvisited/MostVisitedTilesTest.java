@@ -312,8 +312,7 @@ public class MostVisitedTilesTest {
         CriteriaHelper.pollUiThread(() -> { return manager.getCurrentDialogForTest() == null; });
 
         verify(mAutocompleteControllerJniMock, times(1))
-                .deleteMatchElement(
-                        anyLong(), eq(MV_TILE_CAROUSEL_MATCH_POSITION), eq(tileToDelete));
+                .deleteMatchElement(anyLong(), eq(0L), eq(tileToDelete));
     }
 
     @Test

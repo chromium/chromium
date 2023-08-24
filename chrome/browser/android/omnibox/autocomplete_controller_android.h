@@ -70,8 +70,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       JNIEnv* env,
       jint match_index,
       const base::android::JavaParamRef<jobject>& j_web_contents);
-  void DeleteMatch(JNIEnv* env, jint match_index);
-  void DeleteMatchElement(JNIEnv* env, jint match_index, jint element_index);
+  void DeleteMatch(JNIEnv* env, uintptr_t match_ptr);
+  void DeleteMatchElement(JNIEnv* env, uintptr_t match_ptr, jint element_index);
   base::android::ScopedJavaLocalRef<jobject>
   UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
       JNIEnv* env,

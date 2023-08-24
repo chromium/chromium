@@ -236,15 +236,15 @@ public final class MostVisitedTilesProcessorUnitTest {
         // element that is getting removed.
         tileList.get(1).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onDeleteMatchElement(eq(mMatch), eq("nav1"), eq(1), eq(1));
+                .onDeleteMatchElement(eq(mMatch), eq("nav1"), eq(1));
 
         tileList.get(2).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onDeleteMatchElement(eq(mMatch), eq("nav2"), eq(1), eq(2));
+                .onDeleteMatchElement(eq(mMatch), eq("nav2"), eq(2));
 
         tileList.get(0).model.get(TileViewProperties.ON_LONG_CLICK).onLongClick(null);
         ordered.verify(mSuggestionHost, times(1))
-                .onDeleteMatchElement(eq(mMatch), eq("search1"), eq(1), eq(0));
+                .onDeleteMatchElement(eq(mMatch), eq("search1"), eq(0));
 
         verifyNoMoreInteractions(mSuggestionHost);
         verifyNoMoreInteractions(mImageSupplier);
