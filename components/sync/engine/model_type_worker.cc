@@ -596,6 +596,12 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     }
     specifics_were_encrypted = true;
   } else if (specifics.has_incoming_password_sharing_invitation()) {
+    // IncomingPasswordSharingInvitationSpecifics contains a mix of encrypted
+    // and unencrypted fields. We start by copying over everything to make sure
+    // all unecrypted fields are carried over to the UpdateResponseData, and
+    // then decrypt the encrypted part.
+    *data.specifics.mutable_incoming_password_sharing_invitation() =
+        specifics.incoming_password_sharing_invitation();
     // Password sharing invitations use their own encryption scheme.
     // DECRYPTION_PENDING is not used for sharing invitations since the password
     // should be encrypted using recipient's public key (i.e. it's committed to
@@ -606,6 +612,8 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
                 ->mutable_client_only_unencrypted_data())) {
       return FAILED_TO_DECRYPT;
     }
+    data.specifics.mutable_incoming_password_sharing_invitation()
+        ->clear_encrypted_password_sharing_invitation_data();
   } else if (specifics.has_encrypted()) {
     DCHECK(!update_entity.deleted()) << "Tombstones shouldn't be encrypted";
     if (!cryptographer.CanDecrypt(specifics.encrypted())) {

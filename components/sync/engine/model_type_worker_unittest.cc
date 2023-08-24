@@ -30,6 +30,7 @@
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -97,9 +98,27 @@ sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
   return output;
 }
 
-sync_pb::EntitySpecifics EncryptIncomingPasswordSharingInvitation(
-    const sync_pb::PasswordSharingInvitationData& password_data,
-    FakeCryptographer* cryptographer) {
+sync_pb::IncomingPasswordSharingInvitationSpecifics
+CreateIncomingPasswordSharingInvitation(const std::string& invitation_guid,
+                                        const std::string& signon_realm,
+                                        const std::string& username_value,
+                                        const std::string& password_value,
+                                        const std::string& sender_name,
+                                        uint32_t recipient_key_version,
+                                        FakeCryptographer* cryptographer) {
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation;
+  // Set the unencrypted fields:
+  invitation.set_guid(invitation_guid);
+  invitation.set_recipient_key_version(recipient_key_version);
+  invitation.mutable_sender_info()
+      ->mutable_user_display_info()
+      ->set_display_name(sender_name);
+
+  // Set the encrypted fields and the encryption key version:
+  sync_pb::PasswordSharingInvitationData password_data;
+  password_data.mutable_password_data()->set_signon_realm(signon_realm);
+  password_data.mutable_password_data()->set_username_value(username_value);
+  password_data.mutable_password_data()->set_password_value(password_value);
   std::string serialized_data;
   bool success = password_data.SerializeToString(&serialized_data);
   CHECK(success);
@@ -112,15 +131,12 @@ sync_pb::EntitySpecifics EncryptIncomingPasswordSharingInvitation(
           key_pair.GetRawPublicKey());
   CHECK(encrypted_data);
 
-  sync_pb::EntitySpecifics encrypted_specifics;
-  encrypted_specifics.mutable_incoming_password_sharing_invitation()
-      ->set_encrypted_password_sharing_invitation_data(encrypted_data->data(),
-                                                       encrypted_data->size());
-  encrypted_specifics.mutable_incoming_password_sharing_invitation()
-      ->mutable_sender_info()
+  invitation.set_encrypted_password_sharing_invitation_data(
+      encrypted_data->data(), encrypted_data->size());
+  invitation.mutable_sender_info()
       ->mutable_cross_user_sharing_public_key()
       ->CopyFrom(PublicKeyToProto(key_pair, /*version=*/0));
-  return encrypted_specifics;
+  return invitation;
 }
 
 ClientTagHash GeneratePreferenceTagHash(const std::string& tag) {
@@ -3075,17 +3091,24 @@ class ModelTypeWorkerIncomingPasswordSharingInvitationTest
 
 TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
        ShouldDecryptIncomingPasswordSharingInvitation) {
+  const std::string kSignonRealm = "http://www.example.com";
+  const std::string kUsernameValue = "good username";
+  const std::string kPasswordValue = "very strong password";
+  const std::string kInvitationGUID = "some guid";
+  const std::string kSenderName = "Sender Name";
+  const uint32_t kRecipientKeyVersion = 0;
   NormalInitialize();
 
-  sync_pb::PasswordSharingInvitationData password_data;
-  password_data.mutable_password_data()->set_signon_realm("signon_realm");
-  password_data.mutable_password_data()->set_password_value("password");
-  sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptIncomingPasswordSharingInvitation(password_data, cryptographer());
+  sync_pb::EntitySpecifics invitation_with_encrypted_data;
+  *invitation_with_encrypted_data
+       .mutable_incoming_password_sharing_invitation() =
+      CreateIncomingPasswordSharingInvitation(
+          kInvitationGUID, kSignonRealm, kUsernameValue, kPasswordValue,
+          kSenderName, kRecipientKeyVersion, cryptographer());
 
   // Receive an encrypted password sharing invitation.
   SyncEntity entity = server()->UpdateFromServer(
-      /*version_offset=*/10, kHash1, encrypted_specifics);
+      /*version_offset=*/10, kHash1, invitation_with_encrypted_data);
   worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
                                       server()->GetContext(), {&entity},
                                       status_controller());
@@ -3094,31 +3117,47 @@ TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
   ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
   const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
 
-  // The data should have been decrypted by the worker.
+  // The encrypted fields should have been decrypted by the worker, and
+  // unencrypted fields should have been carried over.
   EXPECT_FALSE(update.entity.specifics.incoming_password_sharing_invitation()
                    .has_encrypted_password_sharing_invitation_data());
   EXPECT_FALSE(update.entity.specifics.has_encrypted());
-  EXPECT_TRUE(update.entity.specifics.incoming_password_sharing_invitation()
-                  .has_client_only_unencrypted_data());
+  const sync_pb::IncomingPasswordSharingInvitationSpecifics&
+      invitation_with_unencrypted_data =
+          update.entity.specifics.incoming_password_sharing_invitation();
+  EXPECT_EQ(invitation_with_unencrypted_data.guid(), kInvitationGUID);
+  EXPECT_EQ(invitation_with_unencrypted_data.recipient_key_version(),
+            kRecipientKeyVersion);
+  EXPECT_EQ(invitation_with_unencrypted_data.sender_info()
+                .user_display_info()
+                .display_name(),
+            kSenderName);
 
+  EXPECT_TRUE(
+      invitation_with_unencrypted_data.has_client_only_unencrypted_data());
   const sync_pb::PasswordSharingInvitationData& received_password_data =
-      update.entity.specifics.incoming_password_sharing_invitation()
-          .client_only_unencrypted_data();
+      invitation_with_unencrypted_data.client_only_unencrypted_data();
+  EXPECT_EQ(received_password_data.password_data().username_value(),
+            kUsernameValue);
   EXPECT_EQ(received_password_data.password_data().password_value(),
-            "password");
+            kPasswordValue);
   EXPECT_EQ(received_password_data.password_data().signon_realm(),
-            "signon_realm");
+            kSignonRealm);
 }
 
 TEST_F(ModelTypeWorkerIncomingPasswordSharingInvitationTest,
        ShouldIgnoreCorruptedInvitation) {
   NormalInitialize();
 
-  sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptIncomingPasswordSharingInvitation(
-          sync_pb::PasswordSharingInvitationData(), cryptographer());
-  encrypted_specifics.mutable_incoming_password_sharing_invitation()
-      ->set_encrypted_password_sharing_invitation_data("corrupted blob");
+  sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
+      CreateIncomingPasswordSharingInvitation(
+          "guid", "signon_realm", "username_value", "password_value",
+          "sender_name", /*recipient_key_version=*/0, cryptographer());
+  invitation.set_encrypted_password_sharing_invitation_data("corrupted blob");
+
+  sync_pb::EntitySpecifics encrypted_specifics;
+  *encrypted_specifics.mutable_incoming_password_sharing_invitation() =
+      invitation;
 
   // Receive an invalid encrypted password sharing invitation.
   SyncEntity entity = server()->UpdateFromServer(
