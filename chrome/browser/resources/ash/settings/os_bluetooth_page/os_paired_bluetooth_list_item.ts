@@ -30,7 +30,7 @@ import {getTemplate} from './os_paired_bluetooth_list_item.html.js';
 const SettingsPairedBluetoothListItemElementBase =
     FocusRowMixin(I18nMixin(PolymerElement));
 
-class SettingsPairedBluetoothListItemElement extends
+export class SettingsPairedBluetoothListItemElement extends
     SettingsPairedBluetoothListItemElementBase {
   static get is() {
     return 'os-settings-paired-bluetooth-list-item' as const;
