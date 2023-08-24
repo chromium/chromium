@@ -82,6 +82,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"labelUsername", IDS_POLICY_LABEL_USERNAME},
       {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
       {"labelVersion", IDS_POLICY_LABEL_VERSION},
+      {"moreActions", IDS_POLICY_MORE_ACTIONS},
       {"noPoliciesSet", IDS_POLICY_NO_POLICIES_SET},
       {"offHoursActive", IDS_POLICY_OFFHOURS_ACTIVE},
       {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
@@ -102,7 +103,7 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
       {"statusMachine", IDS_POLICY_STATUS_MACHINE},
       {"statusUser", IDS_POLICY_STATUS_USER},
       {"uploadReport", IDS_UPLOAD_REPORT},
-
+      {"viewLogs", IDS_VIEW_POLICY_LOGS},
   };
   source->AddLocalizedStrings(kStrings);
 

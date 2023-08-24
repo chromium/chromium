@@ -33,12 +33,23 @@
     </div>
     <div class="header-row action-header-row">
       <div class="action-row-buttons">
-        <button id="reload-policies">$i18n{reloadPolicies}</button>
-        <button id="export-policies">$i18n{exportPoliciesJSON}</button>
-        <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
-        <if expr="not is_chromeos">
-          <button id="upload-report">$i18n{uploadReport}</button>
-        </if>
+        <button id="reload-policies" class="action-row-button">
+          $i18n{reloadPolicies}
+        </button>
+        <div id="more-actions-dropdown">
+          <button id="more-actions-button" class="action-row-button">
+            $i18n{moreActions}
+            <div id="dropdown-icon"></div>
+          </button>
+          <div id="more-actions-list" class="more-actions-visibility">
+              <button id="export-policies">$i18n{exportPoliciesJSON}</button>
+              <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
+              <if expr="not is_chromeos">
+                <button id="upload-report">$i18n{uploadReport}</button>
+              </if>
+              <a href="chrome://policy/logs" id="view-logs">$i18n{viewLogs}</a>
+          </div>
+        </div>
       </div>
       <div id="show-unset-container" class="show-unset-checkbox">
         <label>

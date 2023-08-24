@@ -725,6 +725,12 @@ Additional details:
   <message name="IDS_COPY_POLICIES_JSON" desc="Label for the button that copies policies in JSON format.">
     Copy as JSON
   </message>
+  <message name="IDS_VIEW_POLICY_LOGS" desc="Label for the button that redirects from chrome://policy to chrome://policy/logs.">
+    View logs
+  </message>
+  <message name="IDS_POLICY_MORE_ACTIONS" desc="Label for the dropdown menu on the chrome://policy page that offers additional actions such as downloading policy data as a JSON file, uploading report or showing policy logs.">
+    More actions
+  </message>
 
   <!-- Strings for chrome://policy/logs -->
   <message name="IDS_POLICY_LOGS_TITLE" desc="Title for the page.">

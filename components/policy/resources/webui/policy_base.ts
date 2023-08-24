@@ -82,6 +82,23 @@ export class Page {
       sendWithPromise('reloadPolicies');
     };
 
+    const moreActionsButton =
+        getRequiredElement('more-actions-button') as HTMLButtonElement;
+    const moreActionsIcon = getRequiredElement('dropdown-icon') as HTMLElement;
+    const moreActionsList =
+        getRequiredElement('more-actions-list') as HTMLElement;
+    moreActionsButton.onclick = () => {
+      moreActionsList!.classList.toggle('more-actions-visibility');
+    };
+
+    // Close dropdown if user clicks anywhere on page.
+    document.addEventListener('click', function(event) {
+      if (moreActionsList && event.target !== moreActionsButton &&
+          event.target !== moreActionsIcon) {
+        moreActionsList.classList.add('more-actions-visibility');
+      }
+    });
+
     const exportButton = getRequiredElement('export-policies');
     const hideExportButton = loadTimeData.valueExists('hideExportButton') &&
         loadTimeData.getBoolean('hideExportButton');
@@ -259,7 +276,7 @@ export class Page {
    */
   updateReportButton(enabled: boolean) {
     getRequiredElement('upload-report').style.display =
-        enabled ? 'inline-block' : 'none';
+        enabled ? 'block' : 'none';
   }
   // </if>
 

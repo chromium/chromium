@@ -115,6 +115,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     {"labelUsername", IDS_POLICY_LABEL_USERNAME},
     {"labelManagedBy", IDS_POLICY_LABEL_MANAGED_BY},
     {"labelVersion", IDS_POLICY_LABEL_VERSION},
+    {"moreActions", IDS_POLICY_MORE_ACTIONS},
     {"noPoliciesSet", IDS_POLICY_NO_POLICIES_SET},
     {"offHoursActive", IDS_POLICY_OFFHOURS_ACTIVE},
     {"offHoursNotActive", IDS_POLICY_OFFHOURS_NOT_ACTIVE},
@@ -140,6 +141,7 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
     {"uploadReport", IDS_UPLOAD_REPORT},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+    {"viewLogs", IDS_VIEW_POLICY_LOGS},
   };
   source->AddLocalizedStrings(kStrings);
 

@@ -59,6 +59,77 @@ body > header {
 .action-row-buttons {
   display: flex;
   flex-wrap: nowrap;
+  gap: 8px;
+}
+
+#more-actions-dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+#more-actions-dropdown #more-actions-button {
+  cursor: pointer;
+}
+
+#more-actions-list {
+  position: absolute;
+  background-color: white;
+  min-width: 130px;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2),
+              0 6px 10px 0 rgba(0,0,0,.14),
+              0 1px 18px 0 rgba(0,0,0,.12);
+  z-index: 1;
+}
+
+#more-actions-list button,
+#more-actions-list a {
+  background-color: rgb(255, 255, 255);
+  border: none;
+  color: black;
+  display: block;
+  float: none;
+  padding: 12px 16px;
+  text-align: left;
+  text-decoration: none;
+}
+
+#more-actions-list button {
+  width: 100%;
+}
+
+#more-actions-list button:hover,
+#more-actions-list a:hover {
+  background-color: rgb(247, 248, 248);
+}
+
+.more-actions-visibility {
+  display: none;
+}
+
+#more-actions-button {
+  padding: 8px 8px 8px 16px;
+}
+
+#dropdown-icon {
+  background-image: url(chrome://resources/images/icon_arrow_dropdown.svg);
+  background-size: cover;
+  width: 20px;
+  height: 20px;
+}
+
+.action-row-button {
+  align-items: center;
+  border-radius: 4px;
+  border: 1px solid rgb(128, 134, 139);
+  background: rgb(241, 243, 244); /* Google grey 100 */
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-flex;
+  height: 32px;
+  justify-content: center;
+  outline-width: 0;
+  padding: 8px 16px;
+  user-select: none;
 }
 
 #topbar {
