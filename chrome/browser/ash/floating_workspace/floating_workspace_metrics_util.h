@@ -55,6 +55,10 @@ constexpr char kFloatingWorkspaceV2TemplateSize[] =
     "Ash.FloatingWorkspace.TemplateSize";
 constexpr char kFloatingWorkspaceV2TemplateUploadStatus[] =
     "Ash.FloatingWorkspace.TemplateUploadStatus";
+constexpr char kFloatingWorkspaceV2Initialized[] =
+    "Ash.FloatingWorkspace.FloatingWorkspaceV2Initialized";
+constexpr char kFloatingWorkspaceV2TemplateNotFound[] =
+    "Ash.FloatingWorkspace.TemplateNotFound";
 
 void RecordFloatingWorkspaceV1InitializedHistogram();
 void RecordFloatingWorkspaceV1RestoredSessionType(
@@ -67,6 +71,8 @@ void RecordFloatingWorkspaceV2TemplateLoadTime(base::TimeDelta duration);
 void RecordFloatingWorkspaceV2TemplateSize(size_t file_size);
 void RecordFloatingWorkspaceV2TemplateUploadStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status);
+void RecordFloatingWorkspaceV2InitializedHistogram();
+void RecordFloatingWorkspaceV2TemplateNotFound();
 
 }  // namespace ash::floating_workspace_metrics_util
 

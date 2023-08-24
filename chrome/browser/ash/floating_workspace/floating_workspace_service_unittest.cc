@@ -1231,4 +1231,41 @@ TEST_F(FloatingWorkspaceServiceTest,
   scoped_feature_list().Reset();
 }
 
+TEST_F(FloatingWorkspaceServiceTest, CanRecordTemplateNotFoundMetric) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
+  base::HistogramTester histogram_tester;
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::ModelType::WORKSPACE_DESK},
+      syncer::SyncService::ModelTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  EXPECT_FALSE(test_floating_workspace_service_v2
+                   .GetRestoredFloatingWorkspaceTemplate());
+  histogram_tester.ExpectTotalCount(
+      floating_workspace_metrics_util::kFloatingWorkspaceV2TemplateNotFound,
+      1u);
+  scoped_feature_list().Reset();
+}
+
+TEST_F(FloatingWorkspaceServiceTest, CanRecordFloatingWorkspaceV2InitMetric) {
+  scoped_feature_list().InitWithFeatures(
+      {features::kFloatingWorkspaceV2, features::kDeskTemplateSync}, {});
+
+  base::HistogramTester histogram_tester;
+  TestFloatingWorkSpaceService test_floating_workspace_service_v2(
+      profile(), fake_desk_sync_service(), test_sync_service(),
+      floating_workspace_util::FloatingWorkspaceVersion::
+          kFloatingWorkspaceV2Enabled);
+
+  histogram_tester.ExpectTotalCount(
+      floating_workspace_metrics_util::kFloatingWorkspaceV2Initialized, 1u);
+  scoped_feature_list().Reset();
+}
+
 }  // namespace ash::floating_workspace

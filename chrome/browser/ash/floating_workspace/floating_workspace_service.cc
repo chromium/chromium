@@ -307,6 +307,8 @@ void FloatingWorkspaceService::InitForV2(
     desks_storage::DeskSyncService* desk_sync_service) {
   sync_service_ = sync_service;
   desk_sync_service_ = desk_sync_service;
+  floating_workspace_metrics_util::
+      RecordFloatingWorkspaceV2InitializedHistogram();
   if (sync_service_ && !sync_service_->HasObserver(this)) {
     sync_service_->AddObserver(this);
   }
@@ -473,6 +475,8 @@ void FloatingWorkspaceService::RestoreFloatingWorkspaceTemplate(
                     "restore. This is only possible if this is the first time "
                     "a user is using Floating Workspace.";
     should_run_restore_ = false;
+    floating_workspace_metrics_util::
+        RecordFloatingWorkspaceV2TemplateNotFound();
     return;
   }
   // Record metrics for window and tab count and also the time it took to

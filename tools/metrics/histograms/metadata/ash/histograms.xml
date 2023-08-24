@@ -3610,6 +3610,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV2Initialized"
+    enum="BooleanHit" expires_after="2024-08-23">
+  <owner>zhumatthew@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Recorded when floating workspace service V2 is launched. The false bucket is
+    unused here.
+  </summary>
+</histogram>
+
 <histogram name="Ash.FloatingWorkspace.TemplateLaunchFailureStatus"
     enum="FloatingWorkspaceV2LaunchTemplateFailureType"
     expires_after="2024-02-08">
@@ -3640,6 +3650,16 @@ chromium-metrics-reviews@google.com.
     timeout is reached and there is no floating workspace template downloaded, a
     record of the timeout will be recorded in
     &quot;Ash.FloatingWorkspace.TemplateLaunchTimeOut&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Ash.FloatingWorkspace.TemplateNotFound" enum="BooleanHit"
+    expires_after="2024-08-23">
+  <owner>zhumatthew@google.com</owner>
+  <owner>marcuskoehler@google.com</owner>
+  <summary>
+    Recorded when floating workspace service V2 is initialized, but no floating
+    workspace template was found. The false bucket is unused here.
   </summary>
 </histogram>
 
