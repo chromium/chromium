@@ -94,6 +94,7 @@
 <translation id="174937106936716857">Жалпы файлдардын саны</translation>
 <translation id="1755345808328621801">Бул файл Windows программасын колдонгон компьютер үчүн түзүлгөн. Ал ChromeOS негизинде иштеген түзмөгүңүзгө дал келбейт. Chrome Интернет дүкөнүнөн анын ордуна колдонула турган ылайыктуу колдонмо издеп көрүңүз.</translation>
 <translation id="1757915090001272240">Жазы латын тамгалары</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" /> аркылуу бөлүшүү</translation>
 <translation id="1773212559869067373">Аныктыгын текшерүү тастыктамасы жергиликтүү деңгээлде четке кагылды</translation>
 <translation id="1775381402323441512">Видео тууралуу маалымат</translation>
 <translation id="180035236176489073">Бул файлдар онлайн режиминде гана колдонулат.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Колдонмону Linux менен орнотуу</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Чоо-жайы</translation>
 <translation id="2724954091494693138">Түркчө (Turkish F баскычтобу)</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> аркылуу бөлүшүүнү тескөө</translation>
 <translation id="2732839045120506979">Вьетнамча (VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop кызматына <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="2764206540577097904">Жеке Google Workspace сактагычыңыздын баарын колдонуп койдуңуз.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> нерсе шайкештирүүгө даярдалууда...</translation>
 <translation id="3522708245912499433">Португалча</translation>
+<translation id="3523225005467146490">1 папка <ph name="VM_NAME" /> аркылуу бөлүшүлдү</translation>
 <translation id="3524311639100184459">Эскертүү: Бул файлдар убактылуу жана дискте орун бошотуу үчүн автоматтык түрдө жок кылынышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">Куржун</translation>
 <translation id="3548125359243647069">Туура эмес PIN код өтө көп жолу киргизилди.</translation>
@@ -663,6 +666,7 @@
 <translation id="6164412158936057769">Көпөлөктөр</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" /> кызматына Google Drive'дагы файлдарга кирүүгө уруксат бериңиз. Киргизилген өзгөртүүлөр башка түзмөктөрүңүздө шайкештирилет.</translation>
 <translation id="6187719147498869044">Венгерче</translation>
 <translation id="6198252989419008588">PIN'ди өзгөртүү</translation>
 <translation id="6199801702437275229">Бош мейкиндик жөнүндө маалыматты күтүүдө…</translation>
@@ -766,6 +770,7 @@
 <translation id="6989942356279143254">Шведче</translation>
 <translation id="6990081529015358884">Бош орун калбай калды</translation>
 <translation id="6993826899923627728">Бул нерселер таштандыда</translation>
+<translation id="6996593023542748157">Папканы <ph name="VM_NAME" /> аркылуу бөлүшүү</translation>
 <translation id="7008426324576352165">Жүктөп берүүнү аягына чыгаруу үчүн уюмуңузга көбүрөөк сактагыч керек.</translation>
 <translation id="7009985720488544166"><ph name="COUNT" /> файлды жылдыруу аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -951,6 +956,7 @@
 <translation id="8335837413233998004">Беларусча</translation>
 <translation id="8336153091935557858">Кечээ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Мындай аталыштагы файл же каталог мурунтан эле бар.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" /> кызматына <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="8372369524088641025">WEP ачкычы начар</translation>
 <translation id="8372852072747894550">Грекче</translation>
 <translation id="8386903983509584791">Текшерүү аяктады</translation>
@@ -960,6 +966,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> тармагы, туташууда</translation>
 <translation id="8425213833346101688">Өзгөртүү</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
+<translation id="8429998526804961548"><ph name="NUMBER_OF_ITEMS" /> папка <ph name="VM_NAME" /> аркылуу бөлүшүлдү</translation>
 <translation id="8431909052837336408">SIM картанын PIN кодун өзгөртүү</translation>
 <translation id="8437209419043462667">АКШ</translation>
 <translation id="8452135315243592079">SIM-картасы жок</translation>

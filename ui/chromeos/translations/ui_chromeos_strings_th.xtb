@@ -94,6 +94,7 @@
 <translation id="174937106936716857">จำนวนไฟล์ทั้งหมด</translation>
 <translation id="1755345808328621801">ไฟล์นี้ออกแบบมาสำหรับพีซีที่ใช้ซอฟต์แวร์ Windows จึงไม่สามารถใช้ร่วมกับอุปกรณ์ของคุณซึ่งใช้ Chrome OS โปรดค้นหาแอปทดแทนที่เหมาะสมใน Chrome เว็บสโตร์</translation>
 <translation id="1757915090001272240">ละตินตัวกว้าง</translation>
+<translation id="1761091787730831947">แชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธในท้องถิ่น</translation>
 <translation id="1775381402323441512">ข้อมูลวิดีโอ</translation>
 <translation id="180035236176489073">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์เหล่านี้</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">ติดตั้งแอปด้วย Linux</translation>
 <translation id="2719020180254996569">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, รายละเอียด</translation>
 <translation id="2724954091494693138">ตุรกี (F-keyboard)</translation>
+<translation id="2732288874651063549">จัดการการแชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">เวียดนาม (VNI)</translation>
 <translation id="2735623501230989521">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="2764206540577097904">คุณใช้พื้นที่เก็บข้อมูลส่วนบุคคลใน Google Workspace หมดแล้ว</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
 <translation id="3511705761158917664">กำลังเตรียมการซิงค์ <ph name="NUMBER_OF_ITEMS" /> รายการ...</translation>
 <translation id="3522708245912499433">โปรตุเกส</translation>
+<translation id="3523225005467146490">แชร์ 1 โฟลเดอร์กับ <ph name="VM_NAME" /> แล้ว</translation>
 <translation id="3524311639100184459">ข้อควรระวัง: ไฟล์เหล่านี้ใช้ชั่วคราวและอาจถูกลบโดยอัตโนมัติเพื่อเพิ่มพื้นที่ว่างในดิสก์  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3548125359243647069">ป้อน PIN ไม่ถูกต้องหลายครั้งเกินไป</translation>
@@ -664,6 +667,7 @@
 <translation id="6164412158936057769">ผีเสื้อ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
+<translation id="6181912134988520389">ให้สิทธิ์แก่ <ph name="VM_NAME" /> เพื่อเข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="6187719147498869044">ฮังการี</translation>
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
 <translation id="6199801702437275229">กำลังรอข้อมูลพื้นที่...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
 <translation id="6993826899923627728">รายการเหล่านี้อยู่ในถังขยะ</translation>
+<translation id="6996593023542748157">แชร์โฟลเดอร์กับ <ph name="VM_NAME" /></translation>
 <translation id="7008426324576352165">องค์กรต้องมีพื้นที่เก็บข้อมูลมากกว่านี้เพื่ออัปโหลดให้เสร็จสิ้น</translation>
 <translation id="7009985720488544166">นโยบายของผู้ดูแลระบบบล็อกการย้ายไฟล์ <ph name="COUNT" /> รายการ</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">เบลารุส</translation>
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">มีไฟล์หรือไดเรกทอรีที่มีชื่อเดียวกันนี้อยู่แล้ว</translation>
+<translation id="83651606385705612">ให้สิทธิ์แก่ <ph name="VM_NAME" /> ในการเข้าถึงไฟล์ในโฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8372852072747894550">กรีก</translation>
 <translation id="8386903983509584791">สแกนเสร็จแล้ว</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472">เครือข่าย <ph name="NETWORK_TYPE" /> กำลังเชื่อมต่อ</translation>
 <translation id="8425213833346101688">เปลี่ยน</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
+<translation id="8429998526804961548">แชร์ <ph name="NUMBER_OF_ITEMS" /> โฟลเดอร์กับ <ph name="VM_NAME" /> แล้ว</translation>
 <translation id="8431909052837336408">เปลี่ยน PIN ของซิม</translation>
 <translation id="8437209419043462667">สหรัฐอเมริกา</translation>
 <translation id="8452135315243592079">ไม่มีซิมการ์ด</translation>

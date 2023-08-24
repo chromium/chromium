@@ -94,6 +94,7 @@
 <translation id="174937106936716857">전체 파일 수</translation>
 <translation id="1755345808328621801">이 파일은 Windows 소프트웨어를 사용하는 PC용으로 설계되었으며 ChromeOS를 실행하는 기기와 호환되지 않습니다. 적합한 대체 앱을 찾으려면 Chrome 웹 스토어를 검색하세요.</translation>
 <translation id="1757915090001272240">와이드 라틴어</translation>
+<translation id="1761091787730831947"><ph name="VM_NAME" />과(와) 공유</translation>
 <translation id="1773212559869067373">인증서가 로컬로 거부됨</translation>
 <translation id="1775381402323441512">동영상 정보</translation>
 <translation id="180035236176489073">이 파일에 액세스하려면 온라인 상태여야 합니다.</translation>
@@ -211,6 +212,7 @@
 <translation id="2718540689505416944">Linux 앱 설치</translation>
 <translation id="2719020180254996569">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 세부정보</translation>
 <translation id="2724954091494693138">터키어(F 키보드)</translation>
+<translation id="2732288874651063549"><ph name="VM_NAME" /> 공유 관리</translation>
 <translation id="2732839045120506979">베트남어(VNI)</translation>
 <translation id="2735623501230989521">Parallels Desktop이 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 허용합니다.</translation>
 <translation id="2764206540577097904">개인 Google Workspace 저장용량을 모두 사용했습니다.</translation>
@@ -305,6 +307,7 @@
 <translation id="3509680540198371098">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3511705761158917664">항목 <ph name="NUMBER_OF_ITEMS" />개 동기화 준비 중...</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
+<translation id="3523225005467146490">폴더 1개가 <ph name="VM_NAME" />과(와) 공유됨</translation>
 <translation id="3524311639100184459">주의: 이 파일은 임시 파일이며 디스크 여유 공간을 확보하기 위해 자동으로 삭제될 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="3527085408025491307">폴더</translation>
 <translation id="3548125359243647069">잘못된 PIN을 너무 여러 번 입력했습니다</translation>
@@ -664,6 +667,7 @@
 <translation id="6164412158936057769">나비</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6170470584681422115">샌드위치</translation>
+<translation id="6181912134988520389"><ph name="VM_NAME" />에서 Google Drive 파일에 액세스하도록 권한을 부여합니다. 변경사항은 다른 기기에 동기화됩니다.</translation>
 <translation id="6187719147498869044">헝가리어</translation>
 <translation id="6198252989419008588">PIN 변경</translation>
 <translation id="6199801702437275229">남은 저장 용량을 확인하는 중...</translation>
@@ -767,6 +771,7 @@
 <translation id="6989942356279143254">스웨덴어</translation>
 <translation id="6990081529015358884">저장 공간이 부족합니다.</translation>
 <translation id="6993826899923627728">항목이 휴지통에 있습니다</translation>
+<translation id="6996593023542748157"><ph name="VM_NAME" />과(와) 폴더 공유</translation>
 <translation id="7008426324576352165">업로드를 완료하려면 조직에 추가 저장용량이 필요합니다.</translation>
 <translation id="7009985720488544166">관리자 정책에 의해 파일 <ph name="COUNT" />개의 이동이 차단되었습니다.</translation>
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" />(<ph name="ROOT_SUMMARY" />)</translation>
@@ -952,6 +957,7 @@
 <translation id="8335837413233998004">벨라루스어</translation>
 <translation id="8336153091935557858">어제 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">같은 이름을 가진 파일 또는 디렉터리가 이미 존재합니다.</translation>
+<translation id="83651606385705612"><ph name="VM_NAME" />에서 <ph name="FOLDER_NAME" /> 폴더의 파일에 액세스하도록 권한을 부여합니다.</translation>
 <translation id="8372369524088641025">잘못된 WEP 키</translation>
 <translation id="8372852072747894550">그리스어</translation>
 <translation id="8386903983509584791">검색 완료</translation>
@@ -961,6 +967,7 @@
 <translation id="8408068190360279472"><ph name="NETWORK_TYPE" /> 네트워크, 연결 중</translation>
 <translation id="8425213833346101688">변경</translation>
 <translation id="8428213095426709021">설정</translation>
+<translation id="8429998526804961548">폴더 <ph name="NUMBER_OF_ITEMS" />개가 <ph name="VM_NAME" />과(와) 공유됨</translation>
 <translation id="8431909052837336408">SIM PIN 변경</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8452135315243592079">SIM 카드 없음</translation>

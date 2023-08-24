@@ -1946,7 +1946,7 @@
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5129534298163637277">确认对话框</translation>
 <translation id="5135404736266831032">管理地址…</translation>
-<translation id="5136841603454277753">请输入正确的代码</translation>
+<translation id="5136841603454277753">请输入正确的验证码</translation>
 <translation id="5137761395480718572">此应用请求您授权安装 Wi-Fi 凭据。设置完毕后，您的<ph name="DEVICE_TYPE" />将会自动连接到参与的 Wi-Fi 网络。如需移除这些凭据，请卸载该应用。<ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">暂时无法使用虚拟卡，请联系您的发卡行</translation>
 <translation id="5138227688689900538">收起</translation>
@@ -3490,7 +3490,7 @@
 <translation id="8368001212524806591">跟踪价格</translation>
 <translation id="8368027906805972958">未知或不支持的设备 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">Google Play 服务</translation>
-<translation id="8369073279043109617">获取新的动态密码</translation>
+<translation id="8369073279043109617">获取新的验证码</translation>
 <translation id="8371889962595521444">自定义的根证书</translation>
 <translation id="8374636051559112948">视具体情况而定</translation>
 <translation id="8378714024927312812">由贵组织管理</translation>
