@@ -7,7 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
-#include "third_party/blink/renderer/modules/webaudio/audio_basic_inspector_handler.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
@@ -17,36 +17,31 @@ class AudioNode;
 class ExceptionState;
 class AudioNodeInput;
 
-class MediaStreamAudioDestinationHandler final
-    : public AudioBasicInspectorHandler {
+class MediaStreamAudioDestinationHandler final : public AudioHandler {
  public:
   static scoped_refptr<MediaStreamAudioDestinationHandler> Create(
       AudioNode&,
       uint32_t number_of_channels);
   ~MediaStreamAudioDestinationHandler() override;
 
-  // AudioHandler
-  void Process(uint32_t frames_to_process) override;
-  void SetChannelCount(unsigned, ExceptionState&) override;
-
-  uint32_t MaxChannelCount() const;
-
-  bool RequiresTailProcessing() const final { return false; }
-
-  // This node has no outputs, so we need methods that are different from the
-  // ones provided by AudioBasicInspectorHandler, which assume an output.
-  void PullInputs(uint32_t frames_to_process) override;
-  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
-
-  // AudioNode
-  void UpdatePullStatusIfNeeded() override;
-
  private:
   MediaStreamAudioDestinationHandler(AudioNode&, uint32_t number_of_channels);
 
-  // As an audio source, we will never propagate silence.
-  bool PropagatesSilence() const override { return false; }
+  // AudioHandler
+  void Process(uint32_t frames_to_process) override;
+  void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
+  bool RequiresTailProcessing() const override { return false; }
+  double TailTime() const override { return 0; }
+  double LatencyTime() const override { return 0; }
+  bool PropagatesSilence() const override {
+    // As an audio source, we will never propagate silence.
+    return false;
+  }
+  void SetChannelCount(unsigned, ExceptionState&) override;
+  void PullInputs(uint32_t frames_to_process) override;
+  void UpdatePullStatusIfNeeded() override;
 
+  uint32_t MaxChannelCount() const;
   void SendLogMessage(const String& message);
 
   // MediaStreamSource is held alive by MediaStreamAudioDestinationNode.
@@ -60,6 +55,10 @@ class MediaStreamAudioDestinationHandler final
   // This internal mix bus is for up/down mixing the input to the actual
   // number of channels in the destination.
   scoped_refptr<AudioBus> mix_bus_ GUARDED_BY(process_lock_);
+
+  // When setting to true, handler will be pulled automatically by
+  // BaseAudioContext before the end of each render quantum.
+  bool need_automatic_pull_ = false;
 };
 
 }  // namespace blink

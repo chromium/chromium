@@ -20,9 +20,10 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 }  // namespace
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
-    : AudioBasicInspectorHandler(kNodeTypeAnalyser, node, sample_rate),
+    : AudioHandler(kNodeTypeAnalyser, node, sample_rate),
       analyser_(
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames()) {
+  AddInput();
   channel_count_ = kDefaultNumberOfInputChannels;
   AddOutput(kDefaultNumberOfOutputChannels);
 
@@ -175,6 +176,30 @@ bool AnalyserHandler::RequiresTailProcessing() const {
 double AnalyserHandler::TailTime() const {
   return RealtimeAnalyser::kMaxFFTSize /
          static_cast<double>(Context()->sampleRate());
+}
+
+void AnalyserHandler::PullInputs(uint32_t frames_to_process) {
+  // Render directly into the output bus
+  Input(0).Pull(Output(0).Bus(), frames_to_process);
+}
+
+void AnalyserHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
+  DCHECK(Context()->IsAudioThread());
+  Context()->AssertGraphOwner();
+
+  DCHECK_EQ(input, &Input(0));
+
+  unsigned number_of_channels = input->NumberOfChannels();
+
+  if (number_of_channels != Output(0).NumberOfChannels()) {
+    // This will propagate the channel count to any nodes connected further
+    // downstream in the graph.
+    Output(0).SetNumberOfChannels(number_of_channels);
+  }
+
+  AudioHandler::CheckNumberOfChannelsForInput(input);
+
+  UpdatePullStatusIfNeeded();
 }
 
 }  // namespace blink

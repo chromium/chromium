@@ -27,13 +27,14 @@ constexpr uint32_t kMaxChannelCountSupported = 8;
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
     uint32_t number_of_channels)
-    : AudioBasicInspectorHandler(kNodeTypeMediaStreamAudioDestination,
-                                 node,
-                                 node.context()->sampleRate()),
+    : AudioHandler(kNodeTypeMediaStreamAudioDestination,
+                   node,
+                   node.context()->sampleRate()),
       source_(static_cast<MediaStreamAudioDestinationNode&>(node).source()),
       mix_bus_(
           AudioBus::Create(number_of_channels,
                            GetDeferredTaskHandler().RenderQuantumFrames())) {
+  AddInput();
   SendLogMessage(String::Format("%s", __func__));
   source_.Lock()->SetAudioFormat(static_cast<int>(number_of_channels),
                                  node.context()->sampleRate());
