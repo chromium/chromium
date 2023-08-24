@@ -62,13 +62,13 @@ class DownloadBubbleUIController {
   std::vector<DownloadUIModel::DownloadUIModelPtr> GetPartialView();
 
   // Process button press on the bubble.
-  void ProcessDownloadButtonPress(DownloadUIModel* model,
+  void ProcessDownloadButtonPress(base::WeakPtr<DownloadUIModel> model,
                                   DownloadCommands::Command command,
                                   bool is_main_view);
 
   // Process button press on the bubble and return whether the bubble should
   // close.
-  bool ProcessDownloadButtonPressWithClose(DownloadUIModel* model,
+  bool ProcessDownloadButtonPressWithClose(base::WeakPtr<DownloadUIModel> model,
                                            DownloadCommands::Command command,
                                            bool is_main_view);
 

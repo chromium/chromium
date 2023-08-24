@@ -203,11 +203,14 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetPartialView() {
 }
 
 void DownloadBubbleUIController::ProcessDownloadButtonPress(
-    DownloadUIModel* model,
+    base::WeakPtr<DownloadUIModel> model,
     DownloadCommands::Command command,
     bool is_main_view) {
   RecordDownloadBubbleInteraction();
-  DownloadCommands commands(model->GetWeakPtr());
+  if (!model) {
+    return;
+  }
+  DownloadCommands commands(model);
   base::UmaHistogramExactLinear("Download.Bubble.ProcessedCommand", command,
                                 DownloadCommands::MAX + 1);
   switch (command) {
@@ -228,7 +231,7 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
           browser_->tab_strip_model()->GetActiveWebContents());
       break;
     case DownloadCommands::RETRY:
-      RetryDownload(model, command);
+      RetryDownload(model.get(), command);
       break;
     case DownloadCommands::CANCEL:
       model->SetActionedOn(true);
@@ -253,10 +256,10 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
 }
 
 bool DownloadBubbleUIController::ProcessDownloadButtonPressWithClose(
-    DownloadUIModel* model,
+    base::WeakPtr<DownloadUIModel> model,
     DownloadCommands::Command command,
     bool is_main_view) {
-  ProcessDownloadButtonPress(model, command, is_main_view);
+  ProcessDownloadButtonPress(std::move(model), command, is_main_view);
   switch (command) {
     case DownloadCommands::KEEP:
     case DownloadCommands::DISCARD:

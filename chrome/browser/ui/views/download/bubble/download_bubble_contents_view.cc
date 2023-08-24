@@ -110,8 +110,11 @@ bool DownloadBubbleContentsView::ProcessSecuritySubpageButtonPressWithClose(
     // If the bubble controller has gone away, close the dialog.
     return true;
   }
-  return bubble_controller_->ProcessDownloadButtonPressWithClose(
-      GetDownloadModel(id), command, /*is_main_view=*/false);
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    return bubble_controller_->ProcessDownloadButtonPressWithClose(
+        model->GetWeakPtr(), command, /*is_main_view=*/false);
+  }
+  return true;
 }
 
 void DownloadBubbleContentsView::AddSecuritySubpageWarningActionEvent(

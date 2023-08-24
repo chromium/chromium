@@ -860,14 +860,11 @@ void DownloadBubbleRowView::OnDownloadDestroyed(const ContentId& id) {
 void DownloadBubbleRowView::AddMainPageButton(
     DownloadCommands::Command command,
     const std::u16string& button_string) {
-  // base::Unretained is fine as DownloadBubbleRowView owns the discard button
-  // and the model. So, if the discard button is alive, so should be its parents
-  // and their owned fields.
   views::MdTextButton* button =
       main_button_holder_->AddChildView(std::make_unique<views::MdTextButton>(
           base::BindRepeating(
               &DownloadBubbleUIController::ProcessDownloadButtonPress,
-              bubble_controller_, base::Unretained(model_.get()), command,
+              bubble_controller_, model_->GetWeakPtr(), command,
               /*is_main_view=*/true),
           button_string));
   button->SetMaxSize(gfx::Size(0, kDownloadButtonHeight));
@@ -885,7 +882,7 @@ views::ImageButton* DownloadBubbleRowView::AddQuickAction(
   views::ImageButton* quick_action = quick_action_holder_->AddChildView(
       views::CreateVectorImageButton(base::BindRepeating(
           &DownloadBubbleUIController::ProcessDownloadButtonPress,
-          bubble_controller_, base::Unretained(model_.get()), command,
+          bubble_controller_, model_->GetWeakPtr(), command,
           /*is_main_view=*/true)));
   InstallCircleHighlightPathGenerator(quick_action);
   quick_action->SetBorder(
