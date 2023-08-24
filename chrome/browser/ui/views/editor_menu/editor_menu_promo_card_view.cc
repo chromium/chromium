@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_promo_card_view.h"
 
+#include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
+#include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -49,7 +51,9 @@ constexpr int kMarginDip = 8;
 }  // namespace
 
 EditorMenuPromoCardView::EditorMenuPromoCardView(
-    const gfx::Rect& anchor_view_bounds) {
+    const gfx::Rect& anchor_view_bounds)
+    : pre_target_handler_(
+          std::make_unique<PreTargetHandler>(this, CardType::kEditorMenu)) {
   InitLayout();
 }
 
@@ -76,6 +80,36 @@ views::UniqueWidgetPtr EditorMenuPromoCardView::CreateWidget(
   return widget;
 }
 
+void EditorMenuPromoCardView::AddedToWidget() {
+  widget_observation_.Observe(GetWidget());
+}
+
+void EditorMenuPromoCardView::RequestFocus() {
+  views::View::RequestFocus();
+  dismiss_button_->RequestFocus();
+}
+
+void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetName(kTitleTextPlaceholder);
+}
+
+void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+void EditorMenuPromoCardView::OnWidgetActivationChanged(views::Widget* widget,
+                                                        bool active) {
+  // When the widget is active, use default focus behavior.
+  if (active) {
+    pre_target_handler_.reset();
+    return;
+  }
+
+  // Close widget when it is deactivated.
+  GetWidget()->Close();
+}
+
 void EditorMenuPromoCardView::UpdateBounds(
     const gfx::Rect& anchor_view_bounds) {
   const int height = GetHeightForWidth(anchor_view_bounds.width());
@@ -93,11 +127,6 @@ void EditorMenuPromoCardView::UpdateBounds(
   const gfx::Rect bounds = {{anchor_view_bounds.x(), y},
                             {kContainerMinWidthDip, height}};
   GetWidget()->SetBounds(bounds);
-}
-
-void EditorMenuPromoCardView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kDialog;
-  node_data->SetName(kTitleTextPlaceholder);
 }
 
 void EditorMenuPromoCardView::InitLayout() {
@@ -167,10 +196,11 @@ void EditorMenuPromoCardView::InitButtonBar(views::View* main_view) {
                          gfx::Insets::VH(0, button_spacing));
 
   // Dismiss button.
-  button_bar->AddChildView(std::make_unique<views::LabelButton>(
-      views::Button::PressedCallback(),
-      l10n_util::GetStringUTF16(
-          IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
+  dismiss_button_ =
+      button_bar->AddChildView(std::make_unique<views::LabelButton>(
+          views::Button::PressedCallback(),
+          l10n_util::GetStringUTF16(
+              IDS_EDITOR_MENU_PROMO_CARD_VIEW_DISMISS_BUTTON)));
 
   // Tell me more button.
   button_bar->AddChildView(std::make_unique<views::LabelButton>(
