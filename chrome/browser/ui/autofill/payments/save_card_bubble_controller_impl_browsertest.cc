@@ -102,11 +102,12 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
             base::DoNothing());
         break;
       case BubbleType::LOCAL_CVC_SAVE:
-        controller_->OfferLocalSave(test::GetCreditCard(),
-                                    AutofillClient::SaveCreditCardOptions()
-                                        .with_cvc_save_only(true)
-                                        .with_show_prompt(true),
-                                    base::DoNothing());
+        controller_->OfferLocalSave(
+            test::GetCreditCard(),
+            AutofillClient::SaveCreditCardOptions()
+                .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+                .with_show_prompt(true),
+            base::DoNothing());
         break;
       case BubbleType::UPLOAD_SAVE:
         controller_->OfferUploadSave(test::GetMaskedServerCard(),

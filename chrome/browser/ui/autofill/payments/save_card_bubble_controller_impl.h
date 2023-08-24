@@ -215,18 +215,20 @@ class SaveCardBubbleControllerImpl
   // Whether ReshowBubble() has been called since ShowBubbleFor*() was called.
   bool is_reshow_ = false;
 
-  // |options_.should_request_name_from_user|, whether the upload save version
+  // `options_.should_request_name_from_user`, whether the upload save version
   // of the UI should surface a textfield requesting the cardholder name.
-  // |options_.should_request_expiration_date_from_user|, Whether the upload
+  // `options_.should_request_expiration_date_from_user`, Whether the upload
   // save version of the UI should surface a pair of dropdowns requesting the
   // expiration date.
-  // |options_.show_prompt| Whether the offer-to-save bubble should be shown or
+  // `options_.show_prompt` Whether the offer-to-save bubble should be shown or
   // not. If true, behaves normally. If false, the omnibox icon will be
   // displayed when offering credit card save, but the bubble itself will not
   // pop up.
-  // |options_.cvc_save_only| If true, offer-to-save CVC bubble is shown which
-  // upon acceptance saves CVC to an already existing card. If false,
-  // offer-to-save card bubble is shown.
+  // `options_.card_save_type` If the type is `CardSaveType::kCardSaveOnly`, the
+  // offer-to-save card bubble is shown. If the type is
+  // `CardSaveType::kCardSaveWithCvc`, the offer-to-save card bubble is shown,
+  // and the users are informed that the CVC will also be stored. If the type is
+  // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   AutofillClient::SaveCreditCardOptions options_;
 
   // The account info of the signed-in user.

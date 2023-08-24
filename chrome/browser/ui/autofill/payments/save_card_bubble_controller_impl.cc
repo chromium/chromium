@@ -100,8 +100,10 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
   card_ = card;
   local_save_card_prompt_callback_ = std::move(save_card_prompt_callback);
   legal_message_lines_.clear();
-  current_bubble_type_ = options.cvc_save_only ? BubbleType::LOCAL_CVC_SAVE
-                                               : BubbleType::LOCAL_SAVE;
+  current_bubble_type_ =
+      options.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
+          ? BubbleType::LOCAL_CVC_SAVE
+          : BubbleType::LOCAL_SAVE;
 
   if (options.show_prompt)
     ShowBubble();
@@ -184,9 +186,10 @@ std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
                  : l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3);
     case BubbleType::MANAGE_CARDS:
-      return options_.cvc_save_only
-                 ? l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SAVED)
-                 : l10n_util::GetStringUTF16(IDS_AUTOFILL_CARD_SAVED);
+      return l10n_util::GetStringUTF16(
+          options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
+              ? IDS_AUTOFILL_CVC_SAVED
+              : IDS_AUTOFILL_CARD_SAVED);
     case BubbleType::FAILURE:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_FAILURE_BUBBLE_TITLE);
     case BubbleType::UPLOAD_IN_PROGRESS:
@@ -472,9 +475,10 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
     case BubbleType::LOCAL_SAVE:
     case BubbleType::UPLOAD_SAVE:
     case BubbleType::MANAGE_CARDS:
-      return options_.cvc_save_only
-                 ? l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC)
-                 : l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
+      return l10n_util::GetStringUTF16(
+          options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
+              ? IDS_TOOLTIP_SAVE_CVC
+              : IDS_TOOLTIP_SAVE_CREDIT_CARD);
     case BubbleType::LOCAL_CVC_SAVE:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CVC);
     case BubbleType::UPLOAD_IN_PROGRESS:
@@ -520,8 +524,9 @@ SaveCardBubbleControllerImpl::GetPaymentBubbleType() const {
 }
 
 int SaveCardBubbleControllerImpl::GetSaveSuccessAnimationStringId() const {
-  return options_.cvc_save_only ? IDS_AUTOFILL_CVC_SAVED
-                                : IDS_AUTOFILL_CARD_SAVED;
+  return options_.card_save_type == AutofillClient::CardSaveType::kCvcSaveOnly
+             ? IDS_AUTOFILL_CVC_SAVED
+             : IDS_AUTOFILL_CARD_SAVED;
 }
 
 PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {

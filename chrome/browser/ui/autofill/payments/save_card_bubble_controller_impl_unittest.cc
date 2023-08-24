@@ -519,16 +519,18 @@ class SaveCvcBubbleLoggingTest
 
   void TriggerFlow(bool show_prompt = true) {
     if (show_ == "FirstShow") {
-      ShowLocalBubble(/*card=*/nullptr,
-                      /*options=*/AutofillClient::SaveCreditCardOptions()
-                          .with_cvc_save_only(true)
-                          .with_show_prompt(show_prompt));
+      ShowLocalBubble(
+          /*card=*/nullptr,
+          /*options=*/AutofillClient::SaveCreditCardOptions()
+              .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+              .with_show_prompt(show_prompt));
     } else {
       ASSERT_EQ(show_, "Reshows");
-      ShowLocalBubble(/*card=*/nullptr,
-                      /*options=*/AutofillClient::SaveCreditCardOptions()
-                          .with_cvc_save_only(true)
-                          .with_show_prompt(show_prompt));
+      ShowLocalBubble(
+          /*card=*/nullptr,
+          /*options=*/AutofillClient::SaveCreditCardOptions()
+              .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
+              .with_show_prompt(show_prompt));
       CloseAndReshowBubble();
     }
   }
@@ -632,7 +634,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveDialogContent) {
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/AutofillClient::SaveCreditCardOptions()
-          .with_cvc_save_only(false)
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveOnly)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::LOCAL_SAVE, controller()->GetBubbleType());
@@ -647,7 +649,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/AutofillClient::SaveCreditCardOptions()
-          .with_cvc_save_only(true)
+          .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)
           .with_show_prompt(true));
 
   ASSERT_EQ(BubbleType::LOCAL_CVC_SAVE, controller()->GetBubbleType());
@@ -681,8 +683,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Show the local card save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_cvc_save_only(
-          false));
+      /*options=*/AutofillClient::SaveCreditCardOptions().with_card_save_type(
+          AutofillClient::CardSaveType::kCardSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the
@@ -703,8 +705,8 @@ TEST_F(SaveCardBubbleControllerImplTest,
   // Show the local CVC save bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
-      /*options=*/AutofillClient::SaveCreditCardOptions().with_cvc_save_only(
-          true));
+      /*options=*/AutofillClient::SaveCreditCardOptions().with_card_save_type(
+          AutofillClient::CardSaveType::kCvcSaveOnly));
   ClickSaveButton();
   CloseAndReshowBubble();
   // After closing the sign-in promo, clicking the icon should bring up the

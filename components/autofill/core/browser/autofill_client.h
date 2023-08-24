@@ -236,6 +236,15 @@ class AutofillClient : public RiskDataLoader {
     std::u16string expiration_date_year;
   };
 
+  enum class CardSaveType {
+    // Credit card is saved without the CVC.
+    kCardSaveOnly = 0,
+    // Credit card is saved with the CVC.
+    kCardSaveWithCvc = 1,
+    // Only CVC is saved.
+    kCvcSaveOnly = 2,
+  };
+
   // Used for options of upload prompt.
   struct SaveCreditCardOptions {
     SaveCreditCardOptions& with_from_dynamic_change_form(bool b) {
@@ -275,8 +284,8 @@ class AutofillClient : public RiskDataLoader {
       return *this;
     }
 
-    SaveCreditCardOptions& with_cvc_save_only(bool b) {
-      cvc_save_only = b;
+    SaveCreditCardOptions& with_card_save_type(CardSaveType b) {
+      card_save_type = b;
       return *this;
     }
 
@@ -288,7 +297,7 @@ class AutofillClient : public RiskDataLoader {
     bool has_multiple_legal_lines = false;
     bool has_same_last_four_as_server_card_but_different_expiration_date =
         false;
-    bool cvc_save_only = false;
+    CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
   // Used for options of save (and update) address profile prompt.
