@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/aura/window.h"
@@ -64,8 +65,9 @@ ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
                                  context_index) {
   // If we shouldn't group by desk, ExistingWindowSubMenuModel's ctor has
   // already built the menu.
-  const std::vector<Browser*> tabbed_browser_windows =
-      tab_menu_model_delegate->GetOtherTabbedBrowserWindows();
+  std::vector<Browser*> tabbed_browser_windows =
+      tab_menu_model_delegate->GetOtherBrowserWindows(
+          model->delegate()->IsForWebApp());
   if (!ShouldGroupByDesk(GetDesksHelper(tabbed_browser_windows))) {
     return;
   }

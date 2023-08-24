@@ -66,7 +66,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
   // For each window, append the tab groups to the end of the menu items.
   if (tab_menu_model_delegate_) {
     for (Browser* browser :
-         tab_menu_model_delegate_->GetOtherTabbedBrowserWindows()) {
+         tab_menu_model_delegate_->GetOtherBrowserWindows(/*is_app=*/false)) {
       if (browser->tab_strip_model() == model)
         continue;
       const std::vector<MenuItemInfo> retrieved_menu_item_infos =
@@ -159,7 +159,7 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
   // Look at tab groups in all other windows
   if (tab_menu_model_delegate) {
     for (Browser* browser :
-         tab_menu_model_delegate->GetOtherTabbedBrowserWindows()) {
+         tab_menu_model_delegate->GetOtherBrowserWindows(/*is_app=*/false)) {
       TabGroupModel* browser_group_model =
           browser->tab_strip_model()->group_model();
       if (!browser_group_model)
@@ -201,7 +201,7 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
   // Find the index of the browser with the group we are looking for.
   absl::optional<size_t> browser_index;
   std::vector<Browser*> browsers =
-      tab_menu_model_delegate_->GetOtherTabbedBrowserWindows();
+      tab_menu_model_delegate_->GetOtherBrowserWindows(/*is_app=*/false);
   for (size_t i = 0; i < browsers.size(); ++i) {
     TabStripModel* potential_model = browsers[i]->tab_strip_model();
     if (potential_model && potential_model != model() &&

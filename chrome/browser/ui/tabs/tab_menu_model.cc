@@ -56,9 +56,20 @@ void TabMenuModel::BuildForWebApp(TabStripModel* tab_strip, int index) {
       (!web_app::HasPinnedHomeTab(tab_strip) ||
        *tab_strip->selection_model().selected_indices().begin() != 0)) {
     int num_tabs = tab_strip->selection_model().selected_indices().size();
-    AddItem(TabStripModel::CommandMoveTabsToNewWindow,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+    if (ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
+            tab_menu_model_delegate_)) {
+      // Create submenu with existing windows
+      add_to_existing_window_submenu_ = ExistingWindowSubMenuModel::Create(
+          delegate(), tab_menu_model_delegate_, tab_strip, index);
+      AddSubMenu(TabStripModel::CommandMoveToExistingWindow,
+                 l10n_util::GetPluralStringFUTF16(
+                     IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
+                 add_to_existing_window_submenu_.get());
+    } else {
+      AddItem(TabStripModel::CommandMoveTabsToNewWindow,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
