@@ -7,6 +7,8 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
@@ -69,6 +71,8 @@
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = !self.webStateList->empty();
   toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.newTabButton = IsAddNewTabAllowedByPolicy(
+      self.browser->GetBrowserState()->GetPrefs(), YES);
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = !self.webStateList->empty();
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];

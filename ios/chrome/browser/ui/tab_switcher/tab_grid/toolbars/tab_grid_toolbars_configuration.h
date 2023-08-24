@@ -19,6 +19,7 @@
 @property(nonatomic) BOOL closeSelectedTabsButton;
 @property(nonatomic) BOOL deselectAllButton;
 @property(nonatomic) BOOL doneButton;
+@property(nonatomic) BOOL newTabButton;
 @property(nonatomic) BOOL searchButton;
 @property(nonatomic) BOOL selectAllButton;
 @property(nonatomic) BOOL selectTabsButton;

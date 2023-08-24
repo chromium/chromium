@@ -7,7 +7,6 @@
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/policy/policy_util.h"
 
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {
   if (!pref_service)
