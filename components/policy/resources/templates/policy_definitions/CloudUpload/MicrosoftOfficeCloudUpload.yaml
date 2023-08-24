@@ -29,6 +29,7 @@ items:
 owners:
 - greengrape@google.com
 - file://ui/file_manager/OWNERS
+- cros-commercial-clippy-eng@google.com
 schema:
   enum:
   - allowed
