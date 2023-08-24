@@ -123,11 +123,11 @@ bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
   return true;
 }
 
-// static
-void LoginDatabase::DeleteEncryptedPasswordFromKeychain(
-    const std::string& cipher_text) {
-  if (cipher_text.empty())
+void DeleteEncryptedPasswordFromKeychain(
+    const std::string& keychain_identifier) {
+  if (keychain_identifier.empty()) {
     return;
+  }
 
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
       CFDictionaryCreateMutable(nullptr, 0, &kCFTypeDictionaryKeyCallBacks,
@@ -135,7 +135,7 @@ void LoginDatabase::DeleteEncryptedPasswordFromKeychain(
   CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
 
   ScopedCFTypeRef<CFStringRef> item_ref(
-      base::SysUTF8ToCFStringRef(cipher_text));
+      base::SysUTF8ToCFStringRef(keychain_identifier));
   // We are using the account attribute to store item references.
   CFDictionarySetValue(query, kSecAttrAccount, item_ref);
 

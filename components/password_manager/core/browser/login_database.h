@@ -274,11 +274,6 @@ class LoginDatabase {
   friend class LoginDatabaseIOSTest;
   FRIEND_TEST_ALL_PREFIXES(LoginDatabaseIOSTest, KeychainStorage);
 
-  // Removes the keychain item corresponding to the look-up key |cipher_text|.
-  // It's stored as the encrypted password value.
-  static void DeleteEncryptedPasswordFromKeychain(
-      const std::string& cipher_text);
-
   // On iOS, removes the keychain item that is used to store the encrypted
   // password for the supplied primary key |id|.
   void DeleteKeychainItemByPrimaryId(int id);
@@ -395,6 +390,11 @@ bool CreateKeychainIdentifier(const std::u16string& plain_text,
 // true or false to indicate success/failure.
 bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
                                    std::u16string* plain_text);
+
+// Removes the keychain item corresponding to the look-up key
+// |keychain_identifier|. It's stored as the encrypted password value.
+void DeleteEncryptedPasswordFromKeychain(
+    const std::string& keychain_identifier);
 #endif
 
 }  // namespace password_manager
