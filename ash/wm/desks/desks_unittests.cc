@@ -10853,11 +10853,11 @@ class DeskButtonTest
 
   DeskButton* GetDeskButton() { return GetDeskButtonWidget()->GetDeskButton(); }
 
-  views::ImageButton* GetPrevDeskButton() {
+  DeskSwitchButton* GetPrevDeskButton() {
     return GetDeskButton()->prev_desk_button();
   }
 
-  views::ImageButton* GetNextDeskButton() {
+  DeskSwitchButton* GetNextDeskButton() {
     return GetDeskButton()->next_desk_button();
   }
 
@@ -11112,41 +11112,51 @@ TEST_P(DeskButtonTest, SuspendShelfAutoHideWhenHovered) {
 // in each phase of the desk button's desk switch process.
 TEST_P(DeskButtonTest, ValidateDeskButtonPosition) {
   NewDesk();
+  NewDesk();
 
   auto* desk_button = GetDeskButton();
-  ASSERT_TRUE(desk_button);
-
   auto* prev_desk_button = GetPrevDeskButton();
   auto* next_desk_button = GetNextDeskButton();
   auto* desk_name_label = desk_button->desk_name_label_for_test();
+  auto* desk_controller = DesksController::Get();
+  const int desk_count = desk_controller->GetNumberOfDesks();
 
-  if (GetParam().alignment == ShelfAlignment::kBottom) {
-    EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
-  } else {
-    EXPECT_EQ(gfx::Rect(0, 0, 36, 36), desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
-    EXPECT_EQ(gfx::Rect(0, 0, 36, 36), desk_name_label->bounds());
+  for (int i = desk_count - 1; i >= 0; i--) {
+    ActivateDesk(desk_controller->desks()[i].get());
+
+    const bool should_show_prev_desk_button = i > 0;
+    const bool should_show_next_desk_button = i < desk_count - 1;
+
+    // Check the desk button when *not* hovered.
+    auto* event_generator = GetEventGenerator();
+    event_generator->MoveMouseTo(gfx::Point(0, 0));
+    ASSERT_FALSE(desk_button->is_hovered());
+    EXPECT_EQ(desk_button->bounds(),
+              GetParam().alignment == ShelfAlignment::kBottom
+                  ? gfx::Rect(0, 0, 96, 36)
+                  : gfx::Rect(0, 0, 36, 36));
+    EXPECT_EQ(desk_name_label->bounds(),
+              GetParam().alignment == ShelfAlignment::kBottom
+                  ? gfx::Rect(20, 0, 56, 36)
+                  : gfx::Rect(0, 0, 36, 36));
+    EXPECT_FALSE(prev_desk_button->GetShown());
+    EXPECT_FALSE(next_desk_button->GetShown());
+
+    // Check the desk button when hovered.
+    event_generator->MoveMouseTo(
+        desk_button->GetBoundsInScreen().CenterPoint());
+    ASSERT_TRUE(desk_button->is_hovered());
+    EXPECT_EQ(desk_button->bounds(), gfx::Rect(0, 0, 96, 36));
+    EXPECT_EQ(prev_desk_button->GetShown(), should_show_prev_desk_button);
+    EXPECT_EQ(next_desk_button->GetShown(), should_show_next_desk_button);
+    if (should_show_prev_desk_button) {
+      EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
+    }
+    if (should_show_next_desk_button) {
+      EXPECT_EQ(prev_desk_button->bounds(), gfx::Rect(0, 0, 20, 36));
+    }
+    EXPECT_EQ(desk_name_label->bounds(), gfx::Rect(20, 0, 56, 36));
   }
-
-  auto* event_generator = GetEventGenerator();
-  event_generator->MoveMouseTo(desk_button->GetBoundsInScreen().CenterPoint());
-  ASSERT_TRUE(next_desk_button->GetEnabled());
-  event_generator->MoveMouseTo(
-      next_desk_button->GetBoundsInScreen().CenterPoint());
-  EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
-
-  ClickDeskSwitchButton(/*next=*/true);
-  EXPECT_EQ(gfx::Rect(0, 0, 96, 36), desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 20, 36), prev_desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(76, 0, 20, 36), next_desk_button->bounds());
-  EXPECT_EQ(gfx::Rect(20, 0, 56, 36), desk_name_label->bounds());
 }
 
 // Tests that desk button press metrics are correctly recorded.

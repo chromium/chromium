@@ -67,8 +67,12 @@ DeskSwitchButton::DeskSwitchButton(PressedCallback callback)
 DeskSwitchButton::~DeskSwitchButton() = default;
 
 void DeskSwitchButton::SetShown(bool show) {
-  layer()->SetOpacity(show ? 1.f : 0.f);
+  layer()->SetOpacity(show ? 1.0f : 0.0f);
   SetEnabled(show);
+}
+
+bool DeskSwitchButton::GetShown() const {
+  return GetEnabled() && layer()->GetTargetOpacity() == 1.0f;
 }
 
 void DeskSwitchButton::OnMouseEntered(const ui::MouseEvent& event) {
@@ -342,7 +346,8 @@ views::View* DeskButton::GetTooltipHandlerForPoint(const gfx::Point& point) {
   // We override this function so that the tooltip manager ignores disabled desk
   // switch buttons when creating tooltips.
   views::View* tooltip_handler = Button::GetTooltipHandlerForPoint(point);
-  return tooltip_handler->GetEnabled() ? tooltip_handler : this;
+  return tooltip_handler && tooltip_handler->GetEnabled() ? tooltip_handler
+                                                          : this;
 }
 
 void DeskButton::OnDeskAdded(const Desk* desk, bool from_undo) {

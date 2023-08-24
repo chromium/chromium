@@ -21,7 +21,7 @@ namespace ash {
 class DeskButtonWidget;
 
 // Buttons that can be clicked to switch to the left or right desk.
-class DeskSwitchButton : public views::ImageButton {
+class ASH_EXPORT DeskSwitchButton : public views::ImageButton {
  public:
   METADATA_HEADER(DeskSwitchButton);
 
@@ -34,6 +34,7 @@ class DeskSwitchButton : public views::ImageButton {
 
   // Sets opacity and enabled state based on the input `show` state.
   void SetShown(bool show);
+  bool GetShown() const;
 
  private:
   // views::ImageButton:
