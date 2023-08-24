@@ -569,41 +569,25 @@ LONG RegKey::RegDelRecurse(HKEY root_key, const wchar_t* name, REGSAM access) {
     return result;
   }
 
-  std::wstring subkey_name(name);
-
-  // Check for an ending slash and add one if it is missing.
-  if (!subkey_name.empty() && subkey_name.back() != '\\') {
-    subkey_name.push_back('\\');
-  }
-
-  // Enumerate the keys
-  result = ERROR_SUCCESS;
-  const DWORD kMaxKeyNameLength = MAX_PATH;
-  const size_t base_key_length = subkey_name.length();
-  std::wstring key_name;
-  while (result == ERROR_SUCCESS) {
+  // Enumerate the keys.
+  const DWORD kMaxKeyNameLength = 256;  // Includes string terminator.
+  auto subkey_buffer = std::make_unique<wchar_t[]>(kMaxKeyNameLength);
+  while (true) {
     DWORD key_size = kMaxKeyNameLength;
-    result = ::RegEnumKeyEx(target_key.key_, 0,
-                            WriteInto(&key_name, kMaxKeyNameLength), &key_size,
-                            nullptr, nullptr, nullptr, nullptr);
-
-    if (result != ERROR_SUCCESS) {
+    if (::RegEnumKeyEx(target_key.key_, 0, &subkey_buffer[0], &key_size,
+                       nullptr, nullptr, nullptr, nullptr) != ERROR_SUCCESS) {
       break;
     }
-
-    key_name.resize(key_size);
-    subkey_name.resize(base_key_length);
-    subkey_name += key_name;
-
-    if (RegDelRecurse(root_key, subkey_name.c_str(), access) != ERROR_SUCCESS) {
+    CHECK_LT(key_size, kMaxKeyNameLength);
+    CHECK_EQ(subkey_buffer[key_size], L'\0');
+    if (RegDelRecurse(target_key.key_, &subkey_buffer[0], access) !=
+        ERROR_SUCCESS) {
       break;
     }
   }
 
   // Try again to delete the key.
-  result = ::RegDeleteKeyEx(target_key.key_, L"", access, 0);
-
-  return result;
+  return ::RegDeleteKeyEx(target_key.key_, L"", access, 0);
 }
 
 // RegistryValueIterator ------------------------------------------------------
