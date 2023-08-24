@@ -113,7 +113,7 @@ bool TokenService::StoreDmToken(const std::string& token) {
 bool TokenService::DeleteDmToken() {
   base::win::RegKey key;
   auto result = key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyEnrollment,
-                         Wow6432(KEY_SET_VALUE));
+                         Wow6432(KEY_QUERY_VALUE | KEY_SET_VALUE));
 
   // The registry key which stores the DMToken value was not found, so deletion
   // is not necessary.
@@ -129,8 +129,9 @@ bool TokenService::DeleteDmToken() {
   }
 
   // Delete the key if no other values are present.
-  base::win::RegKey(HKEY_LOCAL_MACHINE, L"", Wow6432(KEY_WRITE))
-      .DeleteEmptyKey(kRegKeyCompanyEnrollment);
+  if (key.GetValueCount().value_or(1) == 0) {
+    key.DeleteKey(L"");
+  }
   VLOG(1) << "DM token is deleted.";
   return true;
 }

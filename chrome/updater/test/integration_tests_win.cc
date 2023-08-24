@@ -40,6 +40,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -76,6 +77,7 @@
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/crx_file/crx_verifier.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -182,9 +184,9 @@ void ExpectUpdateRegKeyClean(UpdaterScope scope) {
   EXPECT_EQ(updater_key_iter.SubkeyCount(), 1u);
   EXPECT_STREQ(updater_key_iter.Name(), L"ClientState");
 
-  EXPECT_EQ(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
-                .GetValueCount(),
-            0u);
+  EXPECT_THAT(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
+                  .GetValueCount(),
+              base::test::ValueIs(0u));
   const std::vector<std::wstring> allowed_values = {kDidRun, L"lastrun"};
   for (base::win::RegistryKeyIterator client_state_iter(root, CLIENT_STATE_KEY,
                                                         KEY_WOW64_32KEY);

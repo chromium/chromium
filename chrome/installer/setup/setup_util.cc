@@ -756,7 +756,7 @@ bool DeleteDMToken() {
 
     base::win::RegKey key;
     auto result = key.Open(HKEY_LOCAL_MACHINE, key_path.c_str(),
-                           KEY_SET_VALUE | wow_access);
+                           KEY_QUERY_VALUE | KEY_SET_VALUE | wow_access);
     if (result == ERROR_FILE_NOT_FOUND) {
       // The registry key which stores the DMToken value was not found, so
       // deletion is not necessary.
@@ -781,8 +781,9 @@ bool DeleteDMToken() {
     }  // Else ignore the failure to write to the best-effort location.
 
     // Delete the key if no other values are present.
-    base::win::RegKey(HKEY_LOCAL_MACHINE, L"", KEY_QUERY_VALUE | wow_access)
-        .DeleteEmptyKey(key_path.c_str());
+    if (key.GetValueCount().value_or(1) == 0) {
+      key.DeleteKey(L"");
+    }
   }
 
   VLOG(1) << "Successfully deleted DMToken from the registry.";

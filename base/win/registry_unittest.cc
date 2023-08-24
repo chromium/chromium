@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -88,7 +89,7 @@ TEST_F(RegistryTest, ValueTest) {
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kDWORDValueName, kDWORDData));
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kInt64ValueName, &kInt64Data,
                                           sizeof(kInt64Data), REG_QWORD));
-  EXPECT_EQ(3U, key.GetValueCount());
+  EXPECT_THAT(key.GetValueCount(), base::test::ValueIs(3U));
   EXPECT_TRUE(key.HasValue(kStringValueName));
   EXPECT_TRUE(key.HasValue(kDWORDValueName));
   EXPECT_TRUE(key.HasValue(kInt64ValueName));
@@ -117,7 +118,7 @@ TEST_F(RegistryTest, ValueTest) {
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kStringValueName));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kDWORDValueName));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kInt64ValueName));
-  EXPECT_EQ(0U, key.GetValueCount());
+  EXPECT_THAT(key.GetValueCount(), base::test::ValueIs(0U));
   EXPECT_FALSE(key.HasValue(kStringValueName));
   EXPECT_FALSE(key.HasValue(kDWORDValueName));
   EXPECT_FALSE(key.HasValue(kInt64ValueName));
@@ -227,13 +228,6 @@ TEST_F(RegistryTest, RecursiveDelete) {
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, key_path.c_str(), KEY_READ));
-
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_WRITE));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L""));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Bar\\Foo"));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Bar"));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo"));
 
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, key_path.c_str(), KEY_CREATE_SUB_KEY));
@@ -464,7 +458,6 @@ TEST_F(RegistryTest, DeleteWithInvalidRegKey) {
   static const wchar_t kFooName[] = L"foo";
 
   EXPECT_EQ(key.DeleteKey(kFooName), ERROR_INVALID_HANDLE);
-  EXPECT_EQ(key.DeleteEmptyKey(kFooName), ERROR_INVALID_HANDLE);
   EXPECT_EQ(key.DeleteValue(kFooName), ERROR_INVALID_HANDLE);
 }
 
