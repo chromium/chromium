@@ -436,6 +436,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1874224422119691492">Anda dapat mengubah apakah akan menggunakan kunci layar untuk mengisi sandi di <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Baki Foto</translation>
 <translation id="1875512691959384712">Google Formulir</translation>
+<translation id="1876399092304384674">Menurut tanggal</translation>
 <translation id="187918866476621466">Buka halaman awal</translation>
 <translation id="1883255238294161206">Ciutkan daftar</translation>
 <translation id="1884843295353628214">Musik jazz</translation>
@@ -1113,6 +1114,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menutup semua jendela Samaran yang saat ini terbuka</translation>
 <translation id="3474392552865647225">Tombol Sesuaikan font di Chrome, aktifkan untuk menyesuaikan ukuran font dan rupa huruf di Chrome</translation>
 <translation id="3477679029130949506">Daftar film &amp; jadwal bioskop</translation>
+<translation id="3478033058537426179">Menurut grup</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
 <translation id="3484560055331845446">Anda dapat kehilangan akses ke Akun Google Anda. Chrome merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
 <translation id="3484861421501147767">Pengingat: Kode promo yang disimpan tersedia</translation>
@@ -3239,6 +3241,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8150722005171944719">File pada <ph name="URL" /> tidak dapat dibaca.  File mungkin telah dihapus, dipindahkan, atau izin file mungkin mencegah akses.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk mendownload file ini ke <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Peralatan Hoki</translation>
+<translation id="8161095570253161196">Lanjutkan menjelajah</translation>
 <translation id="8163866351304776260">Empat lubang di kiri</translation>
 <translation id="8175796834047840627">Chrome menawarkan untuk menyimpan informasi kartu ke Akun Google Anda karena Anda sedang login. Anda dapat mengubah perilaku ini di setelan.</translation>
 <translation id="8176440868214972690">Administrator perangkat ini telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>

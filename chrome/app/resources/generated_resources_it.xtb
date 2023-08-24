@@ -1732,6 +1732,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2411666601450687801">Nessuna macchina virtuale consentita su questo dispositivo</translation>
 <translation id="2412015533711271895">Uno dei tuoi genitori o il tuo tutore deve autorizzarti a usare questa estensione</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Riprendi la navigazione per <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2416435988630956212">Tasti funzione della tastiera</translation>
 <translation id="2418307627282545839">Mantieni un ambiente ampio e luminoso</translation>
@@ -1868,6 +1869,10 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (lingua selezionata)</translation>
 <translation id="2513396635448525189">Immagine di accesso</translation>
+<translation id="251425554130284360">Sono visualizzate pagine che hai visitato e ricerche suggerite per aiutarti a tornare facilmente alla tua attività più recente.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Puoi gestire le impostazioni dal menu della scheda o visualizzare altre opzioni in Personalizza Chrome.</translation>
 <translation id="2514326558286966059">Sblocca più velocemente il dispositivo con l'impronta</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Conferma il tuo nome utente</translation>
@@ -2276,6 +2281,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2861402191395139055">Abbonamenti a Passpoint</translation>
 <translation id="2861941300086904918">Gestione sicurezza Native Client</translation>
 <translation id="2862815659905780618">Rimuovi ambiente di sviluppo Linux</translation>
+<translation id="2862986593239703553">questa scheda</translation>
 <translation id="2864601841139725659">Imposta l'immagine del profilo</translation>
 <translation id="2865057607286263192">Tieni premuti i tasti della tastiera per vedere accenti e caratteri speciali. Verrà disattivata la funzionalità Ripeti la pressione del tasto per i tasti alfabetici. Disponibile solo per l'inglese (USA).</translation>
 <translation id="2865919525181940183">Screenshot dei programmi attualmente sullo schermo</translation>
@@ -3298,6 +3304,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicazione con un dispositivo USB}other{Comunicazione con # dispositivi USB}}</translation>
 <translation id="3764753550716962406">Vuoi consentire a Google di trovare sconti disponibili in base agli articoli nel tuo carrello?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">questo tipo di scheda</translation>
 <translation id="3765246971671567135">Impossibile leggere le norme offline relative alla modalità demo.</translation>
 <translation id="3765696567014520261">I siti non possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci. Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="3766687283066842296">Scopri di più su Phone Hub</translation>
@@ -3960,6 +3967,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4330387663455830245">Non tradurre mai <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Configura il Controllo genitori</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 con crittografia RSA</translation>
+<translation id="4334768748331667190">Non vedrai più <ph name="MODULE_NAME" /></translation>
 <translation id="4336434711095810371">Cancella tutti i dati</translation>
 <translation id="4339203724549370495">Disinstalla app</translation>
 <translation id="4340125850502689798">Nome utente non valido</translation>

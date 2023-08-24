@@ -436,6 +436,7 @@
 <translation id="1874224422119691492">আপুনি পাছৱৰ্ড পূৰ কৰাৰ বাবে আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰিবনে নাই সেইটো <ph name="SETTINGS" />ত সলনি কৰিব পাৰে</translation>
 <translation id="1875025161375567525">ফট’ ট্ৰে’</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876399092304384674">তাৰিখ অনুসৰি</translation>
 <translation id="187918866476621466">আৰম্ভণিতে খোল খুৱা পৃষ্ঠা খোলক</translation>
 <translation id="1883255238294161206">সূচী সংকোচন কৰক</translation>
 <translation id="1884843295353628214">জেজ</translation>
@@ -1111,6 +1112,7 @@
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, বৰ্তমান খোল খাই থকা আটাইবোৰ ইনক’গনিট’ ৱিণ্ড’ বন্ধ কৰিবলৈ টেব টিপক আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="3474392552865647225">Chromeত ফণ্ট কাষ্টমাইজ কৰাৰ বুটাম, Chromeত ফণ্টৰ আকাৰ আৰু টাইপফেচ কাষ্টমাইজ কৰিবলৈ সক্ৰিয় কৰক</translation>
 <translation id="3477679029130949506">চলচ্চিত্ৰৰ সূচী আৰু থিয়েটাৰৰ শ্ব’ৰ সময়সূচী</translation>
+<translation id="3478033058537426179">গোট অনুসৰি</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3484560055331845446">আপুনি নিজৰ Google একাউণ্টলৈ এক্সেছ হেৰুৱাব পাৰে। Chromeএ আপোনাৰ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰিছে। আপোনাক ছাইন ইন কৰিবলৈ কোৱা হ’ব।</translation>
 <translation id="3484861421501147767">ৰিমাইণ্ডাৰ: ছেভ কৰি থোৱা প্ৰচাৰৰ ক’ড উপলব্ধ</translation>
@@ -3237,6 +3239,7 @@
 <translation id="8150722005171944719"><ph name="URL" />ৰ ফাইলটো পঢ়িব পৰা অৱস্থাত নাই।  এই ফাইলটো হয়তো আঁতৰোৱা হৈছে, ইয়াৰ পৰা লৈ যোৱা হৈছে বা ফাইলৰ অনুমতিয়ে এক্সেছ প্ৰদান কৰা নাই।</translation>
 <translation id="8153865548451212769">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত ডাউনল’ড কৰাটো চুপাৰিছ নকৰে}}</translation>
 <translation id="81563721597823545">হকীৰ সা-সৰঞ্জাম</translation>
+<translation id="8161095570253161196">ব্ৰাউজ কৰা অব্যাহত ৰাখক</translation>
 <translation id="8163866351304776260">বাওঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="8175796834047840627">আপুনি ছাইন ইন কৰি থোৱাৰ বাবে Chromeএ আপোনাৰ Google একাউণ্টত আপোনাৰ কার্ডসমূহ ছেভ কৰাৰ সুবিধা দিছে। আপুনি ছেটিংসমূহ-ত এয়া সলনি কৰিব পাৰে।</translation>
 <translation id="8176440868214972690">এই ডিভাইচটোৰ প্ৰশাসকে এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>

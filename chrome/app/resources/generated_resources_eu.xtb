@@ -1732,6 +1732,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2411666601450687801">Gailu honek ez du makina birtualik erabiltzeko baimenik</translation>
 <translation id="2412015533711271895">Guraso edo tutore batek luzapena erabiltzeko baimena eman behar dizu</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Berrekin <ph name="MODULE_TITLE" /> arakatzeari</translation>
 <translation id="2414886740292270097">Iluna</translation>
 <translation id="2416435988630956212">Teklatuko funtzio-teklak</translation>
 <translation id="2418307627282545839">Mantendu gauzak argi eta zabala dirudien gune batean</translation>
@@ -1868,6 +1869,10 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (hautatuta)</translation>
 <translation id="2513396635448525189">Saio-hasierako irudia</translation>
+<translation id="251425554130284360">Bisitatu dituzun orriak eta iradokitako bilaketak ikusten ari zara, azken jardueretara itzultzea errazagoa izan dadin.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ezarpenak kudeatzeko, joan txartelaren menura edo ikusi aukera gehiago Pertsonalizatu Chrome atalean.</translation>
 <translation id="2514326558286966059">Desblokeatu bizkorrago hatz-marka erabilita</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Berretsi erabiltzaile-izena</translation>
@@ -2276,6 +2281,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2861402191395139055">Passpoint-eko harpidetzak</translation>
 <translation id="2861941300086904918">Bezero natiboaren segurtasun-kudeatzailea</translation>
 <translation id="2862815659905780618">Kendu Linux-eko garapen-ingurunea</translation>
+<translation id="2862986593239703553">txartel hau</translation>
 <translation id="2864601841139725659">Ezarri profileko argazkia</translation>
 <translation id="2865057607286263192">Eduki sakatuta teklatuko teklak azentuak eta karaktere bereziak ikusteko. Alfabetoko teklen sakatzeen errepikapena desaktibatuko da. AEBko ingelesez soilik dago erabilgarri.</translation>
 <translation id="2865919525181940183">Pantailan dauden programen pantaila-argazkia</translation>
@@ -3298,6 +3304,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komunikatu USB bidezko gailu batekin}other{Komunikatu USB bidezko # gailurekin}}</translation>
 <translation id="3764753550716962406">Saskietan deskontu pertsonalizatuak bilatzen utzi nahi diozu Google-ri?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailura bidaltzen}other{<ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailura bidaltzen}}</translation>
+<translation id="3765055238058255342">txartel mota hau</translation>
 <translation id="3765246971671567135">Ezin izan da irakurri konexiorik gabeko demo moduaren gidalerroa.</translation>
 <translation id="3765696567014520261">Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatze-jarduerak ikusteko, hala nola iragarkiak pertsonalizatzeko. Baliteke webgune batzuetako eginbideek ez funtzionatzea.</translation>
 <translation id="3766687283066842296">Lortu Phone Hub-i buruzko informazio gehiago</translation>
@@ -3960,6 +3967,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4330387663455830245">Ez itzuli inoiz <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Konfiguratu guraso-murriztapenak</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 RSA enkriptazioarekin</translation>
+<translation id="4334768748331667190">Ez duzu ikusiko berriro <ph name="MODULE_NAME" /></translation>
 <translation id="4336434711095810371">Garbitu datu guztiak</translation>
 <translation id="4339203724549370495">Desinstalatu aplikazioa</translation>
 <translation id="4340125850502689798">Erabiltzaile-izenak ez du balio</translation>

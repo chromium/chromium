@@ -436,6 +436,7 @@
 <translation id="1874224422119691492">您可在「<ph name="SETTINGS" />」中變更是否要使用螢幕鎖定功能填入密碼</translation>
 <translation id="1875025161375567525">相片匣</translation>
 <translation id="1875512691959384712">Google 表格</translation>
+<translation id="1876399092304384674">按日期分類</translation>
 <translation id="187918866476621466">開啟起始網頁</translation>
 <translation id="1883255238294161206">收合清單</translation>
 <translation id="1884843295353628214">爵士樂</translation>
@@ -1113,6 +1114,7 @@
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
 <translation id="3474392552865647225">自訂 Chrome 字型按鈕，啟動之後就可以自訂 Chrome 嘅字型大小同字體</translation>
 <translation id="3477679029130949506">電影場次及放映時間</translation>
+<translation id="3478033058537426179">按群組分類</translation>
 <translation id="3479552764303398839">略過</translation>
 <translation id="3484560055331845446">您可能會失去 Google 帳戶存取權。Chrome 建議您立即變更密碼。系統會要求您登入。</translation>
 <translation id="3484861421501147767">提醒：可使用已儲存的宣傳代碼</translation>
@@ -3241,6 +3243,7 @@
 <translation id="8150722005171944719">無法讀取位於 <ph name="URL" /> 的檔案。這個檔案可能已被移除或移動位置，或者檔案權限為禁止存取。</translation>
 <translation id="8153865548451212769">{0,plural, =1{管理員政策不建議下載此檔案到<ph name="DESTINATION_NAME" />}other{管理員政策不建議下載這些檔案到<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">曲棍球用品</translation>
+<translation id="8161095570253161196">繼續瀏覽</translation>
 <translation id="8163866351304776260">四孔 (左側)</translation>
 <translation id="8175796834047840627">由於您已登入，因此 Chrome 提議將您的付款卡儲存至 Google 帳戶。您可以在設定中變更此行為。</translation>
 <translation id="8176440868214972690">此裝置的管理員已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>

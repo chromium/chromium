@@ -1732,6 +1732,7 @@
 <translation id="2411666601450687801">這部裝置不允許使用任何虛擬機器</translation>
 <translation id="2412015533711271895">你必須取得家長或監護人允許，才能使用這個擴充功能</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">繼續瀏覽「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2414886740292270097">深色</translation>
 <translation id="2416435988630956212">鍵盤功能鍵</translation>
 <translation id="2418307627282545839">讓畫面色調保持明亮輕盈</translation>
@@ -1868,6 +1869,10 @@
 <translation id="2509566264613697683">8 倍</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (已選取)</translation>
 <translation id="2513396635448525189">登入圖片</translation>
+<translation id="251425554130284360">系統會顯示你曾造訪的網頁和建議搜尋項目，方便你回到最近造訪過的頁面。
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        你可以使用資訊卡選單管理設定，也可以前往「自訂 Chrome」查看更多選項。</translation>
 <translation id="2514326558286966059">使用指紋快速解鎖</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">確認你的使用者名稱</translation>
@@ -2276,6 +2281,7 @@
 <translation id="2861402191395139055">Passpoint 訂閱</translation>
 <translation id="2861941300086904918">Native Client 安全性管理員</translation>
 <translation id="2862815659905780618">移除 Linux 開發環境</translation>
+<translation id="2862986593239703553">這張資訊卡</translation>
 <translation id="2864601841139725659">設定你的個人資料圖片</translation>
 <translation id="2865057607286263192">按住鍵盤按鍵可查看重音符號和特殊字元。這項設定會關閉字母按鍵的重複按鍵動作。目前僅支援英文 (美國)。</translation>
 <translation id="2865919525181940183">目前畫面上程式的螢幕截圖</translation>
@@ -3298,6 +3304,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
 <translation id="3764753550716962406">要讓 Google 根據購物車中的商品尋找可用折扣嗎？</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}other{正在將 <ph name="ATTACHMENTS" />傳送到「<ph name="DEVICE_NAME" />」}}</translation>
+<translation id="3765055238058255342">這類資訊卡</translation>
 <translation id="3765246971671567135">無法讀取離線示範模式的政策。</translation>
 <translation id="3765696567014520261">網站無法透過 Cookie 瞭解你在各網站的瀏覽活動，也無法放送個人化廣告。某些網站的功能可能無法運作</translation>
 <translation id="3766687283066842296">進一步瞭解 Phone Hub</translation>
@@ -3959,6 +3966,7 @@
 <translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">設定家長監護功能</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 (使用 RSA 加密)</translation>
+<translation id="4334768748331667190">之後不會再顯示<ph name="MODULE_NAME" /></translation>
 <translation id="4336434711095810371">清除所有資料</translation>
 <translation id="4339203724549370495">解除安裝應用程式</translation>
 <translation id="4340125850502689798">使用者名稱無效</translation>

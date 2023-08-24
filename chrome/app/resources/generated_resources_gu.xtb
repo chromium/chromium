@@ -1730,6 +1730,7 @@
 <translation id="2411666601450687801">આ ડિવાઇસ પર કોઈ વર્ચ્યુઅલ મશીનને મંજૂરી નથી</translation>
 <translation id="2412015533711271895">તમારા માતાપિતા અથવા વાલીએ કહેવાનું રહેશે કે તમે આ એક્સ્ટેન્શનનો ઉપયોગ કરો તે બરાબર છે</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> માટે બ્રાઉઝ કરવાનું ફરી શરૂ કરો</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2416435988630956212">કીબોર્ડની ફંકશન કી</translation>
 <translation id="2418307627282545839">બ્રાઇટ અને આંખોને અનુકૂળ હોય એવી ડિસ્પ્લે થીમ</translation>
@@ -1866,6 +1867,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (પસંદ કરેલી)</translation>
 <translation id="2513396635448525189">લૉગ ઇન છબી</translation>
+<translation id="251425554130284360">તમારી સૌથી તાજેતરની પ્રવૃત્તિ પર સરળતાથી પાછા ફરવામાં તમારી સહાય કરવા માટે, તમે મુલાકાત લીધેલા પેજ અને સૂચવેલી શોધ જોઈ રહ્યાં છો.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        તમે કાર્ડના મેનૂમાં જઈને સેટિંગ મેનેજ કરી શકો છો અથવા 'Chromeને કસ્ટમાઇઝ કરો'માં વધુ વિકલ્પો જોઈ શકો છો.</translation>
 <translation id="2514326558286966059">તમારી ફિંગરપ્રિન્ટ વડે ઝડપથી અનલૉક કરો</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">તમારું વપરાશકર્તા નામ કન્ફર્મ કરો</translation>
@@ -2274,6 +2279,7 @@
 <translation id="2861402191395139055">Passpointના સબ્સ્ક્રિપ્શન</translation>
 <translation id="2861941300086904918">નેટિવ ક્લાયન્ટ સિક્યુરિટી મેનેજર</translation>
 <translation id="2862815659905780618">Linux ડેવલપમેન્ટ વાતાવરણ કાઢી નાખો</translation>
+<translation id="2862986593239703553">આ કાર્ડ</translation>
 <translation id="2864601841139725659">તમારું પ્રોફાઇલ ચિત્ર સેટ કરો</translation>
 <translation id="2865057607286263192">ઉચ્ચાર માટેના ચિહ્નો અને વિશેષ વર્ણો જોવા માટે, કીબોર્ડની કીને દબાવી રાખો. આમ કરવાથી આલ્ફાબેટ કી માટે રિપીટ કી દબાવવાની સુવિધા બંધ થઈ જશે. માત્ર અંગ્રેજી (યુએસ) ભાષા માટે ઉપલબ્ધ છે.</translation>
 <translation id="2865919525181940183">હાલમાં સ્ક્રીન પર છે તે પ્રોગ્રામનો સ્ક્રીનશૉટ</translation>
@@ -3296,6 +3302,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{એક USB ઉપકરણ સાથે સંચાર કરો}one{# USB ઉપકરણો સાથે સંચાર કરો}other{# USB ઉપકરણો સાથે સંચાર કરો}}</translation>
 <translation id="3764753550716962406">Googleને તમારા કાર્ટની માહિતીનો ઉપયોગ ઉપલબ્ધ છૂટ શોધવા માટે કરવાની મંજૂરી આપીએ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}one{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}other{<ph name="DEVICE_NAME" /> પર <ph name="ATTACHMENTS" /> મોકલી રહ્યાં છીએ}}</translation>
+<translation id="3765055238058255342">આ પ્રકારનું કાર્ડ</translation>
 <translation id="3765246971671567135">ઑફલાઇન ડેમો મોડ પૉલિસી વાંચી શકાઈ નથી.</translation>
 <translation id="3765696567014520261">અલગ-અલગ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે સાઇટ તમારી કુકીનો ઉપયોગ કરી શકશે નહીં, ઉદાહરણ તરીકે, જાહેરાતોને મનગમતી બનાવવા માટે. અમુક સુવિધાઓ કેટલીક સાઇટ પર કામ કરી શકશે નહીં</translation>
 <translation id="3766687283066842296">ફોન હબ વિશે વધુ જાણો</translation>
@@ -3958,6 +3965,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="4332976768901252016">માતાપિતાના યોગ્ય નિયંત્રણોનું સેટઅપ કરો</translation>
 <translation id="4333854382783149454">RSA એન્ક્રિપ્શનવાળું PKCS #1 SHA-1</translation>
+<translation id="4334768748331667190">તમને <ph name="MODULE_NAME" /> ફરીથી દેખાશે નહીં</translation>
 <translation id="4336434711095810371">બધો ડેટા સાફ કરો</translation>
 <translation id="4339203724549370495">ઍપ અનઇન્સ્ટૉલ કરો</translation>
 <translation id="4340125850502689798">અમાન્ય વપરાશકર્તાનામ</translation>

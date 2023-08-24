@@ -19,7 +19,7 @@
 <translation id="1371239764779356792">አንድ ጣቢያ በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጥ ይፍቀዱ</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
-<translation id="1409426117486808224">ለክፍት ትሮች የተቃለለ እይታ</translation>
+<translation id="1409426117486808224">ለክፍት ትሮች የተቃለለ ዕይታ</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
 <translation id="1426410128494586442">አዎ</translation>
 <translation id="1446450296470737166">ሙሉ የMIDI መሣሪያዎች መቆጣጠርን ያስችላል</translation>
@@ -103,7 +103,7 @@
 <translation id="2717722538473713889">ኢሜይል አድራሻዎች</translation>
 <translation id="2750481671343847896">ጣቢያዎች ከማንነት አገልግሎቶች የመግቢያ ጥያቄዎችን ማሳየት ይችላሉ።</translation>
 <translation id="2822354292072154809">እርግጠኛ ነዎት ሁሉንም የ<ph name="CHOSEN_OBJECT_NAME" /> ጣቢያ ፈቃዶችን ዳግም ማስጀመር ይፈልጋሉ?</translation>
-<translation id="2850913818900871965">የሞባይል እይታ ይጠይቁ</translation>
+<translation id="2850913818900871965">የሞባይል ዕይታ ይጠይቁ</translation>
 <translation id="2870560284913253234">ጣቢያ</translation>
 <translation id="2874939134665556319">ቀዳሚ ትራክ</translation>
 <translation id="2891975107962658722">አንድ ጣቢያ በመሣሪያዎ ላይ ውሂብ እንዳያስቀምጥ ያግዱት</translation>
@@ -172,7 +172,7 @@
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
-<translation id="4149994727733219643">ለድረ-ገጾች የተቃለለ እይታ</translation>
+<translation id="4149994727733219643">ለድረ-ገጾች የተቃለለ ዕይታ</translation>
 <translation id="4151930093518524179">ነባሪ ማጉላት</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
 <translation id="4169549551965910670">ከዩኤስቢ መሣሪያ ጋር ተገናኝቷል</translation>
@@ -404,7 +404,7 @@
 <translation id="83792324527827022">አንድ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="8380167699614421159">ይህ ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="8394832520002899662">ወደ ጣቢያው ለመመለስ መታ ያድርጉ</translation>
-<translation id="8409345997656833551">አንድ ጽሁፍ ቀላል በሆነ እይታ ውስጥ መታየት ሲችል ማሳወቂያ ያግኙ</translation>
+<translation id="8409345997656833551">አንድ ጽሁፍ ቀላል በሆነ ዕይታ ውስጥ መታየት ሲችል ማሳወቂያ ያግኙ</translation>
 <translation id="8423565414844018592">የጽሁፍ ልኬት ወደ <ph name="TEXT_SCALING" /> ተቀናብሯል</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="8441146129660941386">ወደኋላ ፈልግ</translation>

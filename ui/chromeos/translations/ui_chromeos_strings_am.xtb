@@ -97,7 +97,7 @@
 <translation id="1775381402323441512">የቪዲዮ መረጃ</translation>
 <translation id="180035236176489073">እነዚህን ፋይሎች ለመድረስ መስመር ላይ መሆን አለብዎት።</translation>
 <translation id="1807938677607439181">ሁሉም ፋይሎች</translation>
-<translation id="1810764548349082891">ምንም ቅድመ-እይታ አይገኝም</translation>
+<translation id="1810764548349082891">ምንም ቅድመ-ዕይታ አይገኝም</translation>
 <translation id="1812302367230252929">በአማርኛ ቋንቋ ፊደል መጻፍ</translation>
 <translation id="1813278315230285598">ግልጋሎቶች</translation>
 <translation id="1829129547161959350">ፔንግዊን</translation>
@@ -165,7 +165,7 @@
 <translation id="2326539130272988168">ቡልጋሪያኛ</translation>
 <translation id="2337715497728194187">ለBruschetta ያጋሩ</translation>
 <translation id="23721837607121582">የሞባይል መገለጫን ያውርዱ፣ አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" /></translation>
-<translation id="2377319039870049694">ወደ የዝርዝር እይታ ቀይር</translation>
+<translation id="2377319039870049694">ወደ የዝርዝር ዕይታ ቀይር</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> አቃፊዎች ለLinux ተጋርተዋል</translation>
 <translation id="2383454254762599978">ወደ መጣያ ውሰድ</translation>
 <translation id="2387458720915042159">የተኪ ግንኙነት ዓይነት</translation>
@@ -238,7 +238,7 @@
 <translation id="2984337792991268709">ዛሬ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="299638574917407533">ፈረንሳይኛ (ካናዳ)</translation>
 <translation id="3003189754374775221">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="NETWORK_NAME" />፣ <ph name="NETWORK_PROVIDER_NAME" />፣ ሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ተገናኝ</translation>
-<translation id="3003633581067744647">ወደ የድንክዬ እይታ ቀይር</translation>
+<translation id="3003633581067744647">ወደ የድንክዬ ዕይታ ቀይር</translation>
 <translation id="3016566519832145558">ማስጠንቀቂያ፦ እነዚህ ፋይሎች ጊዜያዊ የሆኑና የአንጻፊ ቦታ ነፃ ለማስለቀቅ በራስ-ሰር ሊሰረዙ የሚችሉ ናቸው።</translation>
 <translation id="3029114385395636667">ሰነዶችን፣ ሉሆችን እና ስላይዶችን ከመስመር ውጭ እንዲገኙ ለማድረግ ከመስመር ውጭ Google ሰነዶችን ያንቁ።</translation>
 <translation id="303198083543495566">ጂኦግራፊ</translation>

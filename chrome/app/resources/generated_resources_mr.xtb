@@ -1746,6 +1746,7 @@
 <translation id="2411666601450687801">या डिव्हाइसवर कोणत्याही व्हर्च्युअल मशीन ना अनुमती नाही</translation>
 <translation id="2412015533711271895">तुमच्या पालकांनी तुम्हाला हे एक्स्टेंशन वापरण्यास अनुमती द्यायला हवी</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> साठी ब्राउझिंग पुन्हा सुरू करा</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2416435988630956212">कीबोर्ड कार्य की</translation>
 <translation id="2418307627282545839">प्रखर आणि आरामदायी रंग ठेवा</translation>
@@ -1882,6 +1883,10 @@
 <translation id="2509566264613697683">८x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (निवडली)</translation>
 <translation id="2513396635448525189">लॉगिन इमेज</translation>
+<translation id="251425554130284360">तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजरीत्या परत जाण्यात तुम्हाला मदत व्हावी यासाठी, भेट दिलेली पेज आणि सुचवलेले शोध तुम्हाला दिसत आहेत.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="2514326558286966059">तुमची फिंगरप्रिंट वापरून जलदरीत्या अनलॉक करा</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">तुमचे वापरकर्ता नाव कंफर्म करा</translation>
@@ -2290,6 +2295,7 @@
 <translation id="2861402191395139055">पासपॉइंट सदस्यत्वे</translation>
 <translation id="2861941300086904918">नेटिव्ह क्लायंट सुरक्षा व्यवस्थापक</translation>
 <translation id="2862815659905780618">Linux डेव्हलपमेंट पद्धत काढून टाका</translation>
+<translation id="2862986593239703553">हे कार्ड</translation>
 <translation id="2864601841139725659">तुमचे प्रोफाइल चित्र सेट करा</translation>
 <translation id="2865057607286263192">अ‍ॅक्सेंटच्या खुणा आणि विशेष वर्ण पाहण्यासाठी किबोर्डच्या की प्रेस करून धरून ठेवा. यामुळे वर्णमालेच्या कीसाठी की प्रेस रिपीट करणे बंद होते. हे फक्त इंग्रजी (US) साठी उपलब्ध आहे.</translation>
 <translation id="2865919525181940183">सध्या स्क्रीनवर असलेल्या प्रोग्रामचे स्क्रीनशॉट</translation>
@@ -3312,6 +3318,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{एका USB डिव्हाइससह संवाद प्रस्थापित करा}other{# USB डिव्हाइसेससह संवाद प्रस्थापित करा}}</translation>
 <translation id="3764753550716962406">उपलब्ध सवलती शोधण्यासाठी Google ला तुमचे कार्ट वापरू द्यायचे आहे का?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवत आहे}other{<ph name="DEVICE_NAME" /> ला <ph name="ATTACHMENTS" /> पाठवत आहे}}</translation>
+<translation id="3765055238058255342">या प्रकारचे कार्ड</translation>
 <translation id="3765246971671567135">ऑफलाइन डेमो मोड धोरण रीड करता आले नाही.</translation>
 <translation id="3765696567014520261">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकत नाहीत. उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्याकरिता. काही साइटवर वैशिष्ट्ये कदाचित काम करणार नाहीत</translation>
 <translation id="3766687283066842296">फोन हब बद्दल अधिक जाणून घ्या</translation>
@@ -3972,6 +3979,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> कधीही भाषांतरित करू नका</translation>
 <translation id="4332976768901252016">पालक नियंत्रणे सेट करा</translation>
 <translation id="4333854382783149454">PKCS #1 RSA एंक्रिप्शनसह SHA-1</translation>
+<translation id="4334768748331667190">तुम्हाला <ph name="MODULE_NAME" /> पुन्हा दिसणार नाही</translation>
 <translation id="4336434711095810371">सर्व डेटा साफ करा</translation>
 <translation id="4339203724549370495">अ‍ॅप अनइंस्टॉल करा</translation>
 <translation id="4340125850502689798">चुकीचे वापरकर्ता नाव</translation>

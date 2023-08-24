@@ -1736,6 +1736,7 @@
 <translation id="2411666601450687801">لا يُسمح باستخدام أجهزة افتراضية على هذا الجهاز.</translation>
 <translation id="2412015533711271895">يجب أن يوافق الوصي عليك أو أحد والدَيك على استخدام هذه الإضافة.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">استئناف البحث عن "<ph name="MODULE_TITLE" />"</translation>
 <translation id="2414886740292270097">داكن</translation>
 <translation id="2416435988630956212">مفاتيح الوظائف على لوحة المفاتيح</translation>
 <translation id="2418307627282545839">يُضفي هذا الوضع مظهرًا مضيئًا وتباينًا أقل على شاشة جهازك.</translation>
@@ -1872,6 +1873,10 @@
 <translation id="2509566264613697683">8 أضعاف</translation>
 <translation id="2512065992892294946">تم اختيار <ph name="LANGUAGE" />.</translation>
 <translation id="2513396635448525189">صورة الملف الشخصي</translation>
+<translation id="251425554130284360">‏تظهر لك صفحات سبقت لك زيارتها وعمليات بحث مُقترَحة لمساعدتك في الرجوع بسهولة إلى أحدث أنشطتك.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        يمكنك إدارة الإعدادات من قائمة البطاقات أو الاطّلاع على المزيد من الخيارات عند النقر على الزر "تخصيص Chrome".</translation>
 <translation id="2514326558286966059">استخدام بصمة الإصبع لفتح قفل الجهاز بسرعة</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">تأكيد اسم المستخدم</translation>
@@ -2281,6 +2286,7 @@
 <translation id="2861402191395139055">اشتراكات نقطة المرور</translation>
 <translation id="2861941300086904918">‏إدارة الأمان لـ Native Client</translation>
 <translation id="2862815659905780618">‏إزالة بيئة تطوير نظام التشغيل Linux</translation>
+<translation id="2862986593239703553">هذه البطاقة</translation>
 <translation id="2864601841139725659">تعيين صورة الملف الشخصي</translation>
 <translation id="2865057607286263192">يتيح لك هذا الإعداد إظهار علامات التشكيل والرموز الخاصة عند الضغط مع الاستمرار على مفاتيح لوحة المفاتيح. ويؤدي تفعيل هذا الإعداد إلى إيقاف ميزة تكرار ضغطات مفاتيح الأحرف. يتوفّر هذا الإعداد للّغة الإنجليزية (الولايات المتحدة) فقط.</translation>
 <translation id="2865919525181940183">لقطة شاشة للبرامج التي تظهر على الشاشة حاليًا</translation>
@@ -3304,6 +3310,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏الاتصال بجهاز USB}zero{‏الاتصال بـ # من أجهزة USB}two{‏الاتصال بجهازي USB (#)}few{‏الاتصال بـ # أجهزة USB}many{‏ الاتصال بـ # جهاز USB}other{‏ الاتصال بـ # من أجهزة USB}}</translation>
 <translation id="3764753550716962406">‏هل تريد السماح لمحرك بحث Google باستخدام المنتجات التي تضيفها إلى سلة التسوق للعثور على الخصومات المتاحة؟</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}zero{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}two{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}few{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}many{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}other{جارٍ إرسال <ph name="ATTACHMENTS" /> إلى جهاز <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">هذا النوع من البطاقات</translation>
 <translation id="3765246971671567135">تعذَّرت قراءة سياسة الوضع التجريبي بلا إنترنت.</translation>
 <translation id="3765696567014520261">لن يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح على المواقع الإلكترونية المختلفة، بهدف تقديم إعلانات مخصّصة لك مثلاً. قد لا تعمل ميزات بعض المواقع الإلكترونية.</translation>
 <translation id="3766687283066842296">مزيد من المعلومات حول ميزة "مركز التحكم بالهاتف"</translation>
@@ -3963,6 +3970,7 @@
 <translation id="4330387663455830245">عدم ترجمة <ph name="LANGUAGE" /> مطلقًا</translation>
 <translation id="4332976768901252016">إعداد أدوات الرقابة الأبوية</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 مع ترميز RSA</translation>
+<translation id="4334768748331667190">لن يظهر لك <ph name="MODULE_NAME" /> مرة أخرى.</translation>
 <translation id="4336434711095810371">محو جميع البيانات</translation>
 <translation id="4339203724549370495">إلغاء تثبيت التطبيق</translation>
 <translation id="4340125850502689798">اسم المستخدم غير صالح</translation>
@@ -4460,7 +4468,7 @@
 <translation id="4756388243121344051">ال&amp;سجل</translation>
 <translation id="4756671452988984333">تحويل النص إلى صوت</translation>
 <translation id="4759202969060787081">عدم فتح الملف</translation>
-<translation id="4759238208242260848">الملفات التي تم تنزيلها</translation>
+<translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4761104368405085019">استخدام الميكروفون</translation>
 <translation id="4762489666082647806">لون مؤشر الماوس</translation>
 <translation id="4762718786438001384">مساحة القرص على الجهاز منخفضة للغاية</translation>

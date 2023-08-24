@@ -1748,6 +1748,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2411666601450687801">Imishini ye-virtual ayivumelekile kule divayisi</translation>
 <translation id="2412015533711271895">Umzali wakho noma umnakekeli wakho kufanele athi KULUNGILE ngawe ukusebenzisa lesi sandiso</translation>
 <translation id="2412753904894530585">I-Kerberos</translation>
+<translation id="2414159296888870200">Qhubeka nokubhrawuza <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mnyama</translation>
 <translation id="2416435988630956212">Okhiye bokusebenza kwekhibhodi</translation>
 <translation id="2418307627282545839">Gcina izinto zigqamile futhi zinomoya</translation>
@@ -1884,6 +1885,10 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946">Isi-<ph name="LANGUAGE" /> (sikhethiwe).</translation>
 <translation id="2513396635448525189">Isithombe sokungena ngemvume</translation>
+<translation id="251425554130284360">Ubona amakhasi oye wawavakashela kanye nosesho olunconyelwayo ngenjongo yokukusiza ubuyele kalula emsebenzini osanda kuwenza.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Ungalawula amasethingi kumenyu yekhadi noma ubone izinketho eziningi endaweni ethi Customize Chrome.</translation>
 <translation id="2514326558286966059">Vula ngokushesha ngezigxivizo zakho zeminwe</translation>
 <translation id="2515586267016047495">I-Alt</translation>
 <translation id="251722524540674480">Qinisekisa igama lakho lomsebenzisi</translation>
@@ -2292,6 +2297,7 @@ Ungaphatha izilungiselelo zale akhawunti ngokufaka uhlelo lokusebenza lwe-Family
 <translation id="2861402191395139055">Okubhaliselwe kwe-passpoint</translation>
 <translation id="2861941300086904918">Isiphathi sokuvikela seklayenti lomdabu</translation>
 <translation id="2862815659905780618">Susa indawo yokuthuthukiswa kwe-Linux</translation>
+<translation id="2862986593239703553">leli khadi</translation>
 <translation id="2864601841139725659">Setha isithombe sakho sephrofayela</translation>
 <translation id="2865057607286263192">Cindezela futhi ubambe okhiye bekhibhodi ukuze ubone izimpawu ze-accent nezinhlamvu ezikhethekile Lokhu kuvala ukucindezela kokhiye wokuphinda ukuze uthole okhiye bezinhlamvu. Itholakala kuphela nge-English (US).</translation>
 <translation id="2865919525181940183">Isithombe-skrini sezinhlelo manje ezikusikrini</translation>
@@ -3314,6 +3320,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Xhumana nedivayisi ye-USB}one{Xhumana namadivayisi angu-# we-USB}other{Xhumana namadivayisi angu-# we-USB}}</translation>
 <translation id="3764753550716962406">Vumela i-Google isebenzise ubhasikidi wakho ukuthola izaphulelo ezitholakalayo?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Ithumela i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}one{Ithumela i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}other{Ithumela i-<ph name="ATTACHMENTS" /> ku-<ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">lolu hlobo lwekhadi</translation>
 <translation id="3765246971671567135">Ayikwazanga ukufunda inqubomgomo yemodi yedemo engaxhunyiwe ku-inthanethi.</translation>
 <translation id="3765696567014520261">Amasayithi awakwazi ukusebenzisa amakhukhi akho ukubona umsebenzi wakho wokubhrawuza kumasayithi ahlukahlukene, ngokwesibonelo, ukuqondanisa izikhangiso nomuntu siqu. Izakhi ezikwamanye amasayithi zingase zingasebenzi</translation>
 <translation id="3766687283066842296">Funda kabanzi mayelana Nehabhu Yefoni</translation>
@@ -3975,6 +3982,7 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="4330387663455830245">Ungalokothi uhumushe isi-<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Setha izilawuli zomzali</translation>
 <translation id="4333854382783149454">I-PKCS #1 SHA-1 enokubethela kwe-RSA</translation>
+<translation id="4334768748331667190">Ngeke uphinde uyibone i-<ph name="MODULE_NAME" /></translation>
 <translation id="4336434711095810371">Sula yonke idatha</translation>
 <translation id="4339203724549370495">Khipha uhlelo lokusebenza</translation>
 <translation id="4340125850502689798">Igama lomsebenzisi elingalungile</translation>

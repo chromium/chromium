@@ -1730,6 +1730,7 @@
 <translation id="2411666601450687801">ଏହି ଡିଭାଇସରେ କୌଣସି ଭର୍ଚୁଆଲ ମେସିନକୁ ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="2412015533711271895">ଏହି ଏକ୍ସଟେନସନ ବ୍ୟବହାର କରିବା ତୁମ ପାଇଁ ଠିକ ବୋଲି ତୁମ ବାପାମା କିମ୍ବା ଅଭିଭାବକ କହିବା ଆବଶ୍ୟକ</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ପାଇଁ ବ୍ରାଉଜ କରିବା ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2416435988630956212">କୀବୋର୍ଡ ଫଙ୍କସନ୍ କୀଗୁଡ଼ିକ</translation>
 <translation id="2418307627282545839">ଜିନିଷଗୁଡ଼ିକୁ ଉଜ୍ଜ୍ୱଳ ଏବଂ ଖୋଲା ଖୋଲା ରଖନ୍ତୁ</translation>
@@ -1866,6 +1867,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ଚୟନ କରାଯାଇଛି)</translation>
 <translation id="2513396635448525189">ଲଗଇନ୍ ଛବି</translation>
+<translation id="251425554130284360">ଆପଣ ଆପଣଙ୍କ ବର୍ତ୍ତମାନର କାର୍ଯ୍ୟକଳାପକୁ ସହଜରେ ଫେରିବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ପରାମର୍ଶ କରାଯାଇଥିବା ସର୍ଚ୍ଚଗୁଡ଼ିକୁ ଦେଖୁଛନ୍ତି।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ଆପଣ କାର୍ଡ ମେନୁରୁ ସେଟିଂସକୁ ପରିଚାଳନା କରିପାରିବେ କିମ୍ବା "Chromeକୁ କଷ୍ଟମାଇଜ କରନ୍ତୁ"ରେ ଅଧିକ ବିକଳ୍ପ ଦେଖିପାରିବେ।</translation>
 <translation id="2514326558286966059">ଆପଣଙ୍କ ଟିପଚିହ୍ନ ସହ ଶୀଘ୍ର ଅନଲକ୍ କରନ୍ତୁ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ଆପଣଙ୍କ ଉପଯୋଗକର୍ତ୍ତାନାମ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -2274,6 +2279,7 @@
 <translation id="2861402191395139055">Passpoint ସଦସ୍ୟତା</translation>
 <translation id="2861941300086904918">ମୂଳ କ୍ଲାଏଣ୍ଟ ସୁରକ୍ଷା ପରିଚାଳକ</translation>
 <translation id="2862815659905780618">Linux ଡେଭଲପମେଣ୍ଟ ପରିବେଶକୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
+<translation id="2862986593239703553">ଏହି କାର୍ଡ</translation>
 <translation id="2864601841139725659">ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ୍ ଛବି ସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="2865057607286263192">ଆକ୍ସେଣ୍ଟ ମାର୍କ ଏବଂ ବିଶେଷ କେରେକ୍ଟରଗୁଡ଼ିକ ଦେଖିବା ପାଇଁ କୀବୋର୍ଡ କୀ'ଗୁଡ଼ିକୁ ଦବାଇ ଧରି ରଖନ୍ତୁ। ଏହା ବର୍ଣ୍ଣମାଳା କୀ'ଗୁଡ଼ିକ ପାଇଁ 'କୀ ଦବାଇବା ରିପିଟ କରନ୍ତୁ'କୁ ବନ୍ଦ କରେ। କେବଳ ଇଂରାଜୀ (ଯୁକ୍ତରାଷ୍ଟ୍ର ଆମେରିକା) ପାଇଁ ଉପଲବ୍ଧ।</translation>
 <translation id="2865919525181940183">ବର୍ତ୍ତମାନ ସ୍କ୍ରିନ୍‍‍ରେ ଥିବା ପ୍ରୋଗ୍ରାମ୍‍ଗୁଡ଼ିକର ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
@@ -3296,6 +3302,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ଏକ USB ଡିଭାଇସ୍ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ}other{#ଟି USB ଡିଭାଇସ୍ ସହିତ ଯୋଗାଯୋଗ କରନ୍ତୁ}}</translation>
 <translation id="3764753550716962406">ଉପଲବ୍ଧ ରିହାତିଗୁଡ଼ିକୁ ପାଇବା ପାଇଁ Googleକୁ ଆପଣଙ୍କ କାର୍ଟ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />କୁ <ph name="ATTACHMENTS" /> ପଠାଯାଉଛି}other{<ph name="DEVICE_NAME" />କୁ <ph name="ATTACHMENTS" /> ପଠାଯାଉଛି}}</translation>
+<translation id="3765055238058255342">ଏହି ପ୍ରକାରର କାର୍ଡ</translation>
 <translation id="3765246971671567135">ଅଫ୍‌ଲାଇନ୍‌ ଡେମୋ ମୋଡ୍‌ ନୀତି ପଢାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="3765696567014520261">ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପରି ବିଭିନ୍ନ ସାଇଟରେ ଆପଣଙ୍କ ବ୍ରାଉଜିଂ କାର୍ଯ୍ୟକଳାପକୁ ଦେଖିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ କୁକୀଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବ ନାହିଁ। କିଛି ସାଇଟରେ ଫିଚରଗୁଡ଼ିକ କାମ କରିନପାରେ</translation>
 <translation id="3766687283066842296">ଫୋନ ହବ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -3957,6 +3964,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" />କୁ କେବେ ହେଲେ ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="4332976768901252016">ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
 <translation id="4333854382783149454">RSA ଏନକ୍ରିପ୍ସନ୍ ସହିତ PKCS #1 SHA-1</translation>
+<translation id="4334768748331667190">ଆପଣ <ph name="MODULE_NAME" />କୁ ପୁଣି ଦେଖିବେ ନାହିଁ</translation>
 <translation id="4336434711095810371">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4339203724549370495">ଆପ୍ ଅନଇନଷ୍ଟଲ୍ କରନ୍ତୁ</translation>
 <translation id="4340125850502689798">ଉପଯୋଗକର୍ତ୍ତାଙ୍କ ନାମ ଅବୈଧ ଅଟେ</translation>

@@ -1745,6 +1745,7 @@
 <translation id="2411666601450687801">এই ডিভাইচটোত কোনো ভাৰ্ছুৱেল মেচিন ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
 <translation id="2412015533711271895">আপুনি এই এক্সটেনশ্বনটো ব্যৱহাৰ কৰিবলৈ এগৰাকী অভিভাৱকে অথবা বৈধ অভিভাৱকে আপোনাক সন্মতি দিব লাগিব</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> ব্ৰাউজ কৰা পুনৰ আৰম্ভ কৰক</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
 <translation id="2416435988630956212">কীব’ৰ্ডৰ ফাংশ্বন কী</translation>
 <translation id="2418307627282545839">বস্তুবোৰ উজ্জ্বল আৰু বায়ুপূৰ্ণকৈ ৰাখক</translation>
@@ -1881,6 +1882,10 @@
 <translation id="2509566264613697683">৮x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (বাছনি কৰা হৈছে)</translation>
 <translation id="2513396635448525189">লগইনৰ প্ৰতিচ্ছবি</translation>
+<translation id="251425554130284360">আপোনাৰ একেবাৰে শেহতীয়া কাৰ্যকলাপলৈ সহজে ঘূৰি যোৱাত সহায় কৰিবলৈ আপুনি আগতে চোৱা পৃষ্ঠা আৰু সন্ধানৰ পৰামৰ্শসমূহ দেখিছে।
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        আপুনি কাৰ্ড মেনুৰ পৰা ছেটিং পৰিচালনা কৰিব পাৰে অথবা Chrome কাষ্টমাইজ কৰকত অধিক বিকল্প চাব পাৰে।</translation>
 <translation id="2514326558286966059">আপোনাৰ ফিংগাৰপ্ৰিণ্টৰ জৰিয়তে অধিক ক্ষিপ্ৰভাৱে আনলক কৰক</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">আপোনাৰ ব্যৱহাৰকাৰীৰ নামটো নিশ্চিত কৰক</translation>
@@ -2289,6 +2294,7 @@
 <translation id="2861402191395139055">পাছপইণ্টৰ ছাবস্ক্ৰিপশ্বন</translation>
 <translation id="2861941300086904918">স্থানীয় ক্লায়েণ্টৰ সুৰক্ষা পৰিচালক</translation>
 <translation id="2862815659905780618">Linux বিকাশৰ পৰিবেশ আঁতৰাওক</translation>
+<translation id="2862986593239703553">এই কাৰ্ডখন</translation>
 <translation id="2864601841139725659">আপোনাৰ প্ৰ'ফাইলৰ চিত্ৰ ছেট কৰক</translation>
 <translation id="2865057607286263192">উচ্চাৰণ চিহ্ন আৰু বিশেষ বৰ্ণ চাবলৈ কীব’ৰ্ডৰ কীবোৰ টিপি ধৰি ৰাখক। এইটোৱে বৰ্ণমালাৰ কীসমূহৰ বাবে কী টিপাটো পুনৰাবৃত্তি কৰাটো অফ কৰে। কেৱল ইংৰাজীত (যুক্তৰাষ্ট্ৰ) উপলব্ধ।</translation>
 <translation id="2865919525181940183">স্ক্রীনখনত বৰ্তমান থকা প্ৰ’গ্ৰামসমূহৰ স্ক্ৰীনশ্বট</translation>
@@ -3311,6 +3317,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB ডিভাইচটোৰ সৈতে যোগাযোগ কৰক}one{#টা USB ডিভাইচৰ সৈতে যোগাযোগ কৰক}other{#টা USB ডিভাইচৰ সৈতে যোগাযোগ কৰক}}</translation>
 <translation id="3764753550716962406">উপলব্ধ ৰেহাইসমূহ বিচাৰি পাবলৈ Googleক আপোনাৰ কার্টখন ব্যৱহাৰ কৰিবলৈ দিবনে?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}one{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}other{<ph name="DEVICE_NAME" />লৈ <ph name="ATTACHMENTS" /> পঠিয়াই থকা হৈছে}}</translation>
+<translation id="3765055238058255342">এই ধৰণৰ কাৰ্ড</translation>
 <translation id="3765246971671567135">অফলাইন ডেম’ ম’ডৰ নীতি পঢ়িব নোৱাৰিলে।</translation>
 <translation id="3765696567014520261">বিভিন্ন ছাইটত আপোনাৰ ব্ৰাউজিঙৰ কাৰ্যকলাপ চাবলৈ ছাইটসমূহে আপোনাৰ কুকিসমূহ ব্যৱহাৰ কৰিব নোৱাৰে, যেনে, বিজ্ঞাপন ব্যক্তিগতকৰণ কৰিবলৈ। কিছুমান ছাইটত সুবিধাসমূহে কাম নকৰিবও পাৰে</translation>
 <translation id="3766687283066842296">ফ’ন হাবৰ বিষয়ে অধিক জানক</translation>
@@ -3972,6 +3979,7 @@
 <translation id="4330387663455830245">কেতিয়াও <ph name="LANGUAGE" />লৈ অনুবাদ নকৰিব</translation>
 <translation id="4332976768901252016">অভিভাৱকীয় নিয়ন্ত্ৰণসমূহ ছেট আপ কৰক</translation>
 <translation id="4333854382783149454">RSA এনক্ৰিপশ্বনৰ সৈতে PKCS #1 SHA-1</translation>
+<translation id="4334768748331667190">আপুনি <ph name="MODULE_NAME" /> পুনৰ দেখা নাপায়</translation>
 <translation id="4336434711095810371">সকলো ডেটা মচক</translation>
 <translation id="4339203724549370495">এপ্ আনইনষ্টল কৰক</translation>
 <translation id="4340125850502689798">ব্যৱহাৰকাৰীৰ নামটো অমান্য</translation>

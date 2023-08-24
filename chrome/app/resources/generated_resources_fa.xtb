@@ -1744,6 +1744,7 @@
 <translation id="2411666601450687801">هیچ «ماشین مجازی‌ای» در این دستگاه مجاز نیست</translation>
 <translation id="2412015533711271895">ولی یا سرپرستتان باید تأیید کند که می‌توانید از این افزونه استفاده کنید</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">ازسر گرفتن مرور <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">تاریک</translation>
 <translation id="2416435988630956212">کلیدهای عملکرد صفحه‌کلید</translation>
 <translation id="2418307627282545839">روشن و دلباز</translation>
@@ -1880,6 +1881,10 @@
 <translation id="2509566264613697683">۸ برابر</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (انتخاب شده است)</translation>
 <translation id="2513396635448525189">تصویر ورود به سیستم</translation>
+<translation id="251425554130284360">‏صفحه‌هایی را که بازدید کرده‌اید و جستجوهای پیشنهادی را در اینجا می‌بینید تا به شما کمک کند به‌راحتی به فعالیت اخیر خود برگردید.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        از منوِ کارت می‌توانید تنظیمات را مدیریت کنید یا در «سفارشی کردن Chrome» گزینه‌های بیشتری را ببینید.</translation>
 <translation id="2514326558286966059">باز کردن سریع‌تر قفل با اثر انگشت</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">نام کاربری‌تان را تأیید کنید</translation>
@@ -2288,6 +2293,7 @@
 <translation id="2861402191395139055">‏اشتراک‌های Passpoint</translation>
 <translation id="2861941300086904918">‏مدیر امنیت Native Client</translation>
 <translation id="2862815659905780618">‏برداشتن محیط برنامه‌نویسی Linux</translation>
+<translation id="2862986593239703553">این کارت</translation>
 <translation id="2864601841139725659">عکس نمایه اضافه کنید</translation>
 <translation id="2865057607286263192">برای دیدن نشانه‌های تکیه و نویسه‌های خاص، کلیدهای صفحه‌کلید را فشار دهید و نگه دارید. با این کار، تکرار فشار دادن کلید برای کلیدهای حرفی غیرفعال می‌شود. فقط برای انگلیسی (ایالات متحده) دردسترس است.</translation>
 <translation id="2865919525181940183">نماگرفت برنامه‌هایی که درحال‌حاضر روی صفحه هستند</translation>
@@ -3310,6 +3316,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{‏ارتباط با یک دستگاه USB}one{‏ارتباط با # دستگاه USB}other{‏ارتباط با # دستگاه USB}}</translation>
 <translation id="3764753550716962406">‏آیا به Google اجازه می‌دهید از سبد خریدتان برای پیدا کردن تخفیف‌های دردسترس استفاده کند؟</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}one{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}other{درحال ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">این نوع کارت</translation>
 <translation id="3765246971671567135">خط‌مشی آفلاین حالت نمایشی خوانده نشد.</translation>
 <translation id="3765696567014520261">سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرورتان در سایت‌های مختلف برای اهدافی مثل شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکنند</translation>
 <translation id="3766687283066842296">درباره «مرکز کنترل تلفن» بیشتر بدانید</translation>
@@ -3972,6 +3979,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> هرگز ترجمه نشود</translation>
 <translation id="4332976768901252016">راه‌اندازی کنترل‌های والدین</translation>
 <translation id="4333854382783149454">‏PKCS #1 SHA-1 با رمزگذاری RSA</translation>
+<translation id="4334768748331667190">دیگر <ph name="MODULE_NAME" /> را نخواهید دید</translation>
 <translation id="4336434711095810371">پاک کردن همه داده‌ها</translation>
 <translation id="4339203724549370495">حذف نصب برنامه</translation>
 <translation id="4340125850502689798">نام کاربری نامعتبر است</translation>

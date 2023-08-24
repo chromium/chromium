@@ -1743,6 +1743,7 @@
 <translation id="2411666601450687801">Энэ төхөөрөмжид ямар ч виртуал машиныг зөвшөөрөөгүй</translation>
 <translation id="2412015533711271895">Таны эцэг эх эсвэл асран хамгаалагч таныг энэ өргөтгөлийг ашиглаж БОЛНО гэж хэлэх ёстой</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" />-г үргэлжлүүлэн үзнэ үү</translation>
 <translation id="2414886740292270097">Хар</translation>
 <translation id="2416435988630956212">Гарын функцийн түлхүүр</translation>
 <translation id="2418307627282545839">Зүйлсийг гэрэлтэй бөгөөд зөөлөн байлгаарай</translation>
@@ -1879,6 +1880,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (сонгосон)</translation>
 <translation id="2513396635448525189">Нэвтрэх зураг</translation>
+<translation id="251425554130284360">Та зочилсон хуудаснуудаа харж байгаа бөгөөд санал болгосон хайлтууд нь танд хамгийн сүүлийн үйл ажиллагаа руугаа хялбархан буцахад тусална.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
 <translation id="2514326558286966059">Хурууны хээгээрээ түгжээг илүү хурдан тайлаарай</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Хэрэглэгчийн нэрээ баталгаажуулна уу</translation>
@@ -2287,6 +2292,7 @@
 <translation id="2861402191395139055">Passpoint-н захиалга</translation>
 <translation id="2861941300086904918">Native Client security manager</translation>
 <translation id="2862815659905780618">Linux-н хөгжүүлэлтийн орчныг хасах</translation>
+<translation id="2862986593239703553">энэ карт</translation>
 <translation id="2864601841139725659">Профайл зургаа тохируулах</translation>
 <translation id="2865057607286263192">Өргөлтийн тэмдгүүд болон тусгай тэмдэгтүүдийг харахын тулд гарын товчийг удаан дарна уу. Энэ нь үсгийн товчнуудын товчийн давтагдсан даралтыг унтраана. Зөвхөн англи хэлээр (АНУ) боломжтой.</translation>
 <translation id="2865919525181940183">Одоогоор дэлгэц дээр байгаа програмуудын дэлгэцийн зураг</translation>
@@ -3309,6 +3315,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ USB төхөөрөмжөөр харилцах}other{ # USB төхөөрөмжүүдээр харилцах}}</translation>
 <translation id="3764753550716962406">Google-д таны сагсыг боломжтой хөнгөлөлтүүд олоход ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж байна}other{<ph name="ATTACHMENTS" />-г <ph name="DEVICE_NAME" /> руу илгээж байна}}</translation>
+<translation id="3765055238058255342">энэ төрлийн карт</translation>
 <translation id="3765246971671567135">Офлайн демо горимын удирдамжийг уншиж чадсангүй.</translation>
 <translation id="3765696567014520261">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр сайт дээрх таны хөтчийн үйл ажиллагааг харах зорилгоор таны күүкиг ашиглах боломжгүй. Зарим сайтын онцлогууд ажиллахгүй байж магадгүй</translation>
 <translation id="3766687283066842296">Phone Hub-н талаар нэмэлт мэдээлэл авах</translation>
@@ -3970,6 +3977,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" />-г хэзээ ч бүү орчуул</translation>
 <translation id="4332976768901252016">Эцэг эхийн хяналтыг тохируулах</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 RSA Кодлолтой</translation>
+<translation id="4334768748331667190">Та <ph name="MODULE_NAME" />-г дахиж харахгүй</translation>
 <translation id="4336434711095810371">Бүх өгөгдлийг устгах</translation>
 <translation id="4339203724549370495">Аппыг устгах</translation>
 <translation id="4340125850502689798">Хэрэглэгчийн нэр буруу байна</translation>

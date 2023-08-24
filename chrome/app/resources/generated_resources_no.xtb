@@ -1742,6 +1742,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2411666601450687801">Ingen virtuelle maskiner er tillatt på denne enheten</translation>
 <translation id="2412015533711271895">En forelder eller foresatt må gi deg lov til å bruke denne utvidelsen</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Gjenoppta surfingen for <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2416435988630956212">Funksjonstaster på tastaturet</translation>
 <translation id="2418307627282545839">Hold det lett og luftig</translation>
@@ -1878,6 +1879,10 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (valgt)</translation>
 <translation id="2513396635448525189">Påloggingsbilde</translation>
+<translation id="251425554130284360">Du ser sider du har besøkt, og foreslåtte søk, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan administrere innstillinger via kortmenyen eller se flere alternativer i Tilpass Chrome.</translation>
 <translation id="2514326558286966059">Lås opp raskere med fingeravtrykk</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Bekreft brukernavnet ditt</translation>
@@ -2286,6 +2291,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2861402191395139055">Passpoint-abonnementer</translation>
 <translation id="2861941300086904918">Sikkerhetsadministrator for Native Client</translation>
 <translation id="2862815659905780618">Fjern Linux-utviklingsmiljø</translation>
+<translation id="2862986593239703553">dette kortet</translation>
 <translation id="2864601841139725659">Angi profilbildet ditt</translation>
 <translation id="2865057607286263192">Trykk og hold på tastaturtastene for å se aksenttegn og spesialtegn. Dette medfører at gjentakende tastetrykk blir slått av for alfabettaster. Bare tilgjengelig på engelsk (USA).</translation>
 <translation id="2865919525181940183">Skjermdump av programmene som er på skjermen</translation>
@@ -3308,6 +3314,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{kommunisere med én USB-enhet}other{kommunisere med # USB-enheter}}</translation>
 <translation id="3764753550716962406">Vil du la Google bruke handlevognen din til å finne tilgjengelige rabatter?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Sender <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}other{Sender <ph name="ATTACHMENTS" /> til <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">denne typen kort</translation>
 <translation id="3765246971671567135">Kunne ikke lese regelen for demomodus uten nett.</translation>
 <translation id="3765696567014520261">Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
 <translation id="3766687283066842296">Finn ut mer om Telefonstyring</translation>
@@ -3968,6 +3975,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4330387663455830245">Oversett aldri <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Konfigurer foreldrekontroll</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 med RSA-kryptering</translation>
+<translation id="4334768748331667190">Du kommer ikke til å se <ph name="MODULE_NAME" /> mer</translation>
 <translation id="4336434711095810371">Slett alle data</translation>
 <translation id="4339203724549370495">Avinstaller appen</translation>
 <translation id="4340125850502689798">Ugyldig brukernavn</translation>

@@ -1746,6 +1746,7 @@
 <translation id="2411666601450687801">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ເຄື່ອງຈັກສະເໝືອນຢູ່ອຸປະກອນນີ້</translation>
 <translation id="2412015533711271895">ພໍ່ແມ່ ຫຼື ຜູ້ປົກຄອງຂອງທ່ານຕ້ອງຕອບຕົກລົງກ່ອນ ທ່ານຈຶ່ງຈະສາມາດໃຊ້ສ່ວນຂະຫຍາຍນີ້ໄດ້</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">ສືບຕໍ່ເລືອກເບິ່ງສຳລັບ <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">ມືດ</translation>
 <translation id="2416435988630956212">ປຸ່ມຟັງຊັນໃນແປ້ນພິມ</translation>
 <translation id="2418307627282545839">ເຮັດໃຫ້ສິ່ງຕ່າງໆແຈ້ງ ແລະ ເບິ່ງສະບາຍ</translation>
@@ -1882,6 +1883,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ເລືອກແລ້ວ)</translation>
 <translation id="2513396635448525189">ຮູບການເຂົ້າສູ່ລະບົບ</translation>
+<translation id="251425554130284360">ສິ່ງທີ່ເຫັນນີ້ແມ່ນໜ້າເວັບທີ່ທ່ານເຄີຍເຂົ້າເບິ່ງ ແລະ ການຊອກຫາທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບຄືນໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍ.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        ທ່ານສາມາດຈັດການການຕັ້ງຄ່າໄດ້ຈາກເມນູບັດ ຫຼື ເບິ່ງຕົວເລືອກເພີ່ມເຕີມໄດ້ໃນປັບແຕ່ງ Chrome.</translation>
 <translation id="2514326558286966059">ປົດລັອກໄດ້ໄວຂຶ້ນດ້ວຍລາຍນິ້ວມືຂອງທ່ານ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ຢືນຢັນຊື່ຜູ້ໃຊ້ຂອງທ່ານ</translation>
@@ -2290,6 +2295,7 @@
 <translation id="2861402191395139055">ການສະໝັກໃຊ້ Passpoint</translation>
 <translation id="2861941300086904918">ຕົວຈັດການຄວາມປອດໄພລູກຂ່າຍເດີມ</translation>
 <translation id="2862815659905780618">ລຶບສະພາບແວດລ້ອມການພັດທະນາ Linux ອອກ</translation>
+<translation id="2862986593239703553">ບັດໃບນີ້</translation>
 <translation id="2864601841139725659">ຕັ້ງຄ່າຮູບໂປຣໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="2865057607286263192">ກົດປຸ່ມແປ້ນພິມຄ້າງໄວ້ເພື່ອເບິ່ງເຄື່ອງໝາຍສຳນຽງ ແລະ ຕົວອັກສອນພິເສດ. ການດຳເນີນການນີ້ຈະປິດການກົດປຸ່ມຊ້ຳສຳລັບປຸ່ມຕົວອັກສອນ. ພ້ອມໃຫ້ນຳໃຊ້ສຳລັບພາສາອັງກິດ (ສະຫະລັດ) ເທົ່ານັ້ນ.</translation>
 <translation id="2865919525181940183">ພາບໜ້າຈໍຂອງໂປຣແກຣມທີ່ປັດຈຸບັນຢູ່ໃນໜ້າຈໍ</translation>
@@ -3312,6 +3318,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{ສື່​ສານ​ກັບອຸ​ປະ​ກອນ USB ໃດໜຶ່ງ}other{ສື່​ສານ​ກັບ # ອຸ​ປະ​ກອນ USB}}</translation>
 <translation id="3764753550716962406">ໃຫ້ Google ໃຊ້ກະຕ່າຂອງທ່ານເພື່ອຊອກຫາສ່ວນຫຼຸດທີ່ສາມາດໃຊ້ໄດ້ບໍ?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{ກຳລັງສົ່ງ <ph name="ATTACHMENTS" /> ຫາ <ph name="DEVICE_NAME" />}other{ກຳລັງສົ່ງ <ph name="ATTACHMENTS" /> ຫາ <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">ບັດປະເພດນີ້</translation>
 <translation id="3765246971671567135">ບໍ່ສາມາດອ່ານນະໂຍບາຍໂໝດສາທິດອອບລາຍໄດ້.</translation>
 <translation id="3765696567014520261">ເວັບໄຊບໍ່ສາມາດໃຊ້ຄຸກກີ້ຂອງທ່ານເພື່ອເບິ່ງການເຄື່ອນໄຫວການທ່ອງເວັບຂອງທ່ານໃນເວັບໄຊຕ່າງໆໄດ້, ຕົວຢ່າງ: ເພື່ອປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວ. ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ</translation>
 <translation id="3766687283066842296">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ Phone Hub</translation>
@@ -3974,6 +3981,7 @@
 <translation id="4330387663455830245">ຢ່າແປ <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">ຕັ້ງຄ່າການຄວບຄຸມສຳລັບພໍ່ແມ່</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 ດ້ວຍການໃສ່ລະຫັດ RSA</translation>
+<translation id="4334768748331667190">ທ່ານຈະບໍ່ເຫັນ <ph name="MODULE_NAME" /> ອີກ</translation>
 <translation id="4336434711095810371">ລຶບລ້າງຂໍ້ມູນທັງໝົດ</translation>
 <translation id="4339203724549370495">ຖອນການຕິດຕັ້ງແອັບ</translation>
 <translation id="4340125850502689798">ຊື່ຜູ້ໃຊ້ບໍ່ຖືກຕ້ອງ</translation>

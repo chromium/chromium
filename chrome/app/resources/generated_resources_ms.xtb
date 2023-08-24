@@ -1747,6 +1747,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2411666601450687801">Tiada Mesin Maya dibenarkan pada peranti ini</translation>
 <translation id="2412015533711271895">Ibu/bapa atau penjaga anda perlu memberikan kebenaran untuk anda menggunakan sambungan ini</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Teruskan menyemak imbas untuk <ph name="MODULE_TITLE" /></translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2416435988630956212">Kekunci fungsi papan kekunci</translation>
 <translation id="2418307627282545839">Pastikan imej terang dan jelas</translation>
@@ -1883,6 +1884,10 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (dipilih)</translation>
 <translation id="2513396635448525189">Imej log masuk</translation>
+<translation id="251425554130284360">Anda sedang melihat halaman yang telah anda lawati dan carian cadangan untuk memudahkan anda kembali kepada aktiviti terbaharu anda.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Anda boleh mengurus tetapan daripada menu kad atau melihat lebih banyak pilihan dalam Sesuaikan Chrome.</translation>
 <translation id="2514326558286966059">Buka kunci dengan lebih cepat menggunakan cap jari anda</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Sahkan nama pengguna anda</translation>
@@ -2291,6 +2296,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2861402191395139055">Langganan Passpoint</translation>
 <translation id="2861941300086904918">Pengurus keselamatan Klien Asli</translation>
 <translation id="2862815659905780618">Alih keluar persekitaran pembangunan Linux</translation>
+<translation id="2862986593239703553">kad ini</translation>
 <translation id="2864601841139725659">Tetapkan gambar profil anda</translation>
 <translation id="2865057607286263192">Tekan &amp; tahan kunci papan kekunci untuk melihat tanda aksen dan aksara khas. Tindakan ini akan mematikan tekan kekunci berulang untuk kekunci abjad. Hanya tersedia untuk bahasa Inggeris (AS).</translation>
 <translation id="2865919525181940183">Tangkapan skrin atur cara yang sedang dipaparkan pada skrin</translation>
@@ -3313,6 +3319,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Berkomunikasi dengan peranti USB}other{Berkomunikasi dengan # peranti USB}}</translation>
 <translation id="3764753550716962406">Benarkan Google menggunakan troli anda untuk mencari diskaun yang tersedia?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Menghantar <ph name="ATTACHMENTS" /> kepada <ph name="DEVICE_NAME" />}other{Menghantar <ph name="ATTACHMENTS" /> kepada <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">jenis kad ini</translation>
 <translation id="3765246971671567135">Tidak dapat membaca dasar mod tunjuk cara luar talian.</translation>
 <translation id="3765696567014520261">Laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada laman lain, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
 <translation id="3766687283066842296">Ketahui lebih lanjut tentang Hab Telefon</translation>
@@ -3975,6 +3982,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4330387663455830245">Jangan Sekali-kali Terjemahkan <ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">Sediakan Kawalan Ibu Bapa</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 Dengan Penyulitan RSA</translation>
+<translation id="4334768748331667190">Anda tidak akan melihat <ph name="MODULE_NAME" /> lagi</translation>
 <translation id="4336434711095810371">Kosongkan semua data</translation>
 <translation id="4339203724549370495">Nyahpasang apl</translation>
 <translation id="4340125850502689798">Nama pengguna tidak sah</translation>

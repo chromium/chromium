@@ -1750,6 +1750,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2411666601450687801">Šiame įrenginyje negalima naudoti virtualiųjų įrenginių</translation>
 <translation id="2412015533711271895">Vienas iš tėvų arba globėjų turi patvirtinti, kad galite naudoti šį plėtinį</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">Tęsti naršymą pagal „<ph name="MODULE_TITLE" />“</translation>
 <translation id="2414886740292270097">Tamsi</translation>
 <translation id="2416435988630956212">Klaviatūros funkcijų klavišai</translation>
 <translation id="2418307627282545839">Ryškus ir nuotaikingas režimas</translation>
@@ -1886,6 +1887,10 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2509566264613697683">8 k.</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (pasirinkta)</translation>
 <translation id="2513396635448525189">Prisijungimo vaizdas</translation>
+<translation id="251425554130284360">Matote puslapius, kuriuose lankėtės, ir siūlomas paieškas, kad galėtumėte lengvai grįžti prie naujausios veiklos.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Galite tvarkyti nustatymus kortelės meniu arba peržiūrėti daugiau parinkčių skiltyje „Chrome“ tinkinimas“.</translation>
 <translation id="2514326558286966059">Atrakinkite greičiau kontroliniu kodu</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">Naudotojo vardo patvirtinimas</translation>
@@ -2294,6 +2299,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2861402191395139055">„Passpoint“ prenumeratos</translation>
 <translation id="2861941300086904918">„Native Client“ saugos valdytojas</translation>
 <translation id="2862815659905780618">Pašalinti „Linux“ kūrimo aplinką</translation>
+<translation id="2862986593239703553">ši kortelė</translation>
 <translation id="2864601841139725659">Profilio nuotraukos nustatymas</translation>
 <translation id="2865057607286263192">Paspauskite ir palaikykite klaviatūros klavišus, kad pamatytumėte kirčio ir specialiuosius ženklus. Taip išjungiamas pakartotinis abėcėlės klavišų paspaudimas. Pasiekiama tik anglų k. (JAV).</translation>
 <translation id="2865919525181940183">Šiuo metu ekrane rodomų programų ekrano kopija</translation>
@@ -3316,6 +3322,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Užmegzti ryšį su USB įrenginiu}one{Užmegzti ryšį su # USB įrenginiu}few{Užmegzti ryšį su # USB įrenginiais}many{Užmegzti ryšį su # USB įrenginio}other{Užmegzti ryšį su # USB įrenginių}}</translation>
 <translation id="3764753550716962406">Leisti „Google“ naudoti krepšelį pasiekiamoms nuolaidoms ieškoti?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{Siunčiamas turinys (<ph name="ATTACHMENTS" />) į „<ph name="DEVICE_NAME" />“ įrenginį}one{Siunčiamas turinys (<ph name="ATTACHMENTS" />) į „<ph name="DEVICE_NAME" />“ įrenginį}few{Siunčiamas turinys (<ph name="ATTACHMENTS" />) į „<ph name="DEVICE_NAME" />“ įrenginį}many{Siunčiamas turinys (<ph name="ATTACHMENTS" />) į „<ph name="DEVICE_NAME" />“ įrenginį}other{Siunčiamas turinys (<ph name="ATTACHMENTS" />) į „<ph name="DEVICE_NAME" />“ įrenginį}}</translation>
+<translation id="3765055238058255342">šio tipo kortelė</translation>
 <translation id="3765246971671567135">Nepavyko nuskaityti neprisijungus pasiekiamos demonstracinio režimo politikos.</translation>
 <translation id="3765696567014520261">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse</translation>
 <translation id="3766687283066842296">Sužinokite daugiau apie „Phone Hub“</translation>
@@ -3978,6 +3985,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4330387663455830245">Niekada neversti <ph name="LANGUAGE" /> k.</translation>
 <translation id="4332976768901252016">Tėvų kontrolės nustatymas</translation>
 <translation id="4333854382783149454">PKCS Nr. 1 SHA-1 su RSA šifruote</translation>
+<translation id="4334768748331667190">Nebematysite „<ph name="MODULE_NAME" />“</translation>
 <translation id="4336434711095810371">Išvalyti visus duomenis</translation>
 <translation id="4339203724549370495">Pašalinti programą</translation>
 <translation id="4340125850502689798">Neteisingas naudotojo vardas</translation>

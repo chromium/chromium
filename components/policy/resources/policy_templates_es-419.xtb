@@ -3345,7 +3345,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
       La configuración de esta política como inhabilitada permitirá el uso de SPDY.
 
       Si esta política se deja sin configurar, SPDY estará disponible.</translation>
-<translation id="3887529334667818189">Las exploraciones podrán verse en chrome://history/journeys de forma predeterminada, y los usuarios pueden cambiar la visibilidad de las exploraciones</translation>
 <translation id="3889458462150559611">Permitir que los sitios web envíen solicitudes a cualquier extremo de red de forma no segura</translation>
 <translation id="388999630001435491">Permitir que <ph name="PRODUCT_NAME" /> solo se conecte a dispositivos con direcciones IP privadas</translation>
 <translation id="3891175633496805812">Inhabilitar el controlador de telemetría y diagnósticos wilco</translation>
@@ -3471,7 +3470,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
       Si estableces esta política como verdadera, se cerrará la notificación de advertencia de privacidad después de unos segundos.
 
       Si la estableces como falsa o no la estableces, se fijará la notificación de advertencia de privacidad hasta que el usuario la descarte.</translation>
-<translation id="4008395195135046807">Las exploraciones podrán verse en chrome://history/journeys</translation>
 <translation id="4008507541867797979">Si se establece esta política como verdadera, o no se establece, <ph name="PRODUCT_OS_NAME" /> mostrará a los usuarios existentes en la pantalla de acceso y permitirá elegir uno.
 
       Si se establece como falsa, <ph name="PRODUCT_OS_NAME" /> no mostrará a los usuarios existentes en la pantalla de acceso. Se mostrará la pantalla de acceso normal (en la que se solicita el correo electrónico y la contraseña o el teléfono del usuario) o la pantalla intersticial SAML (si se habilita a través de la política <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a menos que se configure una sesión administrada. Si ese es el caso, solo se mostrarán las cuentas de la sesión administrada, donde se podrá elegir una.
@@ -4656,7 +4654,6 @@ Si no se establece esta política o se establece como verdadera, los informes so
 <translation id="5130935469849337738">Ofrecer siempre la traducción</translation>
 <translation id="5141670636904227950">Establece el tipo de lupa predeterminado habilitado en la pantalla de acceso.</translation>
 <translation id="5142301680741828703">Siempre procesar los siguientes patrones de URL en <ph name="PRODUCT_FRAME_NAME" /></translation>
-<translation id="5143258831402123447">Las exploraciones no podrán verse en chrome://history/journeys</translation>
 <translation id="514870861066611127">Esta política controla el envío de los datos que permiten identificar a los usuarios, como el acceso al SO, el acceso al perfil de <ph name="PRODUCT_NAME" />, el nombre de perfil de <ph name="PRODUCT_NAME" />, la ruta de acceso al perfil de <ph name="PRODUCT_NAME" /> y la ruta ejecutable de <ph name="PRODUCT_NAME" />.
 
       Si no estableces la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o la inhabilitas, se ignorará.
@@ -4713,16 +4710,6 @@ Si no se establece esta política o se establece como verdadera, los informes so
 <translation id="5179853299156742425">URL desde la cual se puede descargar la plantilla de escritorio.</translation>
 <translation id="5182055907976889880">Configura Google Drive en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Ubicar la biblioteca en el lado derecho de la pantalla</translation>
-<translation id="5184298474980725716">Esta política controla la visibilidad de las exploraciones en la página del historial de Chrome.
-
-      Si habilitas la política, las exploraciones podrán verse en chrome://history/journeys.
-
-      Si inhabilitas la política, las exploraciones no podrán verse en chrome://history/journeys.
-
-      Si no estableces la política, las exploraciones podrán verse en chrome://history/journeys de forma predeterminada, y los usuarios podrán cambiar la visibilidad de las exploraciones.
-
-      Ten en cuenta que si inhabilitas la política <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />, pero habilitas o no estableces <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />, las exploraciones seguirán estando disponibles en chrome://history/journeys, aunque es posible que no aparezcan en el cuadro multifunción y sean menos relevantes para el usuario.
-      </translation>
 <translation id="51859390023061147">Inhabilitar la función de restauración completa</translation>
 <translation id="5189360528842591274">Permitir la conexión solo con los servicios de Bluetooth que se especifican en la lista</translation>
 <translation id="5190426551516379357">Si estableces la política, se aplicará un Modo restringido mínimo en YouTube, y se impedirá que los usuarios seleccionen un modo menos restringido. Según el comportamiento buscado, establece alguno de los siguientes valores para esta política.
@@ -7358,7 +7345,6 @@ Si la inhabilitas, no aparecerán las advertencias de seguridad cuando se inicie
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
 En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias administradas con MDM, vinculadas a un dominio a través de MCX o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="7403217961820363141">Mostrar exploraciones en la página del historial de Chrome</translation>
 <translation id="7406039009275722824">Si inhabilitas <ph name="CHROME_SYNC_NAME" />, el servicio Copia de seguridad y restablecimiento de Android dejará de funcionar de manera adecuada.</translation>
 <translation id="7406276857470642718">Controla la configuración para los usuarios autenticados mediante SAML con un IdP externo</translation>
 <translation id="7407441173422042771">Esta política controla la predicción de red en <ph name="PRODUCT_NAME" />. Controla la precarga de DNS, la preconexión a TCP y SSL, y la representación previa de páginas web.

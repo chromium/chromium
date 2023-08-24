@@ -2181,6 +2181,7 @@
 
       警告：不得将 <ph name="PRODUCT_OS_NAME" />的版本控制权委派给自助服务终端应用，否则这可能会阻止设备获取软件更新和重要的安全修补程序。委派 <ph name="PRODUCT_OS_NAME" /> 版本控制权可能会将用户置于风险之中。</translation>
 <translation id="2989404644164421834">重新加载页面</translation>
+<translation id="299104951237091027">chrome://history/2 中不会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="299446489108785864">以列表形式指定 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 会应用于哪些网址。此政策对用户设定的自动打开值没有任何影响。
 
       如果您设置了此政策，那么仅当文件的网址包含在列表中且文件类型已列在 <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME" /> 中时，相应文件才会依照此政策自动打开。如果不符合上述任一条件，下载内容便不会依照此政策自动打开。
@@ -2969,6 +2970,7 @@
 <translation id="3625900437628963632">此字段指定是否记住此策略项中设置的 Kerberos 密码值。如果此字段未设置或设为 true，系统会记住密码。如果此字段设为 false，系统不会记住密码。如果未为此账号指定密码字段，系统会忽略该属性。从 ChromeOS 116 版开始，系统支持此字段。</translation>
 <translation id="3627678165642179114">启用或停用拼写检查网络服务</translation>
 <translation id="3628480121685794414">启用单面打印</translation>
+<translation id="3632122147977480546">chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="3634117682099473917">此政策用于指定所需 DNS-over-HTTPS 解析器的 URI 模板。若要指定多个 DNS-over-HTTPS 解析器，请使用空格分隔相应的 URI 模板。此政策与 <ph name="DOH_TEMPLATES_POLICY_NAME" /> 非常相似，并会覆盖后者（若已指定）。与后者不同的是，此政策支持指定身份信息。
 
 如果 <ph name="DOH_MODE_POLICY_NAME" /> 设为 <ph name="SECURE_DNS_MODE_SECURE" />，则必须设置此政策或 <ph name="DOH_TEMPLATES_POLICY_NAME" />，不得将这两者都留空。
@@ -3257,7 +3259,6 @@
       如果停用此政策，将可以使用 SPDY 协议。
 
       如果未设置此政策，将可以使用 SPDY 协议。</translation>
-<translation id="3887529334667818189">历程将会默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的可见性设置。</translation>
 <translation id="3889458462150559611">允许网站以不安全的方式向任何网络端点发送请求。</translation>
 <translation id="388999630001435491">允许 <ph name="PRODUCT_NAME" /> 仅连接到位于专用 IP 地址的设备</translation>
 <translation id="3891175633496805812">停用 Wilco 诊断和遥测控制器</translation>
@@ -3382,7 +3383,6 @@
       如果此政策设为 True，系统会在隐私权警告通知显示了数秒后关闭它。
 
       如果此政策设为 False 或未设置，系统则会将隐私权警告通知固定在屏幕上，直到用户关闭它为止。</translation>
-<translation id="4008395195135046807">将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="4008507541867797979">如果此政策设为 true 或未配置，<ph name="PRODUCT_OS_NAME" />将会在登录屏幕上显示现有用户并允许选择其一。
 
       如果此政策设为 false，<ph name="PRODUCT_OS_NAME" />将不会在登录屏幕上显示现有用户。除非配置了受管理自助服务终端，否则系统将会显示标准登录屏幕（提示用户输入电子邮件地址和密码/手机号码）或 SAML 插页式屏幕（若已通过 <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" /> 政策启用的话）。如果配置了受管理自助服务终端，系统将仅会显示受管理自助服务终端账号并允许选择其一。
@@ -4215,6 +4215,7 @@
       如果停用此设置，用户将无法选择启用 Phone Hub 功能。
 
       如果未设置此政策，则默认情况下，受企业管理的用户无法选择启用 Phone Hub 功能，但不受管理的用户可以选择启用该功能。</translation>
+<translation id="4774499365794632139">默认情况下，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。</translation>
 <translation id="4783415902268741066">允许在浏览器侧边栏中显示默认搜索引擎的最新搜索结果页面</translation>
 <translation id="4786784434769279324">在计算机处于闲置状态时要运行的操作</translation>
 <translation id="4787763197941188108">替换默认打印页面大小。
@@ -4510,7 +4511,6 @@
 <translation id="5130935469849337738">一律提供翻译</translation>
 <translation id="5141670636904227950">设置登录屏幕上启用的默认放大镜类型</translation>
 <translation id="5142301680741828703">总是通过“<ph name="PRODUCT_FRAME_NAME" />”呈现以下网址格式</translation>
-<translation id="5143258831402123447">不将历程显示在 chrome://history/journeys 页面上。</translation>
 <translation id="514870861066611127">此政策旨在控制是否报告可用于识别用户身份的信息，例如操作系统登录、<ph name="PRODUCT_NAME" /> 个人资料登录、<ph name="PRODUCT_NAME" /> 个人资料名称、<ph name="PRODUCT_NAME" /> 个人资料路径和 <ph name="PRODUCT_NAME" /> 可执行文件路径。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。
@@ -4567,16 +4567,6 @@
 <translation id="5179853299156742425">可供下载桌面模板的网址。</translation>
 <translation id="5182055907976889880">在 <ph name="PRODUCT_OS_NAME" />中配置 Google 云端硬盘。</translation>
 <translation id="5182483318861266793">将文件架放置到屏幕右侧</translation>
-<translation id="5184298474980725716">此政策用于控制是否将历程显示在“Chrome 历史记录”页面上。
-
-      如果此政策已启用，历程将会显示在 chrome://history/journeys 页面上。
-
-      如果此政策已停用，历程将不会显示在 chrome://history/journeys 页面上。
-
-      如果将此政策保留未设置状态，历程将默认显示在 chrome://history/journeys 页面上，但用户可以更改历程的显示设置。
-
-      请注意，如果 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策已停用，但 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> 已启用或保留未设置状态，历程仍会显示在 chrome://history/journeys 页面上，但可能不会显示在多功能框中，而且与用户的相关程度会变低。
-      </translation>
 <translation id="51859390023061147">停用“完全还原”功能。</translation>
 <translation id="5189360528842591274">仅允许连接到此列表中的蓝牙服务</translation>
 <translation id="5190426551516379357">通过设置此政策，您可以强制启用最基本的 YouTube 受限模式，并禁止用户选择限制条件更加宽松的模式。如果此政策设为：
@@ -5824,6 +5814,16 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，用户便可以选择是否使用 <ph name="CHROME_SYNC_NAME" />。
 
       注意：如果 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 已启用，请勿开启此政策，因为此功能具有相同的客户端功能。在这种情况下，由 Google 托管的同步服务会完全关闭。</translation>
+<translation id="6320186400425850182">此政策用于控制是否以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果已启用此政策，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果已停用此政策，chrome://history/2 中不会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      如果未设置此政策，默认情况下，chrome://history/2 中会以网页分组的方式显示“Chrome 历史记录”页面。
+
+      请注意，如果已停用 <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> 政策，但已启用或未设置 <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" />，chrome://history/2 中仍然会以网页分组的方式显示“Chrome 历史记录”页面，但与用户的相关程度可能会变低。
+</translation>
 <translation id="6320935916601887506">系统将默认使用新的 offsetParent 行为。</translation>
 <translation id="6327643515544933974">网络 USB 设置</translation>
 <translation id="6330882599388782338">允许网站使用传感器</translation>
@@ -7110,7 +7110,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。
 
 在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例，或已注册 <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />的实例。</translation>
-<translation id="7403217961820363141">将历程显示在“Chrome 历史记录”页面上</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />会导致 Android 的备份和恢复机制无法正常运行。</translation>
 <translation id="7406276857470642718">此政策旨在控制通过 SAML 向外部 IdP 验证身份的用户的设置</translation>
 <translation id="7407441173422042771">此政策旨在控制 <ph name="PRODUCT_NAME" /> 中的网络预测功能。它控制着 DNS 预提取、TCP 和 SSL 预连接以及网页预呈现。
@@ -8419,6 +8418,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
        如果此政策已停用或未设置，Chrome 会使用默认图标表示安全连接。</translation>
 <translation id="8650974590712548439">Windows 客户端的 Windows 注册表位置：</translation>
 <translation id="8653085952260859632">报告内存信息</translation>
+<translation id="8653212052128283886">显示以网页分组的“Chrome 历史记录”视图</translation>
 <translation id="8653561013005884087">将此政策设为 True 会使语音反馈保持开启状态。将此政策设为 False 会使语音反馈保持关闭状态。
 
        如果您设置了此政策，用户便无法更改它。如果您未设置此政策，语音反馈最初会处于关闭状态，但用户可随时开启它。</translation>

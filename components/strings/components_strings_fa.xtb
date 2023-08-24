@@ -436,6 +436,7 @@
 <translation id="1874224422119691492">می‌توانید در <ph name="SETTINGS" /> انتخاب کنید از قفل صفحه برای تکمیل گذرواژه‌ها استفاده شود یا نه</translation>
 <translation id="1875025161375567525">سینی عکس</translation>
 <translation id="1875512691959384712">‏فرم‌نگار Google</translation>
+<translation id="1876399092304384674">براساس تاریخ</translation>
 <translation id="187918866476621466">باز کردن صفحه‌های شروع</translation>
 <translation id="1883255238294161206">کوچک کردن فهرست</translation>
 <translation id="1884843295353628214">جاز</translation>
@@ -1113,6 +1114,7 @@
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای بستن همه پنجره‌های ناشناسی که درحال‌حاضر باز هستند، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3474392552865647225">‏دکمه «سفارشی کردن قلم‌ها در Chrome»؛ برای سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome، آن را فعال کنید</translation>
 <translation id="3477679029130949506">فهرست فیلم و ساعات کار سینما</translation>
+<translation id="3478033058537426179">براساس گروه</translation>
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3484560055331845446">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chrome توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
 <translation id="3484861421501147767">یادآوری: کد تبلیغاتی ذخیره‌شده دردسترس است</translation>
@@ -3242,6 +3244,7 @@
 <translation id="8150722005171944719">این فایل در <ph name="URL" /> قابل خواندن نیست. ممکن است حذف شده، جابجا شده باشد و یا مجوزهای فایل از دسترسی جلوگیری می‌کنند.</translation>
 <translation id="8153865548451212769">{0,plural, =1{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}one{خط‌مشی سرپرست توصیه نمی‌کند این فایل را در <ph name="DESTINATION_NAME" /> بارگیری کنید}other{خط‌مشی سرپرست توصیه نمی‌کند این فایل‌ها را در <ph name="DESTINATION_NAME" /> بارگیری کنید}}</translation>
 <translation id="81563721597823545">تجهیزات هاکی</translation>
+<translation id="8161095570253161196">ازسر گرفتن مرور</translation>
 <translation id="8163866351304776260">چهار سوراخ در چپ</translation>
 <translation id="8175796834047840627">‏چون به سیستم وارد شده‌اید، Chrome پیشنهاد می‌کند کارت‌ها را در حساب Google ذخیره کنید. در تنظیمات می‌توانید این رفتار را تغییر دهید.</translation>
 <translation id="8176440868214972690">سرپرست این دستگاه اطلاعاتی (مثل تنظیمات یا خط‌مشی‌ها) را به وب‌سایت‌های زیر ارسال کرده است.</translation>

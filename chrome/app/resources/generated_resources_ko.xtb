@@ -1749,6 +1749,7 @@
 <translation id="2411666601450687801">이 기기에서는 가상 머신이 허용되지 않습니다.</translation>
 <translation id="2412015533711271895">이 확장 프로그램을 사용하려면 부모 또는 보호자의 동의가 필요합니다.</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200"><ph name="MODULE_TITLE" /> 둘러보기 재개</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2416435988630956212">키보드 기능 키</translation>
 <translation id="2418307627282545839">밝고 가벼운 느낌을 줍니다.</translation>
@@ -1885,6 +1886,10 @@
 <translation id="2509566264613697683">8배</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
 <translation id="2513396635448525189">로그인 이미지</translation>
+<translation id="251425554130284360">최근 활동으로 쉽게 돌아갈 수 있도록 방문한 페이지와 추천 검색어가 표시됩니다.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        카드 메뉴에서 설정을 관리하거나 Chrome 맞춤설정에서 추가 옵션을 확인할 수 있습니다.</translation>
 <translation id="2514326558286966059">지문으로 신속하게 잠금 해제</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">사용자 이름 확인</translation>
@@ -2293,6 +2298,7 @@
 <translation id="2861402191395139055">Passpoint 구독</translation>
 <translation id="2861941300086904918">네이티브 클라이언트 보안 관리자</translation>
 <translation id="2862815659905780618">Linux 개발 환경 삭제</translation>
+<translation id="2862986593239703553">이 카드</translation>
 <translation id="2864601841139725659">프로필 사진 설정</translation>
 <translation id="2865057607286263192">키보드 키를 길게 누르면 악센트 기호와 특수문자가 표시됩니다. 그러면 알파벳 키의 반복 키 누름이 사용 중지됩니다. 영어(미국)에서만 지원됩니다.</translation>
 <translation id="2865919525181940183">현재 화면에 표시된 프로그램의 스크린샷</translation>
@@ -3315,6 +3321,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB 기기 1개와 통신}other{USB 기기 #개와 통신}}</translation>
 <translation id="3764753550716962406">Google이 내 장바구니의 상품에 적용되는 할인을 찾도록 허용하시겠습니까?</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}other{<ph name="DEVICE_NAME" />에 <ph name="ATTACHMENTS" /> 보내는 중}}</translation>
+<translation id="3765055238058255342">이 유형의 카드</translation>
 <translation id="3765246971671567135">오프라인 데모 모드 정책을 읽을 수 없습니다.</translation>
 <translation id="3765696567014520261">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서 기능이 작동하지 않을 수 있습니다</translation>
 <translation id="3766687283066842296">휴대전화 허브 자세히 알아보기</translation>
@@ -3975,6 +3982,7 @@
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> 번역 안함</translation>
 <translation id="4332976768901252016">자녀 보호 기능 설정하기</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1(RSA 암호화 사용)</translation>
+<translation id="4334768748331667190"><ph name="MODULE_NAME" />가 다시 표시되지 않습니다.</translation>
 <translation id="4336434711095810371">모든 데이터 삭제</translation>
 <translation id="4339203724549370495">앱 제거</translation>
 <translation id="4340125850502689798">잘못된 사용자 이름</translation>

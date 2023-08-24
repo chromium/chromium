@@ -3279,7 +3279,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Sollte sie deaktiviert werden, kann SPDY genutzt werden.
 
       Ist die Richtlinie nicht konfiguriert, steht SPDY zur Verfügung.</translation>
-<translation id="3887529334667818189">Onlinerecherchen sind standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.</translation>
 <translation id="3889458462150559611">Zulassen, dass Websites unsichere Anfragen an Netzwerkendpunkte senden.</translation>
 <translation id="388999630001435491"><ph name="PRODUCT_NAME" /> nur erlauben, Verbindungen zu Geräten unter privaten IP-Adressen herzustellen</translation>
 <translation id="3891175633496805812">Wilco Diagnostics and Telemetry Controller (DTC) deaktivieren</translation>
@@ -3405,7 +3404,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
       Ist die Richtlinie auf „True“ gesetzt, wird die Benachrichtigung mit der Datenschutzwarnung nach einigen Sekunden geschlossen.
 
       Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, bleibt die Benachrichtigung mit der Datenschutzwarnung angepinnt, bis der Nutzer sie schließt.</translation>
-<translation id="4008395195135046807">Onlinerecherchen sind unter chrome://history/journeys sichtbar.</translation>
 <translation id="4008507541867797979">Wenn diese Richtlinie auf "true" gesetzt oder nicht festgelegt ist, werden in <ph name="PRODUCT_OS_NAME" /> vorhandene Nutzer auf der Anmeldeseite aufgeführt und der Nutzer kann einen Namen auswählen.
 
 Ist die Richtlinie auf "false" gesetzt, werden in <ph name="PRODUCT_OS_NAME" /> keine vorhandenen Nutzer auf der Anmeldeseite angezeigt. Stattdessen wird die normale Anmeldeseite, auf der der Nutzer seine E-Mail-Adresse und sein Passwort bzw. seine Telefonnummer eingeben muss, oder der SAML-Interstitialbildschirm angezeigt, wenn dieser über die Richtlinie "<ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />" aktiviert wurde. Falls eine verwaltete Sitzung konfiguriert ist, werden nur die entsprechenden Konten angezeigt, von denen der Nutzer eins auswählen kann.
@@ -4533,7 +4531,6 @@ Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, gilt f
 <translation id="5130935469849337738">Übersetzung immer anbieten</translation>
 <translation id="5141670636904227950">Standardtyp für die Lupe festlegen, die auf der Anmeldeseite aktiviert ist</translation>
 <translation id="5142301680741828703">Folgende URL-Muster immer in <ph name="PRODUCT_FRAME_NAME" /> darstellen</translation>
-<translation id="5143258831402123447">Onlinerecherchen sind nicht unter chrome://history/journeys sichtbar.</translation>
 <translation id="514870861066611127">Mit dieser Richtlinie wird festgelegt, ob personenbezogene Daten gesendet werden, zum Beispiel die Anmeldedaten für das Betriebssystem oder das <ph name="PRODUCT_NAME" />-Profil, der <ph name="PRODUCT_NAME" />-Profilname, der <ph name="PRODUCT_NAME" />-Profilpfad und der ausführbare Pfad für <ph name="PRODUCT_NAME" />.
 
       Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert.
@@ -4590,16 +4587,6 @@ Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, gilt f
 <translation id="5179853299156742425">URL, über die die Desktopvorlage heruntergeladen werden kann.</translation>
 <translation id="5182055907976889880">Google Drive in <ph name="PRODUCT_OS_NAME" /> konfigurieren</translation>
 <translation id="5182483318861266793">Ablage auf der rechten Seite des Bildschirms anzeigen</translation>
-<translation id="5184298474980725716">Diese Richtlinie legt die Sichtbarkeit von Onlinerecherchen auf der Chrome-Verlaufsseite fest.
-
-      Wenn die Richtlinie aktiviert ist, sind Onlinerecherchen unter chrome://history/journeys sichtbar.
-
-      Ist sie deaktiviert, sind Onlinerecherchen nicht unter chrome://history/journeys sichtbar.
-
-      Ist die Richtlinie nicht konfiguriert, sind Onlinerecherchen standardmäßig unter chrome://history/journeys sichtbar und Nutzer können die Sichtbarkeit von Onlinerecherchen ändern.
-
-      Hinweis: Wenn die Richtlinie <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> deaktiviert, <ph name="HISTORY_CLUSTERS_VISIBLE_POLICY_NAME" /> jedoch aktiviert oder nicht konfiguriert ist, sind Onlinerecherchen unter chrome://history/journeys verfügbar, möglicherweise aber nicht in der Omnibox. Außerdem können sie weniger relevant für den Nutzer sein.
-      </translation>
 <translation id="51859390023061147">Funktion zur vollständigen Wiederherstellung deaktivieren.</translation>
 <translation id="5189360528842591274">Verbindung nur zu den Bluetooth-Diensten in der Liste erlauben</translation>
 <translation id="5190426551516379357">Wenn die Richtlinie konfiguriert ist, wird ein minimaler eingeschränkter Modus auf YouTube erzwungen und verhindert, dass Nutzer einen weniger eingeschränkten Modus auswählen. Wird diese Richtlinie
@@ -7134,7 +7121,6 @@ Ist diese Richtlinie deaktiviert, werden keine Sicherheitswarnungen angezeigt, w
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.
 
 Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
-<translation id="7403217961820363141">Onlinerecherchen auf der Chrome-Verlaufsseite anzeigen</translation>
 <translation id="7406039009275722824">Wenn du die <ph name="CHROME_SYNC_NAME" /> deaktivierst, funktioniert der Android-Dienst „Sichern und wiederherstellen“ nicht mehr richtig.</translation>
 <translation id="7406276857470642718">Legt die Einstellungen für Nutzer fest, die über SAML mit einer externen IdP authentifiziert sind</translation>
 <translation id="7407441173422042771">Mit dieser Richtlinie wird die Netzwerkvorhersage bei <ph name="PRODUCT_NAME" /> gesteuert. Mit ihr werden der DNS-Vorabruf, die TCP- und SSL-Vorverbindung sowie das Pre-Rendering von Webseiten gesteuert.

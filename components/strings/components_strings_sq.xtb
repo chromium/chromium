@@ -436,6 +436,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1874224422119691492">Mund të ndryshosh nëse e përdor kyçjen e ekranit për plotësimin e fjalëkalimeve te "<ph name="SETTINGS" />"</translation>
 <translation id="1875025161375567525">Tabakaja e fotografive</translation>
 <translation id="1875512691959384712">Formularët e Google</translation>
+<translation id="1876399092304384674">Sipas datës</translation>
 <translation id="187918866476621466">Hap faqet e nisjes</translation>
 <translation id="1883255238294161206">Palos listën</translation>
 <translation id="1884843295353628214">Xhazi</translation>
@@ -1113,6 +1114,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të mbyllur të gjitha dritaret "e fshehta" që janë aktualisht të hapura</translation>
 <translation id="3474392552865647225">Butoni "Personalizo fontet në Chrome". Aktivizoje për të personalizuar madhësitë e fonteve dhe llojin e karaktereve në Chrome</translation>
 <translation id="3477679029130949506">Listimet e filmave dhe oraret e shfaqjeve në kinema</translation>
+<translation id="3478033058537426179">Sipas grupit</translation>
 <translation id="3479552764303398839">Jo tani</translation>
 <translation id="3484560055331845446">Mund të humbësh qasjen në "Llogarinë tënde të Google". Chrome rekomandon që ta ndryshosh fjalëkalimin tani. Do të të kërkohet që të identifikohesh.</translation>
 <translation id="3484861421501147767">Rikujtesë: Një kod promocional i ruajtur është i disponueshëm</translation>
@@ -3241,6 +3243,7 @@ Detaje shtesë:
 <translation id="8150722005171944719">Skedari në <ph name="URL" /> nuk është i lexueshëm: mund të jetë hequr, lëvizur ose lejet e tij mund të pengojnë qasjen.</translation>
 <translation id="8153865548451212769">{0,plural, =1{Politika e administratorit nuk rekomandon shkarkimin e këtij skedari te: <ph name="DESTINATION_NAME" />}other{Politika e administratorit nuk rekomandon shkarkimin e këtyre skedarëve te: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">Pajisje për hokej</translation>
+<translation id="8161095570253161196">Vazhdo të shfletosh</translation>
 <translation id="8163866351304776260">Katër shpime majtas</translation>
 <translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
 <translation id="8176440868214972690">Administratori i kësaj pajisjeje ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>

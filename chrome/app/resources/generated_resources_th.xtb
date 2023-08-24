@@ -1732,6 +1732,7 @@
 <translation id="2411666601450687801">ไม่อนุญาตให้ใช้เครื่องเสมือนในอุปกรณ์นี้</translation>
 <translation id="2412015533711271895">พ่อแม่หรือผู้ปกครองต้องตอบตกลงก่อน คุณจึงจะใช้ส่วนขยายนี้ได้</translation>
 <translation id="2412753904894530585">Kerberos</translation>
+<translation id="2414159296888870200">เรียกดู <ph name="MODULE_TITLE" /> ต่อ</translation>
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2416435988630956212">แป้นฟังก์ชันของแป้นพิมพ์</translation>
 <translation id="2418307627282545839">ให้ความรู้สึกสว่างและปลอดโปร่ง</translation>
@@ -1868,6 +1869,10 @@
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946">ภาษา<ph name="LANGUAGE" /> (เลือกไว้)</translation>
 <translation id="2513396635448525189">รูปภาพการเข้าสู่ระบบ</translation>
+<translation id="251425554130284360">สิ่งที่เห็นนี้คือหน้าเว็บที่เคยเข้าชมและการค้นหาที่แนะนำเพื่อช่วยให้คุณกลับไปยังกิจกรรมล่าสุดได้โดยง่าย
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        คุณสามารถจัดการการตั้งค่าจากเมนูการ์ดหรือดูตัวเลือกเพิ่มเติมได้ใน "ปรับแต่ง Chrome"</translation>
 <translation id="2514326558286966059">ปลดล็อกได้เร็วขึ้นด้วยลายนิ้วมือ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="251722524540674480">ยืนยันชื่อผู้ใช้ของคุณ</translation>
@@ -2276,6 +2281,7 @@
 <translation id="2861402191395139055">การสมัครใช้บริการ Passpoint</translation>
 <translation id="2861941300086904918">ตัวจัดการความปลอดภัยไคลเอ็นต์ในระบบ</translation>
 <translation id="2862815659905780618">นำสภาพแวดล้อมในการพัฒนาซอฟต์แวร์ Linux ออก</translation>
+<translation id="2862986593239703553">การ์ดนี้</translation>
 <translation id="2864601841139725659">ตั้งรูปโปรไฟล์</translation>
 <translation id="2865057607286263192">กดแป้นบนแป้นพิมพ์ค้างไว้เพื่อดูเครื่องหมายการเน้นเสียงและสัญลักษณ์พิเศษ การดำเนินการนี้จะปิดการกดแป้นซ้ำสำหรับแป้นตัวอักษร พร้อมให้ใช้สำหรับภาษาอังกฤษ (สหรัฐอเมริกา) เท่านั้น</translation>
 <translation id="2865919525181940183">ภาพหน้าจอของโปรแกรมที่กำลังแสดงอยู่ในหน้าจอ</translation>
@@ -3298,6 +3304,7 @@
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{สื่อสารกับอุปกรณ์ USB 1 เครื่อง}other{สื่อสารกับอุปกรณ์ USB # เครื่อง}}</translation>
 <translation id="3764753550716962406">ให้ Google ใช้สินค้าในรถเข็นเพื่อหาส่วนลดที่ใช้ได้</translation>
 <translation id="3764974059056958214">{COUNT,plural, =1{กำลังส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" />}other{กำลังส่ง <ph name="ATTACHMENTS" />ไปยัง <ph name="DEVICE_NAME" />}}</translation>
+<translation id="3765055238058255342">การ์ดประเภทนี้</translation>
 <translation id="3765246971671567135">อ่านนโยบายโหมดสาธิตออฟไลน์ไม่ได้</translation>
 <translation id="3765696567014520261">เว็บไซต์จะไม่สามารถใช้คุกกี้เพื่อดูกิจกรรมการท่องเว็บของคุณในเว็บไซต์ต่างๆ สำหรับวัตถุประสงค์อย่างเช่นการปรับโฆษณาตามโปรไฟล์ของผู้ใช้ ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="3766687283066842296">ดูข้อมูลเพิ่มเติมเกี่ยวกับฮับโทรศัพท์</translation>
@@ -3960,6 +3967,7 @@
 <translation id="4330387663455830245">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
 <translation id="4332976768901252016">ตั้งค่าการควบคุมโดยผู้ปกครอง</translation>
 <translation id="4333854382783149454">PKCS #1 SHA-1 พร้อมการเข้ารหัส RSA</translation>
+<translation id="4334768748331667190">คุณจะไม่เห็น <ph name="MODULE_NAME" /> อีก</translation>
 <translation id="4336434711095810371">ล้างข้อมูลทั้งหมด</translation>
 <translation id="4339203724549370495">ถอนการติดตั้งแอป</translation>
 <translation id="4340125850502689798">ชื่อผู้ใช้ไม่ถูกต้อง</translation>
