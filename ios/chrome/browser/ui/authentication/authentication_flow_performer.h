@@ -70,10 +70,12 @@ class PrefService;
                        browserStatePrefs:(PrefService*)prefs;
 
 // Shows a confirmation dialog for signing in to an account managed by
-// `hostedDomain`.
+// `hostedDomain`. The confirmation dialog's content will be different depending
+// on the status of User Policy and the `syncConsent`.
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser;
+                                       browser:(Browser*)browser
+                                   syncConsent:(BOOL)syncConsent;
 
 // Shows a snackbar confirming sign-in with `identity` and an undo button to
 // sign out the user.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 
 #import "base/check_op.h"
+#import "base/feature_list.cc"
 #import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
@@ -14,6 +15,7 @@
 #import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/flags/ios_chrome_flag_descriptions.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_switch.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -278,16 +280,14 @@ enum AuthenticationState {
           _shouldShowSigninSnackbar = YES;
           [[fallthrough]];
         case PostSignInAction::kNone:
-          if (policy::IsAnyUserPolicyFeatureEnabled() &&
-              _shouldFetchUserPolicy) {
+          if (_shouldFetchUserPolicy) {
             return REGISTER_FOR_USER_POLICY;
           } else {
             return COMPLETE_WITH_SUCCESS;
           }
       }
     case COMMIT_SYNC:
-      if (policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel() &&
-          _shouldFetchUserPolicy) {
+      if (_shouldFetchUserPolicy) {
         return REGISTER_FOR_USER_POLICY;
       }
       return COMPLETE_WITH_SUCCESS;
@@ -356,12 +356,15 @@ enum AuthenticationState {
       return;
     }
 
-    case SHOW_MANAGED_CONFIRMATION:
+    case SHOW_MANAGED_CONFIRMATION: {
+      BOOL syncConsent = self.postSignInAction == PostSignInAction::kCommitSync;
       [_performer
           showManagedConfirmationForHostedDomain:_identityToSignInHostedDomain
                                   viewController:_presentingViewController
-                                         browser:_browser];
+                                         browser:_browser
+                                     syncConsent:syncConsent];
       return;
+    }
 
     case SIGN_OUT_IF_NEEDED:
       [_performer signOutBrowserState:browserState];
@@ -575,10 +578,9 @@ enum AuthenticationState {
 - (void)didFetchManagedStatus:(NSString*)hostedDomain {
   DCHECK_EQ(FETCH_MANAGED_STATUS, _state);
   _shouldShowManagedConfirmation =
-      [hostedDomain length] > 0 &&
-      (self.postSignInAction == PostSignInAction::kCommitSync);
+      [self shouldShowManagedConfirmationForHostedDomain:hostedDomain];
   _identityToSignInHostedDomain = hostedDomain;
-  _shouldFetchUserPolicy = YES;
+  _shouldFetchUserPolicy = [self shouldFetchUserPolicy];
   [self continueSignin];
 }
 
@@ -651,6 +653,34 @@ enum AuthenticationState {
 // incognito mode.
 - (ChromeBrowserState*)originalBrowserState {
   return _browser->GetBrowserState()->GetOriginalChromeBrowserState();
+}
+
+// Returns YES if the managed confirmation dialog should be shown for the
+// hosted domain.
+- (BOOL)shouldShowManagedConfirmationForHostedDomain:(NSString*)hostedDomain {
+  if ([hostedDomain length] == 0) {
+    // No hosted domain, don't show the dialog as there is no host.
+    return NO;
+  }
+
+  if (self.postSignInAction == PostSignInAction::kCommitSync) {
+    // Show the dialog if there is a hosted domain and Sync consent.
+    return YES;
+  }
+
+  // Show the dialog if User Policy and sign-in only features enabled.
+  return policy::IsAnyUserPolicyFeatureEnabled() &&
+         base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos);
+}
+
+// Returns YES if should fetch user policy.
+- (BOOL)shouldFetchUserPolicy {
+  if (self.postSignInAction == PostSignInAction::kCommitSync) {
+    return policy::IsUserPolicyEnabledForSigninOrSyncConsentLevel();
+  } else {
+    return policy::IsAnyUserPolicyFeatureEnabled();
+  }
 }
 
 #pragma mark - Used for testing

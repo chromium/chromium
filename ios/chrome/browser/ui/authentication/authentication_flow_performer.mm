@@ -63,6 +63,42 @@ NSString* const kAuthenticationSnackbarCategory =
 
 }  // namespace
 
+// Content of the managed account confirmation dialog.
+@interface ManagedConfirmationDialogContent : NSObject
+
+// Title of the dialog.
+@property(nonatomic, readonly, copy) NSString* title;
+// Subtitle of the dialog.
+@property(nonatomic, readonly, copy) NSString* subtitle;
+// Label of the accept button in the dialog.
+@property(nonatomic, readonly, copy) NSString* acceptLabel;
+// Label of the cancel button in the dialog.
+@property(nonatomic, readonly, copy) NSString* cancelLabel;
+
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                  acceptLabel:(NSString*)acceptLabel
+                  cancelLabel:(NSString*)cancelLabel;
+
+@end
+
+@implementation ManagedConfirmationDialogContent
+
+- (instancetype)initWithTitle:(NSString*)title
+                     subtitle:(NSString*)subtitle
+                  acceptLabel:(NSString*)acceptLabel
+                  cancelLabel:(NSString*)cancelLabel {
+  if (self = [super init]) {
+    _title = title;
+    _subtitle = subtitle;
+    _acceptLabel = acceptLabel;
+    _cancelLabel = cancelLabel;
+  }
+  return self;
+}
+
+@end
+
 @interface AuthenticationFlowPerformer () <ImportDataControllerDelegate,
                                            SettingsNavigationControllerDelegate>
 @end
@@ -285,28 +321,63 @@ NSString* const kAuthenticationSnackbarCategory =
          !gaia::AreEmailsSame(currentSignedInEmail, lastSignedInEmail);
 }
 
+// Retuns the ManagedConfirmationDialogContent that corresponds to the
+// provided `hostedDomain`, `syncConsent`, and the activation state of User
+// Policy.
+- (ManagedConfirmationDialogContent*)
+    managedConfirmationDialogContentForHostedDomain:(NSString*)hostedDomain
+                                        syncConsent:(BOOL)syncConsent {
+  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
+    // Show the legacy managed confirmation dialog if User Policy is disabled.
+    return [[ManagedConfirmationDialogContent alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
+             subtitle:l10n_util::GetNSStringF(
+                          IDS_IOS_MANAGED_SIGNIN_SUBTITLE,
+                          base::SysNSStringToUTF16(hostedDomain))
+          acceptLabel:l10n_util::GetNSString(
+                          IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
+          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
+  } else if (syncConsent) {
+    // Show the first version of the managed confirmation dialog for User Policy
+    // if User Policy is enabled and there is Sync consent.
+    return [[ManagedConfirmationDialogContent alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SYNC_TITLE)
+             subtitle:l10n_util::GetNSStringF(
+                          IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE,
+                          base::SysNSStringToUTF16(hostedDomain))
+          acceptLabel:l10n_util::GetNSString(
+                          IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON)
+          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
+  } else {
+    // Show the release version of the managed confirmation dialog for User
+    // Policy if User Policy is enabled and there is no Sync consent.
+    return [[ManagedConfirmationDialogContent alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_TITLE)
+             subtitle:l10n_util::GetNSStringF(
+                          IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_SUBTITLE,
+                          base::SysNSStringToUTF16(hostedDomain))
+          acceptLabel:
+              l10n_util::GetNSString(
+                  IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL)
+          cancelLabel:l10n_util::GetNSString(IDS_CANCEL)];
+  }
+}
+
 - (void)showManagedConfirmationForHostedDomain:(NSString*)hostedDomain
                                 viewController:(UIViewController*)viewController
-                                       browser:(Browser*)browser {
+                                       browser:(Browser*)browser
+                                   syncConsent:(BOOL)syncConsent {
   DCHECK(!_alertCoordinator);
-  BOOL userPolicyEnabled = policy::IsAnyUserPolicyFeatureEnabled();
-  int titleID = userPolicyEnabled ? IDS_IOS_MANAGED_SYNC_TITLE
-                                  : IDS_IOS_MANAGED_SIGNIN_TITLE;
-  NSString* title = l10n_util::GetNSString(titleID);
-  int subtitleID = userPolicyEnabled
-                       ? IDS_IOS_MANAGED_SYNC_WITH_USER_POLICY_SUBTITLE
-                       : IDS_IOS_MANAGED_SIGNIN_SUBTITLE;
-  NSString* subtitle = l10n_util::GetNSStringF(
-      subtitleID, base::SysNSStringToUTF16(hostedDomain));
-  NSString* acceptLabel =
-      l10n_util::GetNSString(IDS_IOS_MANAGED_SIGNIN_ACCEPT_BUTTON);
-  NSString* cancelLabel = l10n_util::GetNSString(IDS_CANCEL);
+
+  ManagedConfirmationDialogContent* content =
+      [self managedConfirmationDialogContentForHostedDomain:hostedDomain
+                                                syncConsent:syncConsent];
 
   _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:viewController
                                                    browser:browser
-                                                     title:title
-                                                   message:subtitle];
+                                                     title:content.title
+                                                   message:content.subtitle];
 
   __weak AuthenticationFlowPerformer* weakSelf = self;
   __weak AlertCoordinator* weakAlert = _alertCoordinator;
@@ -340,10 +411,10 @@ NSString* const kAuthenticationSnackbarCategory =
     [[strongSelf delegate] didCancelManagedConfirmation];
   };
 
-  [_alertCoordinator addItemWithTitle:cancelLabel
+  [_alertCoordinator addItemWithTitle:content.cancelLabel
                                action:cancelBlock
                                 style:UIAlertActionStyleCancel];
-  [_alertCoordinator addItemWithTitle:acceptLabel
+  [_alertCoordinator addItemWithTitle:content.acceptLabel
                                action:acceptBlock
                                 style:UIAlertActionStyleDefault];
   _alertCoordinator.noInteractionAction = cancelBlock;

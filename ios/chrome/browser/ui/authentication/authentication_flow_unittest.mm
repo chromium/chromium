@@ -14,6 +14,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/tribool.h"
+#import "components/sync/base/features.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/policy/cloud/user_policy_constants.h"
@@ -339,8 +340,8 @@ TEST_F(AuthenticationFlowTest, TestFailFetchManagedStatus) {
 }
 
 // Tests the managed sign in confirmation dialog is shown when signing in to
-// a managed identity.
-TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
+// a managed identity with sync consent level.
+TEST_F(AuthenticationFlowTest, TestShowManagedConfirmationWithSyncConsent) {
   CreateAuthenticationFlow(
       PostSignInAction::kCommitSync, managed_identity_,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
@@ -357,7 +358,8 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
-                                    browser:browser_.get()];
+                                    browser:browser_.get()
+                                syncConsent:YES];
 
   SetSigninSuccessExpectations(
       managed_identity_,
@@ -374,9 +376,16 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
       signin_metrics::SigninAccountType::kManaged, 1);
 }
 
-// Tests sign-in only with a managed account. The managed account confirmation
-// dialog should not be shown.
-TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
+// Tests that when signed in without sync with a managed account and the
+// policy::kUserPolicyForSigninAndNoSyncConsentLevel feature is disabled, the
+// managed account confirmation dialog isn't shown.
+TEST_F(AuthenticationFlowTest,
+       TestDontShowManagedConfirmationForSigninOnlyIfUserPolicyDisabled) {
+  // Enable sign-in promos but leave user policy disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kReplaceSyncPromosWithSignInPromos}, {});
+
   CreateAuthenticationFlow(
       PostSignInAction::kNone, managed_identity_,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
@@ -384,6 +393,88 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
   }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
+
+  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+
+  CheckSignInCompletion(/*expected_signed_in=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
+}
+
+// Tests that when signed in only with a managed account and the
+// policy::kUserPolicyForSigninAndNoSyncConsentLevel feature is disabled, the
+// managed account confirmation dialog isn't shown.
+TEST_F(AuthenticationFlowTest,
+       TestDontShowManagedConfirmationForSigninConsetLevelIfPromoDisabled) {
+  // Enable user policy but leave sign-in promos disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kReplaceSyncPromosWithSignInPromos}, {});
+
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+
+  SetSigninSuccessExpectations(
+      managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
+
+  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+
+  CheckSignInCompletion(/*expected_signed_in=*/true);
+  histogram_tester_.ExpectUniqueSample(
+      "Signin.AccountType.SigninConsent",
+      signin_metrics::SigninAccountType::kManaged, 1);
+  histogram_tester_.ExpectTotalCount("Signin.AccountType.SyncConsent", 0);
+}
+
+// Tests that when signed in only with a managed account and the
+// needed features are enabled, the managed account confirmation dialog is
+// shown.
+TEST_F(AuthenticationFlowTest,
+       TestShowManagedConfirmationForSigninConsentLevelIfAllFeaturesEnabled) {
+  // Enable user policy and sign-in promos.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kReplaceSyncPromosWithSignInPromos,
+       policy::kUserPolicyForSigninAndNoSyncConsentLevel},
+      {});
+
+  CreateAuthenticationFlow(
+      PostSignInAction::kNone, managed_identity_,
+      signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER);
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchManagedStatus:@"foo.com"];
+  }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didAcceptManagedConfirmation];
+  }] showManagedConfirmationForHostedDomain:@"foo.com"
+                             viewController:view_controller_
+                                    browser:browser_.get()
+                                syncConsent:NO];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
+                                                     clientID:kFakeClientID];
+  }] registerUserPolicy:browser_state_.get() forIdentity:managed_identity_];
+
+  [[[performer_ expect] andDo:^(NSInvocation*) {
+    [authentication_flow_ didFetchUserPolicyWithSuccess:YES];
+  }] fetchUserPolicy:browser_state_.get()
+         withDmToken:kFakeDMToken
+            clientID:kFakeClientID
+            identity:managed_identity_];
 
   SetSigninSuccessExpectations(
       managed_identity_,
@@ -421,7 +512,8 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
-                                    browser:browser_.get()];
+                                    browser:browser_.get()
+                                syncConsent:YES];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -505,7 +597,8 @@ TEST_F(AuthenticationFlowTest,
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
-                                    browser:browser_.get()];
+                                    browser:browser_.get()
+                                syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
@@ -559,7 +652,8 @@ TEST_F(AuthenticationFlowTest,
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
-                                    browser:browser_.get()];
+                                    browser:browser_.get()
+                                syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:@""
@@ -610,7 +704,8 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
-                                    browser:browser_.get()];
+                                    browser:browser_.get()
+                                syncConsent:YES];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
