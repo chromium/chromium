@@ -12,18 +12,28 @@
         document.getElementById('results').innerHTML += m + '<br>';
     }
 
+    const supportedValues = [
+        'browser',
+        'minimal-ui',
+        'standalone',
+        'fullscreen',
+        'window-controls-overlay',
+        'borderless',
+    ]
+
     function testQueries()
     {
         var queries = [
+            // OK values.
             "(display-mode)",
-            "(display-mode: browser)",
-            "(display-mode: minimal-ui)",
-            "(display-mode: standalone)",
-            "(display-mode: fullscreen)",
-            "(display-mode: fine)", // Unexpected values.
+            ...supportedValues.map((mode) => `(display-mode: ${mode})`),
+
+            // Unexpected values.
+            "(display-mode: fine)",
             "(display-mode: 1)",
             "(display-mode: 3%)",
-            ];
+        ];
+
         for (var index=0; index < queries.length; index++) {
             log("Query &quot;" + queries[index] + "&quot: " +
                 window.matchMedia(queries[index]).matches);
@@ -35,27 +45,17 @@
         if (!window.internals)
             return;
 
-        log("------------- with 'browser' display mode -------------");
-        internals.settings.setDisplayModeOverride('browser');
-        testQueries();
-
-        log("------------- with 'minimal-ui' display mode -------------");
-        internals.settings.setDisplayModeOverride('minimal-ui');
-        testQueries();
-
-        log("------------- with 'standalone' display mode -------------");
-        internals.settings.setDisplayModeOverride('standalone');
-        testQueries();
-
-        log("------------- with 'fullscreen' display mode -------------");
-        internals.settings.setDisplayModeOverride('fullscreen');
-        testQueries();
+        for (const mode of supportedValues) {
+          log(`------------- with '${mode}' display mode -------------`);
+          internals.settings.setDisplayModeOverride(mode);
+          testQueries();
+        }
     }
 
 </script>
 </head>
 <body onload="runTests()">
-    <p>Test the <a href="http://w3c.github.io/manifest/#the-display-mode-media-feature">(display-mode: ...)</a> media features.
+    <p>Test the <a href="http://www.w3.org/TR/mediaqueries-5/#display-mode">(display-mode: ...)</a> media features.
 
     <div id="results">
     </div>
