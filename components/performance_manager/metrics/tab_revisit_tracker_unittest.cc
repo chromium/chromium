@@ -50,20 +50,20 @@ TEST_F(TabRevisitTrackerTest, StartsBackgroundedThenRevisited) {
   SetIsActiveTab(mock_graph.page.get(), true);
   // The tab became active after 30 minutes in the background, this should be
   // recorded in the revisit histogram.
-  tester.ExpectUniqueTimeSample(TabRevisitTracker::kTimeToRevisitHistogramName,
-                                base::Minutes(30), 1);
+  tester.ExpectUniqueSample(TabRevisitTracker::kTimeToRevisitHistogramName,
+                            base::Minutes(30).InSeconds(), 1);
 
   SetIsActiveTab(mock_graph.page.get(), false);
-  tester.ExpectUniqueTimeSample(TabRevisitTracker::kTimeToRevisitHistogramName,
-                                base::Minutes(30), 1);
+  tester.ExpectUniqueSample(TabRevisitTracker::kTimeToRevisitHistogramName,
+                            base::Minutes(30).InSeconds(), 1);
 
   AdvanceClock(base::Minutes(10));
   // The tab became active again after 10 minutes in the background, the revisit
   // histogram should contain 2 samples: one for each revisit.
   SetIsActiveTab(mock_graph.page.get(), true);
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 2);
-  tester.ExpectTimeBucketCount(TabRevisitTracker::kTimeToRevisitHistogramName,
-                               base::Minutes(10), 1);
+  tester.ExpectBucketCount(TabRevisitTracker::kTimeToRevisitHistogramName,
+                           base::Minutes(10).InSeconds(), 1);
 
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToCloseHistogramName, 0);
 }
@@ -85,8 +85,8 @@ TEST_F(TabRevisitTrackerTest, CloseInBackgroundRecordsToCloseHistogram) {
   mock_graph.page.reset();
 
   tester.ExpectTotalCount(TabRevisitTracker::kTimeToRevisitHistogramName, 0);
-  tester.ExpectUniqueTimeSample(TabRevisitTracker::kTimeToCloseHistogramName,
-                                base::Hours(1), 1);
+  tester.ExpectUniqueSample(TabRevisitTracker::kTimeToCloseHistogramName,
+                            base::Hours(1).InSeconds(), 1);
 }
 
 TEST_F(TabRevisitTrackerTest, CloseWhileActiveDoesntRecordClose) {

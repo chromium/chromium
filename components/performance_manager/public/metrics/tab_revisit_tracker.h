@@ -23,9 +23,9 @@ class TabRevisitTracker : public GraphOwned,
                           public PageLiveStateObserver {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
-      "PerformanceManager.TabRevisitTracker.TimeToRevisit";
+      "PerformanceManager.TabRevisitTracker.TimeToRevisit2";
   static constexpr char kTimeToCloseHistogramName[] =
-      "PerformanceManager.TabRevisitTracker.TimeToClose";
+      "PerformanceManager.TabRevisitTracker.TimeToClose2";
 
   TabRevisitTracker();
   ~TabRevisitTracker() override;

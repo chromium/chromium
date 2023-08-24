@@ -118,7 +118,7 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.TabRevisitTracker.TimeToClose"
+<histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
     units="seconds" expires_after="2024-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
@@ -128,7 +128,7 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit"
+<histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
     units="seconds" expires_after="2024-08-09">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>

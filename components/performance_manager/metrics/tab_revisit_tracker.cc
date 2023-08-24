@@ -23,24 +23,28 @@ void TabRevisitTracker::RecordRevisitHistograms(
     const TabPageDecorator::TabHandle* tab_handle) {
   TabRevisitTracker::StateBundle state_bundle = tab_states_.at(tab_handle);
   CHECK(state_bundle.last_active_time.has_value());
-  base::UmaHistogramCustomTimes(
+  base::UmaHistogramCustomCounts(
       /*name=*/kTimeToRevisitHistogramName,
-      /*time=*/base::TimeTicks::Now() - state_bundle.last_active_time.value(),
-      /*minimum=*/kMinTime,
-      /*maximum=*/kMaxTime,
-      /*bucket_count=*/200);
+      /*sample=*/
+      (base::TimeTicks::Now() - state_bundle.last_active_time.value())
+          .InSeconds(),
+      /*min=*/kMinTime.InSeconds(),
+      /*exclusive_max=*/kMaxTime.InSeconds(),
+      /*buckets=*/200);
 }
 
 void TabRevisitTracker::RecordCloseHistograms(
     const TabPageDecorator::TabHandle* tab_handle) {
   TabRevisitTracker::StateBundle state_bundle = tab_states_[tab_handle];
   CHECK(state_bundle.last_active_time.has_value());
-  base::UmaHistogramCustomTimes(
+  base::UmaHistogramCustomCounts(
       /*name=*/kTimeToCloseHistogramName,
-      /*time=*/base::TimeTicks::Now() - state_bundle.last_active_time.value(),
-      /*minimum=*/kMinTime,
-      /*maximum=*/kMaxTime,
-      /*bucket_count=*/200);
+      /*sample=*/
+      (base::TimeTicks::Now() - state_bundle.last_active_time.value())
+          .InSeconds(),
+      /*min=*/kMinTime.InSeconds(),
+      /*exclusive_max=*/kMaxTime.InSeconds(),
+      /*buckets=*/200);
 }
 
 void TabRevisitTracker::OnPassedToGraph(Graph* graph) {
