@@ -9,16 +9,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
-#include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -29,8 +25,7 @@ namespace component_updater {
 namespace {
 
 using ::testing::_;
-using ::testing::Pair;
-using ::testing::UnorderedElementsAre;
+using ::testing::IsEmpty;
 
 std::string ReadToString(base::File file) {
   std::string contents;
@@ -225,59 +220,17 @@ TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
 }
 
 TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest,
-       GetInstallerAttributes_Disabled) {
+       GetInstallerAttributes) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
-  EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
-                                            kDogfoodInstallerAttributeName,
-                                        "false")));
+  EXPECT_THAT(policy.GetInstallerAttributes(), IsEmpty());
 }
 
-class FirstPartySetsComponentInstallerNonDogFooderTest
-    : public FirstPartySetsComponentInstallerTest {
- public:
-  FirstPartySetsComponentInstallerNonDogFooderTest() {
-    InitializeFeatureList();
-  }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
-        {{features::kFirstPartySetsIsDogfooder.name, "false"}});
-  }
-};
-
-TEST_F(FirstPartySetsComponentInstallerNonDogFooderTest,
-       GetInstallerAttributes_NonDogfooder) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       GetInstallerAttributes) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
-  EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
-                                            kDogfoodInstallerAttributeName,
-                                        "false")));
-}
-
-class FirstPartySetsComponentInstallerDogFooderTest
-    : public FirstPartySetsComponentInstallerTest {
- public:
-  FirstPartySetsComponentInstallerDogFooderTest() { InitializeFeatureList(); }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kFirstPartySets,
-        {{features::kFirstPartySetsIsDogfooder.name, "true"}});
-  }
-};
-
-TEST_F(FirstPartySetsComponentInstallerDogFooderTest,
-       GetInstallerAttributes_Dogfooder) {
-  FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
-
-  EXPECT_THAT(policy.GetInstallerAttributes(),
-              UnorderedElementsAre(Pair(FirstPartySetsComponentInstallerPolicy::
-                                            kDogfoodInstallerAttributeName,
-                                        "true")));
+  EXPECT_THAT(policy.GetInstallerAttributes(), IsEmpty());
 }
 
 }  // namespace component_updater

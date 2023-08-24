@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
@@ -104,10 +103,6 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
       base::BindOnce(std::move(on_sets_ready), instance_path->second));
 }
 
-std::string BoolToString(bool b) {
-  return b ? "true" : "false";
-}
-
 }  // namespace
 
 namespace component_updater {
@@ -124,10 +119,6 @@ FirstPartySetsComponentInstallerPolicy::FirstPartySetsComponentInstallerPolicy(
 
 FirstPartySetsComponentInstallerPolicy::
     ~FirstPartySetsComponentInstallerPolicy() = default;
-
-const char
-    FirstPartySetsComponentInstallerPolicy::kDogfoodInstallerAttributeName[] =
-        "_internal_experimental_sets";
 
 bool FirstPartySetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
@@ -197,12 +188,7 @@ std::string FirstPartySetsComponentInstallerPolicy::GetName() const {
 
 update_client::InstallerAttributes
 FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
-  return {
-      {
-          kDogfoodInstallerAttributeName,
-          BoolToString(features::kFirstPartySetsIsDogfooder.Get()),
-      },
-  };
+  return {};
 }
 
 // static

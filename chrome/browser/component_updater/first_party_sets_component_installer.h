@@ -48,9 +48,6 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Resets static state. Should only be used to clear state during testing.
   static void ResetForTesting();
 
-  static const char kDogfoodInstallerAttributeName[];
-  static const char kV2FormatOptIn[];
-
   // Seeds a component at `install_dir` with the given `contents`. Only to be
   // used in testing.
   static void WriteComponentForTesting(base::Version version,
@@ -71,13 +68,9 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_OnNetworkRestart);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureDisabledTest,
-                           GetInstallerAttributes_Disabled);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerNonDogFooderTest,
-                           GetInstallerAttributes_NonDogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerDogFooderTest,
-                           GetInstallerAttributes_Dogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerV2FormatTest,
-                           GetInstallerAttributes_V2OptOut);
+                           GetInstallerAttributes);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
+                           GetInstallerAttributes);
 
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

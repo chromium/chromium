@@ -513,11 +513,6 @@ BASE_FEATURE(kFirstPartySets,
 const base::FeatureParam<bool> kFirstPartySetsClearSiteDataOnChangedSets{
     &kFirstPartySets, "FirstPartySetsClearSiteDataOnChangedSets", true};
 
-// Controls whether the client is considered a dogfooder for the FirstPartySets
-// feature.
-const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
-    &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
-
 // Controls how many sites are allowed to be in the Associated subset (ignoring
 // ccTLD aliases).
 const base::FeatureParam<int> kFirstPartySetsMaxAssociatedSites{
