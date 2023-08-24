@@ -672,13 +672,6 @@ BASE_FEATURE(kEnableLocalSearchService,
              "EnableLocalSearchService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables using DiagnosticsLogController to manage lifetime of logs for the
-// diagnostics app routines, network events, and system snapshot.
-// TODO(ashleydp): Remove this after the feature is launched.
-BASE_FEATURE(kEnableLogControllerForDiagnosticsApp,
-             "EnableLogControllerForDiagnosticsApp",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables OAuth support when printing via the IPP protocol.
 BASE_FEATURE(kEnableOAuthIpp,
              "EnableOAuthIpp",
@@ -2944,10 +2937,6 @@ bool IsLicensePackagedOobeFlowEnabled() {
 bool IsLockScreenHideSensitiveNotificationsSupported() {
   return base::FeatureList::IsEnabled(
       kLockScreenHideSensitiveNotificationsSupport);
-}
-
-bool IsLogControllerForDiagnosticsAppEnabled() {
-  return base::FeatureList::IsEnabled(kEnableLogControllerForDiagnosticsApp);
 }
 
 bool IsEducationEnrollmentOobeFlowEnabled() {

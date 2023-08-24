@@ -74,9 +74,7 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
 
   void SetUp() override {
     feature_list_.InitWithFeatures(
-        /* enabled_features=*/{ash::features::
-                                   kEnableLogControllerForDiagnosticsApp,
-                               ash::features::kEnableInputInDiagnosticsApp},
+        /* enabled_features=*/{ash::features::kEnableInputInDiagnosticsApp},
         /* disabled_features=*/{});
 
     NoSessionAshTestBase::SetUp();

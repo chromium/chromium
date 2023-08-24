@@ -932,8 +932,7 @@ void ShimlessRmaService::GetLog(GetLogCallback callback) {
 }
 
 void ShimlessRmaService::SaveLog(SaveLogCallback callback) {
-  if (features::IsLogControllerForDiagnosticsAppEnabled() &&
-      diagnostics::DiagnosticsLogController::IsInitialized()) {
+  if (diagnostics::DiagnosticsLogController::IsInitialized()) {
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
