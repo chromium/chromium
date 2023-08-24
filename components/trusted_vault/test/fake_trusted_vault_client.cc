@@ -90,6 +90,15 @@ void FakeTrustedVaultClient::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
+std::vector<std::vector<uint8_t>> FakeTrustedVaultClient::GetStoredKeys(
+    const std::string& gaia_id) const {
+  auto it = gaia_id_to_cached_keys_.find(gaia_id);
+  if (it == gaia_id_to_cached_keys_.end()) {
+    return {};
+  }
+  return it->second.keys;
+}
+
 void FakeTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
@@ -175,7 +184,10 @@ void FakeTrustedVaultClient::AddTrustedRecoveryMethod(
 
 void FakeTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  NOTIMPLEMENTED();
+  auto it = gaia_id_to_cached_keys_.find(account_info.gaia);
+  if (it != gaia_id_to_cached_keys_.end()) {
+    gaia_id_to_cached_keys_.erase(it);
+  }
 }
 
 }  // namespace trusted_vault

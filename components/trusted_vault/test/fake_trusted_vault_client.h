@@ -66,6 +66,11 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     return get_is_recoverablity_degraded_call_count_;
   }
 
+  // Similar to FetchKeys(), but synchronous and never requests new keys from
+  // `server_`.
+  std::vector<std::vector<uint8_t>> GetStoredKeys(
+      const std::string& gaia_id) const;
+
   // Mimics the completion of the next (FIFO) FetchKeys() request.
   bool CompleteFetchKeysRequest();
 

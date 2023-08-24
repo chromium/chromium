@@ -37,9 +37,9 @@
 #include "components/sync/test/fake_data_type_controller.h"
 #include "components/sync/test/fake_sync_api_component_factory.h"
 #include "components/sync/test/fake_sync_engine.h"
-#include "components/sync/test/mock_trusted_vault_client.h"
 #include "components/sync/test/sync_client_mock.h"
 #include "components/sync/test/sync_service_impl_bundle.h"
+#include "components/trusted_vault/test/fake_trusted_vault_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,6 +50,7 @@ using testing::AtLeast;
 using testing::ByMove;
 using testing::Eq;
 using testing::Invoke;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::Not;
 using testing::Return;
@@ -237,7 +238,7 @@ class SyncServiceImplTest : public ::testing::Test {
     return sync_service_impl_bundle_.sync_invalidations_service();
   }
 
-  MockTrustedVaultClient* trusted_vault_client() {
+  trusted_vault::FakeTrustedVaultClient* trusted_vault_client() {
     return sync_service_impl_bundle_.trusted_vault_client();
   }
 
@@ -1201,10 +1202,16 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   // TODO(crbug.com/1462552): Update once kSync becomes unreachable or is
   // deleted from the codebase. See ConsentLevel::kSync documentation for
   // details.
-  EXPECT_CALL(
-      *trusted_vault_client(),
-      ClearLocalDataForAccount(Eq(identity_manager()->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSync))));
+  const std::string primary_account_gaia_id =
+      identity_manager()
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+          .gaia;
+  // Store some trusted vault keys explicitly to verify that trusted vault local
+  // state is cleared upon DISABLE_SYNC_ON_CLIENT.
+  trusted_vault_client()->StoreKeys(
+      primary_account_gaia_id, /*keys=*/{{1, 2, 3}}, /*last_key_version=*/1);
+  ASSERT_THAT(trusted_vault_client()->GetStoredKeys(primary_account_gaia_id),
+              Not(IsEmpty()));
 
   SyncProtocolError client_cmd;
   client_cmd.action = DISABLE_SYNC_ON_CLIENT;
@@ -1250,6 +1257,10 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // TrustedVault data should have been cleared.
+  EXPECT_THAT(trusted_vault_client()->GetStoredKeys(primary_account_gaia_id),
+              IsEmpty());
 
   EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
 
