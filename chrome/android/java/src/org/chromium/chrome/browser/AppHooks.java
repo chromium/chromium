@@ -31,8 +31,6 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
-import org.chromium.chrome.browser.xsurface.ProcessScope;
-import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.policy.AppRestrictionsProvider;
 import org.chromium.components.policy.CombinedPolicyProvider;
@@ -229,14 +227,6 @@ public abstract class AppHooks {
      */
     public TrustedVaultClient.Backend createSyncTrustedVaultClientBackend() {
         return new TrustedVaultClient.EmptyBackend();
-    }
-
-    /**
-     * This is deprecated, and should not be called. Use FeedHooks instead.
-     */
-    public @Nullable ProcessScope getExternalSurfaceProcessScope(
-            ProcessScopeDependencyProvider dependencies) {
-        return null;
     }
 
     /**
