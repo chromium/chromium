@@ -229,15 +229,14 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
         sql::test::CreateDatabaseFromSQL(database_path_, database_dump));
   }
 
-  void AddPasswordToKeycahin(const std::u16string& password,
-                             const std::string& guid) {
+  void AddItemToKeychain(const std::u16string& value, const std::string& guid) {
     ScopedCFTypeRef<CFStringRef> item_ref(base::SysUTF8ToCFStringRef(guid));
     ScopedCFTypeRef<CFMutableDictionaryRef> attributes(
         CFDictionaryCreateMutable(NULL, 0, &kCFTypeDictionaryKeyCallBacks,
                                   &kCFTypeDictionaryValueCallBacks));
     CFDictionarySetValue(attributes, kSecClass, kSecClassGenericPassword);
     CFDictionarySetValue(attributes, kSecAttrAccount, item_ref);
-    std::string plain_text_utf8 = base::UTF16ToUTF8(password);
+    std::string plain_text_utf8 = base::UTF16ToUTF8(value);
     ScopedCFTypeRef<CFDataRef> data(CFDataCreate(
         NULL, reinterpret_cast<const UInt8*>(plain_text_utf8.data()),
         plain_text_utf8.size()));
@@ -274,10 +273,13 @@ class LoginDatabaseMigrationToOSCryptTest : public LoginDatabaseIOSTest {
 // kCurrentVersionNumber.
 TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39) {
   // Keychain identifier used in the test file.
-  const std::string keychain_identifier =
+  const std::string password_keychain_identifier =
       "2572a7dc-5046-429b-b8d4-3696f87dc9c2";
-  // Add password to the keychain.
-  AddPasswordToKeycahin(u"test1", keychain_identifier);
+  const std::string note_keychain_identifier =
+      "3dbce93e-37a9-4c9f-aa6a-45812c484bc3";
+  // Add password and note to the keychain.
+  AddItemToKeychain(u"test1", password_keychain_identifier);
+  AddItemToKeychain(u"password note", note_keychain_identifier);
 
   CreateDatabase("login_db_v38_with_keychain_id.sql");
   std::vector<std::unique_ptr<PasswordForm>> forms;
@@ -288,13 +290,16 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39) {
     ASSERT_TRUE(db.Init());
     // Delete password from the keychain to check that GetAllLogins no longer
     // needs to access it.
-    DeleteEncryptedPasswordFromKeychain(keychain_identifier);
+    DeleteEncryptedPasswordFromKeychain(password_keychain_identifier);
 
     EXPECT_EQ(db.GetAllLogins(&forms), FormRetrievalResult::kSuccess);
     // Verify that |encrypted_password| is still corresponding to keychain
     // identifier.
-    EXPECT_EQ(keychain_identifier, forms[0]->encrypted_password);
+    EXPECT_EQ(password_keychain_identifier, forms[0]->encrypted_password);
     EXPECT_EQ(u"test1", forms[0]->password_value);
+    // Verify that the password note is still readable.
+    ASSERT_EQ(1u, forms[0]->notes.size());
+    EXPECT_EQ(u"password note", forms[0]->notes[0].value);
   }
   {
     // Verify that password_value in the database is now encrypted with OSCrypt
@@ -307,6 +312,9 @@ TEST_F(LoginDatabaseMigrationToOSCryptTest, MigrationToVersion39) {
         LoginDatabase::EncryptedString(u"test1", &expected_encrypted_password));
     EXPECT_EQ(password_values[0], expected_encrypted_password);
   }
+  // Clear item from the keychain to ensure this test doesn't affect other
+  // tests.
+  DeleteEncryptedPasswordFromKeychain(note_keychain_identifier);
 }
 
 }  // namespace password_manager
