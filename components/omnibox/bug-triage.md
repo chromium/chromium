@@ -299,6 +299,11 @@ Example request:
   where the omnibox doesn’t do what they want.  Ideally we should be able make
   to make the omnibox smart enough that such a feature isn’t necessary.
 
+* “I want to disable suggestions from appearing entirely”. Dup against [crbug/1470391](https://bugs.chromium.org/p/chromium/issues/detail?id=1470391)
+
+  * Try to understand the motivation of the user making the request. Consider
+  quoting from [pkasting’s comment on this bug](https://bugs.chromium.org/p/chromium/issues/detail?id=702850#c16).
+
 * “I typed in something like go/foo and got redirected to a search results page
   instead.” See
   [this internal page](https://docs.google.com/document/d/140jmrHfC9BiNUbHEmUF4ajJ8Zpbc7qd5fjTBulH3I5g/edit#).
@@ -308,10 +313,6 @@ Example request:
 
   * … and no “Did you mean?” infobar appears.  This is likely prerendering; see
   [crbug/247848](https://bugs.chromium.org/p/chromium/issues/detail?id=247848)
-
-* “I want to disable suggestions from appearing entirely”.  Try to find out
-  why.  Quote freely from
-  [pkasting’s comment on this bug](https://bugs.chromium.org/p/chromium/issues/detail?id=702850#c16).
 
 # References
 
