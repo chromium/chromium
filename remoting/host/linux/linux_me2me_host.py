@@ -1344,7 +1344,7 @@ class XDesktop(Desktop):
           br'^Version: (\S+)$', video_dummy_info, re.MULTILINE)
       if not match:
         logging.error('Version line is not found')
-        return False
+        return True
       version = match[1]
       retcode = subprocess.call(
           ['dpkg', '--compare-versions', version, 'ge', '1:0.4.0'])
