@@ -12,8 +12,8 @@
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/icon_button.h"
-#include "ash/style/icon_switch.h"
+#include "ash/style/tab_slider.h"
+#include "ash/style/tab_slider_button.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,23 +22,28 @@
 namespace ash {
 
 CaptureModeSourceView::CaptureModeSourceView()
-    : capture_source_switch_(AddChildView(
-          std::make_unique<IconSwitch>(/*has_background=*/false,
-                                       /*inside_border_insets=*/gfx::Insets(),
-                                       capture_mode::kBetweenChildSpacing))),
-      fullscreen_toggle_button_(capture_source_switch_->AddButton(
-          base::BindRepeating(&CaptureModeSourceView::OnFullscreenToggle,
-                              base::Unretained(this)),
-          &kCaptureModeFullscreenIcon,
-          // Tooltip text will be set in `OnCaptureTypeChanged`.
-          /*tooltip_text=*/u"")),
-      region_toggle_button_(capture_source_switch_->AddButton(
+    : capture_source_switch_(AddChildView(std::make_unique<TabSlider>(
+          /*max_tab_num=*/3,
+          TabSlider::InitParams{
+              /*internal_border_padding=*/0,
+              /*between_child_spacing=*/capture_mode::kBetweenChildSpacing,
+              /*has_background=*/false,
+              /*has_selector_animation=*/false,
+              /*distribute_space_evenly=*/true}))),
+      fullscreen_toggle_button_(
+          capture_source_switch_->AddButton<IconSliderButton>(
+              base::BindRepeating(&CaptureModeSourceView::OnFullscreenToggle,
+                                  base::Unretained(this)),
+              &kCaptureModeFullscreenIcon,
+              // Tooltip text will be set in `OnCaptureTypeChanged`.
+              /*tooltip_text=*/u"")),
+      region_toggle_button_(capture_source_switch_->AddButton<IconSliderButton>(
           base::BindRepeating(&CaptureModeSourceView::OnRegionToggle,
                               base::Unretained(this)),
           &kCaptureModeRegionIcon,
           // Tooltip text will be set in `OnCaptureTypeChanged`.
           /*tooltip_text=*/u"")),
-      window_toggle_button_(capture_source_switch_->AddButton(
+      window_toggle_button_(capture_source_switch_->AddButton<IconSliderButton>(
           base::BindRepeating(&CaptureModeSourceView::OnWindowToggle,
                               base::Unretained(this)),
           &kCaptureModeWindowIcon,
@@ -66,13 +71,13 @@ void CaptureModeSourceView::OnCaptureSourceChanged(
     CaptureModeSource new_source) {
   switch (new_source) {
     case CaptureModeSource::kFullscreen:
-      fullscreen_toggle_button_->SetToggled(true);
+      fullscreen_toggle_button_->SetSelected(true);
       break;
     case CaptureModeSource::kRegion:
-      region_toggle_button_->SetToggled(true);
+      region_toggle_button_->SetSelected(true);
       break;
     case CaptureModeSource::kWindow:
-      window_toggle_button_->SetToggled(true);
+      window_toggle_button_->SetSelected(true);
       break;
   }
 }

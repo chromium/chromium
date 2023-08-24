@@ -16,8 +16,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/icon_button.h"
-#include "ash/style/icon_switch.h"
+#include "ash/style/tab_slider.h"
+#include "ash/style/tab_slider_button.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -26,12 +26,18 @@
 namespace ash {
 
 CaptureModeTypeView::CaptureModeTypeView(CaptureModeBehavior* active_behavior)
-    : capture_type_switch_(AddChildView(std::make_unique<IconSwitch>())) {
+    : capture_type_switch_(AddChildView(std::make_unique<TabSlider>(
+          /*max_tab_num=*/2,
+          TabSlider::InitParams{/*internal_border_padding=*/2,
+                                /*between_child_spacing=*/0,
+                                /*has_background=*/true,
+                                /*has_selector_animation=*/true,
+                                /*distribute_space_evenly=*/false}))) {
   CHECK(active_behavior);
 
   // Only add the image toggle button if the active behavior allows.
   if (active_behavior->ShouldImageCaptureTypeBeAllowed()) {
-    image_toggle_button_ = capture_type_switch_->AddButton(
+    image_toggle_button_ = capture_type_switch_->AddButton<IconSliderButton>(
         base::BindRepeating(&CaptureModeTypeView::OnImageToggle,
                             base::Unretained(this)),
         &kCaptureModeImageIcon,
@@ -43,7 +49,7 @@ CaptureModeTypeView::CaptureModeTypeView(CaptureModeBehavior* active_behavior)
   }
 
   // Add video toggle button.
-  video_toggle_button_ = capture_type_switch_->AddButton(
+  video_toggle_button_ = capture_type_switch_->AddButton<IconSliderButton>(
       base::BindRepeating(&CaptureModeTypeView::OnVideoToggle,
                           base::Unretained(this)),
       &kCaptureModeVideoIcon,
@@ -69,10 +75,10 @@ void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
 
   DCHECK(!controller->is_recording_in_progress() || !is_video);
 
-  video_toggle_button_->SetToggled(is_video);
+  video_toggle_button_->SetSelected(is_video);
 
   if (image_toggle_button_)
-    image_toggle_button_->SetToggled(!is_video);
+    image_toggle_button_->SetSelected(!is_video);
 }
 
 void CaptureModeTypeView::OnImageToggle() {

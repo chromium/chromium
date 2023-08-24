@@ -50,6 +50,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_widget_builder.h"
@@ -462,11 +463,11 @@ TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_FALSE(GetImageToggleButton()->toggled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
-  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_FALSE(GetWindowToggleButton()->toggled());
+  EXPECT_FALSE(GetImageToggleButton()->selected());
+  EXPECT_TRUE(GetVideoToggleButton()->selected());
+  EXPECT_TRUE(GetFullscreenToggleButton()->selected());
+  EXPECT_FALSE(GetRegionToggleButton()->selected());
+  EXPECT_FALSE(GetWindowToggleButton()->selected());
 
   ClickOnView(GetCloseButton(), GetEventGenerator());
   EXPECT_FALSE(controller->IsActive());
@@ -477,24 +478,24 @@ TEST_F(CaptureModeTest, ChangeTypeAndSourceFromUI) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
 
-  EXPECT_TRUE(GetImageToggleButton()->toggled());
-  EXPECT_FALSE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetImageToggleButton()->selected());
+  EXPECT_FALSE(GetVideoToggleButton()->selected());
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetVideoToggleButton(), event_generator);
-  EXPECT_FALSE(GetImageToggleButton()->toggled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
+  EXPECT_FALSE(GetImageToggleButton()->selected());
+  EXPECT_TRUE(GetVideoToggleButton()->selected());
   EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
 
   ClickOnView(GetWindowToggleButton(), event_generator);
-  EXPECT_FALSE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_TRUE(GetWindowToggleButton()->toggled());
+  EXPECT_FALSE(GetFullscreenToggleButton()->selected());
+  EXPECT_FALSE(GetRegionToggleButton()->selected());
+  EXPECT_TRUE(GetWindowToggleButton()->selected());
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
 
   ClickOnView(GetFullscreenToggleButton(), event_generator);
-  EXPECT_TRUE(GetFullscreenToggleButton()->toggled());
-  EXPECT_FALSE(GetRegionToggleButton()->toggled());
-  EXPECT_FALSE(GetWindowToggleButton()->toggled());
+  EXPECT_TRUE(GetFullscreenToggleButton()->selected());
+  EXPECT_FALSE(GetRegionToggleButton()->selected());
+  EXPECT_FALSE(GetWindowToggleButton()->selected());
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
 }
 
@@ -4337,14 +4338,14 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   controller->Start(CaptureModeEntryType::kQuickSettings);
   EXPECT_TRUE(controller->IsActive());
   EXPECT_EQ(CaptureModeType::kImage, controller->type());
-  EXPECT_TRUE(GetImageToggleButton()->toggled());
-  EXPECT_FALSE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetImageToggleButton()->selected());
+  EXPECT_FALSE(GetVideoToggleButton()->selected());
   EXPECT_FALSE(GetVideoToggleButton()->GetEnabled());
 
   // Clicking on the video button should do nothing.
   ClickOnView(GetVideoToggleButton(), GetEventGenerator());
-  EXPECT_TRUE(GetImageToggleButton()->toggled());
-  EXPECT_FALSE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetImageToggleButton()->selected());
+  EXPECT_FALSE(GetVideoToggleButton()->selected());
   EXPECT_EQ(CaptureModeType::kImage, controller->type());
 
   // Things should go back to normal when there's no recording going on.
@@ -4352,8 +4353,8 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   EXPECT_EQ(CaptureModeType::kVideo, controller->type());
-  EXPECT_FALSE(GetImageToggleButton()->toggled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
+  EXPECT_FALSE(GetImageToggleButton()->selected());
+  EXPECT_TRUE(GetVideoToggleButton()->selected());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
 }
 
@@ -5421,7 +5422,7 @@ TEST_F(ProjectorCaptureModeIntegrationTests, BarButtonsState) {
   // button should be enabled and active.
   EXPECT_FALSE(GetImageToggleButton());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
-  EXPECT_TRUE(GetVideoToggleButton()->toggled());
+  EXPECT_TRUE(GetVideoToggleButton()->selected());
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests, StartEndRecording) {

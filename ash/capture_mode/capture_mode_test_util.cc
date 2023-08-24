@@ -23,6 +23,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
+#include "ash/style/tab_slider.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
@@ -297,21 +298,21 @@ gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path) {
   return image;
 }
 
-IconButton* GetImageToggleButton() {
+TabSliderButton* GetImageToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   auto* capture_type_view = GetCaptureModeBarView()->GetCaptureTypeView();
   return capture_type_view ? capture_type_view->image_toggle_button() : nullptr;
 }
 
-IconButton* GetVideoToggleButton() {
+TabSliderButton* GetVideoToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   auto* capture_type_view = GetCaptureModeBarView()->GetCaptureTypeView();
   return capture_type_view ? capture_type_view->video_toggle_button() : nullptr;
 }
 
-IconButton* GetFullscreenToggleButton() {
+TabSliderButton* GetFullscreenToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();
@@ -319,7 +320,7 @@ IconButton* GetFullscreenToggleButton() {
                              : nullptr;
 }
 
-IconButton* GetRegionToggleButton() {
+TabSliderButton* GetRegionToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();
@@ -327,7 +328,7 @@ IconButton* GetRegionToggleButton() {
                              : nullptr;
 }
 
-IconButton* GetWindowToggleButton() {
+TabSliderButton* GetWindowToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());
   auto* capture_source_view = GetCaptureModeBarView()->GetCaptureSourceView();

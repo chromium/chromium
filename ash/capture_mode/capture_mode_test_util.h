@@ -48,6 +48,7 @@ class PillButton;
 class IconButton;
 class CaptureModeController;
 class CaptureModeBarView;
+class TabSliderButton;
 
 // Fake camera info used for testing.
 constexpr char kDefaultCameraDeviceId[] = "/dev/videoX";
@@ -144,11 +145,11 @@ void PressAndReleaseKeyOnVK(ui::test::EventGenerator* event_generator,
 gfx::Image ReadAndDecodeImageFile(const base::FilePath& image_path);
 
 // Gets the buttons inside the capture bar view.
-IconButton* GetImageToggleButton();
-IconButton* GetVideoToggleButton();
-IconButton* GetFullscreenToggleButton();
-IconButton* GetRegionToggleButton();
-IconButton* GetWindowToggleButton();
+TabSliderButton* GetImageToggleButton();
+TabSliderButton* GetVideoToggleButton();
+TabSliderButton* GetFullscreenToggleButton();
+TabSliderButton* GetRegionToggleButton();
+TabSliderButton* GetWindowToggleButton();
 PillButton* GetStartRecordingButton();
 IconButton* GetSettingsButton();
 IconButton* GetCloseButton();
