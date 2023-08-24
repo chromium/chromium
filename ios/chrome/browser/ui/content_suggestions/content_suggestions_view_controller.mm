@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/drag_and_drop/url_drag_drop_handler.h"
 #import "ios/chrome/browser/ntp/set_up_list_item.h"
 #import "ios/chrome/browser/ntp/set_up_list_item_type.h"
-#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -860,7 +859,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     absl::optional<base::Time> lastRunTime =
         absl::optional<base::Time>(_safetyCheckState.lastRunTime);
 
-    return password_manager::FormatElapsedTimeSinceLastCheck(lastRunTime);
+    return FormatElapsedTimeSinceLastSafetyCheck(lastRunTime);
   }
 
   return @"";

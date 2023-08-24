@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/time/time.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol ApplicationCommands;
 namespace password_manager {
@@ -34,5 +35,8 @@ int CheckIssuesCount(SafetyCheckState* state);
 
 // Returns true if the Safety Check can be run given `last_run_time`.
 bool CanRunSafetyCheck(base::Time last_run_time);
+
+NSString* FormatElapsedTimeSinceLastSafetyCheck(
+    absl::optional<base::Time> last_run_time);
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_SAFETY_CHECK_UTILS_H_

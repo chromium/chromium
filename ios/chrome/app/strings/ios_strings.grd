@@ -5159,6 +5159,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_SAFETY_CHECK_TITLE" desc="Tag label title displayed for the Safety Check module in the Magic Stack. [iOS only]">
         Safety Check
       </message>
+      <message name="IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK" desc="Subtitle for Safety Check (Magic Stack) module which shows the timestamp of the last check." meaning="Time when the Safety Check was last run.">
+        Last run <ph name="TIME">$1<ex>10 minutes ago</ex></ph>
+      </message>
     </messages>
   </release>
 </grit>

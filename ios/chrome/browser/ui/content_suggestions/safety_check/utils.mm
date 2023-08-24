@@ -14,12 +14,20 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/common/channel_info.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/time_format.h"
 #import "url/gurl.h"
 
 namespace {
 
 // The Safety Check should only be run once every 24 hours.
 constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
+
+// The amount of time after which the last run timestamp is shown, instead of
+// displaying the last run "just now" text.
+constexpr base::TimeDelta kDisplayTimestampThreshold = base::Minutes(1);
 
 // Returns the number of unique warning types found in `counts`.
 //
@@ -155,4 +163,29 @@ bool CanRunSafetyCheck(base::Time last_run_time) {
   }
 
   return false;
+}
+
+NSString* FormatElapsedTimeSinceLastSafetyCheck(
+    absl::optional<base::Time> last_run_time) {
+  if (!last_run_time.has_value()) {
+    return l10n_util::GetNSString(IDS_IOS_CHECK_NEVER_RUN);
+  }
+
+  base::TimeDelta elapsed_time = base::Time::Now() - last_run_time.value();
+
+  std::u16string timestamp;
+
+  // If the latest Safety Check run happened less than
+  // `kDisplayTimestampThreshold` ago, show the last run "just now" text instead
+  // of the timestamp.
+  if (elapsed_time < kDisplayTimestampThreshold) {
+    timestamp = l10n_util::GetStringUTF16(IDS_IOS_CHECK_FINISHED_JUST_NOW);
+  } else {
+    timestamp = ui::TimeFormat::SimpleWithMonthAndYear(
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+        elapsed_time, true);
+  }
+
+  return l10n_util::GetNSStringF(IDS_IOS_SAFETY_CHECK_LAST_COMPLETED_CHECK,
+                                 timestamp);
 }

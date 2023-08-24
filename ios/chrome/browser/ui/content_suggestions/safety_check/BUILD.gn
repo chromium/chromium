@@ -16,7 +16,10 @@ source_set("safety_check") {
     "utils.h",
     "utils.mm",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
   deps = [
     ":constants",
     "//components/password_manager/core/browser",
