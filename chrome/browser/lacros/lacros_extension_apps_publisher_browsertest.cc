@@ -14,10 +14,11 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
-#include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/test/browser_test.h"
@@ -374,6 +375,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
   }
 }
 
+// Verify AppCapabilityAccess is modified for Chrome apps.
 IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
                        RequestAccessingForPlatformApp) {
   const extensions::Extension* extension =
@@ -412,6 +414,63 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest,
   std::move(video_closure).Run();
   publisher->VerifyAppCapabilityAccess(extension->id(), 4u, false,
                                        absl::nullopt);
+}
+
+// Verify AppCapabilityAccess for web apps is not handled by
+// LacrosExtensionAppsPublisher.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoAccessingForWebApp) {
+  std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
+      std::make_unique<LacrosExtensionAppsPublisherFake>();
+  publisher->Initialize();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("app.com", "/ssl/google.html");
+  auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+  web_app_info->start_url = url;
+  web_app_info->scope = url;
+  auto app_id = web_app::test::InstallWebApp(browser()->profile(),
+                                             std::move(web_app_info));
+
+  // Launch `app_id` for the web app.
+  web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+  web_app::NavigateToURLAndWait(browser(), url);
+  content::WebContents* web_content =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_content);
+
+  // Request accessing the camera and microphone for `web_contents`.
+  base::OnceClosure video_closure1 = StartMediaCapture(
+      web_content, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  base::OnceClosure audio_closure1 = StartMediaCapture(
+      web_content, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+
+  // Verify the publisher does not handle the access for the web app.
+  ASSERT_TRUE(publisher->accesses_history().empty());
+}
+
+// Verify AppCapabilityAccess for browser tabs is not handled by
+// LacrosExtensionAppsPublisher.
+IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, NoAccessingForTab) {
+  std::unique_ptr<LacrosExtensionAppsPublisherFake> publisher =
+      std::make_unique<LacrosExtensionAppsPublisherFake>();
+  publisher->Initialize();
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("app.com", "/ssl/google.html")));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Request accessing the camera and microphone for `web_contents`.
+  base::OnceClosure video_closure = StartMediaCapture(
+      web_contents, blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+  base::OnceClosure audio_closure = StartMediaCapture(
+      web_contents, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE);
+
+  // Verify the publisher does not handle the access for the tab.
+  ASSERT_TRUE(publisher->accesses_history().empty());
 }
 
 }  // namespace

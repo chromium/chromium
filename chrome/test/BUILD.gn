@@ -3045,6 +3045,7 @@ if (!is_android) {
         "../browser/apps/app_service/webapk/webapk_utils_lacros_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_accelerator_browsertest.cc",
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
+        "../browser/lacros/lacros_apps_publisher_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
         "../browser/lacros/profile_loader_browsertest.cc",
