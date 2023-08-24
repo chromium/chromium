@@ -27312,10 +27312,10 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
       label="Breakpoints in file enabled or disabled form context menu"/>
   <int value="73" label="Breakpoint condition edited from sidebar"/>
   <int value="74" label="Add Workspace folder via button in sidebar"/>
-  <int value="75" label="Remove Filesystem from Workspace"/>
-  <int value="76" label="Add Folder for Overrides"/>
-  <int value="77" label="Remove Folder for Overrides"/>
-  <int value="78" label="Filesystem source selected"/>
+  <int value="75" label="Sources - Workspace Tab - Remove folder"/>
+  <int value="76" label="Sources - Override Tab - Add Folder"/>
+  <int value="77" label="Sources - Override Tab - Remove Folder"/>
+  <int value="78" label="Workspace source selected"/>
   <int value="79" label="Overrides source selected"/>
   <int value="80" label="Stylesheet request initiator link clicked"/>
   <int value="81" label="Breakpoint removed from gutter context menu"/>
@@ -28248,7 +28248,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="6" label="Elements - Properties"/>
   <int value="7" label="Elements - Accessibility"/>
   <int value="8" label="Sources - Page"/>
-  <int value="9" label="Sources - Filesystem"/>
+  <int value="9" label="Sources - Workspace"/>
   <int value="10" label="Sources - Overrides"/>
   <int value="11" label="Sources - Content Scripts"/>
   <int value="12" label="Sources - Snippets"/>
@@ -28257,7 +28257,7 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
 <enum name="DevToolsSourcesSidebarTab">
   <int value="0" label="Other sidebar pane"/>
   <int value="1" label="Sources - Page"/>
-  <int value="2" label="Sources - Filesystem"/>
+  <int value="2" label="Sources - Workspace"/>
   <int value="3" label="Sources - Overrides"/>
   <int value="4" label="Sources - Content Scripts"/>
   <int value="5" label="Sources - Snippets"/>
