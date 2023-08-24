@@ -32,6 +32,7 @@ source_set("tab_strip_ui") {
     "tab_strip_view_layout.mm",
   ]
   deps = [
+    "//base",
     "//components/favicon/ios",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/shared/model/browser_state",

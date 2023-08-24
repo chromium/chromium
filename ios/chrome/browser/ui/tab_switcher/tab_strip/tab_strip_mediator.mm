@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 
+#import "base/debug/dump_without_crashing.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -161,10 +162,22 @@ NSString* GetActiveTabId(WebStateList* web_state_list) {
   if (!self.webStateList)
     return;
 
-  if (self.browserState) {
-    // Make sure that adding a new item is allowed by policy.
-    CHECK(IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
-                                     self.browserState->IsOffTheRecord()));
+  if (!self.browserState) {
+    return;
+  }
+
+  if (!IsAddNewTabAllowedByPolicy(self.browserState->GetPrefs(),
+                                  self.browserState->IsOffTheRecord())) {
+    // TODO(crbug.com/1471955): Try to show a notice to the user when this
+    // happens.
+    //
+    // Check that adding a new item is allowed by policy. It is an error to
+    // call -addNewItem when the corresponding browsing mode is disabled. The
+    // event is reported without crashing the browser and -addNewItem is
+    // softly cancelled without a notice (this approach is better than allowing
+    // a policy violation).
+    base::debug::DumpWithoutCrashing();
+    return;
   }
 
   web::WebState::CreateParams params(self.browserState);
