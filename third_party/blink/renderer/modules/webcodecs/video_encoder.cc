@@ -1251,21 +1251,24 @@ void VideoEncoder::CallOutputCallback(
 
   if (first_output_after_configure_ || codec_desc.has_value() ||
       output_color_space != last_output_color_space_) {
-    if (active_config->codec == media::VideoCodec::kH264) {
-      DCHECK(active_config->options.avc.produce_annexb ||
-             codec_desc.has_value());
-    }
-
     first_output_after_configure_ = false;
 
     if (output_color_space != last_output_color_space_) {
-// This should only fail when AndroidVideoEncodeAccelerator is used. Since it's
-// not worth plumbing that just for this DCHECK, disable it entirely.
+// This should only fail when AndroidVideoEncodeAccelerator is used since it
+// doesn't support color space changes. It's not worth plumbing a signal just
+// for these DCHECKs, so disable them entirely.
 #if !BUILDFLAG(IS_ANDROID)
+      if (active_config->codec == media::VideoCodec::kH264) {
+        DCHECK(active_config->options.avc.produce_annexb ||
+               codec_desc.has_value());
+      }
       DCHECK(output.key_frame) << "Encoders should generate a keyframe when "
                                << "changing color space";
 #endif
       last_output_color_space_ = output_color_space;
+    } else if (active_config->codec == media::VideoCodec::kH264) {
+      DCHECK(active_config->options.avc.produce_annexb ||
+             codec_desc.has_value());
     }
 
     auto encoded_size =
