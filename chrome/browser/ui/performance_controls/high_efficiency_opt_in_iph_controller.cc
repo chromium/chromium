@@ -36,11 +36,11 @@ void HighEfficiencyOptInIPHController::OnJankThresholdReached() {
 }
 
 void HighEfficiencyOptInIPHController::MaybeTriggerPromo() {
-  BrowserWindow* browser_window = browser_->window();
-  if (browser_window != nullptr &&
-      performance_manager::user_tuning::UserPerformanceTuningManager::
-          GetInstance()
-              ->IsHighEfficiencyModeDefault()) {
+  BrowserWindow* const browser_window = browser_->window();
+  auto* const manager = performance_manager::user_tuning::
+      UserPerformanceTuningManager::GetInstance();
+  if (browser_window != nullptr && manager->IsHighEfficiencyModeDefault() &&
+      !manager->IsHighEfficiencyModeActive()) {
     browser_window->MaybeShowStartupFeaturePromo(
         feature_engagement::kIPHHighEfficiencyModeFeature);
   }
