@@ -10401,26 +10401,6 @@
             ]
         }
     ],
-    "OmniboxZaryaInNTPRealboxDesktopV1": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxGroupingFrameworkForZPS",
-                        "RealboxSecondaryZeroSuggest"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxZeroSuggestPrefetchingAndroid": [
         {
             "platforms": [

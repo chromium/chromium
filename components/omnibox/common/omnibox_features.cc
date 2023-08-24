@@ -53,7 +53,7 @@ BASE_FEATURE(kOmniboxRemoveSuggestionsFromClipboard,
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
 BASE_FEATURE(kGroupingFrameworkForZPS,
              "OmniboxGroupingFrameworkForZPS",
-             enabled_by_default_android_only);
+             enabled_by_default_desktop_android);
 
 // When enabled, uses the grouping framework with prefixed suggestions (i.e.
 // autocomplete_grouper_sections.h) to limit and group (but not sort) matches.
@@ -196,7 +196,7 @@ BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
 // suggestions in the 2nd column of realbox.
 BASE_FEATURE(kRealboxSecondaryZeroSuggest,
              "RealboxSecondaryZeroSuggest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             enabled_by_default_desktop_only);
 
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
