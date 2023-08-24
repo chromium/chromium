@@ -821,15 +821,13 @@ template("test") {
         "$root_out_dir/gen.runtime/" + get_label_info(target_name, "dir") +
         "/" + get_label_info(target_name, "name") + ".runtime_deps"
 
-    _generated_script = "$root_build_dir/bin/run_" + invoker.target_name
-    if (is_skylab) {
-      generate_skylab_deps(_gen_runner_target) {
-        generated_script = _generated_script
-        test_exe = invoker.target_name
+    if (is_skylab && (defined(tast_attr_expr) || defined(tast_tests) ||
+                      defined(tast_disabled_tests))) {
+      generate_skylab_tast_filter(_gen_runner_target) {
       }
     } else {
       generate_runner_script(_gen_runner_target) {
-        generated_script = _generated_script
+        generated_script = "$root_build_dir/bin/run_" + invoker.target_name
         test_exe = invoker.target_name
         runtime_deps_file = _runtime_deps_file
 

@@ -1,13 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env vpython3
 #
-# Copyright 2022 The Chromium Authors
+# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import unittest
 from unittest import mock
 
-import generate_skylab_deps
+import generate_skylab_tast_filter
 
 TAST_CONTROL = '''
 # Ignore comments
@@ -25,7 +25,7 @@ TAST_EXPR = '"group:mainline" && "dep:chrome" && !informational'
 REQUIRED_ARGS = ['script', 'generate-filter', '--output', 'output.filter']
 
 
-class GenerateSkylabDepsTest(unittest.TestCase):
+class GenerateSkylabTastFilterTest(unittest.TestCase):
 
   def testTastExpr(self):
     file_mock = mock.mock_open(read_data=TAST_CONTROL)
@@ -35,7 +35,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(filter_dict['default'], '(%s)' % TAST_EXPR)
 
@@ -50,7 +50,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(
           filter_dict['default'],
@@ -67,7 +67,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(filter_dict['default'],
                        '("name:enabled.test1" || "name:enabled.test2")')
@@ -85,7 +85,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(filter_dict['default'], '(%s)' % TAST_EXPR)
       self.assertEqual(filter_dict['tast_disabled_tests_from_chrome_m100'],
@@ -103,7 +103,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(
           filter_dict['default'],
@@ -132,7 +132,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       self.assertEqual(
           filter_dict['default'],
@@ -161,7 +161,7 @@ class GenerateSkylabDepsTest(unittest.TestCase):
         mock.patch('builtins.open', file_mock),\
         mock.patch('os.chmod'),\
         mock.patch("json.dump", mock.MagicMock()) as dump:
-      generate_skylab_deps.main()
+      generate_skylab_tast_filter.main()
       filter_dict = dump.call_args[0][0]
       # Should not include 'all' collection from TAST_CONTROL since that would
       # need to be passed in the --disabled-tests to be included
