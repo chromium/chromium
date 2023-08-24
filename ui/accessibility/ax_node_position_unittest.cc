@@ -2902,7 +2902,7 @@ TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithIgnoredNodes) {
 
 TEST_F(AXPositionTest, AtStartOrEndOfParagraphWithEmbeddedObjectCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // This test ensures that "At{Start|End}OfParagraph" work correctly when there
   // are embedded objects present near a paragraph boundary.
@@ -3957,7 +3957,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
 
 TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmbeddedObject) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kImage alt="Test image"
@@ -4672,7 +4672,7 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithNullPosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
   TestPositionType tree_position =
       CreateTreePosition(static_text1_, 1 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
@@ -4732,7 +4732,7 @@ TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTreePosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtPreviousFormatStartWithTextPosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
   TestPositionType text_position = CreateTextPosition(
       inline_box1_, 2 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
@@ -4808,7 +4808,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithNullPosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
   TestPositionType tree_position =
       CreateTreePosition(button_, 0 /* child_index */);
   ASSERT_NE(nullptr, tree_position);
@@ -4875,7 +4875,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTreePosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
   TestPositionType text_position = CreateTextPosition(
       button_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
   ASSERT_NE(nullptr, text_position);
@@ -4950,7 +4950,7 @@ TEST_F(AXPositionTest, CreatePositionAtNextFormatEndWithTextPosition) {
 
 TEST_F(AXPositionTest, CreatePositionAtNextFormatEndOnEmbeddedObject) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
   // ++root_1
   // ++++heading_2
   // ++++++static_text_3 "heading 1"
@@ -7541,7 +7541,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithMoveDirection) {
   // accessibility tree, e.g., in IAccessible2, UI Automation and Linux ATK
   // APIs.
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // This test ensures that "CreateParentPosition" (and by extension
   // "CreateAncestorPosition") works correctly when it is given either a tree or
@@ -8359,7 +8359,7 @@ TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmptyNodes) {
 
 TEST_F(AXPositionTest, CreateParentAndLeafPositionWithEmbeddedObjects) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++kRootWebArea "<embedded>Hello<embedded>"
   // ++++kParagraph "Paragraph"
@@ -9170,7 +9170,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionBeforeCharacter) {
 TEST_F(AXPositionTest,
        AsLeafTextPositionBeforeCharacterIncludingGeneratedNewlines) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   TestPositionType text_position = CreateTextPosition(
       button_, 1 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -9294,7 +9294,7 @@ TEST_F(AXPositionTest, AsLeafTextPositionAfterCharacter) {
 TEST_F(AXPositionTest,
        AsLeafTextPositionAfterCharacterIncludingGeneratedNewlines) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   TestPositionType text_position = CreateTextPosition(
       button_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -9479,7 +9479,7 @@ TEST_F(AXPositionTest, AsValidPosition) {
 
 TEST_F(AXPositionTest, AsValidPositionInDescendantOfEmptyObject) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea
   // ++++2 kButton
@@ -9760,7 +9760,7 @@ TEST_F(AXPositionTest, CreateNextCharacterPosition) {
 
 TEST_F(AXPositionTest, CreateNextCharacterPositionIncludingGeneratedNewlines) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   TestPositionType text_position = CreateTextPosition(
       inline_box1_, 6 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -10084,7 +10084,7 @@ TEST_F(AXPositionTest, CreatePreviousCharacterPosition) {
 TEST_F(AXPositionTest,
        CreatePreviousCharacterPositionIncludingGeneratedNewlines) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   TestPositionType text_position = CreateTextPosition(
       inline_box2_, 0 /* text_offset */, ax::mojom::TextAffinity::kDownstream);
@@ -10616,7 +10616,7 @@ TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdLeaf) {
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea
   // ++++2 kTextField editable
@@ -10679,7 +10679,7 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInTextField) {
 
 TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea
   // ++++2 kSearchBox editable
@@ -10777,7 +10777,7 @@ TEST_F(AXPositionTest, OperatorEqualsTextPositionsInSearchBox) {
 
 TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kParagraph "<embedded_object>"
@@ -10909,7 +10909,7 @@ TEST_F(AXPositionTest, OperatorsTreePositionsAroundEmbeddedCharacter) {
 
 TEST_F(AXPositionTest, OperatorsTextPositionsAroundEmbeddedCharacter) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea "<embedded_object><embedded_object>"
   // ++++2 kParagraph "<embedded_object>"
@@ -11803,7 +11803,7 @@ TEST_F(AXPositionTest, CreatePreviousWordPositionInList) {
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText
@@ -12132,7 +12132,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // Parent Tree
   // ++1 kRootWebArea
@@ -12184,7 +12184,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   // expanded, it must be accessible in the tree. This test ensures we can't
   // navigate into the options of a collapsed menu list popup.
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText "Hi"
@@ -12346,7 +12346,7 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
 
 TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
   ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
-      AXEmbeddedObjectBehavior::kExposeCharacter);
+      AXEmbeddedObjectBehavior::kExposeCharacterForHypertext);
 
   AXNodeData root_data;
   root_data.id = 1;

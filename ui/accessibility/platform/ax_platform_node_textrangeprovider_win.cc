@@ -491,11 +491,12 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   //
   // Whether we expose embedded object characters for nodes is managed by the
   // |g_ax_embedded_object_behavior| global variable set in ax_node_position.cc.
-  // When on Windows, this variable is always set to kExposeCharacter... which
-  // is incorrect if we run UIA-specific code. To avoid problems caused by that,
-  // we use the following ScopedAXEmbeddedObjectBehaviorSetter to modify the
-  // value of the global variable to what is really expected on UIA.
-  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+  // When on Windows, this variable is always set to
+  // kExposeCharacterForHypertext... which is incorrect if we run UIA-specific
+  // code. To avoid problems caused by that, we use the following
+  // ScopedAXEmbeddedObjectBehaviorSetter to modify the value of the global
+  // variable to what is really expected on UIA.
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior_find_text(
       AXEmbeddedObjectBehavior::kSuppressCharacter);
 
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
@@ -503,23 +504,22 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   // The following has to be called after setting the
   // ax_embedded_object_behavior. This is because it can modify `this`'s `start`
   // and `end`, and it will do so assuming
-  // `AXEmbeddedObjectBehavior::kExposeCharacter` if we do not set it to
-  // `kSuppressCharacter' above. This would lead to incorrect behavior where the
-  // `text_range` length = 1, since that is the length of the embedded object
-  // character.
+  // `AXEmbeddedObjectBehavior::kExposeCharacterForHypertext` if we do not set
+  // it to `kSuppressCharacter' above. This would lead to incorrect behavior
+  // where the `text_range` length = 1, since that is the length of the embedded
+  // object character.
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
 
   std::u16string search_string = base::WideToUTF16(string);
   if (search_string.length() <= 0)
     return E_INVALIDARG;
 
-  size_t appended_newlines_count = 0;
-  std::u16string text_range = GetString(-1, &appended_newlines_count);
+  std::vector<size_t> appended_newlines_indices;
+  std::u16string text_range = GetString(-1, &appended_newlines_indices);
   size_t find_start;
   size_t find_length;
   if (base::i18n::StringSearch(search_string, text_range, &find_start,
-                               &find_length, !ignore_case, !backwards) &&
-      find_length > appended_newlines_count) {
+                               &find_length, !ignore_case, !backwards)) {
     // TODO(https://crbug.com/1023599): There is a known issue here related to
     // text searches of a |string| starting and ending with a "\n", e.g.
     // "\nsometext" or "sometext\n" if the newline is computed from a line
@@ -538,7 +538,10 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
     DCHECK(anchor);
     const int start_offset =
         start_ancestor_position->text_offset() + find_start;
-    const int end_offset = start_offset + find_length - appended_newlines_count;
+    const int end_offset =
+        start_offset + find_length -
+        GetAppendedNewLinesCountInRange(find_start, find_length,
+                                        appended_newlines_indices);
     const int max_end_offset = end_ancestor_position->text_offset();
     DCHECK(start_offset <= end_offset && end_offset <= max_end_offset);
 
@@ -727,6 +730,8 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetEnclosingElement(
 }
 
 HRESULT AXPlatformNodeTextRangeProviderWin::GetText(int max_count, BSTR* text) {
+  ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent);
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTRANGE_GETTEXT);
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_GETTEXT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(text);
@@ -1206,11 +1211,34 @@ AXPlatformNodeTextRangeProviderWin::GetNextTextBoundaryPosition(
 
 std::u16string AXPlatformNodeTextRangeProviderWin::GetString(
     int max_count,
-    size_t* appended_newlines_count) {
+    std::vector<size_t>* appended_newlines_indices) {
   AXNodeRange range(start()->Clone(), end()->Clone());
-  return range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
-                       AXEmbeddedObjectBehavior::kExposeCharacter, max_count,
-                       false, appended_newlines_count);
+  return range.GetText(
+      AXTextConcatenationBehavior::kWithParagraphBreaks,
+      AXEmbeddedObjectBehavior::kUIAExposeCharacterForTextContent, max_count,
+      false, appended_newlines_indices);
+}
+
+size_t AXPlatformNodeTextRangeProviderWin::GetAppendedNewLinesCountInRange(
+    size_t find_start,
+    size_t find_length,
+    const std::vector<size_t>& appended_newlines_indices) {
+  size_t relevant_appended_newlines_count = 0;
+
+  for (size_t i = 0; i < appended_newlines_indices.size(); ++i) {
+    // Since the vector is ordered, we can break out of the loop once we've
+    // passed the end of the range.
+    if (appended_newlines_indices[i] > find_start + find_length) {
+      break;
+    }
+
+    if (appended_newlines_indices[i] >= find_start &&
+        appended_newlines_indices[i] < find_start + find_length) {
+      ++relevant_appended_newlines_count;
+    }
+  }
+
+  return relevant_appended_newlines_count;
 }
 
 AXPlatformNodeWin* AXPlatformNodeTextRangeProviderWin::GetOwner() const {

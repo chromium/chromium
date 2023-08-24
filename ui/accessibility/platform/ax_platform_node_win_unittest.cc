@@ -269,7 +269,8 @@ IFACEMETHODIMP MockIRawElementProviderSimple::get_HostRawElementProvider(
 }
 
 AXPlatformNodeWinTest::AXPlatformNodeWinTest()
-    : ax_embedded_object_behavior_(AXEmbeddedObjectBehavior::kExposeCharacter) {
+    : ax_embedded_object_behavior_(
+          AXEmbeddedObjectBehavior::kExposeCharacterForHypertext) {
   scoped_feature_list_.InitAndEnableFeature(features::kIChromeAccessible);
 }
 

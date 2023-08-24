@@ -301,10 +301,10 @@ class AXRange {
       AXTextConcatenationBehavior concatenation_behavior =
           AXTextConcatenationBehavior::kWithoutParagraphBreaks,
       AXEmbeddedObjectBehavior embedded_object_behavior =
-          AXEmbeddedObjectBehavior::kExposeCharacter,
+          AXEmbeddedObjectBehavior::kExposeCharacterForHypertext,
       int max_count = -1,
       bool include_ignored = false,
-      size_t* appended_newlines_count = nullptr) const {
+      std::vector<size_t>* appended_newlines_indices = nullptr) const {
     if (max_count == 0 || IsNull())
       return std::u16string();
 
@@ -321,7 +321,6 @@ class AXRange {
                                  : anchor_->AsLeafTextPosition();
 
     std::u16string range_text;
-    size_t computed_newlines_count = 0;
     bool is_first_non_whitespace_leaf = true;
     bool crossed_paragraph_boundary = false;
     bool is_first_included_leaf = true;
@@ -355,7 +354,9 @@ class AXRange {
           // previous leaf position was a <br> (already ending with a newline).
           if (crossed_paragraph_boundary && !found_trailing_newline) {
             range_text += u"\n";
-            computed_newlines_count++;
+            if (appended_newlines_indices) {
+              appended_newlines_indices->push_back(range_text.length() - 1);
+            }
           }
 
           is_first_non_whitespace_leaf = false;
@@ -413,8 +414,6 @@ class AXRange {
       }
     }
 
-    if (appended_newlines_count)
-      *appended_newlines_count = computed_newlines_count;
     return range_text;
   }
 

@@ -1917,6 +1917,65 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderGetText) {
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest,
+       TestGetVisibleRangesFindTextGetTextPipeline) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kGenericContainer state=kRichlyEditable
+    ++++++3 kGenericContainer
+    ++++++++4 kStaticText
+    ++++++++++5 kInlineTextBox
+    ++++++6 kGenericContainer boolAttribute=kIsLineBreakingObject,true
+  )HTML"));
+  update.nodes[2].SetName("Hello World");
+  update.nodes[3].SetName("Hello World");
+  update.nodes[4].SetName("Hello World");
+
+  Init(update);
+
+  ComPtr<IRawElementProviderSimple> root_node =
+      GetRootIRawElementProviderSimple();
+
+  ComPtr<ITextProvider> text_provider;
+  EXPECT_HRESULT_SUCCEEDED(
+      root_node->GetPatternProvider(UIA_TextPatternId, &text_provider));
+
+  ComPtr<ITextRangeProvider> range;
+  EXPECT_HRESULT_SUCCEEDED(text_provider->get_DocumentRange(&range));
+
+  AXPlatformNodeWin* owner =
+      static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(GetNode(2)));
+  ASSERT_NE(owner, nullptr);
+  SetOwner(owner, range.Get());
+
+  base::win::ScopedBstr find_string(L"Hello");
+  Microsoft::WRL::ComPtr<ITextRangeProvider> text_range_provider_found;
+  EXPECT_HRESULT_SUCCEEDED(range->FindText(find_string.Get(), false, false,
+                                           &text_range_provider_found));
+  SetOwner(owner, text_range_provider_found.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider_found, L"Hello")
+
+  ComPtr<ITextRangeProvider> selected_text_range_provider;
+  base::win::ScopedSafearray selection;
+  LONG index = 0;
+  text_range_provider_found->Select();
+
+  AXPlatformNodeDelegate* delegate = owner->GetDelegate();
+
+  // Verify selection.
+  AXSelection unignored_selection = delegate->GetUnignoredSelection();
+
+  // Verify the content of the selection.
+  text_provider->GetSelection(selection.Receive());
+  ASSERT_NE(nullptr, selection.Get());
+
+  EXPECT_HRESULT_SUCCEEDED(
+      SafeArrayGetElement(selection.Get(), &index,
+                          static_cast<void**>(&selected_text_range_provider)));
+  SetOwner(owner, selected_text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(selected_text_range_provider, L"Hello");
+}
+
+TEST_F(AXPlatformNodeTextRangeProviderTest,
        TestITextRangeProviderMoveCharacter) {
   Init(BuildAXTreeForMove());
   AXNode* root_node = GetRoot();

@@ -17,7 +17,7 @@ namespace ui {
 // character and a word boundary.
 AXEmbeddedObjectBehavior g_ax_embedded_object_behavior =
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
-    AXEmbeddedObjectBehavior::kExposeCharacter;
+    AXEmbeddedObjectBehavior::kExposeCharacterForHypertext;
 #else
     AXEmbeddedObjectBehavior::kSuppressCharacter;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)

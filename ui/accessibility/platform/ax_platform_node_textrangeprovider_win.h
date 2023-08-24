@@ -121,8 +121,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
 
   IFACEMETHODIMP ExpandToEnclosingUnitImpl(TextUnit unit);
 
-  std::u16string GetString(int max_count,
-                           size_t* appended_newlines_count = nullptr);
+  std::u16string GetString(
+      int max_count,
+      std::vector<size_t>* appended_newlines_indices = nullptr);
+
+  static size_t GetAppendedNewLinesCountInRange(
+      size_t find_start,
+      size_t find_length,
+      const std::vector<size_t>& appended_newlines_indices);
   const AXPositionInstance& start() const { return endpoints_.GetStart(); }
   const AXPositionInstance& end() const { return endpoints_.GetEnd(); }
   AXPlatformNodeDelegate* GetDelegate(
