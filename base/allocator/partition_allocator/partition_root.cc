@@ -342,9 +342,14 @@ MinPurgeableSlotSize() {
 }
 }  // namespace
 
+// The function attempts to unprovision unused slots and discard unused pages.
+// It may also "straighten" the free list.
+//
+// If `accounting_only` is set to true, no action is performed and the function
+// merely returns the number of bytes in the would-be discarded pages.
 static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
                                      internal::SlotSpanMetadata* slot_span,
-                                     bool discard)
+                                     bool accounting_only)
     PA_EXCLUSIVE_LOCKS_REQUIRED(internal::PartitionRootLock(root)) {
   const internal::PartitionBucket* bucket = slot_span->bucket;
   size_t slot_size = bucket->slot_size;
@@ -360,7 +365,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     uint32_t utilized_slot_size = static_cast<uint32_t>(
         RoundUpToSystemPage(slot_span->GetUtilizedSlotSize()));
     discardable_bytes = bucket->slot_size - utilized_slot_size;
-    if (discardable_bytes && discard) {
+    if (discardable_bytes && !accounting_only) {
       uintptr_t slot_span_start =
           internal::SlotSpanMetadata::ToSlotSpanStart(slot_span);
       uintptr_t committed_data_end = slot_span_start + utilized_slot_size;
@@ -428,7 +433,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     PA_DCHECK(num_provisioned_slots);
   }
   // First, do the work of calculating the discardable bytes. Don't actually
-  // discard anything unless the discard flag was passed in.
+  // discard anything if `accounting_only` is set.
   if (truncated_slots) {
     size_t unprovisioned_bytes = 0;
     uintptr_t begin_addr =
@@ -457,10 +462,11 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       discardable_bytes += unprovisioned_bytes;
     }
 
-    // If there are any unprovisioned slots, and |discard| is set, then take
-    // action to remove these slots from the free list. "straighten" it, while
-    // at it (if requested), to help reduce fragmentation in the future.
-    if (unprovisioned_bytes && discard) {
+    // If there are any unprovisioned slots, and `accounting_only` isn't set,
+    // then take action to remove these slots from the free list. "straighten"
+    // it, while at it (if requested), to help reduce fragmentation in the
+    // future.
+    if (unprovisioned_bytes && !accounting_only) {
       PA_DCHECK(truncated_slots > 0);
       size_t new_unprovisioned_slots =
           truncated_slots + slot_span->num_unprovisioned_slots;
@@ -621,7 +627,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     if (begin_addr < end_addr) {
       size_t partial_slot_bytes = end_addr - begin_addr;
       discardable_bytes += partial_slot_bytes;
-      if (discard) {
+      if (!accounting_only) {
         ScopedSyscallTimer timer{root};
         DiscardSystemPages(begin_addr, partial_slot_bytes);
       }
@@ -640,7 +646,7 @@ static void PartitionPurgeBucket(PartitionRoot* root,
          slot_span; slot_span = slot_span->next_slot_span) {
       PA_DCHECK(slot_span !=
                 internal::SlotSpanMetadata::get_sentinel_slot_span());
-      PartitionPurgeSlotSpan(root, slot_span, true);
+      PartitionPurgeSlotSpan(root, slot_span, false);
     }
   }
 }
@@ -656,8 +662,7 @@ static void PartitionDumpSlotSpanStats(PartitionBucketMemoryStats* stats_out,
     return;
   }
 
-  stats_out->discardable_bytes +=
-      PartitionPurgeSlotSpan(root, slot_span, false);
+  stats_out->discardable_bytes += PartitionPurgeSlotSpan(root, slot_span, true);
 
   if (slot_span->CanStoreRawSize()) {
     stats_out->active_bytes += static_cast<uint32_t>(slot_span->GetRawSize());
