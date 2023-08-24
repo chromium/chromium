@@ -197,6 +197,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Download.Bubble.ToolbarButtonClickToFullViewShownLatency"
+    units="ms" expires_after="2024-06-01">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Measures the time (in ms) from download toolbar button click to when
+    Download Bubble full view becomes visible. Recorded only for Desktop
+    platforms, where Download Bubble is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Download.Bubble.{DownloadBubbleViewType}View.VisibleTime"
     units="ms" expires_after="2024-03-07">
   <owner>chlily@chromium.org</owner>
