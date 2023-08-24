@@ -2266,9 +2266,9 @@ TEST_F(CalendarViewWithMessageCenterTest,
     PressTab();
   }
 
-  // The "back to today" `PillButton` is the first focused view.
+  // Focus moves to calendar - the current date view is the first focused view.
   EXPECT_STREQ(calendar_focus_manager()->GetFocusedView()->GetClassName(),
-               "PillButton");
+               "CalendarDateCellView");
 
   // Move back to the message center.
   PressShiftTab();

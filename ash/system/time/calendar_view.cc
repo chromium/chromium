@@ -590,6 +590,12 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate)
   calendar_sliding_surface_->SetPaintToLayer();
   calendar_sliding_surface_->layer()->SetFillsBoundsOpaquely(false);
 
+  // Override the default focus order so the calendar contents (which contains
+  // the current date view) and the UI within calendar sliding surfaces get
+  // focused before the "Today" button in the calendar view header.
+  scroll_view_->InsertBeforeInFocusList(TrayDetailedView::tri_view());
+  calendar_sliding_surface_->InsertAfterInFocusList(scroll_view_);
+
   scoped_calendar_model_observer_.Observe(calendar_model_.get());
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
