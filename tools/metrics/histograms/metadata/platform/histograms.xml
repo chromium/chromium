@@ -1567,6 +1567,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.Resourced.MemoryNotificationCountTenMinutes"
+    units="count" expires_after="2024-08-23">
+  <owner>vovoy@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Memory notification count in 10 minutes, reported every 10 minutes.
+  </summary>
+</histogram>
+
 <histogram name="Platform.SATA.AvailableReservedSpace" units="%"
     expires_after="2024-08-07">
   <owner>asavery@chromium.org</owner>
