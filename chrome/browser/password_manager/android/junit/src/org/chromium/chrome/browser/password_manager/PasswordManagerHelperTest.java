@@ -267,7 +267,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanUseUpmCheckup() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -279,7 +278,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutPasswordType() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
@@ -289,7 +287,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutSyncService() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
@@ -298,7 +295,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithoutSyncConsent() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(false);
@@ -307,7 +303,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithAuthError() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
@@ -317,7 +312,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanNotUseUpmCheckupWithNoBackend() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -331,7 +325,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testCanUseUpmCheckupWhenBackendUpdateNeeded() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -347,7 +340,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsUpdateDialogOnShowPasswordSettingsWhenBackendUpdateNeeded()
             throws CredentialManagerBackendException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -367,7 +359,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsUpdateDialogOnShowPasswordCheckupWhenBackendUpdateNeeded()
             throws PasswordCheckBackendException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -386,7 +377,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotShowUpdateDialogOnShowPasswordSettingsWhenNoUpdateNeeded() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -401,7 +391,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotShowUpdateDialogOnShowPasswordCheckupWhenNoUpdateNeeded() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -415,7 +404,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testSendsIntentOnLaunchGmsUpdate() {
         Context mockContext = mock(Context.class);
 
@@ -438,7 +426,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testResetsUnenrollment() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -456,7 +443,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesntResetUnenrollmentIfUnnecessary() {
         when(mSyncServiceMock.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
@@ -475,7 +461,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testLaunchesCredentialManagerSync() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -489,7 +474,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowPasswordSettingsNoSyncLaunchesOldUI() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         Context mockContext = mock(Context.class);
@@ -505,7 +489,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -528,7 +511,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForAccountIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForAccount(CredentialManagerError.UNCATEGORIZED);
@@ -552,7 +534,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsMetricsWhenAccountIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -577,7 +558,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testLaunchesPasswordCheckupSync() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -591,7 +571,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testPasswordCheckupIntentCalledIfSuccess() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -601,7 +580,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForPasswordCheckupIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -616,7 +594,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForPasswordCheckupIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForPasswordCheckup(
@@ -634,7 +611,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsApiErrorMetricsForPasswordCheckupIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenFetchingIntentForPasswordCheckup(
@@ -653,7 +629,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForRunPasswordCheckup() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulRunPasswordCheckup();
@@ -665,7 +640,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForRunPasswordCheckup() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenRunningPasswordCheckup(
@@ -679,7 +653,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsApiErrorMetricsForRunPasswordCheckup() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenRunningPasswordCheckup(
@@ -693,7 +666,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSuccessMetricsForGetBreachedCredentialsCount() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulGetBreachedCredentialsCount();
@@ -705,7 +677,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForGetBreachedCredentialsCount() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenGettingBreachedCredentialsCount(
@@ -719,7 +690,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsApiErrorMetricsForGetBreachedCredentialsCount() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         returnErrorWhenGettingBreachedCredentialsCount(
@@ -734,7 +704,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsMetricsWhenPasswordCheckupIntentFails() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -750,7 +719,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsLoadingDialogOnPasswordCheckup() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -762,7 +730,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogWhenPasswordCheckupIntentSent() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -775,7 +742,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogOnPasswordCheckupIntentSendError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -790,7 +756,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogOnPasswordCheckupIntentGetError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -805,7 +770,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotLaunchPasswordCheckupIntentWhenLoadingDialogCancelled()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -821,7 +785,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotLaunchPasswordCheckupIntentWhenLoadingDialogTimedOut()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -837,7 +800,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testPasswordCheckupLaunchWaitsForDialogDismissability() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -855,7 +817,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testShowsLoadingDialogOnPasswordSettings() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
 
@@ -867,7 +828,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogWhenPasswordSettingsIntentSent()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -881,7 +841,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogOnPasswordSettingsIntentSendError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -896,7 +855,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDismissesLoadingDialogOnPasswordSettingsIntentGetError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -910,7 +868,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotLaunchPasswordSettingsIntentWhenLoadingDialogCancelled()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -926,7 +883,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testDoesNotLaunchPasswordSettingsIntentWhenLoadingDialogTimedOut()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -942,7 +898,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testPasswordSettingsLaunchWaitsForDialogDismissability() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -960,7 +915,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogNotShown() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -975,7 +929,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogShownDismissable()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -993,7 +946,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogShownNonDismissable()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1013,7 +965,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogCancelled()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1027,7 +978,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogCancelledDuringLoad()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1046,7 +996,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogTimeout() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulIntentFetchingForAccount();
@@ -1059,7 +1008,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnDialogTimeoutDuringLoad()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1078,7 +1026,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnIntentFetchError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1094,7 +1041,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsSettingsLoadingDialogMetricsOnIntentSendError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1111,7 +1057,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogNotShown() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -1126,7 +1071,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogShown() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -1143,7 +1087,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogShownNonDismissable()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1163,7 +1106,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogCancelled() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -1176,7 +1118,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogCancelledDuringLoad()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1195,7 +1136,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogTimeout() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -1208,7 +1148,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnDialogTimeoutDuringLoad()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1227,7 +1166,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnIntentFetchError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
@@ -1244,7 +1182,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsCheckupLoadingDialogMetricsOnIntentSendError() throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock);
@@ -1260,7 +1197,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsWhenRunPasswordCheckupFails() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         Exception expectedException =
@@ -1272,7 +1208,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsWhenGetBreachedCredentialsCountFails() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         Exception expectedException =
@@ -1284,7 +1219,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsApiErrorWhenFetchingCredentialManagerIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException =
@@ -1313,7 +1247,6 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsConnectionResultWhenFetchingCredentialManagerIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
         ApiException returnedException = new ApiException(
@@ -1344,20 +1277,16 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
-    public void
-    testUseAccountSettings() {
+    @EnableFeatures(ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
+    public void testUseAccountSettings() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
         assertTrue(PasswordManagerHelper.canUseAccountSettings());
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID,
-            ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID})
-    public void
-    testCannotUseAccountSettingsWithNoBackend() {
+    @EnableFeatures(ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
+    public void testCannotUseAccountSettingsWithNoBackend() {
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(false);
 
         when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(false);

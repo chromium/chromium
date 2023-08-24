@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.password_manager;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
 
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
@@ -206,8 +205,7 @@ public class PasswordManagerHelper {
         Profile profile = Profile.getLastUsedRegularProfile();
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         PrefService prefService = UserPrefs.get(profile);
-        return PasswordManagerHelper.usesUnifiedPasswordManagerUI() && syncService != null
-                && hasChosenToSyncPasswords(syncService)
+        return syncService != null && hasChosenToSyncPasswords(syncService)
                 && !prefService.getBoolean(
                         Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
@@ -224,8 +222,7 @@ public class PasswordManagerHelper {
      * @return True if the AccountSettings intent is available for use, false otherwise.
      */
     public static boolean canUseAccountSettings() {
-        return PasswordManagerHelper.usesUnifiedPasswordManagerUI()
-                && ChromeFeatureList.isEnabled(PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
+        return ChromeFeatureList.isEnabled(PASSKEY_MANAGEMENT_USING_ACCOUNT_SETTINGS_ANDROID)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 
@@ -375,30 +372,9 @@ public class PasswordManagerHelper {
         return true;
     }
 
-    public static boolean usesUnifiedPasswordManagerUI() {
-        if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return false;
-        @UpmExperimentVariation
-        int variation = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                UNIFIED_PASSWORD_MANAGER_ANDROID, UPM_VARIATION_FEATURE_PARAM,
-                UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS);
-        switch (variation) {
-            case UpmExperimentVariation.ENABLE_FOR_SYNCING_USERS:
-            case UpmExperimentVariation.ENABLE_FOR_ALL_USERS:
-                return true;
-            case UpmExperimentVariation.SHADOW_SYNCING_USERS:
-            case UpmExperimentVariation.ENABLE_ONLY_BACKEND_FOR_SYNCING_USERS:
-                return false;
-        }
-        assert false : "Whether to use UI is undefined for variation: " + variation;
-        return false;
-    }
-
     // TODO(http://crbug.com/1371422): Remove method and manage eviction from native code
     // as this is covered by chrome://password-manager-internals page.
     public static void resetUpmUnenrollment() {
-        // Exit early if Chrome doesn't need UPM UI. Assumes the unenroll pref isn't included in
-        // the usesUnifiedPasswordManagementUI check.
-        if (!PasswordManagerHelper.usesUnifiedPasswordManagerUI()) return;
         PrefService prefs = UserPrefs.get(Profile.getLastUsedRegularProfile());
 
         // Exit early if the user is not unenrolled.

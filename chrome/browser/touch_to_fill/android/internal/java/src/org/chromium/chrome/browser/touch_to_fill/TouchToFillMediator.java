@@ -30,7 +30,6 @@ import android.content.Context;
 import androidx.annotation.Px;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties;
@@ -159,8 +158,7 @@ class TouchToFillMediator {
 
     private String getManageButtonText(
             List<Credential> credentials, List<WebAuthnCredential> webAuthnCredentials) {
-        if (!PasswordManagerHelper.usesUnifiedPasswordManagerUI()
-                || webAuthnCredentials.size() == 0) {
+        if (webAuthnCredentials.size() == 0) {
             return mContext.getString(R.string.manage_passwords);
         }
 

@@ -26,10 +26,8 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend.BackendException;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
  *  Tests for the utility methods used by various parts of the password manager backend (e.g.
@@ -38,7 +36,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
-@EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
 public class PasswordManagerAndroidBackendUtilTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
