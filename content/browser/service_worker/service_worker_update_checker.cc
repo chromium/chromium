@@ -246,7 +246,7 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
       url, is_main_script, main_script_url_, version_to_update_->scope(),
       force_bypass_cache_, worker_script_type_, update_via_cache_,
       fetch_client_settings_object_, time_since_last_check_,
-      context_->process_manager()->browser_context(), loader_factory_,
+      context_->wrapper()->browser_context(), loader_factory_,
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
       new_resource_id,
       // If the main script checksum is empty, then calculate each script

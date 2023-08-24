@@ -16,7 +16,11 @@ void ChromeContentBrowserClientPerformanceManagerPart::
         service_manager::BinderRegistry* registry,
         blink::AssociatedInterfaceRegistry* associated_registry_unusued,
         content::RenderProcessHost* render_process_host) {
-  performance_manager::PerformanceManagerRegistry::GetInstance()
-      ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
-          registry, render_process_host);
+  auto* performance_manager_registry =
+      performance_manager::PerformanceManagerRegistry::GetInstance();
+  if (performance_manager_registry) {
+    performance_manager_registry
+        ->CreateProcessNodeAndExposeInterfacesToRendererProcess(
+            registry, render_process_host);
+  }
 }
