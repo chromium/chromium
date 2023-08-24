@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.payments;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
+import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressRequestDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.payments.PayerData;
@@ -83,7 +84,7 @@ public class ChromePaymentResponseHelper
             // The shipping address needs to be normalized before sending the response to the
             // merchant.
             mIsWaitingForShippingNormalization = true;
-            PersonalDataManager.getInstance().normalizeAddress(
+            AddressNormalizerFactory.getInstance().normalizeAddress(
                     mSelectedShippingAddress.getProfile(), this);
         }
     }

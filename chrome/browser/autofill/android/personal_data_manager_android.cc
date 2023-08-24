@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/autofill/address_normalizer_factory.h"
 #include "chrome/browser/autofill/android/jni_headers/PersonalDataManager_jni.h"
 #include "chrome/browser/autofill/autofill_popup_controller_utils.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
@@ -28,7 +27,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
-#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -77,21 +75,6 @@ void OnSubKeysReceived(ScopedJavaGlobalRef<jobject> jdelegate,
   Java_GetSubKeysRequestDelegate_onSubKeysReceived(
       env, jdelegate, base::android::ToJavaArrayOfStrings(env, subkeys_codes),
       base::android::ToJavaArrayOfStrings(env, subkeys_names));
-}
-
-void OnAddressNormalized(ScopedJavaGlobalRef<jobject> jdelegate,
-                         bool success,
-                         const AutofillProfile& profile) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  if (success) {
-    Java_NormalizedAddressRequestDelegate_onAddressNormalized(
-        env, jdelegate,
-        profile.CreateJavaObject(g_browser_process->GetApplicationLocale()));
-  } else {
-    Java_NormalizedAddressRequestDelegate_onCouldNotNormalize(
-        env, jdelegate,
-        profile.CreateJavaObject(g_browser_process->GetApplicationLocale()));
-  }
 }
 
 }  // namespace
@@ -604,37 +587,12 @@ void PersonalDataManagerAndroid::ClearServerDataForTesting(
   personal_data_manager_->NotifyPersonalDataObserver();
 }
 
-void PersonalDataManagerAndroid::LoadRulesForAddressNormalization(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& unused_obj,
-    const base::android::JavaParamRef<jstring>& jregion_code) {
-  AddressNormalizer* normalizer = AddressNormalizerFactory::GetInstance();
-  normalizer->LoadRulesForRegion(ConvertJavaStringToUTF8(env, jregion_code));
-}
-
 void PersonalDataManagerAndroid::LoadRulesForSubKeys(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& unused_obj,
     const base::android::JavaParamRef<jstring>& jregion_code) {
   subkey_requester_.LoadRulesForRegion(
       ConvertJavaStringToUTF8(env, jregion_code));
-}
-
-void PersonalDataManagerAndroid::StartAddressNormalization(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& unused_obj,
-    const JavaParamRef<jobject>& jprofile,
-    jint jtimeout_seconds,
-    const JavaParamRef<jobject>& jdelegate) {
-  AutofillProfile profile = AutofillProfile::CreateFromJavaObject(
-      jprofile, g_browser_process->GetApplicationLocale());
-
-  // Start the normalization.
-  AddressNormalizer* normalizer = AddressNormalizerFactory::GetInstance();
-  normalizer->NormalizeAddressAsync(
-      profile, jtimeout_seconds,
-      base::BindOnce(&OnAddressNormalized,
-                     ScopedJavaGlobalRef<jobject>(jdelegate)));
 }
 
 jboolean PersonalDataManagerAndroid::HasProfiles(JNIEnv* env) {

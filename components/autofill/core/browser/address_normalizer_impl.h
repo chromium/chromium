@@ -14,12 +14,14 @@
 #include "base/sequence_checker.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 
-namespace i18n {
-namespace addressinput {
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+namespace i18n::addressinput {
 class Source;
 class Storage;
-}  // namespace addressinput
-}  // namespace i18n
+}  // namespace i18n::addressinput
 
 namespace autofill {
 
@@ -46,6 +48,19 @@ class AddressNormalizerImpl : public AddressNormalizer {
       AddressNormalizer::NormalizationCallback callback) override;
   bool NormalizeAddressSync(AutofillProfile* profile) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
+
+  void LoadRulesForAddressNormalization(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& region_code);
+  void StartAddressNormalization(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jprofile,
+      jint jtimeout_seconds,
+      const base::android::JavaParamRef<jobject>& jdelegate);
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   friend class AddressNormalizerTest;
   bool AreRulesLoadedForRegion(const std::string& region_code);
@@ -70,6 +85,11 @@ class AddressNormalizerImpl : public AddressNormalizer {
   // The address validator used to normalize addresses.
   std::unique_ptr<AddressValidator> address_validator_;
   const std::string app_locale_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Java-side version of the AddressNormalizer.
+  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

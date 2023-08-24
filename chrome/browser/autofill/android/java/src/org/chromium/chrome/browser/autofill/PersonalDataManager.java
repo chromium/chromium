@@ -74,27 +74,6 @@ public class PersonalDataManager {
     }
 
     /**
-     * Callback for normalized addresses.
-     */
-    public interface NormalizedAddressRequestDelegate {
-        /**
-         * Called when the address has been sucessfully normalized.
-         *
-         * @param profile The profile with the normalized address.
-         */
-        @CalledByNative("NormalizedAddressRequestDelegate")
-        void onAddressNormalized(AutofillProfile profile);
-
-        /**
-         * Called when the address could not be normalized.
-         *
-         * @param profile The non normalized profile.
-         */
-        @CalledByNative("NormalizedAddressRequestDelegate")
-        void onCouldNotNormalize(AutofillProfile profile);
-    }
-
-    /**
      * Autofill credit card information.
      */
     public static class CreditCard {
@@ -741,17 +720,6 @@ public class PersonalDataManager {
     }
 
     /**
-     * Starts loading the address validation rules for the specified {@code regionCode}.
-     *
-     * @param regionCode The code of the region for which to load the rules.
-     */
-    public void loadRulesForAddressNormalization(String regionCode) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().loadRulesForAddressNormalization(
-                mPersonalDataManagerAndroid, PersonalDataManager.this, regionCode);
-    }
-
-    /**
      * Starts loading the sub-key request rules for the specified {@code regionCode}.
      *
      * @param regionCode The code of the region for which to load the rules.
@@ -782,23 +750,6 @@ public class PersonalDataManager {
     public void cancelPendingGetSubKeys() {
         ThreadUtils.assertOnUiThread();
         PersonalDataManagerJni.get().cancelPendingGetSubKeys(mPersonalDataManagerAndroid);
-    }
-
-    /**
-     * Normalizes the address of the profile associated with the {@code guid} if the rules
-     * associated with the profile's region are done loading. Otherwise sets up the callback to
-     * start normalizing the address when the rules are loaded. The normalized profile will be sent
-     * to the {@code delegate}. If the profile is not normalized in the specified
-     * {@code sRequestTimeoutSeconds}, the {@code delegate} will be notified.
-     *
-     * @param profile The profile to normalize.
-     * @param delegate The object requesting the normalization.
-     */
-    public void normalizeAddress(
-            AutofillProfile profile, NormalizedAddressRequestDelegate delegate) {
-        ThreadUtils.assertOnUiThread();
-        PersonalDataManagerJni.get().startAddressNormalization(mPersonalDataManagerAndroid,
-                PersonalDataManager.this, profile, sRequestTimeoutSeconds, delegate);
     }
 
     /**
@@ -1078,13 +1029,8 @@ public class PersonalDataManager {
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller);
         void clearUnmaskedCache(
                 long nativePersonalDataManagerAndroid, PersonalDataManager caller, String guid);
-        void loadRulesForAddressNormalization(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, String regionCode);
         void loadRulesForSubKeys(long nativePersonalDataManagerAndroid, PersonalDataManager caller,
                 String regionCode);
-        void startAddressNormalization(long nativePersonalDataManagerAndroid,
-                PersonalDataManager caller, AutofillProfile profile, int timeoutSeconds,
-                NormalizedAddressRequestDelegate delegate);
         void startRegionSubKeysRequest(long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller, String regionCode, int timeoutSeconds,
                 GetSubKeysRequestDelegate delegate);

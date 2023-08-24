@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.content_public.browser.WebContents;
@@ -34,7 +35,10 @@ public class AutofillTestHelper {
     }
 
     void setRequestTimeoutForTesting() {
-        runOnUiThreadBlocking(() -> PersonalDataManager.setRequestTimeoutForTesting(0));
+        runOnUiThreadBlocking(() -> {
+            PersonalDataManager.setRequestTimeoutForTesting(0);
+            AddressNormalizer.setRequestTimeoutForTesting(0);
+        });
     }
 
     void setSyncServiceForTesting() {

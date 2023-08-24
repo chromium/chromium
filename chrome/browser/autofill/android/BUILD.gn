@@ -12,6 +12,7 @@ java_cpp_enum("autofill_generated_enums") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillAddress.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillEditorBase.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
@@ -117,6 +118,7 @@ android_library("bottom_sheet_utils_java") {
 
 generate_jni("jni_headers") {
   sources = [
+    "java/src/org/chromium/chrome/browser/autofill/AddressNormalizerFactory.java",
     "java/src/org/chromium/chrome/browser/autofill/AutofillProfileBridge.java",
     "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
     "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",

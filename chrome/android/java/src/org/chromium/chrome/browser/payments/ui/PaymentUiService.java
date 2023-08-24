@@ -13,9 +13,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AddressNormalizerFactory;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.NormalizedAddressRequestDelegate;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.components.autofill.AddressNormalizer.NormalizedAddressRequestDelegate;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.Completable;
 import org.chromium.components.autofill.EditableOption;
@@ -1136,7 +1137,8 @@ public class PaymentUiService
             String countryCode = AutofillAddress.getCountryCode(addresses.get(i).getProfile());
             if (!uniqueCountryCodes.contains(countryCode)) {
                 uniqueCountryCodes.add(countryCode);
-                PersonalDataManager.getInstance().loadRulesForAddressNormalization(countryCode);
+                AddressNormalizerFactory.getInstance().loadRulesForAddressNormalization(
+                        countryCode);
             }
         }
 
@@ -1431,7 +1433,8 @@ public class PaymentUiService
     private void startShippingAddressChangeNormalization(AutofillAddress address) {
         // Will call back into either onAddressNormalized or onCouldNotNormalize which will send the
         // result to the merchant.
-        PersonalDataManager.getInstance().normalizeAddress(address.getProfile(), /*delegate=*/this);
+        AddressNormalizerFactory.getInstance().normalizeAddress(
+                address.getProfile(), /*delegate=*/this);
     }
 
     /** @return Whether at least one payment app is available. */

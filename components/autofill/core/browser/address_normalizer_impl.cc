@@ -26,6 +26,12 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/storage.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/autofill/android/main_autofill_jni_headers/AddressNormalizer_jni.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace autofill {
 
 namespace {
@@ -80,6 +86,22 @@ std::unique_ptr<AddressValidator> CreateAddressValidator(
       std::move(source), std::unique_ptr<Storage>(storage.release()),
       load_rules_listener);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void OnAddressNormalized(base::android::ScopedJavaGlobalRef<jobject> jdelegate,
+                         const std::string& app_locale,
+                         bool success,
+                         const AutofillProfile& profile) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  if (success) {
+    Java_NormalizedAddressRequestDelegate_onAddressNormalized(
+        env, jdelegate, profile.CreateJavaObject(app_locale));
+  } else {
+    Java_NormalizedAddressRequestDelegate_onCouldNotNormalize(
+        env, jdelegate, profile.CreateJavaObject(app_locale));
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -237,6 +259,40 @@ bool AddressNormalizerImpl::NormalizeAddressSync(AutofillProfile* profile) {
   return NormalizeProfileWithValidator(profile, app_locale_,
                                        address_validator_.get());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaLocalRef<jobject>
+AddressNormalizerImpl::GetJavaObject() {
+  if (!java_ref_) {
+    java_ref_.Reset(
+        Java_AddressNormalizer_Constructor(base::android::AttachCurrentThread(),
+                                           reinterpret_cast<intptr_t>(this)));
+  }
+  return base::android::ScopedJavaLocalRef<jobject>(java_ref_);
+}
+
+void AddressNormalizerImpl::LoadRulesForAddressNormalization(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& jregion_code) {
+  LoadRulesForRegion(base::android::ConvertJavaStringToUTF8(env, jregion_code));
+}
+
+void AddressNormalizerImpl::StartAddressNormalization(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jprofile,
+    jint jtimeout_seconds,
+    const base::android::JavaParamRef<jobject>& jdelegate) {
+  AutofillProfile profile =
+      AutofillProfile::CreateFromJavaObject(jprofile, app_locale_);
+
+  // Start the normalization.
+  NormalizeAddressAsync(
+      profile, jtimeout_seconds,
+      base::BindOnce(&OnAddressNormalized,
+                     base::android::ScopedJavaGlobalRef<jobject>(jdelegate),
+                     app_locale_));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool AddressNormalizerImpl::AreRulesLoadedForRegion(
     const std::string& region_code) {
