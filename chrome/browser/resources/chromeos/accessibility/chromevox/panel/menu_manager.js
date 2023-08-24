@@ -8,7 +8,11 @@
 import {AsyncUtil} from '../../common/async_util.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {KeyCode} from '../../common/key_code.js';
+import {StringUtil} from '../../common/string_util.js';
 import {Command, CommandCategory, CommandStore} from '../common/command_store.js';
+import {KeyMap} from '../common/key_map.js';
+import {KeySequence} from '../common/key_sequence.js';
+import {KeyUtil} from '../common/key_util.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelNodeMenuData, PanelNodeMenuId, PanelNodeMenuItemData} from '../common/panel_menu_data.js';
 
@@ -234,6 +238,40 @@ export class MenuManager {
   }
 
   /**
+   * @return {!Promise<Array<Object<{command: string, sequence:
+   *     KeySequence}>>>}
+   */
+  async getSortedKeyBindings() {
+    // TODO(accessibility): Commands should be based off of CommandStore and
+    // not the keymap. There are commands that don't have a key binding (e.g.
+    // commands for touch).
+    const keymap = KeyMap.get();
+
+    const sortedBindings = keymap.bindings().slice();
+    for (const binding of sortedBindings) {
+      const command = binding.command;
+      const keySeq = binding.sequence;
+      binding.keySeq = await KeyUtil.keySequenceToString(keySeq, true);
+      const titleMsgId = CommandStore.messageForCommand(command);
+      if (!titleMsgId) {
+        // Title messages are intentionally missing for some keyboard
+        // shortcuts.
+        if (!(command in COMMANDS_WITH_NO_MSG_ID)) {
+          console.error('No localization for: ' + command);
+        }
+        binding.title = '';
+        continue;
+      }
+      const title = Msgs.getMsg(titleMsgId);
+      binding.title = StringUtil.toTitleCase(title);
+    }
+    sortedBindings.sort(
+        (binding1, binding2) =>
+            binding1.title.localeCompare(String(binding2.title)));
+    return sortedBindings;
+  }
+
+  /**
    * @param {!PanelMenu} actionsMenu
    * @param {!PanelMenu} chromevoxMenu
    * @param {!PanelMenu} jumpMenu
@@ -353,3 +391,20 @@ export class MenuManager {
     this.searchMenu_ = menu;
   }
 }
+
+// Local to module.
+
+const COMMANDS_WITH_NO_MSG_ID = [
+  'nativeNextCharacter',
+  'nativePreviousCharacter',
+  'nativeNextWord',
+  'nativePreviousWord',
+  'enableLogging',
+  'disableLogging',
+  'dumpTree',
+  'showActionsMenu',
+  'enableChromeVoxArcSupportForCurrentApp',
+  'disableChromeVoxArcSupportForCurrentApp',
+  'showTalkBackKeyboardShortcuts',
+  'copy',
+];

@@ -16,8 +16,6 @@ import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command, CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
-import {KeyBinding, KeyMap} from '../common/key_map.js';
-import {KeyUtil} from '../common/key_util.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
@@ -334,36 +332,9 @@ export class Panel extends PanelInterface {
       const categoryToMenu = this.menuManager_.makeCategoryMapping(
           actionsMenu, chromevoxMenu, jumpMenu, speechMenu);
 
-      // TODO(accessibility): Commands should be based off of CommandStore and
-      // not the keymap. There are commands that don't have a key binding (e.g.
-      // commands for touch).
-
-      // Get the key map.
-      const keymap = KeyMap.get();
-
-      // Get the key bindings, get the localized title of each command, and then
-      // sort them.
-      const sortedBindings = keymap.bindings();
-      for (let binding, i = 0; binding = sortedBindings[i]; i++) {
-        const command = binding.command;
-        const keySeq = binding.sequence;
-        binding.keySeq = await KeyUtil.keySequenceToString(keySeq, true);
-        const titleMsgId = CommandStore.messageForCommand(command);
-        if (!titleMsgId) {
-          // Title messages are intentionally missing for some keyboard
-          // shortcuts.
-          if (!(command in COMMANDS_WITH_NO_MSG_ID)) {
-            console.error('No localization for: ' + command);
-          }
-          binding.title = '';
-          continue;
-        }
-        const title = Msgs.getMsg(titleMsgId);
-        binding.title = StringUtil.toTitleCase(title);
-      }
-      sortedBindings.sort(
-          (binding1, binding2) =>
-              binding1.title.localeCompare(String(binding2.title)));
+      // Make a copy of the key bindings, get the localized title of each
+      // command, and then sort them.
+      const sortedBindings = await this.menuManager_.getSortedKeyBindings();
 
       // Insert items from the bindings into the menus.
       const sawBindingSet = {};
@@ -1031,21 +1002,6 @@ Panel.ACTION_TO_MSG_ID = {
   showContextMenu: 'show_context_menu',
   longClick: 'force_long_click_on_current_item',
 };
-
-const COMMANDS_WITH_NO_MSG_ID = [
-  'nativeNextCharacter',
-  'nativePreviousCharacter',
-  'nativeNextWord',
-  'nativePreviousWord',
-  'enableLogging',
-  'disableLogging',
-  'dumpTree',
-  'showActionsMenu',
-  'enableChromeVoxArcSupportForCurrentApp',
-  'disableChromeVoxArcSupportForCurrentApp',
-  'showTalkBackKeyboardShortcuts',
-  'copy',
-];
 
 window.addEventListener('load', async () => await Panel.init(), false);
 
