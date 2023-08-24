@@ -139,6 +139,12 @@ void TabStripControlButton::UpdateColors() {
 }
 
 void TabStripControlButton::UpdateBackground() {
+  const auto* const color_provider = GetColorProvider();
+
+  if (!color_provider) {
+    return;
+  }
+
   const absl::optional<int> bg_id =
       tab_strip_->GetCustomBackgroundId(BrowserFrameActiveState::kUseCurrent);
 
@@ -148,7 +154,8 @@ void TabStripControlButton::UpdateBackground() {
   } else {
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainter(
-            GetBackgroundColor(), GetCornerRadius(), GetInsets())));
+            color_provider->GetColor(GetBackgroundColor()), GetCornerRadius(),
+            GetInsets())));
   }
 }
 
