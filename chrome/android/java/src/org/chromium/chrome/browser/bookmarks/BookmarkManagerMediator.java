@@ -811,6 +811,12 @@ class BookmarkManagerMediator
             preserveFolderBookmarksOnEmptySearch = true;
         }
 
+        // Search states should only be the top most state. Back button should not restore them.
+        if (getCurrentUiMode() == BookmarkUiMode.SEARCHING && state.mUiMode == BookmarkUiMode.FOLDER
+                && BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
+            mStateStack.pop();
+        }
+
         mStateStack.push(state);
         notifyUi(state, preserveFolderBookmarksOnEmptySearch);
     }

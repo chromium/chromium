@@ -1410,4 +1410,27 @@ public class BookmarkManagerMediatorTest {
         clearSearchTextRunnable.run();
         assertEquals("", propertyModel.get(BookmarkSearchBoxRowProperties.SEARCH_TEXT));
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testBackNavigationDoesNotRestoreSearch() {
+        finishLoading();
+        mMediator.openFolder(mFolderId1);
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+
+        Callback<String> searchTextChangeCallback = mModelList.get(0).model.get(
+                BookmarkSearchBoxRowProperties.SEARCH_TEXT_CHANGE_CALLBACK);
+        searchTextChangeCallback.onResult("foo");
+        assertEquals(BookmarkUiMode.SEARCHING, mMediator.getCurrentUiMode());
+
+        mMediator.openFolder(mFolderId2);
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mBookmarkId21);
+
+        assertTrue(mMediator.onBackPressed());
+        // Should have gone back to mFolderId1.
+        assertEquals(BookmarkUiMode.FOLDER, mMediator.getCurrentUiMode());
+        verifyCurrentBookmarkIds(null, mFolderId2, mFolderId3);
+    }
 }
