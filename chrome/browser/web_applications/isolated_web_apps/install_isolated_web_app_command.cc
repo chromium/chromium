@@ -185,6 +185,11 @@ void InstallIsolatedWebAppCommand::ValidateManifestAndCreateInstallInfo(
 void InstallIsolatedWebAppCommand::RetrieveIconsAndPopulateInstallInfo(
     base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
     WebAppInstallInfo install_info) {
+  CHECK(!expected_version_ ||
+        *expected_version_ == install_info.isolated_web_app_version);
+  actual_version_ = install_info.isolated_web_app_version;
+  debug_log_.Set("actual_version", actual_version_.GetString());
+
   command_helper_->RetrieveIconsAndPopulateInstallInfo(
       std::move(install_info), *web_contents_.get(),
       base::BindOnce(&InstallIsolatedWebAppCommand::RunNextStepOnSuccess<
@@ -246,7 +251,7 @@ void InstallIsolatedWebAppCommand::ReportSuccess() {
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
       base::BindOnce(std::move(callback_),
-                     InstallIsolatedWebAppCommandSuccess{}));
+                     InstallIsolatedWebAppCommandSuccess(actual_version_)));
 }
 
 Profile& InstallIsolatedWebAppCommand::profile() {

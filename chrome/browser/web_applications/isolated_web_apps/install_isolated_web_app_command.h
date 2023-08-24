@@ -48,7 +48,11 @@ class WebAppUrlLoader;
 
 enum class WebAppUrlLoaderResult;
 
-struct InstallIsolatedWebAppCommandSuccess {};
+struct InstallIsolatedWebAppCommandSuccess {
+  explicit InstallIsolatedWebAppCommandSuccess(base::Version installed_version)
+      : installed_version(std::move(installed_version)) {}
+  base::Version installed_version;
+};
 struct InstallIsolatedWebAppCommandError {
   std::string message;
 
@@ -180,6 +184,9 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   IsolatedWebAppUrlInfo url_info_;
   IsolatedWebAppLocation location_;
   absl::optional<base::Version> expected_version_;
+  // Populated as part of the installation process based on the version read
+  // from the Web Bundle.
+  base::Version actual_version_;
 
   std::unique_ptr<content::WebContents> web_contents_;
 

@@ -319,11 +319,11 @@ void IsolatedWebAppUpdateManager::OnUpdateDiscoveryTaskCompleted(
   IsolatedWebAppUrlInfo url_info = update_discovery_tasks_.front()->url_info();
   update_discovery_tasks_.pop_front();
 
-  update_discovery_results_log_.Append(std::move(task_debug_value));
+  update_discovery_results_log_.Append(task_debug_value.Clone());
   if (!status.has_value()) {
     LOG(ERROR) << "Isolated Web App update discovery for "
-               << url_info.web_bundle_id().id()
-               << " failed: " << status.error();
+               << url_info.web_bundle_id().id() << " failed: " << status.error()
+               << " debug log: " << task_debug_value;
   } else {
     VLOG(1) << "Isolated Web App update discovery for "
             << url_info.web_bundle_id().id()
@@ -357,14 +357,14 @@ void IsolatedWebAppUpdateManager::OnUpdateApplyTaskCompleted(
   IsolatedWebAppUrlInfo url_info = update_apply_tasks_.front()->url_info();
   update_apply_tasks_.pop_front();
 
-  update_apply_results_log_.Append(std::move(task_debug_value));
+  update_apply_results_log_.Append(task_debug_value.Clone());
   if (status.has_value()) {
     VLOG(1) << "Applying an Isolated Web App update for "
             << url_info.web_bundle_id().id() << " succeeded.";
   } else {
     LOG(ERROR) << "Applying an Isolated Web App update for "
-               << url_info.web_bundle_id().id()
-               << " failed: " << status.error();
+               << url_info.web_bundle_id().id() << " failed: " << status.error()
+               << " debug log: " << task_debug_value;
   }
 
   MaybeStartNextTask();

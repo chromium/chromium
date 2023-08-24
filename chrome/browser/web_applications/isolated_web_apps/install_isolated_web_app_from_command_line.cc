@@ -251,7 +251,6 @@ void IsolatedWebAppCommandLineInstallManager::
   CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   CHECK(!callback.is_null());
 
-  MaybeInstallIsolatedWebAppCommandSuccess result;
   if (KeepAliveRegistry::GetInstance()->IsShuttingDown()) {
     // If the browser is shutting down, then there is no point in attempting to
     // install an IWA.
@@ -326,7 +325,9 @@ void IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp(
 void IsolatedWebAppCommandLineInstallManager::ReportInstallationResult(
     MaybeInstallIsolatedWebAppCommandSuccess result) {
   if (result.has_value()) {
-    LOG(WARNING) << "Isolated Web App command line installation successful.";
+    LOG(WARNING) << "Isolated Web App command line installation successful. "
+                    "Installed version "
+                 << result->installed_version.GetString() << ".";
   } else {
     LOG(ERROR) << "Isolated Web App command line installation failed: "
                << result.error();

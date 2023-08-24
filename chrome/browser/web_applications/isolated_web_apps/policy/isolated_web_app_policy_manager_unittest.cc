@@ -179,7 +179,8 @@ class TestIwaInstallCommandWrapper
         EXPECT_EQ(expected_version, base::Version("3.0.0"));
       }
 
-      std::move(callback).Run(InstallIsolatedWebAppCommandSuccess{});
+      std::move(callback).Run(
+          InstallIsolatedWebAppCommandSuccess(expected_version));
       return;
     }
 
