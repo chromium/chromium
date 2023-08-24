@@ -186,10 +186,8 @@ class DirectoryOwnersExtractor:
             return None
 
         # The value of `notify` is one of ['TRINARY_UNSPECIFIED', 'YES', 'NO'].
-        # Assume that users opt out by default; return True only when notify is
-        # 'YES'.
-        #
-        # TODO(crbug.com/1454853): Consider opt-in by default.
+        # Assume that users opt in by default; return False only when notify is
+        # 'NO'.
         return WPTDirMetadata(data.get('teamEmail'),
                               data.get('monorail', {}).get('component'),
-                              data.get('wpt', {}).get('notify') == 'YES')
+                              data.get('wpt', {}).get('notify') != 'NO')

@@ -502,6 +502,10 @@ class ImportNotifierTest(unittest.TestCase):
         )
         self.assertIn('crbug.com/12345 external/wpt/foo/baz.html [ Fail ]',
                       bugs[0].body['description'].splitlines())
+        self.assertIn(
+            'To opt out of WPT import notifications for this component, '
+            'add "wpt { notify: NO }" to "external/wpt/foo/DIR_METADATA".',
+            bugs[0].body['description'].splitlines())
 
     def test_file_bug_without_owners(self):
         """A bug should be filed, even without OWNERS next to DIR_METADATA."""

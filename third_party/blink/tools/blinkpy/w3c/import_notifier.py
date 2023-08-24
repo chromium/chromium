@@ -350,8 +350,15 @@ class ImportNotifier:
 
             links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
 
+            dir_metadata_path = self.host.filesystem.join(
+                directory, "DIR_METADATA")
+            epilogue = (
+                '\nTo opt out of WPT import notifications for this component, '
+                'add "wpt { notify: NO }" to "%s".' % dir_metadata_path)
+
             description = (prologue + failure_list + expectations_statement +
-                           range_statement + commit_list + links_list)
+                           range_statement + commit_list + links_list +
+                           epilogue)
 
             bug = MonorailIssue.new_chromium_issue(summary,
                                                    description,

@@ -245,7 +245,7 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
 
         wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
         self.assertIsNone(wpt_dir_metadata.team_email)
-        self.assertFalse(wpt_dir_metadata.should_notify)
+        self.assertTrue(wpt_dir_metadata.should_notify)
         self.assertIsNone(wpt_dir_metadata.component)
 
     def test_read_dir_all_fields(self):
@@ -263,6 +263,18 @@ class DirectoryOwnersExtractorTest(unittest.TestCase):
     def test_read_dir_empty_wpt(self):
         data = ('{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
                 '{"component":"foo"},"teamEmail":"bar"}}}')
+        self.host.executive = MockExecutive(output=data)
+        extractor = DirectoryOwnersExtractor(self.host)
+
+        wpt_dir_metadata = extractor.read_dir_metadata(MOCK_WEB_TESTS + 'a/b')
+        self.assertEqual(wpt_dir_metadata.team_email, 'bar')
+        self.assertTrue(wpt_dir_metadata.should_notify)
+        self.assertEqual(wpt_dir_metadata.component, 'foo')
+
+    def test_read_dir_disable_wpt(self):
+        data = (
+            '{"dirs":{"third_party/blink/web_tests/a/b":{"monorail":'
+            '{"component":"foo"},"teamEmail":"bar","wpt":{"notify":"NO"}}}}')
         self.host.executive = MockExecutive(output=data)
         extractor = DirectoryOwnersExtractor(self.host)
 
