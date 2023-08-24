@@ -1354,10 +1354,6 @@ void AutofillAgent::HandleFocusChangeComplete() {
 
   focused_node_was_last_clicked_ = false;
 
-  if (password_generation_agent_) {
-    password_generation_agent_->NotifyFocusChangeComplete(focused_element);
-  }
-
   SendPotentiallySubmittedFormToBrowser();
 }
 

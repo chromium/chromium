@@ -262,7 +262,6 @@ void PasswordGenerationAgent::DidCommitProvisionalLoad(
     }
   }
   current_generation_item_.reset();
-  last_focused_password_element_.Reset();
   generation_enabled_fields_.clear();
 }
 
@@ -447,17 +446,24 @@ void PasswordGenerationAgent::TriggeredGeneratePassword(
 }
 
 bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
-  if (last_focused_password_element_.IsNull() || !render_frame())
+  if (!render_frame()) {
     return false;
+  }
+  const WebInputElement last_focused_password_element =
+      password_agent_->focused_element().DynamicTo<WebInputElement>();
+  if (last_focused_password_element.IsNull() ||
+      !last_focused_password_element.IsPasswordFieldForAutofill()) {
+    return false;
+  }
 
   FieldRendererId last_focused_password_element_id(
-      last_focused_password_element_.UniqueRendererFormControlId());
+      last_focused_password_element.UniqueRendererFormControlId());
 
   bool is_automatic_generation_available = base::Contains(
       generation_enabled_fields_, last_focused_password_element_id);
 
   if (!is_automatic_generation_available) {
-    WebFormElement form = last_focused_password_element_.Form();
+    WebFormElement form = last_focused_password_element.Form();
     std::vector<WebFormControlElement> control_elements;
     if (!form.IsNull()) {
       control_elements = form_util::ExtractAutofillableElementsInForm(form);
@@ -470,13 +476,13 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     }
 
     MaybeCreateCurrentGenerationItem(
-        last_focused_password_element_,
+        last_focused_password_element,
         FindConfirmationPasswordFieldId(control_elements,
-                                        last_focused_password_element_));
+                                        last_focused_password_element));
   } else {
     auto it = generation_enabled_fields_.find(last_focused_password_element_id);
     MaybeCreateCurrentGenerationItem(
-        last_focused_password_element_,
+        last_focused_password_element,
         it->second.confirmation_password_renderer_id);
   }
 
@@ -484,30 +490,13 @@ bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
     return false;
 
   if (current_generation_item_->generation_element_ !=
-      last_focused_password_element_) {
+      last_focused_password_element) {
     return false;
   }
 
   current_generation_item_->is_manually_triggered_ =
       !is_automatic_generation_available;
   return true;
-}
-
-void PasswordGenerationAgent::NotifyFocusChangeComplete(
-    const blink::WebNode& node) {
-  if (node.IsNull() || !node.IsElementNode()) {
-    return;
-  }
-
-  const blink::WebElement web_element = node.To<blink::WebElement>();
-  if (!web_element.GetDocument().GetFrame()) {
-    return;
-  }
-
-  const WebInputElement element = web_element.DynamicTo<WebInputElement>();
-  if (!element.IsNull() && element.IsPasswordFieldForAutofill()) {
-    last_focused_password_element_ = element;
-  }
 }
 
 bool PasswordGenerationAgent::ShowPasswordGenerationSuggestions(

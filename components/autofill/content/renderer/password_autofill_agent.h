@@ -30,6 +30,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -247,6 +248,11 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Check if the given element is a username input field.
   bool IsUsernameInputField(const blink::WebInputElement& input_element) const;
+
+  const blink::WebFormControlElement& focused_element() const {
+    CHECK(autofill_agent_);
+    return autofill_agent_->focused_element();
+  }
 
  private:
   using OnPasswordField = base::StrongAlias<class OnPasswordFieldTag, bool>;
