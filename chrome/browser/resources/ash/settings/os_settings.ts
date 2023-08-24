@@ -116,6 +116,7 @@ export {CrPolicyIndicatorElement} from 'chrome://resources/cr_elements/policy/cr
 export {OpenWindowProxy, OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 export {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 export {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
@@ -192,6 +193,7 @@ export {setAppNotificationProviderForTesting} from './os_apps_page/app_notificat
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
 export {SettingsBluetoothPageElement} from './os_bluetooth_page/os_bluetooth_page.js';
 export {SettingsBluetoothPairingDialogElement} from './os_bluetooth_page/os_bluetooth_pairing_dialog.js';
+export {SettingsBluetoothSummaryElement} from './os_bluetooth_page/os_bluetooth_summary.js';
 export {FastPairSavedDevice, FastPairSavedDevicesOptInStatus} from './os_bluetooth_page/settings_fast_pair_constants.js';
 export {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, GoogleDrivePageRemote, Stage} from './os_files_page/google_drive_browser_proxy.js';
 export {ConfirmationDialogType, SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';

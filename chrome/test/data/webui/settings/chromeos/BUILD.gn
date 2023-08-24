@@ -208,7 +208,7 @@ build_webui_tests("build") {
     "os_bluetooth_page/os_bluetooth_devices_subpage_tests.js",
     "os_bluetooth_page/os_bluetooth_page_test.ts",
     "os_bluetooth_page/os_bluetooth_pairing_dialog_test.ts",
-    "os_bluetooth_page/os_bluetooth_summary_tests.js",
+    "os_bluetooth_page/os_bluetooth_summary_test.ts",
     "os_bluetooth_page/os_bluetooth_true_wireless_images_tests.js",
     "os_bluetooth_page/os_paired_bluetooth_list_test.ts",
     "os_bluetooth_page/test_os_bluetooth_subpage_browser_proxy.ts",

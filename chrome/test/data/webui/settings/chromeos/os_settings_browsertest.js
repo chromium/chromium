@@ -625,7 +625,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  [
    'OsBluetoothPageOsBluetoothSummary',
-   'os_bluetooth_page/os_bluetooth_summary_tests.js'
+   'os_bluetooth_page/os_bluetooth_summary_test.js'
  ],
  [
    'OsBluetoothPageOsBluetoothTrueWirelessImages',
