@@ -146,8 +146,8 @@ public class QuickDeleteDialogDelegateUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mTabModelSelectorMock, times(1))
-                .openNewTab(argument.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mTabMock),
-                        eq(false));
+                .openNewTab(
+                        argument.capture(), eq(TabLaunchType.FROM_LINK), eq(mTabMock), eq(false));
         assertEquals(UrlConstants.GOOGLE_SEARCH_HISTORY_URL_IN_QD, argument.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
     }
@@ -172,8 +172,8 @@ public class QuickDeleteDialogDelegateUnitTest {
 
         histogramWatcher.assertExpected();
         verify(mTabModelSelectorMock, times(1))
-                .openNewTab(argument.capture(), eq(TabLaunchType.FROM_CHROME_UI), eq(mTabMock),
-                        eq(false));
+                .openNewTab(
+                        argument.capture(), eq(TabLaunchType.FROM_LINK), eq(mTabMock), eq(false));
         assertEquals(UrlConstants.MY_ACTIVITY_URL_IN_QD, argument.getValue().getUrl());
         verify(mOnDismissCallbackMock, times(1)).onResult(DialogDismissalCause.ACTION_ON_CONTENT);
     }
