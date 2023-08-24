@@ -56,7 +56,7 @@
   // "encrypted" version of the password is a unique ID (UUID) that is
   // stored as an attribute along with the password in the keychain.
   // See login_database_ios.cc for more info.
-  return base::SysUTF8ToNSString(_passwordForm.encrypted_password);
+  return base::SysUTF8ToNSString(_passwordForm.keychain_identifier);
 }
 
 #pragma mark - NSObject

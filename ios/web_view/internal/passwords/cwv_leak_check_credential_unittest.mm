@@ -32,7 +32,7 @@ class CWVLeakCheckCredentialTest : public PlatformTest {
     password_form.signon_realm = "http://www.example.com/";
     password_form.scheme = password_manager::PasswordForm::Scheme::kHtml;
     password_form.blocked_by_user = false;
-    password_form.encrypted_password = base::UTF16ToUTF8(password);
+    password_form.keychain_identifier = base::UTF16ToUTF8(password);
 
     return [[CWVPassword alloc] initWithPasswordForm:password_form];
   }

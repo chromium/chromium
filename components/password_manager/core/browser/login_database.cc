@@ -232,7 +232,7 @@ void BindAddStatement(const PasswordForm& form,
   s->BindString16(COLUMN_USERNAME_VALUE, form.username_value);
   s->BindString16(COLUMN_PASSWORD_ELEMENT, form.password_element);
   s->BindBlob(COLUMN_PASSWORD_VALUE, encrypted_password);
-  s->BindBlob(COLUMN_KEYCHAIN_IDENTIFIER, form.encrypted_password);
+  s->BindBlob(COLUMN_KEYCHAIN_IDENTIFIER, form.keychain_identifier);
   s->BindString16(COLUMN_SUBMIT_ELEMENT, form.submit_element);
   s->BindString(COLUMN_SIGNON_REALM, form.signon_realm);
   s->BindTime(COLUMN_DATE_CREATED, form.date_created);
@@ -1219,13 +1219,13 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
 #if BUILDFLAG(IS_IOS)
   // [iOS] Passwords created in Credential Provider Extension (CPE) are already
   // encrypted in the keychain and there is no need to do the process again.
-  // However, the password needs to be decryped instead so the actual password
+  // However, the password needs to be decrypted instead so the actual password
   // syncs correctly.
   bool has_encrypted_password =
-      !form.encrypted_password.empty() && form.password_value.empty();
+      !form.keychain_identifier.empty() && form.password_value.empty();
   if (has_encrypted_password) {
     std::u16string plaintext_password;
-    if (!GetTextFromKeychainIdentifier(form.encrypted_password,
+    if (!GetTextFromKeychainIdentifier(form.keychain_identifier,
                                        &plaintext_password)) {
       if (error) {
         *error = AddCredentialError::kEncryptionServiceFailure;
@@ -1235,7 +1235,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     form_to_add.password_value = plaintext_password;
   } else {
     if (!CreateKeychainIdentifier(form.password_value,
-                                  &form_to_add.encrypted_password)) {
+                                  &form_to_add.keychain_identifier)) {
       if (error) {
         *error = AddCredentialError::kEncryptionServiceFailure;
       }
@@ -1243,7 +1243,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
     }
   }
 #else
-  CHECK(form.encrypted_password.empty());
+  CHECK(form.keychain_identifier.empty());
 #endif  // BUILDFLAG(IS_IOS)
   std::string encrypted_password;
   if (EncryptedString(form_to_add.password_value, &encrypted_password) !=
@@ -1413,7 +1413,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
       form.password_value != old_primary_key_password.decrypted_password;
 
   PasswordForm form_with_encrypted_password = form;
-  form_with_encrypted_password.encrypted_password = new_keychain_identifier;
+  form_with_encrypted_password.keychain_identifier = new_keychain_identifier;
 
   // TODO(crbug.com/1223022): It should be the responsibility of the caller to
   // set `password_issues` to empty.
@@ -1601,7 +1601,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->username_value = s.ColumnString16(COLUMN_USERNAME_VALUE);
   form->password_element = s.ColumnString16(COLUMN_PASSWORD_ELEMENT);
   form->password_value = decrypted_password;
-  s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER, &form->encrypted_password);
+  s.ColumnBlobAsString(COLUMN_KEYCHAIN_IDENTIFIER, &form->keychain_identifier);
   form->submit_element = s.ColumnString16(COLUMN_SUBMIT_ELEMENT);
   tmp = s.ColumnString(COLUMN_SIGNON_REALM);
   form->signon_realm = tmp;

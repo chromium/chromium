@@ -326,7 +326,7 @@ class WebViewPasswordStoreObserver
   form.url = password_manager_util::StripAuthAndParams(url);
   form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
   form.username_value = base::SysNSStringToUTF16(username);
-  form.encrypted_password = base::SysNSStringToUTF8(keychainIdentifier);
+  form.keychain_identifier = base::SysNSStringToUTF8(keychainIdentifier);
 
   _passwordStore->AddLogin(form);
 }
