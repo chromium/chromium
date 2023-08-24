@@ -13,6 +13,16 @@ namespace extensions {
 class ExtensionPrefs;
 class ExtensionService;
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "SBExtensionTelemetryDisableReason" in
+// src/tools/metrics/histograms/enums.xml.
+enum class ExtensionTelemetryDisableReason {
+  kUnknown = 0,
+  kMalware = 1,
+  kMaxValue = kMalware
+};
+
 // Manages the Extension Telemetry service verdict states in extension pref.
 class ExtensionTelemetryServiceVerdictHandler {
  public:

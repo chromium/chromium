@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_telemetry_service_verdict_handler.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,6 +33,7 @@ class ExtensionTelemetryServiceVerdictHandlerTest
 };
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest, HandlesMalwareExtension) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -47,10 +49,21 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest, HandlesMalwareExtension) {
   EXPECT_EQ(blocklist_prefs::GetExtensionTelemetryServiceBlocklistState(
                 kTestExtensionId, prefs),
             BitMapBlocklistState::BLOCKLISTED_MALWARE);
+
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionReenabled_"
+      "PastDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/0);
 }
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
        ReenablesUnblocklistedExtension) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -87,10 +100,21 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   // blocklist.
   EXPECT_FALSE(blocklist_prefs::HasAcknowledgedBlocklistState(
       kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
+
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionReenabled_"
+      "PastDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/1);
 }
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
        IgnoresUninstalledExtension) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -102,10 +126,21 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   EXPECT_EQ(blocklist_prefs::GetExtensionTelemetryServiceBlocklistState(
                 kUninstalledExtensionId, prefs),
             BitMapBlocklistState::NOT_BLOCKLISTED);
+
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/0);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionReenabled_"
+      "PastDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/0);
 }
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
        IgnoresUnknownBlocklistState) {
+  base::HistogramTester histograms;
   InitializeGoodInstalledExtensionService();
   service()->Init();
 
@@ -121,6 +156,16 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   EXPECT_EQ(blocklist_prefs::GetExtensionTelemetryServiceBlocklistState(
                 kTestExtensionId, prefs),
             BitMapBlocklistState::NOT_BLOCKLISTED);
+
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/0);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.ExtensionTelemetry.OffstoreExtensionReenabled_"
+      "PastDisabledReason",
+      /*sample=*/ExtensionTelemetryDisableReason::kMalware,
+      /*expected_count=*/0);
 }
 
 TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,

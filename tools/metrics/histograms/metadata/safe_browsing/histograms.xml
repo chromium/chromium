@@ -793,6 +793,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.OffstoreExtensionDisabledReason"
+    enum="SBExtensionTelemetryDisableReason" expires_after="2024-02-22">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the reason an off-store extension is disabled. This histogram is
+    emitted when Chrome disables an off-store extension based on a verdict
+    received from the Extension Telemetry Server.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.ExtensionTelemetry.OffstoreExtensionReenabled_PastDisabledReason"
+    enum="SBExtensionTelemetryDisableReason" expires_after="2024-02-22">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the previous blocklist state for an off-store extension when it is
+    re-enabled. This histogram is emitted when Chrome re-enables a previously
+    disabled off-store extension based on a new verdict from the Extension
+    Telemetry Server that un-blocklists the extension.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.ExtensionTelemetry.RetriesTillUploadSuccess"
     units="retries" expires_after="2024-01-14">
   <owner>anunoy@chromium.org</owner>
