@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
@@ -94,7 +96,10 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
     // manager, but AttemptUserExit() uses session manager to kill the chrome
     // binary.
     // TODO(b/292067979): Find a better way to work around this issue.
-    for (Browser* browser : *BrowserList::GetInstance()) {
+    auto* browser_list = BrowserList::GetInstance();
+    // Copy the browser list to avoid mutating it during iteration.
+    std::vector<Browser*> browsers(browser_list->begin(), browser_list->end());
+    for (Browser* browser : browsers) {
       CloseBrowserSynchronously(browser);
     }
 
