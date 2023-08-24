@@ -6958,6 +6958,12 @@ New install
       <message name="IDS_GLANCEABLES_TASKS_SELECTED_LIST_EMPTY_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the text announced by ChromeVox in case the selected tasks list is empty.">
         Selected list empty, navigate down to add a new task
       </message>
+      <message name="IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME" desc="The glanceable displays classroom items fetched from Google Classroom API. This is the a11y name announced by ChromeVox for the top left corner header icon that opens Google Classroom website (home page).">
+        Google Classroom website
+      </message>
+      <message name="IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME" desc="The glanceable displays tasks items fetched from Google Tasks API. This is the a11y name announced by ChromeVox for the top left corner header icon that opens Google Calendar website with the companion app panel open.">
+        Google tasks on web
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">

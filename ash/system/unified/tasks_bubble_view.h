@@ -16,7 +16,6 @@
 #include "ui/views/view_observer.h"
 
 namespace views {
-class ImageView;
 class LabelButton;
 }  // namespace views
 
@@ -51,7 +50,7 @@ class TasksComboboxModel;
 // +----------------------------------------------+
 // |`tasks_header_view_`                          |
 // |+---------------+ +-------------------------+ |
-// ||task_icon_view_| |task_list_combo_box_view_| |
+// ||`IconButton`   | |task_list_combo_box_view_| |
 // |+---------------+ +-------------------------+ |
 // +----------------------------------------------+
 //
@@ -110,7 +109,6 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
 
   // Owned by views hierarchy.
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> tasks_header_view_ = nullptr;
-  raw_ptr<views::ImageView, ExperimentalAsh> task_icon_view_ = nullptr;
   raw_ptr<Combobox, ExperimentalAsh> task_list_combo_box_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> button_container_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> task_items_container_view_ = nullptr;

@@ -17,19 +17,18 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
-#include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -40,8 +39,10 @@ namespace ash {
 namespace {
 
 constexpr int kInteriorGlanceableBubbleMargin = 16;
-
+constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr size_t kMaxAssignments = 3;
+
+constexpr char kClassroomHomePage[] = "https://classroom.google.com/u/0/h";
 
 }  // namespace
 
@@ -66,13 +67,13 @@ ClassroomBubbleBaseView::ClassroomBubbleBaseView(
                                views::MaximumFlexSizeRule::kPreferred));
 
   auto* const header_icon =
-      header_view_->AddChildView(std::make_unique<views::ImageView>());
-  header_icon->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysBaseElevated, 16));
-  header_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      kGlanceablesClassroomIcon, cros_tokens::kCrosSysOnSurface, 20));
-  header_icon->SetPreferredSize(gfx::Size(32, 32));
-  header_icon->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 4));
+      header_view_->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&ClassroomBubbleBaseView::OpenUrl,
+                              base::Unretained(this), GURL(kClassroomHomePage)),
+          IconButton::Type::kMedium, &kGlanceablesClassroomIcon,
+          IDS_GLANCEABLES_CLASSROOM_HEADER_ICON_ACCESSIBLE_NAME));
+  header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
 
   combo_box_view_ = header_view_->AddChildView(
       std::make_unique<views::Combobox>(std::move(combobox_model)));

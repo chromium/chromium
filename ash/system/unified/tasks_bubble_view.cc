@@ -17,13 +17,12 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_id.h"
 #include "ash/style/combobox.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -34,17 +33,17 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
+#include "url/gurl.h"
 
 namespace {
 
 constexpr int kMaximumTasks = 5;
-constexpr int kTasksIconRightPadding = 14;
-constexpr int kTasksIconViewSize = 32;
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
+constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -132,21 +131,14 @@ void TasksBubbleView::InitViews(ui::ListModel<GlanceablesTaskList>* task_list) {
   add_new_task_button_->SetProperty(views::kMarginsKey,
                                     kAddNewTaskButtonMargins);
 
-  task_icon_view_ =
-      tasks_header_view_->AddChildView(std::make_unique<views::ImageView>());
-  task_icon_view_->SetPreferredSize(
-      gfx::Size(kTasksIconViewSize, kTasksIconViewSize));
-  task_icon_view_->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysBaseElevated, kTasksIconViewSize / 2));
-  if (chromeos::features::IsJellyEnabled()) {
-    task_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlanceablesTasksIcon, cros_tokens::kCrosSysOnSurface));
-  } else {
-    task_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlanceablesTasksIcon, kColorAshTextColorPrimary));
-  }
-  task_icon_view_->SetProperty(
-      views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, kTasksIconRightPadding));
+  auto* const header_icon =
+      tasks_header_view_->AddChildView(std::make_unique<IconButton>(
+          base::BindRepeating(&TasksBubbleView::ActionButtonPressed,
+                              base::Unretained(this)),
+          IconButton::Type::kMedium, &kGlanceablesTasksIcon,
+          IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
+  header_icon->SetBackgroundColorId(cros_tokens::kCrosSysBaseElevated);
+  header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
 
   tasks_combobox_model_ = std::make_unique<TasksComboboxModel>(task_list);
   task_list_combo_box_view_ = tasks_header_view_->AddChildView(
