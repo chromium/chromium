@@ -513,6 +513,7 @@
   E_CPONLY(kColorTabGroupDialogPurple) \
   E_CPONLY(kColorTabGroupDialogCyan) \
   E_CPONLY(kColorTabGroupDialogOrange) \
+  E_CPONLY(kColorTabGroupDialogIconEnabled) \
   /* The colors used for tab groups in the context submenu. */ \
   E_CPONLY(kColorTabGroupContextMenuBlue) \
   E_CPONLY(kColorTabGroupContextMenuCyan) \

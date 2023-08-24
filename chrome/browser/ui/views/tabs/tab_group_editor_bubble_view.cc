@@ -443,8 +443,13 @@ void TabGroupEditorBubbleView::AddedToWidget() {
         enabled ? views::Button::STATE_NORMAL : views::Button::STATE_DISABLED;
 
     const SkColor text_color = menu_item->GetCurrentTextColor();
-    const SkColor icon_color =
-        enabled ? color_utils::DeriveDefaultIconColor(text_color) : text_color;
+
+    const auto* const color_provider = GetColorProvider();
+    const SkColor enabled_icon_color =
+        features::IsChromeRefresh2023()
+            ? color_provider->GetColor(kColorTabGroupDialogIconEnabled)
+            : color_utils::DeriveDefaultIconColor(text_color);
+    const SkColor icon_color = enabled ? enabled_icon_color : text_color;
 
     const ui::ImageModel& old_image_model =
         menu_item->GetImageModel(button_state);
