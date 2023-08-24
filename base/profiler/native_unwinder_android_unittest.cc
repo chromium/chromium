@@ -365,8 +365,7 @@ TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
 }
 
 // Checks that java frames can be unwound through.
-// Disabled, see: https://crbug.com/1076997
-TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
+TEST(NativeUnwinderAndroidTest, JavaFunction) {
   auto* build_info = base::android::BuildInfo::GetInstance();
   // Due to varying availability of compiled java unwind tables, unwinding is
   // only expected to succeed on > SDK_VERSION_MARSHMALLOW.
