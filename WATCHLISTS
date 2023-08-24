@@ -707,6 +707,7 @@
       'filepath': 'history_clusters'\
                   '|image_service'\
                   '|ios/chrome/browser/text_selection'\
+                  '|manta'\
                   '|optimization_guide'\
                   '|optimization_hints'\
                   '|third_party/eigen3'\
