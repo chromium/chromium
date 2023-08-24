@@ -63696,6 +63696,7 @@ from previous Chrome versions.
   <int value="-389601101" label="HelpAppAutoTriggerInstallDialog:enabled"/>
   <int value="-389283574" label="IPH_PasswordsAccountStorage:disabled"/>
   <int value="-387606010" label="ArcBootCompletedBroadcast:enabled"/>
+  <int value="-387341308" label="ParentAccessJelly:disabled"/>
   <int value="-387217874" label="LinkCapturingInfoBar:enabled"/>
   <int value="-385461103" label="XsurfaceMetricsReporting:enabled"/>
   <int value="-385337473" label="enable-fast-unload"/>
@@ -64669,6 +64670,7 @@ from previous Chrome versions.
   <int value="99177659" label="OmniboxUICuesForSearchHistoryMatches:disabled"/>
   <int value="99660832" label="DockedMagnifierResizing:enabled"/>
   <int value="101253756" label="RequestDesktopSiteDefaults:disabled"/>
+  <int value="101364236" label="ParentAccessJelly:enabled"/>
   <int value="101973012" label="OmniboxConsumesImeInsets:enabled"/>
   <int value="103347629" label="WinrtSensorsImplementation:enabled"/>
   <int value="103560544" label="ViewportHeightClientHintHeader:disabled"/>

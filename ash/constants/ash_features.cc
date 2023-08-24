@@ -1937,6 +1937,12 @@ BASE_FEATURE(kOverviewScrollLayoutForClamshell,
              "OverviewScrollLayoutForClamshell",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Jelly colors and components to appear in the Parent Access Widget
+// if jelly-colors is also enabled.
+BASE_FEATURE(kParentAccessJelly,
+             "ParentAccessJelly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables user to provision PasspointARCSupport credentials.
 BASE_FEATURE(kPasspointARCSupport,
              "PasspointARCSupport",
@@ -3690,6 +3696,11 @@ bool IsPasspointARCSupportEnabled() {
 bool IsPasspointSettingsEnabled() {
   return base::FeatureList::IsEnabled(kPasspointSettings) &&
          base::FeatureList::IsEnabled(kPasspointARCSupport);
+}
+
+bool IsParentAccessJellyEnabled() {
+  return chromeos::features::IsJellyEnabled() &&
+         base::FeatureList::IsEnabled(kParentAccessJelly);
 }
 
 bool IsPasswordlessGaiaEnabledForConsumers() {

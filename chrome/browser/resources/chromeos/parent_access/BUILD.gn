@@ -89,6 +89,8 @@ js_library("parent_access_offline") {
 }
 
 js_library("parent_access_app") {
+  extra_deps =
+      [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   deps = [
     ":parent_access_after",
     ":parent_access_before",

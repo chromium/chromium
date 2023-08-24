@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './parent_access_template.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';

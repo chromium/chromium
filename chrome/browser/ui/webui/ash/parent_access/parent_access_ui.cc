@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,6 +26,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace ash {
 
@@ -56,6 +58,12 @@ void ParentAccessUI::BindInterface(
   // browser address bar.  The handler should handle that scenario.
   mojo_api_handler_ = std::make_unique<ParentAccessUIHandlerImpl>(
       std::move(receiver), identity_manager, ParentAccessDialog::GetInstance());
+}
+
+void ParentAccessUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 parent_access_ui::mojom::ParentAccessUIHandler*
@@ -114,6 +122,8 @@ void ParentAccessUI::SetUpResources() {
                           IDR_PARENT_ACCESS_REQUEST_APPROVAL_DARK_SVG);
 
   source->UseStringsJs();
+  source->AddBoolean("isParentAccessJellyEnabled",
+                     features::IsParentAccessJellyEnabled());
   source->SetDefaultResource(IDR_PARENT_ACCESS_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {

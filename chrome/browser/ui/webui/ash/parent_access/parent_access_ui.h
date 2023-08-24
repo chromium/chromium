@@ -14,6 +14,11 @@
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash {
 
@@ -47,10 +52,18 @@ class ParentAccessUI : public ui::MojoWebDialogUI {
       mojo::PendingReceiver<parent_access_ui::mojom::ParentAccessUIHandler>
           receiver);
 
+  // Instantiates the implementor of the mojom::PageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
   parent_access_ui::mojom::ParentAccessUIHandler* GetHandlerForTest();
 
  private:
   void SetUpResources();
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   std::unique_ptr<parent_access_ui::mojom::ParentAccessUIHandler>
       mojo_api_handler_;
