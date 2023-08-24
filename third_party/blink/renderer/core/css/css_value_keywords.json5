@@ -1720,5 +1720,12 @@
     // navigation-trigger
     "cross-document-same-origin",
     // none
+
+    // container-type
+    // inline-size,
+    // normal,
+    // size,
+    "snap",
+    // sticky,
   ],
 }

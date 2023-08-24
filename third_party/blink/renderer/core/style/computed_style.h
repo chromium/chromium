@@ -2515,6 +2515,7 @@ class ComputedStyle final : public ComputedStyleBase {
   bool IsStickyContainer() const {
     return ContainerType() & kContainerTypeSticky;
   }
+  bool IsSnapContainer() const { return ContainerType() & kContainerTypeSnap; }
 
   static bool IsDisplayBlockContainer(EDisplay display) {
     return display == EDisplay::kBlock || display == EDisplay::kListItem ||

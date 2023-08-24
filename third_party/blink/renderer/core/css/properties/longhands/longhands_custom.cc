@@ -2309,6 +2309,9 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
   if (style.ContainerType() & kContainerTypeSticky) {
     values->Append(*CSSIdentifierValue::Create(CSSValueID::kSticky));
   }
+  if (style.ContainerType() & kContainerTypeSnap) {
+    values->Append(*CSSIdentifierValue::Create(CSSValueID::kSnap));
+  }
   return values;
 }
 

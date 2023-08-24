@@ -6996,13 +6996,14 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
-  // container-type: normal | [ [ size | inline-size ] || sticky ]
+  // container-type: normal | [ [ size | inline-size ] || sticky || snap ]
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(range)) {
     return value;
   }
 
   CSSValue* size_value = nullptr;
   CSSValue* sticky_value = nullptr;
+  CSSValue* snap_value = nullptr;
 
   do {
     if (!size_value) {
@@ -7019,6 +7020,13 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
         continue;
       }
     }
+    if (!snap_value &&
+        RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {
+      snap_value = ConsumeIdent<CSSValueID::kSnap>(range);
+      if (snap_value) {
+        continue;
+      }
+    }
     return nullptr;
   } while (!range.AtEnd());
 
@@ -7028,6 +7036,9 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   }
   if (sticky_value) {
     list->Append(*sticky_value);
+  }
+  if (snap_value) {
+    list->Append(*snap_value);
   }
   return list;
 }
