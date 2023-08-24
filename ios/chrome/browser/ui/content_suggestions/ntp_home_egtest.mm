@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/ui/whats_new/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -122,10 +123,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   // Mark What's New as already-seen so it does not override Bookmarks.
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:@"userHasInteractedWithWhatsNew"];
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:@"userHasInteractedWithWhatsNewM116"];
+  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
   [NTPHomeTestCase setUpHelper];
 }
 
@@ -141,10 +140,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)tearDown {
   [self closeAllTabs];
   // Clean up What's New already-seen.
-  [ChromeEarlGrey
-      removeUserDefaultObjectForKey:@"userHasInteractedWithWhatsNew"];
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:@"userHasInteractedWithWhatsNewM116"];
+  [ChromeEarlGrey removeUserDefaultObjectForKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
 
   [super tearDown];
 }
@@ -257,8 +254,7 @@ id<GREYMatcher> notPracticallyVisible() {
 - (void)testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [ChromeEarlGrey setUserDefaultObject:@NO
-                                forKey:@"userHasInteractedWithWhatsNewM116"];
+  [ChromeEarlGrey setUserDefaultObject:@NO forKey:kWhatsNewM116UsageEntryKey];
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
