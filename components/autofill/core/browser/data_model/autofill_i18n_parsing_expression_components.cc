@@ -1,0 +1,121 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expression_components.h"
+
+#include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+
+namespace autofill::i18n_model_definition {
+namespace {
+
+inline std::string RemoveVersionSuffix(const std::string& token) {
+  return token.substr(0, token.find("__"));
+}
+
+absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
+    const std::string& value,
+    const std::string& pattern) {
+  const RE2* regex = Re2RegExCache::Instance()->GetRegEx(pattern);
+  if (!regex || !regex->ok()) {
+    return absl::nullopt;
+  }
+
+  // Get the number of capturing groups in the expression.
+  // Note, the capturing group for the full match is not counted.
+  size_t number_of_capturing_groups = regex->NumberOfCapturingGroups() + 1;
+
+  // Create result vectors to get the matches for the capturing groups.
+  std::vector<std::string> results(number_of_capturing_groups);
+  std::vector<RE2::Arg> match_results(number_of_capturing_groups);
+  std::vector<RE2::Arg*> match_results_ptr(number_of_capturing_groups);
+
+  // Note, the capturing group for the full match is not counted by
+  // |NumberOfCapturingGroups|.
+  for (size_t i = 0; i < number_of_capturing_groups; ++i) {
+    match_results[i] = &results[i];
+    match_results_ptr[i] = &match_results[i];
+  }
+
+  // One capturing group is not counted since it holds the full match.
+  if (!RE2::PartialMatchN(value, *regex, match_results_ptr.data(),
+                          number_of_capturing_groups - 1)) {
+    return absl::nullopt;
+  }
+
+  // If successful, write the values into the results map.
+  // Note, the capturing group for the full match creates an off-by-one scenario
+  // in the indexing.
+  std::vector<std::pair<std::string, std::string>> matches;
+  for (const auto& group : regex->NamedCapturingGroups()) {
+    const auto& [name, index] = group;
+    if (results[index - 1].empty()) {
+      continue;
+    }
+    matches.emplace_back(RemoveVersionSuffix(name), results[index - 1]);
+  }
+
+  return base::MakeFlatMap<std::string, std::string>(std::move(matches));
+}
+
+// Check that the condition regex is matched if exist.
+bool ConditionIsMatched(const std::string& condition_regex,
+                        const std::string& value) {
+  if (condition_regex.empty()) {
+    return true;
+  }
+  const RE2* regex = Re2RegExCache::Instance()->GetRegEx(condition_regex);
+  return RE2::PartialMatch(value, *regex);
+}
+}  // namespace
+
+ValueParsingResults Decomposition::Parse(const std::string& value) const {
+  std::string prefix = anchor_beginning_ ? "^" : "";
+  std::string suffix = anchor_end_ ? "$" : "";
+  std::string regex = prefix + parsing_regex_ + suffix;
+  return ParseUsingRegex(value, regex);
+}
+
+ValueParsingResults DecompositionCascade::Parse(
+    const std::string& value) const {
+  if (!ConditionIsMatched(condition_regex_, value)) {
+    return absl::nullopt;
+  }
+
+  for (const auto* alternative : alternatives_) {
+    auto result = alternative->Parse(value);
+    if (result.has_value()) {
+      return result;
+    }
+  }
+  return absl::nullopt;
+}
+
+ValueParsingResults ExtractPart::Parse(const std::string& value) const {
+  if (!ConditionIsMatched(condition_regex_, value)) {
+    return absl::nullopt;
+  }
+
+  return ParseUsingRegex(value, parsing_regex_);
+}
+
+ValueParsingResults ExtractParts::Parse(const std::string& value) const {
+  if (!ConditionIsMatched(condition_regex_, value)) {
+    return absl::nullopt;
+  }
+  base::flat_map<std::string, std::string> result;
+  for (const auto* piece : pieces_) {
+    auto piece_match = piece->Parse(value);
+    if (piece_match.has_value()) {
+      for (const auto& [field_type_str, matched_string] : *piece_match) {
+        result.insert_or_assign(field_type_str, matched_string);
+      }
+    }
+  }
+  if (!result.empty()) {
+    return result;
+  }
+  return absl::nullopt;
+}
+
+}  // namespace autofill::i18n_model_definition
