@@ -33,7 +33,7 @@ class PermissionManagerFactory : public ProfileKeyedServiceFactory {
   ~PermissionManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 
