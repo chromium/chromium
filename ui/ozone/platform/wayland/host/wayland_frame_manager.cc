@@ -16,6 +16,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_factory.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
@@ -355,8 +356,6 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   surface->set_viewport_destination(config.bounds_rect.size());
   surface->set_opacity(config.opacity);
   surface->set_blending(config.enable_blend);
-  surface->set_rounded_clip_bounds(
-      config.rounded_clip_bounds.value_or(gfx::RRectF()));
   surface->set_overlay_priority(config.priority_hint);
   surface->set_background_color(config.background_color);
   surface->set_contains_video(
@@ -381,14 +380,35 @@ void WaylandFrameManager::ApplySurfaceConfigure(
   // If we don't attach a released buffer, graphics freeze will occur.
   DCHECK(will_attach || !buffer_handle->released(surface));
 
-  // `damage_region` and `clip_rect` are specified in viz::Display space, the
-  // same as `bounds_rect`. To get the damage and clip rect in surface space we
-  // need to offset the origin by the surface's position. Note: The damage and
-  // clip rect may be enlarged if bounds_rect is sub-pixel positioned because
-  // `damage_region` is a Rect, and |bounds_rect| is a RectF.
+  // `damage_region`, `clip_rect` and `rounded_clip_bounds` are specified in
+  // the root surface coordinates space, the same as `bounds_rect`. To get
+  // these rect values in local surface space we need to offset the origin by
+  // the root surface's position.
+  // Note: The damage and clip rect may be enlarged if bounds_rect is sub-pixel
+  // positioned because `damage_region` and `clip_rect` is a Rect, and
+  // `bounds_rect` is a RectF. `rounded_clip_bounds` is RRectF so no need for
+  // conversion.
+  // Note: There is no rotation nor scale of the coordinates compared to the
+  // root window coordinates, and also, we assume that the surface is a direct
+  // children of the root surface, so we can adjust the position by
+  // `bounds_rect` origin.
   gfx::RectF surface_damage = gfx::RectF(config.damage_region);
   surface_damage -= config.bounds_rect.OffsetFromOrigin();
   surface->UpdateBufferDamageRegion(ToEnclosingRect(surface_damage));
+  if (config.rounded_clip_bounds) {
+    // The deprecated implementation uses root surface coordinates, so do not
+    // offset if the local coordinates rounded corners is not supported.
+    auto rounded_corners_offset =
+        (connection_->surface_augmenter() &&
+         connection_->surface_augmenter()
+             ->NeedsRoundedClipBoundsInLocalSurfaceCoordinates())
+            ? config.bounds_rect.OffsetFromOrigin()
+            : gfx::Vector2d();
+    surface->set_rounded_clip_bounds(*config.rounded_clip_bounds -
+                                     rounded_corners_offset);
+  } else {
+    surface->set_rounded_clip_bounds(gfx::RRectF());
+  }
   if (config.clip_rect) {
     gfx::RectF clip_rect = gfx::RectF(*config.clip_rect);
     clip_rect -= config.bounds_rect.OffsetFromOrigin();
