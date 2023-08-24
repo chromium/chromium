@@ -604,7 +604,12 @@ public class LocationBarCoordinator
      */
     public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
         assert isTabletWindow();
-        return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
+
+        if (mLocationBarMediator != null) {
+            return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
+        } else {
+            return null;
+        }
     }
 
     /**

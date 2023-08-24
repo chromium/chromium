@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -814,7 +815,11 @@ public class ToolbarTablet
 
         // Create animators for all of the toolbar buttons.
         for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.createHideButtonAnimatorForTablet(button));
+            ObjectAnimator hideButtonAnimator =
+                    mLocationBar.createHideButtonAnimatorForTablet(button);
+            if (hideButtonAnimator != null) {
+                animators.add(hideButtonAnimator);
+            }
         }
 
         // Add animators for location bar.
