@@ -2,26 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/supervised_user/permission_request_creator_mock.h"
+#include "components/supervised_user/core/browser/permission_request_creator_mock.h"
 
 #include <memory>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 
+namespace supervised_user {
+
 namespace {
 
-base::Value::Dict GetManualBehaviorHostDict(Profile* profile) {
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(profile->GetProfileKey());
+base::Value::Dict GetManualBehaviorHostDict(
+    const supervised_user::SupervisedUserSettingsService& settings_service) {
   const base::Value::Dict& local_settings =
-      settings_service->LocalSettingsForTest();
+      settings_service.LocalSettingsForTest();
 
   if (const base::Value::Dict* dict = local_settings.FindDict(
           supervised_user::kContentPackManualBehaviorHosts)) {
@@ -33,8 +31,9 @@ base::Value::Dict GetManualBehaviorHostDict(Profile* profile) {
 
 }  // namespace
 
-PermissionRequestCreatorMock::PermissionRequestCreatorMock(Profile* profile)
-    : profile_(profile) {}
+PermissionRequestCreatorMock::PermissionRequestCreatorMock(
+    SupervisedUserSettingsService& settings_service)
+    : settings_service_(settings_service) {}
 
 PermissionRequestCreatorMock::~PermissionRequestCreatorMock() = default;
 
@@ -47,8 +46,9 @@ void PermissionRequestCreatorMock::CreateURLAccessRequest(
     SuccessCallback callback) {
   DCHECK(enabled_);
   url_requests_.push_back(url_requested);
-  if (!delay_handling_)
+  if (!delay_handling_) {
     CreateURLAccessRequestImpl(url_requested);
+  }
   std::move(callback).Run(true);
 }
 
@@ -70,18 +70,15 @@ void PermissionRequestCreatorMock::DelayHandlingForNextRequests() {
 void PermissionRequestCreatorMock::HandleDelayedRequests() {
   DCHECK(delay_handling_);
 
-  base::Value::Dict dict_to_insert = GetManualBehaviorHostDict(profile_);
+  base::Value::Dict dict_to_insert =
+      GetManualBehaviorHostDict(settings_service_.get());
 
   for (size_t i = last_url_request_handled_index_ + 1; i < url_requests_.size();
        i++) {
     dict_to_insert.Set(url_requests_[i].host(), result_);
   }
 
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
-          profile_->GetProfileKey());
-
-  settings_service->SetLocalSetting(
+  settings_service_->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
 
@@ -90,13 +87,13 @@ void PermissionRequestCreatorMock::HandleDelayedRequests() {
 
 void PermissionRequestCreatorMock::CreateURLAccessRequestImpl(
     const GURL& url_requested) {
-  base::Value::Dict dict_to_insert = GetManualBehaviorHostDict(profile_);
+  base::Value::Dict dict_to_insert =
+      GetManualBehaviorHostDict(settings_service_.get());
   dict_to_insert.Set(url_requested.host(), result_);
 
-  supervised_user::SupervisedUserSettingsService* settings_service =
-      SupervisedUserSettingsServiceFactory::GetForKey(
-          profile_->GetProfileKey());
-  settings_service->SetLocalSetting(
+  settings_service_->SetLocalSetting(
       supervised_user::kContentPackManualBehaviorHosts,
       std::move(dict_to_insert));
 }
+
+}  // namespace supervised_user

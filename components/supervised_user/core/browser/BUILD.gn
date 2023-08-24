@@ -50,6 +50,20 @@ static_library("fetcher_config") {
   ]
 }
 
+static_library("mocked") {
+  testonly = true
+  sources = [
+    "permission_request_creator_mock.cc",
+    "permission_request_creator_mock.h",
+  ]
+  deps = [
+    "//base",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
+    "//url",
+  ]
+}
+
 static_library("fetcher") {
   sources = [
     "api_access_token_fetcher.cc",

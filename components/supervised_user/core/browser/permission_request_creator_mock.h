@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_
-#define CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_MOCK_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_MOCK_H_
 
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
+#include "base/allocator/partition_allocator/pointers/raw_ref.h"
 #include "components/supervised_user/core/browser/permission_request_creator.h"
 #include "url/gurl.h"
 
-class Profile;
+namespace supervised_user {
+class SupervisedUserSettingsService;
 
-class PermissionRequestCreatorMock
-    : public supervised_user::PermissionRequestCreator {
+class PermissionRequestCreatorMock : public PermissionRequestCreator {
  public:
-  explicit PermissionRequestCreatorMock(Profile* profile);
+  explicit PermissionRequestCreatorMock(
+      SupervisedUserSettingsService& settings_service);
 
   PermissionRequestCreatorMock(const PermissionRequestCreatorMock&) = delete;
   PermissionRequestCreatorMock& operator=(const PermissionRequestCreatorMock&) =
@@ -49,9 +50,10 @@ class PermissionRequestCreatorMock
   bool delay_handling_ = false;
   int last_url_request_handled_index_ = 0;
 
-  raw_ptr<Profile> profile_ = nullptr;
-
+  const raw_ref<SupervisedUserSettingsService> settings_service_;
   std::vector<GURL> url_requests_;
 };
 
-#endif  // CHROME_BROWSER_SUPERVISED_USER_PERMISSION_REQUEST_CREATOR_MOCK_H_
+}  // namespace supervised_user
+
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PERMISSION_REQUEST_CREATOR_MOCK_H_

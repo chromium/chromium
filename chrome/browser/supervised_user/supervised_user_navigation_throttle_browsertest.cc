@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/supervised_user/permission_request_creator_mock.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
@@ -31,6 +30,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/supervised_user/core/browser/permission_request_creator_mock.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -433,7 +433,7 @@ class SupervisedUserIframeFilterTest
   bool IsLocalWebApprovalsEnabled() const;
   bool IsLocalWebApprovalsPreferred() const;
 
-  PermissionRequestCreatorMock* permission_creator() {
+  supervised_user::PermissionRequestCreatorMock* permission_creator() {
     return permission_creator_;
   }
 
@@ -444,7 +444,8 @@ class SupervisedUserIframeFilterTest
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
-  raw_ptr<PermissionRequestCreatorMock, ExperimentalAsh> permission_creator_;
+  raw_ptr<supervised_user::PermissionRequestCreatorMock, ExperimentalAsh>
+      permission_creator_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -453,10 +454,16 @@ void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
 
   supervised_user::SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(browser()->profile());
+  supervised_user::SupervisedUserSettingsService* settings_service =
+      SupervisedUserSettingsServiceFactory::GetForKey(
+          browser()->profile()->GetProfileKey());
+  CHECK(settings_service);
   std::unique_ptr<supervised_user::PermissionRequestCreator> creator =
-      std::make_unique<PermissionRequestCreatorMock>(browser()->profile());
+      std::make_unique<supervised_user::PermissionRequestCreatorMock>(
+          *settings_service);
   permission_creator_ =
-      static_cast<PermissionRequestCreatorMock*>(creator.get());
+      static_cast<supervised_user::PermissionRequestCreatorMock*>(
+          creator.get());
   permission_creator_->SetEnabled();
   service->remote_web_approvals_manager().ClearApprovalRequestsCreators();
   service->remote_web_approvals_manager().AddApprovalRequestCreator(

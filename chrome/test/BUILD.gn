@@ -3962,8 +3962,6 @@ if (!is_android) {
     # TODO(https://crbug.com/1218633): Fix the mixin and enable tests on LaCrOS and desktop.
     if (enable_supervised_users) {
       sources += [
-        "../browser/supervised_user/permission_request_creator_mock.cc",
-        "../browser/supervised_user/permission_request_creator_mock.h",
         "../browser/supervised_user/supervised_user_regional_url_filter_browsertest.cc",
         "../browser/supervised_user/supervised_user_service_browsertest.cc",
         "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
@@ -3988,6 +3986,7 @@ if (!is_android) {
         "//chrome/browser/supervised_user:test_support",
         "//components/supervised_user/core/browser",
         "//components/supervised_user/core/browser:fetcher_config",
+        "//components/supervised_user/core/browser:mocked",
         "//components/supervised_user/core/browser/proto",
         "//components/supervised_user/core/common",
       ]
