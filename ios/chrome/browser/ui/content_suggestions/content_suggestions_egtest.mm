@@ -192,7 +192,10 @@ void TapMoreButtonIfVisible() {
   if ([self isRunningTest:@selector
             (MAYBE_testSetUpListDismissItemsWithSyncToSigninDisabled)] ||
       [self isRunningTest:@selector
-            (MAYBE_testSetUpListSigninWithSyncToSigninDisabled)]) {
+            (MAYBE_testSetUpListSigninWithSyncToSigninDisabled)] ||
+      [self
+          isRunningTest:@selector
+          (MAYBE_testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
   }
@@ -586,7 +589,10 @@ void TapMoreButtonIfVisible() {
 
 // TODO(crbug.com/1473705): Test is flaky on device. Re-enable the test.
 // Tests that the signin and sync screens can be dismissed by a swipe.
-- (void)MAYBE_testSetUpListSigninSwipeToDismiss {
+// Note that if SyncToSignin is enabled, then the signin screen is replaced
+// by a bottom sheet which can't be dismissed by swiping, so this test
+// doesn't apply.
+- (void)MAYBE_testSetUpListSigninSwipeToDismissWithSyncToSigninDisabled {
   [self prepareToTestSetUpList];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
@@ -631,7 +637,15 @@ void TapMoreButtonIfVisible() {
   // Tap the signin item.
   TapView(set_up_list::kSignInItemID);
   [ChromeEarlGreyUI waitForAppToIdle];
-  TapPromoStyleSecondaryActionButton();
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // The fake signin UI appears. Dismiss it.
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAuthCancelButtonIdentifier)]
+        performAction:grey_tap()];
+  } else {
+    // The full-screen signin promo appears. Dismiss it.
+    TapPromoStyleSecondaryActionButton();
+  }
 
   ConditionBlock condition = ^{
     NSError* error = nil;
