@@ -173,6 +173,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   }
   bool supports_clip_rect() const { return supports_clip_rect_; }
   bool supports_affine_transform() const { return supports_affine_transform_; }
+  bool supports_out_of_window_clip_rect() const {
+    return supports_out_of_window_clip_rect_;
+  }
 
   void set_drm_modifiers_filter(
       std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter) {
@@ -304,6 +307,10 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Determines whether Wayland server supports delegating non axis-aligned 2d
   // transforms.
   bool supports_affine_transform_ = false;
+
+  // Whether wayland server supports clip delegation for quads that are
+  // partially or fully outside of the window.
+  bool supports_out_of_window_clip_rect_ = false;
 
   // A DRM modifiers filter to ensure we don't allocate buffers with modifiers
   // not supported by Vulkan.

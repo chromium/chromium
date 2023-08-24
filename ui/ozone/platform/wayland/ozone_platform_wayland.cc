@@ -389,6 +389,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.supports_clip_rect = buffer_manager_->supports_clip_rect();
       properties.supports_affine_transform =
           buffer_manager_->supports_affine_transform();
+      properties.supports_out_of_window_clip_rect =
+          buffer_manager_->supports_out_of_window_clip_rect();
     }
     return properties;
   }

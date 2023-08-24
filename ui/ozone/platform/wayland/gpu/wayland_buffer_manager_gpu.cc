@@ -29,6 +29,14 @@
 
 namespace ui {
 
+namespace {
+
+// The minimum version for `augmented_surface_set_rounded_corners_clip_bounds`
+// with a local coordinates bounds.
+constexpr uint32_t kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion = 9;
+
+}  // namespace
+
 WaylandBufferManagerGpu::WaylandBufferManagerGpu()
     : WaylandBufferManagerGpu(base::FilePath()) {}
 
@@ -105,6 +113,9 @@ void WaylandBufferManagerGpu::Initialize(
   supports_affine_transform_ =
       supported_surface_augmentor_version >=
       AUGMENTED_SUB_SURFACE_SET_TRANSFORM_SINCE_VERSION;
+  supports_out_of_window_clip_rect_ =
+      supported_surface_augmentor_version >=
+      kRoundedClipBoundsInLocalSurfaceCoordinatesSinceVersion;
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
   BindHostInterface(std::move(remote_host));
