@@ -204,8 +204,8 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
 
     // If the ‘text-decoration-line’ is not ‘spelling-error’ or ‘grammar-error’,
     // depending on the pseudo. ‘text-decoration-color’ can vary without hurting
-    // the optimisation, and for these line types, we ignore ‘-thickness’ and
-    // ‘-style’ and ‘text-decoration-skip-ink’ anyway.
+    // the optimisation, and for these line types, we ignore all other text
+    // decoration related properties anyway.
     if (pseudo_style->TextDecorationsInEffect() !=
         (pseudo == kPseudoIdSpellingError
              ? TextDecorationLine::kSpellingError

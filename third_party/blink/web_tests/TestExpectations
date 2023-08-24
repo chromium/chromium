@@ -1047,11 +1047,6 @@ crbug.com/666433 external/wpt/css/css-text-decor/text-shadow/standards-decor-nob
 # `text-decoration-skip-ink: all` not implemented yet.
 crbug.com/1054656 external/wpt/css/css-text-decor/text-decoration-skip-ink-005.html [ Crash Failure Pass Timeout ]
 
-# `text-decoration: spelling|grammar-error`
-crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-grammar-error-001.html [ Failure ]
-crbug.com/1163436 wpt_internal/css/css-text-decor/text-decoration-line-spelling-error-001.html [ Failure ]
-
-
 crbug.com/846753 [ Mac ] http/tests/media/reload-after-dialog.html [ Failure Pass Timeout ]
 
 ### external/wpt/css/css-tables/
