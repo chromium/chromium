@@ -5870,17 +5870,7 @@ void NavigationRequest::CommitPageActivation() {
     std::unique_ptr<StoredPage> stored_page =
         GetPrerenderHostRegistry().ActivateReservedHost(
             prerender_frame_tree_node_id_.value(), *this);
-
-    // TODO(https://crbug.com/1181712): Determine the best way to handle
-    // navigation when prerendering is cancelled during activation. This
-    // includes the case where a navigation can be restarted.
-    if (!stored_page) {
-      // TODO(https://crbug.com/1126305): Record the final status for activation
-      // failure.
-      NOTIMPLEMENTED()
-          << "The prerendered page was cancelled during activation";
-      return;
-    }
+    CHECK(stored_page);
 
     RenderFrameHostImpl* rfh = stored_page->render_frame_host();
 
@@ -5912,7 +5902,6 @@ void NavigationRequest::CommitPageActivation() {
     if (!weak_self)
       return;
 
-    DCHECK(stored_page);
     // Use std::exchange instead of move, so that we clear out the optional on
     // the commit_params.
     stored_page->SetViewTransitionState(
