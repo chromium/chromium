@@ -203,8 +203,10 @@ bool HasDescendantsOf(const std::vector<const BookmarkNode*>& list,
                       const BookmarkNode* root);
 
 // Returns the parent to add new nodes to, never returns null (as long as
-// the model is loaded).
-const BookmarkNode* GetParentForNewNodes(BookmarkModel* model);
+// the model is loaded). If |url| is non-empty, features will have the
+// opportunity to suggest contextually relevant folders.
+const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
+                                         const GURL& url = GURL());
 
 }  // namespace bookmarks
 

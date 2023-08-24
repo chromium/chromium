@@ -43,6 +43,12 @@ class BookmarkClient {
   // Called during initialization of BookmarkModel.
   virtual void Init(BookmarkModel* model);
 
+  // Gets a bookmark folder that the provided URL can be saved to. If nullptr is
+  // returned, the bookmark is saved to the default location (usually this is
+  // the last modified folder). This affords features the option to override the
+  // default folder if relevant for the URL.
+  virtual const BookmarkNode* GetSuggestedSaveLocation(const GURL& url);
+
   // Requests a favicon from the history cache for the web page at |page_url|
   // for icon type favicon_base::IconType::kFavicon. |callback| is run when the
   // favicon has been fetched, which returns gfx::Image is a multi-resolution

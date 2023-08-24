@@ -10,6 +10,10 @@ namespace bookmarks {
 
 void BookmarkClient::Init(BookmarkModel* model) {}
 
+const BookmarkNode* BookmarkClient::GetSuggestedSaveLocation(const GURL& url) {
+  return nullptr;
+}
+
 base::CancelableTaskTracker::TaskId BookmarkClient::GetFaviconImageForPageURL(
     const GURL& page_url,
     favicon_base::FaviconImageCallback callback,
