@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feed/core/v2/public/ios/pref_names.h"
 #import "components/history/core/browser/features.h"
@@ -93,6 +94,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
@@ -710,6 +712,15 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
   // Last run time.
   state.lastRunTime = safetyCheckManager->GetLastSafetyCheckRunTime();
+
+  // Last run time (from the Safety Check via Settings).
+  base::Time lastRunTimeViaSettings =
+      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+          doubleForKey:kTimestampOfLastIssueFoundKey]);
+
+  if (lastRunTimeViaSettings > state.lastRunTime) {
+    state.lastRunTime = lastRunTimeViaSettings;
+  }
 
   state.runningState = CanRunSafetyCheck(state.lastRunTime)
                            ? RunningSafetyCheckState::kRunning
