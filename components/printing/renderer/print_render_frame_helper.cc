@@ -688,15 +688,14 @@ double GetScaleFactor(double input_scale_factor, bool is_pdf) {
 // Given the |device| and |canvas| to draw on, prints the appropriate headers
 // and footers using strings from |header_footer_info| on to the canvas.
 void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
-                          uint32_t page_number,
+                          uint32_t page_index,
                           uint32_t total_pages,
                           const blink::WebLocalFrame& source_frame,
                           float scale_factor,
                           const mojom::PageSizeMargins& page_layout,
                           const mojom::PrintParams& params) {
   DCHECK_LE(total_pages, kMaxPageCount);
-  // |page_number| is 1-based here, so it could be equal to kMaxPageCount.
-  DCHECK_LE(page_number, kMaxPageCount);
+  DCHECK_LT(page_index, kMaxPageCount);
 
   // Scaling has already been applied to the canvas, but headers and footers
   // should not be affected by that, so cancel it out.
@@ -778,7 +777,8 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   options.Set("bottomMargin", page_layout.margin_bottom);
   options.Set("leftMargin", page_layout.margin_left);
   options.Set("rightMargin", page_layout.margin_right);
-  options.Set("pageNumber", base::checked_cast<int>(page_number));
+  // `page_index` is 0-based, so 1 is added to get the page number.
+  options.Set("pageNumber", base::checked_cast<int>(page_index + 1));
   options.Set("totalPages", base::checked_cast<int>(total_pages));
   options.Set("url", params.url);
   std::u16string title = source_frame.GetDocument().Title().Utf16();
@@ -799,22 +799,22 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
   web_view->Close();
 }
 
-// Renders page contents from |frame| to |content_area| of |canvas|.
-// |page_number| is zero-based.
-// When method is called, canvas should be setup to draw to |canvas_area| with
-// |scale_factor|.
+// Renders page contents from `frame` to `content_area` of `canvas`.
+// `page_index` is zero-based.
+// When method is called, canvas should be setup to draw to `canvas_area` with
+// `scale_factor`.
 void RenderPageContent(blink::WebLocalFrame* frame,
-                       uint32_t page_number,
+                       uint32_t page_index,
                        const gfx::Rect& canvas_area,
                        const gfx::Rect& content_area,
                        double scale_factor,
                        cc::PaintCanvas* canvas) {
-  TRACE_EVENT1("print", "RenderPageContent", "page_number", page_number);
+  TRACE_EVENT1("print", "RenderPageContent", "page_index", page_index);
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
   canvas->translate((content_area.x() - canvas_area.x()) / scale_factor,
                     (content_area.y() - canvas_area.y()) / scale_factor);
-  frame->PrintPage(page_number, canvas);
+  frame->PrintPage(page_index, canvas);
 }
 
 }  // namespace
@@ -1903,19 +1903,20 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   }
 
   while (!print_preview_context_.IsFinalPageRendered()) {
-    uint32_t page_number = print_preview_context_.GetNextPageNumber();
-    DCHECK_NE(page_number, kInvalidPageIndex);
+    uint32_t page_index = print_preview_context_.GetNextPageIndex();
+    DCHECK_NE(page_index, kInvalidPageIndex);
 
     blink::WebLocalFrame* frame = print_preview_context_.source_frame();
     if (frame) {
       blink::WebPrintPageDescription description;
-      frame->GetPageDescription(page_number, &description);
+      frame->GetPageDescription(page_index, &description);
       print_pages_params_->params->page_orientation =
           FromBlinkPageOrientation(description.orientation);
     }
 
-    if (!RenderPreviewPage(page_number))
+    if (!RenderPreviewPage(page_index)) {
       return CreatePreviewDocumentResult::kFail;
+    }
 
     if (CheckForCancel())
       return CreatePreviewDocumentResult::kFail;
@@ -1941,9 +1942,9 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
   return CreatePreviewDocumentResult::kSuccess;
 }
 
-bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_number) {
+bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_index) {
   TRACE_EVENT1("print", "PrintRenderFrameHelper::RenderPreviewPage",
-               "page_number", page_number);
+               "page_index", page_index);
 
   const mojom::PrintParams& print_params = *print_pages_params_->params;
   MetafileSkia* render_metafile = print_preview_context_.metafile();
@@ -1962,7 +1963,7 @@ bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_number) {
   double scale_factor =
       GetScaleFactor(print_params.scale_factor,
                      /*is_pdf=*/!print_preview_context_.IsModifiable());
-  PrintPageInternal(print_params, page_number,
+  PrintPageInternal(print_params, page_index,
                     print_preview_context_.total_page_count(), scale_factor,
                     print_preview_context_.prepared_frame(), render_metafile);
   print_preview_context_.RenderedPreviewPage(base::TimeTicks::Now() -
@@ -1980,7 +1981,7 @@ bool PrintRenderFrameHelper::RenderPreviewPage(uint32_t page_number) {
   // at a time, instead of waiting for the entire document to be rendered.
   page_render_metafile =
       render_metafile->GetMetafileForCurrentPage(print_params.printed_doc_type);
-  return PreviewPageRendered(page_number, std::move(page_render_metafile));
+  return PreviewPageRendered(page_index, std::move(page_render_metafile));
 }
 
 bool PrintRenderFrameHelper::FinalizePrintReadyDocument() {
@@ -2607,13 +2608,13 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
 }
 
 void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
-                                               uint32_t page_number,
+                                               uint32_t page_index,
                                                uint32_t page_count,
                                                double scale_factor,
                                                blink::WebLocalFrame* frame,
                                                MetafileSkia* metafile) {
   mojom::PageSizeMarginsPtr page_layout_in_device_pixels =
-      ComputePageLayoutForCss(frame, page_number, params, ignore_css_margins_,
+      ComputePageLayoutForCss(frame, page_index, params, ignore_css_margins_,
                               &scale_factor);
   mojom::PageSizeMarginsPtr page_layout_in_css_pixels =
       ConvertedPageSizeMargins(page_layout_in_device_pixels, GetDPI(params),
@@ -2658,12 +2659,11 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   canvas->SetPrintingMetafile(metafile);
 
   if (params.display_header_footer) {
-    // |page_number| is 0-based, so 1 is added.
-    PrintHeaderAndFooter(canvas, page_number + 1, page_count, *frame,
-                         scale_factor, *page_layout_in_css_pixels, params);
+    PrintHeaderAndFooter(canvas, page_index, page_count, *frame, scale_factor,
+                         *page_layout_in_css_pixels, params);
   }
 
-  RenderPageContent(frame, page_number, canvas_area, content_area, scale_factor,
+  RenderPageContent(frame, page_index, canvas_area, content_area, scale_factor,
                     canvas);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
@@ -2814,14 +2814,14 @@ bool PrintRenderFrameHelper::CheckForCancel() {
 }
 
 bool PrintRenderFrameHelper::PreviewPageRendered(
-    uint32_t page_number,
+    uint32_t page_index,
     std::unique_ptr<MetafileSkia> metafile) {
-  DCHECK_NE(page_number, kInvalidPageIndex);
+  DCHECK_NE(page_index, kInvalidPageIndex);
   DCHECK(metafile);
   DCHECK(print_preview_context_.IsModifiable());
 
   TRACE_EVENT1("print", "PrintRenderFrameHelper::PreviewPageRendered",
-               "page_number", page_number);
+               "page_index", page_index);
 
   // Make sure the RenderFrame is alive before taking the snapshot.
   if (render_frame_gone_)
@@ -2833,7 +2833,7 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
   //
   // TODO(dmazzoni) Support multi-frame tagged PDFs.
   // http://crbug.com/1039817
-  if (snapshotter_ && page_number == 0) {
+  if (snapshotter_ && page_index == 0) {
     ui::AXTreeUpdate accessibility_tree;
     snapshotter_->Snapshot(/* max_node_count= */ 0,
                            /* timeout= */ {}, &accessibility_tree);
@@ -2851,7 +2851,7 @@ bool PrintRenderFrameHelper::PreviewPageRendered(
     return false;
   }
 
-  preview_page_params->page_number = page_number;
+  preview_page_params->page_index = page_index;
   preview_page_params->document_cookie =
       print_pages_params_->params->document_cookie;
 
@@ -3016,7 +3016,7 @@ void PrintRenderFrameHelper::PrintPreviewContext::Failed(bool report_error) {
   ClearContext();
 }
 
-uint32_t PrintRenderFrameHelper::PrintPreviewContext::GetNextPageNumber() {
+uint32_t PrintRenderFrameHelper::PrintPreviewContext::GetNextPageIndex() {
   DCHECK_EQ(State::kRendering, state_);
   if (IsFinalPageRendered())
     return kInvalidPageIndex;

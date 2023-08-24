@@ -110,13 +110,13 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
 
   PrintPreviewHandler* handler() const { return handler_; }
 
-  // Returns true if |page_number| is the last page in |pages_to_render_|.
-  // |page_number| is a 0-based number.
-  bool LastPageComposited(uint32_t page_number) const;
+  // Returns true if `page_index` is the last page in `pages_to_render_`.
+  // `page_index` is a 0-based.
+  bool LastPageComposited(uint32_t page_index) const;
 
-  // Get the 0-based index of the |page_number| in |pages_to_render_|.
-  // Same as above, |page_number| is a 0-based number.
-  uint32_t GetPageToNupConvertIndex(uint32_t page_number) const;
+  // Get the 0-based index of the `page_index` in `pages_to_render_`.
+  // `page_index` is a 0-based.
+  uint32_t GetPageToNupConvertIndex(uint32_t page_index) const;
 
   std::vector<base::ReadOnlySharedMemoryRegion> TakePagesForNupConvert();
 
@@ -138,10 +138,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Notifies the Web UI of a print preview request with |request_id|.
   virtual void OnPrintPreviewRequest(int request_id);
 
-  // Notifies the Web UI that the 0-based page |page_number| rendering is being
+  // Notifies the Web UI that the 0-based page `page_index` rendering is being
   // processed and an OnPendingPreviewPage() call is imminent. Returns whether
-  // |page_number| is the expected page.
-  bool OnPendingPreviewPage(uint32_t page_number);
+  // `page_index` is the expected page.
+  bool OnPendingPreviewPage(uint32_t page_index);
 
   // Notifies the Web UI that the print preview failed to render for the request
   // with id = |request_id|.
@@ -227,10 +227,10 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Clear the existing print preview data.
   void ClearAllPreviewData();
 
-  // Notifies the Web UI that the 0-based page |page_number| has been rendered.
-  // |request_id| indicates which request resulted in this response.
+  // Notifies the Web UI that the 0-based page `page_index` has been rendered.
+  // `request_id` indicates which request resulted in this response.
   void NotifyUIPreviewPageReady(
-      uint32_t page_number,
+      uint32_t page_index,
       int request_id,
       scoped_refptr<base::RefCountedMemory> data_bytes);
 
@@ -243,12 +243,12 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Callbacks for print compositor client.
   void OnPrepareForDocumentToPdfDone(int32_t request_id,
                                      mojom::PrintCompositor::Status status);
-  void OnCompositePdfPageDone(uint32_t page_number,
+  void OnCompositePdfPageDone(uint32_t page_index,
                               int32_t document_cookie,
                               int32_t request_id,
                               mojom::PrintCompositor::Status status,
                               base::ReadOnlySharedMemoryRegion region);
-  void OnNupPdfConvertDone(uint32_t page_number,
+  void OnNupPdfConvertDone(uint32_t page_index,
                            int32_t request_id,
                            mojom::PdfNupConverter::Status status,
                            base::ReadOnlySharedMemoryRegion region);
@@ -306,13 +306,14 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // title.
   std::u16string initiator_title_;
 
-  // The list of 0-based page numbers that will be rendered.
+  // The list of 0-based page indices that will be rendered.
   std::vector<uint32_t> pages_to_render_;
 
   // The list of pages to be converted.
   std::vector<base::ReadOnlySharedMemoryRegion> pages_for_nup_convert_;
 
-  // Index into |pages_to_render_| for the page number to expect.
+  // Index into `pages_to_render_`. The expected page index is the value at
+  // `pages_to_render_[pages_to_render_index_]`
   size_t pages_to_render_index_ = 0;
 
   // number of pages per sheet and should be greater or equal to 1.

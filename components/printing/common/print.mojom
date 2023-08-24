@@ -83,8 +83,8 @@ struct DidStartPreviewParams {
 struct DidPreviewPageParams {
   // Page's content including metafile data and subframe info.
   DidPrintContentParams content;
-  // `page_number` is zero-based and should not be negative.
-  uint32 page_number;
+  // `page_index` is zero-based.
+  uint32 page_index;
   // Cookie for the document to ensure correctness.
   int32 document_cookie;
 };

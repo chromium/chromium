@@ -108,8 +108,8 @@ const char16_t kBasicPrintShortcut[] = u"(Ctrl+Shift+P)";
 
 constexpr char kInvalidArgsForDidStartPreview[] =
     "Invalid arguments for DidStartPreview";
-constexpr char kInvalidPageNumberForDidPreviewPage[] =
-    "Invalid page number for DidPreviewPage";
+constexpr char kInvalidPageIndexForDidPreviewPage[] =
+    "Invalid page index for DidPreviewPage";
 constexpr char kInvalidPageCountForMetafileReadyForPrinting[] =
     "Invalid page count for MetafileReadyForPrinting";
 
@@ -125,8 +125,8 @@ void StopWorker(int document_cookie) {
       queue->PopPrinterQuery(document_cookie);
 }
 
-bool IsValidPageNumber(uint32_t page_number, uint32_t page_count) {
-  return page_number < page_count;
+bool IsValidPageIndex(uint32_t page_index, uint32_t page_count) {
+  return page_index < page_count;
 }
 
 bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
@@ -487,7 +487,7 @@ void PrintPreviewUI::ClearAllPreviewData() {
 }
 
 void PrintPreviewUI::NotifyUIPreviewPageReady(
-    uint32_t page_number,
+    uint32_t page_index,
     int request_id,
     scoped_refptr<base::RefCountedMemory> data_bytes) {
   if (!data_bytes || !data_bytes->size())
@@ -497,13 +497,13 @@ void PrintPreviewUI::NotifyUIPreviewPageReady(
   if (ShouldCancelRequest(id_, request_id))
     return;
 
-  DCHECK_NE(page_number, kInvalidPageIndex);
-  SetPrintPreviewDataForIndex(base::checked_cast<int>(page_number),
+  DCHECK_NE(page_index, kInvalidPageIndex);
+  SetPrintPreviewDataForIndex(base::checked_cast<int>(page_index),
                               std::move(data_bytes));
 
   if (g_test_delegate)
     g_test_delegate->DidRenderPreviewPage(web_ui()->GetWebContents());
-  handler_->SendPagePreviewReady(base::checked_cast<int>(page_number), *id_,
+  handler_->SendPagePreviewReady(base::checked_cast<int>(page_index), *id_,
                                  request_id);
 }
 
@@ -533,7 +533,7 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
 }
 
 void PrintPreviewUI::OnCompositePdfPageDone(
-    uint32_t page_number,
+    uint32_t page_index,
     int document_cookie,
     int32_t request_id,
     mojom::PrintCompositor::Status status,
@@ -551,19 +551,19 @@ void PrintPreviewUI::OnCompositePdfPageDone(
 
   if (pages_per_sheet_ == 1) {
     NotifyUIPreviewPageReady(
-        page_number, request_id,
+        page_index, request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
   } else {
     AddPdfPageForNupConversion(std::move(region));
-    uint32_t current_page_index = GetPageToNupConvertIndex(page_number);
+    uint32_t current_page_index = GetPageToNupConvertIndex(page_index);
     if (current_page_index == kInvalidPageIndex)
       return;
 
     if (((current_page_index + 1) % pages_per_sheet_) == 0 ||
-        LastPageComposited(page_number)) {
-      uint32_t new_page_number =
+        LastPageComposited(page_index)) {
+      uint32_t new_page_index =
           base::checked_cast<uint32_t>(current_page_index / pages_per_sheet_);
-      DCHECK_NE(new_page_number, kInvalidPageIndex);
+      DCHECK_NE(new_page_index, kInvalidPageIndex);
       std::vector<base::ReadOnlySharedMemoryRegion> pdf_page_regions =
           TakePagesForNupConvert();
 
@@ -583,7 +583,7 @@ void PrintPreviewUI::OnCompositePdfPageDone(
           std::move(pdf_page_regions),
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               base::BindOnce(&PrintPreviewUI::OnNupPdfConvertDone,
-                             weak_ptr_factory_.GetWeakPtr(), new_page_number,
+                             weak_ptr_factory_.GetWeakPtr(), new_page_index,
                              request_id),
               mojom::PdfNupConverter::Status::CONVERSION_FAILURE,
               base::ReadOnlySharedMemoryRegion()));
@@ -592,7 +592,7 @@ void PrintPreviewUI::OnCompositePdfPageDone(
 }
 
 void PrintPreviewUI::OnNupPdfConvertDone(
-    uint32_t page_number,
+    uint32_t page_index,
     int32_t request_id,
     mojom::PdfNupConverter::Status status,
     base::ReadOnlySharedMemoryRegion region) {
@@ -604,7 +604,7 @@ void PrintPreviewUI::OnNupPdfConvertDone(
   }
 
   NotifyUIPreviewPageReady(
-      page_number, request_id,
+      page_index, request_id,
       base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(region));
 }
 
@@ -683,17 +683,18 @@ void PrintPreviewUI::SetInitiatorTitle(const std::u16string& job_title) {
   initiator_title_ = job_title;
 }
 
-bool PrintPreviewUI::LastPageComposited(uint32_t page_number) const {
+bool PrintPreviewUI::LastPageComposited(uint32_t page_index) const {
   if (pages_to_render_.empty())
     return false;
 
-  return page_number == pages_to_render_.back();
+  return page_index == pages_to_render_.back();
 }
 
-uint32_t PrintPreviewUI::GetPageToNupConvertIndex(uint32_t page_number) const {
-  for (size_t index = 0; index < pages_to_render_.size(); ++index) {
-    if (page_number == pages_to_render_[index])
+uint32_t PrintPreviewUI::GetPageToNupConvertIndex(uint32_t page_index) const {
+  for (uint32_t index : pages_to_render_) {
+    if (page_index == index) {
       return index;
+    }
   }
   return kInvalidPageIndex;
 }
@@ -790,8 +791,8 @@ void PrintPreviewUI::DidStartPreview(mojom::DidStartPreviewParamsPtr params,
     return;
   }
 
-  for (uint32_t page_number : params->pages_to_render) {
-    if (!IsValidPageNumber(page_number, params->page_count)) {
+  for (uint32_t page_index : params->pages_to_render) {
+    if (!IsValidPageIndex(page_index, params->page_count)) {
       receiver_.ReportBadMessage(kInvalidArgsForDidStartPreview);
       return;
     }
@@ -858,11 +859,11 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
                                 all_pages_have_custom_orientation, request_id);
 }
 
-bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_number) {
+bool PrintPreviewUI::OnPendingPreviewPage(uint32_t page_index) {
   if (pages_to_render_index_ >= pages_to_render_.size())
     return false;
 
-  bool matched = page_number == pages_to_render_[pages_to_render_index_];
+  bool matched = page_index == pages_to_render_[pages_to_render_index_];
   ++pages_to_render_index_;
   return matched;
 }
@@ -954,15 +955,15 @@ void PrintPreviewUI::DidPrepareDocumentForPreview(int32_t document_cookie,
 
 void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
                                     int32_t request_id) {
-  uint32_t page_number = params->page_number;
+  uint32_t page_index = params->page_index;
   const mojom::DidPrintContentParams& content = *params->content;
-  if (page_number == kInvalidPageIndex ||
+  if (page_index == kInvalidPageIndex ||
       !content.metafile_data_region.IsValid()) {
     return;
   }
 
-  if (!OnPendingPreviewPage(page_number)) {
-    receiver_.ReportBadMessage(kInvalidPageNumberForDidPreviewPage);
+  if (!OnPendingPreviewPage(page_index)) {
+    receiver_.ReportBadMessage(kInvalidPageIndexForDidPreviewPage);
     return;
   }
 
@@ -990,13 +991,13 @@ void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
         params->document_cookie, render_frame_host, content,
         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
             base::BindOnce(&PrintPreviewUI::OnCompositePdfPageDone,
-                           weak_ptr_factory_.GetWeakPtr(), page_number,
+                           weak_ptr_factory_.GetWeakPtr(), page_index,
                            params->document_cookie, request_id),
             mojom::PrintCompositor::Status::kCompositingFailure,
             base::ReadOnlySharedMemoryRegion()));
   } else {
     NotifyUIPreviewPageReady(
-        page_number, request_id,
+        page_index, request_id,
         base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
             content.metafile_data_region));
   }
