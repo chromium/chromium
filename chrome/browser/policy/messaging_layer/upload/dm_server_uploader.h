@@ -37,6 +37,12 @@ using ReportSuccessfulUploadCallback =
 using EncryptionKeyAttachedCallback =
     base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
+// UpdateConfigInMissiveCallback is called if the configuration file obtained
+// from the server is different from the one that was sent previously using
+// this callback.
+using UpdateConfigInMissiveCallback =
+    base::RepeatingCallback<void(ListOfBlockedDestinations)>;
+
 // Successful response consists of Sequence information that may be
 // accompanied with force_confirm flag.
 struct SuccessfulUploadResponse {

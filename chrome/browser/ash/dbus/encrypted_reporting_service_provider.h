@@ -66,6 +66,8 @@ class EncryptedReportingServiceProvider
   GetReportSuccessUploadCallback();
   static ::reporting::UploadClient::EncryptionKeyAttachedCallback
   GetEncryptionKeyAttachedCallback();
+  static ::reporting::UploadClient::UpdateConfigInMissiveCallback
+  GetUpdateConfigInMissiveCallback();
 
   // Returns true if called on the origin thread.
   bool OnOriginThread() const;

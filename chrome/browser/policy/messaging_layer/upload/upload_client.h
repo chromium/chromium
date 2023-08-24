@@ -31,6 +31,12 @@ class UploadClient {
   using EncryptionKeyAttachedCallback =
       ::reporting::EncryptionKeyAttachedCallback;
 
+  // UpdateConfigInMissiveCallback is called if the configuration file obtained
+  // from the server is different from the one that was sent previously using
+  // this callback.
+  using UpdateConfigInMissiveCallback =
+      ::reporting::UpdateConfigInMissiveCallback;
+
   // CreatedCallback gets a result of Upload client creation (unique pointer or
   // error status).
   using CreatedCallback =

@@ -140,6 +140,23 @@ EncryptedReportingServiceProvider::GetEncryptionKeyAttachedCallback() {
           missive_client->GetWeakPtr()));
 }
 
+// static
+::reporting::UploadClient::UpdateConfigInMissiveCallback
+EncryptedReportingServiceProvider::GetUpdateConfigInMissiveCallback() {
+  chromeos::MissiveClient* const missive_client =
+      chromeos::MissiveClient::Get();
+  return base::BindPostTask(
+      missive_client->origin_task_runner(),
+      base::BindRepeating(
+          [](base::WeakPtr<chromeos::MissiveClient> missive_client,
+             ::reporting::ListOfBlockedDestinations destinations) {
+            if (missive_client) {
+              missive_client->UpdateConfigInMissive(std::move(destinations));
+            }
+          },
+          missive_client->GetWeakPtr()));
+}
+
 void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender) {
