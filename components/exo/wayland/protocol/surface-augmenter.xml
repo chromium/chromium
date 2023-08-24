@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="surface_augmenter" version="8">
+  <interface name="surface_augmenter" version="9">
     <description summary="surface composition delegation">
       The global interface exposing surface delegated composition
       capabilities is used to instantiate an interface extension for a
@@ -89,7 +89,7 @@
     </request>
   </interface>
 
-  <interface name="augmented_surface" version="8">
+  <interface name="augmented_surface" version="9">
     <description summary="delegate composition of a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to specify the delegated composition of the surface
@@ -199,6 +199,12 @@
         that shall be applied on next commit. The mask can be uniform for
         several surfaces and applied uniformally so that two or more
         surfaces visually look as a single surface with rounded corners.
+
+        Since version 9, the bounds will be placed with its origin (top left
+        corner pixel) at the location x, y of the surface local coordinate
+        system. On version 8 or before, it is placed with its root surface
+        coordinates, but this is deperecated.
+
         Please note this is can only be used on surfaces that are used as
         overlays, which must not have any subtrees. The rounding will be
         ignored if the bounds are outside of the surface.
@@ -232,6 +238,14 @@
       <arg name="width" type="fixed" summary="width of the clip rect"/>
       <arg name="height" type="fixed" summary="height of the clip rect"/>
     </request>
+
+    <!-- Version 9 additions -->
+
+    <!-- CAUTION: Use version 10 as a next since version.
+      This version updates `set_rounded_corners_clip_bounds` behavior.
+      No protocol is added for this version.
+    -->
+
   </interface>
 
   <interface name="augmented_sub_surface" version="5">

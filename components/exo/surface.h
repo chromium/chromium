@@ -188,7 +188,10 @@ class Surface final : public ui::PropertyHandler {
   void PlaceSubSurfaceBelow(Surface* sub_surface, Surface* sibling);
   void OnSubSurfaceCommit();
 
-  void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds);
+  // `is_root_coordinates` specifies whether `rounded_corners_bounds` is on its
+  // root surface coordinates or on the local surface coordinates.
+  void SetRoundedCorners(const gfx::RRectF& rounded_corners_bounds,
+                         bool is_root_coordinates);
   void SetOverlayPriorityHint(OverlayPriority hint);
 
   // Sets the surface's clip rectangle.
@@ -570,6 +573,13 @@ class Surface final : public ui::PropertyHandler {
     // The rounded corners bounds for the surface.
     // Persisted between commits.
     gfx::RRectF rounded_corners_bounds;
+    // True if `rounded_corners_bounds` is on root surface coordinate space.
+    // `rounded_corners_bounds` should be on local surface coordinates, but the
+    // outdated implementation was on root surface coordinate space. This flag
+    // is to support the fallback implementation.
+    // Persisted between commits.
+    // TODO(crbug.com/1470955): Remove this.
+    bool rounded_corners_is_root_coordinates = false;
     // The damage region to schedule paint for.
     // Not persisted between commits.
     cc::Region damage;
