@@ -290,6 +290,13 @@ void GenerateSyntheticRenderIdsAndAssignThem(PasswordForm& matched_form) {
 
 }  // namespace
 
+SingleUsernameVoteData::SingleUsernameVoteData()
+    : SingleUsernameVoteData(FieldRendererId(),
+                             /*username_value=*/std::u16string(),
+                             FormPredictions(),
+                             /*stored_credentials=*/{},
+                             /*password_form_had_username_field=*/false) {}
+
 SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,

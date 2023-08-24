@@ -38,6 +38,7 @@ using VoteTypeMap = std::map<autofill::FieldRendererId,
 
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
+  SingleUsernameVoteData();
   SingleUsernameVoteData(
       autofill::FieldRendererId renderer_id,
       const std::u16string& username_value,
@@ -207,15 +208,8 @@ class VotesUploader {
 
   void clear_single_username_vote_data() { single_username_vote_data_.reset(); }
 
-  void set_single_username_vote_data(
-      autofill::FieldRendererId renderer_id,
-      const std::u16string& username_candidate_value,
-      const FormPredictions& form_predictions,
-      const std::vector<const PasswordForm*>& stored_credentials,
-      bool password_form_had_username_field) {
-    single_username_vote_data_.emplace(renderer_id, username_candidate_value,
-                                       form_predictions, stored_credentials,
-                                       password_form_had_username_field);
+  void set_single_username_vote_data(const SingleUsernameVoteData& data) {
+    single_username_vote_data_ = data;
   }
 
   void set_suggested_username(const std::u16string& suggested_username) {
@@ -316,6 +310,9 @@ class VotesUploader {
   // observed form.
   std::map<autofill::FieldRendererId, std::u16string> initial_values_;
 
+  // The data for voting on potential single username form for the username
+  // first flow. Populated when the password form, that follows single username
+  // form, is submitted.
   absl::optional<SingleUsernameVoteData> single_username_vote_data_;
 
   // The username that is suggested in a save/update prompt.

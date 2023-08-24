@@ -1224,16 +1224,14 @@ void PasswordFormManager::HandleUsernameFirstFlow(
                                "Valid possible username by local heuristic, "
                                "not populated in prompt");
     }
-    votes_uploader_.set_single_username_vote_data(
+    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData(
         possible_username->renderer_id, possible_username->value,
         possible_username->form_predictions.value_or(FormPredictions()),
-        form_fetcher_->GetBestMatches(), password_form_had_username);
+        form_fetcher_->GetBestMatches(), password_form_had_username));
   } else {  // !IsPossibleSingleUsernameAvailable(possible_username)
     // If no single username typing preceded single password typing, set
     // empty single username vote data for the fallback classifier.
-    votes_uploader_.set_single_username_vote_data(
-        FieldRendererId(), std::u16string(), FormPredictions(),
-        form_fetcher_->GetBestMatches(), password_form_had_username);
+    votes_uploader_.set_single_username_vote_data(SingleUsernameVoteData());
   }
 }
 
