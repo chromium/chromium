@@ -1086,7 +1086,6 @@ def GenerateLicenseFile(args: argparse.Namespace):
   if args.output_file:
     with open(args.output_file, 'w', encoding='utf-8') as f:
       f.write(license_txt)
-      print(f"\n ---- \nWrote license data to file {args.output_file}")
   else:
     print(license_txt)
 
