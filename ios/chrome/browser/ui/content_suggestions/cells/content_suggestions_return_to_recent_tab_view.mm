@@ -26,15 +26,16 @@ const CGFloat kIconWidth = 32.0f;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    [self.layer
-        setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
-    [self.layer setBorderWidth:kContentViewBorderWidth];
     self.layer.cornerRadius = IsMagicStackEnabled()
                                   ? kMagicStackContentViewCornerRadius
                                   : kContentViewCornerRadius;
     self.layer.masksToBounds = YES;
     if (IsMagicStackEnabled()) {
       self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    } else {
+      [self.layer
+          setBorderColor:[UIColor colorNamed:kTertiaryBackgroundColor].CGColor];
+      [self.layer setBorderWidth:kContentViewBorderWidth];
     }
 
     _titleLabel = [[UILabel alloc] init];
