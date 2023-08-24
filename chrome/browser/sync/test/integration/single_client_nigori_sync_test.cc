@@ -834,6 +834,41 @@ IN_PROC_BROWSER_TEST_F(
               testing::ElementsAreArray(private_key->GetRawPublicKey()));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    PRE_ShouldRecreateKeyPairUponClientServerInconsistency) {
+  ASSERT_TRUE(SetupSync());
+  sync_pb::NigoriSpecifics specifics;
+
+  ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
+  EXPECT_TRUE(specifics.has_cross_user_sharing_public_key());
+  EXPECT_TRUE(
+      specifics.cross_user_sharing_public_key().has_x25519_public_key());
+
+  // Mimic remote transition to custom passphrase without
+  // cross_user_sharing_public_key.
+  const KeyParamsForTesting kCustomPassphraseKeyParams =
+      Pbkdf2PassphraseKeyParamsForTesting("passphrase");
+  SetNigoriInFakeServer(
+      BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams),
+      GetFakeServer());
+
+  EXPECT_TRUE(PassphraseRequiredChecker(GetSyncService(0)).Wait());
+  EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kCustomPassphraseKeyParams.password));
+  EXPECT_TRUE(PassphraseAcceptedChecker(GetSyncService(0)).Wait());
+}
+
+// Tests that upon an inconsistent state between client and server in which the
+// cross-user sharing key-pair is missing on the server, a new cross-user
+// sharing key-pair is created on the client and synced to the server.
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    ShouldRecreateKeyPairUponClientServerInconsistency) {
+  SetupClients();
+  EXPECT_TRUE(CrossUserSharingKeysChecker().Wait());
+}
+
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be
 // committed.
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriSyncTestWithNotAwaitQuiescence,

@@ -841,12 +841,18 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::TryDecryptPendingKeysWith(
     if (state_.cross_user_sharing_key_pair_version.has_value() &&
         !new_cross_user_sharing_keys.HasKeyPair(
             state_.cross_user_sharing_key_pair_version.value())) {
-      return ModelError(FROM_HERE,
-                        "Received keybag is missing the last "
-                        "cross-user-sharing private key.");
+      // TODO(crbug/1474918): Record metric to capture this state.
+      DLOG(ERROR) << "Received keybag is missing the last "
+                  << "cross-user-sharing private key.";
+      // Reset keys so that on next startup they would be recreated and
+      // committed to the server.
+      // TODO(crbug/1474918): Clear obsolete key-pairs from cryptographer.
+      state_.cross_user_sharing_key_pair_version = absl::nullopt;
+      state_.cross_user_sharing_public_key = absl::nullopt;
+    } else if (state_.cross_user_sharing_key_pair_version.has_value()) {
+      state_.cryptographer->EmplaceCrossUserSharingKeysFrom(
+          new_cross_user_sharing_keys);
     }
-    state_.cryptographer->EmplaceCrossUserSharingKeysFrom(
-        new_cross_user_sharing_keys);
   }
 
   // Reset |last_default_trusted_vault_key_name| as |state_| might go out of
