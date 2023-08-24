@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -40,7 +39,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
     private Callback<Integer> mDismissHandler;
     private PasswordMigrationWarningOnClickHandler mOnClickHandler;
     private FragmentManager mFragmentManager;
-    private final RelativeLayout mContentView;
+    private final ScrollablePasswordMigrationWarningContent mContentView;
     private Context mContext;
     private String mAccountDisplayName;
     private @ScreenType int mScreenType = ScreenType.NONE;
@@ -96,8 +95,9 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mOnResumeExportFlowCallback = onResumeExportFlowCallback;
-        mContentView = (RelativeLayout) LayoutInflater.from(context).inflate(
-                R.layout.pwd_migration_warning, null);
+        mContentView =
+                (ScrollablePasswordMigrationWarningContent) LayoutInflater.from(context).inflate(
+                        R.layout.pwd_migration_warning, null);
         mSetFragmentWasCalled = false;
         ImageView sheetHeaderImage =
                 mContentView.findViewById(R.id.touch_to_fill_sheet_header_image);
@@ -204,10 +204,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
         }
     }
     private @Px int getDesiredSheetHeightPx() {
-        if (mScreenType == ScreenType.INTRO_SCREEN) {
-            return getDimensionPixelSize(R.dimen.pwd_migration_warning_intro_fragment_height);
-        }
-        return getDimensionPixelSize(R.dimen.pwd_migration_warning_options_fragment_height);
+        return getDimensionPixelSize(R.dimen.pwd_migration_warning_fragment_height);
     }
 
     private @Px int getDimensionPixelSize(int id) {
@@ -228,7 +225,7 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        return mContentView.getVerticalScrollOffset();
     }
 
     @Override

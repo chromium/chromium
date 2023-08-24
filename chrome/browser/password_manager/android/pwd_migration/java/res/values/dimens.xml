@@ -12,6 +12,5 @@ found in the LICENSE file.
     <dimen name="pwd_migration_warning_button_spacing">12dp</dimen>
 
     <!-- Sheet dimensions. -->
-    <dimen name="pwd_migration_warning_intro_fragment_height">364dp</dimen>
-    <dimen name="pwd_migration_warning_options_fragment_height">500dp</dimen>
+    <dimen name="pwd_migration_warning_fragment_height">500dp</dimen>
 </resources>

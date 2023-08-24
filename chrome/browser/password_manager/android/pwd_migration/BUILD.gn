@@ -49,6 +49,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningUtil.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningView.java",
     "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningViewBinder.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/ScrollablePasswordMigrationWarningContent.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.pwd_migration"

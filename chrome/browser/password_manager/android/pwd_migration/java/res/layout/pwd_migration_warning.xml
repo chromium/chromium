@@ -4,7 +4,7 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<RelativeLayout
+<org.chromium.chrome.browser.pwd_migration.ScrollablePasswordMigrationWarningContent
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -29,7 +29,8 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="false"
-        android:layout_below="@id/drag_handlebar">
+        android:layout_below="@id/drag_handlebar"
+        android:id="@+id/pwd_migration_warning_scroll_view">
 
         <LinearLayout
             android:id="@+id/sheet_item_list"
@@ -66,4 +67,4 @@ found in the LICENSE file.
               android:layout_gravity="center_horizontal" />
         </LinearLayout>
     </ScrollView>
-</RelativeLayout>
+</org.chromium.chrome.browser.pwd_migration.ScrollablePasswordMigrationWarningContent>
