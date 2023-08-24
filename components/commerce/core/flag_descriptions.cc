@@ -15,6 +15,12 @@ const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";
 
+const char kPriceTrackingIconColorsName[] =
+    "Price Tracking Icon Tonal UI Colors";
+const char kPriceTrackingIconColorsDescription[] =
+    "Tonal colors for the expanded state of the price tracking chip on "
+    "desktop.";
+
 const char kShoppingCollectionName[] = "Shopping Collection";
 const char kShoppingCollectionDescription[] =
     "Organize all products into an automatically created bookmark folder.";

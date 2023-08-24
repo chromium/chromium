@@ -79,6 +79,9 @@ PriceTrackingIconView::PriceTrackingIconView(
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_OMNIBOX_TRACK_PRICE));
+
+  SetUseTonalColorsWhenExpanded(
+      base::FeatureList::IsEnabled(commerce::kPriceTrackingIconColors));
 }
 
 PriceTrackingIconView::~PriceTrackingIconView() = default;

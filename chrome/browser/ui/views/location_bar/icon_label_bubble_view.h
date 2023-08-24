@@ -220,6 +220,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // Spacing between the image and the label.
   int GetInternalSpacing() const;
 
+  // Sets whether tonal colors are used for the background of the view when
+  // expanded to show the label.
+  void SetUseTonalColorsWhenExpanded(bool use_tonal_colors);
+
   // Subclasses that want extra spacing added to the internal spacing can
   // override this method. This may be used when we want to align the label text
   // to the suggestion text, like in the SelectedKeywordView.
@@ -281,6 +285,10 @@ class IconLabelBubbleView : public views::InkDropObserver,
   // TODO(tluk): Remove the opt-in after UX has conslusively decided how icon
   // labels should be painted when the label text is shown.
   bool paint_label_over_solid_backround_ = false;
+
+  // Whether the tonal color should be used when the icon is expanded to show
+  // the label.
+  bool use_tonal_color_when_expanded_ = false;
 
   // Virtual view, used for announcing changes to the state of this view. A
   // virtual child of this view.

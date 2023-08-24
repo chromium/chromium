@@ -182,6 +182,11 @@ const char kPriceInsightsShowFeedbackParam[] = "price-insights-show-feedback";
 const base::FeatureParam<bool> kPriceInsightsShowFeedback{
     &commerce::kPriceInsights, kPriceInsightsShowFeedbackParam, false};
 
+// Tonal colors for the expanded state of the price tracking chip on desktop.
+BASE_FEATURE(kPriceTrackingIconColors,
+             "PriceTrackingIconColors",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Discount on navigation
 BASE_FEATURE(kShowDiscountOnNavigation,
              "ShowDiscountOnNavigation",

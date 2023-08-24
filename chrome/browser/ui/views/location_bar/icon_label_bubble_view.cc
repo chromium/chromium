@@ -250,9 +250,12 @@ void IconLabelBubbleView::UpdateBackground() {
   // solid background.
   const bool painted_on_solid_background =
       paint_label_over_solid_backround_ && ShouldShowLabel();
+  const ui::ColorId background_color = use_tonal_color_when_expanded_
+                                           ? kColorPageInfoBackgroundTonal
+                                           : kColorPageInfoBackground;
   SetBackground(painted_on_solid_background
                     ? views::CreateThemedRoundedRectBackground(
-                          kColorPageInfoBackground, GetPreferredSize().height())
+                          background_color, GetPreferredSize().height())
                     : nullptr);
   // TODO(pbos): Consider renaming kPageInfo/kPageAction color IDs to share the
   // same prefix. Here PageInfo assumes to have a background and PageAction
@@ -264,6 +267,10 @@ void IconLabelBubbleView::UpdateBackground() {
                                        : kColorPageActionIconHover,
                                    kColorPageInfoIconPressed);
   }
+}
+
+void IconLabelBubbleView::SetUseTonalColorsWhenExpanded(bool use_tonal_colors) {
+  use_tonal_color_when_expanded_ = use_tonal_colors;
 }
 
 bool IconLabelBubbleView::ShouldShowSeparator() const {

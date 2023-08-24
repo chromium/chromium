@@ -362,6 +362,7 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
 
   // location bar icon colors.
   mixer[kColorPageInfoBackground] = {kColorToolbar};
+  mixer[kColorPageInfoBackgroundTonal] = {ui::kColorSysTonalContainer};
   // Literal constants are `kOmniboxOpacityHovered` and
   // `kOmniboxOpacitySelected`. This is so that we can more cleanly use the
   // colors in the inkdrop instead of handling themes and non-themes separately
