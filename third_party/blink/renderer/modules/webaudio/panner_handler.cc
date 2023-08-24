@@ -21,7 +21,7 @@ namespace blink {
 
 namespace {
 
-// A PannerNode only supports 1 or 2 channels
+// A PannerNode only supports 1 or 2 channels.
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 
@@ -55,7 +55,7 @@ PannerHandler::PannerHandler(AudioNode& node,
   AddInput();
   AddOutput(kMaximumOutputChannels);
 
-  // Node-specific default mixing rules.
+  // Node-specific default mixing rules
   channel_count_ = kMaximumOutputChannels;
   SetInternalChannelCountMode(kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
@@ -217,17 +217,20 @@ void PannerHandler::Process(uint32_t frames_to_process) {
 void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
                                                 const AudioBus* source,
                                                 uint32_t frames_to_process) {
-  CHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
+  const unsigned render_quantum_frames =
+      GetDeferredTaskHandler().RenderQuantumFrames();
 
-  // Get the sample accurate values from all of the AudioParams, including the
-  // values from the AudioListener.
-  float panner_x[GetDeferredTaskHandler().RenderQuantumFrames()];
-  float panner_y[GetDeferredTaskHandler().RenderQuantumFrames()];
-  float panner_z[GetDeferredTaskHandler().RenderQuantumFrames()];
+  CHECK_LE(frames_to_process, render_quantum_frames);
 
-  float orientation_x[GetDeferredTaskHandler().RenderQuantumFrames()];
-  float orientation_y[GetDeferredTaskHandler().RenderQuantumFrames()];
-  float orientation_z[GetDeferredTaskHandler().RenderQuantumFrames()];
+  float panner_x[render_quantum_frames];
+  float panner_y[render_quantum_frames];
+  float panner_z[render_quantum_frames];
+  float orientation_x[render_quantum_frames];
+  float orientation_y[render_quantum_frames];
+  float orientation_z[render_quantum_frames];
+  double azimuth[render_quantum_frames];
+  double elevation[render_quantum_frames];
+  float total_gain[render_quantum_frames];
 
   position_x_->CalculateSampleAccurateValues(panner_x, frames_to_process);
   position_y_->CalculateSampleAccurateValues(panner_y, frames_to_process);
@@ -239,34 +242,18 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   orientation_z_->CalculateSampleAccurateValues(orientation_z,
                                                 frames_to_process);
 
-  // Get the automation values from the listener.
   auto listener = Listener();
-  const float* listener_x = listener->GetPositionXValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* listener_y = listener->GetPositionYValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* listener_z = listener->GetPositionZValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-
-  const float* forward_x = listener->GetForwardXValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* forward_y = listener->GetForwardYValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* forward_z = listener->GetForwardZValues(
-      GetDeferredTaskHandler().RenderQuantumFrames());
-
-  const float* up_x =
-      listener->GetUpXValues(GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* up_y =
-      listener->GetUpYValues(GetDeferredTaskHandler().RenderQuantumFrames());
-  const float* up_z =
-      listener->GetUpZValues(GetDeferredTaskHandler().RenderQuantumFrames());
+  const float* listener_x = listener->GetPositionXValues(render_quantum_frames);
+  const float* listener_y = listener->GetPositionYValues(render_quantum_frames);
+  const float* listener_z = listener->GetPositionZValues(render_quantum_frames);
+  const float* forward_x = listener->GetForwardXValues(render_quantum_frames);
+  const float* forward_y = listener->GetForwardYValues(render_quantum_frames);
+  const float* forward_z = listener->GetForwardZValues(render_quantum_frames);
+  const float* up_x = listener->GetUpXValues(render_quantum_frames);
+  const float* up_y = listener->GetUpYValues(render_quantum_frames);
+  const float* up_z = listener->GetUpZValues(render_quantum_frames);
 
   // Compute the azimuth, elevation, and total gains for each position.
-  double azimuth[GetDeferredTaskHandler().RenderQuantumFrames()];
-  double elevation[GetDeferredTaskHandler().RenderQuantumFrames()];
-  float total_gain[GetDeferredTaskHandler().RenderQuantumFrames()];
-
   for (unsigned k = 0; k < frames_to_process; ++k) {
     gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
     gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
@@ -278,7 +265,6 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
     CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
                               listener_position, listener_forward, listener_up);
 
-    // Get distance and cone gain
     total_gain[k] = CalculateDistanceConeGain(panner_position, orientation,
                                               listener_position);
   }
@@ -305,7 +291,6 @@ void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   position_x_->CalculateSampleAccurateValues(values, frames_to_process);
   position_y_->CalculateSampleAccurateValues(values, frames_to_process);
   position_z_->CalculateSampleAccurateValues(values, frames_to_process);
-
   orientation_x_->CalculateSampleAccurateValues(values, frames_to_process);
   orientation_y_->CalculateSampleAccurateValues(values, frames_to_process);
   orientation_z_->CalculateSampleAccurateValues(values, frames_to_process);
