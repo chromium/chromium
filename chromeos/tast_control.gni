@@ -80,6 +80,10 @@ tast_disabled_tests_from_chrome_all = [
   "ui.ChromeCrashReporterMetrics.success_breakpad",
   "ui.ChromeCrashReporterMetrics.miss_breakpad",
 
+  # b/296821415. Failing in the Chrome builder but not elsewhere;i
+  # still investigating.
+  "ui.ChromeCrashNotLoggedIn.browser_crashpad",
+
   # https://crbug.com/1279285: Flaky.
   "policy.AllowWakeLocks",
 
