@@ -398,7 +398,7 @@ void AuthenticatorRequestDialogModel::StartFlow(
 #endif
 
   PopulateMechanisms();
-  priority_mechanism_index_ = IndexOfPriorityMechanism();
+  ephemeral_state_.priority_mechanism_index_ = IndexOfPriorityMechanism();
 
   if (use_conditional_mediation_) {
     // This is a conditional mediation request.
@@ -443,8 +443,9 @@ void AuthenticatorRequestDialogModel::
     } else {
       SetCurrentStep(Step::kErrorNoAvailableTransports);
     }
-  } else if (priority_mechanism_index_) {
-    Mechanism& mechanism = mechanisms_[*priority_mechanism_index_];
+  } else if (ephemeral_state_.priority_mechanism_index_) {
+    Mechanism& mechanism =
+        mechanisms_[*ephemeral_state_.priority_mechanism_index_];
     const Mechanism::Credential* cred =
         absl::get_if<Mechanism::Credential>(&mechanism.type);
     if (cred != nullptr &&
@@ -774,14 +775,15 @@ void AuthenticatorRequestDialogModel::OnUserConsentDenied() {
     // authenticator.
     if (transport_availability_.request_type ==
             device::FidoRequestType::kMakeCredential &&
-        priority_mechanism_index_.has_value() &&
+        ephemeral_state_.priority_mechanism_index_.has_value() &&
         absl::holds_alternative<Mechanism::ICloudKeychain>(
-            mechanisms_[*priority_mechanism_index_].type)) {
+            mechanisms_[*ephemeral_state_.priority_mechanism_index_].type)) {
       StartOver();
-      return;
+    } else {
+      // Otherwise, respect the "Cancel" button in macOS UI as if it were our
+      // own.
+      Cancel();
     }
-    // Otherwise, respect the "Cancel" button in macOS UI as if it were our own.
-    Cancel();
     return;
   }
 
@@ -802,18 +804,17 @@ bool AuthenticatorRequestDialogModel::OnWinUserCancelled() {
   // dialog) then start the request over (once) if the user cancels the Windows
   // UI and there are other options in Chrome's UI. But if Windows supports
   // hybrid then we've nothing more to offer in practice.
-  if (!have_restarted_due_to_windows_cancel_ && !WebAuthnApiSupportsHybrid()) {
+  if (!WebAuthnApiSupportsHybrid()) {
     bool have_other_option =
         base::ranges::any_of(mechanisms_, [](const Mechanism& m) -> bool {
           return absl::holds_alternative<Mechanism::Phone>(m.type) ||
                  absl::holds_alternative<Mechanism::AddPhone>(m.type);
         });
     bool windows_was_priority =
-        priority_mechanism_index_ &&
+        ephemeral_state_.priority_mechanism_index_ &&
         absl::holds_alternative<Mechanism::WindowsAPI>(
-            mechanisms_[*priority_mechanism_index_].type);
+            mechanisms_[*ephemeral_state_.priority_mechanism_index_].type);
     if (have_other_option && windows_was_priority) {
-      have_restarted_due_to_windows_cancel_ = true;
       StartOver();
       return true;
     }

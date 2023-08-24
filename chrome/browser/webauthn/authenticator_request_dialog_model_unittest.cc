@@ -2121,14 +2121,16 @@ TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
         account_preselected_callback.Callback());
     model.StartFlow(std::move(transports_info),
                     /*is_conditional_mediation=*/false);
-    ASSERT_EQ(model.priority_mechanism_index_.has_value(),
+    ASSERT_EQ(model.ephemeral_state_.priority_mechanism_index_.has_value(),
               test.type_of_priority_mechanism.has_value());
     if (!test.type_of_priority_mechanism.has_value()) {
       continue;
     }
 
-    EXPECT_EQ(*test.type_of_priority_mechanism,
-              model.mechanisms_[*model.priority_mechanism_index_].type);
+    EXPECT_EQ(
+        *test.type_of_priority_mechanism,
+        model.mechanisms_[*model.ephemeral_state_.priority_mechanism_index_]
+            .type);
   }
 }
 
@@ -2199,14 +2201,8 @@ TEST_F(MultiplePlatformAuthenticatorsTest, Dispatch) {
       if (!platform_attachment) {
         // Dispatch to iCloud Keychain to check that canceling doesn't show
         // a Chrome error dialog.
-        base::ranges::find_if(
-            model.mechanisms(),
-            [](const AuthenticatorRequestDialogModel::Mechanism& m) -> bool {
-              return absl::holds_alternative<
-                  AuthenticatorRequestDialogModel::Mechanism::ICloudKeychain>(
-                  m.type);
-            })
-            ->callback.Run();
+        model.HideDialogAndDispatchToPlatformAuthenticator(
+            device::AuthenticatorType::kICloudKeychain);
       }
 
       model.OnUserConsentDenied();
@@ -2218,12 +2214,25 @@ TEST_F(MultiplePlatformAuthenticatorsTest, Dispatch) {
                 ? AuthenticatorRequestDialogModel::Step::kMechanismSelection
                 : AuthenticatorRequestDialogModel::Step::
                       kErrorInternalUnrecognized);
-      } else {
-        // Canceling after a non-automatic dispatch to iCloud Keychain should
-        // end the request.
-        EXPECT_EQ(model.current_step(),
-                  AuthenticatorRequestDialogModel::Step::kNotStarted);
+
+        model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+            kProfileAuthenticatorId, AuthenticatorTransport::kInternal,
+            device::AuthenticatorType::kTouchID));
+        model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+            kICloudKeychainId, AuthenticatorTransport::kInternal,
+            device::AuthenticatorType::kICloudKeychain));
+
+        // Dispatch and cancel again to confirm that canceling the non-automatic
+        // dispatch cancels the whole request.
+        model.HideDialogAndDispatchToPlatformAuthenticator(
+            device::AuthenticatorType::kICloudKeychain);
+        model.OnUserConsentDenied();
       }
+
+      // Canceling after a non-automatic dispatch to iCloud Keychain should
+      // end the request.
+      EXPECT_EQ(model.current_step(),
+                AuthenticatorRequestDialogModel::Step::kNotStarted);
     }
   }
 }

@@ -529,7 +529,7 @@ class AuthenticatorRequestDialogModel {
 
   virtual base::span<const Mechanism> mechanisms() const;
   absl::optional<int> priority_mechanism_index() const {
-    return priority_mechanism_index_;
+    return ephemeral_state_.priority_mechanism_index_;
   }
 
   // Contacts the "priority" paired phone. This is only valid to call when there
@@ -660,6 +660,10 @@ class AuthenticatorRequestDialogModel {
     EphemeralState(EphemeralState&&);
     EphemeralState& operator=(EphemeralState&&);
     ~EphemeralState();
+
+    // priority_mechanism_index_ contains an index in `mechanisms_` for the
+    // mechanism that should immediately be triggered, if any.
+    absl::optional<size_t> priority_mechanism_index_;
 
     // Represents the id of the Bluetooth authenticator that the user is trying
     // to connect to or conduct WebAuthN request to via the WebAuthN UI.
@@ -821,18 +825,9 @@ class AuthenticatorRequestDialogModel {
   // extension.
   bool cable_extension_provided_ = false;
 
-  // have_restarted_due_to_windows_cancel_ is set to true if the request was
-  // restarted because the UI jumped directly to the Windows UI but the user
-  // hit cancel.
-  bool have_restarted_due_to_windows_cancel_ = false;
-
   // mechanisms contains the entries that appear in the "transport" selection
   // sheet and the drop-down menu.
   std::vector<Mechanism> mechanisms_;
-
-  // priority_mechanism_index_ contains an index in `mechanisms_` for the
-  // mechanism that should immediately be triggered, if any.
-  absl::optional<size_t> priority_mechanism_index_;
 
   // cable_ui_type_ contains the type of UI to display for a caBLE transaction.
   absl::optional<CableUIType> cable_ui_type_;
