@@ -1888,6 +1888,8 @@ static_library("browser") {
       "picture_in_picture/auto_pip_setting_helper.h",
       "picture_in_picture/auto_pip_setting_overlay_view.cc",
       "picture_in_picture/auto_pip_setting_overlay_view.h",
+      "picture_in_picture/auto_pip_setting_view.cc",
+      "picture_in_picture/auto_pip_setting_view.h",
       "user_education/browser_tutorial_service.cc",
       "user_education/browser_tutorial_service.h",
       "user_education/user_education_configuration_provider.cc",
