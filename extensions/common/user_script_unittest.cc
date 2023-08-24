@@ -257,4 +257,18 @@ TEST(ExtensionUserScriptTest, Defaults) {
   ASSERT_EQ(mojom::RunLocation::kDocumentIdle, script.run_location());
 }
 
+// Verifies the correct source is returned for a script id with source prefix.
+TEST(ExtensionUserScriptTest, GetSourceForScriptID) {
+  std::string manifest_script_id = "_mc_manifest_script";
+  std::string content_script_id = "_dc_content_script";
+  std::string user_script_id = "_du_user_script";
+
+  EXPECT_EQ(UserScript::GetSourceForScriptID(manifest_script_id),
+            UserScript::Source::kStaticContentScript);
+  EXPECT_EQ(UserScript::GetSourceForScriptID(content_script_id),
+            UserScript::Source::kDynamicContentScript);
+  EXPECT_EQ(UserScript::GetSourceForScriptID(user_script_id),
+            UserScript::Source::kDynamicUserScript);
+}
+
 }  // namespace extensions

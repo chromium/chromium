@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Dynamic user script test extension",
+  "version": "0.1",
+  "description": "Tests a variety of dynamic content scripts API calls when the extension also has user scripts registered.",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": [
+    "scripting",
+    "tabs",
+    "userScripts"
+  ],
+  "host_permissions": [
+    "*://hostperms.com/*"
+  ]
+}

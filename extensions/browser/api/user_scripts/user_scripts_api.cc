@@ -14,6 +14,7 @@
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/extension_types.h"
 #include "extensions/common/api/user_scripts.h"
+#include "extensions/common/user_script.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/common/utils/extension_types_utils.h"
 
@@ -153,7 +154,8 @@ ExtensionFunction::ResponseAction UserScriptsRegisterFunction::Run() {
 
   // Create script ids for dynamic user scripts.
   std::string error;
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> existing_script_ids =
+      loader->GetDynamicScriptIDs(UserScript::Source::kDynamicUserScript);
   std::set<std::string> new_script_ids = scripting::CreateDynamicScriptIds(
       scripts, UserScript::Source::kDynamicUserScript, existing_script_ids,
       &error);

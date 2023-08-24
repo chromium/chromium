@@ -84,6 +84,26 @@ std::string UserScript::TrimPrefixFromScriptID(const std::string& script_id) {
 }
 
 // static
+UserScript::Source UserScript::GetSourceForScriptID(
+    const std::string& script_id) {
+  if (base::StartsWith(script_id, kManifestContentScriptPrefix)) {
+    return Source::kStaticContentScript;
+  }
+
+  if (base::StartsWith(script_id, kDynamicContentScriptPrefix)) {
+    return Source::kDynamicContentScript;
+  }
+
+  if (base::StartsWith(script_id, kDynamicUserScriptPrefix)) {
+    return Source::kDynamicUserScript;
+  }
+
+  // TODO(crbug.com/1475409): Handle gracefully when a new source is handed,
+  // specially when user has different Chrome versions.
+  NOTREACHED_NORETURN();
+}
+
+// static
 bool UserScript::IsURLUserScript(const GURL& url,
                                  const std::string& mime_type) {
   return base::EndsWith(url.ExtractFileName(), kFileExtension,
@@ -102,10 +122,6 @@ int UserScript::ValidUserScriptSchemes(bool can_execute_script_everywhere) {
   }
   return valid_schemes;
 }
-
-// namespace {
-
-// }  // namespace
 
 UserScript::File::File(const base::FilePath& extension_root,
                        const base::FilePath& relative_path,
@@ -180,20 +196,7 @@ UserScript::Source UserScript::GetSource() const {
     return Source::kWebUIScript;
   }
 
-  if (base::StartsWith(user_script_id_, kManifestContentScriptPrefix)) {
-    return Source::kStaticContentScript;
-  }
-
-  if (base::StartsWith(user_script_id_, kDynamicContentScriptPrefix)) {
-    return Source::kDynamicContentScript;
-  }
-
-  if (base::StartsWith(user_script_id_, kDynamicUserScriptPrefix)) {
-    return Source::kDynamicUserScript;
-  }
-
-  NOTREACHED();
-  return Source::kStaticContentScript;
+  return GetSourceForScriptID(user_script_id_);
 }
 
 bool UserScript::MatchesURL(const GURL& url) const {

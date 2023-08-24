@@ -85,13 +85,14 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   void RemoveDynamicScripts(const std::set<std::string>& ids_to_remove,
                             DynamicScriptsModifiedCallback callback);
 
-  // Removes all dynamic scripts for the extension, including loaded and
-  // pending scripts.
-  void ClearDynamicScripts(DynamicScriptsModifiedCallback callback);
+  // Removes all dynamic scripts with `source` for the extension, including
+  // loaded and pending scripts.
+  void ClearDynamicScripts(UserScript::Source source,
+                           DynamicScriptsModifiedCallback callback);
 
-  // Returns the IDs of all dynamic scripts for the extension, which includes
-  // the IDs of all pending and loaded dynamic scripts.
-  std::set<std::string> GetDynamicScriptIDs() const;
+  // Returns the IDs of all dynamic scripts with `source` for the extension,
+  // which includes the IDs of all pending and loaded dynamic scripts.
+  std::set<std::string> GetDynamicScriptIDs(UserScript::Source source) const;
 
   const UserScriptList& GetLoadedDynamicScripts() const;
 

@@ -30,6 +30,21 @@ namespace extensions {
 // extension.
 class UserScript {
  public:
+  // Denotes the type/origin of this script.
+  enum class Source {
+    // The script was parsed from an extension's manifest entry.
+    kStaticContentScript,
+
+    // The script was created through the scripting API.
+    kDynamicContentScript,
+
+    // The script was created through the userScripts API.
+    kDynamicUserScript,
+
+    // The script was created for a webUI.
+    kWebUIScript,
+  };
+
   // The file extension for standalone user scripts.
   static constexpr const char kFileExtension[] = "user.js";
 
@@ -53,6 +68,10 @@ class UserScript {
   // Removes any appended prefix from the given `script_id`.
   static std::string TrimPrefixFromScriptID(const std::string& script_id);
 
+  // Returns the source of `script_id`. This can only be called if `script_id`
+  // already has its source prefix appended.
+  static Source GetSourceForScriptID(const std::string& script_id);
+
   // Check if a URL should be treated as a user script and converted to an
   // extension.
   static bool IsURLUserScript(const GURL& url, const std::string& mime_type);
@@ -60,21 +79,6 @@ class UserScript {
   // Get the valid user script schemes for the current process. If
   // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
   static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
-
-  // Denotes the type/origin of this script.
-  enum class Source {
-    // The script was parsed from an extension's manifest entry.
-    kStaticContentScript,
-
-    // The script was created through the scripting API.
-    kDynamicContentScript,
-
-    // The script was created through the userScripts API.
-    kDynamicUserScript,
-
-    // The script was created for a webUI.
-    kWebUIScript,
-  };
 
   // Holds script file info.
   class File {

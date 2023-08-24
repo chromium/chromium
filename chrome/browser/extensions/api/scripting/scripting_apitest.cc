@@ -21,6 +21,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/utils/content_script_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -548,6 +549,32 @@ class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
 #endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, MAYBE_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
+}
+
+class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
+ public:
+  ScriptingAndUserScriptsAPITest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kApiUserScripts);
+  }
+  ScriptingAndUserScriptsAPITest(const ScriptingAndUserScriptsAPITest&) =
+      delete;
+  ScriptingAndUserScriptsAPITest& operator=(
+      const ScriptingAndUserScriptsAPITest&) = delete;
+  ~ScriptingAndUserScriptsAPITest() override = default;
+
+ private:
+  // The userScripts API is currently behind a channel and feature restriction.
+  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
+  // to stable.
+  ScopedCurrentChannel current_channel_override_{
+      version_info::Channel::UNKNOWN};
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ScriptingAndUserScriptsAPITest,
+                       ScriptingAPIDoesNotAffectUserScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_user_scripts")) << message_;
 }
 
 }  // namespace extensions

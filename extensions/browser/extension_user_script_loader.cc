@@ -652,17 +652,26 @@ void ExtensionUserScriptLoader::RemoveDynamicScripts(
 }
 
 void ExtensionUserScriptLoader::ClearDynamicScripts(
+    UserScript::Source source,
     DynamicScriptsModifiedCallback callback) {
-  RemoveDynamicScripts(GetDynamicScriptIDs(), std::move(callback));
+  RemoveDynamicScripts(GetDynamicScriptIDs(source), std::move(callback));
 }
 
-std::set<std::string> ExtensionUserScriptLoader::GetDynamicScriptIDs() const {
+std::set<std::string> ExtensionUserScriptLoader::GetDynamicScriptIDs(
+    UserScript::Source source) const {
   std::set<std::string> dynamic_script_ids;
-  dynamic_script_ids.insert(pending_dynamic_script_ids_.begin(),
-                            pending_dynamic_script_ids_.end());
 
-  for (const std::unique_ptr<UserScript>& script : loaded_dynamic_scripts_)
-    dynamic_script_ids.insert(script->id());
+  for (std::string pending_id : pending_dynamic_script_ids_) {
+    if (UserScript::GetSourceForScriptID(pending_id) == source) {
+      dynamic_script_ids.insert(pending_id);
+    }
+  }
+
+  for (const std::unique_ptr<UserScript>& script : loaded_dynamic_scripts_) {
+    if (script->GetSource() == source) {
+      dynamic_script_ids.insert(script->id());
+    }
+  }
 
   return dynamic_script_ids;
 }

@@ -918,7 +918,8 @@ ScriptingRegisterContentScriptsFunction::Run() {
 
   // Create script ids for dynamic content scripts.
   std::string error;
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> existing_script_ids =
+      loader->GetDynamicScriptIDs(UserScript::Source::kDynamicContentScript);
   std::set<std::string> new_script_ids = scripting::CreateDynamicScriptIds(
       scripts, UserScript::Source::kDynamicContentScript, existing_script_ids,
       &error);
@@ -1098,6 +1099,7 @@ ScriptingUnregisterContentScriptsFunction::Run() {
   // the list of scripts ids to remove.
   if (!filter || !filter->ids || filter->ids->empty()) {
     loader->ClearDynamicScripts(
+        UserScript::Source::kDynamicContentScript,
         base::BindOnce(&ScriptingUnregisterContentScriptsFunction::
                            OnContentScriptsUnregistered,
                        this));
@@ -1105,7 +1107,8 @@ ScriptingUnregisterContentScriptsFunction::Run() {
   }
 
   std::set<std::string> ids_to_remove;
-  std::set<std::string> existing_script_ids = loader->GetDynamicScriptIDs();
+  std::set<std::string> existing_script_ids =
+      loader->GetDynamicScriptIDs(UserScript::Source::kDynamicContentScript);
   std::string error;
 
   for (const auto& provided_id : *filter->ids) {
@@ -1175,8 +1178,10 @@ ExtensionFunction::ResponseAction ScriptingUpdateContentScriptsFunction::Run() {
       loaded_scripts_metadata;
   const UserScriptList& dynamic_scripts = loader->GetLoadedDynamicScripts();
   for (const std::unique_ptr<UserScript>& script : dynamic_scripts) {
-    loaded_scripts_metadata.emplace(script->id(),
-                                    CreateRegisteredContentScriptInfo(*script));
+    if (script->GetSource() == UserScript::Source::kDynamicContentScript) {
+      loaded_scripts_metadata.emplace(
+          script->id(), CreateRegisteredContentScriptInfo(*script));
+    }
   }
 
   std::set<std::string> ids_to_update;
