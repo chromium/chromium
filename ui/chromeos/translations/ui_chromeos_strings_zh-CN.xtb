@@ -170,6 +170,7 @@
 <translation id="23721837607121582">下载移动网络配置文件，第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），网络名称为“<ph name="NETWORK_NAME" />”</translation>
 <translation id="2377319039870049694">切换到列表视图</translation>
 <translation id="2377590462528165447">与 Linux 共享了 <ph name="NUMBER_OF_ITEMS" /> 个文件夹</translation>
+<translation id="2379576081295865700">正在检查存储空间…找到了 1 项内容</translation>
 <translation id="2383454254762599978">移至回收站</translation>
 <translation id="2387458720915042159">代理连接类型</translation>
 <translation id="2389832672041313158">缅甸语</translation>
@@ -657,6 +658,7 @@
 <translation id="6164412158936057769">蝴蝶</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6170470584681422115">三明治</translation>
+<translation id="6177854567773392726">正在检查存储空间…找到了 <ph name="ITEMS_FOUND" /> 项内容</translation>
 <translation id="6187719147498869044">匈牙利语</translation>
 <translation id="6198252989419008588">更改 PIN</translation>
 <translation id="6199801702437275229">等待存储空间信息...</translation>
@@ -1035,6 +1037,7 @@
 <translation id="9038620279323455325">已有名为“<ph name="FILE_NAME" />”的文件。请另选一个名称。</translation>
 <translation id="9046895021617826162">连接失败</translation>
 <translation id="9065512565307033593">如果您未通过验证，我们将禁止您访问网络。</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 条警告。}other{<ph name="COUNT" /> 条警告。}}</translation>
 <translation id="908378762078012445">俄语注音 AATSEEL 键盘</translation>
 <translation id="9086302186042011942">正在同步</translation>
 <translation id="9099674669267916096">页数</translation>

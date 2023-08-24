@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Descarcă profilul mobil, Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Comută la afișarea listă</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> dosare cu acces permis pentru Linux</translation>
+<translation id="2379576081295865700">Se verifică spațiul de stocare… S-a găsit un element</translation>
 <translation id="2383454254762599978">Mută în coșul de gunoi</translation>
 <translation id="2387458720915042159">Tip de conexiune prin proxy</translation>
 <translation id="2389832672041313158">Birmană/Myanmar</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Fluturi</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
 <translation id="6170470584681422115">Sendviș</translation>
+<translation id="6177854567773392726">Se verifică spațiul de stocare… S-au găsit <ph name="ITEMS_FOUND" /> elemente</translation>
 <translation id="6181912134988520389">Acordă permisiunea ca <ph name="VM_NAME" /> să acceseze fișiere din Google Drive. Modificările se vor sincroniza cu celelalte dispozitive care îți aparțin.</translation>
 <translation id="6187719147498869044">Maghiară</translation>
 <translation id="6198252989419008588">Schimbă codul PIN</translation>

@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Одберете друго име.</translation>
 <translation id="9046895021617826162">Поврзувањето не успеа</translation>
 <translation id="9065512565307033593">Ако не успеете да потврдите, пристапот до мрежата ќе ви биде оневозможен.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 предупредување.}one{<ph name="COUNT" /> предупредување.}other{<ph name="COUNT" /> предупредувања.}}</translation>
 <translation id="908378762078012445">руски со фонетска тастатура AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизирање</translation>
 <translation id="9099674669267916096">Број на страници</translation>

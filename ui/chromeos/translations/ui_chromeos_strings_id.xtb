@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Download profil seluler, Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Beralih ke tampilan daftar</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> folder dibagikan dengan Linux</translation>
+<translation id="2379576081295865700">Memeriksa ruang penyimpanan… 1 item ditemukan</translation>
 <translation id="2383454254762599978">Pindahkan ke sampah</translation>
 <translation id="2387458720915042159">Jenis sambungan proxy</translation>
 <translation id="2389832672041313158">Burma/Myanmar</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Kupu-kupu</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6170470584681422115">Sandwich</translation>
+<translation id="6177854567773392726">Memeriksa ruang penyimpanan… <ph name="ITEMS_FOUND" /> item ditemukan</translation>
 <translation id="6181912134988520389">Beri <ph name="VM_NAME" /> izin untuk mengakses file di Google Drive Anda. Perubahan akan disinkronkan ke perangkat lainnya.</translation>
 <translation id="6187719147498869044">Hungaria</translation>
 <translation id="6198252989419008588">Ubah PIN</translation>

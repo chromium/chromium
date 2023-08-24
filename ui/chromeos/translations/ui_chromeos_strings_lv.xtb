@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
 <translation id="9046895021617826162">Savienojums neizdevās</translation>
 <translation id="9065512565307033593">Ja verifikācija neizdosies, jūsu piekļuve tīklam tiks atspējota.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 brīdinājums.}zero{<ph name="COUNT" /> brīdinājumu.}one{<ph name="COUNT" /> brīdinājums.}other{<ph name="COUNT" /> brīdinājumi.}}</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
 <translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>

@@ -170,6 +170,7 @@
 <translation id="23721837607121582">இந்த மொபைல் சுயவிவரத்தைப் பதிவிறக்கும்: நெட்வொர்க் <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ஃபோல்டர்கள் Linuxஸுடன் பகிரப்பட்டன</translation>
+<translation id="2379576081295865700">சேமிப்பிடத்தைச் சரிபார்க்கிறது… 1 ஆவணம் கண்டறியப்பட்டது</translation>
 <translation id="2383454254762599978">‘நீக்கியவை’ ஃபோல்டருக்கு நகர்த்து</translation>
 <translation id="2387458720915042159">ப்ராக்ஸி இணைப்பு வகை</translation>
 <translation id="2389832672041313158">பர்மீஸ்/மியான்மர்</translation>
@@ -662,6 +663,7 @@
 <translation id="6164412158936057769">வண்ணத்துப்பூச்சிகள்</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6170470584681422115">சாண்ட்விச்</translation>
+<translation id="6177854567773392726">சேமிப்பிடத்தைச் சரிபார்க்கிறது… <ph name="ITEMS_FOUND" /> ஆவணங்கள் கண்டறியப்பட்டன</translation>
 <translation id="6187719147498869044">ஹங்கேரியன்</translation>
 <translation id="6198252989419008588">PIN ஐ மாற்றவும்</translation>
 <translation id="6199801702437275229">இடத் தகவலுக்காக காத்திருக்கிறது...</translation>

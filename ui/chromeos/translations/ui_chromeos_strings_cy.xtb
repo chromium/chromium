@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Lawrlwytho proffil dyfais symudol, Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Newid i'r wedd rhestr</translation>
 <translation id="2377590462528165447">Rhannwyd <ph name="NUMBER_OF_ITEMS" /> ffolder â Linux</translation>
+<translation id="2379576081295865700">Wrthi'n gwirio lle storio… 1 eitem wedi'i chanfod</translation>
 <translation id="2383454254762599978">Symud i'r bin sbwriel</translation>
 <translation id="2387458720915042159">Math o gysylltiad dirprwy</translation>
 <translation id="2389832672041313158">Byrmaneg/Myanmar</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Glöynnod Byw</translation>
 <translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6170470584681422115">Brechdan</translation>
+<translation id="6177854567773392726">Wrthi'n gwirio lle storio… <ph name="ITEMS_FOUND" /> eitem wedi'u canfod</translation>
 <translation id="6181912134988520389">Rhoi caniatâd i <ph name="VM_NAME" /> gael mynediad at ffeiliau yn eich Google Drive. Bydd newidiadau yn cysoni â'ch dyfeisiau eraill.</translation>
 <translation id="6187719147498869044">Hwngareg</translation>
 <translation id="6198252989419008588">Newid PIN</translation>

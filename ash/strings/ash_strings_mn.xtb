@@ -841,6 +841,7 @@
 <translation id="4477892968187500306">Энэ төхөөрөмж нь Google-н баталгаажуулаагүй аппыг агуулж болзошгүй.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Хослоогүй төхөөрөмж</translation>
+<translation id="4505050298327493054">Идэвхтэй дэлгэц.</translation>
 <translation id="450584155212756404">Dev суваг</translation>
 <translation id="4513946894732546136">Санал дүгнэлт</translation>
 <translation id="4516212064498225455">Одоогийн дэлгэц: <ph name="CURRENT_DESK_NAME" />, бүх дэлгэцийн цэсийг нээхийн тулд Search+Space-г ашиглана уу.</translation>
@@ -1186,6 +1187,7 @@
 <translation id="589817443623831496">Цэгээр скан хийх</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Шар</translation>
+<translation id="5909862606227538307">Идэвхгүй дэлгэц.</translation>
 <translation id="5911231045062997865">Lacros цонхыг одоогоор дэмждэггүй. Бусад аппыг хадгална.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>

@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Preuzmi mobilni profil, mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Prebaci na prikaz popisa</translation>
 <translation id="2377590462528165447">S Linuxom se dijeli sljedeći broj mapa: <ph name="NUMBER_OF_ITEMS" /></translation>
+<translation id="2379576081295865700">Provjera prostora za pohranu… Pronađena je 1 stavka</translation>
 <translation id="2383454254762599978">Premjesti u otpad</translation>
 <translation id="2387458720915042159">Vrsta proxy veze</translation>
 <translation id="2389832672041313158">burmanski (Mjanmar)</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">Leptiri</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6170470584681422115">Sendvič</translation>
+<translation id="6177854567773392726">Provjera prostora za pohranu… Pronađeno stavki: <ph name="ITEMS_FOUND" /></translation>
 <translation id="6181912134988520389">Dajte <ph name="VM_NAME" /> dopuštenje za pristup datotekama na Google disku. Promjene će se sinkronizirati na vašim ostalim uređajima.</translation>
 <translation id="6187719147498869044">mađarski</translation>
 <translation id="6198252989419008588">Promijeni PIN</translation>

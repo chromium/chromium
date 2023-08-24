@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Deskargatu mugikorreko profila, <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" /> sare, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">Aldatu zerrenda-ikuspegira</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> karpeta partekatu dira Linux-ekin</translation>
+<translation id="2379576081295865700">Biltegiratzeko tokia egiaztatzen… 1 elementu aurkitu da.</translation>
 <translation id="2383454254762599978">Eraman zaborrontzira</translation>
 <translation id="2387458720915042159">Proxy konexio mota</translation>
 <translation id="2389832672041313158">Birmaniarra</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Tximeletak</translation>
 <translation id="6165508094623778733">Lortu informazio gehiago</translation>
 <translation id="6170470584681422115">Ogitartekoa</translation>
+<translation id="6177854567773392726">Biltegiratzeko tokia egiaztatzen… <ph name="ITEMS_FOUND" /> elementu aurkitu dira.</translation>
 <translation id="6181912134988520389">Eman Google Drive-ko fitxategiak erabiltzeko baimena <ph name="VM_NAME" /> makina birtualari. Aldaketak beste gailuekin sinkronizatuko dira.</translation>
 <translation id="6187719147498869044">Hungariarra</translation>
 <translation id="6198252989419008588">Aldatu PINa</translation>

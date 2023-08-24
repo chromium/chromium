@@ -1041,6 +1041,7 @@
 <translation id="9038620279323455325">Un fichier nommé « <ph name="FILE_NAME" /> » existe déjà. Veuillez choisir un autre nom.</translation>
 <translation id="9046895021617826162">Échec de la connexion</translation>
 <translation id="9065512565307033593">Si vous n'effectuez pas la vérification, votre accès réseau sera désactivé.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 mise en garde.}one{<ph name="COUNT" /> mise en garde.}other{<ph name="COUNT" /> mises en garde.}}</translation>
 <translation id="908378762078012445">Russe avec clavier phonétique AATSEEL</translation>
 <translation id="9086302186042011942">Synchronisation en cours...</translation>
 <translation id="9099674669267916096">Nombre de pages</translation>

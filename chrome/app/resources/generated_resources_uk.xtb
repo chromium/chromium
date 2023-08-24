@@ -36,7 +36,6 @@
 <translation id="1026655690966755180">Додати порт</translation>
 <translation id="1026822031284433028">Завантажити зображення</translation>
 <translation id="1026959648338730078">Windows Hello або зовнішній ключ безпеки</translation>
-<translation id="1028604629594230522">Chrome попередньо завантажує сторінки, які ви, імовірно, відвідаєте, щоб вони завантажувалися швидше.</translation>
 <translation id="1028700151766901954">Причина: підтримка застарілих веб-переглядачів працює в <ph name="DEFAULT_OPEN_BROWSER" /> за умовчанням.</translation>
 <translation id="1029317248976101138">Збільшити</translation>
 <translation id="1029526375103058355">Торкнутися, щоб натиснути</translation>
@@ -1297,7 +1296,6 @@
 <translation id="1997433994358798851">Веб-переглядачу Chrome потрібен дозвіл використовувати Bluetooth, щоб підключитися до вашого пристрою.</translation>
 <translation id="1997616988432401742">Ваші сертифікати</translation>
 <translation id="1999115740519098545">Після запуску</translation>
-<translation id="1999315477791571194">У Google Менеджері паролів <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="2002109485265116295">У реальному часі</translation>
 <translation id="2003130567827682533">Щоб активувати дані служби "<ph name="NAME" />", спершу під’єднайтеся до мережі Wi-Fi</translation>
 <translation id="2004697686368036666">Функції на деяких сайтах можуть не працювати</translation>
@@ -4515,7 +4513,6 @@
 <translation id="4588749726511456218">Прискорення прокручування <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">Журнали записано в каталог "Завантаження".</translation>
 <translation id="459204634473266369">В обліковому записі <ph name="PRIMARY_EMAIL" /> немає збережених пристроїв</translation>
-<translation id="4592525994536856567">Швидша робота веб-переглядача й пошуку.</translation>
 <translation id="4592891116925567110">Додаток для малювання за допомогою стилуса</translation>
 <translation id="4593021220803146968">&amp;Перейти до <ph name="URL" /></translation>
 <translation id="4594218792629569101">Виберіть "Позначити як прочитане", щоб перемістити сторінку в кінець списку</translation>
@@ -4551,7 +4548,6 @@
 <translation id="4622051949285931942">Вимкнути автоматичні оновлення?</translation>
 <translation id="4623167406982293031">Підтвердьте обліковий запис</translation>
 <translation id="4623189117674524348">Системі на вдалося надати API доступ до цього пристрою.</translation>
-<translation id="4623341761454569602">У Google Менеджері паролів <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4624054169152573743">Колірна тема</translation>
 <translation id="4625078469366263107">Увімкнути додаток</translation>
 <translation id="4625905218692741757">Сірий колір за умовчанням</translation>
@@ -5980,7 +5976,6 @@
 <translation id="5836999627049108525">Вихідна мова</translation>
 <translation id="583756221537636748">Чохол</translation>
 <translation id="5839524803417937122">Пошук на зображенні через <ph name="SEARCH_ENGINE" /></translation>
-<translation id="5840318881868981258">У вашому обліковому записі Google (<ph name="ACCOUNT" />)</translation>
 <translation id="5840680448799937675">Завжди передавати файли офлайн</translation>
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
@@ -6658,7 +6653,6 @@
 <translation id="6400360390396538896">Завжди ввімкнено (<ph name="ORIGIN" />)</translation>
 <translation id="6401458660421980302">Щоб надіслати цю вкладку на інший пристрій, увійдіть на ньому в Chrome</translation>
 <translation id="6401597285454423070">Ваш комп’ютер оснащено пристроєм Trusted Platform Module (TPM), який виконує багато важливих функцій безпеки в ОС Chrome. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="6402624310818737708">У вашому обліковому записі Google (<ph name="ACCOUNT" />)</translation>
 <translation id="6404511346730675251">Редагувати закладку</translation>
 <translation id="6406303162637086258">Імітувати перезапуск веб-переглядача</translation>
 <translation id="6406506848690869874">Синхронізація</translation>
@@ -6868,7 +6862,6 @@
 <translation id="65711204837946324">Потрібен дозвіл, щоб завантажити</translation>
 <translation id="6571533309669248172">Форматування тексту</translation>
 <translation id="6571772921213691236">Змінити дані для входу</translation>
-<translation id="6572081226337824427">Деякі сторінки, які ви відвідуєте, попередньо завантажені.</translation>
 <translation id="657229725818377235">Посильте захист від небезпечних веб-сайтів і завантажень</translation>
 <translation id="6573096386450695060">Завжди дозволяти</translation>
 <translation id="6573497332121198392">Не вдалося видалити ярлик</translation>
@@ -8971,7 +8964,6 @@
 <translation id="8263744495942430914">Сторінка <ph name="FULLSCREEN_ORIGIN" /> вимкнула курсор миші.</translation>
 <translation id="8264024885325823677">Цим налаштуванням керує адміністратор.</translation>
 <translation id="8264718194193514834">Розширення "<ph name="EXTENSION_NAME" />" запустило повноекранний режим.</translation>
-<translation id="8265018477030547118">Лише на цьому пристрої</translation>
 <translation id="826511437356419340">Ви ввійшли в режим огляду вікна. Для навігації проводьте пальцем або натискайте клавішу Tab на клавіатурі.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{Вікно в режимі анонімного перегляду не відкриється після перезапуску}one{{COUNT} вікно в режимі анонімного перегляду не відкриється після перезапуску}few{{COUNT} вікна в режимі анонімного перегляду не відкриються після перезапуску}many{{COUNT} вікон у режимі анонімного перегляду не відкриються після перезапуску}other{{COUNT} вікна в режимі анонімного перегляду не відкриється після перезапуску}}</translation>
 <translation id="8266947622852630193">Усі методи введення</translation>
@@ -9425,7 +9417,6 @@
 <translation id="8645920082661222035">Передбачає небезпечні події та повідомляє про них ще до того, як вони відбудуться</translation>
 <translation id="8646209145740351125">Вимкнути синхронізацію</translation>
 <translation id="864637694230589560">Зазвичай сайти надсилають сповіщення, щоб повідомити про важливі новини або повідомлення в чаті</translation>
-<translation id="8646467750715887511">Сторінки завантажуються лише після того, як ви їх відкриєте.</translation>
 <translation id="8647385344110255847">З вашого дозволу дитина може встановлювати додатки через Google Play</translation>
 <translation id="8647834505253004544">Недійсна веб-адреса</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> або <ph name="RE_SCAN_LINK" /></translation>

@@ -840,6 +840,7 @@
 <translation id="4477892968187500306">此裝置可能包含未經 Google 驗證的的應用程式。</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4481530544597605423">未配對的裝置</translation>
+<translation id="4505050298327493054">用緊嘅桌面。</translation>
 <translation id="450584155212756404">開發人員版</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="4516212064498225455">目前的桌面：<ph name="CURRENT_DESK_NAME" />，使用搜尋鍵 + 空格鍵即可開啟所有桌面選單。</translation>
@@ -1184,6 +1185,7 @@
 <translation id="589817443623831496">點掃瞄</translation>
 <translation id="5901316534475909376">Shift + Esc 鍵</translation>
 <translation id="5901630391730855834">黃色</translation>
+<translation id="5909862606227538307">唔係用緊嘅桌面。</translation>
 <translation id="5911231045062997865">目前不支援 Lacros 視窗。系統將儲存其他應用程式。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
@@ -1500,7 +1502,7 @@
 <translation id="7312210124139670355">管理員正在重設您的 eSIM 卡。這項操作可能需時數分鐘。</translation>
 <translation id="7313193732017069507">展開相機調整大小的按鈕</translation>
 <translation id="7316261577130609484">新增工作</translation>
-<translation id="7330397557116570022">必須點選文字欄位，才能使用語音輸入功能</translation>
+<translation id="7330397557116570022">將焦點放到文字欄位以使用「語音聽寫」</translation>
 <translation id="7331646370422660166">Alt 鍵 + 向下箭咀鍵</translation>
 <translation id="7340731148882810149">自動點擊選單</translation>
 <translation id="7346909386216857016">好，我知道了</translation>

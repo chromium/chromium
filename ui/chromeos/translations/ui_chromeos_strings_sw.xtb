@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">Faili yenye jina la "<ph name="FILE_NAME" />" tayari ipo. Tafadhali chagua jina tofauti.</translation>
 <translation id="9046895021617826162">Muunganisho umeshindikana</translation>
 <translation id="9065512565307033593">Usipothibitisha, ufikiaji wako wa mtandao utazimwa.</translation>
+<translation id="9083722265619106011">{0,plural, =1{Tahadhari 1.}other{Tahadhari <ph name="COUNT" />.}}</translation>
 <translation id="908378762078012445">Kirusi kwenye kibodi ya Fonetiki ya AATSEEL</translation>
 <translation id="9086302186042011942">Inasawazisha</translation>
 <translation id="9099674669267916096">Idadi ya kurasa</translation>

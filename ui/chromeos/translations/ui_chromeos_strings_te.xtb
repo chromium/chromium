@@ -171,6 +171,7 @@
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />, <ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" />వ నెట్‌వర్క్ మొబైల్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="2377319039870049694">లిస్ట్‌ వీక్షణకు మార్చు</translation>
 <translation id="2377590462528165447">Linuxతో <ph name="NUMBER_OF_ITEMS" /> ఫోల్డర్‌లు షేర్ చేయబడ్డాయి</translation>
+<translation id="2379576081295865700">స్టోరేజ్ స్పేస్ చెక్ చేస్తోంది… 1 ఐటెమ్ కనుగొనబడింది</translation>
 <translation id="2383454254762599978">ట్రాష్‌కు తరలించండి</translation>
 <translation id="2387458720915042159">ప్రాక్సీ కనెక్షన్ రకం</translation>
 <translation id="2389832672041313158">బర్మీస్/మయన్మార్</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">సీతాకోకచిలుకలు</translation>
 <translation id="6165508094623778733">మరింత తెలుసుకోండి</translation>
 <translation id="6170470584681422115">శాండ్విచ్</translation>
+<translation id="6177854567773392726">స్టోరేజ్ స్పేస్ చెక్ చేస్తోంది… <ph name="ITEMS_FOUND" /> ఐటెమ్‌లు కనుగొనబడ్డాయి</translation>
 <translation id="6181912134988520389">మీ Google Driveలోని ఫైల్స్‌ను యాక్సెస్ చేయడానికి <ph name="VM_NAME" />‌కు అనుమతినివ్వండి. మార్పులు మీ ఇతర పరికరాలలో కూడా సింక్ చేయబడతాయి.</translation>
 <translation id="6187719147498869044">హంగేరియన్</translation>
 <translation id="6198252989419008588">పిన్ మార్పు</translation>

@@ -1049,6 +1049,7 @@
 <translation id="9038620279323455325">Már van „<ph name="FILE_NAME" />” nevű fájl. Válasszon másik nevet.</translation>
 <translation id="9046895021617826162">Csatlakozás sikertelen</translation>
 <translation id="9065512565307033593">Ha nem sikerül az igazolás, a hálózati hozzáférés le lesz tiltva.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 figyelmeztetés.}other{<ph name="COUNT" /> figyelmeztetés.}}</translation>
 <translation id="908378762078012445">orosz, fonetikus AATSEEL-billentyűzettel</translation>
 <translation id="9086302186042011942">Szinkronizálás</translation>
 <translation id="9099674669267916096">Oldalak száma</translation>

@@ -300,7 +300,7 @@
 <translation id="1569487616857761740">輸入到期日</translation>
 <translation id="1569694109004336106">Google Chrome 正在嘗試開啟 Windows Hello，以便在填入密碼時驗證。</translation>
 <translation id="1572765991610098222"><ph name="WIDTH" /> x <ph name="HEIGHT" /> 吋</translation>
-<translation id="1574714699824202614">正在驗證付款方式</translation>
+<translation id="1574714699824202614">正在驗證付款方法</translation>
 <translation id="1576277203042721907">購物分析資料</translation>
 <translation id="1581080074034554886">信用卡驗證碼 (CVC)</translation>
 <translation id="1583429793053364125">顯示此網頁時發生錯誤。</translation>
@@ -450,7 +450,7 @@
 <translation id="1874224422119691492">您可在「<ph name="SETTINGS" />」中變更是否要使用螢幕鎖定功能填入密碼</translation>
 <translation id="1875025161375567525">相片匣</translation>
 <translation id="1875512691959384712">Google 表格</translation>
-<translation id="1876399092304384674">依日期分類</translation>
+<translation id="1876399092304384674">按日期分類</translation>
 <translation id="187918866476621466">開啟起始網頁</translation>
 <translation id="1883255238294161206">收合清單</translation>
 <translation id="1884843295353628214">爵士樂</translation>
@@ -1174,7 +1174,7 @@
 <translation id="3470563864795286535"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以閂晒所有宜家開咗嘅無痕式視窗</translation>
 <translation id="3474392552865647225">自訂 Chrome 字型按鈕，啟動之後就可以自訂 Chrome 嘅字型大小同字體</translation>
 <translation id="3477679029130949506">電影場次及放映時間</translation>
-<translation id="3478033058537426179">依群組分類</translation>
+<translation id="3478033058537426179">按群組分類</translation>
 <translation id="3479552764303398839">略過</translation>
 <translation id="3484560055331845446">您可能會失去 Google 帳戶存取權。Chrome 建議您立即變更密碼。系統會要求您登入。</translation>
 <translation id="3484861421501147767">提醒：可使用已儲存的宣傳代碼</translation>
@@ -1706,7 +1706,7 @@
 <translation id="4579699065574932398">銀行服務</translation>
 <translation id="4582204425268416675">移除卡</translation>
 <translation id="4582595824823167856">接收短訊</translation>
-<translation id="4586607503179159908">付款方式已完成驗證</translation>
+<translation id="4586607503179159908">付款方法已驗證</translation>
 <translation id="4587425331216688090">要從 Chrome 中移除地址嗎？</translation>
 <translation id="459089498662672729">管理員政策不建議將資料從 <ph name="ORIGIN_NAME" /> 貼到此位置</translation>
 <translation id="4592951414987517459">您與 <ph name="DOMAIN" /> 之間的連線透過最新加密套件加密處理。</translation>
@@ -2780,7 +2780,6 @@
 <translation id="6832753933931306326">已經填寫咗表格</translation>
 <translation id="6841864657731852591">凹版印刷滾筒</translation>
 <translation id="6842196666980060516">184 x 260 毫米</translation>
-<translation id="6846340164947227603">使用虛擬付款卡號碼…</translation>
 <translation id="6849023911358004088">管理安全設定按鈕，啟動之後就可以喺 Chrome 設定度管理安全瀏覽功能之類嘅功能</translation>
 <translation id="6852204201400771460">要重新載入應用程式嗎？</translation>
 <translation id="6857776781123259569">管理密碼…</translation>

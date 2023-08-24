@@ -35,7 +35,6 @@
 <translation id="1026655690966755180">新增連接埠</translation>
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全金鑰</translation>
-<translation id="1028604629594230522">Chrome 會預先載入你可能會造訪的網頁，以便在你造訪時更快載入。</translation>
 <translation id="1028700151766901954">原因：LBS 預設保存在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
@@ -1264,7 +1263,6 @@
 <translation id="1997433994358798851">Chrome 需要權限才能使用藍牙連線至你的裝置</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始畫面</translation>
-<translation id="1999315477791571194">儲存到 Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的數據服務，請先連上 Wi-Fi 網路</translation>
 <translation id="2004697686368036666">某些網站的功能可能無法運作</translation>
@@ -4444,7 +4442,6 @@
 <translation id="4588749726511456218">捲動加速功能 <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">記錄已成功寫入「下載」目錄。</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" /> 中未儲存任何裝置</translation>
-<translation id="4592525994536856567">瀏覽及搜尋內容時，載入速度更快了。</translation>
 <translation id="4592891116925567110">觸控筆繪圖應用程式</translation>
 <translation id="4593021220803146968">前往 <ph name="URL" />(&amp;G)</translation>
 <translation id="4594218792629569101">選取「標示為已讀取」即可將頁面移至清單底部</translation>
@@ -4480,7 +4477,6 @@
 <translation id="4622051949285931942">要關閉自動更新功能嗎？</translation>
 <translation id="4623167406982293031">驗證帳戶</translation>
 <translation id="4623189117674524348">系統無法對這個裝置授予 API 存取權。</translation>
-<translation id="4623341761454569602">儲存到 Google 密碼管理工具 <ph name="SEPARATOR" /> <ph name="ACCOUNT" /></translation>
 <translation id="4624054169152573743">色彩主題</translation>
 <translation id="4625078469366263107">啟用應用程式</translation>
 <translation id="4625905218692741757">使用灰色做為預設顏色</translation>
@@ -5899,7 +5895,6 @@
 <translation id="5836999627049108525">原文語言</translation>
 <translation id="583756221537636748">充電盒</translation>
 <translation id="5839524803417937122">使用 <ph name="SEARCH_ENGINE" /> 搜尋圖片的內容</translation>
-<translation id="5840318881868981258">更新 Google 帳戶 (<ph name="ACCOUNT" />) 中的密碼</translation>
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5842497610951477805">啟用藍牙</translation>
@@ -6569,7 +6564,6 @@
 <translation id="6400360390396538896">一律在 <ph name="ORIGIN" /> 上執行</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
 <translation id="6401597285454423070">你的電腦含有信任平台模組 (TPM) 安全性裝置，可用於實作 Chrome OS 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="6402624310818737708">將密碼儲存到 Google 帳戶 (<ph name="ACCOUNT" />)</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406303162637086258">模擬瀏覽器重新啟動</translation>
 <translation id="6406506848690869874">同步</translation>
@@ -6778,7 +6772,6 @@
 <translation id="65711204837946324">需要下載權限</translation>
 <translation id="6571533309669248172">設定文字格式</translation>
 <translation id="6571772921213691236">編輯登入資料</translation>
-<translation id="6572081226337824427">系統已預先載入你要造訪的某些網頁。</translation>
 <translation id="657229725818377235">進一步防範不安全的網站和下載內容</translation>
 <translation id="6573096386450695060">一律允許</translation>
 <translation id="6573497332121198392">無法移除捷徑</translation>
@@ -8853,7 +8846,6 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" /> 已停用滑鼠游標。</translation>
 <translation id="8264024885325823677">這項設定是由系統管理員管理。</translation>
 <translation id="8264718194193514834">「<ph name="EXTENSION_NAME" />」啟用了全螢幕。</translation>
-<translation id="8265018477030547118">僅儲存在這部裝置上</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{重新啟動後，系統將不會開啟無痕式視窗}other{重新啟動後，系統將不會重新開啟 {COUNT} 個無痕式視窗}}</translation>
 <translation id="8266947622852630193">所有輸入法</translation>
@@ -9300,7 +9292,6 @@
 <translation id="8645920082661222035">可預測不安全事件，並在這類事件發生前顯示警告訊息</translation>
 <translation id="8646209145740351125">停用同步功能</translation>
 <translation id="864637694230589560">網站通常會傳送通知，讓你掌握最新消息或留意即時通訊訊息</translation>
-<translation id="8646467750715887511">在你開啟網頁後才載入網頁。</translation>
 <translation id="8647385344110255847">只要你同意，孩子就可以透過 Google Play 安裝應用程式</translation>
 <translation id="8647834505253004544">網址無效</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" />或<ph name="RE_SCAN_LINK" /></translation>

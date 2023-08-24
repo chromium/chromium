@@ -840,6 +840,7 @@
 <translation id="4477892968187500306">На това устройство може да са инсталирани приложения, които не са потвърдени от Google.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Несдвоени устройства</translation>
+<translation id="4505050298327493054">Активен работен кът.</translation>
 <translation id="450584155212756404">Канал за програмисти</translation>
 <translation id="4513946894732546136">Отзиви</translation>
 <translation id="4516212064498225455">Текущ работен кът: <ph name="CURRENT_DESK_NAME" />. За да отворите менюто с всички работни кътове, използвайте клавиша „търсене“ + интервал.</translation>
@@ -1185,6 +1186,7 @@
 <translation id="589817443623831496">Точково сканиране</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
 <translation id="5901630391730855834">жълто</translation>
+<translation id="5909862606227538307">Неактивен работен кът.</translation>
 <translation id="5911231045062997865">Понастоящем не се поддържат прозорци на Lacros. Другите приложения ще бъдат запазени.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Включено</translation>

@@ -235,7 +235,7 @@
 <translation id="1951012854035635156">ረዳት</translation>
 <translation id="1954252331066828794">የማያ ገፅ ቀረጻ ተጠናቅቋል</translation>
 <translation id="1957958912175573503">የእርስዎን ቋንቋ ያቀናብሩ</translation>
-<translation id="1961239773406905488">የካሜራ ቅድመ እይታ ተደብቋል</translation>
+<translation id="1961239773406905488">የካሜራ ቅድመ ዕይታ ተደብቋል</translation>
 <translation id="1961832440516943645"><ph name="DATE" />፣ <ph name="TIME" /></translation>
 <translation id="1962969542251276847">የማያ ገፅ ቁልፍ</translation>
 <translation id="1967970931040389207">መገናኛ ነጥብን አብራ</translation>
@@ -260,7 +260,7 @@
 <translation id="204259843076055848">አሁን ላይ የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ጠፍቷል</translation>
 <translation id="2049240716062114887">የዴስክ ስም ወደ <ph name="DESK_NAME" /> ተለውጧል</translation>
 <translation id="206377500836174974">ሙሉ</translation>
-<translation id="2064048859448024834">የካሜራ ቅድመ-እይታ በርቷል</translation>
+<translation id="2064048859448024834">የካሜራ ቅድመ-ዕይታ በርቷል</translation>
 <translation id="2067602449040652523">የቁልፍ ሰሌዳ ብሩህነት</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ቀያይር። <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ነው</translation>
 <translation id="2078034614700056995">ወደ ቀጣዩ ዴስክ ለመቀየር በአራት ጣቶች ወደ ቀኝ ያንሸራትቱ</translation>
@@ -345,7 +345,7 @@
 <translation id="24452542372838207">ማሳወቂያን ዘርጋ</translation>
 <translation id="2448312741937722512">ዓይነት</translation>
 <translation id="2449089818483227734">ዝቅተኛ ባትሪ</translation>
-<translation id="2450205753526923158">የቅጽበታዊ ገፅ እይታ ሁነታ</translation>
+<translation id="2450205753526923158">የቅጽበታዊ ገፅ ዕይታ ሁነታ</translation>
 <translation id="2455994958736234930">ወደ አድራሻ አሞሌው www. እና .com ያክሉ፣ ከዚያ ድር ጣቢያን ይክፈቱ</translation>
 <translation id="2456008742792828469">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2465145153332031561">የባትሪ ጤና <ph name="BATTERY_HEALTH_PERCENTAGE" />%፣ የዑደት ቁጥር <ph name="CYCLE_COUNT" /></translation>
@@ -543,8 +543,8 @@
 <translation id="332827762492701193">ማሳወቂያዎች ተደብቀዋል</translation>
 <translation id="3339826665088060472">የማያ ገፅ ቀረጻ፣ ቅጽበታዊ ገፅ እይታዎችን እና የማያ ቅጂዎችን ለማንሳት የሚረዱ መሳሪያዎች</translation>
 <translation id="3340978935015468852">ቅንብሮች</translation>
-<translation id="3341303451326249809">ቅጽበታዊ ገፅ እይታ ተቀርጿል</translation>
-<translation id="334252345105450327">ቅጽበታዊ ገፅ እይታ ያንሱ</translation>
+<translation id="3341303451326249809">ቅጽበታዊ ገፅ ዕይታ ተቀርጿል</translation>
+<translation id="334252345105450327">ቅጽበታዊ ገፅ ዕይታ ያንሱ</translation>
 <translation id="334927402682780278">ጽሁፍን ከጠቋሚ ጀምሮ እስከ መስመሩ መጨረሻ ድረስ ይምረጡ</translation>
 <translation id="3349345708646875009">ተግባር መሪን ክፈት</translation>
 <translation id="3364721542077212959">የስቲለስ መሣሪያዎች</translation>
@@ -657,7 +657,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />፣ <ph name="UNAVAILABLE_APPS_TWO" /> እና <ph name="UNAVAILABLE_APPS_COUNT" /> ሌሎች በዚህ መሣሪያ ላይ የሉም።</translation>
 <translation id="3735740477244556633">ደርድር በ</translation>
 <translation id="3738664582935948253">አሁን በማያ ቀረጻዎች ውስጥ ጠቅታዎችን እና የቁልፍ ሰሌዳ አቋራጮችን ማሳየት ይችላሉ</translation>
-<translation id="3742055079367172538">ቅጽበታዊ ገፅ እይታ ተነስቷል</translation>
+<translation id="3742055079367172538">ቅጽበታዊ ገፅ ዕይታ ተነስቷል</translation>
 <translation id="375335662788363456">በእርስዎ <ph name="DEVICE_TYPE" /> ላይ የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ፣ ማሳወቂያዎች እና መተግበሪያዎችን ማዋቀር ያሰናብቱ</translation>
 <translation id="3756485814916578707">ማያ ገጽን Cast በማድረግ ላይ</translation>
 <translation id="3765841382945324995">የ<ph name="SIX_PACK_KEY_NAME" /> አቋራጭ ከ<ph name="OLD_SHORTCUT" /> ወደ <ph name="NEW_SHORTCUT" /> ዘምኗል</translation>
@@ -775,10 +775,10 @@
 <translation id="4231053948789591973">cast ማድረግ በአሁኑ ጊዜ ባለበት ቆሟል። የማያ ገጽዎን በማንኛውም ጊዜ cast ማድረግን ባለበት ማቆም ወይም cast ማድረግን ማቆም ይችላሉ።</translation>
 <translation id="423685346499232137">በዚህ ጊዜ ላይ ይዘትን መቅዳት ወይም መለጠፍ አልተቻለም</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
-<translation id="4240486403425279990">የአጠቃላይ እይታ ሁነታ</translation>
+<translation id="4240486403425279990">የአጠቃላይ ዕይታ ሁነታ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
 <translation id="4247123849143712100">አዘምን እና ዝጋ</translation>
-<translation id="4250229828105606438">ቅጽበታዊ ገፅ እይታ</translation>
+<translation id="4250229828105606438">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="425364040945105958">ምንም ሲም የለም</translation>
 <translation id="4261870227682513959">የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ጠፍተዋል</translation>
 <translation id="4269883910223712419">የዚህ መሣሪያ የሚከተሉትን የማድረግ ችሎታ አለው፦</translation>
@@ -840,6 +840,7 @@
 <translation id="4477892968187500306">ይህ መሣሪያ በGoogle ያልተረጋገጡ መተግበሪያዎችን ሊይዝ ይችላል።</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4481530544597605423">ያልተጣመሩ መሣሪያዎች</translation>
+<translation id="4505050298327493054">ንቁ ዴስክ።</translation>
 <translation id="450584155212756404">የገንቢ ሰርጥ</translation>
 <translation id="4513946894732546136">ግብረ መልስ</translation>
 <translation id="4516212064498225455">የአሁን ዴስክ፦ <ph name="CURRENT_DESK_NAME" />፣ ሁሉንም የዴስኮች ምናሌ ለመክፈት Search+Space ይጠቀሙ።</translation>
@@ -1185,6 +1186,7 @@
 <translation id="589817443623831496">ነጥብ መቃኘት</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">ቢጫ</translation>
+<translation id="5909862606227538307">የቦዘነ ዴስክ።</translation>
 <translation id="5911231045062997865">የLacros መስኮቶች በአሁኑ ጊዜ አይደገፉም። ሌሎች መተግበሪያዎች ይቀመጣሉ።</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">በርቷል</translation>
@@ -1263,7 +1265,7 @@
 <translation id="6199775032047436064">የአሁኑን ገፅ ዳግም ይጭናል</translation>
 <translation id="6200515304866777730">በመተግበሪያ አይደገፍም</translation>
 <translation id="6210042900243040400">ከዚህ ቀደም በ<ph name="EMAIL" /> ላይ ከተቀመጠ <ph name="NAME" /> ጋር ይገናኙ</translation>
-<translation id="6213808132343683860">ከፊል ቅጽበታዊ ገፅ እይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
+<translation id="6213808132343683860">ከፊል ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
 <translation id="6220928844947387476">አሁን እራስዎን እና ማያ ገጽዎን በተመሳሳይ ጊዜ መቅረጽ ይችላሉ</translation>
 <translation id="622484624075952240">ታች</translation>
 <translation id="6228457605945141550">ብሩህነትን ቀንስ</translation>
@@ -1458,7 +1460,7 @@
 <translation id="7045033600005038336">ቅንብር ደንብ ይተካ?</translation>
 <translation id="7051244143160304048"><ph name="DEVICE_NAME" /> ግንኙነት ተቋርጧል</translation>
 <translation id="7055910611768509537">ስታይለስ ከአንድ ሳምንት በላይ ጥቅም ላይ አልዋለም</translation>
-<translation id="7061457967428964661">የካሜራ ቅድመ-እይታ፣ ቅድመ-እይታውን ወደ ሌላ ጥግ ለማንቀሳቀስ የመቆጣጠሪያ + የቀስት ቁልፎችን ይጫኑ</translation>
+<translation id="7061457967428964661">የካሜራ ቅድመ-ዕይታ፣ ቅድመ-ዕይታውን ወደ ሌላ ጥግ ለማንቀሳቀስ የመቆጣጠሪያ + የቀስት ቁልፎችን ይጫኑ</translation>
 <translation id="7066646422045619941">ይህ አውታረ መረብ በአስተዳዳሪዎ ነው የተሰናከለው።</translation>
 <translation id="7067196344162293536">በራስ-አሽከርክር</translation>
 <translation id="7068360136237591149">ፋይሎችን ይክፈቱ</translation>
@@ -1472,7 +1474,7 @@
 <translation id="7100906357717321275">የተደበቁ ፋይሎችን በፋይሎች መተግበሪያ ውስጥ አሳይ</translation>
 <translation id="7108254681523785542">እሱን ለመለጠፍ አንድ ንጥል ይምረጡ። <ph name="SHORTCUT_KEY_NAME" /> + v የሚለውን በመጫን ቅንጥብ ሰሌዳውን መመልከት ይችላሉ።</translation>
 <translation id="7116969082764510092">ዴስክ 11</translation>
-<translation id="7118268675952955085">ቅጽበታዊ ገፅ እይታ</translation>
+<translation id="7118268675952955085">ቅጽበታዊ ገፅ ዕይታ</translation>
 <translation id="7119327711295338600">ቀጣዩን ቃል ወይም ፊደል ይምረጡ</translation>
 <translation id="7126996685418858413">ባለፈው ሳምንት ውስጥ ተከፍቷል</translation>
 <translation id="7130207228079676353">የመሆን ዕድላቸው ከፍ ያለ ነው</translation>
@@ -1502,6 +1504,7 @@
 <translation id="7312210124139670355">አስተዳዳሪዎ የእርስዎን ኢሲም ዳግም እያስጀመረው ነው። ይህ ጥቂት ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="7313193732017069507">ካሜራን ዘርጋ</translation>
 <translation id="7316261577130609484">አዲስ ተግባር አክል</translation>
+<translation id="7330397557116570022">በቃል ማስጻፍን ለመጠቀም ወደ ጽሁፍ መስክ ይሂዱ</translation>
 <translation id="7331646370422660166">alt + የታች ቀስት</translation>
 <translation id="7340731148882810149">የራስ-ሰር ጠቅታዎች ምናሌ</translation>
 <translation id="7346909386216857016">እሺ፣ ገባኝ</translation>
@@ -1521,7 +1524,7 @@
 <translation id="7384028040782072252">መተግበሪያዎችዎን እንደገና ለመደርደር በማንኛውም ቦታ ላይ በቀኝ ጠቅ ያድርጉ</translation>
 <translation id="7386767620098596324">የአውታረ መረብ ግንኙነትን ቀያይር። <ph name="STATE_TEXT" />።</translation>
 <translation id="7392563512730092880">ሁልጊዜ በኋላ ላይ በቅንብሮች ውስጥ ማቀናበር ይችላሉ።</translation>
-<translation id="7401222354741467707">ሙሉ ቅጽበታዊ ገፅ እይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
+<translation id="7401222354741467707">ሙሉ ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
 <translation id="7405710164030118432">መሣሪያውን ለመክፈት የእርስዎን የ Family Link የወላጅ መዳረሻ ኮድ ያስገቡ</translation>
 <translation id="7406608787870898861">የእርስዎን ሞባይል አውታረ መረብ ማቀናበር ያጠናቅቁ</translation>
 <translation id="7406854842098869085"><ph name="MODIFIER_1" />ን ተጭነው ይያዙ፣ መክፈት የሚፈልጉትን መስኮት እስከሚያገኙ ድረስ <ph name="KEY" /> ላይ መታ ያድርጉ፣ ከዚያ ይልቀቁ</translation>
@@ -1545,7 +1548,7 @@
 <translation id="7509246181739783082">ማንነትዎን ያረጋግጡ</translation>
 <translation id="7512509370370076552">የቀኝ ጠቅታ አቋራጭ ከ<ph name="LAUNCHER_KEY_NAME" /> alt + ጠቅታ ወደ ቁልፍ + ጠቅታ ዘምኗል</translation>
 <translation id="7512726380443357693"><ph name="BUTTON_LABEL" />፣ አልተመረጠም</translation>
-<translation id="7513622367902644023">የቅጽበታዊ ገፅ እይታ ሁነታ ተመርጧል</translation>
+<translation id="7513622367902644023">የቅጽበታዊ ገፅ ዕይታ ሁነታ ተመርጧል</translation>
 <translation id="7513922695575567867">ቀን መቁጠሪያ፣ የ<ph name="DATE" /> ሳምንት፣ <ph name="SELECTED_DATE" /> በአሁኑ ጊዜ ተመርጧል።</translation>
 <translation id="7514365320538308">አውርድ</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -1573,12 +1576,12 @@
 <translation id="7600875258240007829">ሁሉንም ማሳወቂያዎች ይመልከቱ</translation>
 <translation id="7601417191446344542">ድምጸ-ከል ማስታወቂያ ይብራ?</translation>
 <translation id="7607002721634913082">ለአፍታ ቆሟል</translation>
-<translation id="7609951632080598826">የቀን መቁጠሪያ እይታ፣ <ph name="DATE" />፣ <ph name="TIME" /></translation>
+<translation id="7609951632080598826">የቀን መቁጠሪያ ዕይታ፣ <ph name="DATE" />፣ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ካሜራ እንደገና ተገናኝቷል።</translation>
 <translation id="761736749114493194">የካሜራ ክፈፍን ይቀያይሩ። <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ፋ</translation>
 <translation id="7634648064048557203">ካሜራ ታችኛው ቀኝ ጥግ ላይ ገጥሟል</translation>
-<translation id="7638572816805275740">የመስኮት ቅጽበታዊ ገፅ እይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
+<translation id="7638572816805275740">የመስኮት ቅጽበታዊ ገፅ ዕይታ ወይም የማያ ገፅ ቅጂ አንሳ</translation>
 <translation id="7642106959537987271">የተቃራኒ ቀለም ሁነታ</translation>
 <translation id="7642647758716480637">ለ <ph name="NETWORK_NAME" />፣ <ph name="CONNECTION_STATUS" /> ቅንብሮችን ክፈት</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (ባለቤት)</translation>
@@ -1863,7 +1866,7 @@
 <translation id="8841375032071747811">የተመለስ አዝራር</translation>
 <translation id="8843682306134542540">የማሽከርከሪያ ቁልፍን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="8853703225951107899">የእርስዎ ፒን ወይም ይለፍ ቃል አሁንም ሊረጋገጥ አልቻለም። ማሳሰቢያ፦ በቅርቡ የይለፍ ቃልዎን ከቀየሩ፣ የድሮውን የይለፍ ቃል ይጠቀሙ። አዲስ የይለፍ ቃልዎ የሚተገበረው ሲወጡ ነው።</translation>
-<translation id="8855885154700222542">የሙሉ ማያ ገፅ እይታ ቁልፍ</translation>
+<translation id="8855885154700222542">የሙሉ ማያ ገፅ ዕይታ ቁልፍ</translation>
 <translation id="8858369206579825206">የግላዊነት ቁጥጥሮች</translation>
 <translation id="8860366331836346216">ኢሲም አክል</translation>
 <translation id="8870509716567206129">መተግበሪያው የተከፈለ ማያ ገጽን አይደግፍም።</translation>

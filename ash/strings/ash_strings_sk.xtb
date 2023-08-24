@@ -840,6 +840,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="4477892968187500306">Toto zariadenie môže obsahovať aplikácie, ktoré neboli overené Googlom.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Nespárované zariadenia</translation>
+<translation id="4505050298327493054">Aktívna plocha.</translation>
 <translation id="450584155212756404">Verzia pre vývojárov</translation>
 <translation id="4513946894732546136">Spätná väzba</translation>
 <translation id="4516212064498225455">Aktuálna plocha: <ph name="CURRENT_DESK_NAME" />, ponuku všetkých plôch otvoríte kombináciou klávesa vyhľadávania a medzerníka.</translation>
@@ -1185,6 +1186,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="589817443623831496">Bodové prehľadávanie</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">Žltá</translation>
+<translation id="5909862606227538307">Plocha je neaktívna.</translation>
 <translation id="5911231045062997865">Okná Lacros momentálne nie sú podporované. Ostatné aplikácie budú uložené.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Zapnuté</translation>

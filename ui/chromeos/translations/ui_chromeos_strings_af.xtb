@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
 <translation id="9046895021617826162">Kon nie koppel nie</translation>
 <translation id="9065512565307033593">Jou netwerktoegang sal gedeaktiveer word as jy nie verifieer nie.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 waarskuwing.}other{<ph name="COUNT" /> waarskuwings.}}</translation>
 <translation id="908378762078012445">Russies met fonetiese AATSEEL-sleutelbord</translation>
 <translation id="9086302186042011942">Sinkroniseer tans</translation>
 <translation id="9099674669267916096">Aantal bladsye</translation>

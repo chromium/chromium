@@ -1046,6 +1046,7 @@
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 upozornění.}few{<ph name="COUNT" /> upozornění.}many{<ph name="COUNT" /> upozornění.}other{<ph name="COUNT" /> upozornění.}}</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9099674669267916096">Počet stránek</translation>

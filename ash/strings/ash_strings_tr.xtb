@@ -840,6 +840,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4477892968187500306">Bu cihaz Google tarafından doğrulanmamış uygulamalar içerebilir.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Eşlemesi kaldırılmış cihazlar</translation>
+<translation id="4505050298327493054">Etkin masa.</translation>
 <translation id="450584155212756404">Yeni Geliştirilenler Kanalı</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="4516212064498225455">Geçerli Masa: <ph name="CURRENT_DESK_NAME" />, tüm masaların yer aldığı menüyü açmak için Arama+Boşluk tuşlarını kullanın.</translation>
@@ -1185,6 +1186,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="589817443623831496">Nokta taraması</translation>
 <translation id="5901316534475909376">Üst Karakter+Esc</translation>
 <translation id="5901630391730855834">Sarı</translation>
+<translation id="5909862606227538307">Masa etkin değil.</translation>
 <translation id="5911231045062997865">Lacros pencereleri şu an için desteklenmemektedir. Diğer uygulamalar kaydedilecektir.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>

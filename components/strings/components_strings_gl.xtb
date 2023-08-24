@@ -135,6 +135,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">Introduciches o teu contrasinal nun sitio que non está xestionado pola túa organización. Para protexer a túa conta, non reutilices o contrasinal noutras aplicacións ou sitios.</translation>
 <translation id="1257553931232494454">niveis de zoom</translation>
+<translation id="1258942153897182536">OCR en progreso…</translation>
 <translation id="1262388120645841613"><ph name="MANAGE_CHROME_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar a configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
@@ -311,6 +312,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1594030484168838125">Escoller</translation>
 <translation id="1596296697375291157">Películas de intriga, policiais e de suspense</translation>
 <translation id="1597473228022844713">Estás facendo un seguimento deste produto. Gardouse esta páxina en <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
+<translation id="1598816256585174656">Clave de acceso de Windows Hello</translation>
 <translation id="1599199147673445968">Tes unha tarxeta nova? Podes <ph name="BEGIN_LINK" />poñer os seus datos<ph name="END_LINK" /></translation>
 <translation id="160851722280695521">Xogar a Dino Run en Chrome</translation>
 <translation id="161042844686301425">Ciano</translation>
@@ -1351,6 +1353,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3827112369919217609">Absoluto</translation>
 <translation id="3827666161959873541">Películas para toda a familia</translation>
 <translation id="3828924085048779000">A frase de acceso non pode estar baleira.</translation>
+<translation id="3830470485672984938">Usar outra clave de acceso</translation>
 <translation id="3831065134033923230">Comproba os contrasinais gardados</translation>
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> instalou extensións para poder utilizar funcións adicionais. As extensións teñen acceso a algúns dos teus datos.</translation>
 <translation id="3832522519263485449">Varias perforacións na parte esquerda</translation>
@@ -1407,6 +1410,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3964661563329879394">{COUNT,plural, =0{Ningún}=1{De 1 sitio }other{De # sitios }}</translation>
 <translation id="397105322502079400">Calculando...</translation>
 <translation id="3973234410852337861"><ph name="HOST_NAME" /> está bloqueado</translation>
+<translation id="3983340834939868135">Clave de acceso de <ph name="VENDOR_NAME" /></translation>
 <translation id="3984581365661308170">Sobre n.º 11</translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Xestiona os enderezos…</translation>
@@ -1786,6 +1790,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4754461935447132332">Non se permite para os sitios non seguros</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756501505996488486">PRC 16K</translation>
+<translation id="4757022425116568383">Clave de acceso do teu perfil de Chrome</translation>
 <translation id="4757993714154412917">Acabas de escribir o teu contrasinal nun sitio enganoso. Para protexer as túas contas, Chromium recoméndache que comprobes os contrasinais que tes gardados.</translation>
 <translation id="4758311279753947758">Engadir información de contacto</translation>
 <translation id="4761104368405085019">Utilizar o micrófono</translation>
@@ -1942,6 +1947,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5070838744279127212">Décimo rolo</translation>
 <translation id="507130231501693183">Caixa de correo 4</translation>
 <translation id="5074134429918579056">Pantalóns e bermudas</translation>
+<translation id="5077767274537436092">Usar outra clave de acceso</translation>
 <translation id="5078060223219502807">O contrasinal que acabas de utilizar viuse implicado nunha violación da seguranza dos datos. Para protexer as túas contas, o xestor de contrasinais recomenda que o cambies de inmediato e que despois comprobes os contrasinais gardados.</translation>
 <translation id="5086225927071063542">Informática en nube e distribuída</translation>
 <translation id="5087286274860437796">O certificado do servidor non é válido neste momento.</translation>
@@ -2111,6 +2117,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5425241977284572032">{NUM_COOKIES,plural, =0{Non hai sitios bloqueados}=1{1 sitio bloqueado}other{# sitios bloqueados}}</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quere enviarche notificacións</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
+<translation id="54430913453805768"><ph name="URL" /> quere controlar e volver programar os dispositivos MIDI (SysEx)</translation>
 <translation id="5443468954631487277">Orde inversa cara arriba</translation>
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use a información que gardase sobre ti</translation>
 <translation id="5447765697759493033">Non se traducirá este sitio</translation>
@@ -2612,6 +2619,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6480864723214312258">Baterías para o fogar</translation>
 <translation id="6486200200930923183">Documentais</translation>
 <translation id="6489534406876378309">Comezar a cargar erros</translation>
+<translation id="6491663123807473970"><ph name="URL" /> quere usar os teus dispositivos MIDI</translation>
 <translation id="6493924760403974580">Esta aplicación só admite este tamaño.</translation>
 <translation id="6494750904506170417">ventás emerxentes e redireccións</translation>
 <translation id="6497295192259406877">Operacións empresariais</translation>
@@ -2769,7 +2777,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6832753933931306326">Completouse o formulario</translation>
 <translation id="6841864657731852591">Cilindro de gravado</translation>
 <translation id="6842196666980060516">184 x 260 mm</translation>
-<translation id="6846340164947227603">Usar un número de conta virtual…</translation>
 <translation id="6849023911358004088">Botón para xestionar a configuración de seguranza. Actívao para xestionar Navegación segura e outras opcións na configuración de Chrome</translation>
 <translation id="6852204201400771460">Queres volver cargar a aplicación?</translation>
 <translation id="6857776781123259569">Xestiona os contrasinais…</translation>
@@ -2897,6 +2904,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="7102079138917191645">Construción e mantemento</translation>
 <translation id="7102554173784142865">Xogar ao xogo do dinosauro de Chrome</translation>
 <translation id="7102760431686146931">Utensilios de cociña e vaixelas</translation>
+<translation id="7105998430540165694">Clave de acceso de chaveiro de iCloud</translation>
 <translation id="7106762743910369165">A túa organización xestiona o teu navegador</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108634116785509031">O host <ph name="HOST" /> quere utilizar a túa cámara</translation>
@@ -3152,6 +3160,7 @@ Detalles adicionais:
 <translation id="7582602800368606489">Crear rapidamente un evento novo en Google Calendar</translation>
 <translation id="7583969447617676942">Servizos legais</translation>
 <translation id="7586676035079382730">O acceso ás notificacións non está permitido</translation>
+<translation id="7588460771338574392">Clave de acceso de <ph name="PHONE_NAME" /></translation>
 <translation id="7588707273764747927">De transferencia</translation>
 <translation id="7591288787774558753">Queres compartir contido confidencial?</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> quere utilizar as cookies e os datos do sitio <ph name="TOP_LEVEL_URL" /></translation>

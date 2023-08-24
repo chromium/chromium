@@ -171,6 +171,7 @@
 <translation id="23721837607121582">Мобильдік профильді жүктеп алу, <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" /> желісі</translation>
 <translation id="2377319039870049694">Тізім көрінісіне ауысу</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> қалта Linux жүйесімен бөлісілген</translation>
+<translation id="2379576081295865700">Жад көлемі тексеріліп жатыр… 1 элемент табылды.</translation>
 <translation id="2383454254762599978">Себетке жіберу</translation>
 <translation id="2387458720915042159">Прокси-сервер байланысының түрі</translation>
 <translation id="2389832672041313158">Бирма (Мьянма)</translation>
@@ -664,6 +665,7 @@
 <translation id="6164412158936057769">Көбелектер</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6170470584681422115">Сэндвич</translation>
+<translation id="6177854567773392726">Жад көлемі тексеріліп жатыр… <ph name="ITEMS_FOUND" /> элемент табылды.</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" /> құрылғысының Google Drive дискісіндегі файлдарды пайдалануына рұқсат беріңіз. Өзгертулер барлық құрылғыда болады.</translation>
 <translation id="6187719147498869044">Венгр</translation>
 <translation id="6198252989419008588">PIN кодын өзгерту</translation>

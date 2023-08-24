@@ -4754,7 +4754,6 @@ Si no se establece esta política o se establece como verdadera, los informes so
 <translation id="5177260184597743704">Política de configuración para Chrome Enterprise Connector OnSecurityEvent</translation>
 <translation id="5178479074002209469">Función experimental booleana que indica si las sesiones de usuario no administrado deben recibir o no notificaciones y si se debe salir de la cuenta cuando se requiere una actualización conforme a esta política.</translation>
 <translation id="5179853299156742425">URL desde la cual se puede descargar la plantilla de escritorio.</translation>
-<translation id="5182055907976889880">Configura Google Drive en <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Ubicar la biblioteca en el lado derecho de la pantalla</translation>
 <translation id="51859390023061147">Inhabilitar la función de restauración completa</translation>
 <translation id="5189360528842591274">Permitir la conexión solo con los servicios de Bluetooth que se especifican en la lista</translation>
@@ -6940,7 +6939,6 @@ el comportamiento predeterminado para bloquear esas solicitudes.</translation>
 <translation id="6969332115615661188">Inhabilitar la entrada de video</translation>
 <translation id="6972540544240464302">Selecciona la configuración del programador de tareas</translation>
 <translation id="6975533677426693807">Abrir siempre los archivos PDF mediante el visor de PDF interno</translation>
-<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Si estableces la política como <ph name="BR_ENABLED" />, el servicio Copia de seguridad y restablecimiento de Android estará inicialmente activado. Si estableces la política como <ph name="BR_DISABLED" /> o no se establece, este servicio se mantendrá desactivado durante la configuración.
 
       Si la estableces como <ph name="BR_UNDER_USER_CONTROL" />, los usuarios recibirán mensajes para usar la Copia de seguridad y restablecimiento. Si activan este servicio, se subirán los datos de las apps para Android a los servidores de copia de seguridad de Android. Estos datos se restablecerán cuando se reinstalen apps compatibles.
@@ -7297,6 +7295,26 @@ El valor <ph name="ENTERPRISE_CONNECTOR_MINIMUM_DATA_SIZE" /> indica la cantidad
       Si no se configura esta política, la acción predeterminada no se permite para los usuarios administrados por empresas y sí se permite para los usuarios no administrados.</translation>
 <translation id="7295019613773647480">Habilitar usuarios supervisados</translation>
 <translation id="7297476773981993405">Permitir la ejecución del algoritmo GREASE de usuario-agente actualizado</translation>
+<translation id="7297765841046240459">Si habilitas esta política, <ph name="PRODUCT_NAME" />
+verificará los certificados del servidor con el verificador de certificados integrado con Chrome Root Store como fuente de confianza pública.
+
+Si la inhabilitas, <ph name="PRODUCT_NAME" />
+usará el verificador de certificados del sistema y los certificados raíz del sistema.
+
+Si no la estableces, se podrán usar
+las raíces provistas por el sistema o Chrome Root Store.
+
+Se planea quitar esta política en
+la versión 120 de <ph name="PRODUCT_OS_NAME" />,
+en la versión 120 de <ph name="PRODUCT_NAME" />
+para <ph name="LINUX_OS_NAME" /> y en
+la versión 121 de <ph name="PRODUCT_NAME" /> para
+<ph name="ANDROID_NAME" />,
+cuando se quite la compatibilidad para usar las raíces provistas por la plataforma.
+
+Se quitó esta política en la versión 113 de <ph name="PRODUCT_NAME" />
+para <ph name="MS_WIN_NAME" /> y <ph name="MAC_OS_NAME" />,
+cuando se quitó la compatibilidad para usar las raíces y el verificador de certificados proporcionados por la plataforma.</translation>
 <translation id="7298197471363105063">Anular los conjuntos propios</translation>
 <translation id="7302043767260300182">Demora de bloqueo de pantalla con alimentación de CA</translation>
 <translation id="7303902834678570827">Los usuarios de la sesión de invitado administrada no pueden almacenar la configuración de la pantalla de todo el dispositivo</translation>
@@ -9034,6 +9052,24 @@ de forma predeterminada a partir de M119.
 <translation id="8854571659927427063">Si habilitas la política, se importarán los favoritos del navegador predeterminado anterior en la primera ejecución. Si la inhabilitas o no la estableces, no se importará ningún favorito en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente a los favoritos estará marcada o desmarcada en función del valor de esta política.</translation>
+<translation id="8857793979935465678">Esto controla si se permite que el modo de protección estándar de la Navegación segura
+envíe hashes parciales de URLs a Google a través de un proxy con un Oblivious HTTP
+para determinar si la URL es segura.
+
+El proxy permite que los navegadores suban hashes parciales de URLs a Google
+sin que estén vinculados a la dirección IP del usuario. La política también permite
+que los navegadores suban los hashes parciales de URLs con mayor frecuencia para
+mejorar la calidad de la protección de la Navegación segura.
+
+Se ignorará esta política si la Navegación segura está inhabilitada o se establece en el modo de protección
+mejorada.
+
+Si habilitas la política o no la estableces, se permitirán las
+búsquedas con proxy de mayor protección.
+
+Si inhabilitas la política, no se permitirán las búsquedas
+con proxy de mayor protección. Los hashes parciales de URLs se subirán a Google directamente con una frecuencia mucho
+menor, lo que disminuirá la protección.</translation>
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar la aplicación del Certificado de transparencia para una lista de hash de subjectPublicKeyInfo</translation>
 <translation id="8860474826929590628">Si habilitas la política o no la estableces, se permitirá el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web.

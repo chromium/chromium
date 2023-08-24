@@ -854,6 +854,7 @@
 <translation id="76959938259365003">ゴミ箱を空にできませんでした。</translation>
 <translation id="770015031906360009">ギリシャ語</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> をコピーしました。</translation>
+<translation id="7707941139430559579">ファイルを移動できません。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="7708271999969613024">このネットワークを使用するには、携帯通信会社が提供する 8 桁の PIN ブロック解除キー（PUK）を入力する必要があります。</translation>
 <translation id="7711920809702896782">画像情報</translation>
 <translation id="7724603315864178912">切り取り</translation>

@@ -821,6 +821,7 @@
 <translation id="4477892968187500306">此设备可能包含未经 Google 验证的应用。</translation>
 <translation id="4479639480957787382">以太网</translation>
 <translation id="4481530544597605423">未配对的设备</translation>
+<translation id="4505050298327493054">处于活动状态的桌面。</translation>
 <translation id="450584155212756404">开发渠道</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4516212064498225455">当前桌面：<ph name="CURRENT_DESK_NAME" />，使用搜索键 + 空格键即可打开“所有桌面”菜单。</translation>
@@ -1160,6 +1161,7 @@
 <translation id="589817443623831496">点扫描</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
 <translation id="5901630391730855834">黄色</translation>
+<translation id="5909862606227538307">闲置的桌面。</translation>
 <translation id="5911231045062997865">目前不支持 Lacros 窗口。其他应用会被保存。</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">已启用</translation>
@@ -1469,6 +1471,7 @@
 <translation id="7312210124139670355">您的管理员正在重置您的 eSIM 卡。这可能需要几分钟的时间。</translation>
 <translation id="7313193732017069507">展开相机</translation>
 <translation id="7316261577130609484">添加新任务</translation>
+<translation id="7330397557116570022">需要选择一个文本字段才能使用语音输入</translation>
 <translation id="7331646370422660166">alt + 向下键</translation>
 <translation id="7340731148882810149">“自动点击”菜单</translation>
 <translation id="7346909386216857016">知道了</translation>

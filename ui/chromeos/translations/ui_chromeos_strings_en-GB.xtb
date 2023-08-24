@@ -1047,6 +1047,7 @@
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
 <translation id="9046895021617826162">Connection failed</translation>
 <translation id="9065512565307033593">If you fail to verify, your network access will be disabled.</translation>
+<translation id="9083722265619106011">{0,plural, =1{1 warning.}other{<ph name="COUNT" /> warnings.}}</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9099674669267916096">Page count</translation>

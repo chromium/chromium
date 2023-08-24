@@ -283,6 +283,7 @@ Toutefois, dans le cadre de cette règle, ces formats ne doivent pas inclure les
           Selon l'évolution des spécifications, cette règle pourrait s'appliquer à l'avenir à toutes les requêtes dirigées vers des IP privés ou un localhost, quelle que soit leur origine.
 
           Si cette règle est définie sur "True", les sites sont autorisés à envoyer des requêtes à n'importe quel point de terminaison du réseau (d'autres vérifications inter-origines peuvent être réalisées).</translation>
+<translation id="1240559668501539326">Définit les métadonnées utilisées par le programme d'installation pour les VM Bruschetta sur les appareils <ph name="PRODUCT_OS_NAME" /> avant l'installation.</translation>
 <translation id="1240722269871366886">Cette règle permet à <ph name="PRODUCT_OS_NAME" /> de suggérer des emoji lorsque l'utilisateur saisit du texte sur un clavier virtuel ou physique.
       Si cette règle est définie sur "True", la fonctionnalité est activée, et l'utilisateur peut la modifier.
       Cette règle est définie par défaut sur "False". Aucun emoji n'est alors suggéré, et l'utilisateur ne peut pas ignorer ce paramètre.</translation>
@@ -647,6 +648,7 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
 
 Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instances gérées via MDM, associées à un domaine via MCX ou qui bénéficient de la <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
+<translation id="1534007181698071943">Autoriser les gestionnaires d'événements "unload" à être désactivés par défaut pendant le processus d'abandon</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
@@ -1011,6 +1013,14 @@ La disponibilité des extensions est toujours contrôlée par d'autres règles.<
       * Pour autoriser le déverrouillage par code et par empreinte digitale, utilisez ["PIN", "FINGERPRINT"].
 
       Si cette règle n'est pas configurée ou qu'aucun facteur WebAuthn n'est indiqué dans la liste, cela signifie qu'aucun facteur WebAuthn n'est disponible pour les appareils gérés.</translation>
+<translation id="1881471688033371681">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
+ 
+Les pages peuvent dépendre de gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> pour enregistrer les données sur le serveur ou signaler à celui-ci la fin d'une session utilisateur. Ce n'est pas recommandé, car cela n'est pas fiable et affecte les performances en bloquant l'utilisation de <ph name="PRODUCT_NAME" />. Il existe des alternatives recommandées, mais l'événement <ph name="UNLOAD_EVENT_NAME" /> est utilisé depuis longtemps. Certaines applis peuvent toujours s'appuyer dessus.
+
+Si cette règle est définie sur "False" ou n'est pas configurée, les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront progressivement obsolètes conformément au processus d'abandon. En outre, les sites qui ne définissent pas l'en-tête <ph name="PERMISSIONS_POLICY_NAME" /> cesseront de déclencher des événements "unload".
+
+Si cette règle est définie sur "True", les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> continueront de fonctionner par défaut.
+</translation>
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
@@ -1601,6 +1611,7 @@ Si la règle est désactivée, elle empêche les utilisateurs ou les variantes d
 <translation id="2366301887862414321">Autoriser les hôtes de messagerie natifs au niveau de l'utilisateur et du système</translation>
 <translation id="2373014700224092497">Autoriser les utilisateurs à ajouter des comptes Kerberos</translation>
 <translation id="2376134474855349829">Désactiver le clavier à l'écran sur l'écran de connexion et autoriser l'utilisateur à l'activer temporairement</translation>
+<translation id="2376151922689284770">Nom à afficher dans l'interface utilisateur du programme d'installation (par exemple, VM Happy). Si cette règle n'est pas configurée, un nom de remplacement s'affiche, lequel peut être dérivé de la première entrée (par ordre d'affichage) dans la règle BruschettaVMConfiguration ou être, à défaut, un nom générique.</translation>
 <translation id="2382672620906337383">La fonction JavaScript setTimeout() ne sera limitée que si le seuil d'imbrication est supérieur.</translation>
 <translation id="2384233438419344179">Si cette règle est activée, les éléments de page Web qui ne font pas partie du domaine indiqué dans la barre d'adresse du navigateur ne peuvent pas placer de cookies. Si cette règle est désactivée, ces éléments sont autorisés à placer des cookies, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
@@ -1843,6 +1854,7 @@ Remarque : Si vous ne renseignez pas un champ, toutes les valeurs seront prises
 
       Si cette règle n'est pas définie, <ph name="PRINTERS_ALLOW_ALL" /> est appliqué.</translation>
 <translation id="2581338546762479588">Autoriser le redémarrage automatique après les mises à jour</translation>
+<translation id="2582855747769273665">URL permettant aux utilisateurs d'en savoir plus. Si cette règle n'est pas configurée, plus aucune URL "En savoir plus" ne figurera dans le programme d'installation.</translation>
 <translation id="2586117300379904732">Autoriser les wakelocks pour la gestion de l'alimentation</translation>
 <translation id="2586231026319371211">Heure au format 24h local.</translation>
 <translation id="2587719089023392205">Définir <ph name="PRODUCT_NAME" /> comme navigateur par défaut</translation>
@@ -2871,6 +2883,7 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
       Si cette règle est activée ou n'est pas configurée, l'utilisateur peut supprimer l'historique de ses tâches d'impression via cette application ou en supprimant l'historique de son navigateur.
 
       Si elle est désactivée, l'utilisateur ne peut pas supprimer l'historique de ses tâches d'impression via cette application ni en supprimant l'historique de son navigateur.</translation>
+<translation id="3507745622376866366">Forcer les gestionnaires d'événements "unload" à rester activés par défaut pendant le processus d'abandon</translation>
 <translation id="350797926066071931">Activer Google Traduction</translation>
 <translation id="3513265258454735822">Activer l'enregistrement de l'historique du navigateur</translation>
 <translation id="3513655665999652754">Quirks Server fournit les fichiers de configuration propres au matériel tels que les profils d'affichage ICC pour régler le calibrage du moniteur.
@@ -2968,6 +2981,7 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les outils de
 
 Veillez à ne pas laisser cette règle activée en permanence, en particulier pour les déploiements en production.</translation>
 <translation id="357917253161699596">Autoriser les utilisateurs à gérer les certificats utilisateur</translation>
+<translation id="3579976772194405786">Bruschetta</translation>
 <translation id="3580414086211696382">Contrôler l'utilisation de l'API File System pour l'accès en lecture</translation>
 <translation id="3584194414857209694">Activer les règles expérimentales</translation>
 <translation id="3584722841530002134">Permet de spécifier les serveurs que <ph name="PRODUCT_NAME" /> est susceptible d'utiliser. S'il y a plusieurs serveurs, séparez leur nom par une virgule. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
@@ -4006,6 +4020,7 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Cette règle ne concerne que les utilisateurs authentifiés via GAIA sans SAML.
 
       La valeur de cette règle doit être indiquée en jours.</translation>
+<translation id="4525328580251166229">Contrôle les règles liées au sous-système Bruschetta.</translation>
 <translation id="453031441196755904">Cette règle est obsolète.</translation>
 <translation id="4531706050939927436">L'installation des applications Android peut être forcée depuis la Console d'administration Google via Google Play. Elles n'utilisent pas cette règle.</translation>
 <translation id="4534500438517478692">Nom de la restriction Android :</translation>
@@ -4578,6 +4593,17 @@ Si cette règle est définie sur "True" ou si elle n'est pas définie, les rappo
       Si cette règle n'est pas configurée ou qu'elle est désactivée, webkitRequestFileSystem de type persistant fonctionnera avec un quota temporaire.
       </translation>
 <translation id="5105313908130842249">Délai de verrouillage de l'écran (batterie)</translation>
+<translation id="510604120100968366">Active la fonctionnalité de son de batterie faible.
+
+          Cette fonctionnalité permet d'émettre le son de batterie faible.
+
+          Si cette règle est activée, le son de batterie faible est émis lorsque le niveau de la batterie ou la durée restante passe en dessous d'un seuil.
+
+          Si cette règle est désactivée, aucun son de batterie faible n'est émis.
+
+          Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+          Si cette règle n'est pas configurée, cette fonctionnalité est désactivée pour les utilisateurs existants ou activée initialement pour les nouveaux utilisateurs sur les appareils <ph name="PRODUCT_OS_NAME" /> gérés. Toutefois, les utilisateurs peuvent l'activer ou la désactiver à tout moment.</translation>
 <translation id="5108031557082757679">Imprimantes d'appareils d'entreprise désactivées</translation>
 <translation id="5109383437323376357">Déterminer la disponibilité des variantes</translation>
 <translation id="5109866581154565900">Cette règle détermine si l'écran de direction du défilement sur le pavé tactile est visible par l'utilisateur lors de la première connexion.
@@ -4654,7 +4680,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="5177260184597743704">Règle de configuration du connecteur Chrome Enterprise OnSecurityEvent</translation>
 <translation id="5178479074002209469">Flag booléen spécifiant si les sessions utilisateur non gérées doivent ou non recevoir des notifications et forcer la déconnexion si une mise à jour est requise conformément à cette règle.</translation>
 <translation id="5179853299156742425">URL depuis laquelle le modèle de bureau peut être téléchargé.</translation>
-<translation id="5182055907976889880">Configurer Google Drive dans <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="5182483318861266793">Placer l'étagère sur le côté droit de l'écran</translation>
 <translation id="51859390023061147">Désactiver la fonctionnalité de restauration complète.</translation>
 <translation id="5189360528842591274">N'autoriser la connexion qu'aux services Bluetooth de la liste</translation>
@@ -5151,6 +5176,14 @@ Si cette règle n'est pas configurée, aucun domaine ne peut accéder aux URL fi
 <translation id="5608114828230655271">Comportement par défaut de l'appareil</translation>
 <translation id="5611869109049836323">Appliquer des contraintes dans les ancres de confiance ajoutées localement</translation>
 <translation id="5614865701790130558">Enregistrer des événements pour les installations d'extensions basées sur des règles</translation>
+<translation id="561493980641967737">Si cette règle est activée, la collecte de données anonymes incluant les URL (qui envoie à Google les URL des pages que l'utilisateur visite afin d'améliorer la recherche et la navigation) est toujours active.
+
+Si cette règle est désactivée, les données anonymes incluant les URL ne sont pas collectées.
+
+Si cette règle n'est pas configurée, l'utilisateur peut modifier ce paramètre manuellement.
+
+Dans <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle ne propose pas l'option "Laisser l'utilisateur décider". Si cette règle n'est pas configurée pour <ph name="PRODUCT_OS_NAME" /> Kiosk, la collecte de données anonymes incluant les URL est toujours active.
+Lorsqu'elle est définie pour <ph name="PRODUCT_OS_NAME" /> Kiosk, cette règle active la collecte de métriques incluant les URL pour les applis kiosque.</translation>
 <translation id="5618398258385745432">Ce paramètre était utilisé avant la mise en œuvre de la règle impliquant une nouvelle authentification après consultation du mot de passe. Depuis lors, le paramètre et la règle correspondante sont sans effet sur le fonctionnement de Chrome. Chrome fonctionne actuellement comme si cette règle était définie sur la désactivation de l'affichage des mots de passe en texte clair dans la page des paramètres du gestionnaire de mots de passe. Cela signifie que la page des paramètres contient seulement un espace réservé, et que l'utilisateur doit cliquer sur "Afficher" (et saisir une nouvelle fois son mot de passe, si nécessaire) pour que Chrome affiche le mot de passe. La description initiale de la règle figure ci-dessous.
 
           Détermine si l'utilisateur peut afficher les mots de passe en texte clair dans le gestionnaire de mots de passe.
@@ -5378,6 +5411,7 @@ Si cette règle est désactivée, la protection des extensions de la <ph name="S
 <translation id="5836064773277134605">Restreindre la plage de ports UDP utilisés par l'hôte d'accès à distance</translation>
 <translation id="583627479140113555">Activer l'importation des mots de passe enregistrés à la première exécution</translation>
 <translation id="5838452040629810808">Activer la mise en surbrillance du curseur</translation>
+<translation id="5841157246593092717">Détermine si les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> peuvent être désactivés.</translation>
 <translation id="5842283830553218200">Le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé par défaut.</translation>
 <translation id="5847509620317822100">Cette fonctionnalité a été supprimée dans Chrome 100.
 
@@ -6753,7 +6787,6 @@ Si la règle est désactivée ou n'est pas configurée, le comportement par déf
 <translation id="6969332115615661188">Désactiver l'entrée vidéo</translation>
 <translation id="6972540544240464302">Sélectionner la configuration du planificateur de tâches</translation>
 <translation id="6975533677426693807">Toujours ouvrir les fichiers PDF dans la visionneuse de PDF interne</translation>
-<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Si cette règle est définie sur "<ph name="BR_ENABLED" />", le service Android de sauvegarde et de restauration est activé au départ. Si elle est définie sur "<ph name="BR_DISABLED" />" ou n'est pas définie, ce service est désactivé pendant la configuration.
 
       Si elle est définie sur "<ph name="BR_UNDER_USER_CONTROL" />", les utilisateurs sont invités à utiliser le service de sauvegarde et restauration. S'ils activent ce service, les données des applications Android sont importées sur les serveurs de sauvegarde Android, puis restaurées lors de la réinstallation des applications compatibles.
@@ -7109,6 +7142,21 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
       Si cette règle n'est pas définie, par défaut, ce mode de partage ne sera pas autorisé pour les utilisateurs gérés par une entreprise et sera autorisé pour les utilisateurs non gérés.</translation>
 <translation id="7295019613773647480">Activer les utilisateurs supervisés</translation>
 <translation id="7297476773981993405">Autorisez l'exécution de l'algorithme GREASE user-agent mis à jour.</translation>
+<translation id="7297765841046240459">Si cette règle est activée, <ph name="PRODUCT_NAME" /> vérifie les certificats des serveurs à l'aide de l'outil de vérification intégré et utilise le Chrome Root Store comme source de confiance publique.
+
+Si cette règle est désactivée, <ph name="PRODUCT_NAME" /> utilise l'outil de vérification des certificats du système et les certificats racines du système.
+
+Si cette règle n'est pas configurée, le Chrome Root Store ou les certificats racines du système peuvent être utilisés indifféremment.
+
+Cette règle sera supprimée dans
+la version 120 de <ph name="PRODUCT_OS_NAME" />,
+la version 120 de <ph name="PRODUCT_NAME" />
+pour <ph name="LINUX_OS_NAME" /> et
+la version 121 de <ph name="PRODUCT_NAME" />
+pour <ph name="ANDROID_NAME" />,
+quand l'utilisation des racines fournies par la plate-forme ne sera plus prise en charge.
+
+Cette règle a été supprimée dans la version 113 de <ph name="PRODUCT_NAME" /> pour <ph name="MS_WIN_NAME" /> et <ph name="MAC_OS_NAME" />, quand la prise en charge de l'outil de vérification des certificats et des racines fournis par la plate-forme a cessé.</translation>
 <translation id="7298197471363105063">Ignorer les ensembles propriétaires.</translation>
 <translation id="7302043767260300182">Délai de verrouillage de l'écran (secteur)</translation>
 <translation id="7303902834678570827">Les utilisateurs d'une session Invité gérée ne peuvent pas stocker les paramètres d'affichage au niveau de l'appareil</translation>
@@ -7387,6 +7435,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle n'est pas configurée ou qu'aucun mode de déverrouillage rapide ne figure dans la liste, aucun de ces modes n'est disponible pour les appareils gérés.</translation>
 <translation id="754176366378585605">Contrôler l'utilisation de l'API File Handling</translation>
+<translation id="754421082295668587">Métadonnées du programme d'installation</translation>
 <translation id="7544392541165889987">Si cette règle est activée, ou si elle n'est pas définie, <ph name="PRODUCT_NAME" /> joue le rôle de proxy entre <ph name="CLOUD_PRINT_NAME" /> et les anciennes imprimantes connectées à la machine. Les utilisateurs peuvent activer le proxy d'impression sur le cloud en s'authentifiant à l'aide de leur compte Google.
 
       Si cette règle est désactivée, les utilisateurs ne peuvent pas activer le proxy et la machine ne peut pas partager ses imprimantes avec <ph name="CLOUD_PRINT_NAME" />.</translation>
@@ -7537,6 +7586,17 @@ Lorsque cette règle est activée, la visionneuse de PDF utilise le moteur de re
 Si elle est désactivée, la visionneuse de PDF utilise son moteur de rendu AGG actuel.
 
 Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélectionné par le navigateur.</translation>
+<translation id="7707869387893611318">Active la fonctionnalité des sons de recharge.
+
+          Cette fonctionnalité permet d'émettre les sons de recharge.
+
+          Si cette règle est activée, les sons de recharge sont émis lorsque l'appareil est branché sur un chargeur.
+
+          Si cette règle est désactivée, aucun son de recharge n'est émis.
+
+          Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+          Si cette règle n'est pas configurée, cette fonctionnalité est initialement désactivée sur les appareils <ph name="PRODUCT_OS_NAME" /> gérés, mais les utilisateurs peuvent l'activer ou la désactiver à tout moment.</translation>
 <translation id="7708934468069982537">Cette règle a été supprimée dans la version M58 après la suppression de DHE dans <ph name="PRODUCT_NAME" />.
 
       Si cette règle n'est pas configurée ou si elle est définie sur "False", les suites de chiffrement DHE dans TLS ne seront pas activées. Sinon, il est possible de la définir sur "true" afin d'activer les suites de chiffrement DHE et de conserver la compatibilité avec un serveur obsolète. Il s'agit d'une solution provisoire et il est conseillé de reconfigurer le serveur.
@@ -8797,6 +8857,15 @@ Si cette règle n'est pas configurée ou qu'elle est désactivée, les données 
 <translation id="8854571659927427063">Si cette règle est activée, les favoris enregistrés dans le précédent navigateur par défaut sont importés lors de la première exécution. Si cette règle est désactivée ou qu'elle n'est pas configurée, les favoris ne sont pas importés lors de la première exécution.
 
       Les utilisateurs peuvent ouvrir une boîte de dialogue d'importation. La case correspondant aux favoris sera ou ne sera pas cochée, suivant la configuration de cette règle.</translation>
+<translation id="8857793979935465678">Ce paramètre détermine si le mode de protection standard de la navigation sécurisée autorise l'envoi des hachages partiels des URL à Google au travers d'un proxy, via un protocole HTTP Oblivious, pour déterminer si elles peuvent être consultées de manière sécurisée.
+
+Le proxy permet aux navigateurs d'importer des hachages partiels d'URL sans les associer à l'adresse IP de l'utilisateur. La règle permet également aux navigateurs d'importer les hachages partiels d'URL avec une fréquence plus élevée pour améliorer la qualité de la protection de la navigation sécurisée.
+
+Cette règle est ignorée si la navigation sécurisée est désactivée ou définie sur le mode de protection renforcée.
+
+Si cette règle est activée ou n'est pas configurée, la recherche d'une protection supérieure via proxy est activée.
+
+Si cette règle est désactivée, la recherche d'une protection supérieure via proxy est désactivée. Les hachages partiels d'URL sont importés directement sur Google avec une fréquence beaucoup plus faible, ce qui réduit la protection.</translation>
 <translation id="8858642179038618439">Forcer le mode sécurisé de YouTube</translation>
 <translation id="8860342862142842017">Désactiver l'application des règles de transparence des certificats pour une liste de hachages subjectPublicKeyInfo</translation>
 <translation id="8860474826929590628">Si cette règle est activée ou n'est pas configurée, <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> est autorisé sur toutes les pages Web.
@@ -9294,6 +9363,7 @@ Si cette règle est désactivée, les appareils enregistrés ne communiquent pas
 
 Lorsque la règle <ph name="DEVICE_EPHEMERAL_USERS_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="REPORT_DEVICE_USERS_POLICY_NAME" /> est ignorée et sera toujours désactivée.</translation>
 <translation id="989197274317162189">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="URL_BLOCKLIST_POLICY_NAME" /> à la place.</translation>
+<translation id="990830704772547092">Configurer le programme d'installation pour les VM Bruschetta sur les appareils <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="991560005425213776">Envoyer le nom d'utilisateur et le nom de fichier aux imprimantes en natif</translation>
 <translation id="99202634486128833">Si cette règle est définie sur "CopyCaCerts", tous les certificats CA installés via ONC avec <ph name="WEB_TRUSTED_BIT" /> sont disponibles pour les applications ARC.
 

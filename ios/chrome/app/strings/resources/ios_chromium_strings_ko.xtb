@@ -12,6 +12,7 @@
 <translation id="1507010443238049608">Chromium의 기능 및 성능 개선에 참여</translation>
 <translation id="1531155317299575425">Chromium에 로그인하기 위한 메시지를 표시합니다.</translation>
 <translation id="1617663976202781617">Chromium 동기화 데이터</translation>
+<translation id="1647558790457890304">Chromium 설정</translation>
 <translation id="1722370509450468186">비밀번호가 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
 <translation id="1758508597843173586">Chromium을 종료하거나 다른 앱으로 전환할 때 시크릿 탭을 잠급니다</translation>
@@ -54,6 +55,10 @@
 <translation id="3780779443901618967">표준 보호 모드보다 더 많은 사이트에서 데이터를 분석하여 위험한 사이트에 관해 경고합니다. Google이 이전에 몰랐던 사이트도 여기에 포함됩니다. Chromium 경고를 건너뛸 수 있습니다.</translation>
 <translation id="3805899903892079518">Chromium에서 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인 정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="3827545470516145620">이 기기에 표준 보안 보호 조치가 적용되고 있습니다.</translation>
+<translation id="3886689467633467988">이 사이트 및 Chromium에 로그인하여 모든 기기에서 북마크 등을 사용하세요.</translation>
+<translation id="394413318816989199">결제 수단 및 주소는 암호로 암호화되지 않습니다.
+
+이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chromium 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="3955621079070267756">어느 앱에서나 Chromium 열기</translation>
 <translation id="4043291146360695975">비밀번호가 이 기기의 비밀번호 관리자에만 저장됩니다</translation>
 <translation id="4099085513035183040">Chromium 베타에서는 지원되지 않습니다.</translation>
@@ -65,14 +70,19 @@
 <translation id="4654936625574199632">앱 개선을 위해 Chromium에서 사용 통계 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_LINK" />관리<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
 <translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
+<translation id="4790638144988730920">Google 계정의 Chromium 데이터를 계속 사용하세요.</translation>
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="4996471330284142407">간소하고 안전하며 그 어느 때보다 빠른 속도의 Chromium을 더욱 다양하게 활용하세요</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" />에서 관리하는 계정에서 로그아웃하면 Chromium 데이터가 기기에서 삭제되나 Google 계정에는 그대로 유지됩니다.</translation>
 <translation id="5042011327527167688">'Chromium에서 Google 지도로 보기'를 탭합니다.</translation>
 <translation id="5048795749726991615">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chromium 자동 완성 기능을 사용하세요</translation>
+<translation id="5131565040785979529">내가 로그인한 계정 및 Chromium이 사용되는 방식은 <ph name="DOMAIN" /> 조직에서 관리합니다</translation>
 <translation id="5171868502429358653">Chromium에 로그인</translation>
 <translation id="5224391634244552924">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chromium에서 확인할 수 있습니다.</translation>
+<translation id="5242782538551259282">Chromium 데이터 중 일부가 아직 Google 계정에 저장되지 않았습니다.
+
+        잠시 기다렸다가 로그아웃하세요. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="5308226104666789935">Chromium에서 업데이트를 확인할 수 없습니다.</translation>
 <translation id="5396916991083608703">Chromium을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="5453478652154926037">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
@@ -82,7 +92,17 @@
 <translation id="5688047395118852662">이 카드는 Chromium을 최대한 활용하는 방법에 관한 추천을 보여줍니다.</translation>
 <translation id="5700709190537129682">Chromium에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="5777187867430702742">Chromium 페이지</translation>
+<translation id="5889847953983052353">사용 설정 되어 있을 때:
+<ph name="BEGIN_INDENT" /> • 나와 비슷한 사용자를 위한 Chromium 개선에 도움이 됩니다.<ph name="END_INDENT" />
+
+알아야 할 것:
+<ph name="BEGIN_INDENT" /> • Chromium 사용에 관한 정보가 Google로 전송되지만 나와 연결되지는 않습니다.
+
+  • Chromium이 비정상 종료되면 관련 세부정보에 일부 개인 정보가 포함될 수 있습니다.
+
+  • 방문 기록을 Google 계정에 동기화하면 측정항목에 내가 방문한 URL에 관한 정보도 포함될 수 있습니다.<ph name="END_INDENT" /></translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chromium 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chromium에서 로그아웃하면 데이터가 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>
+<translation id="5951593919357934226">Chromium 최대한 활용하기</translation>
 <translation id="5983312940147103417">Chromium 개선에 참여</translation>
 <translation id="6062449165341879460"><ph name="DOMAIN" /> 조직에서 이 계정에 저장하는 Chromium 데이터, 북마크, 방문 기록, 비밀번호, 기타 설정에 액세스할 수 있습니다. 로그아웃하면 데이터가 기기에서 삭제됩니다.  하지만 데이터는 관리 Google 계정에 계속 저장되어 조직에서 사용할 수 있습니다. 조직에서 관련 계정에 적용되는 사용자 정책을 설정하여 Chromium의 동작을 변경할 수도 있습니다.</translation>
 <translation id="61109258320235597">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요.</translation>
@@ -94,6 +114,9 @@
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
 <translation id="632825460376924298">Chromium 로그인 허용</translation>
 <translation id="6337530241089703714">이 기기에서 내 Chromium 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
+<translation id="6407399265324739055">결제 수단 및 주소는 암호화되지 않습니다. Chromium 방문 기록은 동기화되지 않습니다.
+
+암호를 아는 사람만 암호화된 내 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />계정의 Chromium 데이터를 삭제<ph name="END_LINK" />하세요.</translation>
 <translation id="6424492062988593837">한층 개선된 Chromium의 최신 버전이 출시되었습니다.</translation>
 <translation id="6563921047760808519"><ph name="BEGIN_LINK" />Chromium에서 데이터를 비공개로 유지하는 방법<ph name="END_LINK" /> 자세히 알아보기</translation>
 <translation id="6625409903340039086">이제 Chromium에서 관리 계정에 대한 사용자 정책을 지원합니다</translation>

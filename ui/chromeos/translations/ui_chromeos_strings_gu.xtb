@@ -171,6 +171,7 @@
 <translation id="23721837607121582"><ph name="NETWORK_NAME" />ના નેટવર્ક <ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> મોબાઇલ પ્રોફાઇલ ડાઉનલોડ કરો</translation>
 <translation id="2377319039870049694">સૂચિ દૃશ્ય પર સ્વિચ કરો</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ફોલ્ડર Linux સાથે શેર કર્યા</translation>
+<translation id="2379576081295865700">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યાં છીએ… 1 આઇટમ મળી</translation>
 <translation id="2383454254762599978">ટ્રેશમાં ખસેડો</translation>
 <translation id="2387458720915042159">પ્રૉક્સી કનેક્શનનો પ્રકાર</translation>
 <translation id="2389832672041313158">બર્મીઝ/મ્યાનમાર</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">પતંગિયાઓ</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6170470584681422115">સેન્ડવિચ</translation>
+<translation id="6177854567773392726">સ્ટોરેજ સ્પેસ ચેક કરી રહ્યાં છીએ… <ph name="ITEMS_FOUND" /> આઇટમ મળી</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" />ને તમારી Google Driveમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો. ફેરફારો તમારા બીજા ડિવાઇસ સાથે સિંક થશે.</translation>
 <translation id="6187719147498869044">હંગેરિયન</translation>
 <translation id="6198252989419008588">PIN બદલો</translation>

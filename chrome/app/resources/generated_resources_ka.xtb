@@ -36,7 +36,6 @@
 <translation id="1026655690966755180">პორტის დამატება</translation>
 <translation id="1026822031284433028">სურათის ჩატვირთვა</translation>
 <translation id="1026959648338730078">Windows Hello ან უსაფრთხოების გარე გასაღები</translation>
-<translation id="1028604629594230522">Chrome წინასწარ ჩატვირთავს გვერდებს, რომელთა ნახვასაც, სავარაუდოდ, დააპირებთ — ამგვარად, ამ გვერდებზე გადასვლისას, ისინი უფრო სწრაფად ჩაიტვირთება.</translation>
 <translation id="1028700151766901954">მიზეზი: LBS ნაგულისხმევად რჩება <ph name="DEFAULT_OPEN_BROWSER" />-ში.</translation>
 <translation id="1029317248976101138">მასშტაბი</translation>
 <translation id="1029526375103058355">შეხებით დაწკაპუნება</translation>
@@ -1282,7 +1281,6 @@
 <translation id="1997433994358798851">Chrome საჭიროებს ნებართვას, თქვენს მოწყობილობასთან დასაკავშირებლად Bluetooth რომ გამოიყენოს</translation>
 <translation id="1997616988432401742">თქვენი სერტიფიკატები</translation>
 <translation id="1999115740519098545">ჩატვირთვისას</translation>
-<translation id="1999315477791571194">Google პაროლების მმართველში <ph name="SEPARATOR" /> <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="2002109485265116295">რეალური დროის</translation>
 <translation id="2003130567827682533">„<ph name="NAME" />“-ის მონაცემთა გადაცემის გასააქტიურებლად, პირველ რიგში, დაუკავშირდით Wi-Fi ქსელს</translation>
 <translation id="2004697686368036666">ფუნქციებმა, შესაძლოა, არ იმუშაოს ზოგიერთ საიტზე</translation>
@@ -4496,7 +4494,6 @@
 <translation id="4588749726511456218">გადაადგილების აჩქარება. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4589713469967853491">ჟურნალები წარმატებით ჩაიწერა „ჩამოტვირთვების“ კატალოგში.</translation>
 <translation id="459204634473266369"><ph name="PRIMARY_EMAIL" />-ში შენახული მოწყობილობები არ არის</translation>
-<translation id="4592525994536856567">ვების დათვალიერება და ძიება უფრო სწრაფია.</translation>
 <translation id="4592891116925567110">სტილუსით სახატავი აპი</translation>
 <translation id="4593021220803146968">&amp;გადასვლა <ph name="URL" />-ზე</translation>
 <translation id="4594218792629569101">გვერდის თქვენი სიის ბოლოში გადასატანად აირჩიეთ „წაკითხულად მონიშვნა“</translation>
@@ -4532,7 +4529,6 @@
 <translation id="4622051949285931942">გსურთ, გამორთოთ ავტომატური განახლებები?</translation>
 <translation id="4623167406982293031">დაადასტურეთ ანგარიში</translation>
 <translation id="4623189117674524348">სისტემამ ვერ მოახერხა API წვდომის ავტორიზაცია ამ მოწყობილობისთვის.</translation>
-<translation id="4623341761454569602">Google პაროლების მმართველში <ph name="SEPARATOR" /> <ph name="ACCOUNT" />-ისთვის</translation>
 <translation id="4624054169152573743">ფერთა თემა</translation>
 <translation id="4625078469366263107">აპის ჩართვა</translation>
 <translation id="4625905218692741757">ნაგულისხმევი ნაცრისფერი ფერი</translation>
@@ -5963,7 +5959,6 @@
 <translation id="5836999627049108525">ენა, რომლიდანაც უნდა ითარგმნოს</translation>
 <translation id="583756221537636748">სათავსო</translation>
 <translation id="5839524803417937122">სურათში ძიება <ph name="SEARCH_ENGINE" />-ით</translation>
-<translation id="5840318881868981258">თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
 <translation id="5840680448799937675">ფაილები ყოველთვის ხაზგარეშე რეჟიმში გაზიარდება</translation>
 <translation id="5841270259333717135">Ethernet-ის კონფიგურაცია</translation>
 <translation id="5842497610951477805">Bluetooth-ის ჩართვა</translation>
@@ -6642,7 +6637,6 @@
 <translation id="6400360390396538896">ყოველთვის <ph name="ORIGIN" />-ზე</translation>
 <translation id="6401458660421980302">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით იქიდან Chrome-ში</translation>
 <translation id="6401597285454423070">თქვენი კომპიუტერი შეიცავს სანდო პლატფორმის მოდულის (TPM) უსაფრთხოების მოწყობილობას, რომელიც ChromeOS-ში უსაფრთხოებასთან დაკავშირებული მრავალი კრიტიკული ფუნქციის შესასრულებლად გამოიყენება. დამატებითი ინფორმაციისთვის ეწვიეთ Chromebook-ის დახმარების ცენტრს: https://support.google.com/chromebook/?p=tpm</translation>
-<translation id="6402624310818737708">თქვენს Google ანგარიშში (<ph name="ACCOUNT" />)</translation>
 <translation id="6404511346730675251">სანიშნის რედაქტირება</translation>
 <translation id="6406303162637086258">ბრაუზერის გადატვირთვის მოდელირება</translation>
 <translation id="6406506848690869874">სინქრონიზაცია</translation>
@@ -6852,7 +6846,6 @@
 <translation id="65711204837946324">ჩამოსატვირთად საჭიროა ნებართვა</translation>
 <translation id="6571533309669248172">ტექსტის ფორმატი</translation>
 <translation id="6571772921213691236">დაარედაქტირეთ სისტემაში შესვლის მონაცემები</translation>
-<translation id="6572081226337824427">თქვენ მიერ მონახულებული ზოგიერთი გვერდი წინასწარ ჩატვირთულია.</translation>
 <translation id="657229725818377235">ისარგებლეთ სახიფათო ვებსაიტებისა და ჩამოტვირთვებისგან დაცვის უფრო ძლიერი საშუალებებით</translation>
 <translation id="6573096386450695060">ყოველთვის დაშვება</translation>
 <translation id="6573497332121198392">მალსახმობი ვერ ამოიშალა</translation>
@@ -8947,7 +8940,6 @@
 <translation id="8263744495942430914"><ph name="FULLSCREEN_ORIGIN" />-მა გამორთო მაუსის კურსორი.</translation>
 <translation id="8264024885325823677">ამ პარამეტრს მართავს თქვენი ადმინისტრატორი.</translation>
 <translation id="8264718194193514834">„<ph name="EXTENSION_NAME" />“ სრულ ეკრანზე გამოწვევა.</translation>
-<translation id="8265018477030547118">მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="826511437356419340">შესულია ფანჯრების მიმოხილვის რეჟიმში. ნავიგაციისთვის გადაფურცლეთ ან დააჭირეთ Tab-კლავიშს, თუ კლავიატურას იყენებთ.</translation>
 <translation id="8265671588726449108">{COUNT,plural, =1{ხელახლა გაშვების შემდეგ თქვენი ინკოგნიტო ფანჯარა აღარ გაიხსნება თავიდან}other{ხელახლა გაშვების შემდეგ თქვენი {COUNT} ინკოგნიტო ფანჯარა აღარ გაიხსნება თავიდან}}</translation>
 <translation id="8266947622852630193">შეყვანის ყველა მეთოდი</translation>
@@ -9401,7 +9393,6 @@
 <translation id="8645920082661222035">პროგნოზირებს სახიფათო მოვლენებს და გაგაფრთხილებთ მათ შესახებ</translation>
 <translation id="8646209145740351125">სინქრონიზაციის გათიშვა</translation>
 <translation id="864637694230589560">როგორც წესი, შეტყობინებების მეშვეობით საიტები გამცნობენ მთავარი ახალი ამბებსა თუ ჩეთებში მოწერილის შესახებ</translation>
-<translation id="8646467750715887511">გვერდები ჩაიტვირთება მხოლოდ მას შემდეგ, რაც მათ გახსნით.</translation>
 <translation id="8647385344110255847">თქვენი ნებართვით, თქვენს ბავშვი შეძლებს აპების ინსტალაციას Google Play-ს მეშვეობით</translation>
 <translation id="8647834505253004544">ვებ-მისამართი არასწორია</translation>
 <translation id="8648252583955599667">ცადეთ <ph name="GET_HELP_LINK" /> ან <ph name="RE_SCAN_LINK" /></translation>

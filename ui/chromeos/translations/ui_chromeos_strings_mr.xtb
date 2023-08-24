@@ -171,6 +171,7 @@
 <translation id="23721837607121582">मोबाइल प्रोफाइल डाउनलोड करा, <ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">सूची व्‍ह्यूवर स्विच करा</translation>
 <translation id="2377590462528165447">Linux सोबत शेअर केलेली <ph name="NUMBER_OF_ITEMS" /> फोल्डर</translation>
+<translation id="2379576081295865700">स्टोरेज जागा तपासत आहे… १ आयटम सापडला</translation>
 <translation id="2383454254762599978">ट्रॅशमध्ये हलवा</translation>
 <translation id="2387458720915042159">प्रॉक्सी कनेक्शन प्रकार</translation>
 <translation id="2389832672041313158">बर्मीज/म्यानमार</translation>
@@ -665,6 +666,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6164412158936057769">फुलपाखरे</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6170470584681422115">सँडविच</translation>
+<translation id="6177854567773392726">स्टोरेज जागा तपासत आहे… <ph name="ITEMS_FOUND" /> आयटम सापडले</translation>
 <translation id="6181912134988520389"><ph name="VM_NAME" /> ला तुमच्या Google Drive मधील फाइल अ‍ॅक्सेस करण्याची परवानगी द्या. बदल तुमच्या इतर डिव्हाइसवर सिंक होतील.</translation>
 <translation id="6187719147498869044">हंगेरियन</translation>
 <translation id="6198252989419008588">पिन बदला</translation>
@@ -1047,6 +1049,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
 <translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
 <translation id="9065512565307033593">तुम्हाला पडताळणी करता न आल्यास, तुमचा नेटवर्क अ‍ॅक्सेस बंद केला जाईल.</translation>
+<translation id="9083722265619106011">{0,plural, =1{१ चेतावणी.}other{<ph name="COUNT" /> चेतावण्या.}}</translation>
 <translation id="908378762078012445">फोनेटिक AATSEEL कीबोर्डसह रशियन</translation>
 <translation id="9086302186042011942">समक्रमण करीत आहे</translation>
 <translation id="9099674669267916096">पेज गणना</translation>

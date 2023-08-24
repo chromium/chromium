@@ -171,6 +171,7 @@
 <translation id="23721837607121582">بارگیری نمایه تلفن همراه، شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" /></translation>
 <translation id="2377319039870049694">جابه‌جایی به نمای فهرستی</translation>
 <translation id="2377590462528165447">‏<ph name="NUMBER_OF_ITEMS" /> پوشه با Linux هم‌رسانی شد</translation>
+<translation id="2379576081295865700">درحال بررسی فضای ذخیره‌سازی… ۱ مورد پیدا شد</translation>
 <translation id="2383454254762599978">انتقال به حذف‌شده‌ها</translation>
 <translation id="2387458720915042159">نوع اتصال پراکسی</translation>
 <translation id="2389832672041313158">برمه‌ای/میانمار</translation>
@@ -665,6 +666,7 @@
 <translation id="6164412158936057769">پروانه‌ها</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6170470584681422115">ساندویچ</translation>
+<translation id="6177854567773392726">درحال بررسی فضای ذخیره‌سازی… <ph name="ITEMS_FOUND" /> مورد پیدا شد</translation>
 <translation id="6181912134988520389">‏به <ph name="VM_NAME" /> اجازه دهید به فایل‌های Google Drive شما دسترسی داشته باشد. تغییرات در دیگر دستگاه‌هایتان همگام‌سازی خواهد شد.</translation>
 <translation id="6187719147498869044">مجاری</translation>
 <translation id="6198252989419008588">تغییر دادن پین</translation>

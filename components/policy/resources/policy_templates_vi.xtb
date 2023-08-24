@@ -4757,7 +4757,6 @@ Nếu bạn đặt chính sách này thành true hoặc không đặt, thì tín
 <translation id="5177260184597743704">Chính sách cấu hình dành cho Trình kết nối OnSecurityEvent của Chrome Enterprise</translation>
 <translation id="5178479074002209469">Một cờ boolean cho biết liệu các phiên của người dùng không được quản lý có phải nhận thông báo và buộc đăng xuất nếu cần cập nhật theo chính sách này hay không.</translation>
 <translation id="5179853299156742425">Người dùng có thể tải mẫu không gian làm việc xuống qua URL này.</translation>
-<translation id="5182055907976889880">Định cấu hình Google Drive trong <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="5182483318861266793">Đặt giá ở bên phải màn hình</translation>
 <translation id="51859390023061147">Tắt tính năng khôi phục hoàn toàn.</translation>
 <translation id="5189360528842591274">Chỉ cho phép kết nối với các dịch vụ Bluetooth có trong danh sách</translation>
@@ -6922,7 +6921,6 @@ tức là chặn những yêu cầu này, sẽ được áp dụng.</translation
 <translation id="6969332115615661188">Tắt đầu vào video</translation>
 <translation id="6972540544240464302">Chọn cấu hình trình lập lịch biểu việc cần làm</translation>
 <translation id="6975533677426693807">Luôn mở tệp PDF bằng trình xem PDF nội bộ</translation>
-<translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979739838208297344">Nếu bạn đặt chính sách này thành <ph name="BR_ENABLED" />, thì dịch vụ sao lưu và khôi phục của Android sẽ bật ngay từ đầu quá trình thiết lập. Nếu bạn đặt chính sách này thành <ph name="BR_DISABLED" /> hoặc không đặt, thì dịch vụ sao lưu và khôi phục sẽ luôn tắt trong quá trình thiết lập.
 
       Nếu bạn đặt chính sách này thành <ph name="BR_UNDER_USER_CONTROL" />, thì người dùng sẽ nhìn thấy lời nhắc sử dụng dịch vụ sao lưu và khôi phục. Nếu người dùng bật dịch vụ sao lưu vào khôi phục, thì dữ liệu ứng dụng Android sẽ được tải lên các máy chủ sao lưu của Android và được khôi phục trong những lần cài đặt lại các ứng dụng tương thích.

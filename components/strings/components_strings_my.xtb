@@ -1246,6 +1246,7 @@
 <translation id="36224234498066874">ဘရောက်စ်ဒေတာ ရှင်းထုတ်ရန်...</translation>
 <translation id="362276910939193118">မှတ်တမ်း အပြည့် ပြရန်</translation>
 <translation id="3624292976554877583">လေဘယ်လ် (မှိုင်းပျပျ)</translation>
+<translation id="3625929652356389713">နှစ်ခုထပ်၍ကြည့်ခြင်းဝင်းဒိုး အလိုအလျောက်ဖွင့်ရန် တောင်းဆိုနိုင်သည်</translation>
 <translation id="3628905806504633297">{0,plural, =1{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင် လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}other{<ph name="DESTINATION_NAME" /> သို့ ဤဖိုင်များ လွှဲပြောင်းခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုထားခြင်းမရှိပါ}}</translation>
 <translation id="3630155396527302611">၎င်းကို ကွန်ရက်အသုံးပြုသည့် ပရိုဂရမ်အဖြစ် စာရင်းထည့်သွင်းပြီးဖြစ်လျှင်၊ စာရင်းမှ ဖယ်ရှားပြီး ထပ်မံထည့်သွင်းကြည့်ပါ။</translation>
 <translation id="3630426379756188722">Google Account ရှိ သင့်စက်ပစ္စည်းရှာခြင်းသို့ သွားရန်အတွက် Find My Device ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -1378,6 +1379,7 @@
 <translation id="388632593194507180">စောင့်ကြည့်နေကြောင်း တွေ့ရှိထားသည်</translation>
 <translation id="3886948180919384617">စီထည့်သည့်ပုံး ၃</translation>
 <translation id="3890664840433101773">အီးမေးလ် ထည့်ပါ</translation>
+<translation id="3893306401511601929">အလိုအလျောက် နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="3897092660631435901">မီနျူး</translation>
 <translation id="3901925938762663762">ကတ် သက်တမ်းကုန်ဆုံး၏</translation>
 <translation id="390391808978419508">ဖွင့်ကြည့်မှု အချိန်ကုန်သွားသည်</translation>
@@ -2157,6 +2159,7 @@
 <translation id="5512812358367123529">ရုံးသုံးပရိဘောဂ</translation>
 <translation id="5513528801833998679">စက်လက်မှတ်ထိုးဝင်ခြင်း သုံးရန်</translation>
 <translation id="5515388687005870733">၅၅ x ၈၅ မီလီမီတာ</translation>
+<translation id="5516095341424241911">သင့်ငွေပေးချေမှုအချက်အလက်များ လုံခြုံစွာထားနိုင်ရန် Google ၏ လုံခြုံရေးနည်းပညာ အသုံးပြုခြင်း</translation>
 <translation id="5518670652865028077">အနုပညာနှင့် ဖျော်ဖြေရေး</translation>
 <translation id="5519516356611866228">သင်၏အပြောင်းအလဲများ ပါဝင်သည်</translation>
 <translation id="5519696598216267194">စာရွက် (အပေါက်ပါ)</translation>
@@ -2781,7 +2784,6 @@
 <translation id="6832753933931306326">ဖောင်ကိုဖြည့်ထားသည်</translation>
 <translation id="6841864657731852591">ထွင်းထု ဆလင်ဒါ</translation>
 <translation id="6842196666980060516">၁၈၄ x ၂၆၀ မီလီမီတာ</translation>
-<translation id="6846340164947227603">အသွင်တု ကတ်နံပါတ်ကို အသုံးပြုပါ...</translation>
 <translation id="6849023911358004088">Chrome ဆက်တင်များတွင် သင်၏ ‘လုံခြုံစွာ ဘရောက်စ်လုပ်ခြင်း’ နှင့် အခြားအရာများကို စီမံရန်အတွက် ‘လုံခြုံရေးဆက်တင်များ စီမံရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
 <translation id="6852204201400771460">အက်ပ်ကို ပြန်လည်စတင်လိုပါသလား။</translation>
 <translation id="6857776781123259569">စကားဝှက်များ စီမံရန်…</translation>
@@ -3987,5 +3989,6 @@
     &lt;li&gt;အခြားကွန်ရက်သို့ ချိတ်ဆက်ကြည့်ပါ&lt;/li&gt;
     &lt;/ul&gt;</translation>
 <translation id="994346157028146140">JIS B1</translation>
+<translation id="995240771322213706">အလိုအလျောက် နှစ်ခုထပ်၍ကြည့်ခြင်း</translation>
 <translation id="997986563973421916">Google Pay မှ</translation>
 </translationbundle>
