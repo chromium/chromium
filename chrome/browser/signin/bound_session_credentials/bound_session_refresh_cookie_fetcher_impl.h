@@ -49,7 +49,7 @@ class BoundSessionRefreshCookieFetcherImpl
   FRIEND_TEST_ALL_PREFIXES(BoundSessionRefreshCookieFetcherImplTest,
                            OnCookiesAccessedChange);
   FRIEND_TEST_ALL_PREFIXES(
-      BoundSessionRefreshCookieFetcherImplParsechallengeHeaderTest,
+      BoundSessionRefreshCookieFetcherImplParseChallengeHeaderTest,
       ParseChallengeHeader);
 
   // Returns empty if parsing challenge header failed. Otherwise, returns the

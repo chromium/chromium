@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/base64url.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_split.h"
@@ -259,22 +258,19 @@ std::string BoundSessionRefreshCookieFetcherImpl::ParseChallengeHeader(
     const std::string& header) {
   base::StringPairs items;
   base::SplitStringIntoKeyValuePairs(header, '=', ';', &items);
-  std::string encoded_challenge;
+  std::string challenge;
   for (const auto& [key, value] : items) {
     // TODO(b/293838716): Check `session_id` matches the current session's id.
     if (base::EqualsCaseInsensitiveASCII(key, kChallengeItemKey)) {
-      encoded_challenge = value;
+      challenge = value;
     }
   }
 
-  std::string challenge;
-  if (!encoded_challenge.empty() &&
-      base::Base64UrlDecode(encoded_challenge,
-                            base::Base64UrlDecodePolicy::DISALLOW_PADDING,
-                            &challenge)) {
-    return challenge;
+  if (!base::IsStringUTF8AllowingNoncharacters(challenge)) {
+    DVLOG(1) << "Server-side challenge has non-UTF8 characters.";
+    return std::string();
   }
-  return std::string();
+  return challenge;
 }
 
 void BoundSessionRefreshCookieFetcherImpl::
