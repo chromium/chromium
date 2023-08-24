@@ -11,6 +11,7 @@ source_set("password_sharing") {
     "family_picker_mediator.mm",
     "family_promo_coordinator.h",
     "family_promo_coordinator.mm",
+    "family_promo_coordinator_delegate.h",
     "password_picker_coordinator.h",
     "password_picker_coordinator.mm",
     "password_sharing_coordinator.h",
@@ -32,6 +33,7 @@ source_set("password_sharing") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/signin",
     "//ios/chrome/common:common",
+    "//ios/chrome/common/ui/confirmation_alert",
   ]
 }
 

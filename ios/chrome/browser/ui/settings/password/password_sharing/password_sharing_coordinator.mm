@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
@@ -23,6 +24,7 @@
 using password_manager::FetchFamilyMembersRequestStatus;
 
 @interface PasswordSharingCoordinator () <FamilyPickerCoordinatorDelegate,
+                                          FamilyPromoCoordinatorDelegate,
                                           PasswordSharingMediatorDelegate>
 
 // The navigation controller displaying the view controller.
@@ -90,6 +92,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   self.mediator = nil;
 
   [self stopFamilyPickerCoordinator];
+  [self stopFamilyPromoCoordinator];
 }
 
 #pragma mark - FamilyPickerCoordinatorDelegate
@@ -98,6 +101,17 @@ using password_manager::FetchFamilyMembersRequestStatus;
     (FamilyPickerCoordinator*)coordinator {
   if (self.familyPickerCoordinator == coordinator) {
     [self stopFamilyPickerCoordinator];
+  }
+
+  [self.delegate passwordSharingCoordinatorDidRemove:self];
+}
+
+#pragma mark - FamilyPromoCoordinatorDelegate
+
+- (void)familyPromoCoordinatorWasDismissed:
+    (FamilyPromoCoordinator*)coordinator {
+  if (self.familyPromoCoordinator == coordinator) {
+    [self stopFamilyPromoCoordinator];
   }
 
   [self.delegate passwordSharingCoordinatorDidRemove:self];
@@ -125,6 +139,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
       self.familyPromoCoordinator = [[FamilyPromoCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser];
+      self.familyPromoCoordinator.delegate = self;
       [self.familyPromoCoordinator start];
       break;
     case FetchFamilyMembersRequestStatus::kUnknown:
@@ -141,6 +156,12 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.familyPickerCoordinator stop];
   self.familyPickerCoordinator.delegate = nil;
   self.familyPickerCoordinator = nil;
+}
+
+- (void)stopFamilyPromoCoordinator {
+  [self.familyPromoCoordinator stop];
+  self.familyPromoCoordinator.delegate = nil;
+  self.familyPromoCoordinator = nil;
 }
 
 @end

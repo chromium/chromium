@@ -19,6 +19,7 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::ButtonWithAccessibilityLabel;
 using password_manager_test_utils::kScrollAmount;
 using password_manager_test_utils::OpenPasswordManager;
 using password_manager_test_utils::SavePasswordForm;
@@ -163,6 +164,15 @@ using password_manager_test_utils::SavePasswordForm;
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 ButtonWithAccessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON))]
+      performAction:grey_tap()];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewId)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

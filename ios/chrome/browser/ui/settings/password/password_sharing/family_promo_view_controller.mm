@@ -46,7 +46,6 @@
   self.titleString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE);
   self.subtitleString = [self subtitleStringWithTag].string;
-  // TODO(crbug.com/1463882): Handle button clicks.
   self.primaryActionString =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON);
 
