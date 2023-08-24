@@ -26,13 +26,10 @@ class RepeatingTimer;
 namespace ash {
 namespace diagnostics {
 
-class TelemetryLog;
-
 class SystemDataProvider : public mojom::SystemDataProvider,
                            public chromeos::PowerManagerClient::Observer {
  public:
   SystemDataProvider();
-  explicit SystemDataProvider(TelemetryLog* telemetry_log_ptr);
 
   ~SystemDataProvider() override;
 
@@ -113,10 +110,6 @@ class SystemDataProvider : public mojom::SystemDataProvider,
 
   void ComputeAndPopulateCpuUsage(const cros_healthd::mojom::CpuInfo& cpu_info,
                                   mojom::CpuUsage& out_cpu_usage);
-
-  bool IsLoggingEnabled() const;
-
-  base::raw_ptr<TelemetryLog> telemetry_log_ptr_ = nullptr;  // Not owned.
 
   CpuUsageData previous_cpu_usage_data_;
 

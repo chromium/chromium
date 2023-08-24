@@ -21,8 +21,6 @@
 namespace ash {
 namespace diagnostics {
 
-class NetworkingLog;
-
 struct NetworkObserverInfo {
   NetworkObserverInfo();
   NetworkObserverInfo(NetworkObserverInfo&&);
@@ -39,7 +37,6 @@ class NetworkHealthProvider
       public mojom::NetworkHealthProvider {
  public:
   NetworkHealthProvider();
-  explicit NetworkHealthProvider(NetworkingLog* networking_log_ptr);
 
   NetworkHealthProvider(const NetworkHealthProvider&) = delete;
   NetworkHealthProvider& operator=(const NetworkHealthProvider&) = delete;
@@ -69,8 +66,6 @@ class NetworkHealthProvider
   // interface. Additionally, updates the currently |active_guid_| to the first
   // active network interface, if one exists.
   std::vector<std::string> GetObserverGuidsAndUpdateActiveGuid();
-
-  void SetNetworkingLogForTesting(NetworkingLog* networking_log_ptr);
 
  private:
   // Handler for receiving a list of active networks.
@@ -127,11 +122,7 @@ class NetworkHealthProvider
       chromeos::network_config::mojom::NetworkStatePropertiesPtr network,
       bool must_match_existing_guid);
 
-  bool IsLoggingEnabled() const;
-
   mojom::NetworkState GetNetworkStateForGuid(const std::string& guid);
-
-  base::raw_ptr<NetworkingLog> networking_log_ptr_ = nullptr;  // Not owned.
 
   // Guid for the currently active network (if one exists). This guid will
   // be present in |networks_|.

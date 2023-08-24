@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/networking_log.h"
 #include "ash/webui/diagnostics_ui/backend/common/histogram_util.h"
 #include "base/containers/contains.h"
@@ -395,6 +396,10 @@ int GetScoreForNetwork(const mojom::NetworkPtr& network) {
   return kNetworkTypePriorityMap.at(network->type) + state_priority;
 }
 
+bool IsLoggingEnabled() {
+  return diagnostics::DiagnosticsLogController::IsInitialized();
+}
+
 }  // namespace
 
 NetworkObserverInfo::NetworkObserverInfo() = default;
@@ -403,11 +408,7 @@ NetworkObserverInfo& NetworkObserverInfo::operator=(NetworkObserverInfo&&) =
     default;
 NetworkObserverInfo::~NetworkObserverInfo() = default;
 
-NetworkHealthProvider::NetworkHealthProvider()
-    : NetworkHealthProvider(/*networking_log_ptr_=*/nullptr) {}
-
-NetworkHealthProvider::NetworkHealthProvider(NetworkingLog* networking_log_ptr)
-    : networking_log_ptr_(networking_log_ptr) {
+NetworkHealthProvider::NetworkHealthProvider() {
   network_config::BindToInProcessInstance(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
   remote_cros_network_config_->AddObserver(
@@ -646,7 +647,8 @@ void NetworkHealthProvider::NotifyNetworkListObservers() {
   }
 
   if (IsLoggingEnabled() && !active_guid_.empty()) {
-    networking_log_ptr_->UpdateNetworkList(observer_guids, active_guid_);
+    DiagnosticsLogController::Get()->GetNetworkingLog().UpdateNetworkList(
+        observer_guids, active_guid_);
   }
 }
 
@@ -660,7 +662,8 @@ void NetworkHealthProvider::NotifyNetworkStateObserver(
       mojo::Clone(network_info.network));
 
   if (IsLoggingEnabled()) {
-    networking_log_ptr_->UpdateNetworkState(network_info.network.Clone());
+    DiagnosticsLogController::Get()->GetNetworkingLog().UpdateNetworkState(
+        network_info.network.Clone());
   }
 }
 
@@ -677,15 +680,6 @@ void NetworkHealthProvider::GetDeviceState() {
   remote_cros_network_config_->GetDeviceStateList(
       base::BindOnce(&NetworkHealthProvider::OnDeviceStateListReceived,
                      base::Unretained(this)));
-}
-
-void NetworkHealthProvider::SetNetworkingLogForTesting(
-    NetworkingLog* networking_log_ptr) {
-  networking_log_ptr_ = networking_log_ptr;
-}
-
-bool NetworkHealthProvider::IsLoggingEnabled() const {
-  return networking_log_ptr_ != nullptr;
 }
 
 mojom::NetworkState NetworkHealthProvider::GetNetworkStateForGuid(

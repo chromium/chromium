@@ -74,6 +74,10 @@ DiagnosticsDialog::DiagnosticsDialog(DiagnosticsDialog::DiagnosticsPage page)
 
 DiagnosticsDialog::~DiagnosticsDialog() = default;
 
+const std::string& DiagnosticsDialog::Id() {
+  return dialog_id_;
+}
+
 void DiagnosticsDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
       display::Screen::GetScreen()->GetPrimaryDisplay();

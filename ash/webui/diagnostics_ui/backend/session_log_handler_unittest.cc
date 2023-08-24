@@ -184,10 +184,6 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
     NoSessionAshTestBase::SetUp();
     DiagnosticsLogController::Initialize(
         std::make_unique<FakeDiagnosticsBrowserDelegate>());
-    auto* controller = DiagnosticsLogController::Get();
-    telemetry_log_ = controller->GetTelemetryLog();
-    routine_log_ = controller->GetRoutineLog();
-    networking_log_ = controller->GetNetworkingLog();
     session_log_handler_ = std::make_unique<diagnostics::SessionLogHandler>(
         base::BindRepeating(&CreateTestSelectFilePolicy),
         /*telemetry_log*/ nullptr, /*routine_log*/ nullptr,
@@ -230,9 +226,6 @@ class SessionLogHandlerTest : public NoSessionAshTestBase {
   content::TestWebUI web_ui_;
   std::unique_ptr<SessionLogHandler> session_log_handler_;
   base::ScopedTempDir temp_dir_;
-  raw_ptr<TelemetryLog, ExperimentalAsh> telemetry_log_;
-  raw_ptr<RoutineLog, ExperimentalAsh> routine_log_;
-  raw_ptr<NetworkingLog, ExperimentalAsh> networking_log_;
   testing::NiceMock<ash::MockHoldingSpaceClient> holding_space_client_;
 };
 
@@ -242,7 +235,8 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
 
   base::RunLoop run_loop;
   // Populate routine log
-  routine_log_->LogRoutineStarted(mojom::RoutineType::kCpuStress);
+  DiagnosticsLogController::Get()->GetRoutineLog().LogRoutineStarted(
+      mojom::RoutineType::kCpuStress);
   task_environment()->RunUntilIdle();
 
   // Populate telemetry log
@@ -261,7 +255,8 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
       expected_cpu_max_clock_speed_khz, expected_has_battery,
       expected_milestone_version, expected_full_version);
 
-  telemetry_log_->UpdateSystemInfo(std::move(test_info));
+  DiagnosticsLogController::Get()->GetTelemetryLog().UpdateSystemInfo(
+      std::move(test_info));
 
   // Select file
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");

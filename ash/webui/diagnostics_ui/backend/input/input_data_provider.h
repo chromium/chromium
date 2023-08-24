@@ -41,8 +41,6 @@
 
 namespace ash::diagnostics {
 
-class KeyboardInputLog;
-
 // Provides information about input devices connected to the system. Implemented
 // in the browser process, constructed within the Diagnostics_UI in the browser
 // process, and eventually called by the Diagnostics SWA (a renderer process).
@@ -54,13 +52,11 @@ class InputDataProvider : public mojom::InputDataProvider,
                           public display::DisplayConfigurator::Observer,
                           public chromeos::PowerManagerClient::Observer {
  public:
-  explicit InputDataProvider(aura::Window* window,
-                             KeyboardInputLog* keyboard_input_log_ptr);
+  explicit InputDataProvider(aura::Window* window);
   explicit InputDataProvider(
       aura::Window* window,
       std::unique_ptr<ui::DeviceManager> device_manager,
       std::unique_ptr<EventWatcherFactory> watcher_factory,
-      KeyboardInputLog* keyboard_input_log_ptr,
       AcceleratorControllerImpl* accelerator_controller,
       ui::EventRewriterAsh::Delegate* event_rewriter_delegate);
   InputDataProvider(const InputDataProvider&) = delete;
@@ -132,10 +128,6 @@ class InputDataProvider : public mojom::InputDataProvider,
   // Get the value of is_internal_display_on_ for testing purpose.
   bool is_internal_display_on() { return is_internal_display_on_; }
 
-  void SetLogForTesting(KeyboardInputLog* keyboard_input_log_ptr) {
-    keyboard_input_log_ptr_ = keyboard_input_log_ptr;
-  }
-
  protected:
   base::SequenceBound<InputDeviceInfoHelper> info_helper_{
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})};
@@ -171,11 +163,6 @@ class InputDataProvider : public mojom::InputDataProvider,
   void UnforwardKeyboardInput(uint32_t id);
 
   const std::string GetKeyboardName(uint32_t id);
-
-  bool IsLoggingEnabled() const;
-
-  base::raw_ptr<KeyboardInputLog> keyboard_input_log_ptr_ =
-      nullptr;  // Not Owned.
 
   // Denotes whether DiagnosticsDialog should be closed when escape is pressed.
   // Currently, this is only false when the keyboard tester is actively in use.
