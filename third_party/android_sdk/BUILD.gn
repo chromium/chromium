@@ -18,45 +18,42 @@ if (enable_java_templates) {
     output_name = "android.privacy-sandbox.jar"
   }
 
-  template("android_test_jar_with_manifest") {
-    _manifest_output_path = "$target_gen_dir/$target_name/AndroidManifest.xml"
-    _manifest_target = "${target_name}__manifest"
+  template("android_sdk_optional_library") {
+    forward_variables_from(invoker, [ "testonly" ])
+    _manifest_path = "$target_gen_dir/$target_name/AndroidManifest.xml"
+
+    # String replace to prevent dep from being treated as a java library.
+    _manifest_target = string_replace(target_name, "_java", "_J") + "__manifest"
     jinja_template(_manifest_target) {
-      testonly = true
       input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
-      output = _manifest_output_path
+      output = _manifest_path
       variables = [ "library_name=${invoker.library_name}" ]
     }
-
-    _resources_target = "${target_name}__resources"
-    android_resources(_resources_target) {
-      testonly = true
-      sources = []
-      android_manifest = _manifest_output_path
-      android_manifest_dep = ":$_manifest_target"
-    }
-
     java_group(target_name) {
-      testonly = true
-      deps = [ ":$_resources_target" ]
-      input_jars_paths = [ "${android_sdk}/optional/${invoker.jar_name}" ]
+      deps = [ ":$_manifest_target" ]
+
+      # Makes the .jar appear in the classpath for compile steps.
+      input_jars_paths =
+          [ "${android_sdk}/optional/${invoker.library_name}.jar" ]
+
+      # Adds the <uses-library> tag to the manifest.
+      mergeable_android_manifests = [ _manifest_path ]
     }
   }
 
-  # The android test libraries below are part of the main SDK jar
-  # and are linked by default on O and below. Starting in P, they
-  # exist in their own libraries that are present on device and are
-  # available to be linked against but aren't linked by default.
-  android_test_jar_with_manifest("android_test_base_java") {
-    library_name = "base"
-    jar_name = "android.test.base.jar"
+  android_sdk_optional_library("android_test_base_java") {
+    testonly = true
+    library_name = "android.test.base"
   }
-  android_test_jar_with_manifest("android_test_mock_java") {
-    library_name = "mock"
-    jar_name = "android.test.mock.jar"
+  android_sdk_optional_library("android_test_mock_java") {
+    testonly = true
+    library_name = "android.test.mock"
   }
-  android_test_jar_with_manifest("android_test_runner_java") {
-    library_name = "runner"
-    jar_name = "android.test.runner.jar"
+  android_sdk_optional_library("android_test_runner_java") {
+    testonly = true
+    library_name = "android.test.runner"
+  }
+  android_sdk_optional_library("android_car_java") {
+    library_name = "android.car"
   }
 }
