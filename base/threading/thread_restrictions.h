@@ -142,14 +142,16 @@ class StartupTabProviderImpl;
 class WebEngineBrowserMainParts;
 
 namespace base {
+class Environment;
 class File;
 class FilePath;
 }  // namespace base
 
-Profile* GetLastProfileMac();
 bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
                                           const base::FilePath&,
                                           const base::FilePath&);
+Profile* GetLastProfileMac();
+bool HasWaylandDisplay(base::Environment* env);
 
 namespace android_webview {
 class AwBrowserContext;
@@ -160,9 +162,9 @@ class ScopedAllowInitGLBindings;
 class VizCompositorThreadRunnerWebView;
 }  // namespace android_webview
 namespace ash {
-class MojoUtils;
 class BrowserDataBackMigrator;
 class LoginEventRecorder;
+class MojoUtils;
 class StartupCustomizationDocument;
 class StartupUtils;
 bool CameraAppUIShouldEnableLocalOverride(const std::string&);
@@ -338,36 +340,6 @@ class MojoTrap;
 }
 }  // namespace core
 }  // namespace mojo
-namespace printing {
-class LocalPrinterHandlerDefault;
-#if BUILDFLAG(IS_MAC)
-class PrintBackendServiceImpl;
-#endif
-class PrintBackendServiceManager;
-class PrinterQuery;
-}  // namespace printing
-namespace rlz_lib {
-class FinancialPing;
-}
-namespace storage {
-class ObfuscatedFileUtil;
-}
-namespace syncer {
-class GetLocalChangesRequest;
-class HttpBridge;
-}  // namespace syncer
-namespace ui {
-class DrmThreadProxy;
-class DrmDisplayHostManager;
-class SelectFileDialogLinux;
-class ScopedAllowBlockingForGbmSurface;
-}  // namespace ui
-namespace weblayer {
-class BrowserContextImpl;
-class ContentBrowserClientImpl;
-class ProfileImpl;
-class WebLayerPathProvider;
-}  // namespace weblayer
 namespace net {
 class GSSAPISharedLibrary;
 class MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
@@ -380,16 +352,21 @@ namespace internal {
 class AddressTrackerLinux;
 }
 }  // namespace net
-
+namespace printing {
+class LocalPrinterHandlerDefault;
+#if BUILDFLAG(IS_MAC)
+class PrintBackendServiceImpl;
+#endif
+class PrintBackendServiceManager;
+class PrinterQuery;
+}  // namespace printing
 namespace proxy_resolver {
 class ScopedAllowThreadJoinForProxyResolverV8Tracing;
 }
-
 namespace remote_cocoa {
 class DroppedScreenShotCopierMac;
 class SelectFileDialogBridge;
 }  // namespace remote_cocoa
-
 namespace remoting {
 class AutoThread;
 class ScopedAllowBlockingForCrashReporting;
@@ -400,56 +377,68 @@ class ScopedAllowSyncPrimitivesForWebRtcTransport;
 class ScopedAllowThreadJoinForWebRtcTransport;
 }  // namespace protocol
 }  // namespace remoting
-
+namespace rlz_lib {
+class FinancialPing;
+}
 namespace service_manager {
 class ServiceProcessLauncher;
 }
-
 namespace shell_integration_linux {
 class LaunchXdgUtilityScopedAllowBaseSyncPrimitives;
 }
-
+namespace storage {
+class ObfuscatedFileUtil;
+}
+namespace syncer {
+class GetLocalChangesRequest;
+class HttpBridge;
+}  // namespace syncer
 namespace tracing {
 class FuchsiaPerfettoProducerConnector;
 }
-
 namespace ui {
+class DrmThreadProxy;
+class DrmDisplayHostManager;
+class ScopedAllowBlockingForGbmSurface;
+class SelectFileDialogLinux;
 class WindowResizeHelperMac;
-}
-
+}  // namespace ui
 namespace updater {
 class SystemctlLauncherScopedAllowBaseSyncPrimitives;
 }
-
 namespace viz {
 class HostGpuMemoryBufferManager;
 class ClientGpuMemoryBufferManager;
 }  // namespace viz
-
 namespace vr {
 class VrShell;
 }
-
 namespace web {
 class WebMainLoop;
 }  // namespace web
+namespace weblayer {
+class BrowserContextImpl;
+class ContentBrowserClientImpl;
+class ProfileImpl;
+class WebLayerPathProvider;
+}  // namespace weblayer
+// NOTE: Please do not append entries here. Put them in the list above and keep
+// the list sorted.
 
 namespace base {
-class Environment;
-}
-
-bool HasWaylandDisplay(base::Environment* env);
-
-namespace base {
-
-namespace sequence_manager::internal {
-class TaskQueueImpl;
-}  // namespace sequence_manager::internal
 
 namespace android {
 class JavaHandlerThread;
 class ScopedAllowBlockingForImportantFileWriter;
 }  // namespace android
+
+namespace apple::internal {
+base::FilePath GetExecutablePath();
+}
+
+namespace debug {
+class StackTrace;
+}
 
 namespace internal {
 class GetAppOutputScopedAllowBaseSyncPrimitives;
@@ -458,12 +447,12 @@ class TaskTracker;
 bool ReadProcFile(const FilePath& file, std::string* buffer);
 }  // namespace internal
 
+namespace sequence_manager::internal {
+class TaskQueueImpl;
+}  // namespace sequence_manager::internal
+
 namespace subtle {
 class PlatformSharedMemoryRegion;
-}
-
-namespace debug {
-class StackTrace;
 }
 
 namespace win {
@@ -483,10 +472,6 @@ class SimpleThread;
 class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
-
-namespace apple::internal {
-base::FilePath GetExecutablePath();
-}
 
 #if DCHECK_IS_ON()
 // NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
