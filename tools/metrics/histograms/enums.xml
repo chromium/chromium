@@ -63273,6 +63273,7 @@ from previous Chrome versions.
   <int value="-606898702" label="MaterialDesignSettings:disabled"/>
   <int value="-606696801" label="TabGroupsUiImprovementsAndroid:enabled"/>
   <int value="-606431158" label="DrawVerticallyEdgeToEdge:enabled"/>
+  <int value="-606011880" label="OverscrollHistoryNavigationSetting:disabled"/>
   <int value="-605720512" label="JourneysZeroStateFiltering:enabled"/>
   <int value="-605117040" label="OsSettingsRevampWayfinding:disabled"/>
   <int value="-604814313" label="enable-pinch"/>
@@ -67502,6 +67503,7 @@ from previous Chrome versions.
   <int value="1534386287" label="SendTabToSelfWhenSignedIn:enabled"/>
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1535497541" label="FillingAcrossGroupedSites:disabled"/>
+  <int value="1536024579" label="OverscrollHistoryNavigationSetting:enabled"/>
   <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
   <int value="1537685016" label="NtpDriveModuleSegmentation:disabled"/>
