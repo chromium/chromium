@@ -47,7 +47,7 @@ suite('<settings-smb-shares-page>', () => {
 
   setup(() => {
     smbBrowserProxy = new TestSmbBrowserProxy();
-    SmbBrowserProxyImpl.setInstanceForTesting(smbBrowserProxy);
+    SmbBrowserProxyImpl.setInstance(smbBrowserProxy);
 
     page = document.createElement('settings-smb-shares-page');
     document.body.appendChild(page);

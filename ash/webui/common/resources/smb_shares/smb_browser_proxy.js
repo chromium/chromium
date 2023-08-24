@@ -8,7 +8,6 @@
  */
 
 import {sendWithPromise} from '//resources/ash/common/cr.m.js';
-import {addSingletonGetter} from '//resources/ash/common/cr_deprecated.js';
 
 /**
  *  @enum {number}
@@ -72,11 +71,14 @@ export class SmbBrowserProxy {
 
 /** @implements {SmbBrowserProxy} */
 export class SmbBrowserProxyImpl {
-  /**
-   * @param {SmbBrowserProxy} instance
-   */
-  static setInstanceForTesting(instance) {
-    SmbBrowserProxyImpl.instance_ = instance;
+  /** @return {!SmbBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new SmbBrowserProxyImpl());
+  }
+
+  /** @param {!SmbBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
   }
 
   /** @override */
@@ -100,4 +102,5 @@ export class SmbBrowserProxyImpl {
   }
 }
 
-addSingletonGetter(SmbBrowserProxyImpl);
+/** @type {?SmbBrowserProxy} */
+let instance = null;
