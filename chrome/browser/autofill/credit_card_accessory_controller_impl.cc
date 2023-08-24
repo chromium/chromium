@@ -328,7 +328,8 @@ void CreditCardAccessoryControllerImpl::OnPersonalDataChanged() {
 
 void CreditCardAccessoryControllerImpl::OnCreditCardFetched(
     CreditCardFetchResult result,
-    const CreditCard* credit_card) {
+    const CreditCard* credit_card,
+    const std::u16string& cvc) {
   if (result != CreditCardFetchResult::kSuccess)
     return;
   content::RenderFrameHost* rfh = GetWebContents().GetFocusedFrame();

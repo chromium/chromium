@@ -2654,13 +2654,14 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_NumberMissing) {
 TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
   FormData form = CreateTestCreditCardFormData(true, false);
   FormsSeen({form});
-  CreditCard credit_card = test::GetMaskedServerCardWithCvc();
+  CreditCard credit_card = test::GetMaskedServerCard();
   browser_autofill_manager_->FillOrPreviewCreditCardForm(
       mojom::AutofillActionPersistence::kFill, form, form.fields[0],
       &credit_card, {.trigger_source = AutofillTriggerSource::kPopup});
 
   test_api(*browser_autofill_manager_)
-      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card);
+      .OnCreditCardFetched(CreditCardFetchResult::kSuccess, &credit_card,
+                           /*cvc=*/u"123");
 
   ASSERT_TRUE(form_data_importer().fetched_card_instrument_id().has_value());
   EXPECT_EQ(form_data_importer().fetched_card_instrument_id().value(),

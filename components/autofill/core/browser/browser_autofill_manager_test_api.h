@@ -90,8 +90,9 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
   }
 
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* credit_card = nullptr) {
-    manager_->OnCreditCardFetched(result, credit_card);
+                           const CreditCard* credit_card = nullptr,
+                           const std::u16string& cvc = std::u16string()) {
+    manager_->OnCreditCardFetched(result, credit_card, cvc);
   }
 
   bool WillFillCreditCardNumber(const FormData& form,

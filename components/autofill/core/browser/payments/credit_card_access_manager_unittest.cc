@@ -124,12 +124,13 @@ class TestAccessor : public CreditCardAccessManager::Accessor {
   }
 
   void OnCreditCardFetched(CreditCardFetchResult result,
-                           const CreditCard* card) override {
+                           const CreditCard* card,
+                           const std::u16string& cvc) override {
     result_ = result;
     if (result == CreditCardFetchResult::kSuccess) {
       DCHECK(card);
       number_ = card->number();
-      cvc_ = card->cvc();
+      cvc_ = cvc;
       expiry_month_ = card->Expiration2DigitMonthAsString();
       expiry_year_ = card->Expiration4DigitYearAsString();
     }
@@ -234,7 +235,7 @@ class CreditCardAccessManagerTest : public testing::Test {
     CreditCard local_card = CreditCard();
     test::SetCreditCardInfo(&local_card, "Elvis Presley", number.c_str(),
                             test::NextMonth().c_str(), test::NextYear().c_str(),
-                            "1", kTestCvc16);
+                            "1");
     local_card.set_guid(guid);
     local_card.set_record_type(CreditCard::RecordType::kLocalCard);
 
@@ -830,7 +831,6 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 
   EXPECT_EQ(accessor_->result(), CreditCardFetchResult::kSuccess);
   EXPECT_EQ(kTestNumber16, accessor_->number());
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // There was no interactive authentication in this flow, so check that this
   // is signaled correctly.
@@ -2639,16 +2639,13 @@ TEST_F(CreditCardAccessManagerTest,
           .with_result(CreditCardOtpAuthenticator::OtpAuthenticationResponse::
                            Result::kSuccess)
           .with_card(&card)
-          .with_cvc(kTestCvc16));
+          .with_cvc(u"123"));
 
   // Expect that we did not signal that there was no interactive authentication.
   EXPECT_FALSE(
       autofill_client_.GetFormDataImporter()
           ->GetCardIdentifierIfNonInteractiveAuthenticationFlowCompleted()
           .has_value());
-
-  // Expect accessor to successfully retrieve the CVC.
-  EXPECT_EQ(kTestCvc16, accessor_->cvc());
 
   // Expect the metrics are logged correctly.
   histogram_tester.ExpectUniqueSample(
