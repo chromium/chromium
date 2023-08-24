@@ -147,7 +147,7 @@ const char* CStringBuilder::c_str() {
 }
 
 void CStringBuilder::PutFloatingPoint(double value, unsigned num_digits10) {
-  switch (fpclassify(value)) {
+  switch (std::fpclassify(value)) {
     case FP_INFINITE:
       PutText(value < 0 ? "-inf" : "inf");
       break;
