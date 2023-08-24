@@ -9,6 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/flags_ui/feature_entry.h"
+#include "ui/base/ui_base_features.h"
 
 namespace features {
 
@@ -219,6 +220,15 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
     "crossfade_preview_at";
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
+
+BASE_FEATURE(kTabOrganization,
+             "TabOrganization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsTabOrganization() {
+  return IsChromeRefresh2023() &&
+         base::FeatureList::IsEnabled(features::kTabOrganization);
+}
 
 BASE_FEATURE(kTabSearchChevronIcon,
              "TabSearchChevronIcon",
