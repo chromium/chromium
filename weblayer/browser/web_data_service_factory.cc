@@ -42,12 +42,14 @@ content::BrowserContext* WebDataServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* WebDataServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WebDataServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   const base::FilePath& profile_path = context->GetPath();
-  return new WebDataServiceWrapper(profile_path, i18n::GetApplicationLocale(),
-                                   content::GetUIThreadTaskRunner({}),
-                                   base::BindRepeating(&ProfileErrorCallback));
+  return std::make_unique<WebDataServiceWrapper>(
+      profile_path, i18n::GetApplicationLocale(),
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(&ProfileErrorCallback));
 }
 
 bool WebDataServiceFactory::ServiceIsNULLWhileTesting() const {
