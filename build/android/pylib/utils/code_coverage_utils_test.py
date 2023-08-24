@@ -30,6 +30,35 @@ class CodeCoverageUtilsTest(unittest.TestCase):
       self.assertFalse(os.path.exists(profdata.name))
       self.assertTrue(mock_sub.called)
 
+  @mock.patch('os.path.isfile', return_value=True)
+  @mock.patch('shutil.rmtree')
+  @mock.patch('pylib.utils.code_coverage_utils.PullClangCoverageFiles')
+  @mock.patch('pylib.utils.code_coverage_utils.MergeClangCoverageFiles')
+  def testPullAndMaybeMergeClangCoverageFiles(self, mock_merge_function,
+                                              mock_pull_function, mock_rmtree,
+                                              _):
+    code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
+        'device', 'device_coverage_dir', 'output_dir', 'output_subfolder_name')
+    mock_pull_function.assert_called_with('device', 'device_coverage_dir',
+                                          'output_dir/output_subfolder_name')
+    mock_merge_function.assert_called_with(
+        'output_dir', 'output_dir/output_subfolder_name/device_coverage_dir')
+    self.assertTrue(mock_rmtree.called)
+
+  @mock.patch('os.path.isfile', return_value=False)
+  @mock.patch('shutil.rmtree')
+  @mock.patch('pylib.utils.code_coverage_utils.PullClangCoverageFiles')
+  @mock.patch('pylib.utils.code_coverage_utils.MergeClangCoverageFiles')
+  def testPullAndMaybeMergeClangCoverageFilesNoMerge(self, mock_merge_function,
+                                                     mock_pull_function,
+                                                     mock_rmtree, _):
+    code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
+        'device', 'device_coverage_dir', 'output_dir', 'output_subfolder_name')
+    mock_pull_function.assert_called_with('device', 'device_coverage_dir',
+                                          'output_dir/output_subfolder_name')
+    self.assertFalse(mock_merge_function.called)
+    self.assertFalse(mock_rmtree.called)
+
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)

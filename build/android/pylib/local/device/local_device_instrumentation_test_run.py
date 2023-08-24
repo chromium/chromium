@@ -959,27 +959,13 @@ class LocalDeviceInstrumentationTestRun(
               logging.warning('Jacoco coverage file does not exist: %s',
                               jacoco_coverage_device_file)
 
-            # Handling Clang coverage data.
-            profraw_parent_dir = os.path.join(
-                self._test_instance.coverage_directory, coverage_basename)
             if device.PathExists(device_clang_profile_dir, retries=0):
-              # Note: The function pulls |device_clang_profile_dir| folder,
-              # instead of profraw files, into |profraw_parent_dir|. the
-              # function also removes |device_clang_profile_dir| from device.
-              code_coverage_utils.PullClangCoverageFiles(
-                  device, device_clang_profile_dir, profraw_parent_dir)
-              # Merge data into one merged file if llvm-profdata tool exists.
-              if os.path.isfile(code_coverage_utils.LLVM_PROFDATA_PATH):
-                profraw_folder_name = os.path.basename(
-                    os.path.normpath(device_clang_profile_dir))
-                profraw_dir = os.path.join(profraw_parent_dir,
-                                           profraw_folder_name)
-                code_coverage_utils.MergeClangCoverageFiles(
-                    self._test_instance.coverage_directory, profraw_dir)
-                shutil.rmtree(profraw_parent_dir)
+              code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
+                  device, device_clang_profile_dir,
+                  self._test_instance.coverage_directory, coverage_basename)
             else:
               logging.warning('Clang coverage data folder does not exist: %s',
-                              profraw_parent_dir)
+                              device_clang_profile_dir)
 
           except (OSError, base_error.BaseError) as e:
             logging.warning('Failed to handle coverage data after tests: %s', e)

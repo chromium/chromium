@@ -6,6 +6,7 @@
 import logging
 import os
 import posixpath
+import shutil
 import subprocess
 
 from devil import base_error
@@ -32,6 +33,38 @@ def GetDeviceClangCoverageDir(device):
   """
   return posixpath.join(device.GetExternalStoragePath(), 'chrome', 'test',
                         'coverage', 'profraw')
+
+
+def PullAndMaybeMergeClangCoverageFiles(device, device_coverage_dir, output_dir,
+                                        output_subfolder_name):
+  """Pulls and possibly merges clang coverage file to a single file.
+
+  Only merges when llvm-profdata tool exists. If so, Merged file is at
+  `output_dir/coverage_merged.profraw`and raw profraw files before merging
+  are deleted.
+
+  Args:
+    device: The working device.
+    device_coverage_dir: The directory storing coverage data on device.
+    output_dir: The output directory on host to store the
+        coverage_merged.profraw file.
+    output_subfolder_name: The subfolder in |output_dir| to pull
+        |device_coverage_dir| into. It will be deleted after merging if
+        merging happens.
+  """
+  # Host side dir to pull device coverage profraw folder into.
+  profraw_parent_dir = os.path.join(output_dir, output_subfolder_name)
+  # Note: The function pulls |device_coverage_dir| folder,
+  # instead of profraw files, into |profraw_parent_dir|. the
+  # function also removes |device_coverage_dir| from device.
+  PullClangCoverageFiles(device, device_coverage_dir, profraw_parent_dir)
+  # Merge data into one merged file if llvm-profdata tool exists.
+  if os.path.isfile(LLVM_PROFDATA_PATH):
+    profraw_folder_name = os.path.basename(
+        os.path.normpath(device_coverage_dir))
+    profraw_dir = os.path.join(profraw_parent_dir, profraw_folder_name)
+    MergeClangCoverageFiles(output_dir, profraw_dir)
+    shutil.rmtree(profraw_parent_dir)
 
 
 def PullClangCoverageFiles(device, device_coverage_dir, output_dir):

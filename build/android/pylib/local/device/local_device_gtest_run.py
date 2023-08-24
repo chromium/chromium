@@ -260,11 +260,9 @@ class _ApkDelegate:
         if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
           if not os.path.isdir(self._coverage_dir):
             os.makedirs(self._coverage_dir)
-        # TODO(crbug.com/1179004) Use MergeClangCoverageFiles when llvm-profdata
-        # not found is fixed.
-          code_coverage_utils.PullClangCoverageFiles(
-              device, device_coverage_dir,
-              os.path.join(self._coverage_dir, str(self._coverage_index)))
+          code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
+              device, device_coverage_dir, self._coverage_dir,
+              str(self._coverage_index))
 
       return device.ReadFile(stdout_file.name).splitlines()
 
@@ -357,9 +355,9 @@ class _ExeDelegate:
         cmd, cwd=cwd, env=env, check_return=False, large_output=True, **kwargs)
 
     if self._coverage_dir:
-      code_coverage_utils.PullClangCoverageFiles(
-          device, device_coverage_dir,
-          os.path.join(self._coverage_dir, str(self._coverage_index)))
+      code_coverage_utils.PullAndMaybeMergeClangCoverageFiles(
+          device, device_coverage_dir, self._coverage_dir,
+          str(self._coverage_index))
 
     return output
 
