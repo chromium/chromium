@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/test/sk_color_eq.h"
 #include "ui/gl/dc_layer_overlay_params.h"
+#include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/direct_composition_surface_win.h"
@@ -537,6 +538,123 @@ TEST_F(DCompPresenterTest, ProtectedVideos) {
 
   // TODO(magchen): Add a hardware protected video test when hardware protected
   // video support is enabled by default in the Intel driver and Chrome
+}
+
+TEST_F(DCompPresenterTest, NoBackgroundColorSurfaceForNonColorOverlays) {
+  const gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+
+  auto root_surface =
+      CreateParamsFromImage(CreateDCompSurface(window_size, SkColors::kBlack));
+  root_surface->quad_rect = gfx::Rect(window_size);
+  root_surface->z_order = 1;
+  presenter_->ScheduleDCLayer(std::move(root_surface));
+
+  PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+  const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+  EXPECT_EQ(1u, layer_tree->GetDcompLayerCountForTesting());
+  EXPECT_EQ(0u, layer_tree->GetNumSurfacesInPoolForTesting());
+}
+
+TEST_F(DCompPresenterTest, BackgroundColorSurfaceTrim) {
+  const gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+
+  const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+
+  // See |TrimAfterCommit|.
+  static constexpr size_t kMaxSolidColorBuffers = 12;
+
+  // From an empty state, the surface pool will allocate surfaces on demand and
+  // retain as many that are in use (and unused surfaces, up to
+  // |kMaxSolidColorBuffers| total). We iterate to |kMaxSolidColorBuffers + 1|
+  // to exceed this threshold.
+  for (size_t num_buffers = 1; num_buffers <= kMaxSolidColorBuffers + 1;
+       num_buffers++) {
+    // We expect as many retained surfaces as there are unique solid color
+    // overlays in the frame.
+    {
+      for (size_t i = 0; i < num_buffers; i++) {
+        auto params = std::make_unique<DCLayerOverlayParams>();
+        params->quad_rect = gfx::Rect(window_size);
+        params->background_color = SkColor4f::FromColor(SkColorSetRGB(i, 0, 0));
+        params->z_order = i + 1;
+        presenter_->ScheduleDCLayer(std::move(params));
+      }
+      PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+      EXPECT_EQ(num_buffers, layer_tree->GetNumSurfacesInPoolForTesting());
+    }
+
+    // We expect retained surfaces even after we present a frame with no solid
+    // color overlays.
+    {
+      PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+      EXPECT_EQ(std::min(num_buffers, kMaxSolidColorBuffers),
+                layer_tree->GetNumSurfacesInPoolForTesting());
+    }
+  }
+}
+
+// Check that when there's multiple background color surfaces, the correct one
+// is reused even if the order they're requested in changes.
+TEST_F(DCompPresenterTest, BackgroundColorSurfaceMultipleReused) {
+  const gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+
+  std::vector<SkColor4f> colors = {SkColors::kRed, SkColors::kGreen};
+  std::vector<IDCompositionSurface*> surfaces_frame1(2, nullptr);
+  std::vector<IDCompositionSurface*> surfaces_frame2(2, nullptr);
+
+  const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+
+  {
+    for (size_t i = 0; i < colors.size(); i++) {
+      auto params = std::make_unique<DCLayerOverlayParams>();
+      params->quad_rect = gfx::Rect(window_size);
+      params->background_color = colors[i];
+      params->z_order = i + 1;
+      presenter_->ScheduleDCLayer(std::move(params));
+    }
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
+
+    surfaces_frame1[0] = layer_tree->GetBackgroundColorSurfaceForTesting(0);
+    surfaces_frame1[1] = layer_tree->GetBackgroundColorSurfaceForTesting(1);
+    // The overlays should have different background color surfaces since they
+    // have different background colors.
+    EXPECT_NE(surfaces_frame1[0], surfaces_frame1[1]);
+  }
+
+  {
+    // Swap the colors so they appear as overlays in a different order for the
+    // next frame.
+    std::swap(colors[0], colors[1]);
+
+    for (size_t i = 0; i < colors.size(); i++) {
+      auto params = std::make_unique<DCLayerOverlayParams>();
+      params->quad_rect = gfx::Rect(window_size);
+      params->background_color = colors[i];
+      params->z_order = i + 1;
+      presenter_->ScheduleDCLayer(std::move(params));
+    }
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+    EXPECT_EQ(2u, layer_tree->GetNumSurfacesInPoolForTesting());
+
+    surfaces_frame2[0] = layer_tree->GetBackgroundColorSurfaceForTesting(0);
+    surfaces_frame2[1] = layer_tree->GetBackgroundColorSurfaceForTesting(1);
+    EXPECT_NE(surfaces_frame2[0], surfaces_frame2[1]);
+
+    // We reversed the order of the color overlays. We expect the background
+    // color surfaces to be reused, but reversed.
+    EXPECT_EQ(surfaces_frame1[0], surfaces_frame2[1]);
+    EXPECT_EQ(surfaces_frame1[1], surfaces_frame2[0]);
+  }
 }
 
 class DCompPresenterPixelTest : public DCompPresenterTest {
@@ -1429,6 +1547,49 @@ TEST_F(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
 
   CheckOverlayExactlyFillsHole(window_size, root_surface_hole,
                                std::move(overlay));
+}
+
+// Check that the surface backing solid color overlays is reused across frames.
+// This can happen e.g. with a solid color draw quad animating its color.
+TEST_F(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
+  const gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(presenter_->SetDrawRectangle(gfx::Rect(window_size)));
+
+  SkColor4f colors[] = {
+      SkColors::kRed,    SkColors::kGreen, SkColors::kBlue,
+      SkColors::kYellow, SkColors::kCyan,  SkColors::kMagenta,
+  };
+
+  IDCompositionSurface* background_color_surface = nullptr;
+
+  for (const SkColor4f& color : colors) {
+    auto params = std::make_unique<DCLayerOverlayParams>();
+    params->quad_rect = gfx::Rect(window_size);
+    params->background_color = color;
+    params->z_order = 1;
+    presenter_->ScheduleDCLayer(std::move(params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+
+    EXPECT_SKCOLOR_EQ(color.toSkColor(), GLTestHelper::ReadBackWindowPixel(
+                                             window_.hwnd(), gfx::Point(0, 0)));
+
+    const DCLayerTree* layer_tree = presenter_->GetLayerTreeForTesting();
+
+    EXPECT_EQ(1u, layer_tree->GetDcompLayerCountForTesting());
+    EXPECT_EQ(1u, layer_tree->GetNumSurfacesInPoolForTesting());
+
+    if (background_color_surface == nullptr) {
+      background_color_surface =
+          layer_tree->GetBackgroundColorSurfaceForTesting(0);
+    }
+    EXPECT_NE(background_color_surface, nullptr);
+    EXPECT_EQ(background_color_surface,
+              layer_tree->GetBackgroundColorSurfaceForTesting(0))
+        << "DComp content for solid color overlay expected to be reused across "
+           "frames";
+  }
 }
 
 class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {

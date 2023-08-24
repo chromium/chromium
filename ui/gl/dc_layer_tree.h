@@ -12,6 +12,7 @@
 
 #include <memory>
 
+#include "base/check_is_test.h"
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/moving_max.h"
@@ -54,6 +55,55 @@ struct VideoProcessorWrapper {
   Microsoft::WRL::ComPtr<ID3D11VideoProcessor> video_processor;
   Microsoft::WRL::ComPtr<ID3D11VideoProcessorEnumerator>
       video_processor_enumerator;
+};
+
+class SolidColorSurface;
+
+// A resource pool that contains DComp surfaces containing solid color fills.
+class SolidColorSurfacePool final {
+ public:
+  SolidColorSurfacePool(
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+      Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device);
+  ~SolidColorSurfacePool();
+
+  SolidColorSurfacePool(const SolidColorSurfacePool&) = delete;
+  SolidColorSurfacePool& operator=(const SolidColorSurfacePool&) = delete;
+
+  // The resulting surface only contains the opaque parts of |color| and needs
+  // to be scaled by |color.fA|. Its contents are only valid until the next
+  // |TrimAfterCommit| call, since surfaces can be reused (and recolored) on
+  // subsequent frames.
+  IDCompositionSurface* GetSolidColorSurface(const SkColor4f& color);
+
+  // Clean up any unused resources in the pool after DComp commit.
+  void TrimAfterCommit();
+
+  // Returns the number of surfaces currently tracked by this pool.
+  size_t GetNumSurfacesInPoolForTesting() const;
+
+ private:
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
+
+  // Solid color surfaces that are tracked by this pool.
+  std::vector<SolidColorSurface> tracked_surfaces_;
+  // Index into |tracked_surfaces_| that partitions the surfaces used this frame
+  // (<num_used_this_frame_) and the surfaces free to use by subsequent
+  // |GetSolidColorSurface| calls (>=num_used_this_frame_).
+  size_t num_used_this_frame_ = 0;
+
+  struct Stats {
+    // The number of times |GetSolidColorSurface| was called. This represents
+    // the number of solid color overlays in the frame.
+    int num_surfaces_requested = 0;
+
+    // The number of surfaces that were filled.
+    int num_surfaces_recolored = 0;
+  };
+
+  // Stats about this pool since the last |TrimAfterCommit| call.
+  Stats stats_since_last_trim_;
 };
 
 // DCLayerTree manages a tree of direct composition visuals, and associated
@@ -127,17 +177,27 @@ class GL_EXPORT DCLayerTree {
                                         gfx::Rect* clip_rect) const;
 
   size_t GetSwapChainPresenterCountForTesting() const {
+    CHECK_IS_TEST();
     return video_swap_chains_.size();
   }
 
   size_t GetDcompLayerCountForTesting() const {
+    CHECK_IS_TEST();
     return visual_tree_ ? visual_tree_->GetDcompLayerCountForTesting() : 0;
   }
   IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+    CHECK_IS_TEST();
     return visual_tree_ ? visual_tree_->GetContentVisualForTesting(index)
                         : nullptr;
   }
-
+  IDCompositionSurface* GetBackgroundColorSurfaceForTesting(
+      size_t index) const {
+    CHECK_IS_TEST();
+    return visual_tree_
+               ? visual_tree_->GetBackgroundColorSurfaceForTesting(index)
+               : nullptr;
+  }
+  size_t GetNumSurfacesInPoolForTesting() const;
 #if DCHECK_IS_ON()
   bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const;
 #endif  // DCHECK_IS_ON()
@@ -160,6 +220,7 @@ class GL_EXPORT DCLayerTree {
           pending_receiver);
 
   DelegatedInkRenderer* GetInkRendererForTesting() const {
+    CHECK_IS_TEST();
     return ink_renderer_.get();
   }
 
@@ -196,13 +257,21 @@ class GL_EXPORT DCLayerTree {
                                           gfx::Point* offset,
                                           gfx::Rect* clip_rect) const;
     size_t GetDcompLayerCountForTesting() const {
+      CHECK_IS_TEST();
       return visual_subtrees_.size();
     }
     IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+      CHECK_IS_TEST();
       return visual_subtrees_[index]->content_visual();
+    }
+    IDCompositionSurface* GetBackgroundColorSurfaceForTesting(
+        size_t index) const {
+      CHECK_IS_TEST();
+      return visual_subtrees_[index]->background_color_surface_for_testing();
     }
 #if DCHECK_IS_ON()
     bool GetAttachedToRootFromPreviousFrameForTesting(size_t index) const {
+      CHECK_IS_TEST();
       return visual_subtrees_[index]
           ->GetAttachedToRootFromPreviousFrameForTesting();
     }
@@ -233,7 +302,7 @@ class GL_EXPORT DCLayerTree {
           uint64_t dcomp_surface_serial,
           const gfx::Size& image_size,
           const gfx::RectF& content_rect,
-          Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface,
+          Microsoft::WRL::ComPtr<IDCompositionSurface> background_color_surface,
           const SkColor4f& background_color,
           const gfx::Rect& quad_rect,
           bool nearest_neighbor_filter,
@@ -251,11 +320,16 @@ class GL_EXPORT DCLayerTree {
       IUnknown* dcomp_visual_content() const {
         return dcomp_visual_content_.Get();
       }
+      IDCompositionSurface* background_color_surface_for_testing() const {
+        CHECK_IS_TEST();
+        return background_color_surface_.Get();
+      }
       void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
                                             gfx::Point* offset,
                                             gfx::Rect* clip_rect) const;
 #if DCHECK_IS_ON()
       bool GetAttachedToRootFromPreviousFrameForTesting() const {
+        CHECK_IS_TEST();
         return attached_to_root_from_previous_frame_;
       }
 #endif  // DCHECK_IS_ON()
@@ -300,14 +374,16 @@ class GL_EXPORT DCLayerTree {
       // mapped to |quad_rect_|'s bounds.
       gfx::RectF content_rect_;
 
-      // The surface containing solid white for the background color fill to be
-      // placed at a leaf of the visual subtree. Will be tinted by
-      // |background_color_|. Must be present if |background_color_| is
-      // non-transparent. Must be created from |GetOrCreateSolidWhiteTexture|.
-      Microsoft::WRL::ComPtr<IDCompositionSurface> solid_white_surface_;
+      // The surface for the background color fill to be placed at a leaf of the
+      // visual subtree. Since |SolidColorSurfacePool::GetSolidColorSurface|
+      // returns a surface that is opaque, |background_color_visual_|'s opacity
+      // will be set to |background_color_.fA|. Must be present if
+      // |background_color_| is non-transparent. Must be re-updated from
+      // |SolidColorSurfacePool::GetSolidColorSurface| every frame it is
+      // present.
+      Microsoft::WRL::ComPtr<IDCompositionSurface> background_color_surface_;
 
-      // The color of the surface that will be placed on
-      // |background_color_visual_|.
+      // The color of |background_color_surface_|.
       SkColor4f background_color_;
 
       // The bounds which contain this overlay. When mapped by |transform_|,
@@ -430,9 +506,6 @@ class GL_EXPORT DCLayerTree {
   // set up the delegated ink visual and delegated ink trail object.
   bool InitializeInkRenderer();
 
-  // Returns nullptr if the surface could not be created.
-  raw_ptr<IDCompositionSurface> GetOrCreateSolidWhiteTexture();
-
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_auto_hdr_;
   const bool disable_vp_scaling_;
@@ -445,8 +518,9 @@ class GL_EXPORT DCLayerTree {
   Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
 
-  // A IDCompositionSurface cleared to white, used for solid color overlays.
-  Microsoft::WRL::ComPtr<IDCompositionSurface> solid_color_texture_;
+  // Resource pool which owns surfaces for solid color overlays. This is needed
+  // since there is no way to procedurally fill a DComp visual.
+  std::unique_ptr<SolidColorSurfacePool> solid_color_surface_pool_;
 
   // Store the largest video processor to avoid problems in
   // (http://crbug.com/1121061) and (http://crbug.com/1472975).
