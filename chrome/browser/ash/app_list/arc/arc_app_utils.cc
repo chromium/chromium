@@ -340,9 +340,14 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
   apps::IntentPtr launch_intent_to_send = std::move(launch_intent);
 
+  if (!app_info) {
+    LOG(WARNING) << "Ignore invalid app launch quest, id = " << app_id;
+    return false;
+  }
+
   // Some apps need fixup when ARC version upgrade e.g. from ARC P to ARC R.
   // Before fixup finishes, the |app_info->ready| is true but not launchable.
-  if (app_info && (app_info->need_fixup || !app_info->ready)) {
+  if (app_info->need_fixup || !app_info->ready) {
     if (!IsArcPlayStoreEnabledForProfile(profile)) {
       if (prefs->IsDefault(app_id)) {
         // The setting can fail if the preference is managed.  However, the
