@@ -51,6 +51,7 @@ class ASH_EXPORT ResizeShadowController : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
 
   void UpdateResizeShadowBoundsOfWindow(aura::Window* window,
                                         const gfx::Rect& bounds);

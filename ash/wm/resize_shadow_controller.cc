@@ -118,6 +118,13 @@ void ResizeShadowController::OnWindowPropertyChanged(aura::Window* window,
   UpdateShadowVisibility(window, window->IsVisible());
 }
 
+void ResizeShadowController::OnWindowAddedToRootWindow(aura::Window* window) {
+  ResizeShadow* shadow = GetShadowForWindow(window);
+  if (shadow) {
+    shadow->OnWindowParentToRootWindow();
+  }
+}
+
 void ResizeShadowController::UpdateResizeShadowBoundsOfWindow(
     aura::Window* window,
     const gfx::Rect& bounds) {

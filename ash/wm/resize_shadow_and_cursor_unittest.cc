@@ -4,9 +4,11 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
+#include "ash/wm/desks/desks_util.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/test/test_non_client_frame_view_ash.h"
@@ -21,6 +23,7 @@
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
@@ -527,6 +530,48 @@ TEST_F(ResizeShadowAndCursorTest, ShadowCanExistInUnparentedWindow) {
   // parent layer to reparent the shadow.
   ASSERT_TRUE(parent);
   parent->AddChild(window());
+}
+
+// Tests that the resize shadow will observe a new color provider source when
+// the window is reparented to other root windows.
+TEST_F(ResizeShadowAndCursorTest, NoCrashOnRootWindowChange) {
+  // Create a resize shadow on primary root window.
+  Shell::Get()->resize_shadow_controller()->ShowShadow(window());
+  // The color provider source of primary root window should be observed by
+  // resize shadow.
+  EXPECT_TRUE(Shell::GetPrimaryRootWindowController()
+                  ->color_provider_source()
+                  ->observers_for_testing()
+                  .HasObserver(GetShadow()));
+
+  // Add an secondary display.
+  display_manager()->AddRemoveDisplay();
+  aura::Window* secondary_root = nullptr;
+  for (auto* root : Shell::GetAllRootWindows()) {
+    if (root != Shell::GetPrimaryRootWindow()) {
+      secondary_root = root;
+      break;
+    }
+  }
+  EXPECT_TRUE(!!secondary_root);
+
+  // Move the window to secondary display and the resize shadow should observe
+  // the color provider source of secondary root window.
+  Shell::GetContainer(secondary_root, desks_util::GetActiveDeskContainerId())
+      ->AddChild(window());
+  EXPECT_TRUE(RootWindowController::ForWindow(secondary_root)
+                  ->color_provider_source()
+                  ->observers_for_testing()
+                  .HasObserver(GetShadow()));
+
+  // Remove secondary root window. The window will be reparent to primary
+  // display, the resize shadow will observe the color provider source of
+  // primary root window, and there should be no crash.
+  display_manager()->AddRemoveDisplay();
+  EXPECT_TRUE(Shell::GetPrimaryRootWindowController()
+                  ->color_provider_source()
+                  ->observers_for_testing()
+                  .HasObserver(GetShadow()));
 }
 
 }  // namespace ash

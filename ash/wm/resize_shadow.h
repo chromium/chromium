@@ -68,6 +68,9 @@ class ResizeShadow : public ui::ColorProviderSourceObserver {
   // ui::ColorProviderSourceObserver:
   void OnColorProviderChanged() override;
 
+  // Called when the observed window is parented to a root window.
+  void OnWindowParentToRootWindow();
+
   void UpdateShadowLayer();
 
   // Shows resize effects for one or more edges based on a |hit_test| code, such

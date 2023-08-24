@@ -166,7 +166,18 @@ ResizeShadow::ResizeShadow(aura::Window* window,
 ResizeShadow::~ResizeShadow() = default;
 
 void ResizeShadow::OnColorProviderChanged() {
-  UpdateShadowLayer();
+  // This function will also be called when the color provider source is
+  // destroyed. We should guarantee the color provider exists.
+  if (absl::holds_alternative<ui::ColorId>(params_.color) &&
+      GetColorProviderSource()) {
+    UpdateShadowLayer();
+  }
+}
+
+void ResizeShadow::OnWindowParentToRootWindow() {
+  if (absl::holds_alternative<ui::ColorId>(params_.color)) {
+    Observe(RootWindowController::ForWindow(window_)->color_provider_source());
+  }
 }
 
 void ResizeShadow::UpdateShadowLayer() {
