@@ -3201,6 +3201,12 @@ void LocalFrameView::UpdateStyleAndLayout() {
   }
 #endif
 
+  // Once all of the layout is finished, update the focused element. This
+  // shouldn't be done before since focusability check sometimes requires an
+  // layout update, which would recurse into this function. This update is only
+  // required if we still need layout though, which should be cleared already.
+  frame_->GetDocument()->ClearFocusedElementIfNeeded();
+
   if (did_layout) {
     bool visual_viewport_size_changed = false;
     if (frame_->IsMainFrame()) {

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -732,6 +733,80 @@ TEST_F(FencedFrameLocalFrameViewTest, DoNotDeferCommitsInFencedFrames) {
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault);
   GetDocument().SetDeferredCompositorCommitIsAllowed(true);
   EXPECT_FALSE(GetDocument().View()->WillDoPaintHoldingForFCP());
+}
+
+class ResizableLocalFrameViewTest : public testing::Test {
+ public:
+  void SetUp() override { web_view_helper_.Initialize(); }
+
+  void TearDown() override { web_view_helper_.Reset(); }
+
+  Document& GetDocument() {
+    return *static_cast<Document*>(
+        web_view_helper_.LocalMainFrame()->GetDocument());
+  }
+
+  void UpdateAllLifecyclePhasesForTest() {
+    GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  }
+
+  void SetHtmlInnerHTML(const char* content) {
+    GetDocument().documentElement()->setInnerHTML(String::FromUTF8(content));
+    UpdateAllLifecyclePhasesForTest();
+  }
+
+  void Resize(const gfx::Size& size) { web_view_helper_.Resize(size); }
+
+  void Focus() {
+    web_view_helper_.GetWebView()->MainFrameWidget()->SetFocus(true);
+  }
+
+ private:
+  frame_test_helpers::WebViewHelper web_view_helper_;
+};
+
+TEST_F(ResizableLocalFrameViewTest, FocusedElementStaysOnResizeWithCQ) {
+  Resize(gfx::Size(640, 480));
+  Focus();
+  test::RunPendingTasks();
+
+  UpdateAllLifecyclePhasesForTest();
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      #fixed {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 10px;
+        background: blue;
+      }
+      #container {
+        container-type: size;
+      }
+      @container (max-width: 630px) {
+        input {
+          background: blue;
+        }
+      }
+    </style>
+    <div id=fixed></div>
+    <div id=container>
+      <input id=input type=text></input>
+    </div>
+  )HTML");
+
+  auto* element = GetDocument().getElementById(AtomicString("input"));
+  ASSERT_TRUE(element);
+
+  element->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element, GetDocument().FocusedElement());
+
+  Resize(gfx::Size(600, 480));
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element, GetDocument().FocusedElement());
 }
 
 }  // namespace

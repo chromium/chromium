@@ -47,7 +47,6 @@ bool PostStyleUpdateScope::Apply() {
     return true;
   }
   ApplyAnimations();
-  document_.ClearFocusedElementIfNeeded();
   document_.RemoveFinishedTopLayerElements();
   return false;
 }
