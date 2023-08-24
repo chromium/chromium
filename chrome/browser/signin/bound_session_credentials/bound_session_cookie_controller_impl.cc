@@ -168,7 +168,7 @@ bool BoundSessionCookieControllerImpl::AreAllCookiesFresh() {
 }
 
 void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
-  cookie_refresh_timer_.Stop();
+  preemptive_cookie_refresh_timer_.Stop();
   if (refresh_cookie_fetcher_) {
     return;
   }
@@ -210,7 +210,7 @@ void BoundSessionCookieControllerImpl::MaybeScheduleCookieRotation() {
   // If a refresh task is already scheduled, this will reschedule it.
   // `base::Unretained(this)` is safe because `this` owns
   // `cookie_rotation_timer_`.
-  cookie_refresh_timer_.Start(
+  preemptive_cookie_refresh_timer_.Start(
       FROM_HERE, refresh_in,
       base::BindRepeating(&BoundSessionCookieControllerImpl::MaybeRefreshCookie,
                           base::Unretained(this)));

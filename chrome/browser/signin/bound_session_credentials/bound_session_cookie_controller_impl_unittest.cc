@@ -200,8 +200,8 @@ class BoundSessionCookieControllerImplTest
     return it->second;
   }
 
-  base::OneShotTimer* cookie_refresh_timer() {
-    return &bound_session_cookie_controller()->cookie_refresh_timer_;
+  base::OneShotTimer* preemptive_cookie_refresh_timer() {
+    return &bound_session_cookie_controller()->preemptive_cookie_refresh_timer_;
   }
 
   base::OneShotTimer* resume_blocked_requests_timer() {
@@ -582,7 +582,7 @@ TEST_F(BoundSessionCookieControllerImplTest, ResumeBlockedRequestsOnTimeout) {
   // Fetcher reset.
   EXPECT_FALSE(cookie_fetcher());
   EXPECT_FALSE(resume_blocked_requests_timer()->IsRunning());
-  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+  EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -695,11 +695,12 @@ TEST_F(BoundSessionCookieControllerImplTest,
   ResetOnBoundSessionThrottlerParamsChangedCallCount();
   EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
-  EXPECT_TRUE(cookie_refresh_timer()->IsRunning());
+  EXPECT_TRUE(preemptive_cookie_refresh_timer()->IsRunning());
   base::TimeDelta expected_refresh_delay =
       bound_session_cookie_controller()->min_cookie_expiration_time() -
       base::Time::Now() - kCookieRefreshInterval;
-  EXPECT_EQ(cookie_refresh_timer()->GetCurrentDelay(), expected_refresh_delay);
+  EXPECT_EQ(preemptive_cookie_refresh_timer()->GetCurrentDelay(),
+            expected_refresh_delay);
   task_environment()->FastForwardBy(expected_refresh_delay);
   EXPECT_TRUE(cookie_fetcher());
   CompletePendingRefreshRequestIfAny();
@@ -708,7 +709,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        RescheduleCookieRotationOnlyIfMinimumExpirationDateChanged) {
   CompletePendingRefreshRequestIfAny();
-  EXPECT_TRUE(cookie_refresh_timer()->IsRunning());
+  EXPECT_TRUE(preemptive_cookie_refresh_timer()->IsRunning());
   task_environment()->FastForwardBy(base::Minutes(12));
 
   // We want to test that a cookie refresh is scheduled only when the minimum
@@ -720,7 +721,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
       BoundSessionRefreshCookieFetcher::Result::kServerTransientError,
       absl::nullopt);
   EXPECT_FALSE(cookie_fetcher());
-  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+  EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
   base::Time old_min_cookie_expiration =
       bound_session_cookie_controller()->min_cookie_expiration_time();
 
@@ -730,7 +731,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_EQ(bound_session_cookie_controller()->min_cookie_expiration_time(),
             old_min_cookie_expiration);
   // Cookie rotation is not scheduled.
-  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+  EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
 
   SetExpirationTimeAndNotify(k3PSIDTSCookieName, GetTimeInTenMinutes());
   // The expiration time of the other cookie is updated, and the minimum
@@ -738,7 +739,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   EXPECT_NE(bound_session_cookie_controller()->min_cookie_expiration_time(),
             old_min_cookie_expiration);
   // Cookie rotation scheduled.
-  EXPECT_TRUE(cookie_refresh_timer()->IsRunning());
+  EXPECT_TRUE(preemptive_cookie_refresh_timer()->IsRunning());
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -748,7 +749,7 @@ TEST_F(BoundSessionCookieControllerImplTest,
   SetExpirationTimeAndNotify(k1PSIDTSCookieName,
                              base::Time::Now() + kCookieRefreshInterval / 2);
   EXPECT_EQ(on_bound_session_throttler_params_changed_call_count(), 1u);
-  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+  EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
   EXPECT_TRUE(cookie_fetcher());
   CompletePendingRefreshRequestIfAny();
 }
@@ -756,8 +757,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
 TEST_F(BoundSessionCookieControllerImplTest,
        StopCookieRotationOnCookieRefresh) {
   EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
-  EXPECT_TRUE(cookie_refresh_timer()->IsRunning());
+  EXPECT_TRUE(preemptive_cookie_refresh_timer()->IsRunning());
   MaybeRefreshCookie();
-  EXPECT_FALSE(cookie_refresh_timer()->IsRunning());
+  EXPECT_FALSE(preemptive_cookie_refresh_timer()->IsRunning());
   CompletePendingRefreshRequestIfAny();
 }
