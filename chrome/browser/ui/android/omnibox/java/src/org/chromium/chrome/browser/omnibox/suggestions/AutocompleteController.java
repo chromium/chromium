@@ -198,6 +198,8 @@ public class AutocompleteController implements Destroyable {
                     AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
             return;
         }
+        // Skip suggestions from cache.
+        if (match.getNativeObjectRef() == 0L) return;
         AutocompleteControllerJni.get().deleteMatchElement(
                 mNativeController, match.getNativeObjectRef(), elementIndex);
     }
@@ -213,6 +215,8 @@ public class AutocompleteController implements Destroyable {
                     AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.DELETE_MATCH)) {
             return;
         }
+        // Skip suggestions from cache.
+        if (match.getNativeObjectRef() == 0L) return;
         AutocompleteControllerJni.get().deleteMatch(mNativeController, match.getNativeObjectRef());
     }
 
@@ -239,27 +243,26 @@ public class AutocompleteController implements Destroyable {
      * Called whenever a navigation happens from the omnibox to record metrics about the user's
      * interaction with the omnibox.
      *
-     * @param matchIndex The index of the suggestion that was selected.
-     * @param disposition The window open disposition.
-     * @param type The type of the selected suggestion.
-     * @param currentPageUrl The URL of the current page.
-     * @param pageClassification The page classification of the current tab.
-     * @param elapsedTimeSinceModified The number of ms that passed between the user first
-     *                                 modifying text in the omnibox and selecting a suggestion.
-     * @param completedLength The length of the default match's inline autocompletion if any.
-     * @param webContents The web contents for the tab where the selected suggestion will be shown.
+     * @param match AutocompleteMatch that was selected by the user
+     * @param suggestionLine the index of the line the match is presented on
+     * @param disposition the window open disposition
+     * @param currentPageUrl the URL of the current page
+     * @param pageClassification the page classification of the current tab
+     * @param elapsedTimeSinceModified the number of ms that passed between the user first
+     *         modifying text in the omnibox and selecting a suggestion
+     * @param completedLength the length of the default match's inline autocompletion if any
+     * @param webContents the web contents for the tab where the selected suggestion will be shown
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public void onSuggestionSelected(int matchIndex, int disposition, int type,
+    public void onSuggestionSelected(AutocompleteMatch match, int suggestionLine, int disposition,
             @NonNull GURL currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
             int completedLength, @Nullable WebContents webContents) {
         if (mNativeController == 0) return;
-        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.SELECT_MATCH)) {
-            return;
-        }
-        AutocompleteControllerJni.get().onSuggestionSelected(mNativeController, matchIndex,
-                disposition, currentPageUrl.getSpec(), pageClassification, elapsedTimeSinceModified,
-                completedLength, webContents);
+        // Skip suggestions from cache.
+        if (match.getNativeObjectRef() == 0L) return;
+        AutocompleteControllerJni.get().onSuggestionSelected(mNativeController,
+                match.getNativeObjectRef(), suggestionLine, disposition, currentPageUrl.getSpec(),
+                pageClassification, elapsedTimeSinceModified, completedLength, webContents);
     }
 
     /**
@@ -375,9 +378,10 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteControllerAndroid, String text, boolean focusedFromFakebox);
         void stop(long nativeAutocompleteControllerAndroid, boolean clearResults);
         void resetSession(long nativeAutocompleteControllerAndroid);
-        void onSuggestionSelected(long nativeAutocompleteControllerAndroid, int matchIndex,
-                int disposition, String currentPageUrl, int pageClassification,
-                long elapsedTimeSinceModified, int completedLength, WebContents webContents);
+        void onSuggestionSelected(long nativeAutocompleteControllerAndroid,
+                long nativeAutocompleteMatch, int matchIndex, int disposition,
+                String currentPageUrl, int pageClassification, long elapsedTimeSinceModified,
+                int completedLength, WebContents webContents);
         boolean onSuggestionTouchDown(
                 long nativeAutocompleteControllerAndroid, int matchIndex, WebContents webContents);
         void onOmniboxFocused(long nativeAutocompleteControllerAndroid, String omniboxText,

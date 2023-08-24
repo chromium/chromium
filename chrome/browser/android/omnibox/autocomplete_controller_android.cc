@@ -297,7 +297,8 @@ void AutocompleteControllerAndroid::ResetSession(JNIEnv* env) {
 
 void AutocompleteControllerAndroid::OnSuggestionSelected(
     JNIEnv* env,
-    jint match_index,
+    uintptr_t match_ptr,
+    int suggestion_line,
     const jint j_window_open_disposition,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
@@ -310,7 +311,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(j_web_contents);
 
-  const auto& match = autocomplete_controller_->result().match_at(match_index);
+  const auto& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
   SuggestionAnswer::LogAnswerUsed(match.answer);
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
@@ -345,7 +346,7 @@ void AutocompleteControllerAndroid::OnSuggestionSelected(
           : input_.text(),
       false,                /* don't know */
       input_.type(), false, /* not keyword mode */
-      OmniboxEventProto::INVALID, true, OmniboxPopupSelection(match_index),
+      OmniboxEventProto::INVALID, true, OmniboxPopupSelection(suggestion_line),
       static_cast<WindowOpenDisposition>(j_window_open_disposition), false,
       sessions::SessionTabHelper::IdForTab(web_contents),
       OmniboxEventProto::PageClassification(j_page_classification),

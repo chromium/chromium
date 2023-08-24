@@ -504,7 +504,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     @Override
     public void onSwitchToTab(AutocompleteMatch suggestion, int matchIndex) {
         if (maybeSwitchToTab(matchIndex)) {
-            recordMetrics(matchIndex, WindowOpenDisposition.SWITCH_TO_TAB, suggestion);
+            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
         } else {
             onSuggestionClicked(suggestion, matchIndex, suggestion.getUrl());
         }
@@ -871,7 +871,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             int transition = suggestion.getTransition();
             int type = suggestion.getType();
 
-            recordMetrics(matchIndex, WindowOpenDisposition.CURRENT_TAB, suggestion);
+            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.CURRENT_TAB);
             if (((transition & PageTransition.CORE_MASK) == PageTransition.TYPED)
                     && url.equals(mDataProvider.getCurrentGurl())) {
                 // When the user hit enter on the existing permanent URL, treat it like a
@@ -1047,13 +1047,13 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
      * Called whenever a navigation happens from the omnibox to record metrics about the user's
      * interaction with the omnibox.
      *
-     * @param matchIndex The index of the suggestion that was selected.
-     * @param disposition The window open disposition.
-     * @param suggestion The suggestion selected.
+     * @param match the selected AutocompleteMatch
+     * @param suggestionLine the index of the suggestion line that holds selected match
+     * @param disposition the window open disposition
      */
-    private void recordMetrics(int matchIndex, int disposition, AutocompleteMatch suggestion) {
+    private void recordMetrics(AutocompleteMatch match, int suggestionLine, int disposition) {
         OmniboxMetrics.recordUsedSuggestionFromCache(mAutocompleteResult.isFromCachedResult());
-        OmniboxMetrics.recordTouchDownPrefetchResult(suggestion, mLastPrefetchStartedSuggestion);
+        OmniboxMetrics.recordTouchDownPrefetchResult(match, mLastPrefetchStartedSuggestion);
 
         // Do not attempt to record other metrics for cached suggestions if the source of the list
         // is local cache. These suggestions do not have corresponding native objects and will fail
@@ -1069,9 +1069,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
         WebContents webContents =
                 mDataProvider.hasTab() ? mDataProvider.getTab().getWebContents() : null;
 
-        mAutocomplete.onSuggestionSelected(matchIndex, disposition, suggestion.getType(),
-                currentPageUrl, pageClassification, elapsedTimeSinceModified, autocompleteLength,
-                webContents);
+        mAutocomplete.onSuggestionSelected(match, suggestionLine, disposition, currentPageUrl,
+                pageClassification, elapsedTimeSinceModified, autocompleteLength, webContents);
     }
 
     @Override

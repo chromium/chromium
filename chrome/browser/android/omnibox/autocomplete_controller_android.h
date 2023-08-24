@@ -59,7 +59,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
 
   void OnSuggestionSelected(
       JNIEnv* env,
-      jint match_index,
+      uintptr_t match_ptr,
+      int suggestion_line,
       const jint j_window_open_disposition,
       const base::android::JavaParamRef<jstring>& j_current_url,
       jint j_page_classification,

@@ -83,6 +83,7 @@ public class MostVisitedTilesTest {
     private static final String START_PAGE_LOCATION = "/echo/start.html";
     private static final String SEARCH_QUERY = "related search query";
     private static final int MV_TILE_CAROUSEL_MATCH_POSITION = 1;
+    private static final long MV_TILE_NATIVE_HANDLE = 0xfce2;
 
     public final @Rule ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -163,7 +164,9 @@ public class MostVisitedTilesTest {
         builder.setType(OmniboxSuggestionType.TILE_NAVSUGGEST);
         builder.setSuggestTiles(Arrays.asList(new SuggestTile[] {mTile1, mTile2, mTile3}));
         builder.setDeletable(true);
-        autocompleteResult.getSuggestionsList().add(builder.build());
+        var match = builder.build();
+        match.updateNativeObjectRef(MV_TILE_NATIVE_HANDLE);
+        autocompleteResult.getSuggestionsList().add(match);
         builder.reset();
 
         // Third suggestion - search query with a header.
@@ -312,7 +315,7 @@ public class MostVisitedTilesTest {
         CriteriaHelper.pollUiThread(() -> { return manager.getCurrentDialogForTest() == null; });
 
         verify(mAutocompleteControllerJniMock, times(1))
-                .deleteMatchElement(anyLong(), eq(0L), eq(tileToDelete));
+                .deleteMatchElement(anyLong(), eq(MV_TILE_NATIVE_HANDLE), eq(tileToDelete));
     }
 
     @Test
