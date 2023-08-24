@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksProviderIter
 import org.chromium.chrome.browser.password_manager.GooglePasswordManagerUIProvider;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.survey.SurveyController;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
@@ -105,14 +104,6 @@ public abstract class AppHooks {
      * Returns a new {@link DirectActionCoordinator} instance, if available.
      */
     public @Nullable DirectActionCoordinator createDirectActionCoordinator() {
-        return null;
-    }
-
-    /**
-     * Creates a new {@link SurveyController}.
-     * @return The created {@link SurveyController}.
-     */
-    public SurveyController createSurveyController() {
         return null;
     }
 
