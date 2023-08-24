@@ -19,9 +19,9 @@ namespace lacros_url_handling {
 bool IsNavigationInterceptable(const NavigateParams& params,
                                const GURL& source_url) {
   const auto qualifier = PageTransitionGetQualifier(params.transition);
-  // True if this was triggered by the user through a bookmark, or typing into
-  // the Omnibox.
-  const bool is_omnibox_navigation =
+  // True if this was triggered by the user typing into the Omnibox or via
+  // crosapi (see BrowserServiceLacros::OpenUrlImpl).
+  const bool is_omnibox_or_crosapi_navigation =
       (PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_TYPED) ||
        PageTransitionCoreTypeIs(params.transition,
                                 ui::PAGE_TRANSITION_GENERATED)) &&
@@ -34,7 +34,7 @@ bool IsNavigationInterceptable(const NavigateParams& params,
   const bool is_system_navigation =
       PageTransitionCoreTypeIs(params.transition, ui::PAGE_TRANSITION_LINK) &&
       source_url.SchemeIs(content::kChromeUIScheme);
-  return (is_omnibox_navigation || is_system_navigation ||
+  return (is_omnibox_or_crosapi_navigation || is_system_navigation ||
           is_bookmark_navigation);
 }
 

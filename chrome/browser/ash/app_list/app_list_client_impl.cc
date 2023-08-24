@@ -55,7 +55,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
@@ -685,16 +684,10 @@ void AppListClientImpl::OpenURL(Profile* profile,
                                 ui::PageTransition transition,
                                 WindowOpenDisposition disposition) {
   if (crosapi::browser_util::IsLacrosEnabled()) {
-    const GURL sanitized_url =
-        crosapi::gurl_os_handler_utils::SanitizeAshURL(url);
-    if (CanBeHandledAsSystemUrl(sanitized_url, transition)) {
-      crosapi::UrlHandlerAsh().OpenUrl(sanitized_url);
-    } else {
-      // Send the url to the current primary browser.
-      ash::NewWindowDelegate::GetPrimary()->OpenUrl(
-          url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
-          ConvertDisposition(disposition));
-    }
+    // Send the url to the current primary browser.
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ConvertDisposition(disposition));
   } else {
     NavigateParams params(profile, url, transition);
     params.disposition = disposition;
