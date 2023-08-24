@@ -455,6 +455,25 @@ void AuthenticatorRequestDialogModel::
       mechanism.callback.Run();
     }
   } else {
+    // If an allowlist was included and there are matches on a local
+    // authenticator, jump to it. There are no mechanisms for these
+    // authenticators so `priority_mechanism_index_` cannot handle this.
+    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
+        !transport_availability_.has_empty_allow_list) {
+      if (transport_availability_.has_icloud_keychain_credential ==
+              device::FidoRequestHandlerBase::RecognizedCredential::
+                  kHasRecognizedCredential &&
+          allow_icloud_keychain_) {
+        StartICloudKeychain();
+        return;
+      }
+      if (transport_availability_.has_platform_authenticator_credential ==
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential) {
+        StartPlatformAuthenticatorFlow();
+        return;
+      }
+    }
     SetCurrentStep(Step::kMechanismSelection);
   }
 }
@@ -588,21 +607,35 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
     if (!transport_availability_.recognized_credentials.empty()) {
       if (transport_availability_.has_empty_allow_list) {
         // For discoverable credential requests, show an account picker.
-        ephemeral_state_.creds_ =
-            transport_availability_.recognized_credentials;
+        if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+          ephemeral_state_.creds_ =
+              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID);
+        } else {
+          ephemeral_state_.creds_ =
+              transport_availability_.recognized_credentials;
+        }
         SetCurrentStep(ephemeral_state_.creds_.size() == 1
                            ? Step::kPreSelectSingleAccount
                            : Step::kPreSelectAccount);
       } else {
-        // For requests with an allow list, pre-select a random credential.
-        ephemeral_state_.creds_ = {
-            transport_availability_.recognized_credentials.front()};
+        // For requests with an allow list, pre-select a random credential. On
+        // macOS, iCloud Keychain is started via a different function, so don't
+        // select an iCloud Keychain credential.
+        if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+          const auto cred =
+              RecognizedCredentialsFor(device::AuthenticatorType::kTouchID)[0];
+          ephemeral_state_.creds_ = {std::move(cred)};
+        } else {
+          ephemeral_state_.creds_ = {
+              transport_availability_.recognized_credentials.front()};
+        }
 #if BUILDFLAG(IS_MAC)
         if (base::FeatureList::IsEnabled(
                 device::kWebAuthnSkipSingleAccountMacOS) &&
             (transport_availability_.user_verification_requirement ==
                  device::UserVerificationRequirement::kRequired ||
-             device::fido::mac::DeviceHasBiometricsAvailable())) {
+             local_biometrics_override_for_testing_.value_or(
+                 device::fido::mac::DeviceHasBiometricsAvailable()))) {
           // If it's not preferable to complete the request by clicking
           // "Continue" then don't show the account selection sheet.
           HideDialogAndDispatchToPlatformAuthenticator();
@@ -1261,6 +1294,11 @@ void AuthenticatorRequestDialogModel::set_has_icloud_drive_enabled(
   has_icloud_drive_enabled_ = is_enabled;
 }
 
+void AuthenticatorRequestDialogModel::set_local_biometrics_override_for_testing(
+    bool is_enabled) {
+  local_biometrics_override_for_testing_ = is_enabled;
+}
+
 #endif
 
 base::WeakPtr<AuthenticatorRequestDialogModel>
@@ -1356,6 +1394,18 @@ void AuthenticatorRequestDialogModel::StartWinNativeApi() {
 
 void AuthenticatorRequestDialogModel::StartICloudKeychain() {
   DCHECK(transport_availability_.has_icloud_keychain);
+  if (transport_availability_.has_icloud_keychain_credential ==
+          device::FidoRequestHandlerBase::RecognizedCredential::
+              kHasRecognizedCredential &&
+      !transport_availability_.has_empty_allow_list) {
+    // For requests with an allow list, pre-select a random credential.
+    const auto cred =
+        RecognizedCredentialsFor(device::AuthenticatorType::kICloudKeychain)[0];
+    account_preselected_callback_.Run(device::PublicKeyCredentialDescriptor(
+        device::CredentialType::kPublicKey, cred.cred_id,
+        {AuthenticatorTransport::kInternal}));
+  }
+
   HideDialogAndDispatchToPlatformAuthenticator(
       device::AuthenticatorType::kICloudKeychain);
 }
@@ -1798,32 +1848,35 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     if (mechanisms_.size() == 1) {
       return 0;
     }
-    // The index and info of the credential that the UI should default to.
-    absl::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
-        best_cred;
-    bool multiple_distinct_creds = false;
 
-    for (size_t i = 0; i < mechanisms_.size(); ++i) {
-      const auto& type = mechanisms_[i].type;
-      if (absl::holds_alternative<Mechanism::Credential>(type)) {
-        const Mechanism::CredentialInfo* cred_info =
-            &absl::get<Mechanism::Credential>(type).value();
+    if (transport_availability_.has_empty_allow_list) {
+      // The index and info of the credential that the UI should default to.
+      absl::optional<std::pair<size_t, const Mechanism::CredentialInfo*>>
+          best_cred;
+      bool multiple_distinct_creds = false;
 
-        if (!best_cred.has_value()) {
-          best_cred = std::make_pair(i, cred_info);
-        } else if (best_cred->second->user_id == cred_info->user_id) {
-          if (SourcePriority(cred_info->source) >
-              SourcePriority(best_cred->second->source)) {
+      for (size_t i = 0; i < mechanisms_.size(); ++i) {
+        const auto& type = mechanisms_[i].type;
+        if (absl::holds_alternative<Mechanism::Credential>(type)) {
+          const Mechanism::CredentialInfo* cred_info =
+              &absl::get<Mechanism::Credential>(type).value();
+
+          if (!best_cred.has_value()) {
             best_cred = std::make_pair(i, cred_info);
+          } else if (best_cred->second->user_id == cred_info->user_id) {
+            if (SourcePriority(cred_info->source) >
+                SourcePriority(best_cred->second->source)) {
+              best_cred = std::make_pair(i, cred_info);
+            }
+          } else {
+            multiple_distinct_creds = true;
           }
-        } else {
-          multiple_distinct_creds = true;
         }
       }
-    }
-    // If there one of the passkey is a valid default, go to that.
-    if (!multiple_distinct_creds && best_cred.has_value()) {
-      return best_cred->first;
+      // If there one of the passkey is a valid default, go to that.
+      if (!multiple_distinct_creds && best_cred.has_value()) {
+        return best_cred->first;
+      }
     }
 
     // If it's caBLEv1, or server-linked caBLEv2, jump to that.
@@ -1989,6 +2042,20 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   }
 
   return absl::nullopt;
+}
+
+std::vector<device::DiscoverableCredentialMetadata>
+AuthenticatorRequestDialogModel::RecognizedCredentialsFor(
+    device::AuthenticatorType source) {
+  std::vector<device::DiscoverableCredentialMetadata> ret;
+  for (const auto& cred : transport_availability_.recognized_credentials) {
+    if (cred.source == source ||
+        // kOther is also accepted for unittests.
+        cred.source == device::AuthenticatorType::kOther) {
+      ret.push_back(cred);
+    }
+  }
+  return ret;
 }
 
 void AuthenticatorRequestDialogModel::

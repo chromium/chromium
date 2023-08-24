@@ -144,6 +144,7 @@ enum class TransportAvailabilityParam {
   kBleAccessDenied,
   kHasICloudKeychain,
   kCreateInICloudKeychain,
+  kNoTouchId,
 };
 
 base::StringPiece TransportAvailabilityParamToString(
@@ -189,6 +190,8 @@ base::StringPiece TransportAvailabilityParamToString(
       return "kHasICloudKeychain";
     case TransportAvailabilityParam::kCreateInICloudKeychain:
       return "kCreateInICloudKeychain";
+    case TransportAvailabilityParam::kNoTouchId:
+      return "kNoTouchId";
   }
 }
 
@@ -229,7 +232,7 @@ const device::DiscoverableCredentialMetadata
 const device::DiscoverableCredentialMetadata kCred1FromICloudKeychain(
     device::AuthenticatorType::kICloudKeychain,
     "rp.com",
-    {1},
+    {4},
     kUser1);
 const device::DiscoverableCredentialMetadata
     kCred2(device::AuthenticatorType::kOther, "rp.com", {1}, kUser2);
@@ -303,6 +306,8 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       TransportAvailabilityParam::kHasICloudKeychain;
   [[maybe_unused]] const auto create_ickc =
       TransportAvailabilityParam::kCreateInICloudKeychain;
+  [[maybe_unused]] const auto no_touchid =
+      TransportAvailabilityParam::kNoTouchId;
   using c = AuthenticatorRequestDialogModel::Mechanism::Credential;
   using t = AuthenticatorRequestDialogModel::Mechanism::Transport;
   using p = AuthenticatorRequestDialogModel::Mechanism::Phone;
@@ -320,7 +325,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   const auto qr = Step::kCableV2QRCode;
   const auto pconf = Step::kPhoneConfirmationSheet;
   const auto hero = Step::kSelectPriorityMechanism;
-
   using psync = base::StrongAlias<class PhoneFromSyncTag, std::string>;
   using pqr = base::StrongAlias<class PhoneFromQrTag, std::string>;
   using PhoneVariant = absl::variant<psync, pqr>;
@@ -353,7 +357,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       // If the platform authenticator has a credential it should activate.
 #if defined(NEW_UI)
       {L, ga, {usb, internal}, {has_plat, one_cred}, {}, {c(cred1), t(usb)},
-       hero},
+       plat_ui},
+#if BUILDFLAG(IS_MAC)
+       // Without Touch ID, the profile authenticator will show a confirmation
+       // prompt.
+      {L, ga, {usb, internal}, {has_plat, one_cred, no_touchid}, {},
+       {c(cred1), t(usb)}, use_pk},
+#endif
       // Even with an empty allow list.
       {L,
        ga,
@@ -786,7 +796,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
        {only_hybrid_or_internal, has_plat},
        {pqr("a")},
        {p("a"), add},
-       mss},
+       plat_ui},
       {L,
        ga,
        {usb, cable, internal},
@@ -902,15 +912,20 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       {L,
        ga,
        {usb, cable, internal},
-       {one_cred},
+       {one_cred, has_plat},
        {psync("a")},
        {c(cred1), add},
-       hero},
-      // Single phone credential.
+#if BUILDFLAG(IS_MAC)
+       plat_ui,
+#else
+       use_pk,
+#endif
+     },
+      // Single phone credential with empty allow list.
       {L,
        ga,
        {usb, cable, internal},
-       {one_phone_cred},
+       {one_phone_cred, empty_al},
        {psync("a")},
        {c(phonecred1), add},
        hero},
@@ -1123,6 +1138,13 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
                        TransportAvailabilityParam::kCreateInICloudKeychain)) {
       model.set_should_create_in_icloud_keychain(true);
     }
+#if BUILDFLAG(IS_MAC)
+    if (base::Contains(test.params, TransportAvailabilityParam::kNoTouchId)) {
+      model.set_local_biometrics_override_for_testing(false);
+    } else {
+      model.set_local_biometrics_override_for_testing(true);
+    }
+#endif
 
     if (has_v2_cable_extension.has_value() || !test.phones.empty() ||
         base::Contains(test.transports,
@@ -1864,51 +1886,83 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIWindowsCancel) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-TEST_F(AuthenticatorRequestDialogModelTest, PreSelectWithEmptyAllowList) {
-  AuthenticatorRequestDialogModel model(main_rfh());
-  int preselect_num_called = 0;
-  model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
-      [&preselect_num_called](device::PublicKeyCredentialDescriptor cred) {
-        EXPECT_EQ(cred.id, std::vector<uint8_t>({0}));
-        ++preselect_num_called;
-      }));
-  int request_num_called = 0;
-  model.SetRequestCallback(base::BindLambdaForTesting(
-      [&request_num_called](const std::string& authenticator_id) {
-        EXPECT_EQ(authenticator_id, "internal-authenticator");
-        ++request_num_called;
-      }));
+TEST_F(AuthenticatorRequestDialogModelTest, PreSelect) {
+  for (const bool has_empty_allow_list : {false, true}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "has_empty_allow_list=" << has_empty_allow_list);
 
-  model.saved_authenticators().AddAuthenticator(
-      AuthenticatorReference(/*device_id=*/"usb-authenticator",
-                             AuthenticatorTransport::kUsbHumanInterfaceDevice,
-                             device::AuthenticatorType::kOther));
-  model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
-      /*device_id=*/"internal-authenticator", AuthenticatorTransport::kInternal,
-      device::AuthenticatorType::kOther));
+    AuthenticatorRequestDialogModel model(main_rfh());
+    int preselect_num_called = 0;
+    model.SetAccountPreselectedCallback(base::BindLambdaForTesting(
+        [&preselect_num_called](device::PublicKeyCredentialDescriptor cred) {
+          EXPECT_EQ(cred.id, std::vector<uint8_t>({1}));
+          ++preselect_num_called;
+        }));
+    int request_num_called = 0;
+    model.SetRequestCallback(base::BindLambdaForTesting(
+        [&request_num_called](const std::string& authenticator_id) {
+          EXPECT_EQ(authenticator_id, "internal-authenticator");
+          ++request_num_called;
+        }));
 
-  TransportAvailabilityInfo transports_info;
-  transports_info.request_type = device::FidoRequestType::kGetAssertion;
-  transports_info.available_transports = kAllTransports;
-  transports_info.has_empty_allow_list = true;
-  transports_info.has_platform_authenticator_credential = device::
-      FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
-  transports_info.recognized_credentials = {kCred1, kCred2};
-  model.StartFlow(std::move(transports_info),
-                  /*is_conditional_mediation=*/false);
+    model.saved_authenticators().AddAuthenticator(
+        AuthenticatorReference(/*device_id=*/"usb-authenticator",
+                               AuthenticatorTransport::kUsbHumanInterfaceDevice,
+                               device::AuthenticatorType::kOther));
+    model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
+        /*device_id=*/"internal-authenticator",
+        AuthenticatorTransport::kInternal, device::AuthenticatorType::kOther));
+
+    TransportAvailabilityInfo transports_info;
+    transports_info.request_type = device::FidoRequestType::kGetAssertion;
+    transports_info.available_transports = kAllTransports;
+    transports_info.has_empty_allow_list = has_empty_allow_list;
+    transports_info.user_verification_requirement =
+        device::UserVerificationRequirement::kRequired;
+    transports_info.has_platform_authenticator_credential = device::
+        FidoRequestHandlerBase::RecognizedCredential::kHasRecognizedCredential;
+    transports_info.recognized_credentials = {kCred1FromICloudKeychain, kCred2};
+    model.StartFlow(std::move(transports_info),
+                    /*is_conditional_mediation=*/false);
 #if defined(NEW_UI)
-  EXPECT_EQ(model.current_step(), Step::kMechanismSelection);
+    if (has_empty_allow_list) {
+      EXPECT_EQ(model.current_step(), Step::kSelectPriorityMechanism);
+    } else {
+      EXPECT_EQ(model.current_step(), Step::kNotStarted);
+    }
 #else
-  EXPECT_EQ(model.current_step(), Step::kPreSelectAccount);
+    if (has_empty_allow_list) {
+      EXPECT_EQ(model.current_step(), Step::kPreSelectAccount);
+    } else {
+      EXPECT_EQ(model.current_step(), Step::kPreSelectSingleAccount);
+    }
 #endif
-  EXPECT_EQ(request_num_called, 0);
+    task_environment()->RunUntilIdle();
 
-  // After preselecting an account, the request should be dispatched to the
-  // platform authenticator.
-  model.OnAccountPreselected(kCred1.cred_id);
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(preselect_num_called, 1);
-  EXPECT_EQ(request_num_called, 1);
+    if (has_empty_allow_list) {
+      EXPECT_EQ(preselect_num_called, 0);
+      EXPECT_EQ(request_num_called, 0);
+      // After preselecting an account, the request should be dispatched to the
+      // platform authenticator.
+      model.OnAccountPreselected(kCred2.cred_id);
+      task_environment()->RunUntilIdle();
+      EXPECT_EQ(preselect_num_called, 1);
+      EXPECT_EQ(request_num_called, 1);
+    } else {
+      EXPECT_EQ(request_num_called, 0);
+      ASSERT_EQ(model.creds().size(), 1u);
+      if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
+        // `kCred1FromICloudKeychain` is an iCloud Keychain credential so,
+        // even though it's in `recognized_credentials`, it shouldn't have been
+        // used by the standard platform authenticator code.
+        EXPECT_EQ(model.creds()[0].cred_id, std::vector<uint8_t>({1}));
+      } else {
+        // Without the new UI flag set, the iCloud Keychain credential won't
+        // be filtered out when triggering the platform authenticator.
+        EXPECT_EQ(model.creds()[0].cred_id, std::vector<uint8_t>({4}));
+      }
+    }
+  }
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, ContactPriorityPhone) {
@@ -2112,6 +2166,7 @@ TEST_F(MultiplePlatformAuthenticatorsTest, DeduplicateAccounts) {
     transports_info.request_type = device::FidoRequestType::kGetAssertion;
     transports_info.available_transports = {AuthenticatorTransport::kInternal};
     transports_info.recognized_credentials = test.recognized_credentials;
+    transports_info.has_empty_allow_list = true;
 
     AuthenticatorRequestDialogModel model(main_rfh());
     model.set_allow_icloud_keychain(true);

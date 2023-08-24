@@ -645,6 +645,7 @@ class AuthenticatorRequestDialogModel {
                                    device::AuthenticatorType);
   void set_is_active_profile_authenticator_user(bool);
   void set_has_icloud_drive_enabled(bool);
+  void set_local_biometrics_override_for_testing(bool);
 #endif
 
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
@@ -750,6 +751,9 @@ class AuthenticatorRequestDialogModel {
   // IndexOfPriorityMechanism returns the index, in |mechanisms_|, of the
   // Mechanism that should be triggered immediately, if any.
   absl::optional<size_t> IndexOfPriorityMechanism();
+
+  std::vector<device::DiscoverableCredentialMetadata> RecognizedCredentialsFor(
+      device::AuthenticatorType source);
 
   // Identifier for the RenderFrameHost of the frame that initiated the current
   // request.
@@ -891,6 +895,12 @@ class AuthenticatorRequestDialogModel {
   // enabled. This is used as an approximation for whether iCloud Keychain
   // syncing is enabled.
   bool has_icloud_drive_enabled_ = false;
+
+  // local_biometrics_override_for_testing_ can be set in tests to override
+  // whether or not the this model should consider local biometrics to be
+  // available. Biometrics can be unavailable on Macs because they're not
+  // present (e.g. a Mac Mini) or because it's a laptop in clamshell mode.
+  absl::optional<bool> local_biometrics_override_for_testing_;
 #endif
 
   base::WeakPtrFactory<AuthenticatorRequestDialogModel> weak_factory_{this};
