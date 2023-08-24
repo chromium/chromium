@@ -811,6 +811,14 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
 
   idp_server()->SetConfigResponseDetails(config_details);
 
+  // Create a WebContents that represents the modal dialog, specifically
+  // the structure that the Identity Registry hangs to.
+  Shell* modal = CreateBrowser();
+  auto config_url = GURL(BaseIdpUrl());
+
+  modal->LoadURL(config_url);
+  EXPECT_TRUE(WaitForLoadStop(modal->web_contents()));
+
   auto mock = std::make_unique<
       ::testing::NiceMock<MockIdentityRequestDialogController>>();
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
@@ -818,8 +826,6 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   MockIdentityRequestDialogController* controller =
       static_cast<MockIdentityRequestDialogController*>(
           test_browser_client_->GetIdentityRequestDialogControllerForTests());
-
-  auto config_url = GURL(BaseIdpUrl());
 
   // Expects the account chooser to be opened. Selects the first account.
   EXPECT_CALL(*controller, ShowAccountsDialog(_, _, _, _, _, _, _))
@@ -829,11 +835,6 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
                  /* account_id=*/"not_real_account",
                  /* is_sign_in= */ true);
       }));
-
-  // Create a WebContents that represents the modal dialog, specifically
-  // the structure that the Identity Registry hangs to.
-  Shell* modal = CreateBrowser();
-  modal->LoadURL(config_url);
 
   base::RunLoop run_loop;
   EXPECT_CALL(*controller, ShowModalDialog(_, _))

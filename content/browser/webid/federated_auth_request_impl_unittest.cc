@@ -3157,7 +3157,12 @@ TEST_F(FederatedAuthRequestImplTest,
           base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
 
   RequestExpectations expectations = {
-      /*return_status=*/absl::nullopt, FederatedAuthRequestResult::kError,
+      /*return_status=*/absl::nullopt,
+      // When the RenderFrameHost changes on navigation, no console message is
+      // received, so pass FederatedAuthRequestResult::kSuccess.
+      main_rfh()->ShouldChangeRenderFrameHostOnSameSiteNavigation()
+          ? FederatedAuthRequestResult::kSuccess
+          : FederatedAuthRequestResult::kError,
       /*standalone_console_message=*/absl::nullopt,
       /*selected_idp_config_url=*/absl::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, kConfigurationValid);
