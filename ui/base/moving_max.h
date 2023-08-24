@@ -4,6 +4,7 @@
 #ifndef UI_BASE_MOVING_MAX_H_
 #define UI_BASE_MOVING_MAX_H_
 
+#include <stddef.h>
 #include <stdint.h>
 #include <vector>
 
