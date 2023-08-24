@@ -79,7 +79,6 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -388,8 +387,7 @@ void RecordBulkPinningMountFailureReason(const Profile* profile,
 
 // Observes drive disable Preference's change.
 class DriveIntegrationService::PreferenceWatcher
-    : public NetworkConnectionTracker::NetworkConnectionObserver,
-      public ash::NetworkStateHandlerObserver {
+    : public ash::NetworkStateHandlerObserver {
  public:
   using NetworkHandler = ash::NetworkHandler;
   using NetworkState = ash::NetworkState;
@@ -426,29 +424,24 @@ class DriveIntegrationService::PreferenceWatcher
   PreferenceWatcher& operator=(const PreferenceWatcher&) = delete;
 
   ~PreferenceWatcher() override {
-    if (integration_service_) {
-      content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(
-          this);
-      if (NetworkHandler::IsInitialized()) {
-        NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-      }
+    if (integration_service_ && NetworkHandler::IsInitialized()) {
+      NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
     }
   }
 
   void SetIntegrationService(DriveIntegrationService* integration_service) {
     integration_service_ = integration_service;
-    content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
-
     AddNetworkPortalDetectorObserver();
   }
 
   void UpdateSyncPauseState() {
-    if (ConnectionType type = ConnectionType::CONNECTION_UNKNOWN;
-        content::GetNetworkConnectionTracker()->GetConnectionType(
-            &type, base::BindOnce(&DriveIntegrationService::PreferenceWatcher::
-                                      OnConnectionChanged,
-                                  weak_ptr_factory_.GetWeakPtr()))) {
-      OnConnectionChanged(type);
+    if (!NetworkHandler::IsInitialized()) {
+      return;
+    }
+    ash::NetworkStateHandler* const handler =
+        NetworkHandler::Get()->network_state_handler();
+    if (const NetworkState* default_network = handler->DefaultNetwork()) {
+      PortalStateChanged(default_network, default_network->GetPortalState());
     }
   }
 
@@ -501,8 +494,19 @@ class DriveIntegrationService::PreferenceWatcher
   // NetworkStateHandlerObserver
   void PortalStateChanged(const NetworkState* default_network,
                           PortalState portal_state) override {
-    VLOG(1) << "PortalStateChanged: " << portal_state;
     portal_state_ = portal_state;
+
+    bool pause_syncing = false;
+    if (default_network && IsOnline()) {
+      bool is_cellular = default_network->GetNetworkTechnologyType() ==
+                         NetworkState::NetworkTechnologyType::kCellular;
+      pause_syncing = is_cellular && pref_service_->GetBoolean(
+                                         prefs::kDisableDriveOverCellular);
+    }
+
+    VLOG(1) << "PortalStateChanged: pause_syncing: " << pause_syncing
+            << ", is_online: " << IsOnline();
+    integration_service_->UpdateNetworkState(pause_syncing, !IsOnline());
 
     if (integration_service_->remount_when_online_ && IsOnline()) {
       integration_service_->remount_when_online_ = false;
@@ -517,21 +521,6 @@ class DriveIntegrationService::PreferenceWatcher
 
   void OnShuttingDown() override {
     NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-  }
-
-  // NetworkConnectionTracker::NetworkConnectionObserver
-  void OnConnectionChanged(const ConnectionType type) override {
-    DCHECK(integration_service_);
-
-    const bool online = type != ConnectionType::CONNECTION_NONE;
-    const bool pause_syncing =
-        NetworkConnectionTracker::IsConnectionCellular(type) &&
-        pref_service_->GetBoolean(prefs::kDisableDriveOverCellular);
-
-    VLOG(1) << "OnConnectionChanged: {type: " << type << ", online: " << online
-            << ", pause_syncing: " << pause_syncing << "}";
-
-    integration_service_->UpdateNetworkState(pause_syncing, !online);
   }
 
   const raw_ptr<const Profile, ExperimentalAsh> profile_;
