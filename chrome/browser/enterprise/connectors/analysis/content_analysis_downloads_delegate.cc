@@ -82,9 +82,6 @@ absl::optional<GURL> ContentAnalysisDownloadsDelegate::GetCustomLearnMoreUrl()
 }
 
 bool ContentAnalysisDownloadsDelegate::BypassRequiresJustification() const {
-  if (!base::FeatureList::IsEnabled(kBypassJustificationEnabled))
-    return false;
-
   return bypass_justification_required_;
 }
 

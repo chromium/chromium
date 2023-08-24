@@ -776,7 +776,6 @@ INSTANTIATE_TEST_SUITE_P(
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:
   ContentAnalysisDialogPlainTests() {
-    scoped_feature_list_.InitAndEnableFeature(kBypassJustificationEnabled);
     ContentAnalysisDialog::SetShowDialogDelayForTesting(kNoDelay);
   }
   void OpenCallback() { ++times_open_called_; }
@@ -873,7 +872,6 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
  private:
   raw_ptr<ContentAnalysisDialog, DanglingUntriaged> dialog_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {

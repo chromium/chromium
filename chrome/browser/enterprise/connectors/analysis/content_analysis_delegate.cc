@@ -227,9 +227,6 @@ absl::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
 }
 
 bool ContentAnalysisDelegate::BypassRequiresJustification() const {
-  if (!base::FeatureList::IsEnabled(kBypassJustificationEnabled))
-    return false;
-
   return data_.settings.tags.count(final_result_tag_) &&
          data_.settings.tags.at(final_result_tag_).requires_justification;
 }
