@@ -1986,7 +1986,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <histogram name="ChromeOS.PlatformVerification.Result2"
     enum="ChromeOSPlatformVerificationResult2" expires_after="2024-02-04">
   <owner>erikchen@chromium.org</owner>
-  <owner>cros-hwsec+uma@chromium.org</owner>
+  <owner>cros-hwsec+uma@google.com</owner>
   <summary>
     The result of a platform verification attempt for content protection on
     Chrome OS. Does not include browser-related failures.
