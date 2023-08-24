@@ -22,7 +22,7 @@ import {
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 
-import type {Realm} from './realm.js';
+import type {Realm} from './Realm.js';
 
 type RealmFilter = {
   realmId?: Script.Realm;

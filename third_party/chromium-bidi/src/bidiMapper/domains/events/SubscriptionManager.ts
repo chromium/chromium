@@ -20,7 +20,7 @@ import {
   InvalidArgumentException,
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 /**
  * Returns the cartesian product of the given arrays.

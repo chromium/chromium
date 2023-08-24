@@ -17,10 +17,10 @@
 import {expect} from 'chai';
 import * as sinon from 'sinon';
 
-import {CdpTarget} from '../context/cdpTarget.js';
+import {CdpTarget} from '../context/CdpTarget.js';
 
 import {PreloadScriptStorage} from './PreloadScriptStorage.js';
-import {BidiPreloadScript} from './bidiPreloadScript.js';
+import {PreloadScript} from './PreloadScript.js';
 
 const MOCKED_UUID_1 = '00000000-0000-0000-0000-00000000000a';
 const MOCKED_UUID_2 = '00000000-0000-0000-0000-00000000000b';
@@ -114,8 +114,8 @@ describe('PreloadScriptStorage', () => {
     sinon.restore();
   });
 
-  function createPreloadScript(id: string): BidiPreloadScript {
-    const preloadScript = sinon.createStubInstance(BidiPreloadScript);
+  function createPreloadScript(id: string): PreloadScript {
+    const preloadScript = sinon.createStubInstance(PreloadScript);
     sinon.stub(preloadScript, 'id').get(() => id);
     sinon.stub(preloadScript, 'targetIds').get(() => new Set([CDP_TARGET_ID]));
     return preloadScript;

@@ -23,7 +23,7 @@
 import type Protocol from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
-import type {CdpTarget} from '../context/cdpTarget.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';

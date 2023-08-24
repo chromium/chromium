@@ -19,7 +19,7 @@ import {expect} from 'chai';
 
 import type {Script} from '../../../protocol/protocol.js';
 
-import {logMessageFormatter} from './logHelper.js';
+import {getRemoteValuesText, logMessageFormatter} from './logHelper.js';
 
 const STRING_FORMAT_TEST_CASES = [
   {
@@ -294,83 +294,110 @@ function testPattern(
   expect(result).to.equal(expected);
 }
 
-describe('logMessageFormatter', () => {
-  describe('respect %d argument', () => {
-    const FORMAT_STRING = '%d';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.d);
-      });
-    }
+describe('logHelper', () => {
+  describe('getRemoteValuesText', () => {
+    it('single line input test', () => {
+      const inputArgs = [
+        {type: 'string', value: 'line 1'},
+      ] satisfies Script.RemoteValue[];
+      const outputString = 'line 1';
+      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+    });
+
+    it('multiple line input test', () => {
+      const inputArgs = [
+        {type: 'string', value: 'line 1'},
+        {type: 'string', value: 'line 2'},
+      ] satisfies Script.RemoteValue[];
+      const outputString = 'line 1\u0020line 2';
+      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+    });
+
+    it('no input test', () => {
+      const inputArgs = [] satisfies Script.RemoteValue[];
+      const outputString = '';
+      expect(getRemoteValuesText(inputArgs, false)).to.equal(outputString);
+    });
   });
 
-  describe('respect %f argument', () => {
-    const FORMAT_STRING = '%f';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.f);
-      });
-    }
-  });
+  describe('logMessageFormatter', () => {
+    describe('respect %d argument', () => {
+      const FORMAT_STRING = '%d';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.d);
+        });
+      }
+    });
 
-  describe('respect %s argument', () => {
-    const FORMAT_STRING = '%s';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.s);
-      });
-    }
-  });
+    describe('respect %f argument', () => {
+      const FORMAT_STRING = '%f';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.f);
+        });
+      }
+    });
 
-  describe('respect %o argument', () => {
-    const FORMAT_STRING = '%o';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.o);
-      });
-    }
-  });
+    describe('respect %s argument', () => {
+      const FORMAT_STRING = '%s';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.s);
+        });
+      }
+    });
 
-  describe('respect %O argument', () => {
-    const FORMAT_STRING = '%O';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.O);
-      });
-    }
-  });
+    describe('respect %o argument', () => {
+      const FORMAT_STRING = '%o';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.o);
+        });
+      }
+    });
 
-  describe('respect %c argument', () => {
-    const FORMAT_STRING = '%c';
-    for (const testcase of STRING_FORMAT_TEST_CASES) {
-      it(`${testcase.name} value`, () => {
-        testPattern(FORMAT_STRING, testcase.arg, testcase.expected.c);
-      });
-    }
-  });
+    describe('respect %O argument', () => {
+      const FORMAT_STRING = '%O';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.O);
+        });
+      }
+    });
 
-  it('more values', () => {
-    const inputArgs = [
-      {type: 'string', value: 'test string %i string test'},
-      {type: 'number', value: 1},
-      {type: 'number', value: 2},
-    ] satisfies Script.RemoteValue[];
+    describe('respect %c argument', () => {
+      const FORMAT_STRING = '%c';
+      for (const testcase of STRING_FORMAT_TEST_CASES) {
+        it(`${testcase.name} value`, () => {
+          testPattern(FORMAT_STRING, testcase.arg, testcase.expected.c);
+        });
+      }
+    });
 
-    expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
-      'More value is provided: "test string %i string test 1 2"'
-    );
-  });
+    it('more values', () => {
+      const inputArgs = [
+        {type: 'string', value: 'test string %i string test'},
+        {type: 'number', value: 1},
+        {type: 'number', value: 2},
+      ] satisfies Script.RemoteValue[];
 
-  it('less values', () => {
-    const inputArgs = [
-      {type: 'string', value: 'test string %i %i string test'},
-      {type: 'number', value: 1},
-    ] satisfies Script.RemoteValue[];
-    const outputString =
-      'Less value is provided: "test string %i %i string test 1"';
+      expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+        'More value is provided: "test string %i string test 1 2"'
+      );
+    });
 
-    expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
-      outputString
-    );
+    it('less values', () => {
+      const inputArgs = [
+        {type: 'string', value: 'test string %i %i string test'},
+        {type: 'number', value: 1},
+      ] satisfies Script.RemoteValue[];
+      const outputString =
+        'Less value is provided: "test string %i %i string test 1"';
+
+      expect(logMessageFormatter.bind(undefined, inputArgs)).to.throw(
+        outputString
+      );
+    });
   });
 });

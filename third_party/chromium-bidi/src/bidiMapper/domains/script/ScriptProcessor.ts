@@ -21,13 +21,13 @@ import {
   NoSuchScriptException,
 } from '../../../protocol/protocol';
 import type {LoggerFn} from '../../../utils/log';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage';
-import type {CdpTarget} from '../context/cdpTarget';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage';
+import type {CdpTarget} from '../context/CdpTarget';
 
 import type {PreloadScriptStorage} from './PreloadScriptStorage';
-import {BidiPreloadScript} from './bidiPreloadScript';
-import type {Realm} from './realm';
-import type {RealmStorage} from './realmStorage';
+import {PreloadScript} from './PreloadScript';
+import type {Realm} from './Realm';
+import type {RealmStorage} from './RealmStorage';
 
 export class ScriptProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
@@ -50,7 +50,7 @@ export class ScriptProcessor {
   async addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
-    const preloadScript = new BidiPreloadScript(params, this.#logger);
+    const preloadScript = new PreloadScript(params, this.#logger);
     this.#preloadScriptStorage.addPreloadScript(preloadScript);
 
     const cdpTargets = new Set<CdpTarget>(

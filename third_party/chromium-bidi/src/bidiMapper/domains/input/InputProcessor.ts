@@ -21,7 +21,7 @@ import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import type {ActionOption} from '../input/ActionOption.js';
 import {SourceType} from '../input/InputSource.js';
 import type {InputState} from '../input/InputState.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class InputProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;

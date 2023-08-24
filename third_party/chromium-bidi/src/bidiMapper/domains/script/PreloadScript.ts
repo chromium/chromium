@@ -20,10 +20,10 @@ import type Protocol from 'devtools-protocol';
 
 import type {Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {CdpTarget} from '../context/cdpTarget.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 import type {LoggerFn} from '../../../utils/log.js';
 
-import {ChannelProxy} from './channelProxy.js';
+import {ChannelProxy} from './ChannelProxy.js';
 
 type CdpPreloadScript = {
   /** CDP target. Includes session ID and target ID. */
@@ -42,7 +42,7 @@ type CdpPreloadScript = {
  * BiDi IDs are needed by the mapper to keep track of potential multiple CDP IDs
  * in the client.
  */
-export class BidiPreloadScript {
+export class PreloadScript {
   /** BiDi ID, an automatically generated UUID. */
   readonly #id: string = uuidv4();
   /** CDP preload scripts. */

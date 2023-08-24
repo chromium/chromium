@@ -23,7 +23,7 @@ import {
   Script,
 } from '../../../protocol/protocol.js';
 import {assert} from '../../../utils/assert.js';
-import type {BrowsingContextImpl} from '../context/browsingContextImpl.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 
 import type {ActionOption} from './ActionOption.js';
 import type {KeySource, PointerSource, WheelSource} from './InputSource.js';

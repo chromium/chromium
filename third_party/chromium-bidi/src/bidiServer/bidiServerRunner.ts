@@ -142,10 +142,10 @@ export class BidiServerRunner {
         jsonBody?.capabilities?.alwaysMatch?.['goog:chromeOptions'];
       debugInternal('new WS request received:', request.resourceURL.path);
 
-      const bidiServer = new BidiServer();
+      const transport = new MessageTransport();
 
       const onBidiConnectionClosed = await onNewBidiConnectionOpen(
-        bidiServer,
+        transport,
         chromeOptions?.args
       );
 
@@ -166,7 +166,7 @@ export class BidiServerRunner {
         const plainCommandData = message.utf8Data;
 
         debugRecv(plainCommandData);
-        bidiServer.onMessage(plainCommandData);
+        transport.onMessage(plainCommandData);
       });
 
       connection.on('close', () => {
@@ -179,7 +179,7 @@ export class BidiServerRunner {
         onBidiConnectionClosed();
       });
 
-      bidiServer.initialize((messageStr) => {
+      transport.initialize((messageStr) => {
         return this.#sendClientMessageStr(messageStr, connection);
       });
     });
@@ -241,7 +241,7 @@ export class BidiServerRunner {
   }
 }
 
-class BidiServer implements ITransport {
+class MessageTransport implements ITransport {
   #handlers: ((message: string) => void)[] = [];
   #sendBidiMessage: ((message: string) => Promise<void>) | null = null;
 

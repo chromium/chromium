@@ -24,13 +24,13 @@ import {
   UnknownErrorException,
   Script,
 } from '../../../protocol/protocol.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../events/EventManager.js';
 import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 
-import {ChannelProxy} from './channelProxy.js';
-import type {RealmStorage} from './realmStorage.js';
+import {ChannelProxy} from './ChannelProxy.js';
+import type {RealmStorage} from './RealmStorage.js';
 
 const SHARED_ID_DIVIDER = '_element_';
 

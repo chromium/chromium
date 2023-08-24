@@ -22,7 +22,7 @@ import {
   type BrowsingContext,
   ChromiumBidi,
 } from '../../../protocol/protocol.js';
-import {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {
   SubscriptionManager,

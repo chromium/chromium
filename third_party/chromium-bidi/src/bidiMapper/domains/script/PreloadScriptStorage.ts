@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {CdpTarget} from '../context/cdpTarget.js';
+import type {CdpTarget} from '../context/CdpTarget.js';
 
-import type {BidiPreloadScript} from './bidiPreloadScript.js';
+import type {PreloadScript} from './PreloadScript.js';
 
 /** BidiPreloadScripts can be filtered by BiDi ID or target ID. */
 export type BidiPreloadScriptFilter = Partial<
-  Pick<BidiPreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
+  Pick<PreloadScript, 'id'> & Pick<CdpTarget, 'targetId'>
 >;
 
 /**
@@ -28,10 +28,10 @@ export type BidiPreloadScriptFilter = Partial<
  */
 export class PreloadScriptStorage {
   /** Tracks all BiDi preload scripts.  */
-  readonly #scripts = new Set<BidiPreloadScript>();
+  readonly #scripts = new Set<PreloadScript>();
 
   /** Finds all entries that match the given filter. */
-  findPreloadScripts(filter?: BidiPreloadScriptFilter): BidiPreloadScript[] {
+  findPreloadScripts(filter?: BidiPreloadScriptFilter): PreloadScript[] {
     if (!filter) {
       return [...this.#scripts];
     }
@@ -50,7 +50,7 @@ export class PreloadScriptStorage {
     });
   }
 
-  addPreloadScript(preloadScript: BidiPreloadScript) {
+  addPreloadScript(preloadScript: PreloadScript) {
     this.#scripts.add(preloadScript);
   }
 

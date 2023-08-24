@@ -20,7 +20,7 @@ import {
   type BrowsingContext,
 } from '../../../protocol/protocol.js';
 
-import type {BrowsingContextImpl} from './browsingContextImpl.js';
+import type {BrowsingContextImpl} from './BrowsingContextImpl.js';
 
 /** Container class for browsing contexts. */
 export class BrowsingContextStorage {

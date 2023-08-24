@@ -26,9 +26,9 @@ import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import type {OutgoingBidiMessage} from './OutgoingBidiMessage.js';
-import {BrowsingContextStorage} from './domains/context/browsingContextStorage.js';
+import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import {EventManager} from './domains/events/EventManager.js';
-import {RealmStorage} from './domains/script/realmStorage.js';
+import {RealmStorage} from './domains/script/RealmStorage.js';
 
 type BidiServerEvent = {
   message: ChromiumBidi.Command;

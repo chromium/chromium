@@ -20,7 +20,7 @@ import {
   UnknownCommandException,
   InvalidArgumentException,
 } from '../../../protocol/protocol.js';
-import type {BrowsingContextStorage} from '../context/browsingContextStorage.js';
+import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 import {NetworkStorage} from './NetworkStorage.js';
 

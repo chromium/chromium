@@ -17,7 +17,7 @@
 
 import {expect} from 'chai';
 
-import {BrowsingContextStorage} from './browsingContextStorage.js';
+import {BrowsingContextStorage} from './BrowsingContextStorage.js';
 
 describe('BrowsingContextStorage', () => {
   let browsingContextStorage: BrowsingContextStorage;

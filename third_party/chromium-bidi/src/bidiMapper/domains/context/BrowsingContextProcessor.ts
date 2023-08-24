@@ -25,13 +25,13 @@ import {
 } from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import type {EventManager} from '../events/EventManager.js';
-import type {RealmStorage} from '../script/realmStorage.js';
+import type {RealmStorage} from '../script/RealmStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 
-import {BrowsingContextImpl} from './browsingContextImpl.js';
-import type {BrowsingContextStorage} from './browsingContextStorage.js';
-import {CdpTarget} from './cdpTarget.js';
+import {BrowsingContextImpl} from './BrowsingContextImpl.js';
+import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
+import {CdpTarget} from './CdpTarget.js';
 
 export class BrowsingContextProcessor {
   readonly #cdpConnection: ICdpConnection;
