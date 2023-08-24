@@ -89,12 +89,6 @@ class CookieControlsBubbleViewPixelTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         content_settings::features::kUserBypassUI,
         {{"expiration", std::get<1>(GetParam())}});
-
-    // Overriding `base::Time::Now()` to obtain a consistent X days until
-    // exception expiration calculation regardless of the time the test runs.
-    base::subtle::ScopedTimeClockOverrides time_override(
-        &CookieControlsBubbleViewPixelTest::GetReferenceTime,
-        /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   }
 
   void TearDownOnMainThread() override {
@@ -161,7 +155,7 @@ class CookieControlsBubbleViewPixelTest
 
   static base::Time GetReferenceTime() {
     base::Time time;
-    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00 UTC", &time));
     return time;
   }
 
@@ -198,19 +192,18 @@ class CookieControlsBubbleViewPixelTest
   net::EmbeddedTestServer* https_test_server() { return https_server_.get(); }
 
  private:
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &CookieControlsBubbleViewPixelTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<CookieControlsIconView> cookie_controls_icon_;
   raw_ptr<CookieControlsBubbleCoordinator> cookie_controls_coordinator_;
 };
 
-// Disabled on Windows due to flakes; see https://crbug.com/1472744.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi DISABLED_InvokeUi
-#else
-#define MAYBE_InvokeUi InvokeUi
-#endif
-IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest, MAYBE_InvokeUi) {
+IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest, InvokeUi) {
   ShowAndVerifyUi();
 }
 

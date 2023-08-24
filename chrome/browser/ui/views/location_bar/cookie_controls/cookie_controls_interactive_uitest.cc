@@ -49,12 +49,6 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
   CookieControlsInteractiveUiTest() {
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
-
-    // Overriding `base::Time::Now()` to obtain a consistent X days until
-    // exception expiration calculation regardless of the time the test runs.
-    base::subtle::ScopedTimeClockOverrides time_override(
-        &CookieControlsInteractiveUiTest::GetReferenceTime,
-        /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
   }
 
   ~CookieControlsInteractiveUiTest() override = default;
@@ -180,9 +174,15 @@ class CookieControlsInteractiveUiTest : public InteractiveBrowserTest {
 
   static base::Time GetReferenceTime() {
     base::Time time;
-    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00", &time));
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00 UTC", &time));
     return time;
   }
+
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &CookieControlsInteractiveUiTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
 
   base::UserActionTester user_actions_;
   feature_engagement::test::ScopedIphFeatureList iph_feature_list_;
