@@ -26,6 +26,9 @@
 // Called when the feed top section is manually dismissed.
 - (void)handleFeedTopSectionClosed;
 
+// Returns whether sign-in is enabled for the user.
+- (BOOL)isSignInAllowed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_DELEGATE_H_

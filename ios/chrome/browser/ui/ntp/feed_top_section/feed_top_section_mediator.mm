@@ -144,7 +144,8 @@
 - (void)updateShouldShowSigninPromo {
   self.shouldShowSigninPromo = NO;
   // Don't show the promo for incognito or start surface.
-  if (self.isIncognito || [self.ntpDelegate isStartSurface]) {
+  if (self.isIncognito || [self.ntpDelegate isStartSurface] ||
+      !self.isSignInPromoEnabled) {
     return;
   }
 
