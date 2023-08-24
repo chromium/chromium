@@ -353,8 +353,10 @@ class ImportNotifier:
             dir_metadata_path = self.host.filesystem.join(
                 directory, "DIR_METADATA")
             epilogue = (
-                '\nTo opt out of WPT import notifications for this component, '
-                'add "wpt { notify: NO }" to "%s".' % dir_metadata_path)
+                '\nThis bug was filed automatically due to a new WPT test '
+                'failure for which you are marked an OWNER. '
+                'If you do not want to receive these reports, please add '
+                '"wpt { notify: NO }"  to the relevant DIR_METADATA file.')
 
             description = (prologue + failure_list + expectations_statement +
                            range_statement + commit_list + links_list +
