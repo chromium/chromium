@@ -1217,29 +1217,11 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
   return clamped_time;
 }
 
-// static
-base::TimeDelta Performance::MonotonicTimeToTimeDelta(
-    base::TimeTicks time_origin,
-    base::TimeTicks monotonic_time,
-    bool allow_negative_value,
-    bool cross_origin_isolated_capability) {
-  return base::Milliseconds(MonotonicTimeToDOMHighResTimeStamp(
-      time_origin, monotonic_time, allow_negative_value,
-      cross_origin_isolated_capability));
-}
-
 DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
     base::TimeTicks monotonic_time) const {
   return MonotonicTimeToDOMHighResTimeStamp(time_origin_, monotonic_time,
                                             false /* allow_negative_value */,
                                             cross_origin_isolated_capability_);
-}
-
-base::TimeDelta Performance::MonotonicTimeToTimeDelta(
-    base::TimeTicks monotonic_time) const {
-  return MonotonicTimeToTimeDelta(time_origin_, monotonic_time,
-                                  false /* allow_negative_value */,
-                                  cross_origin_isolated_capability_);
 }
 
 DOMHighResTimeStamp Performance::now() const {
