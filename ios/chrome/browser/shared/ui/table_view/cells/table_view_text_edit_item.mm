@@ -68,7 +68,10 @@ const CGFloat kSymbolSize = 15;
   }
   cell.textField.text = self.textFieldValue;
   cell.textField.secureTextEntry = self.textFieldSecureTextEntry;
-  if (self.fieldNameLabelText.length) {
+  if (self.customTextfieldAccessibilityIdentifier.length) {
+    cell.textField.accessibilityIdentifier =
+        self.customTextfieldAccessibilityIdentifier;
+  } else if (self.fieldNameLabelText.length) {
     cell.textField.accessibilityIdentifier =
         [NSString stringWithFormat:@"%@_textField", self.fieldNameLabelText];
   }

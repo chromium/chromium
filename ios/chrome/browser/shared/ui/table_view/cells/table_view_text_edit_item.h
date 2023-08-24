@@ -78,6 +78,9 @@ typedef NS_ENUM(NSInteger, TableViewTextEditItemIconType) {
 // cellBackgroundColor will be used as background.
 @property(nonatomic, strong) UIColor* textFieldBackgroundColor;
 
+// Custom textfield accessibility identifier.
+@property(nonatomic, copy) NSString* customTextfieldAccessibilityIdentifier;
+
 // Whether the aspect of the cell should mark the text as valid.
 - (void)setHasValidText:(BOOL)hasValidText;
 

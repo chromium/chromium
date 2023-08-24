@@ -30,6 +30,12 @@ extern NSString* const kDismissedWarningsCellId;
 // displayed in the table.
 extern NSString* const kAddPasswordButtonId;
 
+// Username text field accessibility identifier for Password Details.
+extern NSString* const kUsernameTextfieldForPasswordDetailsId;
+
+// Password text field accessibility identifier for Password Details.
+extern NSString* const kPasswordTextfieldForPasswordDetailsId;
+
 // Delete button accessibility identifier for Password Details.
 extern NSString* const kDeleteButtonForPasswordDetailsId;
 

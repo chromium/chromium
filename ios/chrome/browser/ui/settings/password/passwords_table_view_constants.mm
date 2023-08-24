@@ -22,6 +22,12 @@ NSString* const kPasswordIssuesTableViewId = @"kPasswordIssuesTableViewId";
 
 NSString* const kDismissedWarningsCellId = @"DismissedWarningsCellId";
 
+NSString* const kUsernameTextfieldForPasswordDetailsId =
+    @"kUsernameTextfieldForPasswordDetailsId";
+
+NSString* const kPasswordTextfieldForPasswordDetailsId =
+    @"kPasswordTextfieldForPasswordDetailsId";
+
 NSString* const kDeleteButtonForPasswordDetailsId =
     @"kDeleteButtonForPasswordDetailsId";
 

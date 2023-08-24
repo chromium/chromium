@@ -344,6 +344,14 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   if (!self.tableView.editing) {
     item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
   }
+
+  // For testing: only use this custom accessibility identifier if there are
+  // more than one password shown on the Password Details.
+  if (_passwords.count > 1) {
+    item.customTextfieldAccessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@%@", kUsernameTextfieldForPasswordDetailsId,
+                         passwordDetails.username, passwordDetails.websites[0]];
+  }
   return item;
 }
 
@@ -380,6 +388,14 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   }
   if (!self.tableView.editing) {
     item.textFieldTextColor = [UIColor colorNamed:kTextSecondaryColor];
+  }
+
+  // For testing: only use this custom accessibility identifier if there are
+  // more than one password shown on the Password Details.
+  if (_passwords.count > 1) {
+    item.customTextfieldAccessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@%@", kPasswordTextfieldForPasswordDetailsId,
+                         passwordDetails.username, passwordDetails.websites[0]];
   }
   return item;
 }
@@ -463,7 +479,7 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   item.accessibilityTraits = UIAccessibilityTraitButton;
   item.accessibilityIdentifier = [NSString
       stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
-                       passwordDetails.username, passwordDetails.password];
+                       passwordDetails.username, passwordDetails.websites[0]];
   return item;
 }
 

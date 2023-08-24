@@ -643,7 +643,7 @@ NSString* LeakedPasswordDescription() {
 
   // Enter edit mode and delete the password.
   password_manager_test_utils::TapNavigationBarEditButton();
-  DeleteCredential(username, @"concrete password");
+  DeleteCredential(username, @"https://example.com/");
 
   // Wait until the details view is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -719,7 +719,7 @@ NSString* LeakedPasswordDescription() {
 
   // Enter edit mode and change the password to something that's not weak.
   password_manager_test_utils::TapNavigationBarEditButton();
-  DeleteCredential(username, @"concrete password");
+  DeleteCredential(username, @"https://example1.com/");
 
   // Wait until the details view is dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];

@@ -47,14 +47,20 @@ id<GREYMatcher> EditDoneButton();
 // in the password details page after editing a password.
 id<GREYMatcher> EditPasswordConfirmationButton();
 
-// Matcher for the "Delete Password" associated with the credential with given
-// `username` and `password`.
-id<GREYMatcher> DeleteButtonForUsernameAndPassword(NSString* username,
-                                                   NSString* password);
+// Matcher for the "Username" field associated with the credential with given
+// `username` and `sites`.
+id<GREYMatcher> UsernameTextfieldForUsernameAndSites(NSString* username,
+                                                     NSString* sites);
 
-// Matcher for the "Delete" button of the confirmation dialog that pops up in
-// the password details page when trying to delete a password.
-id<GREYMatcher> DeletePasswordConfirmationButton();
+// Matcher for the "Password" field associated with the credential with given
+// `username` and `sites`.
+id<GREYMatcher> PasswordTextfieldForUsernameAndSites(NSString* username,
+                                                     NSString* sites);
+
+// Matcher for the "Delete Password" associated with the credential with given
+// `username` and `sites`.
+id<GREYMatcher> DeleteButtonForUsernameAndSites(NSString* username,
+                                                NSString* sites);
 
 // GREYElementInteraction* for the item on the password issues list
 // with the given `matcher`. It scrolls in `direction` if necessary to ensure

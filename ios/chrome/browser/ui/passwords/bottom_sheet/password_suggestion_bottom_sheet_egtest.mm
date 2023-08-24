@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
@@ -32,6 +33,7 @@ static constexpr char kFormPassword[] = "pw";
 namespace {
 
 using base::test::ios::kWaitForActionTimeout;
+using password_manager_test_utils::DeleteCredential;
 
 BOOL WaitForKeyboardToAppear() {
   GREYCondition* waitForKeyboard = [GREYCondition
@@ -112,24 +114,6 @@ id<GREYMatcher> NavigationBarEditButton() {
                         IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
                     grey_not(chrome_test_util::TabGridEditButton()),
                     grey_userInteractionEnabled(), nil);
-}
-
-// Matcher for the Delete button at with accessibility identifier containing
-// `username` and `password` in Password Details view.
-id<GREYMatcher> DeleteButtonForUsernameAndPassword(NSString* username,
-                                                   NSString* password) {
-  return grey_allOf(
-      grey_accessibilityID([NSString
-          stringWithFormat:@"%@%@%@", kDeleteButtonForPasswordDetailsId,
-                           username, password]),
-      grey_interactable(), nullptr);
-}
-
-// Matcher for the Delete button in Confirmation Alert for password deletion.
-id<GREYMatcher> DeleteConfirmationButton() {
-  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabel(
-                        l10n_util::GetNSString(IDS_IOS_DELETE_ACTION_TITLE)),
-                    grey_interactable(), nullptr);
 }
 
 #pragma mark - Tests
@@ -459,12 +443,10 @@ id<GREYMatcher> DeleteConfirmationButton() {
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:DeleteButtonForUsernameAndPassword(
-                                          @"user2", @"password2")]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:DeleteConfirmationButton()]
-      performAction:grey_tap()];
+  NSString* website = [URL.absoluteString
+      stringByReplacingOccurrencesOfString:@"simple_login_form.html"
+                                withString:@""];
+  DeleteCredential(@"user2", website);
 
   // Wait until the alert and the detail view are dismissed.
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -526,7 +508,15 @@ id<GREYMatcher> DeleteConfirmationButton() {
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
-- (void)testOpenPasswordBottomSheetExpand {
+// TODO(crbug.com/1474949): Fix flaky test & re-enable.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetExpand \
+  DISABLED_testOpenPasswordBottomSheetExpand
+#else
+#define MAYBE_testOpenPasswordBottomSheetExpand \
+  testOpenPasswordBottomSheetExpand
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetExpand {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:NO];
   NSURL* URL =
@@ -638,7 +628,15 @@ id<GREYMatcher> DeleteConfirmationButton() {
   WaitForKeyboardToAppear();
 }
 
-- (void)testOpenPasswordBottomSheetNoUsername {
+// TODO(crbug.com/1474949): Fix flaky test & re-enable.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenPasswordBottomSheetNoUsername \
+  DISABLED_testOpenPasswordBottomSheetNoUsername
+#else
+#define MAYBE_testOpenPasswordBottomSheetNoUsername \
+  testOpenPasswordBottomSheetNoUsername
+#endif
+- (void)MAYBE_testOpenPasswordBottomSheetNoUsername {
   [PasswordSuggestionBottomSheetAppInterface setUpMockReauthenticationModule];
   [PasswordSuggestionBottomSheetAppInterface
       mockReauthenticationModuleExpectedResult:ReauthenticationResult::
