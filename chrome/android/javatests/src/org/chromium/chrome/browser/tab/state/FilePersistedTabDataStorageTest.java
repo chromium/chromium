@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.util.ByteBufferTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -62,6 +63,7 @@ public class FilePersistedTabDataStorageTest {
     @Before
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         FilePersistedTabDataStorage.deleteFilesForTesting();
     }
 

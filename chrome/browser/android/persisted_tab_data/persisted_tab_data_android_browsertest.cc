@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <deque>
+
 #include "chrome/browser/android/persisted_tab_data/persisted_tab_data_android.h"
 #include "chrome/browser/android/persisted_tab_data/test/bar_persisted_tab_data.h"
 #include "chrome/browser/android/persisted_tab_data/test/foo_persisted_tab_data.h"
@@ -79,6 +81,13 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
     PersistedTabDataAndroid::OnTabClose(tab_android);
   }
 
+  void OnDeferredStartup() { PersistedTabDataAndroid::OnDeferredStartup(); }
+
+  std::deque<std::unique_ptr<PersistedTabDataAndroid::DeferredRequest>>*
+  GetDeferredRequests() {
+    return PersistedTabDataAndroid::GetDeferredRequests();
+  }
+
  private:
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
@@ -91,6 +100,7 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest, TestRemoveAll) {
+  OnDeferredStartup();
   // Save FooPersistedTabDataAndroid and BarPersistedTabDataAndroid for
   // tab_android()
   FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
@@ -118,6 +128,7 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest, TestRemoveAll) {
 
 IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                        TestRemoveAllMultipleTabs) {
+  OnDeferredStartup();
   // Save FooPersistedTabDataAndroid and BarPersistedTabDataAndroid for
   // tab_android() and another_tab().
   FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
@@ -162,6 +173,7 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
                        TestCachedCallbacks) {
+  OnDeferredStartup();
   FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
   foo_persisted_tab_data_android.SetValue(INITIAL_VALUE);
 
@@ -186,4 +198,60 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
           },
           run_loop.QuitClosure()));
   run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
+                       TestDeferredStartup) {
+  FooPersistedTabDataAndroid foo_persisted_tab_data_android(tab_android());
+  foo_persisted_tab_data_android.SetValue(42);
+  BarPersistedTabDataAndroid bar_persisted_tab_data_android(tab_android());
+  bar_persisted_tab_data_android.SetValue(true);
+  FooPersistedTabDataAndroid another_tab_foo_persisted_tab_data_android(
+      another_tab());
+  another_tab_foo_persisted_tab_data_android.SetValue(32);
+  BarPersistedTabDataAndroid another_tab_bar_persisted_tab_data_android(
+      another_tab());
+  another_tab_bar_persisted_tab_data_android.SetValue(false);
+
+  base::RunLoop run_loop[4];
+  FooPersistedTabDataAndroid::From(
+      tab_android(), base::BindOnce(
+                         [](base::OnceClosure done,
+                            PersistedTabDataAndroid* persisted_tab_data) {
+                           std::move(done).Run();
+                         },
+                         run_loop[0].QuitClosure()));
+  BarPersistedTabDataAndroid::From(
+      tab_android(), base::BindOnce(
+                         [](base::OnceClosure done,
+                            PersistedTabDataAndroid* persisted_tab_data) {
+                           std::move(done).Run();
+                         },
+                         run_loop[1].QuitClosure()));
+  // Requests should be stored for deferred startup.
+  EXPECT_EQ(2u, GetDeferredRequests()->size());
+  OnDeferredStartup();
+  run_loop[0].Run();
+  run_loop[1].Run();
+  // Deferred requests should have been executed.
+  EXPECT_EQ(0u, GetDeferredRequests()->size());
+  FooPersistedTabDataAndroid::From(
+      another_tab(), base::BindOnce(
+                         [](base::OnceClosure done,
+                            PersistedTabDataAndroid* persisted_tab_data) {
+                           std::move(done).Run();
+                         },
+                         run_loop[2].QuitClosure()));
+  BarPersistedTabDataAndroid::From(
+      another_tab(), base::BindOnce(
+                         [](base::OnceClosure done,
+                            PersistedTabDataAndroid* persisted_tab_data) {
+                           std::move(done).Run();
+                         },
+                         run_loop[3].QuitClosure()));
+  // Should no longer be added to deferred startup queue because
+  // deferred startup has happened.
+  EXPECT_EQ(0u, GetDeferredRequests()->size());
+  run_loop[2].Run();
+  run_loop[3].Run();
 }
