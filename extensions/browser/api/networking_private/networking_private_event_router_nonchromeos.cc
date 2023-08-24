@@ -234,9 +234,9 @@ void NetworkingPrivateEventRouterImpl::OnCertificateListsChanged() {
   event_router->BroadcastEvent(std::move(extension_event));
 }
 
-NetworkingPrivateEventRouter* NetworkingPrivateEventRouter::Create(
-    content::BrowserContext* browser_context) {
-  return new NetworkingPrivateEventRouterImpl(browser_context);
+std::unique_ptr<NetworkingPrivateEventRouter>
+NetworkingPrivateEventRouter::Create(content::BrowserContext* browser_context) {
+  return std::make_unique<NetworkingPrivateEventRouterImpl>(browser_context);
 }
 
 }  // namespace extensions

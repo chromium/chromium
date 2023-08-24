@@ -35,7 +35,8 @@ NetworkingPrivateEventRouterFactory::NetworkingPrivateEventRouterFactory()
   DependsOn(NetworkingPrivateDelegateFactory::GetInstance());
 }
 
-KeyedService* NetworkingPrivateEventRouterFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NetworkingPrivateEventRouterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return NetworkingPrivateEventRouter::Create(context);
 }
