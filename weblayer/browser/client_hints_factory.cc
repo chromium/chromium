@@ -37,9 +37,10 @@ ClientHintsFactory::ClientHintsFactory()
 
 ClientHintsFactory::~ClientHintsFactory() = default;
 
-KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ClientHintsFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new client_hints::ClientHints(
+  return std::make_unique<client_hints::ClientHints>(
       context, BrowserProcess::GetInstance()->GetNetworkQualityTracker(),
       HostContentSettingsMapFactory::GetForBrowserContext(context),
       CookieSettingsFactory::GetForBrowserContext(context),
