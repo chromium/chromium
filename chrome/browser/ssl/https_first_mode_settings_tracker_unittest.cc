@@ -295,6 +295,30 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   service->Shutdown();
 }
 
+// Tests the repair mitigation for crbug.com/1475747. Namely, if
+// kHttpsFirstModeV2ForTypicallySecureUsers is disabled and the pref is enabled,
+// the code should disable HFM to undo the damage done by the bug.
+TEST_F(HttpsFirstModeSettingsTrackerTest, UndoTypicallySecureUser) {
+  base::test::ScopedFeatureList feature_list;
+
+  feature_list.InitAndDisableFeature(
+      features::kHttpsFirstModeV2ForTypicallySecureUsers);
+
+  HttpsFirstModeService* service =
+      HttpsFirstModeServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  // Pretend that the feature had been erroneously enabled previously.
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+
+  EXPECT_FALSE(
+      service->MaybeEnableHttpsFirstModeForUser(/*add_fallback_entry=*/true));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeEnabled));
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kHttpsOnlyModeAutoEnabled));
+}
+
 // Tests the Typically Secure User heuristic to ensure that it respects the
 // finch flag. See TypicallySecureUserPref for more details.
 // Regression test for crbug.com/1475747.

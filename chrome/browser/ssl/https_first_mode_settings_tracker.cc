@@ -227,6 +227,18 @@ bool HttpsFirstModeService::MaybeEnableHttpsFirstModeForUser(
 
   if (!base::FeatureList::IsEnabled(
           features::kHttpsFirstModeV2ForTypicallySecureUsers)) {
+    // Temporary fix for users impacted by crbug.com/1475747:
+    // HFM-for-typically-secure-users has never been enabled intentionally. If
+    // we see that the preference has been set, that was by accident. Unset the
+    // relevant preferences to undo the damage.
+    if (profile_->GetPrefs()->HasPrefPath(prefs::kHttpsOnlyModeAutoEnabled)) {
+      profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeAutoEnabled, false);
+      // If HFM had already been enabled, the code wouldn't have toggled
+      // kHttpsOnlyModeAutoEnabled. That means it's safe to disable HFM here --
+      // HFM can only be enabled because we set it that way.
+      profile_->GetPrefs()->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+    }
+
     return false;
   }
 
