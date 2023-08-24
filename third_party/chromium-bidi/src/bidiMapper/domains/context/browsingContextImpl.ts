@@ -32,6 +32,7 @@ import type {EventManager} from '../events/EventManager.js';
 import {Realm} from '../script/realm.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {Result} from '../../../utils/result.js';
+import {assert} from '../../../utils/assert.js';
 
 import type {BrowsingContextStorage} from './browsingContextStorage.js';
 import type {CdpTarget} from './cdpTarget.js';
@@ -273,10 +274,12 @@ export class BrowsingContextImpl {
         browsingContextId: this.id,
         sandbox,
       });
+      assert(maybeSandboxes.length !== 0);
     }
-    if (maybeSandboxes.length !== 1) {
-      throw Error(`Sandbox ${sandbox} wasn't created.`);
-    }
+    // It's possible for more than one sandbox to be created due to provisional
+    // frames. In this case, it's always the first one (i.e. the oldest one)
+    // that is more relevant since the user may have set that one up already
+    // through evaluation.
     return maybeSandboxes[0]!;
   }
 
