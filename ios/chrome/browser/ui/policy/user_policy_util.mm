@@ -25,9 +25,7 @@ bool IsUserPolicyNotificationNeeded(AuthenticationService* authService,
 
 bool CanFetchUserPolicy(AuthenticationService* authService,
                         PrefService* prefService) {
-  bool enabled_for_signin = policy::IsAnyUserPolicyFeatureEnabled();
-
-  if (!enabled_for_signin) {
+  if (!policy::IsAnyUserPolicyFeatureEnabled()) {
     // Return false immediately if the user policy features isn't enabled for
     // the minimal consent level.
     return false;
@@ -46,13 +44,7 @@ bool CanFetchUserPolicy(AuthenticationService* authService,
     return false;
   }
 
-  // Set the minimal consent level to kSignin if User Policy is enabled for
-  // signed in users, or otherwise to kSync which is the only other option.
-  signin::ConsentLevel consent_level = enabled_for_signin
-                                           ? signin::ConsentLevel::kSignin
-                                           : signin::ConsentLevel::kSync;
-
   // Return true if the primary identity is managed with the minimal
   // `consent_level` to enable User Policy.
-  return authService->HasPrimaryIdentityManaged(consent_level);
+  return authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }

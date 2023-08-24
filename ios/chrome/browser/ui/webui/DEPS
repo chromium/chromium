@@ -1,4 +1,6 @@
 include_rules = [
   "+mojo/public",
   "+ios/components/webui",
+  "+components/account_id",
+  "+ios/chrome/browser/ui/policy/user_policy_util.h",
 ]

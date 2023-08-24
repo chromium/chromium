@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/webui/management/management_ui.h"
 
+#import "base/strings/string_split.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/account_id/account_id.h"
 #import "components/grit/components_resources.h"
 #import "components/policy/core/browser/webui/policy_data_utils.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -12,16 +14,27 @@
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/policy/proto/device_management_backend.pb.h"
+#import "components/prefs/pref_service.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/account_managed_status_finder.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
+#import "google_apis/gaia/gaia_auth_util.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/ui/policy/user_policy_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using signin::AccountManagedStatusFinder;
 
 namespace {
 
@@ -36,15 +49,60 @@ absl::optional<std::string> GetMachineLevelPolicyDomain() {
   return policy::GetManagedBy(manager);
 }
 
+// Gets the AccountId from the provided `account_info`.
+AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
+  if (account_info.email.empty() || account_info.gaia.empty()) {
+    return EmptyAccountId();
+  }
+
+  return AccountId::FromUserEmailGaiaId(
+      gaia::CanonicalizeEmail(account_info.email), account_info.gaia);
+}
+
+// Extracts the domain from the email. Returns absl::nullopt if there is no
+// domain.
+absl::optional<std::string> ExtractDomainFromEmail(const std::string& email) {
+  std::vector<std::string> components = base::SplitString(
+      email, "@", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (components.size() != 2) {
+    return absl::nullopt;
+  }
+  const std::string domain = components[1];
+  if (domain.empty()) {
+    return absl::nullopt;
+  }
+
+  return domain;
+}
+
 // Returns the domain of the user cloud policy. Returns absl::nullopt if the
 // domain cannot be retrieved (eg. because there is no user policy).
 absl::optional<std::string> GetUserPolicyDomain(web::WebUIIOS* web_ui) {
-  // Get the user policy manager for the BrowserState that has the
-  // chrome://management page that hosts this UI. Each BrowserState has its own
-  // manager.
-  policy::UserCloudPolicyManager* manager =
-      ChromeBrowserState::FromWebUIIOS(web_ui)->GetUserCloudPolicyManager();
-  return policy::GetManagedBy(manager);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui)->GetOriginalChromeBrowserState();
+
+  if (!CanFetchUserPolicy(
+          AuthenticationServiceFactory::GetForBrowserState(browser_state),
+          browser_state->GetPrefs())) {
+    return absl::nullopt;
+  }
+
+  AccountId account_id = AccountIdFromAccountInfo(
+      IdentityManagerFactory::GetForBrowserState(browser_state)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+
+  const std::string user_email = account_id.GetUserEmail();
+
+  if (user_email.empty()) {
+    return absl::nullopt;
+  }
+
+  if (AccountManagedStatusFinder::IsEnterpriseUserBasedOnEmail(user_email) ==
+      AccountManagedStatusFinder::EmailEnterpriseStatus::kKnownNonEnterprise) {
+    return absl::nullopt;
+  }
+
+  return ExtractDomainFromEmail(user_email);
 }
 
 // Returns the management message depending on the levels of the policies that

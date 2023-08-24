@@ -162,7 +162,8 @@ NSString* const kDomain2 = @"domain2.com";
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordUISplit);
 
-  if ([self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)]) {
+  if ([self isRunningTest:@selector(testPopupMenuItemWithUserPolicy)] ||
+      [self isRunningTest:@selector(testManagementPageManagedWithUserPolicy)]) {
     config.features_enabled.push_back(
         policy::kUserPolicyForSigninOrSyncConsentLevel);
   }
@@ -584,7 +585,14 @@ NSString* const kDomain2 = @"domain2.com";
 
 // Tests the chrome://management page when there are user level policies.
 - (void)testManagementPageManagedWithUserPolicy {
-  [PolicyAppInterface setUserCloudPolicyDataWithDomain:kDomain1];
+  // Sign in with a managed account.
+  NSString* managedAccountEmail =
+      [@"enterprise@" stringByAppendingString:kDomain1];
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail
+                                     gaiaID:@"exampleManagedID"
+                                       name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -614,10 +622,21 @@ NSString* const kDomain2 = @"domain2.com";
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
                     _server->GetServiceURL().spec()}));
+  config.features_enabled.push_back(
+      policy::kUserPolicyForSigninOrSyncConsentLevel);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  // Set CBCM policies.
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
-  [PolicyAppInterface setUserCloudPolicyDataWithDomain:kDomain2];
+
+  // Sign in with managed account to enable User Policy.
+  NSString* managedAccountEmail =
+      [@"enterprise@" stringByAppendingString:kDomain2];
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail
+                                     gaiaID:@"exampleManagedID"
+                                       name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
@@ -649,10 +668,21 @@ NSString* const kDomain2 = @"domain2.com";
   config.additional_args.push_back(
       base::StrCat({"--", policy::switches::kDeviceManagementUrl, "=",
                     _server->GetServiceURL().spec()}));
+  config.features_enabled.push_back(
+      policy::kUserPolicyForSigninOrSyncConsentLevel);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
+  // Set CBCM policies.
   [PolicyAppInterface setBrowserCloudPolicyDataWithDomain:kDomain1];
-  [PolicyAppInterface setUserCloudPolicyDataWithDomain:kDomain1];
+
+  // Sign in with managed account to enable User Policy.
+  NSString* managedAccountEmail =
+      [@"enterprise@" stringByAppendingString:kDomain1];
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity identityWithEmail:managedAccountEmail
+                                     gaiaID:@"exampleManagedID"
+                                       name:@"Fake Managed"];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity enableSync:NO];
 
   // Open the management page and check if the content is expected.
   [ChromeEarlGrey loadURL:GURL(kChromeUIManagementURL)];
