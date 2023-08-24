@@ -24,7 +24,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
@@ -131,7 +130,6 @@ public class WebXrGvrPermissionTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisabledTest(message = "crbug.com/1429697")
     public void testPermissionPersistsAfterReload() {
         mWebXrVrPermissionTestFramework.loadFileAndAwaitInitialization(
                 "generic_webxr_page", PAGE_LOAD_TIMEOUT_S);
