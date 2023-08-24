@@ -112018,6 +112018,14 @@ others/histograms.xml -->
   <int value="7" label="Borderless"/>
 </enum>
 
+<enum name="WebAppIconDownloaderResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="PrimaryPageChanged"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="TimeoutFailure"/>
+  <int value="4" label="TimeoutWithPartialDownloadSuccess"/>
+</enum>
+
 <enum name="WebAppIconsDownloadedResult">
   <int value="0" label="Completed"/>
   <int value="1" label="PrimaryPageChanged"/>
