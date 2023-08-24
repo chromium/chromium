@@ -414,12 +414,11 @@ void AutocompleteControllerAndroid::DeleteMatchElement(JNIEnv* env,
 ScopedJavaLocalRef<jobject> AutocompleteControllerAndroid::
     UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
         JNIEnv* env,
-        jint match_index,
+        uintptr_t match_ptr,
         jlong elapsed_time_since_input_change,
         const JavaParamRef<jstring>& jnew_query_text,
         const JavaParamRef<jobjectArray>& jnew_query_params) {
-  AutocompleteMatch match(
-      autocomplete_controller_->result().match_at(match_index));
+  AutocompleteMatch& match = *reinterpret_cast<AutocompleteMatch*>(match_ptr);
 
   if (!jnew_query_text.is_null()) {
     std::u16string query = ConvertJavaStringToUTF16(env, jnew_query_text);

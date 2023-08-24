@@ -300,18 +300,18 @@ public class AutocompleteController implements Destroyable {
     }
 
     /**
-     * Updates aqs parameters on the selected match that we will navigate to and returns the
+     * Updates AQS/SBS parameters on the selected match that we will navigate to and returns the
      * updated URL.
      *
-     * @param matchIndex The index of the autocomplete entry selected.
-     * @param elapsedTimeSinceInputChange The number of ms between the time the user started
-     *         typing in the omnibox and the time the user has selected a suggestion.
+     * @param match the AutocompleteMatch object to get the updated destination URL for
+     * @param elapsedTimeSinceInputChange the number of ms between the time the user started
+     *         typing in the omnibox and the time the user has selected a suggestion
      */
     @Nullable
     GURL updateMatchDestinationUrlWithQueryFormulationTime(
-            int matchIndex, long elapsedTimeSinceInputChange) {
+            AutocompleteMatch match, long elapsedTimeSinceInputChange) {
         return updateMatchDestinationUrlWithQueryFormulationTime(
-                matchIndex, elapsedTimeSinceInputChange, null, null);
+                match, elapsedTimeSinceInputChange, null, null);
     }
 
     /**
@@ -327,26 +327,28 @@ public class AutocompleteController implements Destroyable {
      *   "www.google.com/search?q=Politics+news&aqs=chrome.0.69i...l3.1409j0j9"
      * where ".1409j0j9" is the encoded elapsed time.
      *
-     * @param matchIndex The index of the autocomplete entry selected.
-     * @param elapsedTimeSinceInputChange The number of ms between the time the user started
-     *                                    typing in the omnibox and the time the user has selected
-     *                                    a suggestion.
-     * @param newQueryText The new query string that will replace the existing one.
-     * @param newQueryParams A list of search params to be appended to the query.
-     * @return The url to navigate to for this match with aqs parameter, query string and parameters
-     *         updated, if we are making a Google search query.
+     * @param match the AutocompleteMatch to update
+     * @param elapsedTimeSinceInputChange the number of ms between the time the user started
+     *         typing in the omnibox and the time the user has selected a suggestion
+     * @param newQueryText the new query string that will replace the existing one
+     * @param newQueryParams a list of search params to be appended to the query
+     * @return the url to navigate to for this match with aqs parameter, query string and parameters
+     *         updated, if we are making a Google search query
      */
     @Nullable
-    GURL updateMatchDestinationUrlWithQueryFormulationTime(int matchIndex,
+    GURL updateMatchDestinationUrlWithQueryFormulationTime(AutocompleteMatch match,
             long elapsedTimeSinceInputChange, @Nullable String newQueryText,
             @Nullable List<String> newQueryParams) {
         if (mNativeController == 0) return null;
-        if (!mAutocompleteResult.verifyCoherency(matchIndex, VerificationPoint.UPDATE_MATCH)) {
+        if (!mAutocompleteResult.verifyCoherency(
+                    AutocompleteResult.NO_SUGGESTION_INDEX, VerificationPoint.UPDATE_MATCH)) {
             return null;
         }
+        // Skip suggestions from cache.
+        if (match.getNativeObjectRef() == 0) return null;
         return AutocompleteControllerJni.get()
                 .updateMatchDestinationURLWithAdditionalAssistedQueryStats(mNativeController,
-                        matchIndex, elapsedTimeSinceInputChange, newQueryText,
+                        match.getNativeObjectRef(), elapsedTimeSinceInputChange, newQueryText,
                         newQueryParams == null
                                 ? null
                                 : newQueryParams.toArray(new String[newQueryParams.size()]));
@@ -390,7 +392,7 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteMatch, int elementIndex);
         void deleteMatch(long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch);
         GURL updateMatchDestinationURLWithAdditionalAssistedQueryStats(
-                long nativeAutocompleteControllerAndroid, int matchIndex,
+                long nativeAutocompleteControllerAndroid, long nativeAutocompleteMatch,
                 long elapsedTimeSinceInputChange, String newQueryText, String[] newQueryParams);
         Tab getMatchingTabForSuggestion(long nativeAutocompleteControllerAndroid, int matchIndex);
         void setVoiceMatches(long nativeAutocompleteControllerAndroid, String[] matches,

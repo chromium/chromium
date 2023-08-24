@@ -671,54 +671,17 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private GURL updateSuggestionUrlIfNeeded(@NonNull AutocompleteMatch suggestion, int matchIndex,
             @NonNull GURL url, boolean skipCheck) {
         if (!mNativeInitialized || mAutocomplete == null) return url;
-        if (suggestion.getType() == OmniboxSuggestionType.VOICE_SUGGEST
-                || suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION
+        // TODO(crbug/1474087): this should exclude TILE variants when horizontal render group is
+        // ready.
+        if (suggestion.getType() == OmniboxSuggestionType.TILE_SUGGESTION
                 || suggestion.getType() == OmniboxSuggestionType.TILE_NAVSUGGEST) {
             return url;
         }
 
-        int verifiedIndex = SUGGESTION_NOT_FOUND;
-        if (!skipCheck) {
-            verifiedIndex = findSuggestionInAutocompleteResult(suggestion, matchIndex);
-        }
-
-        // If we do not have the suggestion as part of our results, skip the URL update.
-        if (verifiedIndex == SUGGESTION_NOT_FOUND) return url;
-
-        // TODO(mariakhomenko): Ideally we want to update match destination URL with new aqs
-        // for query in the omnibox and voice suggestions, but it's currently difficult to do.
         GURL updatedUrl = mAutocomplete.updateMatchDestinationUrlWithQueryFormulationTime(
-                verifiedIndex, getElapsedTimeSinceInputChange());
+                suggestion, getElapsedTimeSinceInputChange());
 
         return updatedUrl == null ? url : updatedUrl;
-    }
-
-    /**
-     * Check if the supplied suggestion is still in the current model and return its index.
-     *
-     * This call should be used to confirm that model has not been changed ahead of an event being
-     * called by all the methods that are dispatched rather than called directly.
-     *
-     * @param suggestion Suggestion to look for.
-     * @param matchIndex Last known position of the suggestion.
-     * @return Current index of the supplied suggestion, or SUGGESTION_NOT_FOUND if it is no longer
-     *         part of the model.
-     */
-    @SuppressWarnings("ReferenceEquality")
-    private int findSuggestionInAutocompleteResult(AutocompleteMatch suggestion, int matchIndex) {
-        if (getSuggestionCount() > matchIndex && getSuggestionAt(matchIndex) == suggestion) {
-            return matchIndex;
-        }
-
-        // Underlying omnibox results may have changed since the selection was made,
-        // find the suggestion item, if possible.
-        for (int index = 0; index < getSuggestionCount(); index++) {
-            if (suggestion.equals(getSuggestionAt(index))) {
-                return index;
-            }
-        }
-
-        return SUGGESTION_NOT_FOUND;
     }
 
     /**
