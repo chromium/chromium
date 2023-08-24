@@ -141,7 +141,8 @@ class CalendarViewTest : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
 
-    auto calendar_view = std::make_unique<CalendarView>(delegate_.get());
+    auto calendar_view = std::make_unique<CalendarView>(
+        delegate_.get(), /*for_glanceables_container=*/false);
 
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
@@ -1425,8 +1426,8 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
-    calendar_view_ = widget_->SetContentsView(
-        std::make_unique<CalendarView>(delegate_.get()));
+    calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
+        delegate_.get(), /*for_glanceables_container=*/false));
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.

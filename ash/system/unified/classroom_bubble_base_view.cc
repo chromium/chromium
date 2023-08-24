@@ -49,7 +49,7 @@ constexpr char kClassroomHomePage[] = "https://classroom.google.com/u/0/h";
 ClassroomBubbleBaseView::ClassroomBubbleBaseView(
     DetailedViewDelegate* delegate,
     std::unique_ptr<ui::ComboboxModel> combobox_model)
-    : GlanceableTrayChildBubble(delegate) {
+    : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {
   auto* layout_manager =
       SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout_manager

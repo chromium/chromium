@@ -53,7 +53,7 @@ constexpr char kTasksManagementPage[] =
 namespace ash {
 
 TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
-    : GlanceableTrayChildBubble(delegate) {
+    : GlanceableTrayChildBubble(delegate, /*for_glanceables_container=*/true) {
   if (Shell::Get()->glanceables_v2_controller()->GetTasksClient()) {
     Shell::Get()->glanceables_v2_controller()->GetTasksClient()->GetTaskLists(
         base::BindOnce(&TasksBubbleView::InitViews,

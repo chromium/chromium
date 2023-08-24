@@ -1658,7 +1658,8 @@ void Shell::Init(
         glanceables_controller_.get()));
   }
 
-  if (features::AreGlanceablesV2Enabled()) {
+  if (features::AreGlanceablesV2Enabled() ||
+      features::AreGlanceablesV2EnabledForTrustedTesters()) {
     glanceables_v2_controller_ = std::make_unique<GlanceablesV2Controller>();
   }
 

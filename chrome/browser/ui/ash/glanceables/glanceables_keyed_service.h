@@ -53,6 +53,10 @@ class GlanceablesKeyedService : public KeyedService {
   void Shutdown() override;
 
  private:
+  // Returns whether glanceables are enabled for the profile that owns the
+  // GlanceablesKeyedService.
+  bool AreGlanceablesEnabled() const;
+
   // Helper method that creates a `google_apis::RequestSender` instance.
   // `scopes` - OAuth 2 scopes needed for a client.
   // `traffic_annotation_tag` - describes requests issued by a client (for more
@@ -62,11 +66,17 @@ class GlanceablesKeyedService : public KeyedService {
       const std::vector<std::string>& scopes,
       const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) const;
 
-  // Creates clients needed to communicate with different Google services.
-  void CreateClients();
+  // Creates clients needed to communicate with different Google services, and
+  // registers them with glanceables v2 controller in ash.
+  void RegisterClients();
 
-  // Notifies `ash/` about created clients for `account_id_`.
-  void UpdateRegistrationInAsh() const;
+  // Resets clients needed to communicate with different Google services, and
+  // clears any existing registrations with glanceables v2 controller in ash.
+  void ClearClients();
+
+  // Creates or clear clients that communicated with Google services, and
+  // notifies `ash/` about created clients for `account_id_`.
+  void UpdateRegistration();
 
   // The profile for which this keyed service was created.
   const raw_ptr<Profile, ExperimentalAsh> profile_;

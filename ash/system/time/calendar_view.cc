@@ -436,8 +436,9 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
 BEGIN_METADATA(CalendarHeaderView, views::View)
 END_METADATA
 
-CalendarView::CalendarView(DetailedViewDelegate* delegate)
-    : GlanceableTrayChildBubble(delegate),
+CalendarView::CalendarView(DetailedViewDelegate* delegate,
+                           bool for_glanceables_container)
+    : GlanceableTrayChildBubble(delegate, for_glanceables_container),
       calendar_view_controller_(std::make_unique<CalendarViewController>()),
       scrolling_settled_timer_(
           FROM_HERE,

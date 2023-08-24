@@ -17,7 +17,13 @@ class ASH_EXPORT GlanceableTrayChildBubble : public TrayDetailedView {
  public:
   METADATA_HEADER(GlanceableTrayChildBubble);
 
-  explicit GlanceableTrayChildBubble(DetailedViewDelegate* delegate);
+  // `for_glanceables_container` - whether the bubble should be styled as a
+  // bubble in the glanceables container. `CalendarView` is a
+  // `GlanceablesTrayChildBubble` and if the glanceblae view flag is
+  // not enabled, the calendar view will be added to the
+  // `UnifiedSystemTrayBubble` which has its own styling.
+  GlanceableTrayChildBubble(DetailedViewDelegate* delegate,
+                            bool for_glanceables_container);
   GlanceableTrayChildBubble(const GlanceableTrayChildBubble&) = delete;
   GlanceableTrayChildBubble& operator-(const GlanceableTrayChildBubble&) =
       delete;

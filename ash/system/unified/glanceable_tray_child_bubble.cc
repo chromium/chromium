@@ -26,12 +26,10 @@ constexpr int kBubbleCornerRadius = 24;
 }  // namespace
 
 GlanceableTrayChildBubble::GlanceableTrayChildBubble(
-    DetailedViewDelegate* delegate)
+    DetailedViewDelegate* delegate,
+    bool for_glanceables_container)
     : TrayDetailedView(delegate) {
-  // `CalendarView` also extends from this view. If the glanceblae view flag is
-  // not enabled, the calendar view will be added to the
-  // `UnifiedSystemTrayBubble` which also has its own style settings.
-  if (features::AreGlanceablesV2Enabled()) {
+  if (for_glanceables_container) {
     SetAccessibleRole(ax::mojom::Role::kGroup);
 
     SetPaintToLayer();

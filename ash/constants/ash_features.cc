@@ -3288,8 +3288,11 @@ bool AreGlanceablesEnabled() {
 }
 
 bool AreGlanceablesV2Enabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2) ||
-         base::FeatureList::IsEnabled(kGlanceablesV2TrustedTesters);
+  return base::FeatureList::IsEnabled(kGlanceablesV2);
+}
+
+bool AreGlanceablesV2EnabledForTrustedTesters() {
+  return base::FeatureList::IsEnabled(kGlanceablesV2TrustedTesters);
 }
 
 bool IsGlanceablesV2ClassroomTeacherViewEnabled() {

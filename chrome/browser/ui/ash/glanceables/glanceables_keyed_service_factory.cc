@@ -29,7 +29,8 @@ GlanceablesKeyedService* GlanceablesKeyedServiceFactory::GetService(
     content::BrowserContext* context) {
   return static_cast<GlanceablesKeyedService*>(
       GetInstance()->GetServiceForBrowserContext(
-          context, /*create=*/features::AreGlanceablesV2Enabled()));
+          context, /*create=*/features::AreGlanceablesV2Enabled() ||
+                       features::AreGlanceablesV2EnabledForTrustedTesters()));
 }
 
 std::unique_ptr<KeyedService>

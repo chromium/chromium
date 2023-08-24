@@ -82,9 +82,10 @@ void DateTray::ShowBubble() {
     return;
   }
 
-  if (ash::Shell::Get()
-          ->glanceables_v2_controller()
-          ->AreGlanceablesAvailable()) {
+  GlanceablesV2Controller* const glanceables_controller =
+      ash::Shell::Get()->glanceables_v2_controller();
+  if (glanceables_controller &&
+      glanceables_controller->AreGlanceablesAvailable()) {
     ShowGlanceableBubble();
   }
 }
@@ -133,9 +134,10 @@ void DateTray::OnButtonPressed(const ui::Event& event) {
     return;
   }
 
-  if (ash::Shell::Get()
-          ->glanceables_v2_controller()
-          ->AreGlanceablesAvailable()) {
+  GlanceablesV2Controller* const glanceables_controller =
+      ash::Shell::Get()->glanceables_v2_controller();
+  if (glanceables_controller &&
+      glanceables_controller->AreGlanceablesAvailable()) {
     // Hide the unified_system_tray_ bubble.
     unified_system_tray_->CloseBubble();
     // Open the glanceables bubble.
