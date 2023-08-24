@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+
 {%- set header_guard = "%s_SHARED_H_"|format(
         module.path|upper|replace("/","_")|replace(".","_")|
             replace("-", "_")) %}
@@ -18,18 +20,6 @@ struct MojomTypeTraits<{{kind|get_qualified_name_for_kind}}DataView> {
   static constexpr MojomTypeCategory category = MojomTypeCategory::kStruct;
 {%-  endif %}
 };
-{%- endmacro %}
-
-{%- macro namespace_begin() %}
-{%-   for namespace in namespaces_as_array %}
-namespace {{namespace}} {
-{%-   endfor %}
-{%- endmacro %}
-
-{%- macro namespace_end() %}
-{%-   for namespace in namespaces_as_array|reverse %}
-}  // namespace {{namespace}}
-{%-   endfor %}
 {%- endmacro %}
 
 #ifndef {{header_guard}}
@@ -80,7 +70,7 @@ namespace {{namespace}} {
 #endif
 {%- endif %}
 
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array)}}
 
 {#--- Struct Forward Declarations -#}
 {%- for struct in structs %}
@@ -96,7 +86,7 @@ class {{struct.name}}DataView;
 class {{union.name}}DataView;
 {%- endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array)}}
 
 namespace mojo {
 namespace internal {
@@ -114,7 +104,7 @@ namespace internal {
 }  // namespace internal
 }  // namespace mojo
 
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array)}}
 
 {%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
 
@@ -158,7 +148,7 @@ using {{interface.name}}AssociatedRequestDataView =
 {%    include "union_data_view_declaration.tmpl" %}
 {%- endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array)}}
 
 namespace std {
 
@@ -196,7 +186,7 @@ namespace mojo {
 
 }  // namespace mojo
 
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array)}}
 
 {%- for struct in structs %}
 {%-   if not struct|is_native_only_kind %}
@@ -208,7 +198,7 @@ namespace mojo {
 {%    include "union_data_view_definition.tmpl" %}
 {%- endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array)}}
 
 // Declare TraceFormatTraits for enums, which should be defined in ::perfetto
 // namespace.

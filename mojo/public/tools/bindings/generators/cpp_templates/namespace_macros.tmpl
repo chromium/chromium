@@ -1,0 +1,28 @@
+{# Opens a C++ namespace built from `namespaces` and `variant`.
+   - if `variant` is not supplied, or empty/false then only `namespaces`
+       is used.
+   - if an empty namespace would result, then nothing is emitted. #}
+{%- macro namespace_begin(namespaces, variant) %}
+{%- set full_namespace = namespaces|join("::") %}
+{%- if namespaces|length and variant %}
+{%-   set full_namespace = (full_namespace, variant)|join("::") %}
+{%- elif variant %}
+{%-   set full_namespace = variant %}
+{%- endif %}
+{%- if full_namespace %}
+namespace {{full_namespace}} {
+{%- endif %}
+{%- endmacro -%}
+
+{# Closes a C++ namespace using the same rules as namespace_begin() #}
+{%- macro namespace_end(namespaces, variant) %}
+{%- set full_namespace = namespaces|join("::") %}
+{%- if namespaces|length and variant %}
+{%-   set full_namespace = (full_namespace, variant)|join("::") %}
+{%- elif variant %}
+{%-   set full_namespace = variant %}
+{%- endif %}
+{%- if full_namespace %}
+}  // {{full_namespace}}
+{%- endif %}
+{%- endmacro -%}

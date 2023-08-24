@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+
 {%- if variant -%}
 {%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
 {%- else -%}
@@ -11,24 +13,6 @@
 {%- set header_guard = "%s_H_"|format(
         variant_path|upper|replace("/","_")|replace(".","_")|
             replace("-", "_")) %}
-
-{%- macro namespace_begin() %}
-{%-   for namespace in namespaces_as_array %}
-namespace {{namespace}} {
-{%-   endfor %}
-{%-   if variant %}
-namespace {{variant}} {
-{%-   endif %}
-{%- endmacro %}
-
-{%- macro namespace_end() %}
-{%-   if variant %}
-}  // namespace {{variant}}
-{%-   endif %}
-{%-   for namespace in namespaces_as_array|reverse %}
-}  // namespace {{namespace}}
-{%-   endfor %}
-{%- endmacro %}
 
 {%- macro kythe_annotation(name) %}
 {%- if enable_kythe_annotations %}
@@ -137,7 +121,7 @@ namespace {{variant}} {
 {%- endif %}
 {%- endfor %}
 
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array, variant)}}
 
 {%- set module_prefix = "%s"|format(namespaces_as_array|join(".")) %}
 
@@ -200,7 +184,7 @@ namespace {{variant}} {
 {%-   endif %}
 {%- endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array, variant)}}
 
 namespace mojo {
 

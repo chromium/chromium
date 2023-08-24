@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+{%- from 'namespace_macros.tmpl' import namespace_begin, namespace_end %}
+
 {%- if variant -%}
 {%-   set variant_path = "%s-%s"|format(module.path, variant) -%}
 {%- else -%}
@@ -53,27 +55,7 @@
 #include "{{header}}"
 {%- endfor %}
 
-
-{%- macro namespace_begin() %}
-{%-   for namespace in namespaces_as_array %}
-namespace {{namespace}} {
-{%-   endfor %}
-{%-   if variant %}
-namespace {{variant}} {
-{%-   endif %}
-{%- endmacro %}
-
-{%- macro namespace_end() %}
-{%-   if variant %}
-}  // namespace {{variant}}
-{%-   endif %}
-{%-   for namespace in namespaces_as_array|reverse %}
-}  // namespace {{namespace}}
-{%-   endfor %}
-{%- endmacro %}
-
-
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array, variant)}}
 
 {#--- Constants #}
 {%- for constant in module.constants %}
@@ -110,7 +92,7 @@ constexpr {{constant.kind|cpp_pod_type}} {{struct.name}}::{{constant.name}};
 {%-   include "interface_definition.tmpl" %}
 {%- endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array, variant)}}
 
 
 namespace mojo {
@@ -133,7 +115,7 @@ namespace mojo {
 // Symbols declared in the -test-utils.h header are defined here instead of a
 // separate .cc file to save compile time.
 
-{{namespace_begin()}}
+{{namespace_begin(namespaces_as_array, variant)}}
 
 {%- import "interface_macros.tmpl" as interface_macros %}
 
@@ -207,7 +189,7 @@ void {{interface.name}}AsyncWaiter::{{method.name}}(
 
 {% endfor %}
 
-{{namespace_end()}}
+{{namespace_end(namespaces_as_array, variant)}}
 
 
 #if defined(__clang__)
