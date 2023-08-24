@@ -11,7 +11,7 @@ found in the LICENSE file.
     <dimen name="qd_dialog_rows_bottom_margin">16dp</dimen>
     <dimen name="qd_dialog_rows_bottom_margin_small">12dp</dimen>
     <dimen name="qd_dialog_items_bottom_margin">28dp</dimen>
-    <dimen name="qd_dialog_items_bottom_margin_small">20dp</dimen>
+    <dimen name="qd_dialog_items_bottom_margin_small">25dp</dimen>
     <dimen name="qd_dialog_icon_end_margin">16dp</dimen>
 
     <!-- Icon size values -->
