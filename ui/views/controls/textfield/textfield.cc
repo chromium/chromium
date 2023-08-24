@@ -2568,7 +2568,8 @@ void Textfield::UpdateDefaultBorder() {
   if (!use_default_border_) {
     return;
   }
-  auto border = std::make_unique<views::FocusableBorder>();
+  auto border = std::make_unique<views::FocusableBorder>(
+      ::features::IsChromeRefresh2023());
   const LayoutProvider* provider = LayoutProvider::Get();
   border->SetColorId(ui::kColorTextfieldOutline);
   border->SetInsets(gfx::Insets::TLBR(

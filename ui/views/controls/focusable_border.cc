@@ -26,8 +26,10 @@ constexpr int kInsetSize = 1;
 
 namespace views {
 
-FocusableBorder::FocusableBorder()
-    : insets_(kInsetSize), corner_radius_(FocusRing::kDefaultCornerRadiusDp) {}
+FocusableBorder::FocusableBorder(bool should_scale)
+    : insets_(kInsetSize),
+      corner_radius_(FocusRing::kDefaultCornerRadiusDp),
+      should_scale_(should_scale) {}
 
 FocusableBorder::~FocusableBorder() = default;
 
@@ -41,14 +43,14 @@ void FocusableBorder::Paint(const View& view, gfx::Canvas* canvas) {
   flags.setColor(GetCurrentColor(view));
 
   gfx::ScopedCanvas scoped(canvas);
-  float dsf = canvas->UndoDeviceScaleFactor();
+  const float dsf = canvas->UndoDeviceScaleFactor();
 
-  constexpr int kStrokeWidthPx = 1;
-  flags.setStrokeWidth(SkIntToScalar(kStrokeWidthPx));
+  const float kStrokeWidth = should_scale_ ? dsf : 1.0f;
+  flags.setStrokeWidth(kStrokeWidth);
 
   // Scale the rect and snap to pixel boundaries.
   gfx::RectF rect(gfx::ScaleToEnclosedRect(view.GetLocalBounds(), dsf));
-  rect.Inset(gfx::InsetsF(kStrokeWidthPx / 2.0f));
+  rect.Inset(gfx::InsetsF(kStrokeWidth / 2.0f));
 
   SkPath path;
   flags.setAntiAlias(true);
