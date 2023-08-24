@@ -379,9 +379,6 @@ extern const char kAutofillVirtualViewStructureAndroidDescription[];
 extern const char kBackForwardCacheName[];
 extern const char kBackForwardCacheDescription[];
 
-extern const char kEnableBackForwardCacheForScreenReaderName[];
-extern const char kEnableBackForwardCacheForScreenReaderDescription[];
-
 extern const char kBiometricReauthForPasswordFillingName[];
 extern const char kBiometricReauthForPasswordFillingDescription[];
 

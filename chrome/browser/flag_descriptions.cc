@@ -683,12 +683,6 @@ const char kBackForwardCacheDescription[] =
     "To enable caching pages on same-site navigations too, choose 'enabled "
     "same-site support'.";
 
-const char kEnableBackForwardCacheForScreenReaderName[] =
-    "Enable Back-forward cache for screen readers";
-const char kEnableBackForwardCacheForScreenReaderDescription[] =
-    "If enabled, allow pages to enter back/forward cache even if a screen "
-    "reader is in use. The page might still not be cached for other reasons.";
-
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
 const char kBiometricReauthForPasswordFillingDescription[] =
