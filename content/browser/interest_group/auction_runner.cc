@@ -479,7 +479,7 @@ AuctionRunner::AuctionRunner(
       client_security_state_(std::move(client_security_state)),
       url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
-          is_interest_group_api_allowed_callback),
+          std::move(is_interest_group_api_allowed_callback)),
       get_page_data_callback_(get_page_data_callback),
       attestation_callback_(attestation_callback),
       abort_receiver_(this, std::move(abort_receiver)),
@@ -497,6 +497,7 @@ AuctionRunner::AuctionRunner(
                interest_group_manager,
                &auction_metrics_recorder_,
                /*auction_start_time=*/base::Time::Now(),
+               is_interest_group_api_allowed_callback_,
                std::move(log_private_aggregation_requests_callback)) {}
 
 void AuctionRunner::StartAuction() {
@@ -506,7 +507,6 @@ void AuctionRunner::StartAuction() {
     return;
   }
   auction_.StartLoadInterestGroupsPhase(
-      is_interest_group_api_allowed_callback_,
       base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,
                      base::Unretained(this)));
 }

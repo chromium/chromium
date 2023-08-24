@@ -264,6 +264,10 @@ class CONTENT_EXPORT InterestGroupAuction
     // True if the worklet successfully made a bid.
     bool made_bid = false;
 
+    // If this was provided as an additional bid, this is set to the origin it
+    // claims to be.
+    absl::optional<url::Origin> additional_bid_buyer;
+
     // URLs of forDebuggingOnly.reportAdAuctionLoss(url) and
     // forDebuggingOnly.reportAdAuctionWin(url) called in generateBid().
     // They support post auction signal placeholders in their query string, for
@@ -438,6 +442,10 @@ class CONTENT_EXPORT InterestGroupAuction
   // is destroyed. `config` is typically owned by the AuctionRunner's
   // `owned_auction_config_` field. `parent` should be the parent
   // InterestGroupAuction if this is a component auction, and null, otherwise.
+  //
+  // `is_interest_group_api_allowed_callback` will be used to check whether the
+  // sellers of the auction and bids provided via interest groups or
+  // additionalBids are permitted to participate.
   InterestGroupAuction(
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const blink::AuctionConfig* config,
@@ -447,6 +455,7 @@ class CONTENT_EXPORT InterestGroupAuction
       InterestGroupManagerImpl* interest_group_manager,
       AuctionMetricsRecorder* auction_metrics_recorder,
       base::Time auction_start_time,
+      IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       base::RepeatingCallback<
           void(const PrivateAggregationRequests& private_aggregation_requests)>
           maybe_log_private_aggregation_web_features_callback);
@@ -459,15 +468,14 @@ class CONTENT_EXPORT InterestGroupAuction
   // Starts loading the interest groups that can participate in an auction.
   //
   // Both seller and buyer origins are filtered by
-  // `is_interest_group_api_allowed`, and any any not allowed to use the API
-  // are excluded from participating in the auction.
+  // `is_interest_group_api_allowed` passed to the constructor, and any any not
+  // allowed to use the API are excluded from participating in the auction.
   //
   // Invokes `load_interest_groups_phase_callback` asynchronously on
   // completion. Passes it false if there are no interest groups that may
   // participate in the auction (possibly because sellers aren't allowed to
   // participate in the auction)
   void StartLoadInterestGroupsPhase(
-      IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       AuctionPhaseCompletionCallback load_interest_groups_phase_callback);
 
   // Starts bidding and scoring phase of the auction.
@@ -573,12 +581,16 @@ class CONTENT_EXPORT InterestGroupAuction
   // Returns the number of interest groups participating in the auction that can
   // potentially make bids. Includes interest groups in component auctions.
   // Double-counts interest groups participating multiple times in different
-  // InterestGroupAuctions.
+  // InterestGroupAuctions. Does not include synthetic interest groups for
+  // additional bids.
   size_t NumPotentialBidders() const;
 
   // Returns all interest groups that bid in an auction. Expected to be called
   // after the bidding and scoring phase completes. Returns an empty set if the
   // auction failed for any reason other than the seller rejecting all bids.
+  // Bids from additional bids are not included, since they do not really have
+  // interest groups (and we don't want to attribute them to database IGs with
+  // aliasing names).
   void GetInterestGroupsThatBidAndReportBidCounts(
       blink::InterestGroupSet& interest_groups) const;
 
@@ -844,6 +856,13 @@ class CONTENT_EXPORT InterestGroupAuction
            !direct_from_seller_signals_header_ad_slot_pending_;
   }
 
+  // True if the auction may have additional bids participating.
+  bool MayHaveAdditionalBids() const {
+    return config_->expects_additional_bids ||
+           !encoded_additional_bids_.empty() ||
+           !bid_states_for_additional_bids_.empty();
+  }
+
   // Called when RequestSellerWorklet() returns. Starts scoring bids, if there
   // are any and config has been resolved.
   void OnSellerWorkletReceived();
@@ -851,6 +870,15 @@ class CONTENT_EXPORT InterestGroupAuction
   // Score bids if both the seller worklet and config with all promises resolved
   // are ready.
   void ScoreQueuedBidsIfReady();
+
+  // If we're in the bidding and scoring phase, and `encoded_additional_bids_`
+  // has been filled in, starts of the process of converting these into actual
+  // bids, keeping track of it via `num_scoring_dependencies_`.
+  void DecodeAdditionalBidsIfReady();
+
+  // Processes payload of a single additionalBids entry.
+  void HandleDecodedAdditionalBid(
+      data_decoder::DataDecoder::ValueOrError result);
 
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
   // a SellerWorklet has been provided. Results in auction immediately
@@ -966,6 +994,13 @@ class CONTENT_EXPORT InterestGroupAuction
   ScoredBid* top_non_kanon_enforced_bid();
   const ScoredBid* top_non_kanon_enforced_bid() const;
 
+  // Fills in `signals_out` and `top_level_signals_out` for reporting for bid
+  // by `bid_owner` based on the winner.
+  void ComputePostAuctionSignals(
+      const url::Origin& bid_owner,
+      PostAuctionSignals& signals_out,
+      absl::optional<PostAuctionSignals>& top_level_signals_out);
+
   // -----------------------------------
   // Methods not associated with a phase
   // -----------------------------------
@@ -1080,6 +1115,9 @@ class CONTENT_EXPORT InterestGroupAuction
   std::vector<blink::mojom::AuctionAdConfigAdditionalBidPtr>
       encoded_additional_bids_;
 
+  // This needs pointer stability for the BidState*.
+  std::vector<std::unique_ptr<BidState>> bid_states_for_additional_bids_;
+
   // True once all promises in this and component auction's configuration have
   // been resolved. (Note that if `this` is a component auction, it only looks
   // at itself; while main auctions do look at their components recursively).
@@ -1171,16 +1209,6 @@ class CONTENT_EXPORT InterestGroupAuction
   // The time when this InterestGroupAuction was created; used for UMA.
   const base::TimeTicks creation_time_;
 
-  // A unique identifier associated with this and only this invocation of
-  // runAdAuction, which came from a prior call to createAuctionNonce. This is
-  // only required for auctions that provide additional bids, and each of those
-  // additional bids must use the same auction nonce to ensure that each of
-  // those additional bids was intended for this and only this auction. Because
-  // this value is associated with the call to runAdAuction, the value of this
-  // nonce is identical for the top-level and all component auctions in a
-  // multi-seller auction.
-  absl::optional<base::Uuid> auction_nonce_;
-
   // Holds the computed subresource URLs (renderer-supplied prefix + browser
   // produced suffix). This gets constructed on-demand once the prefix actually
   // comes in from a potential promises, and in successful auctions gets
@@ -1239,6 +1267,9 @@ class CONTENT_EXPORT InterestGroupAuction
   // request's event type.
   std::map<std::string, PrivateAggregationRequests>
       private_aggregation_requests_non_reserved_;
+
+  // Callback for checking who can participate in the auction.
+  IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
   // Callback for passing encountered PrivateAggregationRequests up in order to
   // maybe trigger Private Aggregation web features, as appropriate.

@@ -337,6 +337,9 @@ TEST_F(AdditionalBidsUtilTest, MinimalValid) {
   EXPECT_TRUE(bid_state->made_bid);
   ASSERT_TRUE(bid_state->bidder);
   EXPECT_EQ("trainfans", bid_state->bidder->interest_group.name);
+  ASSERT_TRUE(bid_state->additional_bid_buyer.has_value());
+  EXPECT_EQ(bid_state->bidder->interest_group.owner,
+            bid_state->additional_bid_buyer);
   EXPECT_EQ("https://rollingstock.test",
             bid_state->bidder->interest_group.owner.Serialize());
   ASSERT_TRUE(bid_state->bidder->interest_group.bidding_url.has_value());

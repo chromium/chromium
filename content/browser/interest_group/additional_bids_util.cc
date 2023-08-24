@@ -168,7 +168,6 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       bid_currency = blink::AdCurrency::From(*bid_currency_str);
     }
   }
-  // TODO(http://crbug.com/1464874): How do we check against per-buyer-currency?
 
   absl::optional<double> ad_cost;
   const base::Value* ad_cost_val = bid_dict->Find("adCost");
@@ -229,6 +228,8 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
 
   AdditionalBidDecodeResult result;
   result.bid_state = std::make_unique<InterestGroupAuction::BidState>();
+  result.bid_state->additional_bid_buyer =
+      synth_interest_group->interest_group.owner;
   result.bid_state->bidder = std::move(synth_interest_group);
   result.bid_state->made_bid = true;
   result.bid_state->BeginTracing();

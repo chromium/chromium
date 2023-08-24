@@ -935,9 +935,11 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd() {
 
   const blink::InterestGroup& winning_group =
       winning_bid_info_.storage_interest_group->interest_group;
-  interest_group_manager_->RecordInterestGroupWin(
-      blink::InterestGroupKey(winning_group.owner, winning_group.name),
-      winning_bid_info_.ad_metadata);
+  if (!winning_bid_info_.provided_as_additional_bid) {
+    interest_group_manager_->RecordInterestGroupWin(
+        blink::InterestGroupKey(winning_group.owner, winning_group.name),
+        winning_bid_info_.ad_metadata);
+  }
 
   interest_group_manager_->RegisterAdKeysAsJoined(
       std::move(k_anon_keys_to_join_));

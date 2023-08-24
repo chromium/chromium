@@ -183,6 +183,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
     // The metadata associated with the winning ad, to be made available to the
     // interest group in future auctions in the `prevWins` field.
     std::string ad_metadata;
+
+    bool provided_as_additional_bid = false;
   };
 
   // All passed in raw pointers, including those in *BidInfo fields must outlive

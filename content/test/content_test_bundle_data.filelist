@@ -6138,6 +6138,8 @@ data/interest_group/bidding_argument_validator.js
 data/interest_group/bidding_argument_validator.js.mock-http-headers
 data/interest_group/bidding_logic.js
 data/interest_group/bidding_logic.js.mock-http-headers
+data/interest_group/bidding_logic_additional_bid.js
+data/interest_group/bidding_logic_additional_bid.js.mock-http-headers
 data/interest_group/bidding_logic_expect_top_frame_a_test.js
 data/interest_group/bidding_logic_expect_top_frame_a_test.js.mock-http-headers
 data/interest_group/bidding_logic_invalid_ad_url.js
