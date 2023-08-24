@@ -52,6 +52,8 @@ source_set("modals") {
 
 source_set("public") {
   sources = [
+    "infobar_address_profile_modal_constants.h",
+    "infobar_address_profile_modal_constants.mm",
     "infobar_modal_constants.h",
     "infobar_modal_constants.mm",
     "infobar_translate_modal_constants.h",
