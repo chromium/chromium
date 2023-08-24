@@ -537,4 +537,7 @@ PageLiveStateDecorator::Data::GetOrCreateForPageNode(
 PageLiveStateObserver::PageLiveStateObserver() = default;
 PageLiveStateObserver::~PageLiveStateObserver() = default;
 
+PageLiveStateObserverDefaultImpl::PageLiveStateObserverDefaultImpl() = default;
+PageLiveStateObserverDefaultImpl::~PageLiveStateObserverDefaultImpl() = default;
+
 }  // namespace performance_manager

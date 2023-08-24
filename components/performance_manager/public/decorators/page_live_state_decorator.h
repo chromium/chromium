@@ -207,6 +207,32 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
 };
 
+class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
+ public:
+  PageLiveStateObserverDefaultImpl();
+  ~PageLiveStateObserverDefaultImpl() override;
+  PageLiveStateObserverDefaultImpl(
+      const PageLiveStateObserverDefaultImpl& other) = delete;
+  PageLiveStateObserverDefaultImpl& operator=(
+      const PageLiveStateObserverDefaultImpl&) = delete;
+
+  // PageLiveStateObserver:
+  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
+  void OnIsConnectedToBluetoothDeviceChanged(
+      const PageNode* page_node) override {}
+  void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
+  void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
+  void OnIsBeingMirroredChanged(const PageNode* page_node) override {}
+  void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
+  void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
+  void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
+  void OnWasDiscardedChanged(const PageNode* page_node) override {}
+  void OnIsActiveTabChanged(const PageNode* page_node) override {}
+  void OnIsPinnedTabChanged(const PageNode* page_node) override {}
+  void OnContentSettingsChanged(const PageNode* page_node) override {}
+  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
+};
+
 }  // namespace performance_manager
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_

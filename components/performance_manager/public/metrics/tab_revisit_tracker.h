@@ -20,7 +20,7 @@ namespace performance_manager {
 // about these states.
 class TabRevisitTracker : public GraphOwned,
                           public TabPageObserver,
-                          public PageLiveStateObserver {
+                          public PageLiveStateObserverDefaultImpl {
  public:
   static constexpr char kTimeToRevisitHistogramName[] =
       "PerformanceManager.TabRevisitTracker.TimeToRevisit2";
@@ -56,23 +56,8 @@ class TabRevisitTracker : public GraphOwned,
       TabPageDecorator::TabHandle* tab_handle) override;
   void OnBeforeTabRemoved(TabPageDecorator::TabHandle* tab_handle) override;
 
-  // PageLiveStateObserver:
+  // PageLiveStateObserverDefaultImpl:
   void OnIsActiveTabChanged(const PageNode* page_node) override;
-  // We only care about `OnIsActiveTabChanged` but these are all pure virtual so
-  // no-op here.
-  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
-  void OnIsConnectedToBluetoothDeviceChanged(
-      const PageNode* page_node) override {}
-  void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
-  void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
-  void OnIsBeingMirroredChanged(const PageNode* page_node) override {}
-  void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
-  void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
-  void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnWasDiscardedChanged(const PageNode* page_node) override {}
-  void OnIsPinnedTabChanged(const PageNode* page_node) override {}
-  void OnContentSettingsChanged(const PageNode* page_node) override {}
-  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
 
   std::map<const TabPageDecorator::TabHandle*, StateBundle> tab_states_;
 };
