@@ -18,6 +18,7 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -984,6 +985,66 @@ TEST_F(WebBundleParserTest, DisconnectWhileParsingResponse) {
   ASSERT_TRUE(error);
   EXPECT_EQ(error->type, mojom::BundleParseErrorType::kParserInternalError);
   EXPECT_EQ(error->message, "Data source disconnected.");
+}
+
+// This data source implementation never run result callback
+// making the calls to it permanently pending.
+class BlockingDataSource : public mojom::BundleDataSource {
+ public:
+  void Read(uint64_t offset, uint64_t length, ReadCallback callback) override {}
+  void Length(LengthCallback callback) override {}
+  void IsRandomAccessContext(IsRandomAccessContextCallback callback) override {}
+};
+
+TEST_F(WebBundleParserTest, DestructorWhileParsing) {
+  base::test::TestFuture<mojom::BundleResponsePtr,
+                         mojom::BundleResponseParseErrorPtr>
+      response_future;
+  base::test::TestFuture<mojom::BundleMetadataPtr,
+                         mojom::BundleMetadataParseErrorPtr>
+      metadata_future;
+  base::test::TestFuture<mojom::BundleIntegrityBlockPtr,
+                         mojom::BundleIntegrityBlockParseErrorPtr>
+      integrity_block_future;
+
+  mojo::PendingRemote<mojom::BundleDataSource> source_remote;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<BlockingDataSource>(),
+                              source_remote.InitWithNewPipeAndPassReceiver());
+  {
+    WebBundleParser parser_impl(std::move(source_remote), GURL());
+    mojom::WebBundleParser& parser = parser_impl;
+
+    parser.ParseResponse(/*response_offset=*/100, /*response_length=*/1234,
+                         response_future.GetCallback());
+    parser.ParseMetadata(/*offset=*/absl::nullopt,
+                         metadata_future.GetCallback());
+    parser.ParseIntegrityBlock(integrity_block_future.GetCallback());
+    //|parser_impl| are deleted here.
+  }
+
+  {
+    auto error_response = std::get<1>(response_future.Take());
+    ASSERT_TRUE(error_response);
+    EXPECT_EQ(error_response->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_response->message, "Data source disconnected.");
+  }
+
+  {
+    auto error_metadata = std::get<1>(metadata_future.Take());
+    ASSERT_TRUE(error_metadata);
+    EXPECT_EQ(error_metadata->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_metadata->message, "Data source disconnected.");
+  }
+
+  {
+    auto error_integrity_block = std::get<1>(integrity_block_future.Take());
+    ASSERT_TRUE(error_integrity_block);
+    EXPECT_EQ(error_integrity_block->type,
+              mojom::BundleParseErrorType::kParserInternalError);
+    EXPECT_EQ(error_integrity_block->message, "Data source disconnected.");
+  }
 }
 
 }  // namespace web_package

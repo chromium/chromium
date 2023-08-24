@@ -5,61 +5,39 @@
 #ifndef COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 #define COMPONENTS_WEB_PACKAGE_WEB_BUNDLE_PARSER_H_
 
-#include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
+#include <memory>
+
+#include "base/containers/flat_set.h"
+#include "base/containers/unique_ptr_adapters.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web_package {
 
+// This class is responsible for assigning parsing requests to the particular
+// parsers.
 class WebBundleParser : public mojom::WebBundleParser {
  public:
   WebBundleParser(mojo::PendingRemote<mojom::BundleDataSource> data_source,
-                  const GURL& base_url);
+                  GURL base_url);
 
   WebBundleParser(const WebBundleParser&) = delete;
   WebBundleParser& operator=(const WebBundleParser&) = delete;
 
   ~WebBundleParser() override;
 
-  class SharedBundleDataSource
-      : public base::RefCounted<SharedBundleDataSource> {
+  // This interface defines the parser of sections of the Web Bundle.
+  // Please implement it if you need to create a parse of anything in the
+  // Web Bundle.
+  class WebBundleSectionParser {
    public:
-    class Observer : public base::CheckedObserver {
-     public:
-      virtual void OnDisconnect() = 0;
-    };
-
-    explicit SharedBundleDataSource(
-        mojo::PendingRemote<mojom::BundleDataSource> pending_data_source);
-
-    SharedBundleDataSource(const SharedBundleDataSource&) = delete;
-    SharedBundleDataSource& operator=(const SharedBundleDataSource&) = delete;
-
-    void AddObserver(Observer* observer);
-    void RemoveObserver(Observer* observer);
-
-    void Read(uint64_t offset,
-              uint64_t length,
-              mojom::BundleDataSource::ReadCallback callback);
-
-    void Length(mojom::BundleDataSource::LengthCallback callback);
-
-    void IsRandomAccessContext(
-        mojom::BundleDataSource::IsRandomAccessContextCallback callback);
-
-   private:
-    friend class base::RefCounted<SharedBundleDataSource>;
-
-    ~SharedBundleDataSource();
-
-    void OnDisconnect();
-
-    mojo::Remote<mojom::BundleDataSource> data_source_;
-    base::ObserverList<Observer> observers_;
+    // The closure should contain the callback provided by the caller with
+    // bound parameters that we should return to the caller.
+    using ParsingCompleteCallback = base::OnceCallback<void(base::OnceClosure)>;
+    virtual void StartParsing(ParsingCompleteCallback) = 0;
+    virtual ~WebBundleSectionParser() = default;
   };
 
  private:
@@ -74,8 +52,16 @@ class WebBundleParser : public mojom::WebBundleParser {
                      uint64_t response_length,
                      ParseResponseCallback callback) override;
 
-  scoped_refptr<SharedBundleDataSource> data_source_;
-  const GURL base_url_;
+  void ActivateParser(std::unique_ptr<WebBundleSectionParser> parser);
+  void OnParsingComplete(WebBundleSectionParser* parser,
+                         base::OnceClosure result_callback);
+  void OnDisconnect();
+
+  GURL base_url_;
+  base::flat_set<std::unique_ptr<WebBundleSectionParser>,
+                 base::UniquePtrComparator>
+      active_parsers_;
+  mojo::Remote<mojom::BundleDataSource> data_source_;
 };
 
 }  // namespace web_package

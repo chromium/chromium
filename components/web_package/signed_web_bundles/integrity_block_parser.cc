@@ -4,9 +4,9 @@
 
 #include "components/web_package/signed_web_bundles/integrity_block_parser.h"
 
+#include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom-forward.h"
@@ -28,21 +28,25 @@ constexpr char kSignatureAttributesPublicKeyWithCBORHeader[] = {
 }  // namespace
 
 IntegrityBlockParser::IntegrityBlockParser(
-    scoped_refptr<WebBundleParser::SharedBundleDataSource> data_source,
+    mojo::Remote<mojom::BundleDataSource>& data_source
+        ABSL_ATTRIBUTE_LIFETIME_BOUND,
     WebBundleParser::ParseIntegrityBlockCallback callback)
-    : data_source_(data_source), callback_(std::move(callback)) {
-  data_source_->AddObserver(this);
-}
+    : data_source_(data_source), result_callback_(std::move(callback)) {}
 
 IntegrityBlockParser::~IntegrityBlockParser() {
-  data_source_->RemoveObserver(this);
+  if (!complete_callback_.is_null()) {
+    RunErrorCallback("Data source disconnected.",
+                     mojom::BundleParseErrorType::kParserInternalError);
+  }
 }
 
-void IntegrityBlockParser::Start() {
+void IntegrityBlockParser::StartParsing(
+    WebBundleParser::WebBundleSectionParser::ParsingCompleteCallback callback) {
+  complete_callback_ = std::move(callback);
   // First, we will parse the `magic` and `version` bytes.
   const uint64_t length = sizeof(kIntegrityBlockMagicBytes) +
                           sizeof(kIntegrityBlockVersionMagicBytes);
-  data_source_->Read(
+  data_source_->get()->Read(
       0, length,
       base::BindOnce(&IntegrityBlockParser::ParseMagicBytesAndVersion,
                      weak_factory_.GetWeakPtr()));
@@ -51,9 +55,8 @@ void IntegrityBlockParser::Start() {
 void IntegrityBlockParser::ParseMagicBytesAndVersion(
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy(
-        "Error reading integrity block magic bytes.",
-        mojom::BundleParseErrorType::kParserInternalError);
+    RunErrorCallback("Error reading integrity block magic bytes.",
+                     mojom::BundleParseErrorType::kParserInternalError);
     return;
   }
 
@@ -62,7 +65,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
   // Check the magic bytes.
   const auto magic = input.ReadBytes(sizeof(kIntegrityBlockMagicBytes));
   if (!magic || !base::ranges::equal(*magic, kIntegrityBlockMagicBytes)) {
-    RunErrorCallbackAndDestroy("Wrong array size or magic bytes.");
+    RunErrorCallback("Wrong array size or magic bytes.");
     return;
   }
 
@@ -70,7 +73,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
   const auto version =
       input.ReadBytes(sizeof(kIntegrityBlockVersionMagicBytes));
   if (!version) {
-    RunErrorCallbackAndDestroy("Cannot read version bytes.");
+    RunErrorCallback("Cannot read version bytes.");
     return;
   }
 
@@ -78,7 +81,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
     signature_stack_ =
         std::vector<mojom::BundleIntegrityBlockSignatureStackEntryPtr>();
   } else {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Unexpected integrity block version. Currently supported versions are: "
         "'1b\\0\\0'",
         mojom::BundleParseErrorType::kVersionError);
@@ -86,7 +89,7 @@ void IntegrityBlockParser::ParseMagicBytesAndVersion(
   }
 
   const uint64_t offset_in_stream = input.CurrentOffset();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, kMaxCBORItemHeaderSize,
       base::BindOnce(&IntegrityBlockParser::ParseSignatureStack,
                      weak_factory_.GetWeakPtr(), offset_in_stream));
@@ -96,7 +99,7 @@ void IntegrityBlockParser::ParseSignatureStack(
     uint64_t offset_in_stream,
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy("Error reading signature stack.");
+    RunErrorCallback("Error reading signature stack.");
     return;
   }
 
@@ -104,13 +107,13 @@ void IntegrityBlockParser::ParseSignatureStack(
 
   const auto signature_stack_size = input.ReadCBORHeader(CBORType::kArray);
   if (!signature_stack_size.has_value()) {
-    RunErrorCallbackAndDestroy("Cannot parse the size of the signature stack.");
+    RunErrorCallback("Cannot parse the size of the signature stack.");
     return;
   }
 
   if (*signature_stack_size != 1 && *signature_stack_size != 2) {
     // TODO(cmfcmf): Support more signatures for key rotation.
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "The signature stack must contain one or two signatures (developer + "
         "potentially distributor signature).");
     return;
@@ -123,7 +126,7 @@ void IntegrityBlockParser::ParseSignatureStack(
 void IntegrityBlockParser::ReadSignatureStackEntry(
     const uint64_t offset_in_stream,
     const uint64_t signature_stack_entries_left) {
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, kMaxCBORItemHeaderSize,
       base::BindOnce(&IntegrityBlockParser::ParseSignatureStackEntry,
                      weak_factory_.GetWeakPtr(), offset_in_stream,
@@ -135,7 +138,7 @@ void IntegrityBlockParser::ParseSignatureStackEntry(
     const uint64_t signature_stack_entries_left,
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy("Error reading signature stack entry.");
+    RunErrorCallback("Error reading signature stack entry.");
     return;
   }
 
@@ -145,13 +148,12 @@ void IntegrityBlockParser::ParseSignatureStackEntry(
   // attributes and signature
   const auto array_length = input.ReadCBORHeader(CBORType::kArray);
   if (!array_length.has_value()) {
-    RunErrorCallbackAndDestroy(
-        "Cannot parse the size of signature stack entry.");
+    RunErrorCallback("Cannot parse the size of signature stack entry.");
     return;
   }
 
   if (*array_length != 2) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Each signature stack entry must contain exactly two elements.");
     return;
   }
@@ -164,7 +166,7 @@ void IntegrityBlockParser::ParseSignatureStackEntry(
       std::vector(data->begin(), data->begin() + input.CurrentOffset());
 
   offset_in_stream += input.CurrentOffset();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, kMaxCBORItemHeaderSize,
       base::BindOnce(
           &IntegrityBlockParser::ParseSignatureStackEntryAttributesHeader,
@@ -178,7 +180,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesHeader(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Error reading signature stack entry's attributes header.");
     return;
   }
@@ -187,13 +189,13 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesHeader(
 
   const auto attributes_length = input.ReadCBORHeader(CBORType::kMap);
   if (!attributes_length.has_value()) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Cannot parse the size of signature stack entry's attributes.");
     return;
   }
 
   if (*attributes_length != 1) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "A signature stack entry's attributes must be a map with one element.");
     return;
   }
@@ -207,7 +209,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesHeader(
       data->begin(), data->begin() + input.CurrentOffset());
 
   offset_in_stream += input.CurrentOffset();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream,
       sizeof(kSignatureAttributesPublicKeyWithCBORHeader) +
           kMaxCBORItemHeaderSize,
@@ -224,7 +226,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Error reading signature stack entry's ed25519PublicKey attribute.");
     return;
   }
@@ -233,14 +235,14 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
   const auto attribute_name =
       input.ReadBytes(sizeof(kSignatureAttributesPublicKeyWithCBORHeader));
   if (!attribute_name) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Error reading signature stack entry's ed25519PublicKey attribute.");
     return;
   }
 
   if (!base::ranges::equal(*attribute_name,
                            kSignatureAttributesPublicKeyWithCBORHeader)) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "The signature stack entry's attribute must have 'ed25519PublicKey' as "
         "its key.");
     return;
@@ -249,7 +251,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
   const auto public_key_value_size =
       input.ReadCBORHeader(CBORType::kByteString);
   if (!public_key_value_size.has_value()) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "The value of the signature stack entry's ed25519PublicKey attribute "
         "must be a byte string.");
     return;
@@ -265,7 +267,7 @@ void IntegrityBlockParser::ParseSignatureStackEntryAttributesPublicKeyKey(
       data->begin() + input.CurrentOffset());
 
   offset_in_stream += input.CurrentOffset();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, *public_key_value_size,
       base::BindOnce(&IntegrityBlockParser::
                          ReadSignatureStackEntryAttributesPublicKeyValue,
@@ -280,14 +282,13 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
     const absl::optional<std::vector<uint8_t>>& public_key_bytes) {
   if (!public_key_bytes) {
-    RunErrorCallbackAndDestroy(
-        "Error reading signature stack entry's public key.");
+    RunErrorCallback("Error reading signature stack entry's public key.");
     return;
   }
   ASSIGN_OR_RETURN(
       signature_stack_entry->public_key,
       Ed25519PublicKey::Create(*public_key_bytes),
-      [&](std::string error) { RunErrorCallbackAndDestroy(std::move(error)); });
+      [&](std::string error) { RunErrorCallback(std::move(error)); });
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
@@ -299,7 +300,7 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
       public_key_bytes->end());
 
   offset_in_stream += public_key_bytes->size();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, kMaxCBORItemHeaderSize,
       base::BindOnce(
           &IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader,
@@ -313,7 +314,7 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
     const absl::optional<std::vector<uint8_t>>& data) {
   if (!data) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Error reading CBOR header of the signature stack entry's signature.");
     return;
   }
@@ -322,12 +323,12 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
 
   const auto signature_length = input.ReadCBORHeader(CBORType::kByteString);
   if (!signature_length.has_value()) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         "Cannot parse the size of signature stack entry's signature.");
     return;
   }
   if (*signature_length != ED25519_SIGNATURE_LEN) {
-    RunErrorCallbackAndDestroy(
+    RunErrorCallback(
         base::StringPrintf("The signature does not have the correct length, "
                            "expected %u bytes.",
                            ED25519_SIGNATURE_LEN));
@@ -340,7 +341,7 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignatureHeader(
       data->begin() + input.CurrentOffset());
 
   offset_in_stream += input.CurrentOffset();
-  data_source_->Read(
+  data_source_->get()->Read(
       offset_in_stream, *signature_length,
       base::BindOnce(&IntegrityBlockParser::ParseSignatureStackEntrySignature,
                      weak_factory_.GetWeakPtr(), offset_in_stream,
@@ -354,15 +355,14 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
     mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry,
     const absl::optional<std::vector<uint8_t>>& signature_bytes) {
   if (!signature_bytes.has_value()) {
-    RunErrorCallbackAndDestroy(
-        "Error reading signature-stack entry signature.");
+    RunErrorCallback("Error reading signature-stack entry signature.");
     return;
   }
 
   ASSIGN_OR_RETURN(
       signature_stack_entry->signature,
       Ed25519Signature::Create(*signature_bytes),
-      [&](std::string error) { RunErrorCallbackAndDestroy(std::move(error)); });
+      [&](std::string error) { RunErrorCallback(std::move(error)); });
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
   signature_stack_entry->complete_entry_cbor.insert(
@@ -378,31 +378,28 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
   if (signature_stack_entries_left > 0) {
     ReadSignatureStackEntry(offset_in_stream, signature_stack_entries_left);
   } else {
-    RunSuccessCallbackAndDestroy(offset_in_stream);
+    RunSuccessCallback(offset_in_stream);
   }
 }
 
-void IntegrityBlockParser::RunSuccessCallbackAndDestroy(
-    const uint64_t offset_in_stream) {
+void IntegrityBlockParser::RunSuccessCallback(const uint64_t offset_in_stream) {
   mojom::BundleIntegrityBlockPtr integrity_block =
       mojom::BundleIntegrityBlock::New();
   integrity_block->size = offset_in_stream;
   integrity_block->signature_stack = std::move(signature_stack_);
 
-  std::move(callback_).Run(std::move(integrity_block), nullptr);
-  delete this;
+  std::move(complete_callback_)
+      .Run(base::BindOnce(std::move(result_callback_),
+                          std::move(integrity_block), nullptr));
 }
 
-void IntegrityBlockParser::RunErrorCallbackAndDestroy(
+void IntegrityBlockParser::RunErrorCallback(
     const std::string& message,
     mojom::BundleParseErrorType error_type) {
-  std::move(callback_).Run(
-      nullptr, mojom::BundleIntegrityBlockParseError::New(error_type, message));
-  delete this;
-}
-
-void IntegrityBlockParser::OnDisconnect() {
-  RunErrorCallbackAndDestroy("Data source disconnected.");
+  std::move(complete_callback_)
+      .Run(base::BindOnce(
+          std::move(result_callback_), nullptr,
+          mojom::BundleIntegrityBlockParseError::New(error_type, message)));
 }
 
 }  // namespace web_package
