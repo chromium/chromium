@@ -224,24 +224,23 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   const absl::optional<base::TimeDelta> remaining_time =
       status.GetBatteryTimeToEmpty();
 
-  // Check that powerd actually provided an estimate. It doesn't if the battery
-  // current is so close to zero that the estimate would be huge.
-  if (!remaining_time) {
-    notification_state_ = NOTIFICATION_NONE;
-    return false;
-  }
-
   const bool bsm_currently_active = status.IsBatterySaverActive();
-  const double tte = *remaining_time / base::Minutes(1);
-  const int remaining_minutes = base::ClampRound(tte);
+
+  const absl::optional<int> remaining_minutes =
+      remaining_time ? static_cast<absl::optional<int>>(
+                           base::ClampRound(*remaining_time / base::Minutes(1)))
+                     : absl::nullopt;
   const int remaining_percentage = status.GetRoundedBatteryPercent();
 
   const bool is_20_percent_or_lower_notification =
       remaining_percentage <= battery_saver_activation_charge_percent_;
 
   const bool low_power_minutes_notification =
-      remaining_minutes <= PowerNotificationController::kLowPowerMinutes &&
-      remaining_minutes > PowerNotificationController::kCriticalMinutes;
+      remaining_minutes
+          ? (remaining_minutes <=
+                 PowerNotificationController::kLowPowerMinutes &&
+             remaining_minutes > PowerNotificationController::kCriticalMinutes)
+          : false;
 
   const bool no_notification_currently_showing =
       notification_state_ == NOTIFICATION_NONE;
@@ -253,8 +252,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
   switch (experiment) {
     case features::kFullyAutoEnable:
       // Initial Opt-Out Notification at 20% battery.
-      if (is_20_percent_or_lower_notification &&
-          !battery_saver_previously_active_ && bsm_currently_active &&
+      if (is_20_percent_or_lower_notification && bsm_currently_active &&
           no_notification_currently_showing && !threshold_crossed_) {
         notification_state_ =
             PowerNotificationController::NOTIFICATION_BSM_THRESHOLD_OPT_OUT;
@@ -263,17 +261,16 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       }
 
       // Secondary Opt-Out Low-Power Notification at 15 minutes remaining.
-      if (low_power_minutes_notification && !battery_saver_previously_active_ &&
-          bsm_currently_active && !low_power_crossed_) {
+      if (low_power_minutes_notification && bsm_currently_active &&
+          !low_power_crossed_) {
         notification_state_ = NOTIFICATION_LOW_POWER;
         low_power_crossed_ = true;
-        return false;
+        return true;
       }
       break;
     case features::kOptInThenAutoEnable:
       // Initial Opt-In Notification at 20% battery.
-      if (is_20_percent_or_lower_notification &&
-          !battery_saver_previously_active_ && !bsm_currently_active &&
+      if (is_20_percent_or_lower_notification && !bsm_currently_active &&
           !threshold_crossed_) {
         notification_state_ = NOTIFICATION_BSM_THRESHOLD_OPT_IN;
         threshold_crossed_ = true;
@@ -292,8 +289,7 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       break;
     case features::kFullyOptIn:
       // Initial Opt-In Notification at 20% battery.
-      if (is_20_percent_or_lower_notification &&
-          !battery_saver_previously_active_ && !bsm_currently_active &&
+      if (is_20_percent_or_lower_notification && !bsm_currently_active &&
           !threshold_crossed_) {
         notification_state_ =
             PowerNotificationController::NOTIFICATION_BSM_LOW_POWER_OPT_IN;
@@ -302,8 +298,8 @@ PowerNotificationController::HandleBatterySaverNotifications() {
       }
 
       // Secondary Opt-In Low-Power Notification at 15 minutes remaining.
-      if (low_power_minutes_notification && battery_saver_previously_active_ &&
-          bsm_currently_active && !low_power_crossed_) {
+      if (low_power_minutes_notification && bsm_currently_active &&
+          !low_power_crossed_) {
         notification_state_ = NOTIFICATION_LOW_POWER;
         low_power_crossed_ = true;
         return true;

@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_POWER_BATTERY_SAVER_CONTROLLER_H_
 
 #include "ash/ash_export.h"
-#include "ash/constants/ash_features.h"
 #include "ash/system/power/power_status.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -59,11 +58,6 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
 
   absl::optional<int> GetRemainingMinutes(const PowerStatus* status);
 
-  void MaybeResetNotificationAvailability(
-      features::BatterySaverNotificationBehavior experiment,
-      const double battery_percent,
-      const int battery_remaining_minutes);
-
   raw_ptr<PrefService, ExperimentalAsh> local_state_;  // Non-owned and must
                                                        // out-live this.
 
@@ -71,9 +65,6 @@ class ASH_EXPORT BatterySaverController : public PowerStatus::Observer {
       power_status_observation_{this};
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Used to debounce changes to the pref and state in Power Manager.
-  bool active_ = false;
 
   const double activation_charge_percent_;
 

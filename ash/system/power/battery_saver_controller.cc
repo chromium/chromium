@@ -46,20 +46,6 @@ void BatterySaverController::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kPowerBatterySaver, false);
 }
 
-void BatterySaverController::MaybeResetNotificationAvailability(
-    features::BatterySaverNotificationBehavior experiment,
-    const double battery_percent,
-    const int battery_remaining_minutes) {
-  if (battery_remaining_minutes >
-      PowerNotificationController::kLowPowerMinutes) {
-    low_power_crossed_ = false;
-  }
-
-  if (battery_percent > activation_charge_percent_) {
-    threshold_crossed_ = false;
-  }
-}
-
 void BatterySaverController::OnPowerStatusChanged() {
   if (always_on_) {
     SetState(true, UpdateReason::kAlwaysOn);
@@ -72,35 +58,41 @@ void BatterySaverController::OnPowerStatusChanged() {
   const bool on_USB_power = power_status->IsUsbChargerConnected();
   const bool on_line_power = power_status->IsLinePowerConnected();
 
-  // Update Settings UI to reflect current BSM state.
-  if (local_state_->GetBoolean(prefs::kPowerBatterySaver) != active) {
-    SetState(active, UpdateReason::kPowerManager);
-  }
-
-  // If we don't have a time-to-empty, powerd is still thinking so don't
-  // try to auto-enable.
-  const absl::optional<int> remaining_minutes =
-      GetRemainingMinutes(power_status);
-  if (remaining_minutes == absl::nullopt) {
+  // The preference is the source of truth for battery saver state. If we see
+  // Power Manager disagree, update its state and return.
+  // NB: This is important because Power Manager sends a PowerStatus signal as
+  // part of enabling Battery Saver, but before the Battery Saver signal, so we
+  // always get a spurious PowerStatus with Battery Saver disabled right after
+  // enabling Battery Saver.
+  const bool pref_active = local_state_->GetBoolean(prefs::kPowerBatterySaver);
+  if (pref_active != active) {
+    SetState(pref_active, UpdateReason::kPowerManager);
     return;
   }
 
-  const int battery_remaining_minutes = remaining_minutes.value();
-  const double battery_percent = power_status->GetBatteryPercent();
+  const absl::optional<int> remaining_minutes =
+      GetRemainingMinutes(power_status);
 
-  const bool charger_unplugged = previously_plugged_in_ && !on_AC_power;
+  const double battery_percent = power_status->GetBatteryPercent();
 
   const bool percent_breached_threshold =
       battery_percent <= activation_charge_percent_;
   const bool minutes_breached_threshold =
-      battery_remaining_minutes <=
-      PowerNotificationController::kLowPowerMinutes;
-  const auto experiment = features::kBatterySaverNotificationBehavior.Get();
+      remaining_minutes ? (*remaining_minutes <=
+                           PowerNotificationController::kLowPowerMinutes)
+                        : false;
 
   // If we are charging and we go above any of the thresholds, we reset them.
   if (on_AC_power || on_USB_power || on_line_power) {
-    MaybeResetNotificationAvailability(experiment, battery_percent,
-                                       battery_remaining_minutes);
+    if (remaining_minutes &&
+        remaining_minutes.value() >
+            PowerNotificationController::kLowPowerMinutes) {
+      low_power_crossed_ = false;
+    }
+
+    if (battery_percent > activation_charge_percent_) {
+      threshold_crossed_ = false;
+    }
   }
 
   // Should we turn off battery saver?
@@ -108,6 +100,8 @@ void BatterySaverController::OnPowerStatusChanged() {
     SetState(false, UpdateReason::kCharging);
     return;
   }
+
+  const bool charger_unplugged = previously_plugged_in_ && !on_AC_power;
 
   const bool threshold_conditions_met =
       !on_AC_power && percent_breached_threshold &&
@@ -117,7 +111,7 @@ void BatterySaverController::OnPowerStatusChanged() {
       !on_AC_power && minutes_breached_threshold &&
       (!low_power_crossed_ || charger_unplugged);
 
-  switch (experiment) {
+  switch (features::kBatterySaverNotificationBehavior.Get()) {
     case features::kFullyAutoEnable:
       // Auto Enable when either the battery percentage is at or below
       // 20%/15mins.
@@ -188,24 +182,6 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
   absl::optional<base::TimeDelta> time_to_empty =
       power_status->GetBatteryTimeToEmpty();
   double battery_percent = power_status->GetBatteryPercent();
-
-  if (active == active_) {
-    return;
-  }
-  active_ = active;
-
-  // Update pref and Power Manager state.
-  if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
-    // NB: This call is re-entrant. SetBoolean will call OnSettingsPrefChanged
-    // which will call SetState recursively, which will exit early because
-    // active_ == active.
-    local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
-  }
-  if (active != PowerStatus::Get()->IsBatterySaverActive()) {
-    power_manager::SetBatterySaverModeStateRequest request;
-    request.set_enabled(active);
-    chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
-  }
 
   if (active && !enable_record_) {
     // An enable_record_ means that we were already active, so skip metrics if
@@ -298,6 +274,19 @@ void BatterySaverController::SetState(bool active, UpdateReason reason) {
         }
         break;
     }
+  }
+
+  // Update pref and Power Manager state.
+  if (active != local_state_->GetBoolean(prefs::kPowerBatterySaver)) {
+    // NB: This call is re-entrant. SetBoolean will call OnSettingsPrefChanged
+    // which will call SetState recursively. So we want to do the metrics
+    // before this, so that the correct reason is put in enable_record_.
+    local_state_->SetBoolean(prefs::kPowerBatterySaver, active);
+  }
+  if (active != PowerStatus::Get()->IsBatterySaverActive()) {
+    power_manager::SetBatterySaverModeStateRequest request;
+    request.set_enabled(active);
+    chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(request);
   }
 }
 
