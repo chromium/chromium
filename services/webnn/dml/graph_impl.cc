@@ -98,6 +98,46 @@ void CreateInputNode(const IdToOperandMap& id_to_operand_map,
   id_to_node_output_map[input_id] = std::move(input_node_output);
 }
 
+bool CreateOperatorNodeForClamp(const IdToOperandMap& id_to_operand_map,
+                                const OperatorPtr& operation,
+                                GraphBuilder& graph_builder,
+                                IdToNodeOutputMap& id_to_node_output_map) {
+  uint64_t input_id = operation->input_operands[0];
+  const auto input_iterator = id_to_node_output_map.find(input_id);
+  CHECK(input_iterator != id_to_node_output_map.end());
+  NodeOutputInfo input_node_output_info = input_iterator->second;
+  TensorDesc input_tensor_desc =
+      graph_builder.GetNodeOutput(input_node_output_info).tensor_desc;
+
+  uint64_t output_id = operation->output_operands[0];
+  const OperandPtr& output_operand = id_to_operand_map.at(output_id);
+  TensorDesc output_tensor_desc(GetTensorDataType(output_operand->data_type),
+                                output_operand->dimensions);
+
+  CHECK(operation->attributes);
+  auto& clamp_attributes = operation->attributes->get_clamp();
+  CHECK(clamp_attributes);
+
+  DML_ELEMENT_WISE_CLIP_OPERATOR_DESC clamp_operator_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      // No scale or bias applies to the input.
+      .ScaleBias = nullptr,
+      .Min = clamp_attributes->min_value,
+      .Max = clamp_attributes->max_value};
+  NodeInfo clamp_node_info = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ELEMENT_WISE_CLIP, &clamp_operator_desc,
+      {input_node_output_info});
+  if (clamp_node_info.type == NodeInfo::Type::kInvalid) {
+    return false;
+  }
+
+  NodeOutputInfo clamp_output_info = graph_builder.CreateNodeOutput(
+      clamp_node_info, std::move(output_tensor_desc));
+  id_to_node_output_map[output_id] = std::move(clamp_output_info);
+  return true;
+}
+
 void CreateOperatorNodeForRelu(const IdToOperandMap& id_to_operand_map,
                                const OperatorPtr& operation,
                                GraphBuilder& graph_builder,
@@ -184,7 +224,9 @@ bool CreateOperatorNodeForGemm(const IdToOperandMap& id_to_operand_map,
                                 output_operand->dimensions);
 
   absl::optional<TensorDesc> input_c_tensor_desc = absl::nullopt;
+  CHECK(operation->attributes);
   auto& gemm_attributes = operation->attributes->get_gemm();
+  CHECK(gemm_attributes);
 
   auto& c_operand_id = gemm_attributes->c_operand_id;
   if (c_operand_id) {
@@ -411,8 +453,13 @@ void GraphImpl::CreateAndBuild(
   for (auto& operation : graph_info->operators) {
     // For operators that deal with DML API, there is a chance that operator
     // creation will fail.
-    bool is_create_successful = true;
+    bool was_creation_successful = true;
     switch (operation->kind) {
+      case Operator::Kind::kClamp: {
+        was_creation_successful = CreateOperatorNodeForClamp(
+            id_to_operand_map, operation, graph_builder, id_to_node_output_map);
+        break;
+      }
       case Operator::Kind::kRelu: {
         CreateOperatorNodeForRelu(id_to_operand_map, operation, graph_builder,
                                   id_to_node_output_map);
@@ -424,7 +471,7 @@ void GraphImpl::CreateAndBuild(
         break;
       }
       case Operator::Kind::kGemm: {
-        is_create_successful = CreateOperatorNodeForGemm(
+        was_creation_successful = CreateOperatorNodeForGemm(
             id_to_operand_map, operation, graph_builder, id_to_node_output_map);
         break;
       }
@@ -432,9 +479,9 @@ void GraphImpl::CreateAndBuild(
         DLOG(ERROR) << "This operator kind (" +
                            OpKindToString(operation->kind) +
                            ") is not supported.";
-        is_create_successful = false;
+        was_creation_successful = false;
     }
-    if (!is_create_successful) {
+    if (!was_creation_successful) {
       std::move(callback).Run(mojo::NullRemote());
       return;
     }

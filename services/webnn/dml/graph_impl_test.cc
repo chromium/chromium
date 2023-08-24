@@ -57,6 +57,23 @@ bool WebNNGraphDMLImplTest::CreateAndBuildGraph(
   return result;
 }
 
+// Test building a DML graph with single operator clamp.
+TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorClamp) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id = builder.BuildInput(
+      "input", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id = builder.BuildOutput(
+      "output", {1, 2, 3, 4}, mojom::Operand::DataType::kFloat32);
+  mojom::ClampAttributesPtr clamp_attributes = mojom::ClampAttributes::New();
+  clamp_attributes->max_value = 3;
+  clamp_attributes->min_value = 0;
+  builder.BuildOperator(
+      mojom::Operator::Kind::kClamp, {input_operand_id}, {output_operand_id},
+      mojom::OperatorAttributes::NewClamp(std::move(clamp_attributes)));
+  EXPECT_TRUE(CreateAndBuildGraph(builder.GetGraphInfo()));
+}
+
 // Test building a DML graph with single operator relu.
 TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorRelu) {
   // Build the mojom graph info.
