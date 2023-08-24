@@ -38,7 +38,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
-#include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;
@@ -213,9 +213,8 @@ void MimeHandlerViewGuest::DidAttachToEmbedder() {
   DCHECK(stream_->handler_url().SchemeIs(extensions::kExtensionScheme));
   GetController().LoadURL(stream_->handler_url(), content::Referrer(),
                           ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-  auto prefs = web_contents()->GetOrCreateWebPreferences();
-  prefs.navigate_on_drag_drop = true;
-  web_contents()->SetWebPreferences(prefs);
+  web_contents()->GetMutableRendererPrefs()->can_accept_load_drops = true;
+  web_contents()->SyncRendererPrefs();
 }
 
 void MimeHandlerViewGuest::DidInitialize(

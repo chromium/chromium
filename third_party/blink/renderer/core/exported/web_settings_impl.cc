@@ -643,10 +643,6 @@ void WebSettingsImpl::SetCookieEnabled(bool enabled) {
   dev_tools_emulator_->SetCookieEnabled(enabled);
 }
 
-void WebSettingsImpl::SetNavigateOnDragDrop(bool enabled) {
-  settings_->SetNavigateOnDragDrop(enabled);
-}
-
 void WebSettingsImpl::SetAllowCustomScrollbarInMainFrame(bool enabled) {
   settings_->SetAllowCustomScrollbarInMainFrame(enabled);
 }

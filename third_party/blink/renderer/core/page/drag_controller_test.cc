@@ -85,7 +85,10 @@ class DragControllerSimTest : public SimTest {};
 // Drop clears out the Autoscroll state. Regression test for
 // https://crbug.com/733996.
 TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
-  WebView().GetPage()->GetSettings().SetNavigateOnDragDrop(false);
+  auto renderer_preferences = WebView().GetRendererPreferences();
+  renderer_preferences.can_accept_load_drops = false;
+  WebView().SetRendererPreferences(renderer_preferences);
+
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
@@ -98,22 +101,26 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
 
   Compositor().BeginFrame();
 
-  DataObject* object = DataObject::Create();
-  object->SetURLAndTitle("https://www.example.com/index.html", "index");
-  DragData data(
-      object, gfx::PointF(10, 10), gfx::PointF(10, 10),
-      static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |
-                                      kDragOperationMove));
+  WebDragData drag_data;
+  WebDragData::StringItem item;
+  item.type = "text/uri-list";
+  item.data = WebString::FromUTF8("https://www.example.com/index.html");
+  drag_data.AddItem(item);
 
-  WebView().GetPage()->GetDragController().DragEnteredOrUpdated(
-      &data, *GetDocument().GetFrame());
+  const gfx::PointF client_point(10, 10);
+  const gfx::PointF screen_point(10, 10);
+  WebFrameWidget* widget = WebView().MainFrameImpl()->FrameWidget();
+  widget->DragTargetDragEnter(drag_data, client_point, screen_point,
+                              kDragOperationCopy, 0, base::DoNothing());
 
   // The page should tell the AutoscrollController about the drag.
   EXPECT_TRUE(
       WebView().GetPage()->GetAutoscrollController().AutoscrollInProgress());
 
-  WebView().GetPage()->GetDragController().PerformDrag(
-      &data, *GetDocument().GetFrame());
+  widget->DragTargetDrop(drag_data, client_point, screen_point, 0,
+                         base::DoNothing());
+  frame_test_helpers::PumpPendingRequestsForFrameToLoad(
+      WebView().MainFrameImpl());
 
   // Once we've "performed" the drag (in which nothing happens), the
   // AutoscrollController should have been cleared.
@@ -125,7 +132,6 @@ TEST_F(DragControllerSimTest, DropURLOnNonNavigatingClearsState) {
 // lifecycle updates for frames - are accounted for in the DragController.
 // Regression test for https://crbug.com/685030
 TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
-  WebView().GetPage()->GetSettings().SetNavigateOnDragDrop(false);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/test.html", "text/html");
 
@@ -138,8 +144,7 @@ TEST_F(DragControllerSimTest, ThrottledDocumentHandled) {
       "  document.addEventListener('dragenter', e => e.preventDefault());"
       "</script>");
 
-  DataObject* object = DataObject::Create();
-  object->SetURLAndTitle("https://www.example.com/index.html", "index");
+  DataObject* object = DataObject::CreateFromString("hello world");
   DragData data(
       object, gfx::PointF(10, 10), gfx::PointF(10, 10),
       static_cast<DragOperationsMask>(kDragOperationCopy | kDragOperationLink |

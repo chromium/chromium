@@ -140,7 +140,6 @@ WebPreferences::WebPreferences()
       smart_insert_delete_enabled(false),
 #endif
       spatial_navigation_enabled(false),
-      navigate_on_drag_drop(true),
       fake_no_alloc_direct_call_for_testing_enabled(false),
       v8_cache_options(blink::mojom::V8CacheOptions::kDefault),
       record_whole_document(false),

@@ -2739,7 +2739,9 @@ TEST_F(WebViewTest, DragDropURL) {
             web_view->MainFrameImpl()->GetDocument().Url().GetString().Utf8());
 
   // Disable navigation on drag-and-drop.
-  web_view->SettingsImpl()->SetNavigateOnDragDrop(false);
+  auto renderer_preferences = web_view->GetRendererPreferences();
+  renderer_preferences.can_accept_load_drops = false;
+  web_view->SetRendererPreferences(renderer_preferences);
 
   // Attempt to drag and drop to barUrl and verify that no navigation has
   // occurred.

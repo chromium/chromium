@@ -121,7 +121,6 @@ class WebSettings {
   virtual void SetCaretBrowsingEnabled(bool) = 0;
   virtual void SetClobberUserAgentInitialScaleQuirk(bool) = 0;
   virtual void SetCookieEnabled(bool) = 0;
-  virtual void SetNavigateOnDragDrop(bool) = 0;
   virtual void SetCursiveFontFamily(const WebString&,
                                     UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetDNSPrefetchingEnabled(bool) = 0;

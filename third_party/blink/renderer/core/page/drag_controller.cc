@@ -296,38 +296,29 @@ void DragController::PerformDrag(DragData* drag_data, LocalFrame& local_root) {
   }
 
   if (OperationForLoad(drag_data, local_root) != DragOperation::kNone) {
-    if (page_->GetSettings().GetNavigateOnDragDrop()) {
-      ResourceRequest resource_request(drag_data->AsURL());
-      resource_request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(
-          document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr));
+    ResourceRequest resource_request(drag_data->AsURL());
+    resource_request.SetHasUserGesture(LocalFrame::HasTransientUserActivation(
+        document_under_mouse_ ? document_under_mouse_->GetFrame() : nullptr));
 
-      // Use a unique origin to match other navigations that are initiated
-      // outside of a renderer process (e.g. omnibox navigations).  Here, the
-      // initiator of the navigation is a user dragging files from *outside* of
-      // the current page.  See also https://crbug.com/930049.
-      //
-      // TODO(lukasza): Once drag-and-drop remembers the source of the drag
-      // (unique origin for drags started from top-level Chrome like bookmarks
-      // or for drags started from other apps like Windows Explorer;  specific
-      // origin for drags started from another tab) we should use the source of
-      // the drag as the initiator of the navigation below.
-      resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
+    // Use a unique origin to match other navigations that are initiated
+    // outside of a renderer process (e.g. omnibox navigations).  Here, the
+    // initiator of the navigation is a user dragging files from *outside* of
+    // the current page.  See also https://crbug.com/930049.
+    //
+    // TODO(lukasza): Once drag-and-drop remembers the source of the drag
+    // (unique origin for drags started from top-level Chrome like bookmarks
+    // or for drags started from other apps like Windows Explorer;  specific
+    // origin for drags started from another tab) we should use the source of
+    // the drag as the initiator of the navigation below.
+    resource_request.SetRequestorOrigin(SecurityOrigin::CreateUniqueOpaque());
 
-      FrameLoadRequest request(nullptr, resource_request);
+    FrameLoadRequest request(nullptr, resource_request);
 
-      // Open the dropped URL in a new tab to avoid potential data-loss in the
-      // current tab. See https://crbug.com/451659.
-      request.SetNavigationPolicy(
-          NavigationPolicy::kNavigationPolicyNewForegroundTab);
-      local_root.Navigate(request, WebFrameLoadType::kStandard);
-    }
-
-    // TODO(bokan): This case happens when we end a URL drag inside a guest
-    // process which doesn't navigate. We assume that since we'll navigate the
-    // page in the general case we don't end up sending `dragleave` and
-    // `dragend` events but for plugins we wont navigate so it seems we should
-    // be sending these events. crbug.com/748243.
-    local_root.GetEventHandler().ClearDragState();
+    // Open the dropped URL in a new tab to avoid potential data-loss in the
+    // current tab. See https://crbug.com/451659.
+    request.SetNavigationPolicy(
+        NavigationPolicy::kNavigationPolicyNewForegroundTab);
+    local_root.Navigate(request, WebFrameLoadType::kStandard);
   }
 
   document_under_mouse_ = nullptr;
