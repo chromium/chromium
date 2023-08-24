@@ -23,6 +23,11 @@ extern const base::FeatureParam<std::string>
 // Used to control the enterprise plus address feature's OAuth scope.
 COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
 extern const base::FeatureParam<std::string> kEnterprisePlusAddressOAuthScope;
+
+// The url that the enterprise uses to create plus addresses. Must be a valid
+// GURL, such as `https://foo.example/`.
+COMPONENT_EXPORT(PLUS_ADDRESSES_FEATURES)
+extern const base::FeatureParam<std::string> kEnterprisePlusAddressServerUrl;
 }  // namespace plus_addresses
 
 #endif  // COMPONENTS_PLUS_ADDRESSES_FEATURES_H_

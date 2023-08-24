@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/plus_addresses/plus_address_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -75,6 +76,9 @@ class PlusAddressService : public KeyedService {
   // Stores pointer to IdentityManager instance. It must outlive the
   // PlusAddressService and can be null during tests.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // Handles requests to a remote server that this service uses.
+  const PlusAddressClient plus_address_client_;
 };
 
 }  // namespace plus_addresses
