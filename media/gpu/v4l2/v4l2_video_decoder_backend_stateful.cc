@@ -211,10 +211,16 @@ void V4L2StatefulVideoDecoderBackend::DoDecodeWork() {
 
     // Record timestamp of the input buffer so it propagates to the decoded
     // frames.
-    const auto buffer_timestamp = current_decode_request_->buffer->timestamp();
-    current_input_buffer_->SetTimeStamp(TimeDeltaToTimeVal(buffer_timestamp));
+    const struct timespec timespec =
+        current_decode_request_->buffer->timestamp().ToTimeSpec();
+    struct timeval timestamp = {
+        .tv_sec = timespec.tv_sec,
+        .tv_usec = timespec.tv_nsec / 1000,
+    };
+    current_input_buffer_->SetTimeStamp(timestamp);
 
-    const int64_t flat_timespec = buffer_timestamp.InMilliseconds();
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
     encoding_timestamps_[flat_timespec] = base::TimeTicks::Now();
   }
 
@@ -432,9 +438,14 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
 
   // Zero-bytes buffers are returned as part of a flush and can be dismissed.
   if (buffer->GetPlaneBytesUsed(0) > 0) {
-    const base::TimeDelta timestamp =
-        TimeValToTimeDelta(buffer->GetTimeStamp());
-    const int64_t flat_timespec = timestamp.InMilliseconds();
+    const struct timeval timeval = buffer->GetTimeStamp();
+    const struct timespec timespec = {
+        .tv_sec = timeval.tv_sec,
+        .tv_nsec = timeval.tv_usec * 1000,
+    };
+
+    const int64_t flat_timespec =
+        base::TimeDelta::FromTimeSpec(timespec).InMilliseconds();
     // TODO(b/190615065) |flat_timespec| might be repeated with H.264
     // bitstreams, investigate why, and change the if() to DCHECK().
     if (base::Contains(encoding_timestamps_, flat_timespec)) {
@@ -468,6 +479,7 @@ void V4L2StatefulVideoDecoderBackend::OnOutputBufferDequeued(
         NOTREACHED();
     }
 
+    const base::TimeDelta timestamp = base::TimeDelta::FromTimeSpec(timespec);
     // TODO(b/214190092): Get color space from the buffer.
     client_->OutputFrame(std::move(frame), *visible_rect_, color_space_,
                          timestamp);

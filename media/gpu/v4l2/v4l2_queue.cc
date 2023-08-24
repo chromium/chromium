@@ -60,6 +60,14 @@ const char* V4L2BufferTypeToString(const enum v4l2_buf_type buf_type) {
   }
 }
 
+int64_t V4L2BufferTimestampInMilliseconds(
+    const struct v4l2_buffer* v4l2_buffer) {
+  struct timespec ts;
+  TIMEVAL_TO_TIMESPEC(&v4l2_buffer->timestamp, &ts);
+
+  return base::TimeDelta::FromTimeSpec(ts).InMilliseconds();
+}
+
 // For decoding and encoding data to be processed is enqueued in the
 // V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE queue.  Once that data has been either
 // decompressed or compressed, the finished buffer is dequeued from the
@@ -83,21 +91,20 @@ void V4L2ProcessingTrace(const struct v4l2_buffer* v4l2_buffer, bool start) {
   TRACE_EVENT_INSTANT1(kTracingCategory, name, TRACE_EVENT_SCOPE_THREAD, "type",
                        v4l2_buffer->type);
 
-  const auto timestamp_ms =
-      TimeValToTimeDelta(v4l2_buffer->timestamp).InMilliseconds();
-  if (timestamp_ms <= 0) {
+  const int64_t timestamp = V4L2BufferTimestampInMilliseconds(v4l2_buffer);
+  if (timestamp <= 0) {
     return;
   }
 
   if (start && v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kTracingCategory, kVideoDecoding,
-                                      TRACE_ID_LOCAL(timestamp_ms), "timestamp",
-                                      timestamp_ms);
+                                      TRACE_ID_LOCAL(timestamp), "timestamp",
+                                      timestamp);
   } else if (!start &&
              v4l2_buffer->type == V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE) {
     TRACE_EVENT_NESTABLE_ASYNC_END1(kTracingCategory, kVideoDecoding,
-                                    TRACE_ID_LOCAL(timestamp_ms), "timestamp",
-                                    timestamp_ms);
+                                    TRACE_ID_LOCAL(timestamp), "timestamp",
+                                    timestamp);
   }
 }
 
