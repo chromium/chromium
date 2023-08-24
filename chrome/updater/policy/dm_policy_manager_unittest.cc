@@ -108,12 +108,10 @@ TEST(DMPolicyManager, DeviceManagementOverride) {
   ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
       omaha_settings;
 
-  auto policy_manager =
-      base::MakeRefCounted<DMPolicyManager>(omaha_settings, true);
-  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
-
-  policy_manager = base::MakeRefCounted<DMPolicyManager>(omaha_settings, false);
-  EXPECT_FALSE(policy_manager->HasActiveDevicePolicies());
+  EXPECT_TRUE(base::MakeRefCounted<DMPolicyManager>(omaha_settings, true)
+                  ->HasActiveDevicePolicies());
+  EXPECT_FALSE(base::MakeRefCounted<DMPolicyManager>(omaha_settings, false)
+                   ->HasActiveDevicePolicies());
 }
 
 TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
@@ -122,9 +120,7 @@ TEST(DMPolicyManager, PolicyManagerFromEmptyProto) {
 
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
-#if !BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
-#endif  // BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);
@@ -202,9 +198,7 @@ TEST(DMPolicyManager, PolicyManagerFromProto) {
 
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
-#if !BUILDFLAG(IS_LINUX)
-  EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
-#endif  // BUILDFLAG(IS_LINUX)
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   // Verify global policies
@@ -292,7 +286,7 @@ TEST(DMPolicyManager, PolicyManagerFromDMResponse) {
 
   auto policy_manager(base::MakeRefCounted<DMPolicyManager>(omaha_settings));
 
-  EXPECT_EQ(policy_manager->HasActiveDevicePolicies(), base::IsManagedDevice());
+  EXPECT_TRUE(policy_manager->HasActiveDevicePolicies());
   EXPECT_EQ(policy_manager->source(), "DeviceManagement");
 
   EXPECT_EQ(policy_manager->GetLastCheckPeriod(), absl::nullopt);

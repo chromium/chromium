@@ -81,24 +81,12 @@ DMPolicyManager::DMPolicyManager(
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings,
     const absl::optional<bool>& override_is_managed_device)
-    :
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-      is_managed_device_(
-          override_is_managed_device.value_or(base::IsManagedDevice())),
-#else
-      is_managed_device_(override_is_managed_device.value_or(false)),
-#endif
-      omaha_settings_(omaha_settings) {
-}
+    : is_managed_device_(override_is_managed_device.value_or(true)),
+      omaha_settings_(omaha_settings) {}
 
 DMPolicyManager::~DMPolicyManager() = default;
 
 bool DMPolicyManager::HasActiveDevicePolicies() const {
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1276162) - `is_managed_device_` is not properly initialized
-  // if the platform is not Windows or macOS.
-  NOTIMPLEMENTED();
-#endif
   return is_managed_device_;
 }
 
