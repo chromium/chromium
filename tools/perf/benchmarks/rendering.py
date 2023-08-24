@@ -37,6 +37,8 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.PercentDroppedFrames3.AllSequences',
     'Memory.GPU.PeakMemoryUsage2.Scroll',
     'Memory.GPU.PeakMemoryUsage2.PageLoad',
+    'Event.ScrollJank.DelayedFramesPercentage.FixedWindow',
+    'Event.ScrollJank.MissedVsyncsSum.FixedWindow',
 ]
 
 
