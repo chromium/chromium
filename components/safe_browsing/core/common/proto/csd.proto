@@ -2082,6 +2082,9 @@ message ExtensionTelemetryReportRequest {
         optional ProtocolType connection_protocol = 3;
       }
       repeated RemoteHostInfo remote_host = 1;
+
+      // True if the remote host info is collected from new interception point.
+      optional bool collected_from_new_interception = 2;
     }
 
     optional RemoteHostContactedInfo remote_host_contacted_info = 2;
