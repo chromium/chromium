@@ -114,6 +114,14 @@ export class AppServiceInternalsElement extends PolymerElement {
       fileParts.push(shortcut.debugInfo + '\n');
     }
 
+    fileParts.push('Promise App List\n');
+    fileParts.push('================\n\n');
+    for (const promiseApp of this.promiseAppList_) {
+      fileParts.push(promiseApp.packageId + '\n');
+      fileParts.push('-----\n');
+      fileParts.push(promiseApp.debugInfo + '\n');
+    }
+
     const file = new Blob(fileParts);
     const a = document.createElement('a');
     a.href = URL.createObjectURL(file);
