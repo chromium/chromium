@@ -236,13 +236,8 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
 
 bool DecryptIncomingPasswordSharingInvitationSpecifics(
     const Cryptographer& cryptographer,
-    const sync_pb::EntitySpecifics& in,
-    sync_pb::EntitySpecifics* out) {
-  CHECK(in.has_incoming_password_sharing_invitation());
-
-  const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation =
-      in.incoming_password_sharing_invitation();
-
+    const sync_pb::IncomingPasswordSharingInvitationSpecifics& invitation,
+    sync_pb::PasswordSharingInvitationData* unencrypted_invitation_data) {
   if (!invitation.has_encrypted_password_sharing_invitation_data() ||
       !invitation.sender_info().has_cross_user_sharing_public_key()) {
     DLOG(ERROR)
@@ -263,9 +258,8 @@ bool DecryptIncomingPasswordSharingInvitationSpecifics(
     return false;
   }
 
-  if (!out->mutable_incoming_password_sharing_invitation()
-           ->mutable_client_only_unencrypted_data()
-           ->ParseFromArray(decrypted->data(), decrypted->size())) {
+  if (!unencrypted_invitation_data->ParseFromArray(decrypted->data(),
+                                                   decrypted->size())) {
     DLOG(ERROR) << "Failed to parse password sharing invitation";
     return false;
   }
@@ -607,7 +601,9 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     // should be encrypted using recipient's public key (i.e. it's committed to
     // the server), and hence it's expected to be present.
     if (!DecryptIncomingPasswordSharingInvitationSpecifics(
-            cryptographer, specifics, &data.specifics)) {
+            cryptographer, specifics.incoming_password_sharing_invitation(),
+            data.specifics.mutable_incoming_password_sharing_invitation()
+                ->mutable_client_only_unencrypted_data())) {
       return FAILED_TO_DECRYPT;
     }
   } else if (specifics.has_encrypted()) {
