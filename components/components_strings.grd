@@ -381,7 +381,7 @@
       <message name="IDS_SAVE" desc="Used on a button to save information you are editing.">
         Save
       </message>
-      <message name="IDS_MENU" desc="The accessible name for the Menu. This is used as the aria-roledescription for context menus.">
+      <message name="IDS_MENU" desc="The accessible name for the Menu. This is used as the aria-roledescription for context menus." formatter_data="android_java">
         Menu
       </message>
       <message name="IDS_INSTALL" desc="Text to be displayed when an action will trigger an installation (of a component, app from the Play Store, etc.).">
