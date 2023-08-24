@@ -272,7 +272,7 @@ source_set("allocator_core") {
   if (use_freelist_pool_offsets) {
     sources += [ "pool_offset_freelist.h" ]
   } else {
-    sources += [ "encoded_freelist.h" ]
+    sources += [ "encoded_next_freelist.h" ]
   }
 
   public_deps = [

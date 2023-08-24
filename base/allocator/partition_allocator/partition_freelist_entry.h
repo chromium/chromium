@@ -26,7 +26,7 @@ namespace partition_alloc::internal {
 #if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 #include "base/allocator/partition_allocator/pool_offset_freelist.h"  // IWYU pragma: export
 #else
-#include "base/allocator/partition_allocator/encoded_freelist.h"  // IWYU pragma: export
+#include "base/allocator/partition_allocator/encoded_next_freelist.h"  // IWYU pragma: export
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 namespace partition_alloc::internal {
