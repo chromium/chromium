@@ -51,6 +51,14 @@ chrome.fileManagerPrivate.DeviceType = {
 /**
  * @enum {string}
  */
+chrome.fileManagerPrivate.DeviceConnectionState = {
+  OFFLINE: 'OFFLINE',
+  ONLINE: 'ONLINE',
+};
+
+/**
+ * @enum {string}
+ */
 chrome.fileManagerPrivate.DriveConnectionStateType = {
   OFFLINE: 'OFFLINE',
   METERED: 'METERED',
@@ -1367,6 +1375,13 @@ chrome.fileManagerPrivate.searchFilesByHashes = function(volumeId, hashList, cal
 chrome.fileManagerPrivate.searchFiles = function(searchParams, callback) {};
 
 /**
+ * Retrieves the state of the current device connection. |callback|
+ * @param {function(!chrome.fileManagerPrivate.DeviceConnectionState): void}
+ *     callback
+ */
+chrome.fileManagerPrivate.getDeviceConnectionState = function(callback) {};
+
+/**
  * Retrieves the state of the current drive connection. |callback|
  * @param {function(!chrome.fileManagerPrivate.DriveConnectionState): void}
  *     callback
@@ -1765,6 +1780,11 @@ chrome.fileManagerPrivate.onDirectoryChanged;
  * @type {!ChromeEvent}
  */
 chrome.fileManagerPrivate.onPreferencesChanged;
+
+/**
+ * @type {!ChromeEvent}
+ */
+chrome.fileManagerPrivate.onDeviceConnectionStatusChanged;
 
 /**
  * @type {!ChromeEvent}

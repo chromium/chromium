@@ -40,6 +40,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -62,18 +63,20 @@ namespace file_manager {
 
 // Monitors changes in disk mounts, network connection state and preferences
 // affecting File Manager. Dispatches appropriate File Browser events.
-class EventRouter : public KeyedService,
-                    public extensions::ExtensionRegistryObserver,
-                    public ash::system::TimezoneSettings::Observer,
-                    public VolumeManagerObserver,
-                    public arc::ArcIntentHelperObserver,
-                    public drive::DriveIntegrationServiceObserver,
-                    public guest_os::GuestOsSharePath::Observer,
-                    public ash::TabletModeObserver,
-                    public file_manager::io_task::IOTaskController::Observer,
-                    public guest_os::GuestOsMountProviderRegistry::Observer,
-                    public chromeos::DlpClient::Observer,
-                    public apps::AppRegistryCache::Observer {
+class EventRouter
+    : public KeyedService,
+      public extensions::ExtensionRegistryObserver,
+      public ash::system::TimezoneSettings::Observer,
+      public VolumeManagerObserver,
+      public arc::ArcIntentHelperObserver,
+      public drive::DriveIntegrationServiceObserver,
+      public guest_os::GuestOsSharePath::Observer,
+      public ash::TabletModeObserver,
+      public file_manager::io_task::IOTaskController::Observer,
+      public guest_os::GuestOsMountProviderRegistry::Observer,
+      public chromeos::DlpClient::Observer,
+      public apps::AppRegistryCache::Observer,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   using DispatchDirectoryChangeEventImplCallback =
       base::RepeatingCallback<void(const base::FilePath& virtual_path,
@@ -211,6 +214,9 @@ class EventRouter : public KeyedService,
   void OnAppUpdate(const apps::AppUpdate& update) override;
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
+
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(const network::mojom::ConnectionType type) override;
 
   // Use this method for unit tests to bypass checking if there are any SWA
   // windows.

@@ -35684,6 +35684,8 @@ Called by update_extension_histograms.py.-->
   <int value="542" label="OS_DIAGNOSTICS_ON_MEMORY_ROUTINE_FINISHED"/>
   <int value="543" label="OS_EVENTS_ON_TOUCHSCREEN_TOUCH_EVENT"/>
   <int value="544" label="OS_EVENTS_ON_TOUCHSCREEN_CONNECTED_EVENT"/>
+  <int value="545"
+      label="FILE_MANAGER_PRIVATE_ON_DEVICE_CONNECTION_STATUS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -37602,6 +37604,7 @@ Called by update_extension_histograms.py.-->
   <int value="1820" label="FILEMANAGERPRIVATE_DISMISSIOTASK"/>
   <int value="1821" label="ACCESSIBILITY_PRIVATE_SHOWTOAST"/>
   <int value="1822" label="USERSCRIPTS_GETSCRIPTS"/>
+  <int value="1823" label="FILEMANAGERPRIVATE_GETDEVICECONNECTIONSTATE"/>
 </enum>
 
 <enum name="ExtensionIconState">

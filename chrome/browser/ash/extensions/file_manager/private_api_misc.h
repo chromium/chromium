@@ -476,6 +476,19 @@ class FileManagerPrivateSendFeedbackFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.getDeviceConnectionState method.
+class FileManagerPrivateGetDeviceConnectionStateFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.getDeviceConnectionState",
+                             FILEMANAGERPRIVATE_GETDEVICECONNECTIONSTATE)
+
+ protected:
+  ~FileManagerPrivateGetDeviceConnectionStateFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_MISC_H_

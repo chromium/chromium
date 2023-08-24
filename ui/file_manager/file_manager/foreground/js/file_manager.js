@@ -939,6 +939,12 @@ export class FileManager extends EventTarget {
     store.init(getEmptyState());
     this.initUIFocus_();
     metrics.recordInterval('Load.InitUI');
+
+    chrome.fileManagerPrivate.onDeviceConnectionStatusChanged.addListener(
+        this.updateDeviceConnectionState_.bind(this));
+    chrome.fileManagerPrivate.getDeviceConnectionState(
+        this.updateDeviceConnectionState_.bind(this));
+
     return fileSystemUIPromise;
   }
 
@@ -1796,6 +1802,15 @@ export class FileManager extends EventTarget {
       this.ui_.nudgeContainer.clearSeen(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
       console.debug('Reset Google Drive move to cloud nudge');
     }
+  }
+
+  /**
+   * Invoked when the device connection status changes.
+   * @param {chrome.fileManagerPrivate.DeviceConnectionState} state
+   * @private
+   */
+  updateDeviceConnectionState_(state) {
+    // TODO(jboulic): Update device connection state in the store.
   }
 
   /**

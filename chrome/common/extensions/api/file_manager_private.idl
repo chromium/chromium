@@ -54,6 +54,9 @@ enum VolumeType { drive, downloads, removable, archive, provided, mtp,
 // Device type. Available if this is removable volume.
 enum DeviceType { usb, sd, optical, mobile, unknown };
 
+// List of device connection statuses.
+enum DeviceConnectionState {OFFLINE, ONLINE};
+
 // List of connection types of drive.
 enum DriveConnectionStateType {OFFLINE, METERED, ONLINE};
 
@@ -1387,6 +1390,8 @@ callback SearchFilesCallback = void([instanceOf=Entry] object[] entries);
 // contain at most one path per hash.
 callback SearchFilesByHashesCallback = void(object paths);
 
+callback GetDeviceConnectionStateCallback = void(DeviceConnectionState result);
+
 callback GetDriveConnectionStateCallback = void(DriveConnectionState result);
 
 // |result| true if the length is in the valid range, false otherwise.
@@ -1732,6 +1737,10 @@ interface Functions {
   static void searchFiles(SearchMetadataParams searchParams,
                           SearchFilesCallback callback);
 
+  // Retrieves the current device connection status.
+  // |callback|
+  static void getDeviceConnectionState(GetDeviceConnectionStateCallback callback);
+
   // Retrieves the state of the current drive connection.
   // |callback|
   [supportsPromises]
@@ -2009,6 +2018,8 @@ interface Events {
   static void onDirectoryChanged(FileWatchEvent event);
 
   static void onPreferencesChanged();
+
+  static void onDeviceConnectionStatusChanged(DeviceConnectionState state);
 
   static void onDriveConnectionStatusChanged();
 

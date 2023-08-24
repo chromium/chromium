@@ -80,6 +80,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "components/zoom/page_zoom.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/page_zoom.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"
@@ -1146,6 +1147,18 @@ FileManagerPrivateSendFeedbackFunction::Run() {
                            /*category_tag=*/"chromeos-files-app",
                            /*extra_diagnostics=*/std::string());
   return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetDeviceConnectionStateFunction::Run() {
+  api::file_manager_private::DeviceConnectionState result =
+      content::GetNetworkConnectionTracker()->IsOffline()
+          ? api::file_manager_private::DEVICE_CONNECTION_STATE_OFFLINE
+          : api::file_manager_private::DEVICE_CONNECTION_STATE_ONLINE;
+
+  return RespondNow(ArgumentList(
+      api::file_manager_private::GetDeviceConnectionState::Results::Create(
+          result)));
 }
 
 }  // namespace extensions
