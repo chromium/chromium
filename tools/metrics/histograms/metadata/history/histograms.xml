@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.BrowsingDataLifetime.Duration.BrowserShutdownDeletion"
-    units="ms" expires_after="2024-02-04">
+    units="ms" expires_after="2024-07-01">
   <owner>ydago@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -115,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="History.BrowsingDataLifetime.Duration.Scheduled{DeletionType}Deletion"
-    units="ms" expires_after="2023-10-01">
+    units="ms" expires_after="2024-07-01">
   <owner>ydago@chromium.org</owner>
   <owner>dullweber@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -123,30 +123,6 @@ chromium-metrics-reviews@google.com.
     The time that passed while performing a scheduled data deletion using the
     BrowsingDataSettings policy. The deletion will be for a specific hourly time
     range, the data types being deleted are {DeletionType}.
-  </summary>
-  <token key="DeletionType">
-    <variant name="Filterable" summary="filterable"/>
-    <variant name="Unfilterable" summary="unfilterable"/>
-  </token>
-</histogram>
-
-<histogram name="History.BrowsingDataLifetime.State.BrowserShutdownDeletion"
-    enum="BooleanStartedCompleted" expires_after="2023-10-01">
-  <owner>ydago@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>The states in which a deletion on shutdown went through.</summary>
-</histogram>
-
-<histogram
-    name="History.BrowsingDataLifetime.State.Scheduled{DeletionType}Deletion"
-    enum="BooleanStartedCompleted" expires_after="2023-10-01">
-  <owner>ydago@chromium.org</owner>
-  <owner>dullweber@chromium.org</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    The states in which a scheduled deletion of {DeletionType} browsing data
-    went through.
   </summary>
   <token key="DeletionType">
     <variant name="Filterable" summary="filterable"/>

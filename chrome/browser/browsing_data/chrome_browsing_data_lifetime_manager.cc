@@ -98,8 +98,6 @@ class BrowsingDataRemoverObserver
       profile_->GetPrefs()->ClearPref(
           browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending);
     }
-    base::UmaHistogramBoolean(state_histogram(),
-                              /*BooleanStartedCompleted.Completed*/ true);
     // The profile and browser should not be shutting down yet.
     DCHECK(!keep_browser_alive_ || !profile_->ShutdownStarted());
     delete this;
@@ -122,8 +120,6 @@ class BrowsingDataRemoverObserver
     }
 #endif
     browsing_data_remover_observer_.Observe(remover);
-    base::UmaHistogramBoolean(state_histogram(),
-                              /*BooleanStartedCompleted.Started*/ false);
   }
 
   const char* duration_histogram() const {
@@ -137,19 +133,6 @@ class BrowsingDataRemoverObserver
                ? kDurationBrowserShutdownDeletion
                : filterable_deletion_ ? kDurationScheduledFilterableDeletion
                                       : kDurationScheduledUnfilterableDeletion;
-  }
-
-  const char* state_histogram() const {
-    static constexpr char kStateScheduledFilterableDeletion[] =
-        "History.BrowsingDataLifetime.State.ScheduledFilterableDeletion";
-    static constexpr char kStateScheduledUnfilterableDeletion[] =
-        "History.BrowsingDataLifetime.State.ScheduledUnfilterableDeletion";
-    static constexpr char kStateBrowserShutdownDeletion[] =
-        "History.BrowsingDataLifetime.State.BrowserShutdownDeletion";
-    return keep_browser_alive_
-               ? kStateBrowserShutdownDeletion
-               : filterable_deletion_ ? kStateScheduledFilterableDeletion
-                                      : kStateScheduledUnfilterableDeletion;
   }
 
   base::ScopedObservation<content::BrowsingDataRemover,
