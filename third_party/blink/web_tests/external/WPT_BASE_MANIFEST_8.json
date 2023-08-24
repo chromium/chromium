@@ -147728,6 +147728,19 @@
        {}
       ]
      ],
+     "counter-reset-increment-overflow-underflow.html": [
+      "6dc16e25ee73f4b4cbad2af1120761ebcff7b0b1",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counter-reset-increment-overflow-underflow-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "counter-reset-increment-set-display-contents.html": [
       "6508df0da150a92e42032c546f2cf4ac6c171859",
       [
@@ -279291,16 +279304,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "d2d505a5039207fb563838e8f79979e6cf8ca16b",
-     []
-    ],
-    "mtime.json": [
-     "4de153c33ec6386afe1b95b997afac984475fc0e",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -328969,6 +328972,10 @@
      ],
      "counter-order-display-contents.html.ini": [
       "007ea4c9b93e57f05cc2aa279e692466071cc458",
+      []
+     ],
+     "counter-reset-increment-overflow-underflow-ref.html": [
+      "cb86d5713a1d1070371508a25a3afcaf12ece3bd",
       []
      ],
      "counter-reset-reversed-list-item-start.html.ini": [
