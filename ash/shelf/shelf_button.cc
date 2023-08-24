@@ -25,8 +25,8 @@ ShelfButton::ShelfButton(Shelf* shelf,
   DCHECK(shelf_button_delegate_);
   SetHideInkDropWhenShowingContextMenu(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  // Inset focus ring path to avoid clipping the edges of the ring.
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
+  // Inset focus ring path to avoid clipping the edges of the ring.
   views::FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<views::CircleHighlightPathGenerator>(
           gfx::Insets(-views::FocusRing::kDefaultHaloInset)));
