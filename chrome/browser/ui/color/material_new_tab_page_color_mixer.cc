@@ -54,7 +54,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
     mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysNeutralContainer};
-    mixer[kColorNewTabPageModuleItemBackground] = {ui::kColorSysSurface};
+    mixer[kColorNewTabPageModuleItemBackground] = {
+        ui::kColorSysBaseContainerElevated};
+    mixer[kColorNewTabPageModuleItemBackgroundHovered] = {
+        ui::kColorSysStateHoverBrightBlendProtection};
   } else {
     mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
     mixer[kColorNewTabPageModuleItemBackground] = {ui::kColorSysBaseContainer};

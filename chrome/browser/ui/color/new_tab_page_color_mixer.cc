@@ -431,8 +431,20 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                      : gfx::kGoogleGrey300};
   mixer[kColorNewTabPageMicIconColor] = {dark_mode ? gfx::kGoogleGrey100
                                                    : gfx::kGoogleGrey700};
-  mixer[kColorNewTabPageModuleBackground] = {
-      kColorNewTabPageBackgroundOverride};
+
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned)) {
+    if (dark_mode) {
+      mixer[kColorNewTabPageModuleBackground] = {kColorNewTabPageBackground};
+    } else {
+      mixer[kColorNewTabPageModuleBackground] = {gfx::kGoogleGrey100};
+    }
+  } else {
+    mixer[kColorNewTabPageModuleBackground] = {
+        kColorNewTabPageBackgroundOverride};
+  }
+
+  mixer[kColorNewTabPageModuleContextMenuDivider] = {
+      {dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey600}};
   mixer[kColorNewTabPageModuleItemBackground] = {
       kColorNewTabPageBackgroundOverride};
   if (dark_mode) {
