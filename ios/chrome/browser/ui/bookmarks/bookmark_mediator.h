@@ -56,6 +56,13 @@ class PrefRegistrySyncable;
                                         URL:(const GURL&)URL
                                  editAction:(void (^)())editAction;
 
+// Bulk adds URLs to bookmarks by automatically using their hostname + path as
+// title. Returns a snackbar toast message with the amount of bookmarks
+// successfully added and with the viewAction passed. Skips adding invalid URLs
+// or URLs already bookmarked.
+- (MDCSnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
+                                     viewAction:(void (^)())viewAction;
+
 // Adds bookmarks for `URLs` into `folder`. Returns a message to be displayed
 // after the Bookmark has been added.
 - (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs

@@ -557,6 +557,24 @@ enum class PresentedState {
                                                                 title:title]];
 }
 
+- (void)bulkCreateBookmarksWithURLs:(NSArray<NSURL*>*)URLs {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get())) {
+    return;
+  }
+
+  __weak BookmarksCoordinator* weakSelf = self;
+  void (^viewAction)() = ^{
+    base::RecordAction(base::UserMetricsAction(
+        "IOSBookmarksAddedInBulkSnackbarViewButtonClicked"));
+    [weakSelf presentBookmarks];
+  };
+
+  [self.snackbarCommandsHandler
+      showSnackbarMessage:[self.mediator bulkAddBookmarksWithURLs:URLs
+                                                       viewAction:viewAction]];
+}
+
 - (void)createOrEditBookmarkWithURL:(URLWithTitle*)URLWithTitle {
   DCHECK(URLWithTitle) << [self description];
   NSString* title = URLWithTitle.title;

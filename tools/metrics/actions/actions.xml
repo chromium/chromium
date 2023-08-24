@@ -12637,6 +12637,21 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOSBookmarksAddedInBulk">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>User added bookmarks in bulk.</description>
+</action>
+
+<action name="IOSBookmarksAddedInBulkSnackbarViewButtonClicked">
+  <owner>nicolasmacbeth@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Recorded when a user clicks the &quot;view&quot; button in the snackbar
+    generated from bulk adding bookmarks. iOS-only.
+  </description>
+</action>
+
 <action name="IOSBookmarksEditorClosedWithSwipeDown">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

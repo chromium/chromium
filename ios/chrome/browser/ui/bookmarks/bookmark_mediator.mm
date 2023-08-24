@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/i18n/message_formatter.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "net/base/mac/url_conversions.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using bookmarks::BookmarkModel;
@@ -137,6 +139,73 @@ using bookmarks::BookmarkNode;
   return message;
 }
 
+- (MDCSnackbarMessage*)bulkAddBookmarksWithURLs:(NSArray<NSURL*>*)URLs
+                                     viewAction:(void (^)())viewAction {
+  DCHECK([URLs count] > 0);
+  base::RecordAction(base::UserMetricsAction("IOSBookmarksAddedInBulk"));
+
+  const BookmarkNode* defaultFolder = GetDefaultBookmarkFolder(
+      _prefs, bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService),
+      _localOrSyncableBookmarkModel.get(), _accountBookmarkModel.get());
+  BookmarkModel* modelForDefaultFolder =
+      bookmark_utils_ios::GetBookmarkModelForNode(
+          defaultFolder, _localOrSyncableBookmarkModel.get(),
+          _accountBookmarkModel.get());
+
+  // Add bookmarks and keep track of successful additions.
+  int successfullyAddedBookmarks = 0;
+  for (NSURL* NSURL in URLs) {
+    GURL URL = net::GURLWithNSURL(NSURL);
+
+    if (!URL.is_valid()) {
+      continue;
+    }
+
+    // Construct the title from domain + path (stripping trailing slash from
+    // path).
+    std::string path = URL.GetWithoutRef().GetWithoutFilename().path();
+    if (path.length() > 0) {
+      path.pop_back();
+    }
+    NSString* title = base::SysUTF8ToNSString(URL.host() + path);
+
+    const BookmarkNode* existingBookmark =
+        bookmark_utils_ios::GetMostRecentlyAddedUserNodeForURL(
+            URL, _localOrSyncableBookmarkModel.get(),
+            _accountBookmarkModel.get());
+
+    if (!existingBookmark) {
+      modelForDefaultFolder->AddNewURL(defaultFolder,
+                                       defaultFolder->children().size(),
+                                       base::SysNSStringToUTF16(title), URL);
+      successfullyAddedBookmarks++;
+    }
+  }
+
+  base::UmaHistogramCounts100("IOS.Bookmarks.BulkAddURLsCount",
+                              successfullyAddedBookmarks);
+
+  // Create snackbar message.
+  MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
+  action.handler = viewAction;
+  action.title =
+      l10n_util::GetNSString(IDS_IOS_BOOKMARK_SNACKBAR_VIEW_BOOKMARKS);
+
+  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
+      defaultFolder, _localOrSyncableBookmarkModel.get(),
+      _accountBookmarkModel.get());
+  NSString* result = [self
+      messageForBulkAddingBookmarksWithStorageType:storageType
+                        successfullyAddedBookmarks:successfullyAddedBookmarks];
+
+  TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
+  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:result];
+  message.action = action;
+  message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
+
+  return message;
+}
+
 - (MDCSnackbarMessage*)addBookmarks:(NSArray<URLWithTitle*>*)URLs
                            toFolder:(const BookmarkNode*)folder {
   LogBookmarkUseForDefaultBrowserPromo();
@@ -166,6 +235,23 @@ using bookmarks::BookmarkNode;
 
 #pragma mark - Private
 
+// The bookmark is saved in the account if either following condition is true:
+// * the saved folder is in the account model,
+// * the sync consent has been granted and the bookmark data type is enabled
+- (BOOL)bookmarkSavedIntoAccountWithStorageType:
+    (bookmarks::StorageType)storageType {
+  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
+  // deleted from the codebase. See ConsentLevel::kSync documentation for
+  // details.
+  BOOL hasSyncConsent =
+      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
+  BOOL savedIntoAccount =
+      (storageType == bookmarks::StorageType::kAccount) ||
+      (hasSyncConsent && _syncSetupService->IsDataTypePreferred(
+                             syncer::UserSelectableType::kBookmarks));
+  return savedIntoAccount;
+}
+
 // The localized strings for adding bookmarks.
 // `addFolder`: whether the folder name should appear in the message
 // `folderTitle`: The name of the folder. Assumed to be non-nil if `addFolder`
@@ -178,19 +264,9 @@ using bookmarks::BookmarkNode;
   std::u16string result;
   id<SystemIdentity> identity =
       _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  // TODO(crbug.com/1462552): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  BOOL hasSyncConsent =
-      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  // The bookmark is saved in the account if either following condition is true:
-  // * the saved folder is in the account model,
-  // * the sync consent has been granted and the bookmark data type is enabled
-  BOOL saveIntoAccount =
-      (storageType == bookmarks::StorageType::kAccount) ||
-      (hasSyncConsent && _syncSetupService->IsDataTypePreferred(
-                             syncer::UserSelectableType::kBookmarks));
-  if (saveIntoAccount) {
+  BOOL savedIntoAccount =
+      [self bookmarkSavedIntoAccountWithStorageType:storageType];
+  if (savedIntoAccount) {
     std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
     if (addFolder) {
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
@@ -216,6 +292,29 @@ using bookmarks::BookmarkNode;
           l10n_util::GetPluralStringFUTF16(IDS_IOS_BOOKMARK_PAGE_SAVED, count);
     }
   }
+  return base::SysUTF16ToNSString(result);
+}
+
+// The localized string that appears to users for bulk adding bookmarks.
+- (NSString*)messageForBulkAddingBookmarksWithStorageType:
+                 (bookmarks::StorageType)storageType
+                               successfullyAddedBookmarks:(int)count {
+  std::u16string result;
+
+  BOOL savedIntoAccount =
+      [self bookmarkSavedIntoAccountWithStorageType:storageType];
+  if (savedIntoAccount) {
+    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+        signin::ConsentLevel::kSignin);
+    result = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED_ACCOUNT),
+        "count", count, "email", base::SysNSStringToUTF16(identity.userEmail));
+  } else {
+    result = base::i18n::MessageFormatter::FormatWithNamedArgs(
+        l10n_util::GetStringUTF16(IDS_IOS_BOOKMARKS_BULK_SAVED), "count",
+        count);
+  }
+
   return base::SysUTF16ToNSString(result);
 }
 @end

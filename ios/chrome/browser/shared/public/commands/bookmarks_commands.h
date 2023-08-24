@@ -27,6 +27,11 @@ class WebState;
 // Behaves as `-(void)bookmark:(URLWithTitle*)` otherwise.
 - (void)bookmarkWithWebState:(web::WebState*)webState;
 
+// Bulk adds passed URLs to bookmarks. Toasts the amount of successfully added
+// bookmarks with a button to view bookmarks. Does not add invalid URLs or
+// already existing ones into the model.
+- (void)bulkCreateBookmarksWithURLs:(NSArray<NSURL*>*)URLs;
+
 // Adds bookmark for the URL.
 // - If it is already bookmarked, the "edit bookmark" flow will begin.
 // - If it is not already bookmarked, it will be bookmarked automatically and an
