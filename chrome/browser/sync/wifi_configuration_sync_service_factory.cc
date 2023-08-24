@@ -56,10 +56,11 @@ WifiConfigurationSyncServiceFactory::WifiConfigurationSyncServiceFactory()
 WifiConfigurationSyncServiceFactory::~WifiConfigurationSyncServiceFactory() =
     default;
 
-KeyedService* WifiConfigurationSyncServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+WifiConfigurationSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new ash::sync_wifi::WifiConfigurationSyncService(
+  return std::make_unique<ash::sync_wifi::WifiConfigurationSyncService>(
       chrome::GetChannel(), profile->GetPrefs(),
       ModelTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory());
 }
