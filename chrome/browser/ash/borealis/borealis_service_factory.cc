@@ -33,9 +33,11 @@ BorealisServiceFactory::BorealisServiceFactory()
 
 BorealisServiceFactory::~BorealisServiceFactory() = default;
 
-KeyedService* BorealisServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BorealisServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new BorealisServiceImpl(Profile::FromBrowserContext(context));
+  return std::make_unique<BorealisServiceImpl>(
+      Profile::FromBrowserContext(context));
 }
 
 bool BorealisServiceFactory::ServiceIsCreatedWithBrowserContext() const {
