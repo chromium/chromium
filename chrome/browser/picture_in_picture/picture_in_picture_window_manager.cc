@@ -298,6 +298,8 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
   // contents, so we only need to forget the controller here when user closes
   // the parent web contents with the PiP window open.
   document_web_contents_observer_.reset();
+  // `setting_helper_` depends on the opener's WebContents.
+  auto_pip_setting_helper_.reset();
   if (pip_window_controller_)
     pip_window_controller_ = nullptr;
 }
@@ -317,8 +319,8 @@ std::unique_ptr<views::View> PictureInPictureWindowManager::GetOverlayView() {
     return nullptr;
   }
 
-  auto auto_pip_setting_helper = std::make_unique<AutoPipSettingHelper>(
-      pip_window_controller_->GetWebContents()->GetURL(),
+  auto auto_pip_setting_helper = AutoPipSettingHelper::CreateForWebContents(
+      pip_window_controller_->GetWebContents(),
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon));
 
   auto overlay_view = auto_pip_setting_helper->CreateOverlayViewIfNeeded();

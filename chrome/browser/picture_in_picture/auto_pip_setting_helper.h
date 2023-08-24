@@ -11,17 +11,31 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace views {
 class View;
 }  // namespace views
+
+class HostContentSettingsMap;
 
 // Helper class to manage the content setting for AutoPiP, including the
 // permissions embargo.
 class AutoPipSettingHelper {
  public:
+  // Convenience function.
+  static std::unique_ptr<AutoPipSettingHelper> CreateForWebContents(
+      content::WebContents* web_contents,
+      base::OnceClosure close_pip_cb);
+
   // We'll use `close_pip_cb` to close the pip window as needed.  It should be
-  // safe to call at any time.
-  AutoPipSettingHelper(GURL origin, base::OnceClosure close_pip_cb);
+  // safe to call at any time.  It is up to our caller to make sure that we are
+  // destroyed if `settings_map` is.
+  AutoPipSettingHelper(const GURL& origin,
+                       HostContentSettingsMap* settings_map,
+                       base::OnceClosure close_pip_cb);
   ~AutoPipSettingHelper();
 
   AutoPipSettingHelper(const AutoPipSettingHelper&) = delete;
@@ -33,25 +47,20 @@ class AutoPipSettingHelper {
   // call `close_pip_cb_` if AutoPiP is blocked.
   std::unique_ptr<views::View> CreateOverlayViewIfNeeded();
 
-  // If called, pretend that the content setting is `setting`.  This is
-  // temporary until we actually check content settings.
-  void override_content_setting_for_testing(ContentSetting setting) {
-    content_setting_override_ = setting;
-  }
-
  private:
   // Returns the content setting, modified as needed by any embargo.
   ContentSetting GetEffectiveContentSetting();
+
+  // Update the content setting to `new_setting`, and clear any embargo.
+  void UpdateContentSetting(ContentSetting new_setting);
 
   // Notify us that the user has interacted with the content settings UI that's
   // displayed in the pip window.
   void OnUiResult(AutoPipSettingOverlayView::UiResult result);
 
   GURL origin_;
+  const raw_ptr<HostContentSettingsMap> settings_map_ = nullptr;
   base::OnceClosure close_pip_cb_;
-
-  // Set for testing.
-  absl::optional<ContentSetting> content_setting_override_;
 
   base::WeakPtrFactory<AutoPipSettingHelper> weak_factory_{this};
 };

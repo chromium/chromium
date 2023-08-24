@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
@@ -25,8 +27,13 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     widget_ = CreateTestWidget();
     widget_->Show();
 
-    setting_helper_ =
-        std::make_unique<AutoPipSettingHelper>(GURL(), close_cb_.Get());
+    HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
+    settings_map_ = base::MakeRefCounted<HostContentSettingsMap>(
+        &prefs_, false /* is_off_the_record */, false /* store_last_modified */,
+        false /* restore_session */, true /* should_record_metrics */);
+
+    setting_helper_ = std::make_unique<AutoPipSettingHelper>(
+        origin_, settings_map_.get(), close_cb_.Get());
 
     event_generator_ = std::make_unique<ui::test::EventGenerator>(
         views::GetRootWindow(widget_.get()));
@@ -37,6 +44,7 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     widget_.reset();
     setting_helper_.reset();
     ViewsTestBase::TearDown();
+    settings_map_->ShutdownOnUIThread();
   }
 
   void click_allow() const {
@@ -68,48 +76,72 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     }
   }
 
+  void set_content_setting(ContentSetting new_setting) {
+    settings_map_->SetContentSettingDefaultScope(
+        origin_, GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE,
+        new_setting);
+  }
+
+  ContentSetting get_content_setting() {
+    return settings_map_->GetContentSetting(
+        origin_, GURL(), ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+  }
+
  private:
   base::MockOnceCallback<void()> close_cb_;
 
-  std::unique_ptr<AutoPipSettingHelper> setting_helper_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AutoPipSettingOverlayView> setting_overlay_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
+
+  const GURL origin_{"https://example.com"};
+
+  // Used by the HostContentSettingsMap instance.
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+
+  // Used by the AutoPipSettingHelper instance.
+  scoped_refptr<HostContentSettingsMap> settings_map_;
+
+  std::unique_ptr<AutoPipSettingHelper> setting_helper_;
 };
 
 TEST_F(AutoPipSettingHelperTest, NoUiIfContentSettingIsAllow) {
-  setting_helper()->override_content_setting_for_testing(CONTENT_SETTING_ALLOW);
+  set_content_setting(CONTENT_SETTING_ALLOW);
 
   EXPECT_CALL(close_cb(), Run()).Times(0);
   AttachOverlayView();
   EXPECT_FALSE(setting_overlay());
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(AutoPipSettingHelperTest,
        NoUiButCallbackIsCalledIfContentSettingIsBlock) {
-  setting_helper()->override_content_setting_for_testing(CONTENT_SETTING_BLOCK);
+  set_content_setting(CONTENT_SETTING_BLOCK);
 
   EXPECT_CALL(close_cb(), Run()).Times(1);
   AttachOverlayView();
   EXPECT_FALSE(setting_overlay());
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }
 
 TEST_F(AutoPipSettingHelperTest, AllowDoesNotCallCloseCb) {
-  setting_helper()->override_content_setting_for_testing(CONTENT_SETTING_ASK);
+  set_content_setting(CONTENT_SETTING_DEFAULT);
   AttachOverlayView();
   EXPECT_TRUE(setting_overlay());
 
   // Click allow.  Nothing should happen.
   EXPECT_CALL(close_cb(), Run()).Times(0);
   click_allow();
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_ALLOW);
 }
 
 TEST_F(AutoPipSettingHelperTest, BlockDoesCallCloseCb) {
-  setting_helper()->override_content_setting_for_testing(CONTENT_SETTING_ASK);
+  set_content_setting(CONTENT_SETTING_DEFAULT);
   AttachOverlayView();
   EXPECT_TRUE(setting_overlay());
 
   // Click block.  The close cb should be called.
   EXPECT_CALL(close_cb(), Run()).Times(1);
   click_block();
+  EXPECT_EQ(get_content_setting(), CONTENT_SETTING_BLOCK);
 }

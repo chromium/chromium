@@ -4,17 +4,44 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "content/public/browser/web_contents.h"
 
-AutoPipSettingHelper::AutoPipSettingHelper(GURL origin,
+// static
+std::unique_ptr<AutoPipSettingHelper>
+AutoPipSettingHelper::CreateForWebContents(content::WebContents* web_contents,
+                                           base::OnceClosure close_pip_cb) {
+  auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
+      web_contents->GetBrowserContext());
+  return std::make_unique<AutoPipSettingHelper>(
+      web_contents->GetLastCommittedURL(), settings_map,
+      std::move(close_pip_cb));
+}
+
+AutoPipSettingHelper::AutoPipSettingHelper(const GURL& origin,
+                                           HostContentSettingsMap* settings_map,
                                            base::OnceClosure close_pip_cb)
-    : origin_(origin), close_pip_cb_(std::move(close_pip_cb)) {}
+    : origin_(origin),
+      settings_map_(settings_map),
+      close_pip_cb_(std::move(close_pip_cb)) {}
 
 AutoPipSettingHelper::~AutoPipSettingHelper() = default;
 
 ContentSetting AutoPipSettingHelper::GetEffectiveContentSetting() {
-  // TODO(crbug.com/1464065): Fetch the content setting.
-  return content_setting_override_.value_or(CONTENT_SETTING_ASK);
+  return settings_map_->GetContentSetting(
+      origin_, /*secondary_url=*/GURL(),
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE);
+}
+
+void AutoPipSettingHelper::UpdateContentSetting(ContentSetting new_setting) {
+  content_settings::ContentSettingConstraints constraints;
+  constraints.set_session_model(content_settings::SessionModel::Durable);
+
+  settings_map_->SetContentSettingDefaultScope(
+      origin_, /*secondary_url=*/GURL(),
+      ContentSettingsType::AUTO_PICTURE_IN_PICTURE, new_setting, constraints);
 }
 
 std::unique_ptr<views::View> AutoPipSettingHelper::CreateOverlayViewIfNeeded() {
@@ -39,10 +66,17 @@ std::unique_ptr<views::View> AutoPipSettingHelper::CreateOverlayViewIfNeeded() {
 
 void AutoPipSettingHelper::OnUiResult(
     AutoPipSettingOverlayView::UiResult result) {
-  // TODO(crbug.com/1464065): Update the content setting.
-
-  // If the user selected 'Block', then also close the pip window.
-  if (result == AutoPipSettingOverlayView::UiResult::kBlock) {
-    std::move(close_pip_cb_).Run();
+  switch (result) {
+    case AutoPipSettingOverlayView::UiResult::kBlock:
+      UpdateContentSetting(CONTENT_SETTING_BLOCK);
+      // Also close the pip window.
+      std::move(close_pip_cb_).Run();
+      break;
+    case AutoPipSettingOverlayView::UiResult::kAllow:
+      UpdateContentSetting(CONTENT_SETTING_ALLOW);
+      break;
+    case AutoPipSettingOverlayView::UiResult::kDismissed:
+      // Leave at 'ASK'.
+      break;
   }
 }
