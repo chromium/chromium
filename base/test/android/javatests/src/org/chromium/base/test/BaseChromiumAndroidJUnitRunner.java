@@ -736,9 +736,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             if (file.getName().equals("lib")) {
                 continue;
             }
-            if (file.getName().equals("chromium_tests_root")) {
-                continue;
-            }
             if (file.getName().equals("incremental-install-files")) {
                 continue;
             }

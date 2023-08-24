@@ -9,7 +9,6 @@
 
 
 import unittest
-import mock  # pylint: disable=import-error
 
 from pylib.base import base_test_result
 from pylib.base import mock_environment
@@ -164,33 +163,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
     original = ''
     with self.assertRaises(ValueError):
       local_device_instrumentation_test_run._ReplaceUncommonChars(original)
-
-  def testStoreDataInAppDir(self):
-    env = mock.MagicMock()
-    test_instance = mock.MagicMock()
-    test_instance.store_data_in_app_directory = True
-    device = mock.MagicMock()
-
-    device.GetApplicationDataDirectory.return_value = 'app_dir'
-    device.GetExternalStoragePath.return_value = 'external_dir'
-    test_run = (
-        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
-            env, test_instance))
-    self.assertEqual(test_run._GetDataStorageRootDirectory(device), 'app_dir')
-
-  def testStoreDataInExternalDir(self):
-    env = mock.MagicMock()
-    test_instance = mock.MagicMock()
-    test_instance.store_data_in_app_directory = False
-    device = mock.MagicMock()
-
-    device.GetApplicationDataDirectory.return_value = 'app_dir'
-    device.GetExternalStoragePath.return_value = 'external_dir'
-    test_run = (
-        local_device_instrumentation_test_run.LocalDeviceInstrumentationTestRun(
-            env, test_instance))
-    self.assertEqual(test_run._GetDataStorageRootDirectory(device),
-                     'external_dir')
 
 
 if __name__ == '__main__':
