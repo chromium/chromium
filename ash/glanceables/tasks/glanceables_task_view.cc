@@ -44,10 +44,10 @@ constexpr auto kSecondRowItemsMargin = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr auto kSingleRowButtonMargin = gfx::Insets::VH(13, 18);
 constexpr auto kDoubleRowButtonMargin = gfx::Insets::VH(16, 18);
 
-constexpr auto kSingleRowTextMargins = gfx::Insets::VH(13, 0);
-constexpr auto kDoubleRowTextMargins = gfx::Insets::VH(7, 0);
+constexpr auto kSingleRowTextMargins = gfx::Insets::TLBR(13, 0, 13, 16);
+constexpr auto kDoubleRowTextMargins = gfx::Insets::TLBR(7, 0, 7, 16);
 
-views::Label* SetupLabel(views::FlexLayoutView* parent) {
+views::Label* SetupLabel(views::View* parent) {
   views::Label* label = parent->AddChildView(std::make_unique<views::Label>());
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   // Views should not be individually selected for accessibility. Accessible
@@ -160,11 +160,11 @@ GlanceablesTaskView::GlanceablesTaskView(const std::string& task_list_id,
   contents_view_->SetOrientation(views::LayoutOrientation::kVertical);
   contents_view_->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   tasks_title_view_ =
-      contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
+      contents_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
   tasks_details_view_ =
       contents_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   tasks_details_view_->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
