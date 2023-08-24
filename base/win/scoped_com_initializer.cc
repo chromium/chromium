@@ -9,6 +9,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/debug/alias.h"
 
 namespace base {
 namespace win {
@@ -58,7 +59,10 @@ void ScopedCOMInitializer::Initialize(COINIT init,
   // apartement, for example, the caller requested an STA but the thread
   // remained in an MTA instead. Continuing the program execution under these
   // conditions is hazardous and it may lead to data races.
-  DUMP_WILL_BE_CHECK(RPC_E_CHANGED_MODE != hr_);
+  const HRESULT hr = hr_;
+  base::debug::Alias(&hr);
+  base::debug::Alias(&init);
+  DUMP_WILL_BE_CHECK(SUCCEEDED(hr));
   DCHECK_NE(RPC_E_CHANGED_MODE, hr_) << "Invalid COM thread model change";
 }
 
