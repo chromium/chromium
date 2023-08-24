@@ -41,6 +41,8 @@ class COMPONENT_EXPORT(MISSIVE) FakeMissiveClient
       base::OnceCallback<void(reporting::Status)> completion_callback) override;
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override;
+  void UpdateConfigInMissive(
+      const reporting::ListOfBlockedDestinations& destinations) override;
   void ReportSuccess(const reporting::SequenceInformation& sequence_information,
                      bool force_confirm) override;
   TestInterface* GetTestInterface() override;

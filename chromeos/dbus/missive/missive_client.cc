@@ -29,6 +29,7 @@
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "google_apis/google_api_keys.h"
+#include "third_party/cros_system_api/dbus/missive/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -113,6 +114,17 @@ class MissiveClientImpl : public MissiveClient {
     }
     auto delegate = std::make_unique<FlushDelegate>(
         priority, this, std::move(completion_callback));
+    client_.MaybeMakeCall(std::move(delegate));
+  }
+
+  void UpdateConfigInMissive(
+      const reporting::ListOfBlockedDestinations& destinations) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled()) {
+      return;
+    }
+    auto delegate =
+        std::make_unique<UpdateConfigInMissiveDelegate>(destinations, this);
     client_.MaybeMakeCall(std::move(delegate));
   }
 
@@ -293,6 +305,25 @@ class MissiveClientImpl : public MissiveClient {
 
    private:
     reporting::FlushPriorityRequest request_;
+  };
+
+  class UpdateConfigInMissiveDelegate : public DBusDelegate {
+   public:
+    UpdateConfigInMissiveDelegate(
+        const reporting::ListOfBlockedDestinations& destinations,
+        MissiveClientImpl* owner)
+        : DBusDelegate(missive::kUpdateConfigInMissive,
+                       owner,
+                       base::DoNothing()) {
+      *request_.mutable_list_of_blocked_destinations() = destinations;
+    }
+
+    bool WriteRequest(dbus::MessageWriter* writer) override {
+      return writer->AppendProtoAsArrayOfBytes(request_);
+    }
+
+   private:
+    reporting::UpdateConfigInMissiveRequest request_;
   };
 
   class UpdateEncryptionKeyDelegate : public DBusDelegate {
