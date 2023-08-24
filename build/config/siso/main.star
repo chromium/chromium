@@ -7,6 +7,7 @@
 load("@builtin//encoding.star", "json")
 load("@builtin//runtime.star", "runtime")
 load("@builtin//struct.star", "module")
+load("./blink_all.star", "blink_all")
 load("./linux.star", chromium_linux = "chromium")
 load("./mac.star", chromium_mac = "chromium")
 load("./simple.star", "simple")
@@ -30,6 +31,7 @@ def init(ctx):
     }
     step_config = host.step_config(ctx, step_config)
     step_config = simple.step_config(ctx, step_config)
+    step_config = blink_all.step_config(ctx, step_config)
 
     #  Python actions may use an absolute path at the first argument.
     #  e.g. C:/src/depot_tools/bootstrap-2@3_8_10_chromium_26_bin/python3/bin/python3.exe
@@ -44,10 +46,12 @@ def init(ctx):
             rule["remote_command"] = arg0
 
     filegroups = {}
+    filegroups.update(blink_all.filegroups)
     filegroups.update(host.filegroups)
     filegroups.update(simple.filegroups)
 
     handlers = {}
+    handlers.update(blink_all.handlers)
     handlers.update(host.handlers)
     handlers.update(simple.handlers)
 
