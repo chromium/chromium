@@ -2524,6 +2524,33 @@ std::string SerializeContentAnalysisRequest(
       break;
   }
 
+  switch (request.reason()) {
+    case enterprise_connectors::ContentAnalysisRequest::UNKNOWN:
+      request_dict.Set("reason", "UNKNOWN");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE:
+      request_dict.Set("reason", "CLIPBOARD_PASTE");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::DRAG_AND_DROP:
+      request_dict.Set("reason", "DRAG_AND_DROP");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::FILE_PICKER_DIALOG:
+      request_dict.Set("reason", "FILE_PICKER_DIALOG");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::PRINT_PREVIEW_PRINT:
+      request_dict.Set("reason", "PRINT_PREVIEW_PRINT");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::SYSTEM_DIALOG_PRINT:
+      request_dict.Set("reason", "SYSTEM_DIALOG_PRINT");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::NORMAL_DOWNLOAD:
+      request_dict.Set("reason", "NORMAL_DOWNLOAD");
+      break;
+    case enterprise_connectors::ContentAnalysisRequest::SAVE_AS_DOWNLOAD:
+      request_dict.Set("reason", "SAVE_AS_DOWNLOAD");
+      break;
+  }
+
   if (request.has_request_data()) {
     base::Value::Dict request_data;
     request_data.Set("url", request.request_data().url());
