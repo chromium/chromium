@@ -5,6 +5,26 @@
 import SwiftUI
 import ios_chrome_common_ui_colors_swift
 
+/// Custom toggle style for Overflow Menu Action rows, consisting of a circle
+/// border when the toggle is off and a circle with checkmark when the toggle
+/// is on.
+struct OverflowMenuActionToggleStyle: ToggleStyle {
+  @ViewBuilder
+  func makeBody(configuration: Configuration) -> some View {
+    Button {
+      configuration.isOn.toggle()
+    } label: {
+      Label {
+        configuration.label
+      } icon: {
+        Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
+          .foregroundStyle(configuration.isOn ? .primary : .secondary)
+          .imageScale(.large)
+      }
+    }
+  }
+}
+
 /// A view that displays an action in the overflow menu.
 @available(iOS 15, *)
 struct OverflowMenuActionRow: View {
@@ -55,12 +75,13 @@ struct OverflowMenuActionRow: View {
   private var rowContent: some View {
     if isEditing {
       HStack {
+        Toggle(isOn: $action.shown.animation()) {}
+          .toggleStyle(OverflowMenuActionToggleStyle())
+          .labelsHidden()
+          .tint(.chromeBlue)
         rowIcon
         name
         Spacer()
-        Toggle(isOn: $action.shown.animation()) {}
-          .labelsHidden()
-          .tint(.chromeBlue)
       }
       .padding([.trailing], Self.editRowEndPadding)
     } else {
