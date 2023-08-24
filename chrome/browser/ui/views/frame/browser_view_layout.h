@@ -218,7 +218,7 @@ class BrowserViewLayout : public views::LayoutManager {
   std::unique_ptr<WebContentsModalDialogHostViews> dialog_host_;
 
   // The latest dialog bounds applied during a layout pass.
-  gfx::Rect latest_dialog_bounds_;
+  gfx::Rect latest_dialog_bounds_in_screen_;
 
   // The latest contents bounds applied during a layout pass, in screen
   // coordinates.
@@ -227,9 +227,9 @@ class BrowserViewLayout : public views::LayoutManager {
   // Directly tied to SetContentBorderBounds() - more details there.
   absl::optional<gfx::Rect> dynamic_content_border_bounds_;
 
-  // The distance the web contents modal dialog is from the top of the window,
-  // in pixels.
-  int web_contents_modal_dialog_top_y_ = -1;
+  // The distance the web contents modal dialog is from the top of the dialog
+  // host widget.
+  int dialog_top_y_ = -1;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_LAYOUT_H_

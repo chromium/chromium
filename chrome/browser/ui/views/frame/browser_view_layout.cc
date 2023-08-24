@@ -98,10 +98,10 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   }
 
   gfx::Point GetDialogPosition(const gfx::Size& size) override {
-    views::View* view = browser_view_layout_->contents_container_;
-    gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
-    const int middle_x = content_area.x() + content_area.width() / 2;
-    const int top = browser_view_layout_->web_contents_modal_dialog_top_y_;
+    views::View* view = browser_view_layout_->top_container_;
+    gfx::Rect rect = view->ConvertRectToWidget(view->GetLocalBounds());
+    const int middle_x = rect.x() + rect.width() / 2;
+    const int top = browser_view_layout_->dialog_top_y_;
     return gfx::Point(middle_x - size.width() / 2, top);
   }
 
@@ -116,14 +116,18 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
   gfx::Size GetMaximumDialogSize() override {
     views::View* view = browser_view_layout_->contents_container_;
     gfx::Rect content_area = view->ConvertRectToWidget(view->GetLocalBounds());
-    const int top = browser_view_layout_->web_contents_modal_dialog_top_y_;
+    const int top = browser_view_layout_->dialog_top_y_;
     return gfx::Size(content_area.width(), content_area.bottom() - top);
+  }
+
+  views::Widget* GetHostWidget() const {
+    return views::Widget::GetWidgetForNativeView(
+        browser_view_layout_->delegate_->GetHostViewForAnchoring());
   }
 
  private:
   gfx::NativeView GetHostView() const override {
-    return browser_view_layout_->browser_view_->GetWidgetForAnchoring()
-        ->GetNativeView();
+    return GetHostWidget()->GetNativeView();
   }
 
   // Add/remove observer.
@@ -440,8 +444,14 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   // Adjust any hosted dialogs if the browser's dialog hosting bounds changed.
   const gfx::Rect dialog_bounds(dialog_host_->GetDialogPosition(gfx::Size()),
                                 dialog_host_->GetMaximumDialogSize());
-  if (latest_dialog_bounds_ != dialog_bounds) {
-    latest_dialog_bounds_ = dialog_bounds;
+  const gfx::Rect host_widget_bounds =
+      dialog_host_->GetHostWidget()
+          ? dialog_host_->GetHostWidget()->GetClientAreaBoundsInScreen()
+          : gfx::Rect();
+  const gfx::Rect dialog_bounds_in_screen =
+      dialog_bounds + host_widget_bounds.OffsetFromOrigin();
+  if (latest_dialog_bounds_in_screen_ != dialog_bounds_in_screen) {
+    latest_dialog_bounds_in_screen_ = dialog_bounds_in_screen;
     dialog_host_->NotifyPositionRequiresUpdate();
   }
 }
@@ -580,8 +590,7 @@ int BrowserViewLayout::LayoutToolbar(int top) {
 
 int BrowserViewLayout::LayoutBookmarkAndInfoBars(int top, int browser_view_y) {
   TRACE_EVENT0("ui", "BrowserViewLayout::LayoutBookmarkAndInfoBars");
-  web_contents_modal_dialog_top_y_ =
-      top + browser_view_y - kConstrainedWindowOverlap;
+  dialog_top_y_ = top + browser_view_y - kConstrainedWindowOverlap;
 
   if (bookmark_bar_) {
     top = std::max(toolbar_->bounds().bottom(), LayoutBookmarkBar(top));

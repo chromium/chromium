@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_mac.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -40,6 +41,29 @@ namespace {
 // values in BrowserNonClientFrameViewMac::GetCaptionButtonInsets don't account
 // for a window with an NSToolbar.
 const int kTrafficLightsWidth = 70;
+
+class ImmersiveModeControllerMac;
+
+// This class notifies the browser view to refresh layout whenever the overlay
+// widget moves. This is necessary for positioning web dialogs.
+class ImmersiveModeOverlayWidgetObserver : public views::WidgetObserver {
+ public:
+  explicit ImmersiveModeOverlayWidgetObserver(
+      ImmersiveModeControllerMac* controller);
+
+  ImmersiveModeOverlayWidgetObserver(
+      const ImmersiveModeOverlayWidgetObserver&) = delete;
+  ImmersiveModeOverlayWidgetObserver& operator=(
+      const ImmersiveModeOverlayWidgetObserver&) = delete;
+  ~ImmersiveModeOverlayWidgetObserver() override;
+
+  // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+
+ private:
+  raw_ptr<ImmersiveModeControllerMac> controller_;
+};
 
 class ImmersiveModeControllerMac : public ImmersiveModeController,
                                    public views::FocusChangeListener,
@@ -127,6 +151,9 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
       top_container_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_frame_observation_{this};
+  ImmersiveModeOverlayWidgetObserver overlay_widget_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      overlay_widget_observation_{&overlay_widget_observer_};
 
   std::unique_ptr<views::FocusSearch> focus_search_;
 
@@ -244,6 +271,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     }
     top_container_observation_.Observe(browser_view_->top_container());
     browser_frame_observation_.Observe(browser_view_->GetWidget());
+    overlay_widget_observation_.Observe(browser_view_->overlay_widget());
 
     // Capture the overlay content view before enablement. Once enabled the view
     // is moved to an AppKit window leaving us otherwise without a reference.
@@ -302,6 +330,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
     }
     top_container_observation_.Reset();
     browser_frame_observation_.Reset();
+    overlay_widget_observation_.Reset();
 
     // Notify BrowserView about the fullscreen exit so that the top container
     // can be reparented, otherwise it might be destroyed along with the
@@ -562,4 +591,19 @@ std::unique_ptr<ImmersiveModeController> CreateImmersiveModeControllerMac(
     const BrowserView* browser_view) {
   return std::make_unique<ImmersiveModeControllerMac>(
       /*separate_tab_strip=*/browser_view->UsesImmersiveFullscreenTabbedMode());
+}
+
+ImmersiveModeOverlayWidgetObserver::ImmersiveModeOverlayWidgetObserver(
+    ImmersiveModeControllerMac* controller)
+    : controller_(controller) {}
+
+ImmersiveModeOverlayWidgetObserver::~ImmersiveModeOverlayWidgetObserver() =
+    default;
+
+void ImmersiveModeOverlayWidgetObserver::OnWidgetBoundsChanged(
+    views::Widget* widget,
+    const gfx::Rect& new_bounds) {
+  // Update web dialog position when the overlay widget moves by invalidating
+  // the browse view layout.
+  controller_->browser_view()->InvalidateLayout();
 }
