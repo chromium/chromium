@@ -5874,6 +5874,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     kOmniboxModernizeVisualUpdateVariations,
                                     "OmniboxModernizeVisualUpdate")},
 
+    {"omnibox-most-visited-tiles-horizontal-render-group",
+     flag_descriptions::kOmniboxMostVisitedTilesHorizontalRenderGroupName,
+     flag_descriptions::
+         kOmniboxMostVisitedTilesHorizontalRenderGroupDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kMostVisitedTilesHorizontalRenderGroup)},
+
     {"omnibox-suppress-clipboard-suggestion-after-first-used",
      flag_descriptions::kOmniboxSuppressClipboardSuggestionAfterFirstUsedName,
      flag_descriptions::

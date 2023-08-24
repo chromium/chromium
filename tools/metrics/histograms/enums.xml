@@ -66574,6 +66574,8 @@ from previous Chrome versions.
   <int value="1083020187" label="FractionalScrollOffsets:enabled"/>
   <int value="1083201516" label="PersistentWindowBounds:enabled"/>
   <int value="1083575298" label="LoadCryptoTokenExtension:enabled"/>
+  <int value="1083781462"
+      label="OmniboxMostVisitedTilesHorizontalRenderGroup:enabled"/>
   <int value="1084365949" label="ReleaseNotesNotification:disabled"/>
   <int value="1084484359" label="ContextualTriggersSelectionSize:disabled"/>
   <int value="1084972292" label="WebXRAnchors:enabled"/>
@@ -67690,6 +67692,8 @@ from previous Chrome versions.
   <int value="1638582559" label="UpdatedCellularActivationUi:disabled"/>
   <int value="1638617234" label="GetTheMostOutOfChrome:disabled"/>
   <int value="1638927687" label="AutofillRichMetadataQueries:disabled"/>
+  <int value="1638944472"
+      label="OmniboxMostVisitedTilesHorizontalRenderGroup:disabled"/>
   <int value="1639190590" label="UseMessagesGoogleComDomain:enabled"/>
   <int value="1639314588" label="LookalikeUrlNavigationSuggestions:disabled"/>
   <int value="1639681180" label="HelpAppAppsDiscovery:enabled"/>

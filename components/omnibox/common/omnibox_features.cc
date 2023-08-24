@@ -319,6 +319,14 @@ BASE_FEATURE(kMostVisitedTiles,
              "OmniboxMostVisitedTiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, makes Most Visited Tiles a Horizontal render group.
+// Horizontal render group decomposes aggregate suggestions (such as old Most
+// Visited Tiles), expecting individual AutocompleteMatch entry for every
+// element in the carousel.
+BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
+             "OmniboxMostVisitedTilesHorizontalRenderGroup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
 // prefixes. Will also adjust the location bar UI and omnibox text selection to

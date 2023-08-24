@@ -2380,6 +2380,12 @@ const char kOmniboxMostVisitedTilesDescription[] =
     "Display a list of frequently visited pages from history as a single row "
     "with a carousel instead of one URL per line.";
 
+const char kOmniboxMostVisitedTilesHorizontalRenderGroupName[] =
+    "Omnibox MV Tiles Horizontal Render Group";
+const char kOmniboxMostVisitedTilesHorizontalRenderGroupDescription[] =
+    "Updates the logic constructing MV tiles to use horizontal render group. "
+    "No user-facing changes expected.";
+
 const char kOmniboxRedoCurrentMatchName[] = "Omnibox redo current match";
 const char kOmniboxRedoCurrentMatchDescription[] =
     "Use an alternative implementation of calculating the cached omnibox "
