@@ -131,6 +131,8 @@ class DownloadDisplayController : public FullscreenObserver,
   // Returns the DownloadDisplay. Should always return a valid display.
   DownloadDisplay* download_display_for_testing() { return display_; }
 
+  void OpenSecuritySubpage(const offline_items_collection::ContentId& id);
+
  private:
   friend class DownloadDisplayControllerTest;
 

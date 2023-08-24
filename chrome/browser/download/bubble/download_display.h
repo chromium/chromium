@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_H_
 
+namespace offline_items_collection {
+struct ContentId;
+}
+
 class DownloadDisplay {
  public:
   // Shows the download display.
@@ -38,6 +42,9 @@ class DownloadDisplay {
   // bubble because we will just temporarily reveal the toolbar when the
   // downloads finish.
   virtual bool ShouldShowExclusiveAccessBubble() = 0;
+  // Open the security subpage for the download with `id`, if it exists.
+  virtual void OpenSecuritySubpage(
+      const offline_items_collection::ContentId& id) = 0;
 
  protected:
   virtual ~DownloadDisplay();

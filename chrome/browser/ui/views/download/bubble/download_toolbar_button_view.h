@@ -77,6 +77,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   bool IsShowingDetails() override;
   bool IsFullscreenWithParentViewHidden() override;
   bool ShouldShowExclusiveAccessBubble() override;
+  void OpenSecuritySubpage(
+      const offline_items_collection::ContentId& id) override;
 
   // ToolbarButton:
   void UpdateIcon() override;

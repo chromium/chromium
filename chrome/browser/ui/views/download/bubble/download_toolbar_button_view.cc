@@ -341,6 +341,11 @@ bool DownloadToolbarButtonView::ShouldShowExclusiveAccessBubble() {
          browser_view->CanUserExitFullscreen();
 }
 
+void DownloadToolbarButtonView::OpenSecuritySubpage(
+    const offline_items_collection::ContentId& id) {
+  OpenSecurityDialog(id);
+}
+
 // This function shows the partial view. If the main view is already showing,
 // we do not show the partial view. If the partial view is already showing,
 // there is nothing to do here, the controller should update the partial view.

@@ -198,6 +198,11 @@ void DownloadDisplayController::OnResume() {
   UpdateButtonStateFromAllModelsInfo();
 }
 
+void DownloadDisplayController::OpenSecuritySubpage(
+    const offline_items_collection::ContentId& id) {
+  display_->OpenSecuritySubpage(id);
+}
+
 void DownloadDisplayController::UpdateToolbarButtonState(
     const DownloadDisplayController::AllDownloadUIModelsInfo& info) {
   if (info.all_models_size == 0) {
