@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/version_info/channel.h"
 
 namespace autofill {
@@ -64,6 +65,14 @@ IbanManager* AutofillClient::GetIbanManager() {
 
 plus_addresses::PlusAddressService* AutofillClient::GetPlusAddressService() {
   return nullptr;
+}
+
+void AutofillClient::OfferPlusAddressCreation(
+    const url::Origin& main_frame_origin,
+    plus_addresses::PlusAddressCallback callback) {
+  // This is overridden by platform subclasses. Currently only
+  // ChromeAutofillClient (Chrome Desktop & Android) implements this, with iOS
+  // support also expected.
 }
 
 MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {

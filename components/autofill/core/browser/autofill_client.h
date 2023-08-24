@@ -29,6 +29,7 @@
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
 #include "components/translate/core/browser/language_state.h"
@@ -410,7 +411,15 @@ class AutofillClient : public RiskDataLoader {
   // Gets the IbanManager instance associated with the client.
   virtual IbanManager* GetIbanManager();
 
+  // When the enterprise plus address feature is supported, gets the
+  // KeyedService that manages that data.
   virtual plus_addresses::PlusAddressService* GetPlusAddressService();
+
+  // Orchestrates UI for enterprise plus address creation; no-op except on
+  // supported platforms.
+  virtual void OfferPlusAddressCreation(
+      const url::Origin& main_frame_origin,
+      plus_addresses::PlusAddressCallback callback);
 
   // Gets the MerchantPromoCodeManager instance associated with the
   // client (can be null for unsupported platforms).

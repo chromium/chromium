@@ -87,6 +87,7 @@
 #include "components/password_manager/core/browser/password_requirements_service.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/security_state/core/security_state.h"
@@ -237,6 +238,19 @@ ChromeAutofillClient::GetPlusAddressService() {
   }
   return PlusAddressServiceFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext());
+}
+
+void ChromeAutofillClient::OfferPlusAddressCreation(
+    const url::Origin& main_frame_origin,
+    plus_addresses::PlusAddressCallback callback) {
+  // TODO(crbug.com/1467623): orchestrate UI here rather than (effectively)
+  // filling immediately.
+  plus_addresses::PlusAddressService* plus_address_service =
+      GetPlusAddressService();
+  if (plus_address_service) {
+    plus_address_service->OfferPlusAddressCreation(main_frame_origin,
+                                                   std::move(callback));
+  }
 }
 
 MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
