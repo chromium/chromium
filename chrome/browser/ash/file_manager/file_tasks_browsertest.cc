@@ -947,7 +947,13 @@ IN_PROC_BROWSER_TEST_F(ChildAccount, IsEligibleAndEnabledUploadOfficeToCloud) {
 
 class NonManagedAccountNoFlag : public TestAccountBrowserTest {
  public:
-  NonManagedAccountNoFlag() : TestAccountBrowserTest(kNonManaged) {}
+  NonManagedAccountNoFlag() : TestAccountBrowserTest(kNonManaged) {
+    feature_list_.InitAndDisableFeature(
+        chromeos::features::kUploadOfficeToCloud);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that a |IsEligibleAndEnabledUploadOfficeToCloud| returns false when a

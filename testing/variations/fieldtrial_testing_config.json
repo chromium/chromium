@@ -15704,6 +15704,21 @@
             ]
         }
     ],
+    "UploadOfficeToCloud": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UploadOfficeToCloud"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseBoringSSLForRandBytes": [
         {
             "platforms": [
