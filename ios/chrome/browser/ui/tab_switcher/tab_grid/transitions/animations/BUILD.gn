@@ -5,7 +5,11 @@
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("animations") {
-  sources = [ "tab_grid_transition_animation.h" ]
+  sources = [
+    "centered_zoom_transition_animation.h",
+    "centered_zoom_transition_animation.mm",
+    "tab_grid_transition_animation.h",
+  ]
 
   deps = [
     "//base",
