@@ -1056,6 +1056,20 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return EvalJs(execution_target ? *execution_target : shell(),
                   base::StringPrintf(
                       R"(
+// Helper for setting up additional bids. seller and nonce will be needed once
+// we switch to header-based approach.
+function provideAdditionalBids(seller, nonce, bidStringList) {
+  let additionalBids = []
+  for (bidString of bidStringList) {
+    let bidObj = {
+      bid: bidString,
+      signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
+    };
+    additionalBids.push(bidObj);
+  }
+  return additionalBids;
+}
+
 (async function() {
   try {
     return await navigator.runAdAuction(%s);
@@ -15895,8 +15909,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     decisionLogicUrl: $2,
     interestGroupBuyers: [$1],
     auctionNonce: $3,
-    additionalBids: Promise.resolve([{
-      bid: JSON.stringify({
+    additionalBids: provideAdditionalBids($1, $3, [JSON.stringify({
         interestGroup: {
           name: 'campaign123',
           biddingLogicURL: $5,
@@ -15909,9 +15922,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         },
         auctionNonce: $3,
         seller: $1,
-      }),
-      signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
-    }])})",
+      })])})",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce, additional_bid_url, additional_bid_logic_url,
@@ -15964,8 +15975,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     perBuyerCurrencies: {
       $6: 'CAD'
     },
-    additionalBids: Promise.resolve([{
-      bid: JSON.stringify({
+    additionalBids: provideAdditionalBids($1, $3, [
+      JSON.stringify({
         interestGroup: {
           name: 'campaign123',
           biddingLogicURL: $5,
@@ -15980,8 +15991,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         auctionNonce: $3,
         seller: $1,
       }),
-      signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
-    }])})",
+    ])})",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce, additional_bid_url, additional_bid_logic_url,
@@ -16034,10 +16044,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     decisionLogicUrl: $2,
     interestGroupBuyers: [$1],
     auctionNonce: $3,
-    additionalBids: Promise.resolve([{
-      bid: '"boo',
-      signatures: [{key: new Uint8Array(32), signature: new Uint8Array(64)}]
-    }])})",
+    additionalBids: provideAdditionalBids($1, $3, ['"boo'])
+      })",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce, additional_bid_url, additional_bid_logic_url,
@@ -16076,7 +16084,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     decisionLogicUrl: $2,
     interestGroupBuyers: [$1],
     auctionNonce: $3,
-    additionalBids: Promise.resolve([])})",
+    additionalBids: provideAdditionalBids($1, $3, [])})",
       test_origin,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"),
       auction_nonce, additional_bid_url, additional_bid_logic_url,
