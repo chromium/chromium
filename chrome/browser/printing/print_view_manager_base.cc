@@ -1004,7 +1004,12 @@ void PrintViewManagerBase::ShouldQuitFromInnerMessageLoop() {
   }
 }
 
-bool PrintViewManagerBase::CreateNewPrintJob(
+scoped_refptr<PrintJob> PrintViewManagerBase::CreatePrintJob(
+    PrintJobManager* print_job_manager) {
+  return base::MakeRefCounted<PrintJob>(print_job_manager);
+}
+
+bool PrintViewManagerBase::SetupNewPrintJob(
     std::unique_ptr<PrinterQuery> query) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!quit_inner_loop_);
@@ -1022,8 +1027,7 @@ bool PrintViewManagerBase::CreateNewPrintJob(
   }
 
   DCHECK(!print_job_);
-  print_job_ =
-      base::MakeRefCounted<PrintJob>(g_browser_process->print_job_manager());
+  print_job_ = CreatePrintJob(g_browser_process->print_job_manager());
   print_job_->Initialize(std::move(query), RenderSourceName(), number_pages());
 #if BUILDFLAG(IS_CHROMEOS)
   print_job_->SetSource(web_contents()->GetBrowserContext()->IsOffTheRecord()
@@ -1172,7 +1176,7 @@ bool PrintViewManagerBase::OpportunisticallyCreatePrintJob(int cookie) {
     return false;
   }
 
-  if (!CreateNewPrintJob(std::move(queued_query))) {
+  if (!SetupNewPrintJob(std::move(queued_query))) {
     // Don't kill anything.
     return false;
   }

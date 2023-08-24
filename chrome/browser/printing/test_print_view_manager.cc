@@ -92,15 +92,13 @@ bool TestPrintViewManager::PrintNow(content::RenderFrameHost* rfh) {
   return *print_now_result_;
 }
 
-bool TestPrintViewManager::CreateNewPrintJob(
-    std::unique_ptr<PrinterQuery> query) {
-  if (!PrintViewManager::CreateNewPrintJob(std::move(query))) {
-    return false;
-  }
+scoped_refptr<PrintJob> TestPrintViewManager::CreatePrintJob(
+    PrintJobManager* print_job_manager) {
+  auto print_job = PrintViewManager::CreatePrintJob(print_job_manager);
   if (on_did_create_print_job_) {
-    on_did_create_print_job_.Run(print_job_.get());
+    on_did_create_print_job_.Run(print_job.get());
   }
-  return true;
+  return print_job;
 }
 
 void TestPrintViewManager::PrintPreviewAllowedForTesting() {

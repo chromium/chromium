@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_H_
 #define CHROME_BROWSER_PRINTING_TEST_PRINT_VIEW_MANAGER_H_
 
-#include <memory>
-
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
@@ -47,7 +45,6 @@ class TestPrintViewManager : public PrintViewManager {
 
   // `PrintViewManagerBase` overrides.
   bool PrintNow(content::RenderFrameHost* rfh) override;
-  bool CreateNewPrintJob(std::unique_ptr<PrinterQuery> query) override;
 
  protected:
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -55,6 +52,11 @@ class TestPrintViewManager : public PrintViewManager {
   RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
 
  private:
+  // `PrintViewManagerBase` overrides.
+  scoped_refptr<PrintJob> CreatePrintJob(
+      PrintJobManager* print_job_manager) override;
+
+  // `PrintViewManager` overrides
   void PrintPreviewAllowedForTesting() override;
 
   // printing::mojom::PrintManagerHost:
