@@ -38,7 +38,7 @@ INSERT INTO "logins" (origin_url,action_url,username_element,username_value,pass
 'Email', /* username_element */
 'theerikchen', /* username_value */
 'Passwd', /* password_element */
-X'', /* password_value */
+X'32353732613764632d353034362d343239622d623864342d333639366638376463396332', /* password_value */
 '', /* submit_element */
 'https://accounts.google.com/', /* signon_realm */
 13047429345000000, /* date_created */
@@ -60,64 +60,6 @@ X'', /* moving_blocked_for */
 'Sender Name', /* sender_name */
 0 , /* date_receieved */
 1  /* sharing_notification_displayed */
-);
-INSERT INTO "logins" (origin_url,action_url,username_element,username_value,password_element,password_value,submit_element,signon_realm,date_created,blacklisted_by_user,scheme,password_type,times_used,form_data,display_name,icon_url,federation_url,skip_zero_click,generation_upload_status,possible_username_pairs,date_last_used,moving_blocked_for,date_password_modified, sender_email, sender_name, date_received, sharing_notification_displayed) VALUES(
-'https://accounts.google.com/ServiceLogin', /* origin_url */
-'https://accounts.google.com/ServiceLoginAuth', /* action_url */
-'Email', /* username_element */
-'theerikchen2', /* username_value */
-'Passwd', /* password_element */
-X'', /* password_value */
-'non-empty', /* submit_element */
-'https://accounts.google.com/', /* signon_realm */
-13047423600000000, /* date_created */
-0, /* blacklisted_by_user */
-0, /* scheme */
-0, /* password_type */
-1, /* times_used */
-X'18000000020000000000000000000000000000000000000000000000', /* form_data */
-'', /* display_name */
-'https://www.google.com/icon', /* icon_url */
-'', /* federation_url */
-1,  /* skip_zero_click */
-0,  /* generation_upload_status */
-X'00000000', /* possible_username_pairs */
-0, /* date_last_used */
-X'2400000020000000931DDD1C53CCD2CE11C30C3027798FF7E31CCFE83FB086F3A7797F404D647332', /* moving_blocked_for */
-13047423610000000, /* date_password_modified */
-'', /* sender_email */
-'', /* sender_name */
-0 , /* date_receieved */
-0  /* sharing_notification_displayed */
-);
-INSERT INTO "logins" (origin_url,action_url,username_element,username_value,password_element,password_value,submit_element,signon_realm,date_created,blacklisted_by_user,scheme,password_type,times_used,form_data,display_name,icon_url,federation_url,skip_zero_click,generation_upload_status,possible_username_pairs,date_last_used,moving_blocked_for,date_password_modified, sender_email, sender_name, date_received, sharing_notification_displayed) VALUES(
-'http://example.com', /* origin_url */
-'http://example.com/landing', /* action_url */
-'', /* username_element */
-'user', /* username_value */
-'', /* password_element */
-X'', /* password_value */
-'non-empty', /* submit_element */
-'http://example.com', /* signon_realm */
-13047423600000000, /* date_created */
-0, /* blacklisted_by_user */
-1, /* scheme */
-0, /* password_type */
-1, /* times_used */
-X'18000000020000000000000000000000000000000000000000000000', /* form_data */
-'', /* display_name */
-'https://www.google.com/icon', /* icon_url */
-'', /* federation_url */
-1,  /* skip_zero_click */
-0,  /* generation_upload_status */
-X'00000000', /* possible_username_pairs */
-0, /* date_last_used */
-X'', /* moving_blocked_for */
-13047423610000000 , /* date_password_modified */
-'', /* sender_email */
-'', /* sender_name */
-0 , /* date_receieved */
-0  /* sharing_notification_displayed */
 );
 CREATE INDEX logins_signon ON logins (signon_realm);
 CREATE TABLE stats (
@@ -180,3 +122,4 @@ X'', /* value */
 0 /* confidential */
 );
 COMMIT;
+

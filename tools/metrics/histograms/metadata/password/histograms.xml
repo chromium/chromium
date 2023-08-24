@@ -2057,6 +2057,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.MigrationToOSCrypt"
+    enum="MigrationToOSCryptEnum" expires_after="M119">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records a migration status of PasswordStore to OSCrypt on iOS. Recorded when
+    migration starts and finishes.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.MoveUIDismissalReason{UserSyncingType}"
     enum="PasswordManagerUIDismissalReason" expires_after="2024-02-12">
   <owner>mamir@chromium.org</owner>

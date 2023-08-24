@@ -281,12 +281,8 @@ class LoginDatabase {
 
   // On iOS, removes the keychain item that is used to store the encrypted
   // password for the supplied primary key |id|.
-  void DeleteEncryptedPasswordById(int id);
-
-  // Returns the encrypted password value for the specified |id|.  Returns an
-  // empty string if the row for this |form| is not found.
-  std::string GetEncryptedPasswordById(int id) const;
-#endif
+  void DeleteKeychainItemByPrimaryId(int id);
+#endif  // BUILDFLAG(IS_IOS)
 
   void ReportNumberOfAccountsMetrics(bool custom_passphrase_sync_enabled);
   void ReportTimesPasswordUsedMetrics(bool custom_passphrase_sync_enabled);
@@ -385,9 +381,21 @@ class LoginDatabase {
   std::string get_statement_username_;
   std::string created_statement_;
   std::string blocklisted_statement_;
-  std::string encrypted_password_statement_by_id_;
+  std::string keychain_identifier_statement_by_id_;
   std::string id_and_password_statement_;
 };
+
+#if BUILDFLAG(IS_IOS)
+// Adds |plain_text| to keychain and provides lookup in
+// |keychain_identifier|. Returns true or false to indicate success/failure.
+bool CreateKeychainIdentifier(const std::u16string& plain_text,
+                              std::string* keychain_identifier);
+
+// Retrieves |plain_text| from keychain using |keychain_identifier|. Returns
+// true or false to indicate success/failure.
+bool GetTextFromKeychainIdentifier(const std::string& keychain_identifier,
+                                   std::u16string* plain_text);
+#endif
 
 }  // namespace password_manager
 
