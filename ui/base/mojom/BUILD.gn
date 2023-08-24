@@ -35,6 +35,10 @@ mojom("mojom") {
           mojom = "ui.mojom.ModalType"
           cpp = "::ui::ModalType"
         },
+        {
+          mojom = "ui.mojom.WindowShowState"
+          cpp = "::ui::WindowShowState"
+        },
       ]
       traits_headers = [ "ui_base_types_mojom_traits.h" ]
       traits_public_deps = [ "//ui/base" ]

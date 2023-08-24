@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
+#include "ui/base/ui_base_types.h"
 
 namespace crosapi {
 
@@ -42,7 +43,7 @@ void DeskTemplateAsh::GetBrowserInformation(
 
 void DeskTemplateAsh::CreateBrowserWithRestoredData(
     const gfx::Rect& bounds,
-    const ui::mojom::WindowShowState show_state,
+    const ui::WindowShowState show_state,
     crosapi::mojom::DeskTemplateStatePtr additional_state) {
   if (remotes_.empty())
     return;

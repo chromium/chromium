@@ -34,7 +34,7 @@ class DeskTemplateAsh : public mojom::DeskTemplate {
       base::OnceCallback<void(crosapi::mojom::DeskTemplateStatePtr)> callback);
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
-      const ui::mojom::WindowShowState show_state,
+      const ui::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state);
   void GetFaviconImage(
       const GURL& url,

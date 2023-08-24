@@ -328,28 +328,6 @@ class OpenForFullRestoreAction final : public BrowserAction {
   const bool skip_crash_restore_;
 };
 
-namespace {
-ui::mojom::WindowShowState ConvertWindowShowState(ui::WindowShowState state) {
-  switch (state) {
-    case ui::SHOW_STATE_DEFAULT:
-      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
-    case ui::SHOW_STATE_NORMAL:
-      return ui::mojom::WindowShowState::SHOW_STATE_NORMAL;
-    case ui::SHOW_STATE_MINIMIZED:
-      return ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED;
-    case ui::SHOW_STATE_MAXIMIZED:
-      return ui::mojom::WindowShowState::SHOW_STATE_MAXIMIZED;
-    case ui::SHOW_STATE_INACTIVE:
-      return ui::mojom::WindowShowState::SHOW_STATE_INACTIVE;
-    case ui::SHOW_STATE_FULLSCREEN:
-      return ui::mojom::WindowShowState::SHOW_STATE_FULLSCREEN;
-    case ui::SHOW_STATE_END:
-      NOTREACHED();
-      return ui::mojom::WindowShowState::SHOW_STATE_DEFAULT;
-  }
-}
-}  // namespace
-
 class CreateBrowserWithRestoredDataAction final : public BrowserAction {
  public:
   CreateBrowserWithRestoredDataAction(
@@ -380,8 +358,7 @@ class CreateBrowserWithRestoredDataAction final : public BrowserAction {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->desk_template_ash()
-        ->CreateBrowserWithRestoredData(bounds_,
-                                        ConvertWindowShowState(show_state_),
+        ->CreateBrowserWithRestoredData(bounds_, show_state_,
                                         std::move(additional_state));
   }
 

@@ -24,7 +24,7 @@ class DeskTemplateClientLacros : public crosapi::mojom::DeskTemplateClient {
   // DeskTemplateClient:
   void CreateBrowserWithRestoredData(
       const gfx::Rect& bounds,
-      const ui::mojom::WindowShowState show_state,
+      const ui::WindowShowState show_state,
       crosapi::mojom::DeskTemplateStatePtr additional_state) override;
   void GetBrowserInformation(uint32_t serial,
                              const std::string& window_unique_id,

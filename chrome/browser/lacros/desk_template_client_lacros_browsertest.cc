@@ -397,9 +397,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -421,9 +420,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -445,9 +443,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -469,9 +466,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -491,9 +487,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -514,9 +509,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -538,9 +532,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.
@@ -562,9 +555,8 @@ IN_PROC_BROWSER_TEST_F(DeskTemplateClientLacrosBrowserTest,
 
   DeskTemplateClientLacros client;
 
-  client.CreateBrowserWithRestoredData(
-      expected_bounds, ui::mojom::WindowShowState::SHOW_STATE_DEFAULT,
-      std::move(launch_parameters));
+  client.CreateBrowserWithRestoredData(expected_bounds, ui::SHOW_STATE_DEFAULT,
+                                       std::move(launch_parameters));
 
   // Close default test browser, we will set browser to the browser created
   // by the method under test.

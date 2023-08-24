@@ -159,7 +159,7 @@ DeskTemplateClientLacros::~DeskTemplateClientLacros() = default;
 
 void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
     const gfx::Rect& bounds,
-    const ui::mojom::WindowShowState show_state,
+    const ui::WindowShowState show_state,
     crosapi::mojom::DeskTemplateStatePtr additional_state) {
   Profile* profile = ProfileManager::GetLastUsedProfileAllowedByPolicy();
   DCHECK(profile) << "No last used profile is found.";
@@ -176,8 +176,7 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
           : Browser::CreateParams(Browser::TYPE_NORMAL, profile,
                                   /*user_gesture=*/false);
   create_params.should_trigger_session_restore = false;
-  create_params.initial_show_state =
-      static_cast<ui::WindowShowState>(show_state);
+  create_params.initial_show_state = show_state;
   create_params.initial_bounds = bounds;
   create_params.restore_id = additional_state->restore_window_id;
   create_params.creation_source = Browser::CreationSource::kDeskTemplate;
@@ -201,7 +200,7 @@ void DeskTemplateClientLacros::CreateBrowserWithRestoredData(
 
   SetPinnedTabs(additional_state->first_non_pinned_index, browser);
 
-  if (show_state == ui::mojom::WindowShowState::SHOW_STATE_MINIMIZED) {
+  if (show_state == ui::SHOW_STATE_MINIMIZED) {
     browser->window()->Minimize();
   } else {
     browser->window()->ShowInactive();
