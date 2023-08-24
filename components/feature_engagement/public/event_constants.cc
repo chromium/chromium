@@ -77,6 +77,12 @@ const char kOverflowMenuNoHorizontalScrollOrAction[] =
     "overflow_menu_no_horizontal_scroll_or_action";
 const char kPriceNotificationsUsed[] = "price_notifications_used";
 const char kDefaultBrowserPromoShown[] = "default_browser_promo_shown";
+const char kPasswordManagerWidgetPromoTriggered[] =
+    "password_manager_widget_promo_trigger";
+const char kPasswordManagerWidgetPromoUsed[] =
+    "password_manager_widget_promo_used";
+const char kPasswordManagerWidgetPromoClosed[] =
+    "password_manager_widget_promo_closed";
 
 // Default browser blue dot promo.
 const char kBlueDotPromoCriterionMet[] = "blue_dot_promo_criterion_met";

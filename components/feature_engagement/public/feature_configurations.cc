@@ -1644,6 +1644,33 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSPromoPasswordManagerWidgetFeature.name == feature->name) {
+    // A config to allow a user to be shown the Password Manager widget promo in
+    // the Password Manager. The promo will be shown for a maximum of three
+    // subsequent Password Manager visits to users who have not yet installed
+    // and used the widget. This FET feature is non-blocking because it is a
+    // passive promo that appears alongside the rest of the UI, and does not
+    // interrupt the user's flow.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger = EventConfig(
+        feature_engagement::events::kPasswordManagerWidgetPromoTriggered,
+        Comparator(LESS_THAN, 3), 360, 360);
+    config->used =
+        EventConfig(feature_engagement::events::kPasswordManagerWidgetPromoUsed,
+                    Comparator(EQUAL, 0), 360, 360);
+    config->event_configs.insert(EventConfig(
+        feature_engagement::events::kPasswordManagerWidgetPromoClosed,
+        Comparator(EQUAL, 0), 360, 360));
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
   // iOS Promo Configs are split out into a separate file, so check that too.
   if (absl::optional<FeatureConfig> ios_promo_feature_config =
           GetClientSideiOSPromoFeatureConfig(feature)) {
