@@ -21,8 +21,10 @@
 
   <?if $(sys.BUILDARCH) = "x64" ?>
     <?define ProgramFilesFolderForPlatform = "ProgramFiles64Folder" ?>
+    <?define CAQuietExecForPlatform = "CAQuietExec64" ?>
   <?else?>
     <?define ProgramFilesFolderForPlatform = "ProgramFilesFolder" ?>
+    <?define CAQuietExecForPlatform = "CAQuietExec" ?>
   <?endif?>
 
   <?if $(var.OfficialBuild) != 0 ?>
@@ -831,44 +833,76 @@
                   Property="REINSTALLMODE"
                   Value="amus" />
 
+    <!-- Actions are run in quiet mode (no interactive windows are shown). This is done
+         using a custom action that uses CAQuietExec to execute a command line which is
+         stored in a property with the same name as the action. -->
+    <SetProperty Id="make_symbolic_link"
+      Value='"cmd.exe" /c mklink /d "[chromoting]CurrentVersion" "[binaries]"'
+      Before="make_symbolic_link"
+      Sequence="execute" />
     <CustomAction Id="make_symbolic_link"
-      Directory="chromoting"
-      ExeCommand='cmd /c mklink /d CurrentVersion ".\$(var.Version)\"'
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
 
+    <SetProperty Id="remove_symbolic_link"
+      Value='"cmd.exe" /c rmdir "[chromoting]CurrentVersion"'
+      Before="remove_symbolic_link"
+      Sequence="execute" />
     <CustomAction Id="remove_symbolic_link"
-       Directory="chromoting"
-       ExeCommand='cmd /c rmdir CurrentVersion'
-       Execute="deferred"
-       Impersonate="no"
-       Return="ignore"/>
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
+      Execute="deferred"
+      Impersonate="no"
+      Return="ignore"/>
 
+    <SetProperty Id="remove_logs"
+      Value='"cmd.exe" /c del /f "[binaries]*.log"'
+      Before="remove_logs"
+      Sequence="execute" />
     <CustomAction Id="remove_logs"
-      Directory="binaries"
-      ExeCommand='cmd /c del /f *.log'
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
 
     <!-- Prevents errors during installation time when the website client has an
-         active native messaging host instance running. -->
+         active native messaging host instance running. Actions are run in quiet
+         mode (no interactive windows are shown). This is done using a custom
+         action that uses CAQuietExec to execute a command line which is stored
+         in a property with the same name as the action. -->
+    <SetProperty Id="kill_me2me_native_message_host"
+      Value='"cmd.exe" /c taskkill /F /IM remoting_native_messaging_host.exe'
+      Before="kill_it2me_native_message_host"
+      Sequence="execute" />
     <CustomAction Id="kill_me2me_native_message_host"
-      Directory="binaries"
-      ExeCommand='cmd /c taskkill /F /IM remoting_native_messaging_host.exe'
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
+
+    <SetProperty Id="kill_it2me_native_message_host"
+      Value='"cmd.exe" /c taskkill /T /F /IM remote_assistance_host.exe'
+      Before="kill_it2me_native_message_host"
+      Sequence="execute" />
     <CustomAction Id="kill_it2me_native_message_host"
-      Directory="binaries"
-      ExeCommand='cmd /c taskkill /T /F /IM remote_assistance_host.exe'
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
+
+    <SetProperty Id="kill_webauthn_native_message_host"
+      Value='"cmd.exe" /c taskkill /T /F /IM remote_webauthn.exe'
+      Before="kill_webauthn_native_message_host"
+      Sequence="execute" />
     <CustomAction Id="kill_webauthn_native_message_host"
-      Directory="binaries"
-      ExeCommand='cmd /c taskkill /T /F /IM remote_webauthn.exe'
+      BinaryKey="WixCA"
+      DllEntry="$(var.CAQuietExecForPlatform)"
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
