@@ -18,6 +18,10 @@ enum class ContentSettingsType : int32_t {
   // "DEFAULT" is only used as an argument to the Content Settings Window
   // opener; there it means "whatever was last shown".
   DEFAULT = -1,
+  // This setting governs whether cookies are enabled by the user in the
+  // provided context. However, it may be overridden by other settings. This
+  // enum should NOT be read directly to determine whether cookies are enabled;
+  // the client should instead rely on the CookieSettings API.
   COOKIES = 0,
   IMAGES,
   JAVASCRIPT,

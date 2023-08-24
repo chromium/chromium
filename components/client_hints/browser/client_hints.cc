@@ -129,8 +129,9 @@ void ClientHints::GetAllowedClientHintsFromSource(
           url, GURL(), ContentSettingsType::CLIENT_HINTS, nullptr),
       client_hints);
 
-  for (auto hint : additional_hints_)
+  for (auto hint : additional_hints_) {
     client_hints->SetIsEnabled(hint, true);
+  }
 }
 
 bool ClientHints::IsJavaScriptAllowed(const GURL& url,
@@ -145,9 +146,7 @@ bool ClientHints::IsJavaScriptAllowed(const GURL& url,
 
 bool ClientHints::AreThirdPartyCookiesBlocked(const GURL& url,
                                               content::RenderFrameHost* rfh) {
-  return settings_map_->GetContentSetting(
-             url, url, ContentSettingsType::COOKIES) == CONTENT_SETTING_BLOCK ||
-         cookie_settings_->ShouldBlockThirdPartyCookies();
+  return !cookie_settings_->IsThirdPartyAccessAllowed(url);
 }
 
 blink::UserAgentMetadata ClientHints::GetUserAgentMetadata() {
@@ -165,11 +164,13 @@ void ClientHints::PersistClientHints(
   // TODO(tbansal): crbug.com/735518. Consider killing the renderer that sent
   // the malformed IPC.
   if (!primary_url.is_valid() ||
-      !network::IsUrlPotentiallyTrustworthy(primary_url))
+      !network::IsUrlPotentiallyTrustworthy(primary_url)) {
     return;
+  }
 
-  if (!IsJavaScriptAllowed(primary_url, parent_rfh))
+  if (!IsJavaScriptAllowed(primary_url, parent_rfh)) {
     return;
+  }
 
   DCHECK_LE(
       client_hints.size(),

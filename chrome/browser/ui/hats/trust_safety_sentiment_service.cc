@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -365,16 +366,16 @@ void TrustSafetySentimentService::InteractedWithPrivacySandbox3(
   std::map<std::string, bool> product_specific_data;
   product_specific_data["Stable channel"] =
       (chrome::GetChannel() == version_info::Channel::STABLE) ? true : false;
-  bool blockCookies =
-      HostContentSettingsMapFactory::GetForProfile(profile_)
-          ->GetDefaultContentSetting(ContentSettingsType::COOKIES) ==
-      ContentSetting::CONTENT_SETTING_BLOCK;
-  blockCookies =
-      blockCookies ||
+  scoped_refptr<content_settings::CookieSettings> cookie_settings =
+      CookieSettingsFactory::GetForProfile(profile_);
+  bool block_cookies = cookie_settings->GetDefaultCookieSetting() ==
+                       ContentSetting::CONTENT_SETTING_BLOCK;
+  block_cookies =
+      block_cookies ||
       (static_cast<content_settings::CookieControlsMode>(
            profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
        content_settings::CookieControlsMode::kBlockThirdParty);
-  product_specific_data["3P cookies blocked"] = blockCookies ? true : false;
+  product_specific_data["3P cookies blocked"] = block_cookies ? true : false;
   product_specific_data["Privacy Sandbox enabled"] =
       profile_->GetPrefs()->GetBoolean(prefs::kPrivacySandboxApisEnabledV2)
           ? true

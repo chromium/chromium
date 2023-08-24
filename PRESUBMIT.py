@@ -1645,6 +1645,23 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         '^tools/',
       ),
     ),
+    BanRule(
+      pattern = r'ContentSettingsType::COOKIES',
+      explanation = (
+        'Do not use ContentSettingsType::COOKIES to check whether cookies are '
+        'supported in the provided context. Instead rely on the '
+        'content_settings::CookieSettings API. If you are using '
+        'ContentSettingsType::COOKIES to check the user preference setting '
+        'specifically, disregard this warning.',
+      ),
+      treat_as_error = False,
+      excluded_paths = (
+        '^chrome/browser/ui/content_settings/',
+        '^components/content_settings/',
+        '^services/network/cookie_settings/',
+        'test.cc',
+      ),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
