@@ -88,7 +88,7 @@ public class BackPressManager implements Destroyable {
 
         @Override
         public void handleOnBackCancelled() {
-            assert mActiveHandler != null;
+            if (mActiveHandler == null) return;
             mActiveHandler.handleOnBackCancelled();
             mActiveHandler = null;
         }
