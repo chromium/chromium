@@ -302,7 +302,7 @@ class BookmarkButton : public BookmarkButtonBase {
   }
 
   void MayRecordHoverDuration(bool taken) {
-    // Record once. `moouse_entered_time_` should not be set if
+    // Record once. `mouse_entered_time_` should not be set if
     // `OnButtonPressed` is called for keyboard events. We are not interested
     // in such cases.
     if (hover_duration_recorded_ || !mouse_entered_time_.has_value()) {
@@ -393,6 +393,23 @@ class BookmarkButton : public BookmarkButtonBase {
               kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
           base::BindRepeating(&BookmarkButton::StartPreconnecting,
                               base::Unretained(this), *url_));
+      // Now we should register the callback function that will be used to
+      // compute the preloading recall.
+      if (auto* web_contents =
+              browser_->tab_strip_model()->GetActiveWebContents()) {
+        content::PreloadingData* preloading_data =
+            content::PreloadingData::GetOrCreateForWebContents(web_contents);
+        preloading_data->SetIsNavigationInDomainCallback(
+            chrome_preloading_predictor::kPointerDownOnBookmarkBar,
+            base::BindRepeating(
+                [](content::NavigationHandle* navigation_handle) -> bool {
+                  return ui::PageTransitionCoreTypeIs(
+                             navigation_handle->GetPageTransition(),
+                             ui::PAGE_TRANSITION_AUTO_BOOKMARK) &&
+                         ui::PageTransitionIsNewNavigation(
+                             navigation_handle->GetPageTransition());
+                }));
+      }
     }
   }
 

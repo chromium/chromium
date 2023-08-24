@@ -14,6 +14,7 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -654,4 +655,47 @@ IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
   histogram_tester.ExpectBucketCount(
       "Preloading.Prerender.Attempt.MouseHoverOnBookmarkBar.TriggeringOutcome",
       kPreloadingTriggeringOutcomeSuccess, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBookmarkBarOnHoverNavigationTest,
+                       SetIsNavigationInDomainCallback) {
+  base::HistogramTester histogram_tester;
+  // Navigate to an non-empty tab
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html")));
+
+  CreateBookmarkButton();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL("/empty.html?foo")));
+  views::LabelButton* button = GetBookmarkButton(0);
+
+  // Mouse enters and exits the button immediately.
+  gfx::Point center(10, 10);
+  button->OnMouseEntered(ui::MouseEvent(ui::ET_MOUSE_ENTERED, center, center,
+                                        ui::EventTimeForNow(),
+                                        /*flags=*/ui::EF_NONE,
+                                        /*changed_button_flags=*/ui::EF_NONE));
+  button->OnMouseExited(ui::MouseEvent(ui::ET_MOUSE_EXITED, center, center,
+                                       ui::EventTimeForNow(),
+                                       /*flags=*/ui::EF_NONE,
+                                       /*changed_button_flags=*/ui::EF_NONE));
+
+  // Normal navigation is not in `kPointerDownOnBookmarkBar` predictor's domain.
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      /*content::PredictorConfusionMatrix::kTruePositive*/ 0, 0);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 0);
+
+  // A `PAGE_TRANSITION_AUTO_BOOKMARK` navigation should be in the predictor's
+  // domain.
+  CreateBookmarkButton();
+  NavigateParams params(browser(),
+                        https_test_server()->GetURL("/empty.html?bar"),
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  ui_test_utils::NavigateToURL(&params);
+  histogram_tester.ExpectBucketCount(
+      "Preloading.Predictor.PointerDownOnBookmarkBar.Recall",
+      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
 }
