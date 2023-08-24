@@ -81,16 +81,20 @@ def args_general(kwargs):
     set_if_none("manifest_update", True)
     set_if_none("manifest_download", True)
 
+    config_builder = serve.build_config(
+        logger, os.path.join(kwargs["tests_root"], "config.json"))
     if kwargs["ssl_type"] in (None, "pregenerated"):
         cert_root = os.path.join(wpt_root, "tools", "certs")
-        if kwargs["ca_cert_path"] is None:
-            kwargs["ca_cert_path"] = os.path.join(cert_root, "cacert.pem")
-
-        if kwargs["host_key_path"] is None:
-            kwargs["host_key_path"] = os.path.join(cert_root, "web-platform.test.key")
-
-        if kwargs["host_cert_path"] is None:
-            kwargs["host_cert_path"] = os.path.join(cert_root, "web-platform.test.pem")
+        # `wpt run` options override the settings in `config.json`, which in
+        # turn override these defaults.
+        default_config = {
+            "ca_cert_path": os.path.join(cert_root, "cacert.pem"),
+            "host_key_path": os.path.join(cert_root, "web-platform.test.key"),
+            "host_cert_path": os.path.join(cert_root, "web-platform.test.pem"),
+        }
+        config_from_file = config_builder.ssl.get("pregenerated", {})
+        for key, default_value in default_config.items():
+            set_if_none(key, config_from_file.get(key, default_value))
     elif kwargs["ssl_type"] == "openssl":
         if not which(kwargs["openssl_binary"]):
             if os.uname()[0] == "Windows":
@@ -111,7 +115,8 @@ def check_environ(product):
     if product not in ("android_weblayer", "android_webview", "chrome",
                        "chrome_android", "chrome_ios", "content_shell",
                        "firefox", "firefox_android", "servo", "wktr"):
-        config_builder = serve.build_config(os.path.join(wpt_root, "config.json"))
+        config_builder = serve.build_config(
+            logger, os.path.join(wpt_root, "config.json"))
         # Override the ports to avoid looking for free ports
         config_builder.ssl = {"type": "none"}
         config_builder.ports = {"http": [8000]}

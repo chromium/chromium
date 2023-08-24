@@ -22,7 +22,11 @@ from blinkpy.common.host import Host
 from blinkpy.common.system import command_line
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.base import (
+    Port,
+    WPT_FINGERPRINT,
+    SXG_WPT_FINGERPRINT,
+)
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
 
@@ -271,6 +275,12 @@ class WPTAdapter:
         runner_options.binary_args.extend([
             '--host-resolver-rules='
             'MAP nonexistent.*.test ~NOTFOUND, MAP *.test 127.0.0.1',
+            # TODO(crbug.com/1467065): Use `Port.additional_driver_flags(...)`
+            # to provide the fingerprints (i.e., crrev.com/c/4775673). This is a
+            # temporary solution to unblock the tooling roll
+            # (crrev.com/c/4811135).
+            '--ignore-certificate-errors-spki-list='
+            f'{WPT_FINGERPRINT},{SXG_WPT_FINGERPRINT}',
         ])
 
         if self.options.product != 'content_shell':
