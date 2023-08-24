@@ -31,6 +31,10 @@ extra_trybots = [
         "mastername": "luci.chromium.try",
         "buildernames": ["android_optional_gpu_tests_rel"]
     },
+    {
+        "mastername": "luci.chromium.try",
+        "buildernames": ["gpu-fyi-cq-android-arm64"]
+    },
 ]
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -259,6 +263,7 @@ class AutoRoller(object):
     logging.debug('Pulling latest changes')
     if not ignore_checks:
       self._RunCommand(['git', 'pull'])
+      self._RunCommand(['gclient', 'sync'])
 
     self._RunCommand(['git', 'checkout', '-b', ROLL_BRANCH_NAME])
 
@@ -303,6 +308,7 @@ class AutoRoller(object):
 
     # Checkout main again.
     self._RunCommand(['git', 'checkout', 'main'])
+    self._RunCommand(['gclient', 'sync'])
     print('Roll branch left as ' + ROLL_BRANCH_NAME)
     return 0
 
@@ -312,6 +318,7 @@ class AutoRoller(object):
     self._RunCommand(
         ['gclient', 'setdep', '-r', dep_revision],
         working_dir=os.path.dirname(deps_filename))
+    self._RunCommand(['gclient', 'sync'])
 
   def _UpdateWebGLRevTextFile(self, txt_filename, commit_info):
     # Rolling the WebGL conformance tests must cause at least all of
@@ -328,6 +335,7 @@ class AutoRoller(object):
 
   def _DeleteRollBranch(self):
     self._RunCommand(['git', 'checkout', 'main'])
+    self._RunCommand(['gclient', 'sync'])
     self._RunCommand(['git', 'branch', '-D', ROLL_BRANCH_NAME])
     logging.debug('Deleted the local roll branch (%s)', ROLL_BRANCH_NAME)
 
@@ -362,6 +370,7 @@ class AutoRoller(object):
       # Ignore an error here in case an issue wasn't created for some reason.
       self._RunCommand(['git', 'cl', 'set_close'], ignore_exit_code=True)
       self._RunCommand(['git', 'checkout', active_branch])
+      self._RunCommand(['gclient', 'sync'])
       self._RunCommand(['git', 'branch', '-D', ROLL_BRANCH_NAME])
     return 0
 
