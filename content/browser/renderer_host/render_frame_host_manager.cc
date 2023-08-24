@@ -1583,28 +1583,28 @@ RenderFrameHostManager::GetFrameHostForNavigation(
                                    use_current_rfh);
   bool notify_webui_of_rf_creation = request->HasWebUI();
 
+  // For navigation queueing, if the speculative RFH is already committing a
+  // cross-document navigation, avoid discarding it here: the commit needs to
+  // complete in order for the browser and the renderer state to remain in
+  // sync. See https://crbug.com/838348.
+  //
+  // In theory, it would be possible to simply avoid discarding it (see the
+  // later branch for avoiding redundant cancellations: however, this
+  // navigation race should be fairly rare, so for navigation queueing, do the
+  // simple thing and give up trying to assign a RenderFrameHost for the
+  // navigation.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
+      request->ShouldQueueDueToExistingPendingCommitRFH()) {
+    return base::unexpected(
+        GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
+  }
+
   // We only do this if the policy allows it and are recovering a crashed frame.
   bool recovering_without_early_commit =
       ShouldSkipEarlyCommitPendingForCrashedFrame() &&
       render_frame_host_->must_be_replaced();
   if (use_current_rfh) {
     AppendReason(reason, "GetFrameHostForNavigation / use-current-rfh");
-    // For navigation queueing, if the speculative RFH is already committing a
-    // cross-document navigation, avoid discarding it here: the commit needs to
-    // complete in order for the browser and the renderer state to remain in
-    // sync. See https://crbug.com/838348.
-    //
-    // In theory, it would be possible to simply avoid discarding it (see the
-    // later branch for avoiding redundant cancellations: however, this
-    // navigation race should be fairly rare, so for navigation queueing, do the
-    // simple thing and give up trying to assign a RenderFrameHost for the
-    // navigation.
-    if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-        request->ShouldQueueDueToExistingPendingCommitRFH()) {
-      return base::unexpected(
-          GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
-    }
-
     navigation_rfh = render_frame_host_.get();
 
     // Set the associated RenderFrameHost type for the navigation, and discard
@@ -1636,19 +1636,6 @@ RenderFrameHostManager::GetFrameHostForNavigation(
         speculative_render_frame_host_->GetSiteInstance() !=
             dest_site_instance.get()) {
       AppendReason(reason, "GetFrameHostForNavigation / new-speculative-rfh");
-      // If a previous speculative RenderFrameHost didn't exist or if its
-      // SiteInstance differs from the one for the current URL, a new one needs
-      // to be created.
-      //
-      // However, if the speculative RFH is already committing a cross-document
-      // navigation, avoid discarding it now: the commit needs to complete in
-      // order for the browser and the renderer state to remain in sync. See
-      // https://crbug.com/838348.
-      if (ShouldQueueNavigationsWhenPendingCommitRFHExists() &&
-          request->ShouldQueueDueToExistingPendingCommitRFH()) {
-        return base::unexpected(
-            GetFrameHostForNavigationFailed::kBlockedByPendingCommit);
-      }
 
       // Determine if the old speculative RFH and new speculative RFH will use
       // the same process.  If so, add a reference to that process so that

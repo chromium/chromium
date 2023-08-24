@@ -4103,6 +4103,12 @@ TEST_F(NavigationControllerTest, ClearHistoryList) {
 // Tests that if a stale navigation comes back from the renderer, it is properly
 // resurrected.
 TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    GTEST_SKIP() << "When navigation queueing is enabled, there will be no "
+                    "stale navigations, as newer navigations will wait for "
+                    "pending commit navigations to finish";
+  }
+
   NavigationControllerImpl& controller = controller_impl();
   // When back/forward cache is enabled, the ReadyToCommit() call for the
   // forward navigation to B will commit the navigation immediately, making the
@@ -4110,7 +4116,6 @@ TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   // to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
                                     BackForwardCache::TEST_REQUIRES_NO_CACHING);
-
   // Start on page A.
   const GURL url_a("http://foo.com/a");
   NavigationSimulator::NavigateAndCommitFromDocument(url_a, main_test_rfh());
