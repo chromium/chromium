@@ -206,7 +206,7 @@ BASE_DECLARE_FEATURE(kIPHiOSHistoryOnOverflowMenuFeature);
 BASE_DECLARE_FEATURE(kIPHiOSShareToolbarItemFeature);
 BASE_DECLARE_FEATURE(kIPHiOSDefaultBrowserVideoPromoTriggerFeature);
 BASE_DECLARE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature);
-BASE_DECLARE_FEATURE(kIPHiOSPromoSearchPasswordsWidgetFeature);
+BASE_DECLARE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature);
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

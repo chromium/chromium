@@ -38943,11 +38943,11 @@ should be able to be added at any place in this file.
       label="For iOSPromoCredentialProviderExtension feature"/>
   <suffix name="iOSPromoDefaultBrowser"
       label="For iOSPromoDefaultBrowser feature"/>
+  <suffix name="iOSPromoPasswordManagerWidget"
+      label="For iOSPromoPasswordManagerWidget feature"/>
   <suffix name="iOSPromoPostRestore" label="For iOSPromoPostRestore feature"/>
   <suffix name="iOSPromoPostRestoreDefaultBrowser"
       label="For iOSPromoPostRestoreDefaultBrowser feature"/>
-  <suffix name="iOSPromoSearchPasswordsWidget"
-      label="For iOSPromoSearchPasswordsWidget feature"/>
   <suffix name="iOSPromoWhatsNew" label="For iOSPromoWhatsNew feature"/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>

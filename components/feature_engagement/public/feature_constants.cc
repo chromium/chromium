@@ -510,8 +510,8 @@ BASE_FEATURE(kIPHiOSDefaultBrowserVideoPromoTriggerFeature,
 BASE_FEATURE(kIPHiOSPromoPostRestoreDefaultBrowserFeature,
              "IPH_iOSPromoPostRestoreDefaultBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHiOSPromoSearchPasswordsWidgetFeature,
-             "IPH_iOSPromoSearchPasswordsWidget",
+BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
+             "IPH_iOSPromoPasswordManagerWidget",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
