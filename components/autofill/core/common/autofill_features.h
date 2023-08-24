@@ -191,7 +191,6 @@ BASE_DECLARE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillSkipComparingInferredLabels);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillSplitCreditCardNumbersCautiously);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillTokenPrefixMatching);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillTrackProfileTokenQuality);

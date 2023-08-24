@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -33,10 +32,6 @@
 namespace autofill {
 
 namespace {
-
-// Credit card numbers are at most 19 digits in length.
-// [Ref: http://en.wikipedia.org/wiki/Bank_card_number]
-constexpr size_t kMaxValidCardNumberSize = 19;
 
 // Returns true if a field that has |max_length| can fit the data for a field of
 // |type|.
@@ -198,24 +193,6 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     if (ParseFieldSpecifics(scanner, kCardNumberRe, kMatchNumTelAndPwd,
                             patterns, &current_number_field,
                             {log_manager, "kCardNumberRe"})) {
-      // Avoid autofilling any credit card number field having very low or high
-      // |start_index| on the HTML form.
-      size_t start_index = 0;
-      if (!credit_card_field->numbers_.empty()) {
-        size_t last_number_field_size =
-            credit_card_field->numbers_.back()->credit_card_number_offset() +
-            credit_card_field->numbers_.back()->max_length;
-
-        // Distinguish between
-        //   (a) one card split across multiple fields
-        //   (b) multiple fields for multiple cards
-        // Treat this field as a part of the same card as the last field, except
-        // when doing so would cause overflow.
-        if (last_number_field_size < kMaxValidCardNumberSize)
-          start_index = last_number_field_size;
-      }
-
-      current_number_field->set_credit_card_number_offset(start_index);
       credit_card_field->numbers_.push_back(current_number_field);
       nb_unknown_fields = 0;
       continue;

@@ -178,8 +178,6 @@ public final class ProductionSupportedFlagList {
                             .ANDROID_AUTOFILL_VIEW_STRUCTURE_WITH_FORM_HIERARCHY_LAYER_NAME,
                     "When enabled, Android Autofill ViewStructures contain an additional "
                             + "hierarchy level."),
-            Flag.baseFeature(AutofillFeatures.AUTOFILL_SPLIT_CREDIT_CARD_NUMBERS_CAUTIOUSLY,
-                    "Split credit card numbers over multiple fields more cautiously."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_DEPENDENT_LOCALITY_PARSING,
                     "Enables parsing dependent locality fields (e.g. Bairros in Brazil)."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ENABLE_EXPIRATION_DATE_IMPROVEMENTS,

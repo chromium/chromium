@@ -820,8 +820,6 @@ TEST_P(FormStructureRationalizerTestMultiOriginCreditCardFields,
 TEST_F(
     FormStructureRationalizerTest,
     RationalizeCreditCardNumberOffsets_DoNotSplitForNonAdjacentMaxlength1Field) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(
       *BuildFormStructure(
           {
@@ -842,8 +840,6 @@ TEST_F(
 TEST_F(
     FormStructureRationalizerTest,
     RationalizeCreditCardNumberOffsets_DoNotSplitForAdjacentMaxlength1Field) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NAME_FULL},
@@ -864,8 +860,6 @@ TEST_F(
 // grow by 4.
 TEST_F(FormStructureRationalizerTest,
        RationalizeCreditCardNumberOffsets_SplitGroupOfFours) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NAME_FULL},
@@ -889,8 +883,6 @@ TEST_F(FormStructureRationalizerTest,
 // Tests fields of different focusability are not in the same group.
 TEST_F(FormStructureRationalizerTest,
        RationalizeCreditCardNumberOffsets_FocusabilityStartNewGroups) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NAME_FULL},
@@ -918,8 +910,6 @@ TEST_F(FormStructureRationalizerTest,
 // Tests fields from different host forms are not in the same group.
 TEST_F(FormStructureRationalizerTest,
        RationalizeCreditCardNumberOffsets_RendererFormsStartNewGroups) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   FormGlobalId other_host_form = test::MakeFormGlobalId();
   EXPECT_THAT(*BuildFormStructure(
                   {
@@ -949,8 +939,6 @@ TEST_F(FormStructureRationalizerTest,
 // followed by an overflow field grow by 4.
 TEST_F(FormStructureRationalizerTest,
        RationalizeCreditCardNumberOffsets_SplitGroupOfFoursFollodeByOverflow) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NAME_FULL},
@@ -977,8 +965,6 @@ TEST_F(FormStructureRationalizerTest,
 // group.
 TEST_F(FormStructureRationalizerTest,
        RationalizeCreditCardNumberOffsets_SplitGroupOfOnes) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NUMBER},
@@ -1016,8 +1002,6 @@ TEST_F(FormStructureRationalizerTest,
 // Tests that in <input maxlength=4> <input maxlength=8> <input maxlength=4> the
 // last <input> starts a new group. Regression test for crbug.com/1465573.
 TEST_F(FormStructureRationalizerTest, RationalizeCreditCardNumberOffsets_) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAutofillSplitCreditCardNumbersCautiously);
   EXPECT_THAT(*BuildFormStructure(
                   {
                       {.field_type = CREDIT_CARD_NAME_FULL},

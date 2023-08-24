@@ -926,10 +926,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
     LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillSplitCreditCardNumbersCautiously)) {
-    RationalizeCreditCardNumberOffsets(log_manager);
-  }
+  RationalizeCreditCardNumberOffsets(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);
   for (const auto& field : *fields_)

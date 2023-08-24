@@ -564,12 +564,6 @@ BASE_FEATURE(kAutofillSkipComparingInferredLabels,
              "AutofillSkipComparingInferredLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Stronger conditions for splitting credit card numbers across multiple fields.
-// TODO(crbug.com/1419578): Remove when launched.
-BASE_FEATURE(kAutofillSplitCreditCardNumbersCautiously,
-             "AutofillSplitCreditCardNumbersCautiously",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls whether Autofill should search prefixes of all words/tokens when
 // filtering profiles, or only on prefixes of the whole string.
 BASE_FEATURE(kAutofillTokenPrefixMatching,

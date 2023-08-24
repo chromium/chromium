@@ -478,34 +478,6 @@ TEST_P(CreditCardFieldTest, ParseCreditCardExpYear_2DigitMaxLength) {
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_P(CreditCardFieldTest, ParseCreditCardNumberWithSplit) {
-  FormFieldData field;
-  field.form_control_type = "text";
-  AddFormFieldDataWithLength("text", "card_number_q1", "Card Number", 4,
-                             CREDIT_CARD_NUMBER);
-  AddFormFieldDataWithLength("text", "card_number_q2", "Card Number", 4,
-                             CREDIT_CARD_NUMBER);
-  AddFormFieldDataWithLength("text", "card_number_q3", "Card Number", 4,
-                             CREDIT_CARD_NUMBER);
-  // For last credit card number input field it simply ignores the |max_length|
-  // attribute. So even having a very big number, does not conside it an invalid
-  // split for autofilling.
-  AddFormFieldDataWithLength("text", "card_number_q4", "Card Number", 20,
-                             CREDIT_CARD_NUMBER);
-
-  AddTextFormFieldData("ccmonth", "Exp Month", CREDIT_CARD_EXP_MONTH);
-  AddTextFormFieldData("ccyear", "Exp Year", CREDIT_CARD_EXP_4_DIGIT_YEAR);
-
-  ClassifyAndVerify(ParseResult::PARSED);
-
-  // Test the for the right credit card number offsets.
-  ASSERT_TRUE(list_.size() > 4);
-  EXPECT_EQ(list_[0]->credit_card_number_offset(), 0U);
-  EXPECT_EQ(list_[1]->credit_card_number_offset(), 4U);
-  EXPECT_EQ(list_[2]->credit_card_number_offset(), 8U);
-  EXPECT_EQ(list_[3]->credit_card_number_offset(), 12U);
-}
-
 TEST_P(CreditCardFieldTest, ParseMultipleCreditCardNumbers) {
   AddTextFormFieldData("name_on_card", "Name on Card", CREDIT_CARD_NAME_FULL);
   AddTextFormFieldData("card_number", "Card Number", CREDIT_CARD_NUMBER);
