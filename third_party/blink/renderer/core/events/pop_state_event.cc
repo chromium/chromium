@@ -53,7 +53,8 @@ PopStateEvent* PopStateEvent::Create(
 PopStateEvent::PopStateEvent(ScriptState* script_state,
                              const AtomicString& type,
                              const PopStateEventInit* initializer)
-    : Event(type, initializer) {
+    : Event(type, initializer),
+      has_ua_visual_transition_(initializer->hasUAVisualTransition()) {
   v8::Isolate* isolate = script_state->GetIsolate();
   if (initializer->hasState()) {
     state_.Set(isolate, initializer->state().V8Value());

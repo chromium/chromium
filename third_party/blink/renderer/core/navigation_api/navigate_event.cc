@@ -69,7 +69,8 @@ NavigateEvent::NavigateEvent(ExecutionContext* context,
       info_(init->hasInfo()
                 ? init->info()
                 : ScriptValue(context->GetIsolate(),
-                              v8::Undefined(context->GetIsolate()))) {
+                              v8::Undefined(context->GetIsolate()))),
+      has_ua_visual_transition_(init->hasUAVisualTransition()) {
   CHECK(IsA<LocalDOMWindow>(context));
   CHECK(!controller_ || controller_->signal() == signal_);
 }

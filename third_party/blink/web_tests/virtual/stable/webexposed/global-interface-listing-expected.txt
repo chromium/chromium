@@ -5555,6 +5555,7 @@ interface NavigateEvent : Event
     getter destination
     getter downloadRequest
     getter formData
+    getter hasUAVisualTransition
     getter hashChange
     getter info
     getter navigationType
@@ -6323,6 +6324,7 @@ interface PointerEvent : MouseEvent
     method getPredictedEvents
 interface PopStateEvent : Event
     attribute @@toStringTag
+    getter hasUAVisualTransition
     getter state
     method constructor
 interface Presentation

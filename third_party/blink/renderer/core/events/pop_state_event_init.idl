@@ -6,4 +6,5 @@
 
 dictionary PopStateEventInit : EventInit {
     any state = null;
+    boolean hasUAVisualTransition = false;
 };

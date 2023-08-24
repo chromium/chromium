@@ -1948,7 +1948,7 @@
     },
     {
       name: "HasUAVisualTransition",
-      status: "test",
+      status: "stable",
       base_feature: "none",
     },
     // HighlightAPI's custom highlights use HighlightInheritance's behavior even

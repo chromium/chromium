@@ -49,6 +49,7 @@ async_test(t => {
     const formData = new FormData();
     const signal = (new AbortController()).signal;
     const downloadRequest = "abc";
+    const hasUAVisualTransition = true;
 
     const event = new NavigateEvent("navigate", {
       navigationType: "replace",
@@ -59,7 +60,8 @@ async_test(t => {
       signal,
       formData,
       downloadRequest,
-      info
+      info,
+      hasUAVisualTransition
     });
 
     assert_equals(event.navigationType, "replace");
@@ -71,6 +73,7 @@ async_test(t => {
     assert_equals(event.formData, formData);
     assert_equals(event.downloadRequest, downloadRequest);
     assert_equals(event.info, info);
+    assert_equals(event.hasUAVisualTransition, hasUAVisualTransition);
   });
   history.pushState(2, null, "#2");
 }, "all properties are reflected back");
@@ -93,4 +96,16 @@ async_test(t => {
   });
   history.pushState(3, null, "#3");
 }, "defaults are as expected");
+
+async_test(t => {
+  navigation.onnavigate = t.step_func_done(e => {
+    const event = new NavigateEvent("navigate", {
+      destination: e.destination,
+      signal: (new AbortController()).signal
+    });
+
+    assert_false(event.hasUAVisualTransition);
+  });
+  history.pushState(3, null, "#3");
+}, "hasUAVisualTransition is default false");
 </script>
