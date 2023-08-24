@@ -53,6 +53,7 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -412,7 +413,7 @@ public class CustomTabActivityNavigationController
      * If no page in the navigation history meets the criterion, or there is no criterion, then
      * pressing close button will finish the Custom Tab activity.
      */
-    public void setLandingPageOnCloseCriterion(CloseButtonNavigator.PageCriteria criterion) {
+    public void setLandingPageOnCloseCriterion(Predicate<String> criterion) {
         mCloseButtonNavigator.setLandingPageCriteria(criterion);
     }
 

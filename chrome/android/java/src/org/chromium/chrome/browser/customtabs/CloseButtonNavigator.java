@@ -17,6 +17,8 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.function.Predicate;
+
 import javax.inject.Inject;
 
 /**
@@ -38,7 +40,8 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class CloseButtonNavigator {
-    @Nullable private PageCriteria mLandingPageCriteria;
+    @Nullable
+    private Predicate<String> mLandingPagePredicate;
     private final CustomTabActivityTabController mTabController;
     private final CustomTabActivityTabProvider mTabProvider;
     private final boolean mButtonClosesChildTab;
@@ -52,22 +55,18 @@ public class CloseButtonNavigator {
         mButtonClosesChildTab = intentDataProvider.isWebappOrWebApkActivity();
     }
 
-    // TODO(peconn): Replace with Predicate<T> when we can use Java 8 libraries.
-    /** An interface that allows specifying if a URL matches some criteria. */
-    public interface PageCriteria {
-        /** Whether the given |url| matches the criteria. */
-        boolean matches(String url);
-    }
+    /**
+     * Sets the criteria for the page to go back to.
+     * @param criteria A predicate that returns true when given the URL of a landing page.
+     */
+    public void setLandingPageCriteria(Predicate<String> criteria) {
+        assert mLandingPagePredicate == null : "Conflicting criteria for close button navigation.";
 
-    /** Sets the criteria for the page to go back to. */
-    public void setLandingPageCriteria(PageCriteria criteria) {
-        assert mLandingPageCriteria == null : "Conflicting criteria for close button navigation.";
-
-        mLandingPageCriteria = criteria;
+        mLandingPagePredicate = criteria;
     }
 
     private boolean isLandingPage(String url) {
-        return mLandingPageCriteria != null && mLandingPageCriteria.matches(url);
+        return mLandingPagePredicate != null && mLandingPagePredicate.test(url);
     }
 
     /**
@@ -117,7 +116,7 @@ public class CloseButtonNavigator {
      * criteria for what is a landing page has been given or no such page can be found.
      */
     private boolean navigateSingleTab(@Nullable NavigationController controller) {
-        if (mLandingPageCriteria == null || controller == null) return false;
+        if (mLandingPagePredicate == null || controller == null) return false;
 
         NavigationHistory history = controller.getNavigationHistory();
         for (int i = history.getCurrentEntryIndex() - 1; i >= 0; i--) {
