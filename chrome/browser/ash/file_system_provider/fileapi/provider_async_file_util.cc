@@ -17,9 +17,11 @@
 #include "base/notreached.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/fileapi/fallback_copy_in_foreign_file.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/blob/shareable_file_reference.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
@@ -99,8 +101,7 @@ void ReadDirectoryOnUIThread(
   util::FileSystemURLParser parser(url);
   if (!parser.Parse()) {
     callback.Run(base::File::FILE_ERROR_INVALID_OPERATION,
-                 storage::AsyncFileUtil::EntryList(),
-                 false /* has_more */);
+                 storage::AsyncFileUtil::EntryList(), false /* has_more */);
     return;
   }
 
@@ -434,7 +435,9 @@ void ProviderAsyncFileUtil::CopyInForeignFile(
     const storage::FileSystemURL& dest_url,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  std::move(callback).Run(base::File::FILE_ERROR_ACCESS_DENIED);
+  // TODO(b/289322939): can the FileSystemProvider accept a Blob instead?
+  ash::FallbackCopyInForeignFile(*this, std::move(context), src_file_path,
+                                 dest_url, std::move(callback));
 }
 
 void ProviderAsyncFileUtil::DeleteFile(

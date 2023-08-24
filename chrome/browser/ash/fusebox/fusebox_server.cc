@@ -1150,8 +1150,10 @@ void Server::Rename(const RenameRequestProto& request_proto,
   //   - ArcDocumentsProviderAsyncFileUtil::CopyInForeignFile
   //   - ArcDocumentsProviderAsyncFileUtil::CreateSnapshotFile
   //   - MTPFileSystemBackendDelegate::CreateFileStreamWriter
-  //   - ProviderAsyncFileUtil::CopyInForeignFile
+  //   - ProviderAsyncFileUtil::CopyInForeignFile (*)
   //   - ProviderAsyncFileUtil::CreateSnapshotFile
+  //
+  // (*) ProviderAsyncFileUtil::CopyInForeignFile was added in August 2023.
   if (!src_parsed->fs_url.IsInSameFileSystem(dst_parsed->fs_url) &&
       UseTempFile(dst_fs_url_as_string)) {
     auto outer_callback = base::BindPostTaskToCurrentDefault(
