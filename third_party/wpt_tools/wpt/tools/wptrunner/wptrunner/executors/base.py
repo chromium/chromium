@@ -21,14 +21,15 @@ from .protocol import Protocol, WdspecProtocol
 here = os.path.dirname(__file__)
 
 
-def executor_kwargs(test_type, test_environment, run_info_data, **kwargs):
+def executor_kwargs(test_type, test_environment, run_info_data, subsuite, **kwargs):
     timeout_multiplier = kwargs["timeout_multiplier"]
     if timeout_multiplier is None:
         timeout_multiplier = 1
 
     executor_kwargs = {"server_config": test_environment.config,
                        "timeout_multiplier": timeout_multiplier,
-                       "debug_info": kwargs["debug_info"]}
+                       "debug_info": kwargs["debug_info"],
+                       "subsuite": subsuite.name}
 
     if test_type in ("reftest", "print-reftest"):
         executor_kwargs["screenshot_cache"] = test_environment.cache_manager.dict()
@@ -262,13 +263,14 @@ class TestExecutor:
 
 
     def __init__(self, logger, browser, server_config, timeout_multiplier=1,
-                 debug_info=None, **kwargs):
+                 debug_info=None, subsuite=None, **kwargs):
         self.logger = logger
         self.runner = None
         self.browser = browser
         self.server_config = server_config
         self.timeout_multiplier = timeout_multiplier
         self.debug_info = debug_info
+        self.subsuite = subsuite
         self.last_environment = {"protocol": "http",
                                  "prefs": {}}
         self.protocol = None  # This must be set in subclasses
@@ -383,6 +385,7 @@ class RefTestImplementation:
     def __init__(self, executor):
         self.timeout_multiplier = executor.timeout_multiplier
         self.executor = executor
+        self.subsuite = executor.subsuite
         # Cache of url:(screenshot hash, screenshot). Typically the
         # screenshot is None, but we set this value if a test fails
         # and the screenshot was taken from the cache so that we may
@@ -402,7 +405,7 @@ class RefTestImplementation:
         return self.executor.logger
 
     def get_hash(self, test, viewport_size, dpi, page_ranges):
-        key = (test.url, viewport_size, dpi)
+        key = (self.subsuite, test.url, viewport_size, dpi)
 
         if key not in self.screenshot_cache:
             success, data = self.get_screenshot_list(test, viewport_size, dpi, page_ranges)

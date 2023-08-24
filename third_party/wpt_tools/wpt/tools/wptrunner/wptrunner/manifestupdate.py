@@ -944,6 +944,8 @@ def make_node(value):
         node = ListNode()
         for item in value:
             node.append(make_node(item))
+    else:
+        raise ValueError(f"Unrecoginsed data type {type(value)}")
     return node
 
 

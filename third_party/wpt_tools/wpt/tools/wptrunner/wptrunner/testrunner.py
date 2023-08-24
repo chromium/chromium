@@ -4,8 +4,8 @@ import threading
 import time
 import traceback
 from queue import Empty
-from collections import namedtuple
-from typing import Optional
+from collections import namedtuple, defaultdict
+from typing import Any, Mapping, Optional
 
 from mozlog import structuredlog, capture
 
@@ -255,10 +255,10 @@ class BrowserManager:
 class _RunnerManagerState:
     before_init = namedtuple("before_init", [])
     initializing = namedtuple("initializing",
-                              ["test_type", "test", "test_group",
+                              ["subsuite", "test_type", "test", "test_group",
                                "group_metadata", "failure_count"])
-    running = namedtuple("running", ["test_type", "test", "test_group", "group_metadata"])
-    restarting = namedtuple("restarting", ["test_type", "test", "test_group",
+    running = namedtuple("running", ["subsuite", "test_type", "test", "test_group", "group_metadata"])
+    restarting = namedtuple("restarting", ["subsuite", "test_type", "test", "test_group",
                                            "group_metadata", "force_stop"])
     error = namedtuple("error", [])
     stop = namedtuple("stop", ["force_stop"])
@@ -269,7 +269,7 @@ RunnerManagerState = _RunnerManagerState()
 
 class TestRunnerManager(threading.Thread):
     def __init__(self, suite_name, index, test_queue, test_source_cls,
-                 test_implementation_by_type, stop_flag, rerun=1,
+                 test_implementations, stop_flag, retry_index=0, rerun=1,
                  pause_after_test=False, pause_on_unexpected=False,
                  restart_on_unexpected=True, debug_info=None,
                  capture_stdio=True, restart_on_new_group=True, recording=None, max_restarts=5):
@@ -293,22 +293,22 @@ class TestRunnerManager(threading.Thread):
         self.test_source = test_source_cls(test_queue)
 
         self.manager_number = index
-        self.test_type = None
+        self.test_implementation_key = None
 
-        self.test_implementation_by_type = {}
-        for test_type, test_implementation in test_implementation_by_type.items():
+        self.test_implementations = {}
+        for key, test_implementation in test_implementations.items():
             browser_kwargs = test_implementation.browser_kwargs
             if browser_kwargs.get("device_serial"):
                 browser_kwargs = browser_kwargs.copy()
                 # Assign Android device to runner according to current manager index
                 browser_kwargs["device_serial"] = browser_kwargs["device_serial"][index]
-                self.test_implementation_by_type[test_type] = TestImplementation(
+                self.test_implementations[key] = TestImplementation(
                     test_implementation.executor_cls,
                     test_implementation.executor_kwargs,
                     test_implementation.browser_cls,
                     browser_kwargs)
             else:
-                self.test_implementation_by_type[test_type] = test_implementation
+                self.test_implementations[key] = test_implementation
 
         mp = mpcontext.get_context()
 
@@ -316,6 +316,9 @@ class TestRunnerManager(threading.Thread):
         self.parent_stop_flag = stop_flag
         self.child_stop_flag = mp.Event()
 
+        # Keep track of the current retry index. The retries are meant to handle
+        # flakiness, so at retry round we should restart the browser after each test.
+        self.retry_index = retry_index
         self.rerun = rerun
         self.run_count = 0
         self.pause_after_test = pause_after_test
@@ -336,8 +339,8 @@ class TestRunnerManager(threading.Thread):
         self.logger = None
 
         self.test_count = 0
-        self.unexpected_tests = set()
-        self.unexpected_pass_tests = set()
+        self.unexpected_fail_tests = defaultdict(list)
+        self.unexpected_pass_tests = defaultdict(list)
 
         # This may not really be what we want
         self.daemon = True
@@ -436,7 +439,8 @@ class TestRunnerManager(threading.Thread):
             self.logger.debug("Got command: %r" % command)
         except OSError:
             self.logger.error("Got IOError from poll")
-            return RunnerManagerState.restarting(self.state.test_type,
+            return RunnerManagerState.restarting(self.state.subsuite,
+                                                 self.state.test_type,
                                                  self.state.test,
                                                  self.state.test_group,
                                                  self.state.group_metadata,
@@ -483,12 +487,12 @@ class TestRunnerManager(threading.Thread):
         return self.child_stop_flag.is_set() or self.parent_stop_flag.is_set()
 
     def start_init(self):
-        test_type, test, test_group, group_metadata = self.get_next_test()
+        subsuite, test_type, test, test_group, group_metadata = self.get_next_test()
         self.recording.set(["testrunner", "init"])
         if test is None:
             return RunnerManagerState.stop(True)
         else:
-            return RunnerManagerState.initializing(test_type, test, test_group, group_metadata, 0)
+            return RunnerManagerState.initializing(subsuite, test_type, test, test_group, group_metadata, 0)
 
     def init(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
@@ -496,11 +500,11 @@ class TestRunnerManager(threading.Thread):
             self.logger.critical("Max restarts exceeded")
             return RunnerManagerState.error()
 
-        if self.state.test_type != self.test_type:
+        if (self.state.subsuite, self.state.test_type) != self.test_implementation_key:
             if self.browser is not None:
                 assert self.browser.browser is not None
                 self.browser.browser.cleanup()
-            impl = self.test_implementation_by_type[self.state.test_type]
+            impl = self.test_implementations[(self.state.subsuite, self.state.test_type)]
             browser = impl.browser_cls(self.logger, remote_queue=self.command_queue,
                                        **impl.browser_kwargs)
             browser.setup()
@@ -508,7 +512,7 @@ class TestRunnerManager(threading.Thread):
                                           browser,
                                           self.command_queue,
                                           no_timeout=self.debug_info is not None)
-            self.test_type = self.state.test_type
+            self.test_implementation_key = (self.state.subsuite, self.state.test_type)
 
         assert self.browser is not None
         self.browser.update_settings(self.state.test)
@@ -527,7 +531,7 @@ class TestRunnerManager(threading.Thread):
         assert self.command_queue is not None
         assert self.remote_queue is not None
         self.logger.info("Starting runner")
-        impl = self.test_implementation_by_type[self.state.test_type]
+        impl = self.test_implementations[(self.state.subsuite, self.state.test_type)]
         self.executor_cls = impl.executor_cls
         self.executor_kwargs = impl.executor_kwargs
         self.executor_kwargs["group_metadata"] = self.state.group_metadata
@@ -547,8 +551,7 @@ class TestRunnerManager(threading.Thread):
         mp = mpcontext.get_context()
         self.test_runner_proc = mp.Process(target=start_runner,
                                            args=args,
-                                           name="TestRunner-%s-%i" % (
-                                               self.test_type, self.manager_number))
+                                           name="TestRunner-%i" % self.manager_number)
         self.test_runner_proc.start()
         self.logger.debug("Test runner started")
         # Now we wait for either an init_succeeded event or an init_failed event
@@ -556,7 +559,8 @@ class TestRunnerManager(threading.Thread):
     def init_succeeded(self):
         assert isinstance(self.state, RunnerManagerState.initializing)
         self.browser.after_init()
-        return RunnerManagerState.running(self.state.test_type,
+        return RunnerManagerState.running(self.state.subsuite,
+                                          self.state.test_type,
                                           self.state.test,
                                           self.state.test_group,
                                           self.state.group_metadata)
@@ -566,7 +570,8 @@ class TestRunnerManager(threading.Thread):
         self.browser.check_crash(None)
         self.browser.after_init()
         self.stop_runner(force=True)
-        return RunnerManagerState.initializing(self.state.test_type,
+        return RunnerManagerState.initializing(self.state.subsuite,
+                                               self.state.test_type,
                                                self.state.test,
                                                self.state.test_group,
                                                self.state.group_metadata,
@@ -578,13 +583,13 @@ class TestRunnerManager(threading.Thread):
         test_group = None
         while test is None:
             while test_group is None or len(test_group) == 0:
-                test_group, test_type, group_metadata = self.test_source.group()
+                test_group, subsuite, test_type, group_metadata = self.test_source.group()
                 if test_group is None:
                     self.logger.info("No more tests")
-                    return None, None, None, None
+                    return None, None, None, None, None
             test = test_group.popleft()
         self.run_count = 0
-        return test_type, test, test_group, group_metadata
+        return subsuite, test_type, test, test_group, group_metadata
 
     def run_test(self):
         assert isinstance(self.state, RunnerManagerState.running)
@@ -592,14 +597,15 @@ class TestRunnerManager(threading.Thread):
 
         if self.browser.update_settings(self.state.test):
             self.logger.info("Restarting browser for new test environment")
-            return RunnerManagerState.restarting(self.state.test_type,
+            return RunnerManagerState.restarting(self.state.subsuite,
+                                                 self.state.test_type,
                                                  self.state.test,
                                                  self.state.test_group,
                                                  self.state.group_metadata,
                                                  False)
 
         self.recording.set(["testrunner", "test"] + self.state.test.id.split("/")[1:])
-        self.logger.test_start(self.state.test.id)
+        self.logger.test_start(self.state.test.id, subsuite=self.state.subsuite)
         if self.rerun > 1:
             self.logger.info("Run %d/%d" % (self.run_count, self.rerun))
             self.send_message("reset")
@@ -670,14 +676,15 @@ class TestRunnerManager(threading.Thread):
                                     message=result.message,
                                     expected=expected,
                                     known_intermittent=known_intermittent,
-                                    stack=result.stack)
+                                    stack=result.stack,
+                                    subsuite=self.state.subsuite)
 
         expected = test.expected()
         known_intermittent = test.known_intermittent()
         status = file_result.status
 
         if self.browser.check_crash(test.id) and status != "CRASH":
-            if test.test_type == "crashtest" or status == "EXTERNAL-TIMEOUT":
+            if test.test_type in ["crashtest", "wdspec"] or status == "EXTERNAL-TIMEOUT":
                 self.logger.info("Found a crash dump file; changing status to CRASH")
                 status = "CRASH"
             else:
@@ -697,9 +704,6 @@ class TestRunnerManager(threading.Thread):
         is_unexpected = expected != status and status not in known_intermittent
         is_pass_or_expected = status in ["OK", "PASS"] or (not is_unexpected)
 
-        if is_unexpected or subtest_unexpected:
-            self.unexpected_tests.add(test.id)
-
         # A result is unexpected pass if the test or any subtest run
         # unexpectedly, and the overall status is expected or passing (OK for test
         # harness test, or PASS for reftest), and all unexpected results for
@@ -707,7 +711,9 @@ class TestRunnerManager(threading.Thread):
         is_unexpected_pass = ((is_unexpected or subtest_unexpected) and
                               is_pass_or_expected and subtest_all_pass_or_expected)
         if is_unexpected_pass:
-            self.unexpected_pass_tests.add(test.id)
+            self.unexpected_pass_tests[self.state.subsuite, test.test_type].append(test)
+        elif is_unexpected or subtest_unexpected:
+            self.unexpected_fail_tests[self.state.subsuite, test.test_type].append(test)
 
         if "assertion_count" in file_result.extra:
             assertion_count = file_result.extra["assertion_count"]
@@ -725,9 +731,10 @@ class TestRunnerManager(threading.Thread):
                              expected=expected,
                              known_intermittent=known_intermittent,
                              extra=file_result.extra,
-                             stack=file_result.stack)
+                             stack=file_result.stack,
+                             subsuite=self.state.subsuite)
 
-        restart_before_next = (test.restart_after or
+        restart_before_next = (self.retry_index > 0 or test.restart_after or
                                file_result.status in ("CRASH", "EXTERNAL-TIMEOUT", "INTERNAL-ERROR") or
                                ((subtest_unexpected or is_unexpected) and
                                 self.restart_on_unexpected))
@@ -756,7 +763,7 @@ class TestRunnerManager(threading.Thread):
         # that as long as we've done at least the automatic run count in total we can
         # continue with the next test.
         if not force_rerun and self.run_count >= self.rerun:
-            test_type, test, test_group, group_metadata = self.get_next_test()
+            subsuite, test_type, test, test_group, group_metadata = self.get_next_test()
             if test is None:
                 return RunnerManagerState.stop(force_stop)
             if test_type != self.state.test_type:
@@ -772,20 +779,20 @@ class TestRunnerManager(threading.Thread):
 
         if restart:
             return RunnerManagerState.restarting(
-                test_type, test, test_group, group_metadata, force_stop)
+                subsuite, test_type, test, test_group, group_metadata, force_stop)
         else:
             return RunnerManagerState.running(
-                test_type, test, test_group, group_metadata)
+                subsuite, test_type, test, test_group, group_metadata)
 
     def restart_runner(self):
         """Stop and restart the TestRunner"""
         assert isinstance(self.state, RunnerManagerState.restarting)
         self.stop_runner(force=self.state.force_stop)
         return RunnerManagerState.initializing(
-            self.state.test_type, self.state.test,
+            self.state.subsuite, self.state.test_type, self.state.test,
             self.state.test_group, self.state.group_metadata, 0)
 
-    def log(self, data):
+    def log(self, data: Mapping[str, Any]) -> None:
         self.logger.log_raw(data)
 
     def error(self, message):
@@ -821,9 +828,7 @@ class TestRunnerManager(threading.Thread):
             return
 
         self.browser.stop(force=True)
-        self.logger.debug("waiting for runner process to end")
         self.test_runner_proc.join(10)
-        self.logger.debug("After join")
         mp = mpcontext.get_context()
         if self.test_runner_proc.is_alive():
             # This might leak a file handle from the queue
@@ -886,8 +891,8 @@ class TestRunnerManager(threading.Thread):
                 break
 
 
-def make_test_queue(tests, test_source_cls, **test_source_kwargs):
-    queue, num_of_workers = test_source_cls.make_queue(tests, **test_source_kwargs)
+def make_test_queue(tests, test_source):
+    queue, num_of_workers = test_source.cls.make_queue(tests, **test_source.kwargs)
 
     # There is a race condition that means sometimes we continue
     # before the tests have been written to the underlying pipe.
@@ -899,8 +904,8 @@ def make_test_queue(tests, test_source_cls, **test_source_kwargs):
 
 class ManagerGroup:
     """Main thread object that owns all the TestRunnerManager threads."""
-    def __init__(self, suite_name, test_source_cls, test_source_kwargs,
-                 test_implementation_by_type,
+    def __init__(self, suite_name, test_source, test_implementations,
+                 retry_index=0,
                  rerun=1,
                  pause_after_test=False,
                  pause_on_unexpected=False,
@@ -911,13 +916,13 @@ class ManagerGroup:
                  recording=None,
                  max_restarts=5):
         self.suite_name = suite_name
-        self.test_source_cls = test_source_cls
-        self.test_source_kwargs = test_source_kwargs
-        self.test_implementation_by_type = test_implementation_by_type
+        self.test_source = test_source
+        self.test_implementations = test_implementations
         self.pause_after_test = pause_after_test
         self.pause_on_unexpected = pause_on_unexpected
         self.restart_on_unexpected = restart_on_unexpected
         self.debug_info = debug_info
+        self.retry_index = retry_index
         self.rerun = rerun
         self.capture_stdio = capture_stdio
         self.restart_on_new_group = restart_on_new_group
@@ -940,16 +945,17 @@ class ManagerGroup:
     def run(self, tests):
         """Start all managers in the group"""
 
-        test_queue, size = make_test_queue(tests, self.test_source_cls, **self.test_source_kwargs)
+        test_queue, size = make_test_queue(tests, self.test_source)
         self.logger.info("Using %i child processes" % size)
 
         for idx in range(size):
             manager = TestRunnerManager(self.suite_name,
                                         idx,
                                         test_queue,
-                                        self.test_source_cls,
-                                        self.test_implementation_by_type,
+                                        self.test_source.cls,
+                                        self.test_implementations,
                                         self.stop_flag,
+                                        self.retry_index,
                                         self.rerun,
                                         self.pause_after_test,
                                         self.pause_on_unexpected,
@@ -986,8 +992,16 @@ class ManagerGroup:
     def test_count(self):
         return sum(manager.test_count for manager in self.pool)
 
-    def unexpected_tests(self):
-        return set().union(*(manager.unexpected_tests for manager in self.pool))
+    def unexpected_fail_tests(self):
+        rv = defaultdict(list)
+        for manager in self.pool:
+            for (subsuite, test_type), tests in manager.unexpected_fail_tests.items():
+                rv[(subsuite, test_type)].extend(tests)
+        return rv
 
     def unexpected_pass_tests(self):
-        return set().union(*(manager.unexpected_pass_tests for manager in self.pool))
+        rv = defaultdict(list)
+        for manager in self.pool:
+            for (subsuite, test_type), tests in manager.unexpected_pass_tests.items():
+                rv[(subsuite, test_type)].extend(tests)
+        return rv
