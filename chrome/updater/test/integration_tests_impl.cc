@@ -751,7 +751,7 @@ void FillLog(UpdaterScope scope) {
   absl::optional<base::FilePath> log = GetLogFilePath(scope);
   ASSERT_TRUE(log);
   std::string data = "This test string is used to fill up log space.\n";
-  for (int i = 0; i < 1024 * 1024 * 6; i += data.length()) {
+  for (int i = 0; i < 1024 * 1024 * 3; i += data.length()) {
     ASSERT_TRUE(base::AppendToFile(*log, data));
   }
 }

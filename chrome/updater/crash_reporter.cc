@@ -96,13 +96,20 @@ void StartCrashReporter(UpdaterScope updater_scope,
       ->set_gather_indirectly_referenced_memory(crashpad::TriState::kEnabled,
                                                 kIndirectMemoryLimit);
   crashpad::CrashpadClient& client = GetCrashpadClient();
+  std::vector<base::FilePath> attachments;
+#if !BUILDFLAG(IS_MAC)  // Crashpad does not support attachments on macOS.
+  absl::optional<base::FilePath> log_file = GetLogFilePath(updater_scope);
+  if (log_file) {
+    attachments.push_back(*log_file);
+  }
+#endif
   if (!client.StartHandler(
           handler_path, *database_path,
           /*metrics_dir=*/base::FilePath(),
           CreateExternalConstants()->CrashUploadURL().possibly_invalid_spec(),
           annotations, MakeCrashHandlerArgs(updater_scope),
           /*restartable=*/true,
-          /*asynchronous_start=*/false)) {
+          /*asynchronous_start=*/false, attachments)) {
     VLOG(1) << "Failed to start handler.";
     return;
   }
