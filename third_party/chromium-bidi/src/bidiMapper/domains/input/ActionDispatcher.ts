@@ -380,7 +380,6 @@ export class ActionDispatcher {
         const {modifiers} = keyState;
         switch (pointerType) {
           case Input.PointerType.Mouse:
-          case Input.PointerType.Pen:
             // TODO: Implement width and height when available.
             await this.#context.cdpTarget.cdpClient.sendCommand(
               'Input.dispatchMouseEvent',
@@ -401,28 +400,55 @@ export class ActionDispatcher {
               }
             );
             break;
+          case Input.PointerType.Pen:
+            if (source.pressed.size !== 0) {
+              // TODO: Implement width and height when available.
+              await this.#context.cdpTarget.cdpClient.sendCommand(
+                'Input.dispatchMouseEvent',
+                {
+                  type: 'mouseMoved',
+                  x,
+                  y,
+                  modifiers,
+                  clickCount: 0,
+                  button: getCdpButton(
+                    source.pressed.values().next().value ?? 5
+                  ),
+                  buttons: source.buttons,
+                  pointerType,
+                  tangentialPressure,
+                  tiltX,
+                  tiltY,
+                  twist,
+                  force: pressure,
+                }
+              );
+            }
+            break;
           case Input.PointerType.Touch:
-            await this.#context.cdpTarget.cdpClient.sendCommand(
-              'Input.dispatchTouchEvent',
-              {
-                type: 'touchMove',
-                touchPoints: [
-                  {
-                    x,
-                    y,
-                    radiusX: width,
-                    radiusY: height,
-                    tangentialPressure,
-                    tiltX,
-                    tiltY,
-                    twist,
-                    force: pressure,
-                    id: source.pointerId,
-                  },
-                ],
-                modifiers,
-              }
-            );
+            if (source.pressed.size !== 0) {
+              await this.#context.cdpTarget.cdpClient.sendCommand(
+                'Input.dispatchTouchEvent',
+                {
+                  type: 'touchMove',
+                  touchPoints: [
+                    {
+                      x,
+                      y,
+                      radiusX: width,
+                      radiusY: height,
+                      tangentialPressure,
+                      tiltX,
+                      tiltY,
+                      twist,
+                      force: pressure,
+                      id: source.pointerId,
+                    },
+                  ],
+                  modifiers,
+                }
+              );
+            }
             break;
         }
         // --- Platform-specific code ends here ---
