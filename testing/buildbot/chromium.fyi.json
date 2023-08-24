@@ -4979,6 +4979,54 @@
           "15a5229h",
           "--xctest"
         ],
+        "isolate_name": "env_chromium_unittests",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "env_chromium_unittests iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13.4"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15a5229h",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://third_party/leveldatabase:env_chromium_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15a5229h",
+          "--xctest"
+        ],
         "isolate_name": "events_unittests",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5445,6 +5493,54 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://ui/latency:latency_unittests/",
+        "variant_id": "iPhone 14 17.0"
+      },
+      {
+        "args": [
+          "--platform",
+          "iPhone 14",
+          "--version",
+          "17.0",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "15a5229h",
+          "--xctest"
+        ],
+        "isolate_name": "leveldb_unittests",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "leveldb_unittests iPhone 14 17.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+            }
+          ],
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-13.4"
+          },
+          "named_caches": [
+            {
+              "name": "xcode_ios_15a5229h",
+              "path": "Xcode.app"
+            },
+            {
+              "name": "runtime_ios_17_0",
+              "path": "Runtime-ios-17.0"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://third_party/leveldatabase:leveldb_unittests/",
         "variant_id": "iPhone 14 17.0"
       },
       {
