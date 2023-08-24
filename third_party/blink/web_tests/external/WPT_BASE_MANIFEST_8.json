@@ -279304,6 +279304,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "a25f3796e54a5b97869fbbcb8a3482d9961e4fa5",
+     []
+    ],
+    "mtime.json": [
+     "85615b0d65ada4937e9f8763b2b5eceb01874a8b",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -310971,7 +310981,7 @@
       []
      ],
      "anonymous-flex-item-004.html.ini": [
-      "fa827cafd5d14fdda25236c4655b6e8b08cb41e1",
+      "c49c62336865c20c2d0e2c270c6e1d88e779dd15",
       []
      ],
      "anonymous-flex-item-005.html.ini": [
@@ -353083,6 +353093,10 @@
        "4b3a3d758b3e2826f5eb7528da006bdc54f9fa2b",
        []
       ],
+      "kind-of-widget-fallback-color-input-border-image-outset-001.html.ini": [
+       "e371484020e2c0faeac284804749a10ee4f280b0",
+       []
+      ],
       "kind-of-widget-fallback-color-input-border-image-repeat-001.html.ini": [
        "56c1cd125e76e8ed493adf0daadfe8a34a15398f",
        []
@@ -353136,7 +353150,7 @@
        []
       ],
       "kind-of-widget-fallback-color-input-border-right-style-001.html.ini": [
-       "a8801e7a6a261b4ca0348fd0931158c67cb4cf91",
+       "60ca7e88a40bd594b3d753890e4160bdd96df28d",
        []
       ],
       "kind-of-widget-fallback-color-input-border-right-width-001.html.ini": [
@@ -353315,6 +353329,10 @@
        "4450ebef682f98dcdb14a23c2601e34636ea1b8a",
        []
       ],
+      "kind-of-widget-fallback-input-button-border-top-style-001.html.ini": [
+       "bb3aa03e8e7492e7a13de827134dd35f3fd1e458",
+       []
+      ],
       "kind-of-widget-fallback-input-button-border-top-width-001.html.ini": [
        "8a6e498f7a36e7760cb0a37a1e534413cf69e29f",
        []
@@ -353408,7 +353426,7 @@
        []
       ],
       "kind-of-widget-fallback-input-reset-border-image-width-001.html.ini": [
-       "da6bf1451922d04a1a27dcf67ca28be2fad8251a",
+       "3fa335984c25c8f275df658ac94ae2c78f8a9391",
        []
       ],
       "kind-of-widget-fallback-input-reset-border-inline-end-color-001.html.ini": [
@@ -353672,7 +353690,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-text-background-position-001.html.ini": [
-       "a68ecdd86e474247d0078c2674fbb94520db450e",
+       "91658f205cedab22c3cb57cf3d739470797883a2",
        []
       ],
       "kind-of-widget-fallback-input-search-text-background-size-001.html.ini": [
@@ -353719,6 +353737,10 @@
        "cccc18168d13cd48cf3777ec03e116432182f14c",
        []
       ],
+      "kind-of-widget-fallback-input-search-text-border-bottom-width-001.html.ini": [
+       "50b1770f61569147b59f493bcb88965aa250fa7f",
+       []
+      ],
       "kind-of-widget-fallback-input-search-text-border-end-end-radius-001.html.ini": [
        "306992ba6677f862bafbb54627068d67078d554f",
        []
@@ -353741,6 +353763,10 @@
       ],
       "kind-of-widget-fallback-input-search-text-border-image-source-001.html.ini": [
        "e19e35b9221c3f106b1db29f46c18acbd5e10c3a",
+       []
+      ],
+      "kind-of-widget-fallback-input-search-text-border-image-width-001.html.ini": [
+       "20bb7b5b0dbf1a468bbde7681e334c2a15101d1a",
        []
       ],
       "kind-of-widget-fallback-input-search-text-border-inline-end-style-001.html.ini": [
@@ -354448,7 +354474,7 @@
        []
       ],
       "kind-of-widget-fallback-textarea-border-inline-end-color-001.html.ini": [
-       "129dcb891f952baeeca71ed87db8dc8832b817df",
+       "fc884b752b577ee78be72d32252640717073241b",
        []
       ],
       "kind-of-widget-fallback-textarea-border-inline-end-style-001.html.ini": [
@@ -395097,16 +395123,12 @@
          "b7a454b4f20e9cc712203838878f5ffd60ad7809",
          []
         ],
-        "unsupported-attribute-expected.txt": [
-         "56f3e21b9604a985301c4f8ea186a77c530988ee",
-         []
-        ],
         "unsupported-attribute.html.ini": [
          "2a52682a597cae6da9221ca0f4228b7176c85e4e",
          []
         ],
         "unsupported-attribute.js": [
-         "e589fea8305ee708f254ced452c15d802349dfa1",
+         "2fc6829cfbf58ff84c4d17d08e4397cfcf44fca6",
          []
         ]
        },
