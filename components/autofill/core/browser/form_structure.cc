@@ -139,17 +139,19 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-// Returns true iff all form fields autofill types are in |contained_types|.
-bool AllTypesCaptured(const FormStructure& form,
-                      const ServerFieldTypeSet& contained_types) {
+// Returns the first form field type that is not contained in |contained_types|
+// or MAX_VALID_FIELD_TYPE if no such type exists.
+ServerFieldType FirstNonCapturedType(
+    const FormStructure& form,
+    const ServerFieldTypeSet& contained_types) {
   for (const auto& field : form) {
     for (auto type : field->possible_types()) {
       if (type != UNKNOWN_TYPE && type != EMPTY_TYPE &&
           !contained_types.count(type))
-        return false;
+        return type;
     }
   }
-  return true;
+  return MAX_VALID_FIELD_TYPE;
 }
 
 // Encode password attributes and length into |upload|.
@@ -455,7 +457,9 @@ std::vector<AutofillUploadContents> FormStructure::EncodeUploadRequest(
     const base::StringPiece& login_form_signature,
     bool observed_submission,
     bool is_raw_metadata_uploading_enabled) const {
-  DCHECK(AllTypesCaptured(*this, available_field_types));
+  DCHECK_EQ(FirstNonCapturedType(*this, available_field_types),
+            MAX_VALID_FIELD_TYPE);
+
   std::string data_present = EncodeFieldTypes(available_field_types);
 
   AutofillUploadContents upload;
