@@ -4481,6 +4481,12 @@ const char kWebAuthnAndroidCredManDescription[] =
     "Use Credential Management API for passkeys. Requires Android 14 or "
     "higher.";
 
+const char kWebAuthnAndroidCredManAndGmsCoreName[] =
+    "Android Credential Management for 3rd party providers";
+const char kWebAuthnAndroidCredManAndGmsCoreDescription[] =
+    "Use Android Credential Management for passkeys in 3rd party providers. "
+    "Requires Android 14 or higher.";
+
 const char kWebApkInstallFailureNotificationName[] =
     "Web app install failure notification";
 const char kWebApkInstallFailureNotificationDescription[] =

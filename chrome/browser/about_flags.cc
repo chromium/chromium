@@ -10473,6 +10473,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPasswordsInCredManName,
      flag_descriptions::kPasswordsInCredManDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(password_manager::features::kPasswordsInCredMan)},
+
+    {"web-authentication-android-credential-management-and-gmscore",
+     flag_descriptions::kWebAuthnAndroidCredManAndGmsCoreName,
+     flag_descriptions::kWebAuthnAndroidCredManAndGmsCoreDescription,
+     kOsAndroid, FEATURE_VALUE_TYPE(device::kWebAuthnAndroidCredManAndGmsCore)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

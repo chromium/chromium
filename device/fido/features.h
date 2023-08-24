@@ -40,9 +40,15 @@ BASE_DECLARE_FEATURE(kWebAuthnAndroidHybridClientUi);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege);
 
+#if BUILDFLAG(IS_ANDROID)
 // Use the Android 14 Credential Manager API.
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAndroidCredMan);
+
+// Use the Android 14 Credential Manager API alongside GMSCore.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidCredManAndGmsCore);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Count kCtap2ErrPinRequired as meaning not recognised.
 COMPONENT_EXPORT(DEVICE_FIDO)
