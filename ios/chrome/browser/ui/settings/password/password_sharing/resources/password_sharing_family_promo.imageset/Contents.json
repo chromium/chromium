@@ -1,0 +1,25 @@
+{
+  "images" : [
+    {
+      "filename" : "password_sharing_family_promo.pdf",
+      "idiom" : "universal"
+    },
+    {
+      "filename" : "password_sharing_family_promo_dark.pdf",
+      "idiom" : "universal",
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ]
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "preserves-vector-representation" : true
+  }
+}

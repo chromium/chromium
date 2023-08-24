@@ -9,6 +9,8 @@ source_set("password_sharing") {
     "family_picker_coordinator_delegate.h",
     "family_picker_mediator.h",
     "family_picker_mediator.mm",
+    "family_promo_coordinator.h",
+    "family_promo_coordinator.mm",
     "password_picker_coordinator.h",
     "password_picker_coordinator.mm",
     "password_sharing_coordinator.h",
@@ -39,6 +41,8 @@ source_set("password_sharing_ui") {
     "family_picker_view_controller.h",
     "family_picker_view_controller.mm",
     "family_picker_view_controller_presentation_delegate.h",
+    "family_promo_view_controller.h",
+    "family_promo_view_controller.mm",
     "password_picker_view_controller.h",
     "password_picker_view_controller.mm",
     "password_sharing_view_controller.h",
@@ -48,6 +52,7 @@ source_set("password_sharing_ui") {
   ]
   deps = [
     ":password_sharing_constants",
+    "resources:password_sharing_family_promo",
     "//components/password_manager/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/bottom_sheet",
@@ -58,6 +63,7 @@ source_set("password_sharing_ui") {
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:popover_label_view_controller",
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
@@ -78,6 +84,7 @@ source_set("eg2_tests") {
   deps = [
     ":password_sharing_constants",
     "//components/password_manager/core/common:features",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/signin:fake_system_identity",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:eg2_tests",
@@ -86,6 +93,7 @@ source_set("eg2_tests") {
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
     "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
   ]
 }
 

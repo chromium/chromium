@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/family_picker_coordinator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_sharing/family_promo_coordinator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_sharing_mediator_delegate.h"
@@ -36,6 +37,9 @@ using password_manager::FetchFamilyMembersRequestStatus;
 
 // Coordinator for family picker.
 @property(nonatomic, strong) FamilyPickerCoordinator* familyPickerCoordinator;
+
+// Coordinator for family promo view.
+@property(nonatomic, strong) FamilyPromoCoordinator* familyPromoCoordinator;
 
 @end
 
@@ -117,7 +121,11 @@ using password_manager::FetchFamilyMembersRequestStatus;
       [self.familyPickerCoordinator start];
       break;
     case FetchFamilyMembersRequestStatus::kNoFamily:
-      // TODO(crbug.com/1463882): Implement family promo view.
+      [self.familyPromoCoordinator stop];
+      self.familyPromoCoordinator = [[FamilyPromoCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser];
+      [self.familyPromoCoordinator start];
       break;
     case FetchFamilyMembersRequestStatus::kUnknown:
     case FetchFamilyMembersRequestStatus::kNetworkError:

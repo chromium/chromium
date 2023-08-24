@@ -2912,6 +2912,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SHARING_SHARE_BUTTON" desc="Button text for the confirm action in the password sharing flow. [iOS only]">
         Share
       </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_BUTTON" desc="Button text for the confirm action in the password sharing family promo view. [iOS only]">
+        Got It
+      </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_SUBTITLE" desc="Subtitle text displayed in the family promo view of the password sharing flow describing what are the prerequisites to use the feature. [iOS only]">
+        For now, you can only share passwords with family members. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Create a family group<ph name="END_LINK">END_LINK</ph> with up to 6 members, and get more from your products and subscriptions across Google.
+      </message>
+      <message name="IDS_IOS_PASSWORD_SHARING_FAMILY_PROMO_TITLE" desc="Title text of the family promo view in the password sharing flow.">
+        Join a Family Group
+      </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
       </message>
