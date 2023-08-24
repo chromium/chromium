@@ -53,6 +53,7 @@
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/cwv_back_forward_list_internal.h"
 #import "ios/web_view/internal/cwv_favicon_internal.h"
+#import "ios/web_view/internal/cwv_find_in_page_controller_internal.h"
 #import "ios/web_view/internal/cwv_html_element_internal.h"
 #import "ios/web_view/internal/cwv_navigation_action_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
@@ -462,6 +463,7 @@ BOOL gChromeContextMenuEnabled = NO;
 @synthesize canGoForward = _canGoForward;
 @synthesize configuration = _configuration;
 @synthesize estimatedProgress = _estimatedProgress;
+@synthesize findInPageController = _findInPageController;
 @synthesize lastCommittedURL = _lastCommittedURL;
 @synthesize loading = _loading;
 @synthesize navigationDelegate = _navigationDelegate;
@@ -1015,6 +1017,16 @@ BOOL gChromeContextMenuEnabled = NO;
          passwordController:passwordController
           applicationLocale:ios_web_view::ApplicationContext::GetInstance()
                                 ->GetApplicationLocale()];
+}
+
+#pragma mark - Find In Page
+
+- (CWVFindInPageController*)findInPageController {
+  if (!_findInPageController) {
+    _findInPageController =
+        [[CWVFindInPageController alloc] initWithWebState:_webState.get()];
+  }
+  return _findInPageController;
 }
 
 #pragma mark - Preserving and Restoring State

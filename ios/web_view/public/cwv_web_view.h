@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVAutofillController;
 @class CWVBackForwardList;
 @class CWVBackForwardListItem;
+@class CWVFindInPageController;
 @class CWVScriptCommand;
 @class CWVTranslationController;
 @class CWVWebViewConfiguration;
@@ -119,6 +120,10 @@ CWV_EXPORT
 
 // The web view's autofill controller.
 @property(nonatomic, readonly) CWVAutofillController* autofillController;
+
+// The web view's find in page controller.
+@property(nonatomic, readonly)
+    CWVFindInPageController* findInPageController API_AVAILABLE(ios(16.0));
 
 // An equivalent of
 // https://developer.apple.com/documentation/webkit/wkwebview/1414977-backforwardlist

@@ -91,4 +91,7 @@
 // Supports -[CWVUserScript initWithSource:forMainFrameOnly:].
 #define IOS_WEB_VIEW_SUPPORTS_INSTALLING_USER_SCRIPTS_INTO_ALL_FRAMES 1
 
+// Allows the usage of CWVFindInPageController for find in page sessions.
+#define IOS_WEB_VIEW_SUPPORTS_FIND_IN_PAGE_SESSIONS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

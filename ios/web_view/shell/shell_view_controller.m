@@ -867,6 +867,17 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          }]];
   }
 
+  // Using native FiP through is only available for 16.0, otherwise fallback
+  // to iGA JS FiP.
+  if (@available(iOS 16.0, *)) {
+    [alertController
+        addAction:[UIAlertAction actionWithTitle:@"Start Find In Page"
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction* action) {
+                                           [weakSelf startFindInPageSession];
+                                         }]];
+  }
+
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
@@ -1109,6 +1120,16 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
       wasPersistent ? [CWVWebViewConfiguration nonPersistentConfiguration]
                     : [CWVWebViewConfiguration defaultConfiguration];
   self.webView = [self createWebViewWithConfiguration:newConfiguration];
+}
+
+- (void)startFindInPageSession {
+  // Using native FiP through is only available for 16.0, otherwise fallback
+  // to iGA JS FiP.
+  if (@available(iOS 16.0, *)) {
+    if ([_webView.findInPageController canFindInPage]) {
+      [_webView.findInPageController startFindInPage];
+    }
+  }
 }
 
 - (CWVWebView*)createWebViewWithConfiguration:
