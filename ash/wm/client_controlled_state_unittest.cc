@@ -426,7 +426,7 @@ TEST_F(ClientControlledStateTest, CenterWindow) {
               delegate()->requested_bounds().CenterPoint().y(), 1);
 }
 
-TEST_F(ClientControlledStateTest, SnapWindow) {
+TEST_F(ClientControlledStateTest, CycleSnapWindow) {
   // Snap disabled.
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Rect work_area = screen->GetPrimaryDisplay().work_area();
@@ -462,6 +462,53 @@ TEST_F(ClientControlledStateTest, SnapWindow) {
   window_state()->OnWMEvent(&snap_right_event);
   EXPECT_NEAR(work_area.CenterPoint().x(), delegate()->requested_bounds().x(),
               1);
+  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
+  EXPECT_EQ(work_area.bottom_right(),
+            delegate()->requested_bounds().bottom_right());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kSecondarySnapped, delegate()->new_state());
+}
+
+TEST_P(ClientControlledStateTestClamshellAndTablet, SnapWindow) {
+  // Snap disabled.
+  const gfx::Rect work_area =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  ASSERT_FALSE(window_state()->CanResize());
+  ASSERT_FALSE(window_state()->CanSnap());
+
+  // The event should be ignored.
+  const WindowSnapWMEvent snap_primary_event(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap_primary_event);
+  EXPECT_FALSE(window_state()->IsSnapped());
+  EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
+
+  const WindowSnapWMEvent snap_secondary_event(WM_EVENT_SNAP_SECONDARY);
+  window_state()->OnWMEvent(&snap_secondary_event);
+  EXPECT_FALSE(window_state()->IsSnapped());
+  EXPECT_TRUE(delegate()->requested_bounds().IsEmpty());
+
+  // Snap enabled.
+  widget_delegate()->EnableSnap();
+  ASSERT_TRUE(window_state()->CanResize());
+  ASSERT_TRUE(window_state()->CanSnap());
+
+  // Snap to primary.
+  window_state()->OnWMEvent(&snap_primary_event);
+  EXPECT_NEAR(work_area.CenterPoint().x() +
+                  (InTabletMode() ? -kSplitviewDividerShortSideLength / 2 : 0),
+              delegate()->requested_bounds().right(), 1);
+  EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
+  EXPECT_TRUE(delegate()->requested_bounds().origin().IsOrigin());
+  EXPECT_EQ(WindowStateType::kDefault, delegate()->old_state());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+
+  delegate()->Reset();
+
+  // Snap to secondary.
+  window_state()->OnWMEvent(&snap_secondary_event);
+  EXPECT_NEAR(work_area.CenterPoint().x() +
+                  (InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0),
+              delegate()->requested_bounds().x(), 1);
   EXPECT_EQ(work_area.height(), delegate()->requested_bounds().height());
   EXPECT_EQ(work_area.bottom_right(),
             delegate()->requested_bounds().bottom_right());
