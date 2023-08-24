@@ -40,15 +40,17 @@ using ::google_apis::tasks::TaskList;
 using ::google_apis::tasks::TaskLists;
 using ::google_apis::tasks::Tasks;
 
-// TODO(b/269750741): Update the traffic annotation tag once all "[TBD]" items
-// are ready.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("glanceables_tasks_integration", R"(
         semantics {
           sender: "Glanceables keyed service"
           description: "Provide ChromeOS users quick access to their "
                        "task lists without opening the app or website"
-          trigger: "[TBD] Depends on UI surface and pre-fetching strategy"
+          trigger: "User presses the calendar pill in shelf, which triggers "
+                   "opening the calendar, classroom (if available) and tasks "
+                   "widgets. This specific client implementation "
+                   "is responsible for fetching user's tasks data from "
+                   "Google Tasks API."
           internal {
             contacts {
               email: "chromeos-launcher@google.com"
@@ -60,12 +62,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           data: "The request is authenticated with an OAuth2 access token "
                 "identifying the Google account"
           destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2023-03-14"
+          last_reviewed: "2023-08-21"
         }
         policy {
           cookies_allowed: NO
-          setting: "[TBD] This feature cannot be disabled in settings"
-          policy_exception_justification: "WIP, guarded by `GlanceablesV2` flag"
+          setting: "This feature cannot be disabled in settings"
+          chrome_policy {
+            GlanceablesEnabled {
+              GlanceablesEnabled: false
+            }
+          }
         }
     )");
 

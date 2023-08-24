@@ -64,15 +64,17 @@ constexpr char kOwnCoursesFilterValue[] = "me";
 // the specified course.
 constexpr char kAllStudentSubmissionsParameterValue[] = "-";
 
-// TODO(b/282013130): Update the traffic annotation tag once all "[TBD]" items
-// are ready.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
     net::DefineNetworkTrafficAnnotation("glanceables_classroom_integration", R"(
         semantics {
           sender: "Glanceables keyed service"
           description: "Provide ChromeOS users quick access to their "
                        "classroom items without opening the app or website"
-          trigger: "[TBD] Depends on UI surface and pre-fetching strategy"
+          trigger: "User presses the calendar pill in shelf, which triggers "
+                   "opening the calendar, classroom (if available) and tasks "
+                   "widgets. This specific client implementation "
+                   "is responsible for fetching user's classroom data from "
+                   "Google Classroom API."
           internal {
             contacts {
               email: "chromeos-launcher@google.com"
@@ -84,12 +86,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
           data: "The request is authenticated with an OAuth2 access token "
                 "identifying the Google account"
           destination: GOOGLE_OWNED_SERVICE
-          last_reviewed: "2023-05-12"
+          last_reviewed: "2023-08-21"
         }
         policy {
           cookies_allowed: NO
-          setting: "[TBD] This feature cannot be disabled in settings"
-          policy_exception_justification: "WIP, guarded by `GlanceablesV2` flag"
+          setting: "This feature cannot be disabled in settings"
+          chrome_policy {
+            GlanceablesEnabled {
+              GlanceablesEnabled: false
+            }
+          }
         }
     )");
 
