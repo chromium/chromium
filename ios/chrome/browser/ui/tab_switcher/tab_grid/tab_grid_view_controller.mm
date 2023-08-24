@@ -1353,7 +1353,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       (self.currentPage == TabGridPageRegularTabs &&
        !self.regularTabsViewController)) {
     [self configureDoneButtonOnDisabledPage];
-    [self.bottomToolbar setNewTabButtonEnabled:NO];
     [self.topToolbar setCloseAllButtonEnabled:NO];
     [self.bottomToolbar setCloseAllButtonEnabled:NO];
     [self.bottomToolbar setEditButtonEnabled:NO];
@@ -1395,6 +1394,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.bottomToolbar setAddToButtonMenu:menu];
 }
 
+// TODO(crbug.com/1457146): Remove this when incognito authentication is take
+// into account for button configuration.
 - (void)configureNewTabButtonBasedOnContentPermissions {
   BOOL isRecentTabPage = self.currentPage == TabGridPageRemoteTabs;
   BOOL allowedByContentAuthentication =

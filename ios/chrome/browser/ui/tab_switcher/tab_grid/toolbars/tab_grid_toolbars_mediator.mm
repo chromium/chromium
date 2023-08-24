@@ -24,6 +24,8 @@
 
   // TODO(crbug.com/1457146): Add all buttons management.
   [self configureEditOrUndoButton];
+  [self.bottomToolbarConsumer
+      setNewTabButtonEnabled:_configuration.newTabButton];
 }
 
 - (void)setToolbarsButtonsDelegate:
