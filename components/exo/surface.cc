@@ -394,11 +394,19 @@ bool Surface::HasPendingAttachedBuffer() const {
 void Surface::Damage(const gfx::Rect& damage) {
   TRACE_EVENT1("exo", "Surface::Damage", "damage", damage.ToString());
 
+  gfx::Rect t_damage = damage;
+  if (t_damage.width() == 0x7FFFFFFF) {
+    t_damage.set_width(0x7FFFFFFE);
+  }
+  if (t_damage.height() == 0x7FFFFFFF) {
+    t_damage.set_height(0x7FFFFFFE);
+  }
+
   // SkRegion forbids 0x7FFFFFFF (INT32_MAX) as width or height, see
   // SkRegion_kRunTypeSentinel, and would mark the resulting region from the
   // union below as empty. See https://crbug.com/1463905
   gfx::Rect intersected_damage = gfx::Rect(0x7FFFFFFE, 0x7FFFFFFE);
-  intersected_damage.Intersect(damage);
+  intersected_damage.Intersect(t_damage);
   pending_state_.damage.Union(intersected_damage);
 }
 
