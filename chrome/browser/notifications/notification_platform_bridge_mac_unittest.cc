@@ -292,6 +292,53 @@ TEST_F(NotificationPlatformBridgeMacTest, TestDisplayProgress) {
   EXPECT_EQ(expected, delivered_notification->title);
 }
 
+TEST_F(NotificationPlatformBridgeMacTest,
+       TestDisplayUpdatesExistingNotification) {
+  std::unique_ptr<Notification> notification = CreateNotification(
+      "Title", "Context", "https://gmail.com", nullptr, nullptr,
+      /*require_interaction=*/false, /*show_settings_button=*/false);
+
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  *notification, nullptr);
+
+  {
+    const auto& notifications = banner_dispatcher()->notifications();
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_TRUE(alert_dispatcher()->notifications().empty());
+    const auto& delivered_notification = notifications[0];
+    EXPECT_EQ(u"Title", delivered_notification->title);
+  }
+
+  notification = CreateNotification(
+      "New Title", "Context", "https://gmail.com", nullptr, nullptr,
+      /*require_interaction=*/false, /*show_settings_button=*/false);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  *notification, nullptr);
+  {
+    const auto& notifications = banner_dispatcher()->notifications();
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_TRUE(alert_dispatcher()->notifications().empty());
+    const auto& delivered_notification = notifications[0];
+    EXPECT_EQ(u"New Title", delivered_notification->title);
+  }
+
+  notification = CreateNotification(
+      "New Title", "Context", "https://gmail.com", nullptr, nullptr,
+      /*require_interaction=*/true, /*show_settings_button=*/false);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  *notification, nullptr);
+  {
+    const auto& notifications = alert_dispatcher()->notifications();
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_TRUE(banner_dispatcher()->notifications().empty());
+    const auto& delivered_notification = notifications[0];
+    EXPECT_EQ(u"New Title", delivered_notification->title);
+  }
+}
+
 TEST_F(NotificationPlatformBridgeMacTest, TestCloseNotification) {
   std::unique_ptr<Notification> notification = CreateBanner(
       "Title", "Context", "https://gmail.com", "Button 1", nullptr);
@@ -545,4 +592,32 @@ TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
 
   bridge->Close(profile(), "notification_id1");
   EXPECT_EQ(0u, app_dispatcher->notifications().size());
+}
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       DisplayMovesNotificationToWebApp) {
+  const char* const kWebAppId = "webappid";
+  std::unique_ptr<Notification> banner =
+      CreateBanner("Title", "Context", "https://gmail.com", "Button 1", nullptr,
+                   /*web_app_id=*/nullptr);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      CreateWebAppDispatcherFactory());
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+
+  EXPECT_FALSE(dispatcher_for_web_app(kWebAppId));
+  EXPECT_TRUE(alert_dispatcher()->notifications().empty());
+  EXPECT_EQ(1u, banner_dispatcher()->notifications().size());
+
+  banner = CreateBanner("Title", "Context", "https://gmail.com", "Button 1",
+                        nullptr, kWebAppId);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+
+  auto* app_dispatcher = dispatcher_for_web_app(kWebAppId);
+  ASSERT_TRUE(app_dispatcher);
+  EXPECT_EQ(1u, app_dispatcher->notifications().size());
+  EXPECT_TRUE(alert_dispatcher()->notifications().empty());
+  EXPECT_TRUE(banner_dispatcher()->notifications().empty());
 }

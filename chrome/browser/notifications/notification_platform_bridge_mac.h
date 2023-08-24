@@ -48,6 +48,13 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void DisplayServiceShutDown(Profile* profile) override;
 
  private:
+  // Closes the notification with the given `notification_id` and `profile` in
+  // every dispatcher except `excluded_dispatcher`. Pass nullptr to
+  // `excluded_dispatcher` to close the notification everywhere.
+  void CloseImpl(Profile* profile,
+                 const std::string& notification_id,
+                 NotificationDispatcherMac* excluded_dispatcher = nullptr);
+
   // Closes all notifications for the given |profile|.
   void CloseAllNotificationsForProfile(Profile* profile);
 

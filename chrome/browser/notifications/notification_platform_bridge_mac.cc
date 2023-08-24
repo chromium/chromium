@@ -88,18 +88,33 @@ void NotificationPlatformBridgeMac::Display(
     dispatcher = is_alert ? alert_dispatcher_.get() : banner_dispatcher_.get();
   }
   dispatcher->DisplayNotification(notification_type, profile, notification);
+  CloseImpl(profile, notification.id(), dispatcher);
 }
 
 void NotificationPlatformBridgeMac::Close(Profile* profile,
                                           const std::string& notification_id) {
+  CloseImpl(profile, notification_id);
+}
+
+void NotificationPlatformBridgeMac::CloseImpl(
+    Profile* profile,
+    const std::string& notification_id,
+    NotificationDispatcherMac* excluded_dispatcher) {
   std::string profile_id = GetProfileId(profile);
   bool incognito = profile->IsOffTheRecord();
 
-  banner_dispatcher_->CloseNotificationWithId(
-      {notification_id, profile_id, incognito});
-  alert_dispatcher_->CloseNotificationWithId(
-      {notification_id, profile_id, incognito});
+  if (banner_dispatcher_.get() != excluded_dispatcher) {
+    banner_dispatcher_->CloseNotificationWithId(
+        {notification_id, profile_id, incognito});
+  }
+  if (alert_dispatcher_.get() != excluded_dispatcher) {
+    alert_dispatcher_->CloseNotificationWithId(
+        {notification_id, profile_id, incognito});
+  }
   for (auto& [app_id, dispatcher] : app_specific_dispatchers_) {
+    if (dispatcher.get() == excluded_dispatcher) {
+      continue;
+    }
     dispatcher->CloseNotificationWithId(
         {notification_id, profile_id, incognito});
   }

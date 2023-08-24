@@ -12,7 +12,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/profiles/profile.h"
 
 StubNotificationDispatcherMac::StubNotificationDispatcherMac() = default;
 
@@ -22,6 +24,9 @@ void StubNotificationDispatcherMac::DisplayNotification(
     NotificationHandler::Type notification_type,
     Profile* profile,
     const message_center::Notification& notification) {
+  CloseNotificationWithId({notification.id(),
+                           NotificationPlatformBridge::GetProfileId(profile),
+                           profile->IsOffTheRecord()});
   notifications_.push_back(
       CreateMacNotification(notification_type, profile, notification));
 }
