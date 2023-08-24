@@ -32,7 +32,6 @@ namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class URLLoaderThrottleProvider;
 class WeakWrapperResourceLoadInfoNotifier;
-class WebFrameRequestBlocker;
 class WebServiceWorkerProviderContext;
 class WebSocketHandshakeThrottleProvider;
 
@@ -105,8 +104,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // TODO(nhiroki): Add more comments about security/privacy implications to
   // each property, for example, site_for_cookies and top_frame_origin.
   void set_ancestor_frame_id(int id) override;
-  void set_frame_request_blocker(
-      scoped_refptr<WebFrameRequestBlocker> frame_request_blocker) override;
   void set_site_for_cookies(
       const net::SiteForCookies& site_for_cookies) override;
   void set_top_frame_origin(const WebSecurityOrigin& top_frame_origin) override;
@@ -262,10 +259,6 @@ class BLINK_PLATFORM_EXPORT DedicatedOrSharedWorkerFetchContextImpl final
   // workers, this is the shadow page.
   bool is_on_sub_frame_ = false;
   int ancestor_frame_id_ = MSG_ROUTING_NONE;
-  // Set to non-null if the ancestor frame has an associated RequestBlocker,
-  // which blocks requests from this worker too when the ancestor frame is
-  // blocked.
-  scoped_refptr<WebFrameRequestBlocker> frame_request_blocker_;
   net::SiteForCookies site_for_cookies_;
   absl::optional<url::Origin> top_frame_origin_;
 

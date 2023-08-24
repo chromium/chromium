@@ -1920,8 +1920,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
                                   GetBrowserInterfaceBroker());
   }
 
-  frame_request_blocker_ = blink::WebFrameRequestBlocker::Create();
-
   // Bind this class to mojom::Frame and to the message router for legacy IPC.
   // These must be called after |frame_| is set since binding requires a
   // per-frame task runner.
@@ -2482,14 +2480,6 @@ void RenderFrameImpl::GetInterfaceProvider(
   auto task_runner = GetTaskRunner(blink::TaskType::kInternalDefault);
   DCHECK(task_runner);
   interface_provider_receivers_.Add(this, std::move(receiver), task_runner);
-}
-
-void RenderFrameImpl::BlockRequests() {
-  frame_request_blocker_->Block();
-}
-
-void RenderFrameImpl::ResumeBlockedRequests() {
-  frame_request_blocker_->Resume();
 }
 
 void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
@@ -3367,8 +3357,6 @@ RenderFrameImpl::CreateWorkerFetchContext() {
 
   web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
       routing_id_);
-  web_dedicated_or_shared_worker_fetch_context->set_frame_request_blocker(
-      frame_request_blocker_);
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
   web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
@@ -3409,8 +3397,6 @@ RenderFrameImpl::CreateWorkerFetchContextForPlzDedicatedWorker(
 
   web_dedicated_or_shared_worker_fetch_context->set_ancestor_frame_id(
       routing_id_);
-  web_dedicated_or_shared_worker_fetch_context->set_frame_request_blocker(
-      frame_request_blocker_);
   web_dedicated_or_shared_worker_fetch_context->set_site_for_cookies(
       frame_->GetDocument().SiteForCookies());
   web_dedicated_or_shared_worker_fetch_context->set_top_frame_origin(
@@ -4318,7 +4304,6 @@ void RenderFrameImpl::WillSendRequestInternal(
       GetContentClient()->renderer()->IsPrefetchOnly(this);
   url_request_extra_data->set_is_for_no_state_prefetch(
       is_for_no_state_prefetch);
-  url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   url_request_extra_data->set_allow_cross_origin_auth_prompt(
       GetWebView()->GetRendererPreferences().allow_cross_origin_auth_prompt);
   url_request_extra_data->set_top_frame_origin(GetSecurityOriginOfTopFrame());

@@ -496,14 +496,6 @@ interface Frame {
       blink.mojom.RemoteFrameInterfacesFromBrowser new_remote_frame_interfaces,
       blink.mojom.RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
 
-  // Causes all new subresource requests to be blocked (not being started) until
-  // ResumeBlockedRequests is called.
-  BlockRequests();
-
-  // Resumes blocked requests.
-  // It is safe to call this without calling BlockRequests.
-  ResumeBlockedRequests();
-
   GetInterfaceProvider(
       pending_receiver<service_manager.mojom.InterfaceProvider> interfaces);
 

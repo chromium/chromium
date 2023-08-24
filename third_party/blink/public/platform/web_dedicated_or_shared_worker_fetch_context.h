@@ -20,7 +20,6 @@
 
 namespace blink {
 
-class WebFrameRequestBlocker;
 class WebString;
 template <typename T>
 class WebVector;
@@ -94,8 +93,6 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
   // TODO(nhiroki): Add more comments about security/privacy implications to
   // each property, for example, site_for_cookies and top_frame_origin.
   virtual void set_ancestor_frame_id(int id) = 0;
-  virtual void set_frame_request_blocker(
-      scoped_refptr<WebFrameRequestBlocker> frame_request_blocker) = 0;
   virtual void set_site_for_cookies(
       const net::SiteForCookies& site_for_cookies) = 0;
   virtual void set_top_frame_origin(

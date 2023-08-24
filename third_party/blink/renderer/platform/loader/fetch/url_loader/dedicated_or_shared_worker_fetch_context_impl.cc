@@ -25,7 +25,6 @@
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/weak_wrapper_resource_load_info_notifier.h"
 #include "third_party/blink/public/platform/web_code_cache_loader.h"
-#include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
@@ -298,11 +297,6 @@ void DedicatedOrSharedWorkerFetchContextImpl::set_ancestor_frame_id(int id) {
   ancestor_frame_id_ = id;
 }
 
-void DedicatedOrSharedWorkerFetchContextImpl::set_frame_request_blocker(
-    scoped_refptr<WebFrameRequestBlocker> frame_request_blocker) {
-  frame_request_blocker_ = frame_request_blocker;
-}
-
 void DedicatedOrSharedWorkerFetchContextImpl::set_site_for_cookies(
     const net::SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
@@ -391,7 +385,6 @@ void DedicatedOrSharedWorkerFetchContextImpl::WillSendRequest(
   }
 
   auto url_request_extra_data = base::MakeRefCounted<WebURLRequestExtraData>();
-  url_request_extra_data->set_frame_request_blocker(frame_request_blocker_);
   if (throttle_provider_) {
     url_request_extra_data->set_url_loader_throttles(
         throttle_provider_->CreateThrottles(ancestor_frame_id_, request));
@@ -548,7 +541,6 @@ DedicatedOrSharedWorkerFetchContextImpl::CloneForNestedWorkerInternal(
       std::move(pending_resource_load_info_notifier)));
   new_context->is_on_sub_frame_ = is_on_sub_frame_;
   new_context->ancestor_frame_id_ = ancestor_frame_id_;
-  new_context->frame_request_blocker_ = frame_request_blocker_;
   new_context->site_for_cookies_ = site_for_cookies_;
   new_context->top_frame_origin_ = top_frame_origin_;
   child_preference_watchers_.Add(std::move(preference_watcher));

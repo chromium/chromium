@@ -10,7 +10,6 @@
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_frame_request_blocker.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "ui/base/page_transition_types.h"
@@ -74,13 +73,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles) {
     url_loader_throttles_ = std::move(throttles);
   }
-  void set_frame_request_blocker(
-      scoped_refptr<WebFrameRequestBlocker> frame_request_blocker) {
-    frame_request_blocker_ = frame_request_blocker;
-  }
-  scoped_refptr<WebFrameRequestBlocker> frame_request_blocker() {
-    return frame_request_blocker_;
-  }
   bool allow_cross_origin_auth_prompt() const {
     return allow_cross_origin_auth_prompt_;
   }
@@ -101,7 +93,6 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   bool originated_from_service_worker_ = false;
   WebString custom_user_agent_;
   WebVector<std::unique_ptr<URLLoaderThrottle>> url_loader_throttles_;
-  scoped_refptr<WebFrameRequestBlocker> frame_request_blocker_;
   bool allow_cross_origin_auth_prompt_ = false;
 
   // The origin of the top most frame. Only applicable for frames.

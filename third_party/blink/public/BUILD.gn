@@ -207,7 +207,6 @@ source_set("blink_headers") {
     "platform/web_font.h",
     "platform/web_font_description.h",
     "platform/web_font_render_style.h",
-    "platform/web_frame_request_blocker.h",
     "platform/web_gesture_curve.h",
     "platform/web_graphics_context_3d_provider.h",
     "platform/web_http_body.h",

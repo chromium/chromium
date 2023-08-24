@@ -3701,17 +3701,6 @@ void RenderFrameHostImpl::Init() {
 
   GetLocalRenderWidgetHost()->Init();
 
-  // TODO(danakj): We only blocked the main frame, so we should only need to
-  // resume that?
-  ForEachRenderFrameHostIncludingSpeculative(
-      [this](RenderFrameHostImpl* render_frame_host) {
-        // Inner frame trees shouldn't be possible here.
-        DCHECK_EQ(render_frame_host->frame_tree(), frame_tree());
-
-        if (render_frame_host->IsRenderFrameLive())
-          render_frame_host->frame_->ResumeBlockedRequests();
-      });
-
   if (pending_navigate_) {
     // `pending_navigate_` is set only by BeginNavigation(), and
     // BeginNavigation() should only be triggered when the navigation is
@@ -8355,14 +8344,6 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
-
-  // When `waiting_for_init_` is true, the browser waits for the renderer to
-  // request to show the window (which becomes a call to Init() on the new
-  // window's `new_main_rfh`) before servicing subresource requests. We ensure
-  // this is the first message received by the remote frame (instead of plumbing
-  // it with the CreateNewWindow IPC).
-  if (new_main_rfh->waiting_for_init_)
-    new_main_rfh->GetMojomFrameInRenderer()->BlockRequests();
 
   // The mojom reply callback with kSuccess causes the renderer to create the
   // renderer-side objects.

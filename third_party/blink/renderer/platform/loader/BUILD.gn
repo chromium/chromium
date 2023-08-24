@@ -150,8 +150,6 @@ blink_platform_sources("loader") {
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
     "fetch/worker_resource_timing_notifier.h",
-    "frame_request_blocker.cc",
-    "frame_request_blocker.h",
     "internet_disconnected_url_loader.cc",
     "internet_disconnected_url_loader.h",
     "link_header.cc",

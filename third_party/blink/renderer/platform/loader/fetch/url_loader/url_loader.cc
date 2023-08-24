@@ -271,9 +271,6 @@ void URLLoader::Context::Start(
   // TODO(horo): Check credentials flag is unset when credentials mode is omit.
   //             Check credentials flag is set when credentials mode is include.
 
-  const network::mojom::RequestDestination request_destination =
-      request->destination;
-
   scoped_refptr<WebURLRequestExtraData> empty_url_request_extra_data;
   WebURLRequestExtraData* url_request_extra_data;
   if (passed_url_request_extra_data) {
@@ -287,15 +284,6 @@ void URLLoader::Context::Start(
 
   auto throttles =
       url_request_extra_data->TakeURLLoaderThrottles().ReleaseVector();
-  // The frame request blocker is only for a frame's subresources.
-  if (url_request_extra_data->frame_request_blocker() &&
-      !IsRequestDestinationFrame(request_destination)) {
-    auto throttle = url_request_extra_data->frame_request_blocker()
-                        ->GetThrottleIfRequestsBlocked();
-    if (throttle) {
-      throttles.push_back(std::move(throttle));
-    }
-  }
 
   // TODO(falken): URLLoader should be able to get the top frame origin via some
   // plumbing such as through ResourceLoader -> FetchContext -> LocalFrame
