@@ -27,6 +27,8 @@ class AutofillHandler : public protocol::Autofill::Backend {
   ~AutofillHandler() override;
 
  private:
+  protocol::Response Enable() override;
+  protocol::Response Disable() override;
   void Trigger(int field_id,
                Maybe<String> frame_id,
                std::unique_ptr<protocol::Autofill::CreditCard> card,
@@ -44,6 +46,7 @@ class AutofillHandler : public protocol::Autofill::Backend {
   autofill::ContentAutofillDriver* GetAutofillDriver();
 
   const std::string target_id_;
+  bool enabled_;
   base::WeakPtrFactory<AutofillHandler> weak_ptr_factory_{this};
 };
 

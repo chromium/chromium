@@ -207,3 +207,13 @@ autofill::ContentAutofillDriver* AutofillHandler::GetAutofillDriver() {
   return autofill::ContentAutofillDriver::GetForRenderFrameHost(
       outermost_primary_rfh);
 }
+
+Response AutofillHandler::Enable() {
+  enabled_ = true;
+  return Response::FallThrough();
+}
+
+Response AutofillHandler::Disable() {
+  enabled_ = false;
+    return Response::FallThrough();
+}
