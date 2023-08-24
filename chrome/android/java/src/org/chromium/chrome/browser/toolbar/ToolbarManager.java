@@ -78,7 +78,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
-import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
@@ -854,7 +853,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 mLocationBarModel.notifyContentChanged();
                 checkIfNtpLoaded();
                 mToolbar.onTabContentViewChanged();
-                maybeShowCursorInLocationBar();
+                maybeShowOrClearCursorInLocationBar();
                 // Paint preview status might have been changed. Update the omnibox chip.
                 mLocationBarModel.notifySecurityStateChanged();
                 onBackPressStateChanged();
@@ -1060,7 +1059,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
                     if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
                         checkIfNtpLoaded();
-                        maybeShowCursorInLocationBar();
+                        maybeShowOrClearCursorInLocationBar();
                     }
                 }
             }
@@ -2089,7 +2088,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             // Place the cursor in the Omnibox if applicable.  We always clear the focus above to
             // ensure the shield placed over the content is dismissed when switching tabs.  But if
             // needed, we will refocus the omnibox and make the cursor visible here.
-            maybeShowCursorInLocationBar();
+            maybeShowOrClearCursorInLocationBar();
         }
 
         updateButtonStatus();
@@ -2206,28 +2205,37 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     }
 
     /**
-     * Called whenever the NTP could have been entered (e.g. tab content changed, tab navigated to
-     * from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed entered the
-     * NTP, we will check two cases:
-     *   1. If a11y is enabled, we will request a11y focus on the omnibox (e.g. for TalkBack).
-     *   2. If a keyboard is plugged in, we will show the URL bar cursor (without focus animations).
+     * Called whenever the NTP could have been entered or exited (e.g. tab content changed, tab
+     * navigated to from the tab strip/tab switcher, etc.). If the user is on a tablet and indeed
+     * entered or exited from the NTP, we will check the following cases:
+     *   1. If a11y is enabled, we will request a11y focus on the omnibox (e.g. for TalkBack) on the
+     * NTP.
+     *   2. If a keyboard is plugged in, we will show the URL bar cursor (without focus animations)
+     * on entering the NTP.
+     *   3. If a keyboard is plugged in, we will clear focus established in #2 above on exiting
+     * from the NTP.
      */
-    private void maybeShowCursorInLocationBar() {
+    private void maybeShowOrClearCursorInLocationBar() {
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
         Tab tab = mLocationBarModel.getTab();
         if (tab == null) return;
         NativePage nativePage = tab.getNativePage();
-        if (!(nativePage instanceof NewTabPage) && !(nativePage instanceof IncognitoNewTabPage)) {
-            return;
-        }
+        boolean onNtp = UrlUtilities.isNTPUrl(tab.getUrl());
 
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()
                 && nativePage instanceof NewTabPage) {
             mLocationBar.requestUrlBarAccessibilityFocus();
         }
 
+        // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
+        // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
+        // clear such focus if it exists.
         if (mActivity.getResources().getConfiguration().keyboard == Configuration.KEYBOARD_QWERTY) {
-            mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+            if (onNtp) {
+                mLocationBar.showUrlBarCursorWithoutFocusAnimations();
+            } else {
+                mLocationBar.clearUrlBarCursorWithoutFocusAnimations();
+            }
         }
     }
 

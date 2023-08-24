@@ -365,6 +365,11 @@ public class LocationBarCoordinator
     }
 
     @Override
+    public void clearUrlBarCursorWithoutFocusAnimations() {
+        mLocationBarMediator.clearUrlBarCursorWithoutFocusAnimations();
+    }
+
+    @Override
     public void selectAll() {
         mUrlCoordinator.selectAll();
     }

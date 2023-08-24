@@ -46,6 +46,14 @@ public interface LocationBar {
      */
     void showUrlBarCursorWithoutFocusAnimations();
 
+    /**
+     * Notifies the LocationBar to take necessary action after exiting from the NTP, while a
+     * hardware keyboard is connected. If the URL bar was previously focused on the NTP due to a
+     * connected keyboard, a navigation away from the NTP should clear this focus before filling the
+     * current tab's URL.
+     */
+    void clearUrlBarCursorWithoutFocusAnimations();
+
     /** Selects all of the editable text in the {@link UrlBar}. */
     void selectAll();
 

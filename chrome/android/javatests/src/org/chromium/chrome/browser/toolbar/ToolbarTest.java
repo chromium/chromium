@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.content.res.Configuration;
+
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -21,12 +23,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -49,6 +53,7 @@ import org.chromium.ui.test.util.UiRestriction;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class ToolbarTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -149,5 +154,38 @@ public class ToolbarTest {
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
         omnibox.requestFocus();
         waitForFindInPageVisibility(false);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Feature({"Omnibox"})
+    public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        // Simulate availability of a hardware keyboard.
+        activity.getResources().getConfiguration().keyboard = Configuration.KEYBOARD_QWERTY;
+
+        // Open a new tab.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), activity, false, true);
+        // Verify that the omnibox is focused when the NTP is loaded.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(activity.getToolbarManager()
+                                       .getLocationBarForTesting()
+                                       .getOmniboxStub()
+                                       .isUrlBarFocused(),
+                    Matchers.is(true));
+        });
+
+        // Navigate away from the NTP.
+        mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
+        // Verify that the omnibox is unfocused on exit from the NTP.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(activity.getToolbarManager()
+                                       .getLocationBarForTesting()
+                                       .getOmniboxStub()
+                                       .isUrlBarFocused(),
+                    Matchers.is(false));
+        });
     }
 }

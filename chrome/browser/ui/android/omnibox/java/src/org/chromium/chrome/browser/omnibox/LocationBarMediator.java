@@ -403,6 +403,19 @@ class LocationBarMediator
                 OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD);
     }
 
+    /**
+     * If the URL bar was previously focused on the NTP due to a connected keyboard, an navigation
+     * away from the NTP should clear this focus before filling the current tab's URL.
+     */
+    /*package */ void clearUrlBarCursorWithoutFocusAnimations() {
+        if (mUrlCoordinator.hasFocus() && mUrlFocusedWithoutAnimations) {
+            // If we did not run the focus animations, then the user has not typed any text.
+            // So, clear the focus and accept whatever URL the page is currently attempting to
+            // display, given that the current tab is not displaying the NTP.
+            setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
+        }
+    }
+
     /*package */ void revertChanges() {
         if (mUrlHasFocus) {
             GURL currentUrl = mLocationBarDataProvider.getCurrentGurl();
@@ -547,14 +560,7 @@ class LocationBarMediator
         // If the URL is currently focused, do not replace the text they have entered with the URL.
         // Once they stop editing the URL, the current tab's URL will automatically be filled in.
         if (mUrlCoordinator.hasFocus()) {
-            if (mUrlFocusedWithoutAnimations && !UrlUtilities.isNTPUrl(currentUrl)) {
-                // If we did not run the focus animations, then the user has not typed any text.
-                // So, clear the focus and accept whatever URL the page is currently attempting to
-                // display. If the NTP is showing, the current page's URL should not be displayed.
-                setUrlBarFocus(false, null, OmniboxFocusReason.UNFOCUS);
-            } else {
-                return;
-            }
+            return;
         }
 
         mOriginalUrl = currentUrl;

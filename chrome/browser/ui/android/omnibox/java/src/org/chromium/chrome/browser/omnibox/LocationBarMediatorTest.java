@@ -697,15 +697,19 @@ public class LocationBarMediatorTest {
         UrlBarData urlBarData = UrlBarData.forUrl(url);
         mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
 
-        verify(mUrlCoordinator)
-                .setUrlBarData(
-                        urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
-
+        // Assume that the URL bar is now focused without focus animations.
         doReturn(true).when(mUrlCoordinator).hasFocus();
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         mMediator.setUrl(JUnitTestGURLs.getGURL(url), urlBarData);
 
-        verify(mUrlCoordinator).clearFocus();
+        // Verify that setUrl() never clears focus when the URL bar is focused without animations.
+        verify(mUrlCoordinator, never()).clearFocus();
+
+        // Verify that setUrlBarData() was invoked exactly once, after the first invocation of
+        // setUrl() when the URL bar was not focused.
+        verify(mUrlCoordinator, times(1))
+                .setUrlBarData(
+                        urlBarData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_ALL);
     }
 
     @Test
@@ -1144,6 +1148,17 @@ public class LocationBarMediatorTest {
         mMediator.loadUrl(TEST_URL, PageTransition.GENERATED, 0);
         verify(mOmniboxUma, times(1))
                 .recordNavigationOnNtp(TEST_URL, PageTransition.GENERATED, true);
+    }
+
+    @Test
+    public void testNotifyNtpExitedWithHardwareKeyboardConnected() {
+        // Assume that the URL bar is focused without animations on the NTP.
+        doReturn(true).when(mUrlCoordinator).hasFocus();
+        mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
+
+        mMediator.clearUrlBarCursorWithoutFocusAnimations();
+        // Verify that the omnibox focus is cleared on an exit from the NTP.
+        verify(mUrlCoordinator).clearFocus();
     }
 
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
