@@ -209,6 +209,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipInkDropRipple] = {
       ui::kColorSysStateRippleNeutralOnSubtle};
 
+  // Picture-in-Picture window colors.
+  mixer[kColorPipWindowForeground] = {ui::kColorSysOnSurface};
+  mixer[kColorPipWindowForegroundInactive] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorPipWindowTopBarBackground] = {ui::kColorSysSurface};
+
   // Tabstrip tab alert colors.
   mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {
       ui::kColorSysOnSurfaceSubtle};

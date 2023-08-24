@@ -54,6 +54,11 @@
 using content::WebContents;
 using security_state::SecurityLevel;
 
+absl::optional<ui::ColorId>
+LocationIconView::Delegate::GetLocationIconBackgroundColorOverride() const {
+  return absl::nullopt;
+}
+
 LocationIconView::LocationIconView(
     const gfx::FontList& font_list,
     IconLabelBubbleView::Delegate* parent_delegate,
@@ -297,9 +302,11 @@ void LocationIconView::UpdateBackground() {
     const bool is_text_dangerous =
         display_text == l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
-    ui::ColorId id = is_text_dangerous
-                         ? kColorOmniboxSecurityChipDangerousBackground
-                         : kColorPageInfoBackground;
+    const ui::ColorId id =
+        delegate_->GetLocationIconBackgroundColorOverride().value_or(
+            is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
+                              : kColorPageInfoBackground);
+
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(id), height() / 2));
 
