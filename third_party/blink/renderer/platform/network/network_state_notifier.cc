@@ -351,6 +351,7 @@ void NetworkStateNotifier::RemoveObserver(
   DCHECK(task_runner->RunsTasksInCurrentSequence());
   DCHECK(observer);
 
+  base::AutoLock locker(lock_);
   ObserverListMap& map = GetObserverMapFor(type);
   DCHECK(base::Contains(map, observer));
   map.erase(observer);
