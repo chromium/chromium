@@ -28,6 +28,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/progress_bar.h"
+#include "ui/views/mouse_constants.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -35,6 +36,13 @@
 
 namespace ash {
 namespace {
+
+void WaitForTimeBetweenButtonOnClicks() {
+  base::RunLoop loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(), views::kMinimumTimeBetweenButtonClicks);
+  loop.Run();
+}
 
 class TestNewWindowDelegateImpl : public TestNewWindowDelegate {
  public:
@@ -160,6 +168,7 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
   // Verify the number of items in task_items_container_view()->children().
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 3u);
 
+  WaitForTimeBetweenButtonOnClicks();
   // Verify that tapping on combobox opens the selection menu.
   GestureTapOn(GetComboBoxView());
   base::RunLoop().RunUntilIdle();
@@ -172,6 +181,7 @@ TEST_F(TasksBubbleViewTest, ShowTasksComboModel) {
   // Verify the number of items in task_items_container_view()->children().
   EXPECT_EQ(GetTaskItemsContainerView()->children().size(), 2u);
 
+  WaitForTimeBetweenButtonOnClicks();
   // Verify that tapping on combobox opens the selection menu.
   GestureTapOn(GetComboBoxView());
   base::RunLoop().RunUntilIdle();

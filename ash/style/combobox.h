@@ -57,6 +57,7 @@ class ASH_EXPORT Combobox : public views::Button,
   // views::Button:
   void SetCallback(PressedCallback callback) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnBlur() override;
 
   std::u16string GetTextForRow(size_t row) const;
 
@@ -106,6 +107,9 @@ class ASH_EXPORT Combobox : public views::Button,
 
   // The current selected index; nullopt means no selection.
   absl::optional<size_t> selected_index_ = absl::nullopt;
+
+  // The selection that committed by performing selection changed action.
+  absl::optional<size_t> last_commit_selection_ = absl::nullopt;
 
   // A handler handles mouse and touch event happening outside combobox and drop
   // down menu. This is mainly used to decide if we should close the drop down

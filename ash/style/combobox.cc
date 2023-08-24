@@ -152,10 +152,11 @@ class Combobox::ComboboxEventHandler : public ui::EventHandler {
 
  private:
   void OnLocatedEvent(ui::LocatedEvent* event) {
-    // If there is a mouse or touch event happening outside the combobox and
-    // drop down menu, the drop down menu should be closed.
+    // If there is a mouse, scroll or touch event happening outside the combobox
+    // and drop down menu, the drop down menu should be closed.
     if (event->type() != ui::ET_MOUSE_PRESSED &&
-        event->type() != ui::ET_TOUCH_PRESSED) {
+        event->type() != ui::ET_TOUCH_PRESSED &&
+        event->type() != ui::ET_MOUSEWHEEL) {
       return;
     }
 
@@ -195,6 +196,7 @@ Combobox::Combobox(ui::ComboboxModel* model)
   CHECK(model_);
   observation_.Observe(model_.get());
   SetSelectedIndex(model_->GetDefaultIndex());
+  OnPerformAction();
   OnComboboxModelChanged(model_);
 
   // Set up layout.
@@ -246,8 +248,6 @@ void Combobox::SetSelectedIndex(absl::optional<size_t> index) {
   if (menu_view_) {
     menu_view_->SelectItem(selected_index_.value());
   }
-
-  OnPerformAction();
 }
 
 bool Combobox::SelectValue(const std::u16string& value) {
@@ -276,6 +276,14 @@ void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
+void Combobox::OnBlur() {
+  if (menu_) {
+    CloseDropDownMenu();
+  }
+
+  views::Button::OnBlur();
+}
+
 std::u16string Combobox::GetTextForRow(size_t row) const {
   return model_->IsItemSeparatorAt(row) ? std::u16string()
                                         : model_->GetItemAt(row);
@@ -302,8 +310,10 @@ void Combobox::OnComboboxPressed() {
     return;
   }
 
-  if ((base::TimeTicks::Now() - closed_time_) >
-      views::kMinimumTimeBetweenButtonClicks) {
+  if (menu_) {
+    CloseDropDownMenu();
+  } else if ((base::TimeTicks::Now() - closed_time_) >
+             views::kMinimumTimeBetweenButtonClicks) {
     ShowDropDownMenu();
   }
 }
@@ -338,10 +348,14 @@ void Combobox::ShowDropDownMenu() {
   title_->SetEnabledColorId(kActiveTitleAndIconColorId);
   drop_down_arrow_->SetImage(ui::ImageModel::FromVectorIcon(
       kDropDownArrowIcon, kActiveTitleAndIconColorId, kArrowIconSize));
+
   RequestFocus();
 }
 
 void Combobox::CloseDropDownMenu() {
+  // Commit selection before closing the menu.
+  OnPerformAction();
+
   menu_view_ = nullptr;
   menu_.reset();
   closed_time_ = base::TimeTicks::Now();
@@ -352,13 +366,19 @@ void Combobox::CloseDropDownMenu() {
 }
 
 void Combobox::OnPerformAction() {
-  CHECK(selected_index_.has_value());
-  title_->SetText(model_->GetItemAt(selected_index_.value()));
+  if (selected_index_ == last_commit_selection_) {
+    return;
+  }
 
-  SchedulePaint();
+  last_commit_selection_ = selected_index_;
 
-  if (callback_) {
-    callback_.Run();
+  if (selected_index_.has_value()) {
+    title_->SetText(model_->GetItemAt(selected_index_.value()));
+    if (callback_) {
+      callback_.Run();
+    }
+  } else {
+    title_->SetText(std::u16string());
   }
 }
 
@@ -379,6 +399,8 @@ void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 }
 
 void Combobox::OnComboboxModelDestroying(ui::ComboboxModel* model) {
+  // Reset selected index to avoid using the destroying model.
+  SetSelectedIndex(absl::nullopt);
   CloseDropDownMenu();
   model_ = nullptr;
   observation_.Reset();
@@ -455,17 +477,17 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     case ui::VKEY_UP:
       new_index = index_before(model_, selected_index_.value());
       break;
-
-    case ui::VKEY_RETURN:
-    case ui::VKEY_SPACE:
-      ShowDropDownMenu();
-      return true;
     default:
-      return false;
+      return views::Button::OnKeyPressed(e);
   }
 
+  // If menu is running, only update selected item on menu instead of committing
+  // the selection. Otherwise, make the selection.
   if (new_index.has_value()) {
     SetSelectedIndex(new_index);
+    if (!IsMenuRunning()) {
+      OnPerformAction();
+    }
   }
   return true;
 }
