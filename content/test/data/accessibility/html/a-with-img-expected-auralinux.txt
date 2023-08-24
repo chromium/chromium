@@ -6,7 +6,7 @@
 ++++[static] name=' '
 ++++[link] name='Link with image in the middle.'
 ++++++[static] name='Link with '
-++++++[image] name='image'
+++++++[image] name='image. To get missing image descriptions, open the context menu.'
 ++++++[static] name=' in the middle.'
 ++++[static] name=' '
 ++++[link] name='Link with broken in the middle.'

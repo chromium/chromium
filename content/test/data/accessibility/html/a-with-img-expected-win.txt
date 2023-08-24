@@ -6,7 +6,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_LINK name='Link with image in the middle.' FOCUSABLE
 ++++++ROLE_SYSTEM_STATICTEXT name='Link with '
-++++++ROLE_SYSTEM_GRAPHIC name='image' READONLY
+++++++ROLE_SYSTEM_GRAPHIC name='image. To get missing image descriptions, open the context menu.' READONLY
 ++++++ROLE_SYSTEM_STATICTEXT name=' in the middle.'
 ++++ROLE_SYSTEM_STATICTEXT name=' '
 ++++ROLE_SYSTEM_LINK name='Link with broken in the middle.' FOCUSABLE

@@ -3,6 +3,6 @@ AXWebArea
 ++++AXImage AXDescription='pipe' AXRoleDescription='image'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue=' '
-++++AXImage AXDescription='  ' AXRoleDescription='image'
+++++AXImage AXDescription='  . To get missing image descriptions, open the context menu.'
 ++++AXStaticText AXValue=' '
 ++++AXImage AXDescription='SVG face' AXRoleDescription='image'

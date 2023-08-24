@@ -3,6 +3,6 @@
 ++++[image] name='pipe'
 ++++[static] name=' '
 ++++[static] name=' '
-++++[image] name='  '
+++++[image] name='  . To get missing image descriptions, open the context menu.'
 ++++[static] name=' '
 ++++[image] name='SVG face'

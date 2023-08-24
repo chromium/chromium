@@ -6,7 +6,7 @@ AXWebArea
 ++++AXStaticText AXValue=' '
 ++++AXLink AXDescription='Link with image in the middle.'
 ++++++AXStaticText AXValue='Link with '
-++++++AXImage AXDescription='image'
+++++++AXImage AXDescription='image. To get missing image descriptions, open the context menu.'
 ++++++AXStaticText AXValue=' in the middle.'
 ++++AXStaticText AXValue=' '
 ++++AXLink AXDescription='Link with broken in the middle.'

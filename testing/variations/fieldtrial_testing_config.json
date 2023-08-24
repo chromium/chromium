@@ -1024,6 +1024,26 @@
             ]
         }
     ],
+    "AugmentExistingImageLabels": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230823",
+                    "enable_features": [
+                        "AugmentExistingImageLabels"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutoDisableAccessibility": [
         {
             "platforms": [
