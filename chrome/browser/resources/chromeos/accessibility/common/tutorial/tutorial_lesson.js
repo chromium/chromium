@@ -184,17 +184,6 @@ export const TutorialLesson = Polymer({
   },
 
   /**
-   * @param {string} text
-   * @private
-   */
-  requestSpeech(text) {
-    // TODO (akihiroota): Migrate this to i_tutorial.js so that the tutorial
-    // engine controls all speech requests.
-    this.dispatchEvent(
-        new CustomEvent('requestspeech', {composed: true, detail: {text}}));
-  },
-
-  /**
    * @return {boolean}
    * @private
    */

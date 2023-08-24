@@ -912,25 +912,6 @@ export class Panel extends PanelInterface {
       await BackgroundBridge.UserActionMonitor.destroy();
       this.onCloseTutorial_();
     });
-    $('chromevox-tutorial').addEventListener('requestspeech', evt => {
-      /**
-       * @type {{
-       * text: string,
-       * queueMode: QueueMode,
-       * properties: ({doNotInterrupt: boolean}|undefined)}}
-       */
-      const detail = evt.detail;
-      const text = detail.text;
-      const queueMode = detail.queueMode;
-      const properties = detail.properties || {};
-      if (!text || queueMode === undefined) {
-        throw new Error(
-            `Must specify text and queueMode when requesting speech from the
-                tutorial`);
-      }
-      const cvox = backgroundPage['ChromeVox'];
-      cvox.tts.speak(text, queueMode, properties);
-    });
     $('chromevox-tutorial')
         .addEventListener('startinteractivemode', async evt => {
           const actions = evt.detail.actions;
