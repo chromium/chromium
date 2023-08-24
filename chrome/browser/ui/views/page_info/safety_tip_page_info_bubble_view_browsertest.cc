@@ -1635,7 +1635,7 @@ class SafetyTipPageInfoBubbleViewPrerenderBrowserTest
 
   void SetUp() override {
     lookalikes::InitializeSafetyTipConfig();
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 

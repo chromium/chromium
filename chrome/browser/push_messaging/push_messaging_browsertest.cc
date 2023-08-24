@@ -2584,7 +2584,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
     incognito_browser_ = CreateIncognitoBrowser();
     // We SetUp here rather than in SetUp since the https_server isn't yet
     // created at that time.
-    prerender_helper_.SetUp(https_server());
+    prerender_helper_.RegisterServerRequestMonitor(https_server());
     PushMessagingBrowserTestBase::SetUpOnMainThread();
   }
   Browser* GetBrowser() const override { return incognito_browser_; }

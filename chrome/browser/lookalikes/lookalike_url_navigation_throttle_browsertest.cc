@@ -1856,7 +1856,7 @@ class LookalikeUrlNavigationThrottlePrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    prerender_helper_->SetUp(https_server());
+    prerender_helper_->RegisterServerRequestMonitor(https_server());
     LookalikeUrlNavigationThrottleBrowserTest::SetUpOnMainThread();
   }
 

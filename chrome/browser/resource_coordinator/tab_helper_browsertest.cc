@@ -52,7 +52,7 @@ class TabHelperBrowserTest : public InProcessBrowserTest {
   ~TabHelperBrowserTest() override = default;
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(embedded_test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 

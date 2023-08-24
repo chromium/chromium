@@ -62,8 +62,8 @@ class PrerenderBrowserTest : public PlatformBrowserTest {
                                 base::Unretained(this))) {}
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
-    prerender_helper_.SetUp(ssl_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(ssl_server());
     PlatformBrowserTest::SetUp();
   }
 

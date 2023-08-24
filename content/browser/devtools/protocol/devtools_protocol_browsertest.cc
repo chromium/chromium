@@ -2647,7 +2647,7 @@ class DevToolsProtocolDeviceEmulationPrerenderTest
 
   void SetUpOnMainThread() override {
     DevToolsProtocolDeviceEmulationTest::SetUpOnMainThread();
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
   }
 
   // WebContentsDelegate overrides.

@@ -697,7 +697,7 @@ class NavigationPredictorPrerenderBrowserTest
       const NavigationPredictorPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(test_server());
     NavigationPredictorMPArchBrowserTest::SetUp();
   }
 

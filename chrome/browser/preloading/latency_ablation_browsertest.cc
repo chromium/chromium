@@ -49,7 +49,7 @@ class LatencyAblationBrowserTest : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->ServeFilesFromSourceDirectory("chrome/test/data");
-    prerender_helper_->SetUp(https_server_.get());
+    prerender_helper_->RegisterServerRequestMonitor(https_server_.get());
     ASSERT_TRUE(https_server_->Start());
 
     TemplateURLService* model = TemplateURLServiceFactory::GetForProfile(

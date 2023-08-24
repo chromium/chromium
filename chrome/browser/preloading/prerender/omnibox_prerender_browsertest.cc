@@ -63,7 +63,7 @@ class OmniboxPrerenderBrowserTest : public PlatformBrowserTest {
             base::Unretained(this))) {}
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     PlatformBrowserTest::SetUp();
   }
 
@@ -231,7 +231,7 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
   }
 
   void SetUp() override {
-    prerender_helper().SetUp(&search_engine_server_);
+    prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     PlatformBrowserTest::SetUp();
   }
 

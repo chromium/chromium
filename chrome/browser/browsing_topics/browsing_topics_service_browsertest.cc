@@ -398,7 +398,7 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
   ~BrowsingTopicsBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUp(&https_server_);
+    prerender_helper_.RegisterServerRequestMonitor(&https_server_);
 
     BrowsingTopicsBrowserTestBase::SetUpOnMainThread();
 

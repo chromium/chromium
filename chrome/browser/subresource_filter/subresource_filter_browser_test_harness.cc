@@ -313,7 +313,7 @@ SubresourceFilterPrerenderingBrowserTest::
     ~SubresourceFilterPrerenderingBrowserTest() = default;
 
 void SubresourceFilterPrerenderingBrowserTest::SetUp() {
-  prerender_helper_.SetUp(embedded_test_server());
+  prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
   SubresourceFilterListInsertingBrowserTest::SetUp();
 }
 

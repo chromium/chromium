@@ -102,7 +102,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
   }
 
   void SetUp() override {
-    prerender_helper().SetUp(&search_engine_server_);
+    prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     PlatformBrowserTest::SetUp();
   }
 

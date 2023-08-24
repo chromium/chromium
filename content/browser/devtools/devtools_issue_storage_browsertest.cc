@@ -199,7 +199,8 @@ class DevToolsIssueStorageWithPrerenderBrowserTest
             base::Unretained(this))) {}
 
   void SetUp() override {
-    prerender_test_helper().SetUp(embedded_test_server());
+    prerender_test_helper().RegisterServerRequestMonitor(
+        embedded_test_server());
     DevToolsIssueStorageBrowserTest::SetUp();
   }
 

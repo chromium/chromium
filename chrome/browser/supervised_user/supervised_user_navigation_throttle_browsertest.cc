@@ -272,7 +272,7 @@ bool SupervisedUserNavigationThrottleTest::IsInterstitialBeingShownInMainFrame(
 }
 
 void SupervisedUserNavigationThrottleTest::SetUp() {
-  prerender_helper_.SetUp(embedded_test_server());
+  prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
   // Polymorphically initiate logged_in_user_mixin_.
   logged_in_user_mixin_ = std::make_unique<ash::LoggedInUserMixin>(
       &mixin_host_, GetLogInType(), embedded_test_server(), this);

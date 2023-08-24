@@ -251,7 +251,7 @@ class PermissionRequestManagerWithPrerenderingTest
             base::Unretained(this))) {}
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(embedded_test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
     PermissionRequestManagerBrowserTest::SetUp();
   }
 

@@ -36,7 +36,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   }
 
   void SetUp() override {
-    prerender_helper_.SetUp(&test_server_);
+    prerender_helper_.RegisterServerRequestMonitor(&test_server_);
     ASSERT_TRUE(test_server_.Start());
     ChromeRenderViewHostTestHarness::SetUp();
 

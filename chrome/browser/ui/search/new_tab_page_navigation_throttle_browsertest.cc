@@ -204,7 +204,7 @@ class NewTabPageNavigationThrottlePrerenderTest
       const NewTabPageNavigationThrottlePrerenderTest&) = delete;
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(https_test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(https_test_server());
     NewTabPageNavigationThrottleTest::SetUp();
   }
 

@@ -388,7 +388,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    prerender_test_helper_.SetUp(embedded_test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("a.test", "127.0.0.1");
     host_resolver()->AddRule("b.test", "127.0.0.1");

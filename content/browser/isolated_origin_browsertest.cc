@@ -430,7 +430,7 @@ class OriginIsolationPrerenderOptInHeaderTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // This must be called prior to starting the test server.
-    prerender_helper_.SetUp(https_server());
+    prerender_helper_.RegisterServerRequestMonitor(https_server());
     OriginIsolationOptInHeaderTest::SetUpCommandLine(command_line);
   }
 

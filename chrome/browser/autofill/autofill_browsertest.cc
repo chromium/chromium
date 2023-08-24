@@ -819,7 +819,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
   };
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 

@@ -632,7 +632,7 @@ class PrerenderingChangePasswordNavigationThrottleBrowserTest
   }
 
   void SetUp() override {
-    prerender_helper_.SetUp(test_server_.get());
+    prerender_helper_.RegisterServerRequestMonitor(test_server_.get());
     WellKnownChangePasswordNavigationThrottleBrowserTest::SetUp();
   }
 

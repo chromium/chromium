@@ -107,7 +107,8 @@ class PrerenderTestHelper {
   // impossible (eg, if the test helper is created later to avoid problematic
   // creation/destruction relative to other ScopedFeatureLists or if the fixture
   // creates test server after SetUp).
-  void SetUp(net::test_server::EmbeddedTestServer* http_server);
+  void RegisterServerRequestMonitor(
+      net::test_server::EmbeddedTestServer* http_server);
 
   // Attempts to lookup the host for the given |gurl|. Returns
   // RenderFrameHost::kNoFrameTreeNodeId upon failure.

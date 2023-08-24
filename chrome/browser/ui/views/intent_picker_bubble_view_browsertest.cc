@@ -392,7 +392,7 @@ class IntentPickerIconPrerenderingBrowserTest
       const IntentPickerIconPrerenderingBrowserTest&) = delete;
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     IntentPickerIconBrowserTest::SetUp();
   }
 

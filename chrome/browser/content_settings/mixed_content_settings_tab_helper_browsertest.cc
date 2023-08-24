@@ -124,7 +124,7 @@ class MixedContentSettingsTabHelperPrerenderBrowserTest
       const MixedContentSettingsTabHelperPrerenderBrowserTest&) = delete;
 
   void SetUp() override {
-    prerender_helper_.SetUp(test_server());
+    prerender_helper_.RegisterServerRequestMonitor(test_server());
     MixedContentSettingsTabHelperBrowserTest::SetUp();
   }
 

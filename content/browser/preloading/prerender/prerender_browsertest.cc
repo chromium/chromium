@@ -274,7 +274,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         base::BindRepeating(&net::test_server::HandlePrefixedRequest,
                             "/server-redirect-credentialed-prerender",
                             base::BindRepeating(HandleCredentialedRequest)));
-    prerender_helper_->SetUp(&ssl_server_);
+    prerender_helper_->RegisterServerRequestMonitor(&ssl_server_);
     ContentBrowserTest::SetUp();
   }
 

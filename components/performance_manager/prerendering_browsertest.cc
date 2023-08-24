@@ -42,7 +42,7 @@ class PerformanceManagerPrerenderingBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PerformanceManagerPrerenderingBrowserTest::web_contents,
             base::Unretained(this))) {
-    prerender_helper_.SetUp(&ssl_server_);
+    prerender_helper_.RegisterServerRequestMonitor(&ssl_server_);
   }
 
   void SetUpOnMainThread() override {

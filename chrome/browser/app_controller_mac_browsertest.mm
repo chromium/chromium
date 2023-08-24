@@ -1427,7 +1427,7 @@ class AppControllerHandoffPrerenderBrowserTest
     : public AppControllerHandoffBrowserTest {
  public:
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA));

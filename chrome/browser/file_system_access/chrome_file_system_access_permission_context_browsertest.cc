@@ -95,7 +95,7 @@ class ChromeFileSystemAccessPermissionContextPrerenderingBrowserTest
     ASSERT_TRUE(
         temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
 
-    prerender_test_helper_.SetUp(embedded_test_server());
+    prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 

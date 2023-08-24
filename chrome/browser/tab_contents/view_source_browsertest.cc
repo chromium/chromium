@@ -781,7 +781,8 @@ class ViewSourcePrerenderTest : public ViewSourceTest {
   void set_target(content::WebContents* target) { target_ = target; }
 
   void SetUp() override {
-    prerender_test_helper().SetUp(embedded_test_server());
+    prerender_test_helper().RegisterServerRequestMonitor(
+        embedded_test_server());
     ViewSourceTest::SetUp();
   }
 

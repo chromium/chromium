@@ -256,7 +256,7 @@ PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
 
-void PrerenderTestHelper::SetUp(
+void PrerenderTestHelper::RegisterServerRequestMonitor(
     net::test_server::EmbeddedTestServer* http_server) {
   EXPECT_FALSE(http_server->Started());
   http_server->RegisterRequestMonitor(base::BindRepeating(

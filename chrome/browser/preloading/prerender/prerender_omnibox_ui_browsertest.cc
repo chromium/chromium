@@ -117,7 +117,7 @@ class PrerenderOmniboxUIBrowserTest : public InProcessBrowserTest,
   }
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     InProcessBrowserTest::SetUp();
   }
 
@@ -714,7 +714,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
   }
 
   void SetUp() override {
-    prerender_helper().SetUp(&search_engine_server_);
+    prerender_helper().RegisterServerRequestMonitor(&search_engine_server_);
     InProcessBrowserTest::SetUp();
   }
 

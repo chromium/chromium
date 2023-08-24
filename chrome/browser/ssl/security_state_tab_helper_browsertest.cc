@@ -1564,7 +1564,7 @@ class SecurityStateTabHelperPrerenderTest : public SecurityStateTabHelperTest {
       const SecurityStateTabHelperPrerenderTest&) = delete;
 
   void SetUp() override {
-    prerender_helper_.SetUp(&https_server_);
+    prerender_helper_.RegisterServerRequestMonitor(&https_server_);
     SecurityStateTabHelperTest::SetUp();
   }
 

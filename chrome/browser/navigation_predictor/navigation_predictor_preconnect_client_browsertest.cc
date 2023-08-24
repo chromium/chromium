@@ -472,7 +472,7 @@ class NavigationPredictorPreconnectClientPrerenderBrowserTestNoDelay
       delete;
 
   void SetUp() override {
-    prerender_test_helper_.SetUp(https_server_.get());
+    prerender_test_helper_.RegisterServerRequestMonitor(https_server_.get());
     NavigationPredictorPreconnectClientBrowserTestPreconnectOnDidFinishNavigationNoDelay::
         SetUp();
   }

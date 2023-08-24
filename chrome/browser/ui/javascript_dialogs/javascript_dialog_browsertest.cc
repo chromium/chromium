@@ -444,7 +444,7 @@ class JavaScriptDialogForPrerenderTest : public JavaScriptDialogTest {
                                 base::Unretained(this))) {}
 
   void SetUp() override {
-    prerender_helper_.SetUp(embedded_test_server());
+    prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
     JavaScriptDialogTest::SetUp();
   }
 

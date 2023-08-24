@@ -502,7 +502,7 @@ class DomDistillerTabUtilsPrerenderTest
             base::Unretained(this))) {}
 
   void SetUpOnMainThread() override {
-    prerender_helper_.SetUp(https_server_.get());
+    prerender_helper_.RegisterServerRequestMonitor(https_server_.get());
     DomDistillerTabUtilsBrowserTest::SetUpOnMainThread();
   }
 

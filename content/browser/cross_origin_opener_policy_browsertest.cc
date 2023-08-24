@@ -321,7 +321,7 @@ class CrossOriginOpenerPolicyBrowserTest
         base::BindRepeating(&ServeDifferentCoopOnSecondNavigation,
                             base::OwnedRef(navigation_counter))));
 
-    prerender_helper().SetUp(&https_server_);
+    prerender_helper().RegisterServerRequestMonitor(&https_server_);
 
     ASSERT_TRUE(https_server()->Start());
   }

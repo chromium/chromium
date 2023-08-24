@@ -34,7 +34,7 @@ class SSLClientCertPendingRequestsPrerenderTest
       : prerender_helper_(base::BindRepeating(
             &SSLClientCertPendingRequestsPrerenderTest::web_contents,
             base::Unretained(this))) {
-    prerender_helper_.SetUp(&https_server_);
+    prerender_helper_.RegisterServerRequestMonitor(&https_server_);
   }
 
   void SetUpOnMainThread() override {
