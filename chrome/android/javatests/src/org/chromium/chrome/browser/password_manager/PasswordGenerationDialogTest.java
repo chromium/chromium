@@ -15,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,16 +25,19 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /** Test for the password manager dialog. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordGenerationDialogTest {
     private PasswordGenerationDialogCoordinator mDialog;
@@ -43,18 +47,22 @@ public class PasswordGenerationDialogTest {
     @Mock
     private Callback<Boolean> mOnPasswordAcceptedOrRejectedCallback;
 
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mDialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             PasswordGenerationDialogCoordinator dialog = new PasswordGenerationDialogCoordinator(
-                    mActivityTestRule.getActivity().getWindowAndroid());
+                    sActivityTestRule.getActivity().getWindowAndroid());
             dialog.showDialog(
                     mGeneratedPassword, mExplanationString, mOnPasswordAcceptedOrRejectedCallback);
             return dialog;
