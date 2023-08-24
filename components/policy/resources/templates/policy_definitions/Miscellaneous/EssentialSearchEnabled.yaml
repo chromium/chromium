@@ -1,0 +1,25 @@
+caption: Enable only essential cookies and data in search
+default: false
+desc: |-
+  This policy lets admins control how Google processes cookies and data sent to Search through <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+  When the policy is enabled, the user will be able to use the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> Launcher search box, and the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Browser address box in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, the cookies and data may be used only for essential purposes.
+  When the policy is unset or disabled, the cookies and data may be used for non-essential purposes.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+items:
+- caption: Use only essential cookies and data in search.
+  value: true
+- caption: Use essential and non-essential cookies in search.
+  value: false
+owners:
+- ayag@chromium.org
+- mohammedabdon@chromium.org
+- dp-chromeos-eng@google.com
+schema:
+  type: boolean
+tags: []
+type: main

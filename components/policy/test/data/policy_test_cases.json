@@ -23553,7 +23553,7 @@
       }
     ]
   },
-  "AnonymousSearchEnabled": {
+  "EssentialSearchEnabled": {
     "reason_for_missing_test": "TODO(b/275929724): Feature not yet implemented"
   },
   "ReportAppInventory": {

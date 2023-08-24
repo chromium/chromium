@@ -1098,7 +1098,7 @@ policies:
   1097: DeviceReportNetworkEvents
   1098: SafeBrowsingExtensionProtectionAllowed
   1099: ShowDisplaySizeScreenEnabled
-  1100: AnonymousSearchEnabled
+  1100: EssentialSearchEnabled
   1101: LegacyTechReportAllowlist
   1102: ReportAppInventory
   1103: ReportAppUsage
