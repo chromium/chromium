@@ -344,6 +344,25 @@ void WebUsbServiceImpl::SetClient(
         client) {
   DCHECK(client);
   clients_.Add(std::move(client));
+#if !BUILDFLAG(IS_ANDROID)
+  if (service_worker_version_ && service_worker_version_->context()) {
+    // WebUsbService is expected to have only one DeviceManagerClient when it is
+    // for a service worker. One renderer side of a service worker has its own
+    // associated WebUsbService.
+    CHECK_EQ(1u, clients_.size());
+    // When a service worker is woken up by a device connection event, the
+    // client might not have yet registered with the WebUsbService or the
+    // WebUsbService hasn't been created yet when service worker is in running
+    // state. This is because service worker is set to running state after
+    // script evaluation but inter-processes request triggered from the script
+    // evaluation that creates WebUsbService or registers a client might not be
+    // done in the browser process. To handle this situation, pending callbacks
+    // are stored and to be processed when registering the client.
+    service_worker_version_->context()
+        ->usb_delegate_observer()
+        ->ProcessPendingCallbacks(service_worker_version_.get());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void WebUsbServiceImpl::OnPermissionRevoked(const url::Origin& origin) {

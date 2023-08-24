@@ -46,6 +46,65 @@ using ::testing::Return;
 
 const char kTestUrl[] = "https://www.google.com";
 
+// This TestServiceWorkerObserver observes starting, started, and stopped of
+// the worker with `version_id`.
+class TestServiceWorkerObserver : public ServiceWorkerContextCoreObserver {
+ public:
+  TestServiceWorkerObserver(ServiceWorkerContextWrapper* context,
+                            int64_t version_id)
+      : version_id_(version_id) {
+    observation_.Observe(context);
+  }
+
+  TestServiceWorkerObserver(const TestServiceWorkerObserver&) = delete;
+  TestServiceWorkerObserver& operator=(const TestServiceWorkerObserver&) =
+      delete;
+
+  ~TestServiceWorkerObserver() override = default;
+
+  void WaitForWorkerStarting() { starting_run_loop.Run(); }
+
+  void WaitForWorkerStarted() { started_run_loop.Run(); }
+
+  void WaitForWorkerStopped() { stopped_run_loop.Run(); }
+
+  // ServiceWorkerContextCoreObserver:
+  void OnStarting(int64_t version_id) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    starting_run_loop.Quit();
+  }
+
+  void OnStarted(int64_t version_id,
+                 const GURL& scope,
+                 int process_id,
+                 const GURL& script_url,
+                 const blink::ServiceWorkerToken& token,
+                 const blink::StorageKey& key) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    started_run_loop.Quit();
+  }
+
+  void OnStopped(int64_t version_id) override {
+    if (version_id != version_id_) {
+      return;
+    }
+    stopped_run_loop.Quit();
+  }
+
+ private:
+  base::RunLoop starting_run_loop;
+  base::RunLoop started_run_loop;
+  base::RunLoop stopped_run_loop;
+  int64_t version_id_;
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      observation_{this};
+};
+
 class ServiceWorkerUsbDelegateObserverTest
     : public content::ServiceWorkerDeviceDelegateObserverTest {
  public:
@@ -58,6 +117,7 @@ class ServiceWorkerUsbDelegateObserverTest
 
   void SetUp() override {
     content::ServiceWorkerDeviceDelegateObserverTest::SetUp();
+    usb_delegate().SetAssertBrowserContext(true);
 
     // Connect with the FakeUsbDeviceManager.
     mojo::PendingRemote<device::mojom::UsbDeviceManager> pending_device_manager;
@@ -186,6 +246,15 @@ class ServiceWorkerUsbDelegateObserverTest
   ScopedContentBrowserClientSetting setting{&test_client_};
 };
 
+class ServiceWorkerUsbDelegateObserverNoEventHandlersTest
+    : public ServiceWorkerUsbDelegateObserverTest {
+ public:
+  void ServiceWorkerInstalling(
+      scoped_refptr<ServiceWorkerVersion> version) override {
+    // Do nothing to simulate no USB event handlers.
+  }
+};
+
 }  // namespace
 
 TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
@@ -203,14 +272,41 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
     auto* version = registrations[idx]->newest_installed_version();
     ASSERT_NE(version, nullptr);
     version_ids.push_back(version->version_id());
-    StartServiceWorker(version);
-    usb_services[idx] = CreateUsbService(version);
-    RegisterUsbManagerClient(usb_services[idx], device_manager_clients[idx]);
   }
 
-  mojo::Remote<device::mojom::UsbDevice> device;
-  device::MockUsbMojoDevice mock_device;
-  auto fake_device_info = CreateFakeDevice();
+  mojo::Remote<device::mojom::UsbDevice> device1;
+  mojo::Remote<device::mojom::UsbDevice> device2;
+  device::MockUsbMojoDevice mock_device1;
+  device::MockUsbMojoDevice mock_device2;
+  auto fake_device_info1 = CreateFakeDevice();
+  auto fake_device_info2 = CreateFakeDevice();
+
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::UsbDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+      auto& device_added_future = device_added_futures[idx];
+      EXPECT_CALL(device_manager_clients[idx], OnDeviceAdded)
+          .WillOnce(
+              [&](auto d) { device_added_future.SetValue(std::move(d)); });
+    }
+    auto device_info1 = ConnectDevice(fake_device_info1, &mock_device1);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      usb_services[idx] = CreateUsbService(version);
+      RegisterUsbManagerClient(usb_services[idx], device_manager_clients[idx]);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      EXPECT_EQ(device_added_futures[idx].Get()->guid, device_info1->guid);
+    }
+  }
 
   // DeviceAdded event when the service worker is running.
   {
@@ -225,9 +321,9 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceAdded) {
           .WillOnce(
               [&](auto d) { device_added_future.SetValue(std::move(d)); });
     }
-    auto device_info = ConnectDevice(fake_device_info, &mock_device);
+    auto device_info2 = ConnectDevice(fake_device_info2, &mock_device2);
     for (size_t idx = 0; idx < num_workers; ++idx) {
-      EXPECT_EQ(device_added_futures[idx].Get()->guid, device_info->guid);
+      EXPECT_EQ(device_added_futures[idx].Get()->guid, device_info2->guid);
     }
   }
 }
@@ -247,13 +343,41 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest, OnDeviceRemoved) {
     auto* version = registrations[idx]->newest_installed_version();
     ASSERT_NE(version, nullptr);
     version_ids.push_back(version->version_id());
-    StartServiceWorker(version);
-    usb_services[idx] = CreateUsbService(version);
-    RegisterUsbManagerClient(usb_services[idx], device_manager_clients[idx]);
   }
 
   auto fake_device_info = CreateFakeDevice();
   usb_device_manager_.AddDevice(fake_device_info);
+
+  // DeviceRemoved event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::UsbDeviceInfoPtr>>
+        device_removed_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+      auto& device_removed_future = device_removed_futures[idx];
+      EXPECT_CALL(device_manager_clients[idx], OnDeviceRemoved)
+          .WillOnce(
+              [&](auto d) { device_removed_future.SetValue(std::move(d)); });
+    }
+    DisconnectDevice(fake_device_info);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      usb_services[idx] = CreateUsbService(version);
+      RegisterUsbManagerClient(usb_services[idx], device_manager_clients[idx]);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      EXPECT_EQ(device_removed_futures[idx].Get()->guid,
+                fake_device_info->guid());
+    }
+  }
+
+  usb_device_manager_.AddDevice(fake_device_info);
+
   // DeviceRemoved event when the service worker is running.
   {
     std::vector<TestFuture<device::mojom::UsbDeviceInfoPtr>>
@@ -438,6 +562,258 @@ TEST_F(ServiceWorkerUsbDelegateObserverTest,
   usb_service = CreateUsbService(version);
   EXPECT_TRUE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
       registration->id()));
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest,
+       RestartBrowserWithInstalledServiceWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto registration_id = registration->id();
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  auto version_id = version->version_id();
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+
+  // Simulate a browser restart scenario where the registration_id_map of
+  // ServiceWorkerUsbDelegateObserver is empty, and the
+  // ServiceWorkerRegistration, ServiceWorkerVersion are not alive.
+  registration.reset();
+  EXPECT_FALSE(context()->GetLiveRegistration(registration_id));
+  EXPECT_FALSE(context()->GetLiveVersion(version_id));
+  context()->SetServiceWorkerUsbDelegateObserverForTesting(
+      std::make_unique<ServiceWorkerUsbDelegateObserver>(context()));
+  EXPECT_TRUE(
+      context()->usb_delegate_observer()->registration_id_map().empty());
+
+  // Create ServiceWorkerRegistration and ServiceWorkerVersion by finding the
+  // registration.
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin));
+  auto [status, found_registration] = FindRegistration(registration_id, key);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+  EXPECT_TRUE(found_registration);
+  version = found_registration->GetNewestVersion();
+  EXPECT_NE(version, nullptr);
+  EXPECT_TRUE(version->has_usb_event_handlers());
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+  const auto it =
+      context()->usb_delegate_observer()->registration_id_map().find(
+          registration_id);
+  EXPECT_NE(it,
+            context()->usb_delegate_observer()->registration_id_map().end());
+  EXPECT_EQ(it->second.key, key);
+  EXPECT_TRUE(it->second.has_event_handlers);
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest, NoPermissionNotStartWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+
+  device::MockUsbMojoDevice mock_device;
+  auto fake_device_info = CreateFakeDevice();
+  EXPECT_CALL(usb_delegate(), HasDevicePermission).WillOnce(Return(false));
+  auto device_info = ConnectDevice(fake_device_info, &mock_device);
+  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest, ProcessPendingCallback) {
+  size_t num_workers = 10;
+  std::vector<const GURL> origins;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
+  std::vector<int64_t> version_ids;
+  std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
+      num_workers);
+  std::vector<MockDeviceManagerClient> device_manager_clients(num_workers);
+  for (size_t idx = 0; idx < num_workers; ++idx) {
+    origins.push_back(
+        GURL(base::StringPrintf("https://www.example%zu.com", idx)));
+    registrations.push_back(InstallServiceWorker(origins[idx]));
+    auto* version = registrations[idx]->newest_installed_version();
+    ASSERT_NE(version, nullptr);
+    version_ids.push_back(version->version_id());
+  }
+
+  device::MockUsbMojoDevice mock_device1;
+  auto fake_device_info1 = CreateFakeDevice();
+  auto fake_device_info2 = CreateFakeDevice();
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::UsbDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+    }
+    auto device_info1 = ConnectDevice(fake_device_info1, &mock_device1);
+    const auto& pending_callbacks =
+        context()->usb_delegate_observer()->GetPendingCallbacksForTesting();
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      // Not to register UsbManagerClient until later to have callback stored
+      // and be consumed later.
+      usb_services[idx] = CreateUsbService(version);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      const auto it = pending_callbacks.find(version_ids[idx]);
+      EXPECT_NE(it, pending_callbacks.end());
+      EXPECT_EQ(it->second.size(), 1u);
+    }
+
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      auto& device_added_future = device_added_futures[idx];
+      EXPECT_CALL(device_manager_clients[idx], OnDeviceAdded)
+          .WillOnce(
+              [&](auto d) { device_added_future.SetValue(std::move(d)); });
+      RegisterUsbManagerClient(usb_services[idx], device_manager_clients[idx]);
+      EXPECT_EQ(device_added_futures[idx].Get()->guid,
+                fake_device_info1->guid());
+      EXPECT_FALSE(pending_callbacks.contains(version_ids[idx]));
+    }
+  }
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverTest,
+       ClearPendingCallbackWhenWorkerStopped) {
+  size_t num_workers = 10;
+  std::vector<const GURL> origins;
+  std::vector<scoped_refptr<ServiceWorkerRegistration>> registrations;
+  std::vector<int64_t> version_ids;
+  for (size_t idx = 0; idx < num_workers; ++idx) {
+    origins.push_back(
+        GURL(base::StringPrintf("https://www.example%zu.com", idx)));
+    registrations.push_back(InstallServiceWorker(origins[idx]));
+    auto* version = registrations[idx]->newest_installed_version();
+    ASSERT_NE(version, nullptr);
+    version_ids.push_back(version->version_id());
+  }
+
+  device::MockUsbMojoDevice mock_device1;
+  auto fake_device_info1 = CreateFakeDevice();
+  auto fake_device_info2 = CreateFakeDevice();
+
+  std::vector<mojo::Remote<blink::mojom::WebUsbService>> usb_services(
+      num_workers);
+  std::vector<MockDeviceManagerClient> device_manager_clients(num_workers);
+  // DeviceAdded event when the service worker is not running.
+  {
+    std::vector<std::unique_ptr<TestServiceWorkerObserver>>
+        service_worker_observers;
+    std::vector<TestFuture<device::mojom::UsbDeviceInfoPtr>>
+        device_added_futures(num_workers);
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers.push_back(
+          std::make_unique<TestServiceWorkerObserver>(context()->wrapper(),
+                                                      version_ids[idx]));
+    }
+    auto device_info1 = ConnectDevice(fake_device_info1, &mock_device1);
+    const auto& pending_callbacks =
+        context()->usb_delegate_observer()->GetPendingCallbacksForTesting();
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      service_worker_observers[idx]->WaitForWorkerStarting();
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      usb_services[idx] = CreateUsbService(version);
+      service_worker_observers[idx]->WaitForWorkerStarted();
+      const auto it = pending_callbacks.find(version_ids[idx]);
+      EXPECT_NE(it, pending_callbacks.end());
+      EXPECT_EQ(it->second.size(), 1u);
+    }
+
+    for (size_t idx = 0; idx < num_workers; ++idx) {
+      auto* version = context()->GetLiveVersion(version_ids[idx]);
+      ASSERT_NE(version, nullptr);
+      ASSERT_EQ(version->version_id(), version_ids[idx]);
+      StopServiceWorker(version);
+      service_worker_observers[idx]->WaitForWorkerStopped();
+      // Returning from `WaitForWorkerStopped()` does not guarantee that all of
+      // the `ServiceWorkerContextCoreObserver` are called. It might be the case
+      // that `TestServiceWorkerObserver::OnStopped` is called but
+      // `ServiceWorkerDeviceDelegateObserver::OnStopped` is not called yet. To
+      // handle this case, start the worker and then check the state when the
+      // work is started because that is the point at which all of the
+      // `ServiceWorkerContextCoreObservers::OnStopped` have been called.
+      StartServiceWorker(version);
+      EXPECT_FALSE(pending_callbacks.contains(version_ids[idx]));
+    }
+  }
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
+       DeviceAddedNotStartWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_TRUE(version);
+
+  device::MockUsbMojoDevice mock_device;
+  auto fake_device_info = CreateFakeDevice();
+  auto device_info = ConnectDevice(fake_device_info, &mock_device);
+  EXPECT_EQ(version->running_status(), EmbeddedWorkerStatus::STOPPED);
+}
+
+TEST_F(ServiceWorkerUsbDelegateObserverNoEventHandlersTest,
+       RestartBrowserWithInstalledServiceWorker) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto registration_id = registration->id();
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  auto version_id = version->version_id();
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+
+  // Simulate a browser restart scenario where the registration_id_map of
+  // ServiceWorkerUsbDelegateObserver is empty, and the
+  // ServiceWorkerRegistration, ServiceWorkerVersion are not alive.
+  registration.reset();
+  EXPECT_FALSE(context()->GetLiveRegistration(registration_id));
+  EXPECT_FALSE(context()->GetLiveVersion(version_id));
+  context()->SetServiceWorkerUsbDelegateObserverForTesting(
+      std::make_unique<ServiceWorkerUsbDelegateObserver>(context()));
+  EXPECT_TRUE(
+      context()->usb_delegate_observer()->registration_id_map().empty());
+
+  // Create ServiceWorkerRegistration and ServiceWorkerVersion by finding the
+  // registration.
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(origin));
+  auto [status, found_registration] = FindRegistration(registration_id, key);
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
+  EXPECT_TRUE(found_registration);
+  version = found_registration->GetNewestVersion();
+  EXPECT_NE(version, nullptr);
+  EXPECT_FALSE(version->has_usb_event_handlers());
+  EXPECT_TRUE(context()->GetLiveRegistration(registration_id));
+  EXPECT_TRUE(
+      context()->usb_delegate_observer()->registration_id_map().empty());
+
+  StartServiceWorker(version);
+  EXPECT_FALSE(version->has_usb_event_handlers());
+  EXPECT_TRUE(
+      context()->usb_delegate_observer()->registration_id_map().empty());
+}
+
+// Shutdown the service worker context and make sure that
+// ServiceWorkerUsbDelegateObserver removes itself from the usb delegate
+// properly.
+TEST_F(ServiceWorkerUsbDelegateObserverTest, ShutdownServiceWorkerContext) {
+  const GURL origin(kTestUrl);
+  auto registration = InstallServiceWorker(origin);
+  auto* version = registration->newest_installed_version();
+  ASSERT_NE(version, nullptr);
+  StartServiceWorker(version);
+  CreateUsbService(version);
+  EXPECT_TRUE(context()->usb_delegate_observer()->GetUsbServiceForTesting(
+      registration->id()));
+
+  EXPECT_FALSE(usb_delegate().observer_list().empty());
+  helper()->ShutdownContext();
+  EXPECT_TRUE(usb_delegate().observer_list().empty());
 }
 
 }  // namespace content

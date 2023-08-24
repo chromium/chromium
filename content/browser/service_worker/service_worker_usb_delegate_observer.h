@@ -67,6 +67,12 @@ class CONTENT_EXPORT ServiceWorkerUsbDelegateObserver
       const device::mojom::UsbDeviceInfo& device_info,
       UsbServiceDeviceEventCallback callback);
 
+  // Run `callback` with `device_info` after the worker of `version` is started.
+  void WorkerStarted(device::mojom::UsbDeviceInfoPtr device_info,
+                     UsbServiceDeviceEventCallback callback,
+                     scoped_refptr<ServiceWorkerVersion> version,
+                     blink::ServiceWorkerStatusCode service_worker_status);
+
   // Get UsbService for the `registration_id`. It can be null if no live
   // UsbService for the `registration_id`.
   WebUsbServiceImpl* GetUsbService(int64_t registration_id);
@@ -76,6 +82,9 @@ class CONTENT_EXPORT ServiceWorkerUsbDelegateObserver
 
   base::ScopedObservation<UsbDelegate, ServiceWorkerUsbDelegateObserver>
       usb_delegate_observation{this};
+
+  base::WeakPtrFactory<ServiceWorkerUsbDelegateObserver> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content

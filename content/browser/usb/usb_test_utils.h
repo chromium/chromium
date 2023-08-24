@@ -133,8 +133,11 @@ class MockUsbDelegate : public UsbDelegate {
 
   const base::ObserverList<Observer>& observer_list() { return observer_list_; }
 
+  void SetAssertBrowserContext(bool assert_browser_context);
+
  private:
   base::ObserverList<UsbDelegate::Observer> observer_list_;
+  bool assert_browser_context_ = false;
 };
 
 template <typename SuperClass>
