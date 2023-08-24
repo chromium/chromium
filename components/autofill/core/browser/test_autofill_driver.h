@@ -52,10 +52,6 @@ class TestAutofillDriverTemplate : public T {
   bool IsPrerendering() const override { return false; }
   bool HasSharedAutofillPermission() const override { return false; }
   bool CanShowAutofillUi() const override { return true; }
-  ui::AXTreeID GetAxTreeId() const override {
-    NOTIMPLEMENTED() << "See https://crbug.com/985933";
-    return ui::AXTreeIDUnknown();
-  }
   bool RendererIsAvailable() override { return true; }
   void HandleParsedForms(const std::vector<FormData>& forms) override {}
   void SendAutofillTypePredictionsToRenderer(

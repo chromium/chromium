@@ -252,10 +252,6 @@ bool ContentPasswordManagerDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
-::ui::AXTreeID ContentPasswordManagerDriver::GetAxTreeId() const {
-  return render_frame_host_->GetAXTreeID();
-}
-
 const GURL& ContentPasswordManagerDriver::GetLastCommittedURL() const {
   return render_frame_host_->GetLastCommittedURL();
 }

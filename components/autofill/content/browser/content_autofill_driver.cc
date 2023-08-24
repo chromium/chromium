@@ -177,10 +177,6 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
-ui::AXTreeID ContentAutofillDriver::GetAxTreeId() const {
-  return render_frame_host_->GetAXTreeID();
-}
-
 bool ContentAutofillDriver::RendererIsAvailable() {
   return render_frame_host_->GetRenderViewHost() != nullptr;
 }

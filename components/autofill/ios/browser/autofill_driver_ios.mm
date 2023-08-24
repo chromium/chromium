@@ -79,11 +79,6 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
   return true;
 }
 
-ui::AXTreeID AutofillDriverIOS::GetAxTreeId() const {
-  NOTIMPLEMENTED() << "See https://crbug.com/985933";
-  return ui::AXTreeIDUnknown();
-}
-
 bool AutofillDriverIOS::RendererIsAvailable() {
   return true;
 }

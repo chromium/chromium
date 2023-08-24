@@ -57,7 +57,6 @@ class IOSPasswordManagerDriver
   password_manager::PasswordManagerInterface* GetPasswordManager() override;
   password_manager::PasswordAutofillManager* GetPasswordAutofillManager()
       override;
-  ::ui::AXTreeID GetAxTreeId() const override;
   int GetFrameId() const override;
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;

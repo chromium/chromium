@@ -112,9 +112,6 @@ class AutofillDriver {
       base::OnceCallback<void(bool success)>
           form_extraction_finished_callback) = 0;
 
-  // Returns the ax tree id associated with this driver.
-  virtual ui::AXTreeID GetAxTreeId() const = 0;
-
   // Returns true iff the renderer is available for communication.
   virtual bool RendererIsAvailable() = 0;
 

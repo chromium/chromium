@@ -122,10 +122,6 @@ bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
   return true;
 }
 
-::ui::AXTreeID IOSPasswordManagerDriver::GetAxTreeId() const {
-  return {};
-}
-
 int IOSPasswordManagerDriver::GetFrameId() const {
   return cached_frame_id_;
 }

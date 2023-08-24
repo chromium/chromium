@@ -22,7 +22,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -30,7 +29,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -615,25 +613,6 @@ bool AutofillPopupControllerImpl::IsMouseLocked() const {
          (rwhv = rfh->GetView()) && rwhv->IsMouseLocked();
 }
 
-absl::variant<ContentAutofillDriver*,
-              password_manager::ContentPasswordManagerDriver*>
-AutofillPopupControllerImpl::GetDriver() {
-  using PasswordManagerDriver = password_manager::PasswordManagerDriver;
-  using ContentPasswordManagerDriver =
-      password_manager::ContentPasswordManagerDriver;
-  absl::variant<AutofillDriver*, PasswordManagerDriver*> driver =
-      delegate_->GetDriver();
-  DCHECK(absl::holds_alternative<AutofillDriver*>(driver) ||
-         absl::holds_alternative<PasswordManagerDriver*>(driver));
-  if (absl::holds_alternative<AutofillDriver*>(driver)) {
-    return static_cast<ContentAutofillDriver*>(
-        absl::get<AutofillDriver*>(driver));
-  } else {
-    return static_cast<ContentPasswordManagerDriver*>(
-        absl::get<PasswordManagerDriver*>(driver));
-  }
-}
-
 void AutofillPopupControllerImpl::SetViewForTesting(
     base::WeakPtr<AutofillPopupView> view) {
   view_ = std::move(view);
@@ -645,8 +624,10 @@ void AutofillPopupControllerImpl::FireControlsChangedEvent(bool is_show) {
     return;
 
   // Retrieve the ax tree id associated with the current web contents.
-  ui::AXTreeID tree_id = absl::visit(
-      [](auto* driver) { return driver->GetAxTreeId(); }, GetDriver());
+  ui::AXTreeID tree_id;
+  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
+    tree_id = rfh->GetAXTreeID();
+  }
 
   // Retrieve the ax node id associated with the current web contents' element
   // that has a controller relation to the current autofill popup.

@@ -140,9 +140,6 @@ class PasswordManagerDriver
   // frame.
   virtual bool CanShowAutofillUi() const = 0;
 
-  // Returns the ax tree id associated with this driver.
-  virtual ::ui::AXTreeID GetAxTreeId() const = 0;
-
   // Returns the frame ID of the frame associated with this driver.
   virtual int GetFrameId() const = 0;
 
