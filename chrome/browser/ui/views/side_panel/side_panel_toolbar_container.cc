@@ -126,6 +126,8 @@ SidePanelToolbarContainer::SidePanelToolbarContainer(BrowserView* browser_view)
   // button view, too.
   SetNotifyEnterExitOnChild(true);
 
+  SetProperty(views::kElementIdentifierKey,
+              kToolbarSidePanelContainerElementId);
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kPreferredSnapToZero,

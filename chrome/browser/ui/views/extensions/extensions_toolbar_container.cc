@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -124,6 +125,9 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
       display_mode_(display_mode),
       action_hover_card_controller_(
           std::make_unique<ToolbarActionHoverCardController>(this)) {
+  SetProperty(views::kElementIdentifierKey,
+              kToolbarExtensionsContainerElementId);
+
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
