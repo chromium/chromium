@@ -107,8 +107,9 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
       continue;
     }
 
-    if (MediaCodecUtil::IsKnownUnaccelerated(supported_codec.codec,
-                                             MediaCodecDirection::ENCODER)) {
+    bool is_software_codec = MediaCodecUtil::IsKnownUnaccelerated(
+        supported_codec.codec, MediaCodecDirection::ENCODER);
+    if (supported_codec.codec != VideoCodec::kH264 && is_software_codec) {
       continue;
     }
 
@@ -120,6 +121,7 @@ AndroidVideoEncodeAccelerator::GetSupportedProfiles() {
     profile.max_framerate_numerator = kMaxFramerateNumerator;
     profile.max_framerate_denominator = kMaxFramerateDenominator;
     profile.rate_control_modes = media::VideoEncodeAccelerator::kConstantMode;
+    profile.is_software_codec = is_software_codec;
     profiles.push_back(profile);
   }
   return profiles;
@@ -167,10 +169,28 @@ bool AndroidVideoEncodeAccelerator::Initialize(
   frame_size_ = config.input_visible_size;
   last_set_bitrate_ = config.bitrate.target_bps();
 
-  // Only consider using MediaCodec if it's likely backed by hardware.
-  if (MediaCodecUtil::IsKnownUnaccelerated(codec,
-                                           MediaCodecDirection::ENCODER)) {
-    MEDIA_LOG(ERROR, log_) << "No HW support";
+  // Only consider using MediaCodec if it's likely backed by hardware or we
+  // don't have a software encoder bundled.
+  auto required_encoder_type = config.required_encoder_type;
+  if (codec != VideoCodec::kH264) {
+    required_encoder_type = Config::EncoderType::kHardware;
+  }
+
+  const bool is_software_codec =
+      MediaCodecUtil::IsKnownUnaccelerated(codec, MediaCodecDirection::ENCODER);
+  if (required_encoder_type == Config::EncoderType::kHardware &&
+      is_software_codec) {
+    MEDIA_LOG(ERROR, log_) << "No hardware encoding support for "
+                           << GetCodecName(codec);
+    return false;
+  }
+
+  // We need to add the ability to select by name if we want to support software
+  // encoding like the NDK encoder does.
+  if (required_encoder_type == Config::EncoderType::kSoftware &&
+      !is_software_codec) {
+    MEDIA_LOG(ERROR, log_) << "No software encoding support for "
+                           << GetCodecName(codec);
     return false;
   }
 
