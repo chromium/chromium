@@ -1543,6 +1543,13 @@ void DesksController::OnWindowActivating(ActivationReason reason,
   if (AreDesksBeingModified())
     return;
 
+  // When there is no `current_account_id_`, it means no user has finished sign
+  // in (either no user, or a user is signing in). Do not change desks in this
+  // case.
+  if (!current_account_id_.is_valid()) {
+    return;
+  }
+
   // Browser session restore opens all restored windows, so it activates
   // every single window and activates the parent desk. Therefore, this check
   // prevents repetitive desk activation. Moreover, when Bento desks restore is
