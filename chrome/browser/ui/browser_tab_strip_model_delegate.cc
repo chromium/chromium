@@ -128,9 +128,8 @@ void BrowserTabStripModelDelegate::DuplicateContentsAt(int index) {
 void BrowserTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
     int browser_index) {
-  std::vector<Browser*> existing_browsers =
-      browser_->tab_menu_model_delegate()->GetOtherBrowserWindows(
-          web_app::AppBrowserController::IsWebApp(browser_));
+  auto existing_browsers =
+      browser_->tab_menu_model_delegate()->GetOtherTabbedBrowserWindows();
   size_t existing_browser_count = existing_browsers.size();
   if (static_cast<size_t>(browser_index) < existing_browser_count &&
       existing_browsers[browser_index]) {

@@ -9,7 +9,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/accelerators/accelerator.h"
 
@@ -54,8 +53,7 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
                                TabStripModel::CommandMoveTabsToNewWindow) {
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW,
         BuildMenuItemInfoVectorForBrowsers(
-            tab_menu_model_delegate->GetOtherBrowserWindows(
-                model->delegate()->IsForWebApp())));
+            tab_menu_model_delegate->GetOtherTabbedBrowserWindows()));
 }
 
 ExistingWindowSubMenuModel::~ExistingWindowSubMenuModel() = default;
@@ -89,12 +87,6 @@ bool ExistingWindowSubMenuModel::IsCommandIdEnabled(int command_id) const {
 // static:
 bool ExistingWindowSubMenuModel::ShouldShowSubmenu(Profile* profile) {
   return chrome::GetTabbedBrowserCount(profile) > 1;
-}
-
-bool ExistingWindowSubMenuModel::ShouldShowSubmenuForApp(
-    TabMenuModelDelegate* tab_menu_model_delegate) {
-  return tab_menu_model_delegate->GetOtherBrowserWindows(/*is_app=*/true)
-             .size() >= 1;
 }
 
 // static:
