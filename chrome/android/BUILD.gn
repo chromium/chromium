@@ -3198,6 +3198,7 @@ if (current_toolchain == default_toolchain) {
 
       write_ssargs_trichrome("ssargs_trichrome") {
         ssargs_path = "$root_build_dir/apks/${_ssargs_filename}"
+        abi_filter = android_app_abi
         trichrome_library_basename = _trichrome_library_basename
         trichrome_chrome_basename = _trichrome_chrome_basename
         trichrome_webview_basename = _trichrome_webview_basename
