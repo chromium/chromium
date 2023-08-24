@@ -340,6 +340,12 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
 
   ns_view_ = remote_ns_view_.get();
 
+  // New remote NSViews start out as visible, make sure we hide it if it is
+  // supposed to be hidden already.
+  if (!is_visible_) {
+    remote_ns_view_->SetVisible(false);
+  }
+
   // End local display::Screen observation via `in_process_ns_view_bridge_`;
   // the remote NSWindow's display::Screen information will be sent by Mojo.
   // TODO(crbug.com/1204273): Maybe just destroy `in_process_ns_view_bridge_`?
