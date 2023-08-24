@@ -5808,6 +5808,10 @@ const char kFastPairLowPowerDescription[] =
     "continously. This results in lower power usage, but also higher latency "
     "for device discovery.";
 
+const char kFastPairPwaCompanionName[] = "Enable Fast Pair Web Companion";
+const char kFastPairPwaCompanionDescription[] =
+    "Enables Fast Pair Web Companion link after device pairing.";
+
 const char kFastPairSoftwareScanningName[] =
     "Enable Fast Pair Software Scanning";
 const char kFastPairSoftwareScanningDescription[] =

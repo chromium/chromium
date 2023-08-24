@@ -4192,6 +4192,14 @@
     "expiry_milestone": 116
   },
   {
+    "name": "fast-pair-pwa-companion",
+    "owners": [
+      "//ash/quick_pair/OWNERS",
+      "gschen"
+    ],
+    "expiry_milestone": 125
+  },
+  {
     "name": "fast-pair-saved-devices",
     "owners": [
       "//ash/quick_pair/OWNERS",

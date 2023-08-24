@@ -7573,6 +7573,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairLowPowerDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairLowPower)},
 
+    {"fast-pair-pwa-companion", flag_descriptions::kFastPairPwaCompanionName,
+     flag_descriptions::kFastPairPwaCompanionDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairPwaCompanion)},
+
     {"fast-pair-saved-devices", flag_descriptions::kFastPairSavedDevicesName,
      flag_descriptions::kFastPairSavedDevicesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairSavedDevices)},

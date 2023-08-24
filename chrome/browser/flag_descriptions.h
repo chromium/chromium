@@ -3349,6 +3349,9 @@ extern const char kFastPairHIDDescription[];
 extern const char kFastPairLowPowerName[];
 extern const char kFastPairLowPowerDescription[];
 
+extern const char kFastPairPwaCompanionName[];
+extern const char kFastPairPwaCompanionDescription[];
+
 extern const char kFastPairSoftwareScanningName[];
 extern const char kFastPairSoftwareScanningDescription[];
 

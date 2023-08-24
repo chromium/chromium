@@ -294,6 +294,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairSavedDevicesNicknames);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice);
+COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kFastPairPwaCompanion);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<double>
     kFastPairDeviceLostNotificationTimeoutMinutes;
@@ -898,6 +899,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesNicknamesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairLowPowerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairPwaCompanionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSoftwareScanningEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairSavedDevicesStrictOptInEnabled();

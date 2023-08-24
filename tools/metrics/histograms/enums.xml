@@ -61287,6 +61287,7 @@ from previous Chrome versions.
   <int value="-1581969217" label="enable-switch-access-point-scanning"/>
   <int value="-1581724231" label="ModalPermissionPrompts:enabled"/>
   <int value="-1580376019" label="ShowAllDialogsWithViewsToolkit:enabled"/>
+  <int value="-1579273370" label="FastPairPwaCompanion:enabled"/>
   <int value="-1578781240" label="QuickAnswersV2:enabled"/>
   <int value="-1578677451" label="EnableAppGridGhost:disabled"/>
   <int value="-1578620046" label="ContextualTriggersSelectionHandles:enabled"/>
@@ -67045,6 +67046,7 @@ from previous Chrome versions.
   <int value="1304523073" label="RetryGetVideoCaptureDeviceInfos:enabled"/>
   <int value="1304636193" label="ArcEnableUnifiedAudioFocus:enabled"/>
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
+  <int value="1306412559" label="FastPairPwaCompanion:disabled"/>
   <int value="1306473273" label="BluetoothFlossCoredump:enabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1307402891" label="ReadAloud:enabled"/>

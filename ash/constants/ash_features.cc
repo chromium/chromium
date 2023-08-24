@@ -1007,11 +1007,17 @@ BASE_FEATURE(kFastPairSavedDevicesNicknames,
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
     &kFastPair, "fast-pair-device-lost-notification-timeout-minutes", 5};
 
-// Enabled Fast Pair sub feature to prevent notifications for recently lost
+// Enables Fast Pair sub feature to prevent notifications for recently lost
 // devices for |kFastPairDeviceLostNotificationTimeout|.
 BASE_FEATURE(kFastPairPreventNotificationsForRecentlyLostDevice,
              "FastPairPreventNotificationsForRecentlyLostDevice",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables link to Progressive Web Application companion app to configure
+// device after Fast Pair.
+BASE_FEATURE(kFastPairPwaCompanion,
+             "FastPairPwaCompanion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Sets Fast Pair scanning to low power mode.
 BASE_FEATURE(kFastPairLowPower,
@@ -3180,6 +3186,10 @@ bool IsFastPairSavedDevicesNicknamesEnabled() {
 
 bool IsFastPairLowPowerEnabled() {
   return base::FeatureList::IsEnabled(kFastPairLowPower);
+}
+
+bool IsFastPairPwaCompanionEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairPwaCompanion);
 }
 
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
