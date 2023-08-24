@@ -15,6 +15,7 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
@@ -62,6 +63,10 @@ constexpr size_t kMaxAcceleratorsAllowed = 5;
 
 constexpr char kShortcutCustomizationHistogramName[] =
     "Ash.ShortcutCustomization.CustomizationAction";
+constexpr char kAddAcceleratorHistogramName[] =
+    "Ash.ShortcutCustomization.AddAccelerator.";
+constexpr char kRemoveDefaultAcceleratorHistogramName[] =
+    "Ash.ShortcutCustomization.RemoveDefaultAccelerator.";
 
 // The following map are accelerators that will not appear in the app and cannot
 // be used as a custom accelerator. For example, if you have an accelerator
@@ -550,6 +555,16 @@ void LogAddAccelerator(mojom::AcceleratorSource source,
           << " with error: " << error;
 }
 
+void RecordEncodedAcceleratorHistogram(const std::string& histogram_name,
+                                       uint32_t action_id,
+                                       const ui::Accelerator& accelerator) {
+  base::UmaHistogramSparse(
+      base::StrCat(
+          {histogram_name, GetAcceleratorActionName(
+                               static_cast<AcceleratorAction>(action_id))}),
+      GetEncodedShortcut(accelerator));
+}
+
 }  // namespace
 
 namespace shortcut_ui {
@@ -889,6 +904,8 @@ void AcceleratorConfigurationProvider::AddAccelerator(
   LogAddAccelerator(source, accelerator, result_data->result);
   base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
                                 ShortcutCustomizationAction::kAddAccelerator);
+  RecordEncodedAcceleratorHistogram(kAddAcceleratorHistogramName, action_id,
+                                    accelerator);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -920,6 +937,15 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   base::UmaHistogramEnumeration(
       kShortcutCustomizationHistogramName,
       ShortcutCustomizationAction::kRemoveAccelerator);
+
+  // Only record this metric if the removed accelerator is a default accelerator
+  // for `action_id`.
+  absl::optional<AcceleratorAction> default_id =
+      ash_accelerator_configuration_->GetIdForDefaultAccelerator(accelerator);
+  if (default_id == action_id) {
+    RecordEncodedAcceleratorHistogram(kRemoveDefaultAcceleratorHistogramName,
+                                      action_id, accelerator);
+  }
   std::move(callback).Run(std::move(result_data));
 }
 

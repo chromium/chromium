@@ -2854,6 +2854,88 @@ TEST_F(AcceleratorConfigurationProviderTest, GetDefaultAcceleratorsForId) {
           }));
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, AddRemoveAcceleratorMetrics) {
+  FakeAcceleratorsUpdatedMojoObserver observer;
+  SetUpObserver(&observer);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationAction",
+      ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
+
+  // Initialize default accelerators.
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+
+  // Override non-configurable accelerators.
+  const ui::Accelerator browser_accelerator(ui::VKEY_H, ui::EF_CONTROL_DOWN);
+  NonConfigurableActionsMap non_config_map = {
+      {NonConfigurableActions::kBrowserShowHistory,
+       NonConfigurableAcceleratorDetails({browser_accelerator})}};
+
+  base::RunLoop().RunUntilIdle();
+
+  const ui::Accelerator good_accelerator(ui::VKEY_M, ui::EF_COMMAND_DOWN);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(good_accelerator), 0);
+
+  AcceleratorResultDataPtr result;
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh,
+                          AcceleratorAction::kToggleMirrorMode,
+                          good_accelerator, &result);
+
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kSuccess, result->result);
+
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+      {/*trigger_on_press=*/true, ui::VKEY_M, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kToggleMirrorMode},
+  };
+  AcceleratorConfigurationProvider::AcceleratorConfigurationMap actual_config =
+      observer.config();
+  ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh,
+                               updated_test_data, actual_config);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(good_accelerator), 1);
+
+  // Remove a default accelerator and expect a metric to be recorded.
+  const ui::Accelerator removed_accelerator(ui::VKEY_SPACE,
+                                            ui::EF_CONTROL_DOWN);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(removed_accelerator), 0);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(mojom::AcceleratorSource::kAsh,
+                             AcceleratorAction::kToggleMirrorMode,
+                             removed_accelerator, &result);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(removed_accelerator), 1);
+
+  // Now remove the recently added Meta + M custom accelerator, expect no
+  // metrics to be recorded.
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .RemoveAccelerator(mojom::AcceleratorSource::kAsh,
+                             AcceleratorAction::kToggleMirrorMode,
+                             good_accelerator, &result);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.RemoveDefaultAccelerator.ToggleMirrorMode",
+      GetEncodedShortcut(good_accelerator), 0);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest,
        VerifyAllAcceleratorsHaveKeyString) {
   // The following is a set of VKEYs that are ignored in this test. If there is
