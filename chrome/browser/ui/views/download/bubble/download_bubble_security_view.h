@@ -29,6 +29,7 @@ class LabelButton;
 
 class DownloadBubbleNavigationHandler;
 class ParagraphsView;
+class DownloadBubblePasswordPromptView;
 
 class DownloadBubbleSecurityView : public views::View,
                                    public download::DownloadItem::Observer {
@@ -47,6 +48,21 @@ class DownloadBubbleSecurityView : public views::View,
     virtual void AddSecuritySubpageWarningActionEvent(
         const offline_items_collection::ContentId& id,
         DownloadItemWarningData::WarningAction action) = 0;
+
+    // Processes the deep scan being pressed, when the given password is
+    // provided.
+    virtual void ProcessDeepScanPress(
+        const offline_items_collection::ContentId& id,
+        const std::string& password) = 0;
+
+    // Return whether the download item is an encrypted archive.
+    virtual bool IsEncryptedArchive(
+        const offline_items_collection::ContentId& id) = 0;
+
+    // Return whether the download item has a previously provided invalid
+    // password.
+    virtual bool HasPreviousIncorrectPassword(
+        const offline_items_collection::ContentId& id) = 0;
   };
 
   METADATA_HEADER(DownloadBubbleSecurityView);
@@ -105,9 +121,10 @@ class DownloadBubbleSecurityView : public views::View,
   void AddHeader();
   void CloseBubble();
   void OnCheckboxClicked();
-  void AddIconAndText();
+  void AddIconAndContents();
   void AddSecondaryIconAndText();
   void AddProgressBar();
+  void AddPasswordPrompt(views::View* parent);
 
   void UpdateViews();
   void UpdateHeader();
@@ -120,6 +137,7 @@ class DownloadBubbleSecurityView : public views::View,
                     bool has_checkbox);
   void UpdateButtons();
   void UpdateProgressBar();
+  void UpdatePasswordPrompt();
 
   // Reset fields that increase the width of the bubble.
   void ClearWideFields();
@@ -131,6 +149,10 @@ class DownloadBubbleSecurityView : public views::View,
   int GetMinimumTitleWidth() const;
   // Minimum width for the subpage summary.
   int GetMinimumLabelWidth() const;
+
+  // Deep scanning is complicated enough that this button click is separate from
+  // the others.
+  bool ProcessDeepScanClick();
 
   // Must outlive this.
   const raw_ptr<Delegate> delegate_;
@@ -168,6 +190,7 @@ class DownloadBubbleSecurityView : public views::View,
   raw_ptr<views::StyledLabel> deep_scanning_link_ = nullptr;
   raw_ptr<views::StyledLabel> learn_more_link_ = nullptr;
   raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
+  raw_ptr<DownloadBubblePasswordPromptView> password_prompt_ = nullptr;
 
   // Records the last time this was shown or updated for a new download. Used
   // for metrics.

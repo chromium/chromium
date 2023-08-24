@@ -7,12 +7,14 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_password_prompt_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -401,7 +403,7 @@ void DownloadBubbleSecurityView::UpdateSecondaryIconAndText() {
   secondary_styled_label_->PreferredSizeChanged();
 }
 
-void DownloadBubbleSecurityView::AddIconAndText() {
+void DownloadBubbleSecurityView::AddIconAndContents() {
   const int side_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_CONTROL_VERTICAL);
   const int icon_label_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -495,6 +497,8 @@ void DownloadBubbleSecurityView::AddIconAndText() {
   // paragraph spacing between them.
   learn_more_link_->SetProperty(views::kMarginsKey,
                                 gfx::Insets().set_top(kAfterParagraphSpacing));
+
+  AddPasswordPrompt(wrapper);
 }
 
 void DownloadBubbleSecurityView::AddSecondaryIconAndText() {
@@ -581,6 +585,23 @@ void DownloadBubbleSecurityView::AddProgressBar() {
   progress_bar_->SetVisible(false);
 }
 
+void DownloadBubbleSecurityView::AddPasswordPrompt(views::View* parent) {
+  password_prompt_ = parent->AddChildView(
+      std::make_unique<DownloadBubblePasswordPromptView>());
+  password_prompt_->SetVisible(false);
+  password_prompt_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/false));
+  password_prompt_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                          views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                      0));
+  UpdatePasswordPrompt();
+}
+
 bool DownloadBubbleSecurityView::ProcessButtonClick(
     DownloadCommands::Command command,
     bool is_secondary_button) {
@@ -590,6 +611,12 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
   if (!navigation_handler_) {
     // If the navigation handler has gone away, close the dialog.
     return true;
+  }
+
+  if (command == DownloadCommands::DEEP_SCAN &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningEncryptedArchives)) {
+    return ProcessDeepScanClick();
   }
 
   // Record metrics only if we are actually processing the command.
@@ -677,6 +704,25 @@ void DownloadBubbleSecurityView::UpdateProgressBar() {
   }
 
   progress_bar_->SetValue(-1);
+}
+
+void DownloadBubbleSecurityView::UpdatePasswordPrompt() {
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningEncryptedArchives)) {
+    return;
+  }
+
+  bool should_show =
+      danger_type_ == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING &&
+      delegate_->IsEncryptedArchive(content_id_);
+
+  DownloadBubblePasswordPromptView::State state =
+      delegate_->HasPreviousIncorrectPassword(content_id_)
+          ? DownloadBubblePasswordPromptView::State::kInvalid
+          : DownloadBubblePasswordPromptView::State::kValid;
+
+  password_prompt_->SetVisible(should_show);
+  password_prompt_->SetState(state);
 }
 
 void DownloadBubbleSecurityView::ClearWideFields() {
@@ -793,6 +839,7 @@ void DownloadBubbleSecurityView::UpdateViews() {
   UpdateIconAndText();
   UpdateSecondaryIconAndText();
   UpdateProgressBar();
+  UpdatePasswordPrompt();
 
   bubble_delegate_->SizeToContents();
 }
@@ -832,7 +879,7 @@ DownloadBubbleSecurityView::DownloadBubbleSecurityView(
     SetProperty(views::kMarginsKey, GetLayoutInsets(DOWNLOAD_ROW));
   }
   AddHeader();
-  AddIconAndText();
+  AddIconAndContents();
   AddSecondaryIconAndText();
   AddProgressBar();
 }
@@ -865,6 +912,20 @@ int DownloadBubbleSecurityView::GetMinimumLabelWidth() const {
   return GetMinimumBubbleWidth() - side_margin -
          GetLayoutConstant(DOWNLOAD_ICON_SIZE) -
          GetLayoutInsets(DOWNLOAD_ICON).width() - icon_label_spacing;
+}
+
+bool DownloadBubbleSecurityView::ProcessDeepScanClick() {
+  if (delegate_->IsEncryptedArchive(content_id_) &&
+      password_prompt_->GetText().empty()) {
+    password_prompt_->SetState(
+        DownloadBubblePasswordPromptView::State::kInvalidEmpty);
+    bubble_delegate_->SizeToContents();
+  } else {
+    delegate_->ProcessDeepScanPress(
+        content_id_, base::UTF16ToUTF8(password_prompt_->GetText()));
+  }
+
+  return false;
 }
 
 BEGIN_METADATA(DownloadBubbleSecurityView, views::View)

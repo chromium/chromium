@@ -9,6 +9,7 @@
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_warning_data.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_partial_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_primary_view.h"
@@ -126,6 +127,34 @@ void DownloadBubbleContentsView::AddSecuritySubpageWarningActionEvent(
         model->GetDownloadItem(),
         DownloadItemWarningData::WarningSurface::BUBBLE_SUBPAGE, action);
   }
+}
+
+void DownloadBubbleContentsView::ProcessDeepScanPress(
+    const ContentId& id,
+    const std::string& password) {
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    safe_browsing::DownloadProtectionService::UploadForConsumerDeepScanning(
+        model->GetDownloadItem(), password);
+  }
+}
+
+bool DownloadBubbleContentsView::IsEncryptedArchive(const ContentId& id) {
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    return DownloadItemWarningData::IsEncryptedArchive(
+        model->GetDownloadItem());
+  }
+
+  return false;
+}
+
+bool DownloadBubbleContentsView::HasPreviousIncorrectPassword(
+    const ContentId& id) {
+  if (DownloadUIModel* model = GetDownloadModel(id); model) {
+    return DownloadItemWarningData::HasIncorrectPassword(
+        model->GetDownloadItem());
+  }
+
+  return false;
 }
 
 void DownloadBubbleContentsView::SwitchToCurrentPage(
