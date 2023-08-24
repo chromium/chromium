@@ -21,31 +21,34 @@ namespace bindings {
 // implementation of async iterators.
 class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
  public:
-  // https://webidl.spec.whatwg.org/#default-asynchronous-iterator-object-kind
-  enum class Kind {
-    kKey,
-    kValue,
-    kKeyValue,
-  };
-
   class PLATFORM_EXPORT IterationSourceBase
       : public GarbageCollected<IterationSourceBase> {
    public:
-    IterationSourceBase() = default;
+    // https://webidl.spec.whatwg.org/#default-asynchronous-iterator-object-kind
+    enum class Kind {
+      kKey,
+      kValue,
+      kKeyValue,
+    };
+
+    explicit IterationSourceBase(Kind kind) : kind_(kind) {}
     virtual ~IterationSourceBase() = default;
     IterationSourceBase(const IterationSourceBase&) = delete;
     IterationSourceBase& operator=(const IterationSourceBase&) = delete;
 
     virtual v8::Local<v8::Promise> Next(ScriptState* script_state,
-                                        Kind kind,
                                         ExceptionState& exception_state) = 0;
 
     virtual v8::Local<v8::Promise> Return(ScriptState* script_state,
-                                          Kind kind,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state) = 0;
 
+    Kind GetKind() const { return kind_; }
+
     virtual void Trace(Visitor* visitor) const {}
+
+   private:
+    const Kind kind_;
   };
 
   ~AsyncIteratorBase() override = default;
@@ -60,11 +63,10 @@ class PLATFORM_EXPORT AsyncIteratorBase : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  protected:
-  explicit AsyncIteratorBase(IterationSourceBase* iteration_source, Kind kind)
-      : iteration_source_(iteration_source), kind_(kind) {}
+  explicit AsyncIteratorBase(IterationSourceBase* iteration_source)
+      : iteration_source_(iteration_source) {}
 
   const Member<IterationSourceBase> iteration_source_;
-  const Kind kind_;
 };
 
 }  // namespace bindings

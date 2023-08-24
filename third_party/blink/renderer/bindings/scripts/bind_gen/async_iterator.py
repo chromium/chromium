@@ -30,11 +30,11 @@ def make_constructors(cg_context):
 
     decls = ListNode([
         CxxFuncDefNode(name=cg_context.class_name,
-                       arg_decls=["IterationSourceBase* source", "Kind kind"],
+                       arg_decls=["IterationSourceBase* source"],
                        return_type="",
                        explicit=True,
                        member_initializer_list=[
-                           "${base_class_name}(source, kind)",
+                           "${base_class_name}(source)",
                        ]),
         CxxFuncDeclNode(name="~AsyncIterator",
                         arg_decls=[],
