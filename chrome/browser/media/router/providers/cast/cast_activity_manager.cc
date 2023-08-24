@@ -210,8 +210,6 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
     base::UmaHistogramBoolean(kHistogramAudioSender,
                               cast_source.site_requested_audio_capture());
   }
-  RecordLaunchSessionRequestSupportedAppTypes(
-      cast_source.supported_app_types());
 
   cast_source.ContainsStreamingApp()
       ? AddMirroringActivity(route, app_id, frame_tree_node_id,

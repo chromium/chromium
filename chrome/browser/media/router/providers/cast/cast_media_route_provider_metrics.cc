@@ -23,25 +23,6 @@ void RecordAppAvailabilityResult(cast_channel::GetAppAvailabilityResult result,
     UMA_HISTOGRAM_TIMES(kHistogramAppAvailabilitySuccess, duration);
 }
 
-void RecordLaunchSessionRequestSupportedAppTypes(
-    std::vector<ReceiverAppType> types) {
-  DCHECK(base::Contains(types, ReceiverAppType::kWeb));
-  bool has_atv = false;
-  for (ReceiverAppType type : types) {
-    switch (type) {
-      case ReceiverAppType::kAndroidTv:
-        has_atv = true;
-        break;
-      case ReceiverAppType::kWeb:
-      case ReceiverAppType::kOther:
-        break;
-    }
-  }
-  base::UmaHistogramEnumeration(kHistogramCastSupportedAppTypes,
-                                has_atv ? ReceiverAppTypeSet::kAndroidTvAndWeb
-                                        : ReceiverAppTypeSet::kWeb);
-}
-
 void RecordLaunchSessionResponseAppType(const base::Value* app_type) {
   if (!app_type) {
     return;

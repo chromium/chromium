@@ -6334,16 +6334,6 @@ chromium-metrics-reviews@google.com.
   <summary>Events related to the WebUI Cast feedback dialog.</summary>
 </histogram>
 
-<histogram name="MediaRouter.Cast.LaunchSessionRequest.SupportedAppTypes"
-    enum="ReceiverAppTypeSet" expires_after="2023-09-03">
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    The types of apps supported by the sender page. Recorded when requesting the
-    receiver to launch a new session.
-  </summary>
-</histogram>
-
 <histogram name="MediaRouter.Cast.LaunchSessionResponse.AppType"
     enum="MediaRouterResponseReceiverAppType" expires_after="2024-02-04">
   <owner>muyaoxu@google.com</owner>
