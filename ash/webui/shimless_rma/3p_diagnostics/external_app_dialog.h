@@ -45,7 +45,6 @@ class ExternalAppDialog : public ui::WebDialogDelegate {
   std::u16string GetDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetDialogSize(gfx::Size* size) const override;
-  bool OnDialogCloseRequested() override;
   void GetWebUIMessageHandlers(
       std::vector<content::WebUIMessageHandler*>* handlers) const override;
   std::string GetDialogArgs() const override;

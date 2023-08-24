@@ -138,10 +138,6 @@ void ExternalAppDialog::GetDialogSize(gfx::Size* size) const {
                     kRelativeScreenHeight * screen_size.height());
 }
 
-bool ExternalAppDialog::OnDialogCloseRequested() {
-  return true;
-}
-
 void ExternalAppDialog::GetWebUIMessageHandlers(
     std::vector<content::WebUIMessageHandler*>* handlers) const {}
 
