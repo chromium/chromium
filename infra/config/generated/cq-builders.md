@@ -549,7 +549,7 @@ as required builders.
 
 ### chromium
 * [android-12-x64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-12-x64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-12-x64-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [android-arm64-siso-rel](https://ci.chromium.org/p/chromium/builders/try/android-arm64-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android-arm64-siso-rel""))
   * Experiment percentage: 20.0
@@ -607,7 +607,7 @@ as required builders.
   * Experiment percentage: 100.0
 
 * [win-siso-rel](https://ci.chromium.org/p/chromium/builders/try/win-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-siso-rel""))
-  * Experiment percentage: 20.0
+  * Experiment percentage: 10.0
 
 * [win11-x64-fyi-rel](https://ci.chromium.org/p/chromium/builders/try/win11-x64-fyi-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-x64-fyi-rel""))
   * Experiment percentage: 10.0

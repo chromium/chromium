@@ -312,7 +312,6 @@ This builder should be removed after migrating linux-chromeos-rel from Ninja to 
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
         experiment_percentage = 20,
     ),
     use_clang_coverage = True,
@@ -370,7 +369,6 @@ This builder should be removed after migrating linux-lacros-rel from Ninja to Si
     coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
         experiment_percentage = 20,
     ),
     use_clang_coverage = True,

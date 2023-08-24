@@ -95,7 +95,6 @@ This builder should be removed after migrating android-12-x64-rel from Ninja to 
 """,
     mirrors = builder_config.copy_from("try/android-12-x64-rel"),
     try_settings = builder_config.try_settings(
-        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -107,8 +106,9 @@ This builder should be removed after migrating android-12-x64-rel from Ninja to 
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
-        experiment_percentage = 20,
+        # Decreasing the experiment percentage while enabling tests to reduce
+        # extra workloads on the test pool.
+        experiment_percentage = 10,
     ),
     use_java_coverage = True,
 )
@@ -175,6 +175,8 @@ This builder should be removed after migrating android-arm64-rel from Ninja to S
 """,
     mirrors = builder_config.copy_from("try/android-arm64-rel"),
     try_settings = builder_config.try_settings(
+        # TODO: b/294287964 - waiting test devices to be allocated to handle
+        # extra traffic.
         is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
@@ -187,7 +189,6 @@ This builder should be removed after migrating android-arm64-rel from Ninja to S
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
         experiment_percentage = 20,
     ),
     use_clang_coverage = True,
@@ -445,7 +446,6 @@ This builder should be removed after migrating android-nougat-x86-rel from Ninja
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
         experiment_percentage = 20,
     ),
     use_java_coverage = True,

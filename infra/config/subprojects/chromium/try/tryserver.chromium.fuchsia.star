@@ -174,7 +174,6 @@ This builder should be removed after migrating fuchsia-x64-cast-receiver-rel fro
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
         experiment_percentage = 20,
     ),
     use_clang_coverage = True,

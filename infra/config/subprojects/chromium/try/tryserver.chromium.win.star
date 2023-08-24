@@ -114,7 +114,6 @@ This builder should be removed after migrating win-rel from Ninja to Siso. b/277
 """,
     mirrors = builder_config.copy_from("try/win-rel"),
     try_settings = builder_config.try_settings(
-        is_compile_only = True,
         rts_config = builder_config.rts_config(
             condition = builder_config.rts_condition.QUICK_RUN_ONLY,
         ),
@@ -128,8 +127,9 @@ This builder should be removed after migrating win-rel from Ninja to Siso. b/277
     },
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO(b/277863839): increase percentage.
-        experiment_percentage = 20,
+        # Decreasing the experiment percentage while enabling tests to reduce
+        # extra workloads on the test pool.
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
