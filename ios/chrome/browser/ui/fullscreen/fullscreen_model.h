@@ -5,13 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MODEL_H_
 
-#import <CoreGraphics/CoreGraphics.h>
+#include <CoreGraphics/CoreGraphics.h>
 #include <cmath>
 
 #include "base/observer_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
-#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#include "ios/chrome/browser/shared/public/features/features.h"
+#include "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
+#include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 
 class FullscreenModelObserver;
 
@@ -26,12 +26,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   ~FullscreenModel() override;
 
   // Adds and removes FullscreenModelObservers.
-  void AddObserver(FullscreenModelObserver* observer) {
-    observers_.AddObserver(observer);
-  }
-  void RemoveObserver(FullscreenModelObserver* observer) {
-    observers_.RemoveObserver(observer);
-  }
+  void AddObserver(FullscreenModelObserver* observer);
+  void RemoveObserver(FullscreenModelObserver* observer);
 
   // The progress value calculated by the model.
   CGFloat progress() const { return progress_; }
@@ -226,7 +222,7 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
   void OnCollapsedBottomToolbarHeightBroadcasted(CGFloat height) override;
 
   // The observers for this model.
-  base::ObserverList<FullscreenModelObserver>::Unchecked observers_;
+  base::ObserverList<FullscreenModelObserver, true> observers_;
   // The percentage of the toolbar that should be visible, where 1.0 denotes a
   // fully visible toolbar and 0.0 denotes a completely hidden one.
   CGFloat progress_ = 0.0;

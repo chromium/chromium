@@ -27,6 +27,14 @@ class ScopedIncrementer {
 FullscreenModel::FullscreenModel() = default;
 FullscreenModel::~FullscreenModel() = default;
 
+void FullscreenModel::AddObserver(FullscreenModelObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void FullscreenModel::RemoveObserver(FullscreenModelObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void FullscreenModel::IncrementDisabledCounter() {
   if (++disabled_counter_ == 1U) {
     ScopedIncrementer disabled_incrementer(&observer_callback_count_);
