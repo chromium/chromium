@@ -538,7 +538,7 @@ class MetricsService {
 
   // Called via a callback after a periodic ongoing log (created through the
   // MetricsRotationScheduler) was stored in |log_store()|.
-  void OnPeriodicOngoingLogStored();
+  void OnAsyncPeriodicOngoingLogStored();
 
   // Prepares the initial stability log, which is only logged when the previous
   // run of Chrome crashed.  This log contains any stability metrics left over
