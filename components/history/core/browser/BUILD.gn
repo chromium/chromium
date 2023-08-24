@@ -92,6 +92,8 @@ static_library("browser") {
     "visit_delegate.h",
     "visit_tracker.cc",
     "visit_tracker.h",
+    "visited_link_database.cc",
+    "visited_link_database.h",
     "visitsegment_database.cc",
     "visitsegment_database.h",
     "web_history_service.cc",
@@ -185,6 +187,7 @@ source_set("unit_tests") {
     "visit_annotations_database_unittest.cc",
     "visit_database_unittest.cc",
     "visit_tracker_unittest.cc",
+    "visited_link_database_unittest.cc",
     "web_history_service_unittest.cc",
   ]
   deps = [

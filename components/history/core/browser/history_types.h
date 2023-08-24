@@ -61,6 +61,11 @@ typedef int64_t VisitID;
 // `kInvalidVisitID` is 0 because SQL AUTOINCREMENT's very first row has
 // "id" == 1. Therefore any 0 VisitID is a sentinel null-like value.
 constexpr VisitID kInvalidVisitID = 0;
+// Corresponds to the "id" column of the "visited_links" SQL table.
+using VisitedLinkID = int64_t;
+// `kInvalidVisitedLinkID` is 0 because SQL AUTOINCREMENT's very first row has
+// "id" == 1. Therefore any 0 VisitedLinkID is a sentinel null-like value.
+constexpr VisitedLinkID kInvalidVisitedLinkID = 0;
 
 // Structure to hold the mapping between each visit's id and its source.
 typedef std::map<VisitID, VisitSource> VisitSourceMap;
@@ -195,6 +200,42 @@ enum class VisitUpdateReason {
   kAddContextAnnotations,
   kSetOnCloseContextAnnotations
 };
+
+// VisitedLinkRow --------------------------------------------------------------
+// Holds all information globally associated with one visited link (one row in
+// the VisitedLinkDatabase).
+//
+// The VisitedLinkDatabase contains the following fields:
+struct VisitedLinkRow {
+  // `id` - the unique int64 ID assigned to this row.
+  // This is immutable except when retrieving the row from the database or when
+  // determining if the visited link referenced by the VisitedLinkRow already
+  // exists in the database.
+  VisitedLinkID id = 0;
+
+  // `link_url_id` - the unique URLID assigned to the row where this link url is
+  // stored in the URLDatabase. ID is stored to avoid storing the URL twice.
+  // Immutable except when retrieving the row from the database. If clients want
+  // to change it, they must use the constructor to make a new one.
+  URLID link_url_id = 0;
+
+  // `top_level_url` - the GURL of the top-level frame where the link url was
+  // visited from.
+  // Immutable except when retrieving the row from the database. If clients want
+  // to change it, they must use the constructor to make a new one.
+  GURL top_level_url;
+
+  // `frame_url` - the GURL of the frame where the link was visited from.
+  // Immutable except when retrieving the row from the database. If clients want
+  // to change it, they must use the constructor to make a new one.
+  GURL frame_url;
+
+  // `visit_count` - the number of entries in the VisitDatabase corresponding to
+  // this row (must exactly match the <link_url, top_level_url, frame_url>
+  // partition key).
+  int visit_count = 0;
+};
+using VisitedLinkRows = std::vector<VisitedLinkRow>;
 
 // QueryResults ----------------------------------------------------------------
 
