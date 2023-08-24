@@ -82,15 +82,12 @@ using ::chromeos::Printer;
 using ::chromeos::PrinterClass;
 using ::printing::PrinterQueryResult;
 
-void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
+void OnRemovedPrinter(bool success) {
   if (success) {
     PRINTER_LOG(DEBUG) << "Printer removal succeeded.";
   } else {
     PRINTER_LOG(DEBUG) << "Printer removal failed.";
   }
-
-  base::UmaHistogramEnumeration("Printing.CUPS.PrinterRemoved", protocol,
-                                Printer::PrinterProtocol::kProtocolMax);
 }
 
 class CupsPrintersManagerImpl
@@ -208,6 +205,9 @@ class CupsPrintersManagerImpl
     auto existing = synced_printers_manager_->GetPrinter(printer_id);
     if (existing) {
       event_tracker_->RecordPrinterRemoved(*existing);
+      const Printer::PrinterProtocol protocol = existing->GetProtocol();
+      base::UmaHistogramEnumeration("Printing.CUPS.PrinterRemoved", protocol,
+                                    Printer::PrinterProtocol::kProtocolMax);
     }
     synced_printers_manager_->RemoveSavedPrinter(printer_id);
     // Note that we will rebuild our lists when we get the observer
@@ -367,13 +367,8 @@ class CupsPrintersManagerImpl
     // Uninstall printer if installed completely.
     if (installed_printer_fingerprints_.erase(printer_id)) {
       // The printer was present in `installed_printer_fingerprints_`.
-      absl::optional<chromeos::Printer> printer = GetPrinter(printer_id);
-      if (printer) {
-        const Printer::PrinterProtocol protocol = printer->GetProtocol();
-        DebugDaemonClient::Get()->CupsRemovePrinter(
-            printer_id, base::BindOnce(&OnRemovedPrinter, protocol),
-            base::DoNothing());
-      }
+      DebugDaemonClient::Get()->CupsRemovePrinter(
+          printer_id, base::BindOnce(&OnRemovedPrinter), base::DoNothing());
       return;
     }
 
