@@ -261,6 +261,12 @@ BASE_FEATURE(kOptimizationGuidePredictionModelKillswitch,
              "OptimizationGuidePredictionModelKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+size_t MaxRelatedSearchesCacheSize() {
+  return GetFieldTrialParamByFeatureAsInt(
+      kExtractRelatedSearchesFromPrefetchedZPSResponse,
+      "max_related_searches_cache_size", 10);
+}
+
 // The default value here is a bit of a guess.
 // TODO(crbug/1163244): This should be tuned once metrics are available.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod() {

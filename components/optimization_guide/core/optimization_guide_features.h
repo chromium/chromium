@@ -60,6 +60,11 @@ BASE_DECLARE_FEATURE(kOptimizationGuidePredictionModelKillswitch);
 BASE_DECLARE_FEATURE(
     kOptimizationGuideUseContinueOnShutdownForPageContentAnnotations);
 
+// The maximum number of "related searches" entries allowed to be maintained in
+// a least-recently-used cache for "related searches" data obtained via ZPS
+// prefetch logic.
+size_t MaxRelatedSearchesCacheSize();
+
 // The grace period duration for how long to give outstanding page text dump
 // requests to respond after DidFinishLoad.
 base::TimeDelta PageTextExtractionOutstandingRequestsGracePeriod();

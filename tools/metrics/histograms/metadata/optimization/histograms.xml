@@ -912,6 +912,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesCache.CacheHit"
+    enum="BooleanCacheHit" expires_after="2023-12-10">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records whether there was a cache hit when attempting to fetch the set of
+    related searches cached by the ZPS prefetching on SRP logic. This will be
+    recorded approximately once per successful Google SRP page load.
+  </summary>
+</histogram>
+
+<histogram
     name="OptimizationGuide.PageContentAnnotationsService.RelatedSearchesExtracted"
     enum="BooleanAnnotated" expires_after="2024-02-11">
   <owner>mahmadi@chromium.org</owner>

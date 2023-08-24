@@ -8,6 +8,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
+#include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/ranges/algorithm.h"
@@ -29,6 +30,7 @@
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/search/search.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -88,6 +90,13 @@ void LogRelatedSearchesExtracted(bool success) {
       success);
 }
 
+void LogRelatedSearchesCacheHit(bool cache_hit) {
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.PageContentAnnotationsService.RelatedSearchesCache."
+      "CacheHit",
+      cache_hit);
+}
+
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Record the visibility score of the provided visit as a RAPPOR-style record to
 // UKM.
@@ -134,6 +143,30 @@ void MaybeRecordVisibilityUKM(
 }
 #endif /* BUILDFLAG(BUILD_WITH_TFLITE_LIB) */
 
+// Generates the canonical URL associated with the the given search |url|.
+// |template_url_service| must not be null.
+//
+// In the context of "related searches" annotation, the canonical
+// search URL computed by this function is used as a cache key to ensure that
+// the cache entry written by the ZPS prefetch flow can be properly read by the
+// SRP DOM extraction flow. We cannot directly use the SRP URL as a cache key
+// because the initial URL obtained during prefetch differs from the final URL
+// obtained once navigation has been committed (i.e. it contains extraneous URL
+// params), even though both URLs are referring to the same logical SRP visit.
+std::string GetCanonicalSearchURL(const GURL& url,
+                                  TemplateURLService* template_url_service) {
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+
+  GURL canonical_search_url;
+  default_provider->KeepSearchTermsInURL(
+      url, template_url_service->search_terms_data(),
+      /*keep_search_intent_params=*/true, /*normalize_search_terms=*/true,
+      &canonical_search_url);
+
+  return canonical_search_url.spec();
+}
+
 }  // namespace
 
 PageContentAnnotationsService::PageContentAnnotationsService(
@@ -154,6 +187,7 @@ PageContentAnnotationsService::PageContentAnnotationsService(
       history_service_(history_service),
       template_url_service_(template_url_service),
       zero_suggest_cache_service_(zero_suggest_cache_service),
+      prefetched_related_searches_(features::MaxRelatedSearchesCacheSize()),
       last_annotated_history_visits_(
           features::MaxContentAnnotationRequestsCached()),
       missing_title_visits_by_url_(
@@ -478,10 +512,6 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {
-  if (ShouldExtractRelatedSearchesFromZPSCache()) {
-    return;
-  }
-
   search_result_extractor_client_.RequestData(
       web_contents, {continuous_search::mojom::ResultType::kRelatedSearches},
       base::BindOnce(&PageContentAnnotationsService::OnRelatedSearchesExtracted,
@@ -548,7 +578,9 @@ void PageContentAnnotationsService::OnPageContentAnnotated(
 bool PageContentAnnotationsService::ShouldExtractRelatedSearchesFromZPSCache() {
   return base::FeatureList::IsEnabled(
              features::kExtractRelatedSearchesFromPrefetchedZPSResponse) &&
-         autocomplete_provider_client_ && zero_suggest_cache_service_;
+         autocomplete_provider_client_ &&
+         search::DefaultSearchProviderIsGoogle(template_url_service_) &&
+         zero_suggest_cache_service_;
 }
 
 void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
@@ -562,28 +594,9 @@ void PageContentAnnotationsService::OnZeroSuggestResponseUpdated(
     return;
   }
 
-  history_service_->QueryURL(
-      GURL(page_url), /*want_visits=*/true,
-      base::BindOnce(&PageContentAnnotationsService::
-                         ExtractRelatedSearchesFromZeroSuggestResponse,
-                     weak_ptr_factory_.GetWeakPtr(), response),
-      &history_service_task_tracker_);
-}
-
-void PageContentAnnotationsService::
-    ExtractRelatedSearchesFromZeroSuggestResponse(
-        const ZeroSuggestCacheService::CacheEntry& response,
-        history::QueryURLResult url_result) {
-  if (!url_result.success || url_result.visits.empty()) {
-    LogPageContentAnnotationsStorageStatus(
-        PageContentAnnotationsStorageStatus::kNoVisitsForUrl,
-        PageContentAnnotationsType::kRelatedSearches);
-    return;
-  }
-
   AutocompleteInput input(u"", metrics::OmniboxEventProto::JOURNEYS,
                           autocomplete_provider_client_->GetSchemeClassifier());
-  auto suggest_results =
+  const auto suggest_results =
       response.GetSuggestResults(input, *autocomplete_provider_client_);
 
   std::vector<std::string> related_searches;
@@ -599,32 +612,43 @@ void PageContentAnnotationsService::
   }
 
   if (related_searches.empty()) {
-    LogRelatedSearchesExtracted(false);
     return;
   }
 
-  LogRelatedSearchesExtracted(true);
-
-  auto visit_id = url_result.visits.front().visit_id;
-  history_service_->AddRelatedSearchesForVisit(related_searches, visit_id);
-
-  LogPageContentAnnotationsStorageStatus(
-      PageContentAnnotationsStorageStatus::kSuccess,
-      PageContentAnnotationsType::kRelatedSearches);
+  prefetched_related_searches_.Put(
+      GetCanonicalSearchURL(GURL(page_url), template_url_service_),
+      related_searches);
 }
 
 void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     const HistoryVisit& visit,
     continuous_search::SearchResultExtractorClientStatus status,
     continuous_search::mojom::CategoryResultsPtr results) {
+  // Fetch any cached "related searches" data obtained via ZPS prefetch.
+  std::vector<std::string> related_searches_from_zps_prefetch;
+  if (ShouldExtractRelatedSearchesFromZPSCache()) {
+    bool found = false;
+    const auto it = prefetched_related_searches_.Get(
+        GetCanonicalSearchURL(visit.url, template_url_service_));
+    if (it != prefetched_related_searches_.end()) {
+      related_searches_from_zps_prefetch = it->second;
+      found = true;
+      prefetched_related_searches_.Erase(it);
+    }
+    LogRelatedSearchesCacheHit(found);
+  }
+
   const bool success =
-      status == continuous_search::SearchResultExtractorClientStatus::kSuccess;
+      status ==
+          continuous_search::SearchResultExtractorClientStatus::kSuccess ||
+      !related_searches_from_zps_prefetch.empty();
   LogRelatedSearchesExtracted(success);
 
   if (!success) {
     return;
   }
 
+  // Construct `related_searches` using data obtained from SRP DOM extraction.
   std::vector<std::string> related_searches;
   for (const auto& group : results->groups) {
     if (group->type != continuous_search::mojom::ResultType::kRelatedSearches) {
@@ -639,6 +663,11 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     break;
   }
 
+  // Augment `related_searches` using data obtained via ZPS prefetch.
+  for (const auto& search_query : related_searches_from_zps_prefetch) {
+    related_searches.push_back(search_query);
+  }
+
   if (related_searches.empty()) {
     return;
   }
@@ -647,6 +676,12 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     return;
   }
 
+  AddRelatedSearchesForVisit(visit, related_searches);
+}
+
+void PageContentAnnotationsService::AddRelatedSearchesForVisit(
+    const HistoryVisit& visit,
+    const std::vector<std::string>& related_searches) {
   QueryURL(visit,
            base::BindOnce(&history::HistoryService::AddRelatedSearchesForVisit,
                           history_service_->AsWeakPtr(), related_searches),

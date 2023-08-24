@@ -47,6 +47,7 @@ static_library("browser") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:entities",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/search",
     "//components/search_engines",
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",

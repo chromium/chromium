@@ -10,6 +10,7 @@ include_rules = [
   "+components/omnibox/common",
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
+  "+components/search",
   "+components/search_engines",
   "+components/ukm",
   "+content/public/browser",
