@@ -68,6 +68,22 @@ constexpr int kDeskBarShelfAndBarSpacing = 8;
 // supported.
 constexpr int kDeskBarMaxDeskShortcut = 8;
 
+// For desk button desk bar, time in milliseconds it takes from when the desk
+// button desk bar enter event was received and successfully processed to when
+// the next frame is shown to the user.
+inline constexpr char kDeskBarEnterPresentationHistogram[] =
+    "Ash.Desks.DeskButton.DeskBar.Enter.PresentationTime";
+
+// For desk button desk bar, time in milliseconds it takes from when the desk
+// button desk bar exit event was received and successfully processed to when
+// the next frame is shown to the user.
+inline constexpr char kDeskBarExitPresentationHistogram[] =
+    "Ash.Desks.DeskButton.DeskBar.Exit.PresentationTime";
+
+// For desk button desk bar, max latency of entering/exiting the desk bar.
+inline constexpr base::TimeDelta kDeskBarEnterExitPresentationMaxLatency =
+    base::Seconds(2);
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

@@ -25,6 +25,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -281,6 +283,11 @@ bool DeskBarController::IsShowingDeskBar() const {
 void DeskBarController::OpenDeskBar(aura::Window* root) {
   CHECK(root && root->IsRootWindow());
 
+  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+      root->layer()->GetCompositor(), kDeskBarEnterPresentationHistogram, "",
+      kDeskBarEnterExitPresentationMaxLatency);
+  presentation_time_recorder->RequestNext();
+
   // It should not close all bars for the activation change when a new desk bar
   // is opening.
   base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
@@ -312,17 +319,8 @@ void DeskBarController::CloseDeskBar(aura::Window* root) {
 
   for (auto it = desk_bars_.begin(); it != desk_bars_.end();) {
     if (it->bar_view->root() == root) {
-      // TODO(yongshun): Avoid code duplication between this and
-      // `CloseAllDeskBars`.
-      it->bar_widget->Hide();
-
-      // Deletes asynchronously so it is less likely to result in UAF.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-          FROM_HERE, it->bar_widget.release());
-
+      CloseDeskBarInternal(*it);
       it = desk_bars_.erase(it);
-
-      SetDeskButtonActivation(root, /*is_activated=*/false);
     } else {
       it++;
     }
@@ -336,18 +334,28 @@ void DeskBarController::CloseAllDeskBars() {
 
   for (auto& desk_bar : desk_bars_) {
     if (desk_bar.bar_widget->IsVisible()) {
-      desk_bar.bar_widget->Hide();
-
-      // Deletes asynchronously so it is less likely to result in UAF.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-          FROM_HERE, desk_bar.bar_widget.release());
-
-      SetDeskButtonActivation(desk_bar.bar_view->root(),
-                              /*is_activated=*/false);
+      CloseDeskBarInternal(desk_bar);
     }
   }
 
   desk_bars_.clear();
+}
+
+void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
+  auto presentation_time_recorder = CreatePresentationTimeHistogramRecorder(
+      desk_bar.bar_view->root()->layer()->GetCompositor(),
+      kDeskBarExitPresentationHistogram, "",
+      kDeskBarEnterExitPresentationMaxLatency);
+  presentation_time_recorder->RequestNext();
+
+  desk_bar.bar_widget->Hide();
+
+  // Deletes asynchronously so it is less likely to result in UAF.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, desk_bar.bar_widget.release());
+
+  SetDeskButtonActivation(desk_bar.bar_view->root(),
+                          /*is_activated=*/false);
 }
 
 gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {

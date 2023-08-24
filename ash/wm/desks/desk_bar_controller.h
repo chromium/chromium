@@ -103,6 +103,8 @@ class ASH_EXPORT DeskBarController : public DesksController::Observer,
   void CloseAllDeskBars();
 
  private:
+  void CloseDeskBarInternal(BarWidgetAndView& desk_bar);
+
   // Returns bounds for desk bar widget in `root`. Please note, this is the full
   // available bounds and does not change after initialization. Therefore, the
   // desk bar view can adjust its bounds as needed without manipulating the
