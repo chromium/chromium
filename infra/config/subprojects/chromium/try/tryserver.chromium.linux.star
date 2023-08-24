@@ -851,7 +851,6 @@ try_.gpu.optional_tests_builder(
 try_.builder(
     name = "linux-js-coverage-rel",
     mirrors = ["ci/linux-js-code-coverage"],
-    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -869,7 +868,6 @@ try_.builder(
 try_.builder(
     name = "chromeos-js-coverage-rel",
     mirrors = ["ci/chromeos-js-code-coverage"],
-    coverage_test_types = ["unit", "overall"],
     main_list_view = "try",
     tryjob = try_.job(
         experiment_percentage = 20,

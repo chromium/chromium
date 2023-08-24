@@ -42,10 +42,6 @@
     }
   },
   "$build/code_coverage": {
-    "coverage_test_types": [
-      "unit",
-      "overall"
-    ],
     "use_javascript_coverage": true
   },
   "$build/flakiness": {
