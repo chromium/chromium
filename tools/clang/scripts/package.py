@@ -358,15 +358,18 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-riscv64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-arm-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-i686-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan_static-riscv64-android.a',
 
         # Builtins for Android.
         'lib/clang/$V/lib/linux/libclang_rt.builtins-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-arm-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.builtins-riscv64-android.a',
 
         # Builtins for Linux and Lacros.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
@@ -385,6 +388,8 @@ def main():
         # HWASAN Android runtime.
         'lib/clang/$V/lib/linux/libclang_rt.hwasan-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.hwasan-preinit-aarch64-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.hwasan-riscv64-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.hwasan-preinit-riscv64-android.a',
 
         # MemorySanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.msan.a',
@@ -403,6 +408,7 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.profile-x86_64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-arm-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.profile-riscv64-android.a',
 
         # ThreadSanitizer C runtime (pure C won't link with *_cxx).
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.tsan.a',
@@ -425,6 +431,7 @@ def main():
         # UndefinedBehaviorSanitizer Android runtime, needed for CFI.
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-arm-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-riscv64-android.so',
 
         # Ignorelist for MemorySanitizer (used on Linux only).
         'lib/clang/$V/share/msan_*list.txt',

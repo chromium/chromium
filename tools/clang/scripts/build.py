@@ -57,6 +57,16 @@ LLVM_BUILD_TOOLS_DIR = os.path.abspath(
     os.path.join(LLVM_DIR, '..', 'llvm-build-tools'))
 ANDROID_NDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
                                'android_toolchain', 'ndk')
+ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR = os.path.join('toolchains', 'llvm',
+                                                  'prebuilt', 'linux-x86_64')
+ANDROID_NDK_TOOLCHAIN_DIR = os.path.join(ANDROID_NDK_DIR,
+                                         ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR)
+# NOTE(nathaniel): Using the canary Android NDK in this manner is forecast
+# to be temporary (~months; will be done differently by 2024).
+ANDROID_NDK_CANARY_DIR = os.path.join(CHROMIUM_DIR, 'third_party',
+                                      'android_toolchain_canary', 'ndk')
+ANDROID_NDK_CANARY_TOOLCHAIN_DIR = os.path.join(
+    ANDROID_NDK_CANARY_DIR, ANDROID_NDK_TOOLCHAIN_RELATIVE_DIR)
 FUCHSIA_SDK_DIR = os.path.join(CHROMIUM_DIR, 'third_party', 'fuchsia-sdk',
                                'sdk')
 PINNED_CLANG_DIR = os.path.join(LLVM_BUILD_TOOLS_DIR, 'pinned-clang')
@@ -1267,14 +1277,17 @@ def main():
     }
 
   if args.with_android:
-    toolchain_dir = ANDROID_NDK_DIR + '/toolchains/llvm/prebuilt/linux-x86_64'
-    for target_arch in ['aarch64', 'arm', 'i686', 'x86_64']:
+    toolchain_dir = ANDROID_NDK_TOOLCHAIN_DIR
+    for target_arch in ['aarch64', 'arm', 'i686', 'riscv64', 'x86_64']:
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
       api_level = '19'
       if target_arch == 'aarch64' or target_arch == 'x86_64':
         api_level = '21'
+      elif target_arch == 'riscv64':
+        api_level = '35'
+        toolchain_dir = ANDROID_NDK_CANARY_TOOLCHAIN_DIR
       target_triple += '-linux-android' + api_level
       android_cflags = [
           '--sysroot=%s/sysroot' % toolchain_dir,
