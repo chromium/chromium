@@ -208,13 +208,13 @@ let gCurrentMessageId;
 
 /**
  * `gCurrentMessageResult` can be of 3 possible types:
- * 
+ *
  * 1. ProtocolError (id?, error: (code, message), data?)
  * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L275
- * 
+ *
  * 2. Response (id, result) - The response contains the return values defined by CDP.
  * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L348
- * 
+ *
  * 3. Notification (method, params) - TODO: we are not handling this yet.
  * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L370
  */
@@ -249,7 +249,7 @@ function sendMessage(method, params) {
     }
   }
   gCurrentMessageId = undefined;
-  
+
   if (gCurrentMessageResult?.result) {
     return gCurrentMessageResult.result;
   }
@@ -511,7 +511,7 @@ function Target_topFrameLocation() {
 /**
  * Get the raw call frames on the stack, eliding ones in scripts we are ignoring.
  * @return {{ callFrames: CDP.Debugger.CallFrame[] }}
- * 
+ *
  * @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#type-CallFrame
  * @see https://github.com/replayio/chromium-v8/blob/37d50784b68747e7b2d5ebc16305cb9b3227741a/src/inspector/v8-debugger-agent-impl.cc#L1412
  */
@@ -541,7 +541,7 @@ function buildRrpObjectResult(cdpReturnValue) {
     }
   } else {
     // Sometimes things go wrong.
-    // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage 
+    // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage
     // from Pause_evaluateIn*.
     rrpResult.failed = true;
   }
@@ -550,8 +550,8 @@ function buildRrpObjectResult(cdpReturnValue) {
 
 
 function handleEvalError(err) {
-  // RUN-2042 workaround: This fails a lot due to evals on frames in contexts 
-  // that have been destroyed. We want to fix this if we know that this is 
+  // RUN-2042 workaround: This fails a lot due to evals on frames in contexts
+  // that have been destroyed. We want to fix this if we know that this is
   // high-impact.
   log(`[RuntimeError] in eval: ${err?.stack || err}`);
   return {
@@ -566,11 +566,11 @@ function Pause_evaluateInFrame({ frameId, expression }) {
   const frame = frames[index];
 
   if (expression === '[...arguments]') {
-    // Short-circuit hackfix: "universal `arguments`" for any frame. This 
+    // Short-circuit hackfix: "universal `arguments`" for any frame. This
     // serves to allow the `MAPPER` used by the `devtools` event analysis
     // to get all arguments for any JS event callback. `arguments` are available
-    // by default in many function frames. However, arrow functions do not 
-    // support them. This "solution" makes sure, `[...arguments]` are 
+    // by default in many function frames. However, arrow functions do not
+    // support them. This "solution" makes sure, `[...arguments]` are
     // always available.
     // See: https://linear.app/replay/issue/RUN-1061#comment-fc1c3ee4
     const args = fromJsGetArgumentsInFrame(frame.callFrameId);
@@ -607,7 +607,7 @@ function Pause_evaluateInGlobal({ expression }) {
   let rv;
   try {
     rv = sendMessage(
-      "Runtime.evaluate", 
+      "Runtime.evaluate",
       {
         expression,
         objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
@@ -682,7 +682,7 @@ function isBlinkObject(x) {
 }
 
 /**
- * Check whether given object `x` is a blink object and its 
+ * Check whether given object `x` is a blink object and its
  * class name is `target.name`.
  */
 function isBlinkInstanceOf(x, target) {
@@ -699,7 +699,7 @@ function isBlinkInstanceOf(x, target) {
  * NOTE: ideal solution is `x instanceof global[name]`, but we cannot do that since it does not work when operating in
  * a context with multiple instance of `global` (i.e. windows).
  * @see https://linear.app/replay/issue/RUN-1014/chromium-find-better-way-of-determining-dom-class-membership
- * 
+ *
  * NOTE: `instanceof` is implemented in `Object::InstanceOf` -> `JSReceiver::HasInPrototypeChain`
  * @see https://github.com/replayio/gecko-dev/blob/592992ff7e15cb8ad1dd6fb109f19bd3523cd452/devtools/server/actors/replay/module.js#L1937
  * @see https://github.com/replayio/chromium-v8/blob/51140a440949dbbeea7a4e6c2185ccdeb8b6276e/src/objects/objects.cc#L929
@@ -726,7 +726,7 @@ function hasInProtoChain(x, name) {
  * This is mostly standard CDP `RemoteObject`s.
  * In some cases, CDP decided to have non-standard objects with
  * a separate id space (e.g. `CSSStylesheet`). We do not store those.
- * 
+ *
  * @type {Map<string, CDP.Runtime.RemoteObject>}
  */
 const gCdpObjectsByRrpId = new Map();
@@ -788,7 +788,7 @@ function clearPauseDataCallback() {
 
 /**
  * Creates and returns a new `CDP.RemoteObject` for given JS object.
- * 
+ *
  * @return {CDP.Runtime.RemoteObject}
  * @see https://chromedevtools.github.io/devtools-protocol/tot/Runtime/#type-RemoteObject
  */
@@ -832,7 +832,7 @@ function getPlainObjectByCdpId(cdpId) {
 }
 
 /**
- * @param {number} rrpId 
+ * @param {number} rrpId
  * @return {Object}
  */
 function getPlainObjectByRrpId(rrpId) {
@@ -879,7 +879,7 @@ function registerCdpObject(cdpObject) {
 
 
 /**
- * 
+ *
  * @return {CDP.Runtime.RemoteObject | Object}
  */
 function getCdpObjectByRrpId(rrpId) {
@@ -892,16 +892,16 @@ function getCdpObjectByRrpId(rrpId) {
 
 /**
  * Edge case: CDP calls produce custom objects that do NOT have an `objectId`.
- * Sometimes, they have their own id which refers back to some native plainObject 
+ * Sometimes, they have their own id which refers back to some native plainObject
  *   (e.g. `CSSStylesheet`).
  * Sometimes they do not map to a native plainObject (e.g. `CSSRule`).
  * For such a CDP object, we only store its RRP preview extra and, for now, discard
  * its CDP representation.
- * 
- * 
+ *
+ *
  * @param {object} rrpObjectPreview Used in `getObjectPreview`.
  * @return {number} rrpId
- * 
+ *
  * @see https://static.replay.io/protocol/tot/Pause/#type-ObjectPreview
  */
 function registerRrpPreview(rrpObjectPreview, plainObject) {
@@ -965,7 +965,7 @@ function isCdpRefType(cdpObject) {
 
 
 /**
- * 
+ *
  * @return {RRP.Pause.Object}
  */
 function buildRrpObjectFromCdpObject(cdpObject) {
@@ -1009,8 +1009,8 @@ function buildRrpObjectFromCdpObject(cdpObject) {
 
 
 /**
- * 
- * @param {CDP.Runtime.Scope} scope 
+ *
+ * @param {CDP.Runtime.Scope} scope
  */
 function registerCdpScope(scope) {
   const rrpId = registerCdpObject(scope.object);
@@ -1027,8 +1027,8 @@ function getCdpScopeByRrpId(rrpScopeId) {
 
 /**
  * Get blink's `nodeId` by `cdpId`.
- * 
- * @param {*} cdpId 
+ *
+ * @param {*} cdpId
  */
 function getBlinkNodeIdByCdpId(cdpId) {
   const nodeId = fromJsGetNodeId(cdpId);
@@ -1383,7 +1383,7 @@ function previewBlinkNode(node) {
   ) {
     /**
      * Nested documents use the parent element instead of null.
-     * 
+     *
      * TODO: will need more work here to support multi-CSP iframes
      *   (properly handle `iframe`s and the case where `node.defaultView.parent.document` is missing)
      *   Issue: https://linear.app/replay/issue/RUN-954/dom-feature-support-multi-cspcross-origin-iframes
@@ -1791,24 +1791,11 @@ function DOM_getAllBoundingClientRects() {
       let { left, top, right, bottom } =
         shiftRect(elem.raw.getBoundingClientRect(), elem.offset);
 
-      // If we can get a box-model for the element, use its border
-      // as the bounding rect.
-      try {
-        const nodeId = getBlinkNodeIdByRrpId(id);
-        const cdpModel = fromJsGetBoxModel(nodeId);
-        if (cdpModel) {
-          const top_left = cdpModel.border.slice(0, 2);
-          const top_right = cdpModel.border.slice(2, 4);
-          const bottom_right = cdpModel.border.slice(4, 6);
-          const bottom_left = cdpModel.border.slice(6, 8);
-          left = Math.min(top_left[0], bottom_left[0]);
-          top = Math.min(top_left[1], top_right[1]);
-          right = Math.max(top_right[0], bottom_right[0]);
-          bottom = Math.max(bottom_left[1], bottom_right[1]);
-        }
-      } catch (err) {
-        warning(`Failed to get border box for ${id}: ${err.toString()}`);
-      }
+      // Get all client rects.
+      const clientRects = [...elem.raw.getClientRects()].map(r => {
+        const { left, top, right, bottom } = shiftRect(r, elem.offset)
+        return [left, top, right, bottom];
+      });
 
       if (left >= right || top >= bottom) {
         return null;
@@ -1818,6 +1805,9 @@ function DOM_getAllBoundingClientRects() {
         node: id,
         rect: [left, top, right, bottom],
       };
+      if (clientRects.length > 0) {
+        v.rects = clientRects;
+      }
       if (elem.style?.getPropertyValue("visibility") === "hidden") {
         v.visibility = "hidden";
       }
@@ -2042,7 +2032,7 @@ class CssRule {
 
 
 /**
- * 
+ *
  * @see https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
  * @see https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
  * @see https://chromedevtools.github.io/devtools-protocol/tot/CSS/#type-CSSRule
@@ -2071,7 +2061,7 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
       const nativeSheet = fromJsCssGetStylesheetByCpdId(styleSheetCpdId);
 
       // NOTE: `isSystem` is part of RRP from `gecko`.
-      //    -> Chromium has a more diversified `StyleSheetOrigin` enum for this, 
+      //    -> Chromium has a more diversified `StyleSheetOrigin` enum for this,
       //      (that is only accessible on the rule level in CDP, for some reason)
       const isSystem = origin !== 'regular';
       const styleSheet = { isSystem };
@@ -2166,7 +2156,7 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
   };
 
   // NOTE: we cannot currently lookup the native `CSSRule` object because
-  //      InspectorCSSAgent::BuildObjectForRuleWithoutMedia does not 
+  //      InspectorCSSAgent::BuildObjectForRuleWithoutMedia does not
   //      store an id.
   // const nativeRule = lookupNativeCssRuleByCdpRule();
   const nativeRule = null;
@@ -2183,10 +2173,10 @@ function registerCdpAsRrpCssRule(nodeObj, cdpRule) {
  * NOTE1: RRP's `CSS.Rule` is based on how gecko does things.
  *    gecko has a utility function to produce the rules in one call.
  *    But in chromium, we have to query and convert the data in multiple steps.
- * 
- * 
+ *
+ *
  * @see https://chromedevtools.github.io/devtools-protocol/tot/CSS/#method-getMatchedStylesForNode
- * 
+ *
  * @see https://linear.app/replay/issue/RUN-981/enhance-pausegetobjectpreview-css-previews
  * @see https://github.com/replayio/gecko-dev/blob/628cc55f22785f3a66a8c767cdc86f31feb9a050/layout/inspector/InspectorUtils.cpp#L155
  */
@@ -2731,7 +2721,7 @@ const {
 const cache = {};
 
 // Provide a cache for urls, salted with the supplied hash.  Practically, this
-// means if the script content changes at the url, we will re-download the resource. 
+// means if the script content changes at the url, we will re-download the resource.
 async function getCachedResource(url, hash) {
   const key = `${url}:${hash}`;
   if (cache[key] && !RECORD_REPLAY_DISABLE_SOURCEMAP_CACHE) {
@@ -2780,7 +2770,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
 
   let sources;
   if (!recordingDirectoryFileExists(name) || !recordingDirectoryFileExists(lookupName)) {
-    writeToRecordingDirectory(name, sourceMap);    
+    writeToRecordingDirectory(name, sourceMap);
 
     sources = collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
     writeToRecordingDirectory(lookupName, JSON.stringify(sources));
@@ -2956,10 +2946,10 @@ function isValidBaseURL(url) {
 
 )"""";
 
-// Script that injects React DevTools "stub" functions to capture 
+// Script that injects React DevTools "stub" functions to capture
 // marker annotations while recording, for use in later processing
 const char* gReactDevtoolsScript = R""""(
-//js 
+//js
 (() => {
 
 const stubFiberRoots = {};
@@ -3028,7 +3018,7 @@ function onCommitFiberUnmount(rendererID, fiber) {
   const annotationType = "commit-fiber-unmount"
 
   // Unmounts are always one fiber at a time during the commit phase.
-  // Stash the unmounted fibers here, so we can map them to persistent 
+  // Stash the unmounted fibers here, so we can map them to persistent
   // object IDs inside of `onCommitFiberRoot` processing in the routine.
   const unmountedFibersSet = getUnmountedFibersSetForRenderer(rendererID);
   unmountedFibersSet.add(fiber);
@@ -3053,7 +3043,7 @@ function onCommitFiberRoot(rendererID, root, priorityLevel) {
   const current = root.current;
   const isKnownRoot = mountedRoots.has(root);
   // Keep track of mounted roots so we can hydrate when DevTools connect.
-  const isUnmounting = current.memoizedState == null || current.memoizedState.element == null; 
+  const isUnmounting = current.memoizedState == null || current.memoizedState.element == null;
 
   if (!isKnownRoot && !isUnmounting) {
     mountedRoots.add(root);
@@ -3064,7 +3054,7 @@ function onCommitFiberRoot(rendererID, root, priorityLevel) {
   // Get these so it's in scope in the routine eval, and we can clear it after the annotation
   const unmountedFibersSet = getUnmountedFibersSetForRenderer(rendererID);
   const unmountedFiberAlternates = getUnmountedFiberAlternatesForRenderer(rendererID);
-  
+
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 
   for (const fiber of unmountedFibersSet) {
@@ -3084,7 +3074,7 @@ function onPostCommitFiberRoot(rendererID, root) {
 
 
 
-// Script that injects Redux DevTools "stub" functions to capture 
+// Script that injects Redux DevTools "stub" functions to capture
 // marker annotations while recording, for use in later processing
 const char* gReduxDevtoolsScript = R""""(
 //js
@@ -3641,7 +3631,7 @@ static void SetDataProperty(v8::Isolate* isolate,
  *  `v8_crdtp::Serializable` and
  *  `crdtp::Serializable`.
  *  Both namespaces also have their own copy of the ConvertCBORToJSON function.
- * 
+ *
  * @see https://replit.com/@Domiii/FunctionTemplates#main.cpp
  */
 // typedef ConvertResult (*ConvertFun)(int, int);  // signature for all valid functions
@@ -3773,7 +3763,7 @@ static InspectedFrames* getOrCreateInspectedFrames() {
   return gInspectedFrames;
 }
 
-// NOTE: we need to instantiate all inspectors indivudally because we 
+// NOTE: we need to instantiate all inspectors indivudally because we
 //    are not fully hooked up with a `DevToolsSession` + `UberDispatcher`.
 //    We also cannot enable them for the same reason.
 InspectorDOMAgent* getOrCreateInspectorDOMAgent(v8::Isolate* isolate) {
@@ -3825,7 +3815,7 @@ InspectorCSSAgent* getOrCreateInspectorCSSAgent(v8::Isolate* isolate) {
     gInspectorCssAgent = MakeGarbageCollected<InspectorCSSAgent>(
         domAgent, inspectedFrames, networkAgent, resource_content_loader,
         resource_container);
-    
+
     // NOTE: we cannot easily enable without a full session active,
     //      but if we wanted to, here is an example:
     // https://source.chromium.org/chromium/chromium/src/+/main:out/mac-Debug/gen/third_party/blink/renderer/core/inspector/protocol/css.cc;l=890?q=EnableCallbackImpl&ss=chromium%2Fchromium%2Fsrc
@@ -3955,20 +3945,20 @@ static void fromJsGetObjectByCdpId(
 
 /**
  * Whether a given value is a blink object.
- * 
- * NOTE: If we want a generalized |isNativeObject| function, 
+ *
+ * NOTE: If we want a generalized |isNativeObject| function,
  * we probably have to expose |v8::internal::Script::type|
  * (which is also used by |CallSiteInfo::IsNative|).
  */
 static void fromJsIsBlinkObject(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
-  CHECK(args.Length() == 1 && 
+  CHECK(args.Length() == 1 &&
         "[RuntimeError] must be called with a single value");
 
   v8::Isolate* isolate = args.GetIsolate();
-  
+
   bool result = V8DOMWrapper::IsWrapper(isolate, args[0]);
-  
+
   args.GetReturnValue().Set(result);
 }
 
@@ -4560,7 +4550,7 @@ static void fromJsGetMatchedStylesForNode(
   }
 }
 
- 
+
 static void fromJsCssGetStylesheetByCpdId(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   CHECK(args.Length() == 1 && args[0]->IsString() &&
