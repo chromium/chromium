@@ -28,9 +28,10 @@ NoStatePrefetchManagerFactory::NoStatePrefetchManagerFactory()
           "NoStatePrefetchManager",
           BrowserContextDependencyManager::GetInstance()) {}
 
-KeyedService* NoStatePrefetchManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NoStatePrefetchManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new prerender::NoStatePrefetchManager(
+  return std::make_unique<prerender::NoStatePrefetchManager>(
       browser_context,
       std::make_unique<NoStatePrefetchManagerDelegateImpl>(browser_context));
 }
