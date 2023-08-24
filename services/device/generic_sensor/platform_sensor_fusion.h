@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "services/device/generic_sensor/platform_sensor.h"
-#include "services/device/generic_sensor/platform_sensor_provider_base.h"
+#include "services/device/generic_sensor/platform_sensor_provider.h"
 
 namespace device {
 
@@ -41,7 +41,7 @@ class PlatformSensorFusion : public PlatformSensor,
       SensorReadingSharedBuffer* reading_buffer,
       PlatformSensorProvider* provider,
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm,
-      PlatformSensorProviderBase::CreateSensorCallback callback);
+      PlatformSensorProvider::CreateSensorCallback callback);
 
   PlatformSensorFusion(const PlatformSensorFusion&) = delete;
   PlatformSensorFusion& operator=(const PlatformSensorFusion&) = delete;

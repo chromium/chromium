@@ -996,7 +996,7 @@ TEST_F(PlatformSensorAndProviderLinuxTest,
 
   // We cannot call PlatformSensorAndProviderLinuxTest::CreateSensor() like the
   // other tests because we need more control over the RunLoop; both calls to
-  // PlatformSensorProviderBase::CreateSensor() must happen before the RunLoop
+  // PlatformSensorProvider::CreateSensor() must happen before the RunLoop
   // runs (and therefore before sensor enumeration finishes).
   scoped_refptr<PlatformSensor> accelerometer;
   provider_->CreateSensor(

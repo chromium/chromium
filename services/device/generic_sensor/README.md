@@ -179,9 +179,7 @@ and incognito windows.
     create and track `PlatformSensor` instances. `PlatformSensorProvider` is
     also responsible for creating a shared buffer for sensor readings. Every
     platform has its own implementation of `PlatformSensorProvider`
-    (`PlatformSensorProviderAndroid`, `PlatformSensorProviderWin` etc), and the
-    generic part of the functionality is encapsulated inside the
-    `PlatformSensorProviderBase` class.
+    (`PlatformSensorProviderAndroid`, `PlatformSensorProviderWin` etc).
 
 *   `PlatformSensor`: represents device sensor of a given type. There can be
     only one `PlatformSensor` instance of the same type at a time, its ownership
@@ -506,20 +504,20 @@ between Blink calls `SensorProviderProxy::GetSensor()` works roughly like this:
 1.  `SensorProviderProxy::GetSensor()` calls the `GetSensor()` operation in the
     Sensor Mojo interface.
 1.  That is implemented by `SensorProviderImpl::GetSensor()`. It invokes
-    `PlatformSensorProviderBase::CloneSharedMemoryRegion()`.
-    1.  `PlatformSensorProviderBase::CloneSharedMemoryRegion()` initializes the
+    `PlatformSensorProvider::CloneSharedMemoryRegion()`.
+    1.  `PlatformSensorProvider::CloneSharedMemoryRegion()` initializes the
         shared buffer and the mapping if necessary in
-        `PlatformSensorProviderBase::CreateSharedBufferIfNeeded()`.
-    1.  `PlatformSensorProviderBase::CloneSharedMemoryRegion()` returns a
+        `PlatformSensorProvider::CreateSharedBufferIfNeeded()`.
+    1.  `PlatformSensorProvider::CloneSharedMemoryRegion()` returns a
         read-only mapping handle.
 1.  If the platform sensor still needs to be created,
     `SensorProviderImpl::GetSensor()` will invoke
-    `PlatformSensorProviderBase::CreateSensor()`, which invokes
-    `PlatformSensorProviderBase::GetSensorReadingSharedBufferForType()`. The
+    `PlatformSensorProvider::CreateSensor()`, which invokes
+    `PlatformSensorProvider::GetSensorReadingSharedBufferForType()`. The
     `SensorReadingSharedBuffer` pointer returned by this function is later
     passed to `PlatformSensor` and its subclasses, which update it when the
     readings change.
-1.  Ultimately, `PlatformSensorProviderBase::SensorCreated()` is called, and the
+1.  Ultimately, `PlatformSensorProvider::SensorCreated()` is called, and the
     read-only shared buffer handle and the offset in it corresponding to the
     sensor type being created are passed in `mojom::SensorInitParams`.
 1.  On the Blink side, `SensorProxyImpl::OnSensorCreated()` is invoked with the

@@ -39,8 +39,6 @@ source_set("generic_sensor") {
     "platform_sensor_fusion_algorithm.h",
     "platform_sensor_provider.cc",
     "platform_sensor_provider.h",
-    "platform_sensor_provider_base.cc",
-    "platform_sensor_provider_base.h",
     "platform_sensor_util.cc",
     "platform_sensor_util.h",
     "relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.cc",
