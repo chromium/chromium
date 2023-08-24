@@ -406,9 +406,10 @@ DnsProbeServiceFactory::DnsProbeServiceFactory()
 
 DnsProbeServiceFactory::~DnsProbeServiceFactory() = default;
 
-KeyedService* DnsProbeServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DnsProbeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new DnsProbeServiceImpl(context);
+  return std::make_unique<DnsProbeServiceImpl>(context);
 }
 
 // static
