@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/base_paths.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -434,10 +434,12 @@ class CompanionPageBrowserTest : public InProcessBrowserTest {
 
   companion::proto::CompanionUrlParams DeserializeCompanionRequest(
       const std::string& companion_url_param) {
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        companion_url_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+
     companion::proto::CompanionUrlParams proto;
-    auto base64_decoded = base::Base64Decode(companion_url_param);
-    auto serialized_proto = std::string(base64_decoded.value().begin(),
-                                        base64_decoded.value().end());
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto;
   }

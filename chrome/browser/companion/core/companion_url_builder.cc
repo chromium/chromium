@@ -4,7 +4,7 @@
 
 #include "chrome/browser/companion/core/companion_url_builder.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "chrome/browser/companion/core/companion_permission_utils.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
@@ -133,7 +133,9 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
       signin_delegate_->ShouldShowRegionSearchIPH());
 
   std::string base64_encoded_proto;
-  base::Base64Encode(url_params.SerializeAsString(), &base64_encoded_proto);
+  base::Base64UrlEncode(url_params.SerializeAsString(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &base64_encoded_proto);
   return base64_encoded_proto;
 }
 

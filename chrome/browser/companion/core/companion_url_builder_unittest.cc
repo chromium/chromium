@@ -4,7 +4,7 @@
 
 #include "chrome/browser/companion/core/companion_url_builder.h"
 
-#include "base/base64.h"
+#include "base/base64url.h"
 #include "base/logging.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/companion/core/constants.h"
@@ -92,10 +92,12 @@ class CompanionUrlBuilderTest : public testing::Test {
   // Deserialize the query param into proto::CompanionUrlParams.
   proto::CompanionUrlParams DeserializeCompanionRequest(
       const std::string& companion_url_param) {
+    std::string serialized_proto;
+    EXPECT_TRUE(base::Base64UrlDecode(
+        companion_url_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+        &serialized_proto));
+
     companion::proto::CompanionUrlParams proto;
-    auto base64_decoded = base::Base64Decode(companion_url_param);
-    auto serialized_proto = std::string(base64_decoded.value().begin(),
-                                        base64_decoded.value().end());
     EXPECT_TRUE(proto.ParseFromString(serialized_proto));
     return proto;
   }
