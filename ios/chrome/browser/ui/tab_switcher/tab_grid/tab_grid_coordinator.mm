@@ -82,6 +82,7 @@
 #import "ios/chrome/browser/ui/snackbar/snackbar_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_button_mediator.h"
@@ -172,6 +173,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   // Mediator of the tab grid.
   TabGridMediator* _mediator;
+
+  // Incognito grid coordinator.
+  IncognitoGridCoordinator* _incognitoGridCoordinator;
 }
 
 // Browser that contain tabs from the main pane (i.e. non-incognito).
@@ -774,19 +778,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
              prefService:GetApplicationContext()->GetLocalState()];
   }
 
-  self.incognitoTabsMediator = [[IncognitoGridMediator alloc]
-      initWithConsumer:baseViewController.incognitoTabsConsumer];
-  // TODO(crbug.com/1457146): The action wrangler should be the incognito grid
-  // view controller.
-  self.incognitoTabsMediator.actionWrangler = self.baseViewController;
-  self.incognitoTabsMediator.browser = _incognitoBrowser;
-  self.incognitoTabsMediator.delegate = self;
-
   baseViewController.regularTabsDelegate = self.regularTabsMediator;
-  baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
 
   baseViewController.regularTabsDragDropHandler = self.regularTabsMediator;
-  baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   if (IsPinnedTabsEnabled()) {
     baseViewController.pinnedTabsDragDropHandler = self.pinnedTabsMediator;
   }
@@ -795,7 +789,22 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   baseViewController.regularTabsShareableItemsProvider =
       self.regularTabsMediator;
-  baseViewController.incognitoTabsShareableItemsProvider =
+
+  _incognitoGridCoordinator = [[IncognitoGridCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:_incognitoBrowser
+                 toolbarsMutator:_toolbarsCoordinator.toolbarsMutator
+            gridMediatorDelegate:self];
+  // TODO(crbug.com/1457146): Init view controller inside the coordinator. Also
+  // it should be a IncognitoViewController instead of a TabGridViewController.
+  _incognitoGridCoordinator.incognitoViewController = self.baseViewController;
+  [_incognitoGridCoordinator start];
+  self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
+
+  self.baseViewController.incognitoTabsDelegate = self.incognitoTabsMediator;
+  self.baseViewController.incognitoTabsDragDropHandler =
+      self.incognitoTabsMediator;
+  self.baseViewController.incognitoTabsShareableItemsProvider =
       self.incognitoTabsMediator;
 
   self.incognitoAuthMediator =
@@ -889,8 +898,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _mediator.incognitoPageMutator = self.incognitoTabsMediator;
   _mediator.remotePageMutator = self.remoteTabsMediator;
 
-  self.incognitoTabsMediator.toolbarsMutator =
-      _toolbarsCoordinator.toolbarsMutator;
   self.regularTabsMediator.toolbarsMutator =
       _toolbarsCoordinator.toolbarsMutator;
   self.remoteTabsMediator.toolbarsMutator =
@@ -945,6 +952,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   [_toolbarsCoordinator stop];
   _toolbarsCoordinator = nil;
+
+  [_incognitoGridCoordinator stop];
+  _incognitoGridCoordinator = nil;
 
   // Disconnect UI from models they observe.
   self.regularTabsMediator.browser = nil;

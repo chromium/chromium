@@ -4,6 +4,8 @@
 
 source_set("incognito") {
   sources = [
+    "incognito_grid_coordinator.h",
+    "incognito_grid_coordinator.mm",
     "incognito_grid_mediator.h",
     "incognito_grid_mediator.mm",
   ]
@@ -11,13 +13,14 @@ source_set("incognito") {
   deps = [
     "//base",
     "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
   ]
 }
