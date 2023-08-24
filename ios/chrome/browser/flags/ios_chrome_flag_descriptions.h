@@ -542,6 +542,11 @@ extern const char kIOSSetUpListDescription[];
 extern const char kIOSPasswordBottomSheetName[];
 extern const char kIOSPasswordBottomSheetDescription[];
 
+// Title and description for the flag to enable bulk uploading local passwords
+// for eligible users on the iOS password settings.
+extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[];
+extern const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[];
+
 // Title and description for the flag to enable payments bottom sheet on IOS.
 extern const char kIOSPaymentsBottomSheetName[];
 extern const char kIOSPaymentsBottomSheetDescription[];

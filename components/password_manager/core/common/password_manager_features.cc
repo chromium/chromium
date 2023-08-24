@@ -51,6 +51,12 @@ BASE_FEATURE(kIOSPasswordCheckup,
 BASE_FEATURE(kIOSPasswordBottomSheet,
              "IOSPasswordBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, eligible users will be given the possibility to bulk upload
+// local passwords in the iOS password settings.
+BASE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords,
+             "IOSPasswordSettingsBulkUploadLocalPasswords",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
 // Killswitch for changes regarding password issues in
@@ -269,6 +275,11 @@ bool RequiresMigrationForUnifiedPasswordManager() {
 bool IsPasswordCheckupEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSPasswordCheckup);
+}
+
+bool IsBulkUploadLocalPasswordsEnabled() {
+  return base::FeatureList::IsEnabled(
+      kIOSPasswordSettingsBulkUploadLocalPasswords);
 }
 #endif  // IS_IOS
 

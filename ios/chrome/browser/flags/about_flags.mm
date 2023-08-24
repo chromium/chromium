@@ -1461,6 +1461,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSBrowserEditMenuMetricsName,
      flag_descriptions::kIOSBrowserEditMenuMetricsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSBrowserEditMenuMetrics)},
+    {"ios-bulk-upload-local-passwords",
+     flag_descriptions::kIOSPasswordSettingsBulkUploadLocalPasswordsName,
+     flag_descriptions::kIOSPasswordSettingsBulkUploadLocalPasswordsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kIOSPasswordSettingsBulkUploadLocalPasswords)},
     {"enable-reading-list-account-storage",
      flag_descriptions::kEnableReadingListAccountStorageName,
      flag_descriptions::kEnableReadingListAccountStorageDescription,

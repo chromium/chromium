@@ -5024,6 +5024,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "ios-bulk-upload-local-passwords",
+    "owners": ["nicolasmacbeth", "rkgibson", "tmartino", "bling-transactions@google.com"],
+    "expiry_milestone": 122
+  },
+  {
     "name": "ios-crashpad",
     "owners": [ "justincohen", "bling-flags@google.com" ],
     "expiry_milestone": 120

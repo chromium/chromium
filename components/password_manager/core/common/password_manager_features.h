@@ -32,6 +32,7 @@ BASE_DECLARE_FEATURE(kForgotPasswordFormSupport);
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
+BASE_DECLARE_FEATURE(kIOSPasswordSettingsBulkUploadLocalPasswords);
 #endif  // IS_IOS
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
 BASE_DECLARE_FEATURE(kSendPasswords);
@@ -169,6 +170,10 @@ bool RequiresMigrationForUnifiedPasswordManager();
 #if BUILDFLAG(IS_IOS)
 // Returns true if the Password Checkup feature flag is enabled.
 bool IsPasswordCheckupEnabled();
+
+// Helper function returning the status of
+// `kIOSPasswordSettingsBulkUploadLocalPasswords`.
+bool IsBulkUploadLocalPasswordsEnabled();
 #endif  // IS_IOS
 
 }  // namespace password_manager::features

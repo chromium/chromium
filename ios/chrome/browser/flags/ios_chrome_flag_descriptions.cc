@@ -634,6 +634,12 @@ const char kIOSPasswordBottomSheetName[] = "IOS Password Manager Bottom Sheet";
 const char kIOSPasswordBottomSheetDescription[] =
     "Enables the display of the password bottom sheet on IOS.";
 
+const char kIOSPasswordSettingsBulkUploadLocalPasswordsName[] =
+    "iOS Bulk Upload Local Passwords";
+const char kIOSPasswordSettingsBulkUploadLocalPasswordsDescription[] =
+    "Enables bulk uploading local passwords for eligible users in the iOS "
+    "password settings.";
+
 const char kIOSPaymentsBottomSheetName[] = "IOS Payments Manager Bottom Sheet";
 const char kIOSPaymentsBottomSheetDescription[] =
     "Enables the display of the payments bottom sheet on IOS.";
