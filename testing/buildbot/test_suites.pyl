@@ -6279,8 +6279,9 @@
       'gpu_dawn_webgpu_blink_web_tests',
     ],
 
-    # Like chromium_linux_rel_isolated_scripts above, but includes
-    # desktop_once_isolated_scripts. Note: use
+    # Like chromium_linux_rel_isolated_scripts above, but should only
+    # include test suites that aren't affected by things like extra GN args
+    # (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
     # chromium_linux_rel_isolated_scripts if you're setting up a new builder.
     # This group should only be used across ~3 builders.
     'chromium_linux_rel_isolated_scripts_once': [
@@ -6349,8 +6350,9 @@
       # TODO(crbug.com/1399354): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 
-    # Like chromium_mac_rel_isolated_scripts above, but includes
-    # desktop_once_isolated_scripts. Note: use
+    # Like chromium_mac_rel_isolated_scripts above, but should only
+    # include test suites that aren't affected by things like extra GN args
+    # (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
     # chromium_mac_rel_isolated_scripts if you're setting up a new builder.
     # This group should only be used across ~3 builders.
     'chromium_mac_rel_isolated_scripts_once': [
@@ -6416,8 +6418,9 @@
       'gpu_dawn_webgpu_blink_web_tests',
     ],
 
-    # Like chromium_win_rel_isolated_scripts above, but includes
-    # desktop_once_isolated_scripts. Note: use
+    # Like chromium_win_rel_isolated_scripts above, but should only
+    # include test suites that aren't affected by things like extra GN args
+    # (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
     # chromium_win_rel_isolated_scripts if you're setting up a new builder.
     # This group should only be used across ~3 builders.
     'chromium_win_rel_isolated_scripts_once': [
