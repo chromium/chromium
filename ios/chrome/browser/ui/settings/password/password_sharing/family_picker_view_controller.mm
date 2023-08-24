@@ -151,7 +151,12 @@ const CGFloat kAccessorySymbolSize = 22;
 #pragma mark - FamilyPickerConsumer
 
 - (void)setRecipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients {
-  _recipients = recipients;
+  NSSortDescriptor* eligibility =
+      [[NSSortDescriptor alloc] initWithKey:@"isEligible" ascending:NO];
+  NSSortDescriptor* fullName = [[NSSortDescriptor alloc] initWithKey:@"fullName"
+                                                           ascending:YES];
+  _recipients =
+      [recipients sortedArrayUsingDescriptors:@[ eligibility, fullName ]];
 
   [self loadModel];
   [self.tableView reloadData];

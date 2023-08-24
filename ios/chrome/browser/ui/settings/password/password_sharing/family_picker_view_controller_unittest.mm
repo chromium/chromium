@@ -223,3 +223,29 @@ TEST_F(FamilyPickerViewControllerTest, TestShareButtonEnabledWithSelectedRows) {
       didDeselectRowAtIndexPath:indexPath2];
   EXPECT_FALSE(family_controller.navigationItem.rightBarButtonItem.isEnabled);
 }
+
+// Tests that recipients are sorted in the table by eligibility for sharing
+// (having public key) first and then by their name.
+TEST_F(FamilyPickerViewControllerTest,
+       RecipientsAreSortedByEligibilityAndName) {
+  RecipientInfo recipient1;
+  recipient1.user_name = "test2";
+  RecipientInfo recipient2;
+  recipient2.user_name = "test1";
+  RecipientInfo recipient3;
+  recipient3.public_key.key = kPublicKey;
+  recipient3.public_key.key_version = kPublicKeyVersion;
+  recipient3.user_name = "test4";
+  RecipientInfo recipient4;
+  recipient4.public_key.key = kPublicKey;
+  recipient4.public_key.key_version = kPublicKeyVersion;
+  recipient4.user_name = "test3";
+  SetFamilyWithRecipients({recipient1, recipient2, recipient3, recipient4});
+
+  EXPECT_EQ(NumberOfSections(), 1);
+  EXPECT_EQ(NumberOfItemsInSection(0), 4);
+  CheckCellText(@"test3", 0, 0);
+  CheckCellText(@"test4", 0, 1);
+  CheckCellText(@"test1", 0, 2);
+  CheckCellText(@"test2", 0, 3);
+}
