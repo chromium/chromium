@@ -271,8 +271,7 @@ SearchSection::SearchSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  updater.AddSearchTags(
-      GetSearchPageSearchConcepts(/*section_path=*/GetSectionPath()));
+  updater.AddSearchTags(GetSearchPageSearchConcepts(GetSectionPath()));
 
   AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
