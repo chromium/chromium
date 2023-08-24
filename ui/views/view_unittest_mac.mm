@@ -6,8 +6,6 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/views/test/widget_test.h"
 
@@ -45,102 +43,79 @@ namespace views {
 
 namespace {
 
-// Stores last received swipe gesture direction vector in
-// |last_swipe_gesture()|.
+enum SwipeType {
+  SWIPE_NONE,
+  SWIPE_LEFT,
+  SWIPE_RIGHT,
+  SWIPE_UP,
+  SWIPE_DOWN,
+};
+
+// Stores last received swipe gesture direction.
 class ThreeFingerSwipeView : public View {
  public:
-  ThreeFingerSwipeView() = default;
-
-  ThreeFingerSwipeView(const ThreeFingerSwipeView&) = delete;
-  ThreeFingerSwipeView& operator=(const ThreeFingerSwipeView&) = delete;
-
   // View:
   void OnGestureEvent(ui::GestureEvent* event) override {
     EXPECT_EQ(ui::ET_GESTURE_SWIPE, event->details().type());
 
-    int dx = 0, dy = 0;
-    if (event->details().swipe_left())
-      dx = -1;
-
-    if (event->details().swipe_right()) {
-      EXPECT_EQ(0, dx);
-      dx = 1;
+    if (event->details().swipe_left()) {
+      last_swipe_ = SWIPE_LEFT;
+    } else if (event->details().swipe_right()) {
+      last_swipe_ = SWIPE_RIGHT;
+    } else if (event->details().swipe_up()) {
+      last_swipe_ = SWIPE_UP;
+    } else if (event->details().swipe_down()) {
+      last_swipe_ = SWIPE_DOWN;
+    } else {
+      NOTREACHED();
     }
-
-    if (event->details().swipe_down())
-      dy = 1;
-
-    if (event->details().swipe_up()) {
-      EXPECT_EQ(0, dy);
-      dy = -1;
-    }
-
-    last_swipe_gesture_ = gfx::Point(dx, dy);
   }
 
-  absl::optional<gfx::Point> last_swipe_gesture() const {
-    return last_swipe_gesture_;
-  }
+  SwipeType last_swipe() const { return last_swipe_; }
 
  private:
-  absl::optional<gfx::Point> last_swipe_gesture_;
+  SwipeType last_swipe_{SWIPE_NONE};
 };
+
+using ViewMacTest = test::WidgetTest;
+
+SwipeType SendSwipeGesture(ThreeFingerSwipeView* view, NSPoint gesture) {
+  NSWindow* window = view->GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  FakeSwipeEvent* swipe_event = [[FakeSwipeEvent alloc] init];
+  swipe_event.deltaX = gesture.x;
+  swipe_event.deltaY = gesture.y;
+  swipe_event.window = window;
+  swipe_event.locationInWindow = NSMakePoint(50, 50);
+  swipe_event.timestamp = NSProcessInfo.processInfo.systemUptime;
+
+  // BridgedContentView should create an appropriate ui::GestureEvent and pass
+  // it to the Widget.
+  [window.contentView swipeWithEvent:swipe_event];
+  return view->last_swipe();
+}
+
+// Test that three-finger swipe events are translated by BridgedContentView.
+TEST_F(ViewMacTest, HandlesThreeFingerSwipeGestures) {
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  widget->SetBounds(gfx::Rect(0, 0, 100, 100));
+  widget->Show();
+
+  auto* view = widget->non_client_view()->frame_view()->AddChildView(
+      std::make_unique<ThreeFingerSwipeView>());
+  view->SetSize(widget->GetClientAreaBoundsInScreen().size());
+
+  // Remember that in AppKit coordinates, x and y increase towards the top-left.
+  const NSPoint nsleft = NSMakePoint(1, 0);
+  const NSPoint nsright = NSMakePoint(-1, 0);
+  const NSPoint nsup = NSMakePoint(0, 1);
+  const NSPoint nsdown = NSMakePoint(0, -1);
+
+  EXPECT_EQ(SWIPE_LEFT, SendSwipeGesture(view, nsleft));
+  EXPECT_EQ(SWIPE_RIGHT, SendSwipeGesture(view, nsright));
+  EXPECT_EQ(SWIPE_DOWN, SendSwipeGesture(view, nsdown));
+  EXPECT_EQ(SWIPE_UP, SendSwipeGesture(view, nsup));
+}
 
 }  // namespace
-
-class ViewMacTest : public test::WidgetTest {
- public:
-  ViewMacTest() = default;
-
-  ViewMacTest(const ViewMacTest&) = delete;
-  ViewMacTest& operator=(const ViewMacTest&) = delete;
-
-  absl::optional<gfx::Point> SwipeGestureVector(int dx, int dy) {
-    FakeSwipeEvent* swipe_event = [[FakeSwipeEvent alloc] init];
-    swipe_event.deltaX = dx;
-    swipe_event.deltaY = dy;
-    swipe_event.window = widget_->GetNativeWindow().GetNativeNSWindow();
-    swipe_event.locationInWindow = NSMakePoint(50, 50);
-    swipe_event.timestamp = NSProcessInfo.processInfo.systemUptime;
-
-    // BridgedContentView should create an appropriate ui::GestureEvent and pass
-    // it to the Widget.
-    [widget_->GetNativeWindow().GetNativeNSWindow().contentView
-        swipeWithEvent:swipe_event];
-    return view_->last_swipe_gesture();
-  }
-
-  // testing::Test:
-  void SetUp() override {
-    WidgetTest::SetUp();
-
-    widget_ = CreateTopLevelPlatformWidget();
-    widget_->SetBounds(gfx::Rect(0, 0, 100, 100));
-    widget_->Show();
-
-    view_ = new ThreeFingerSwipeView;
-    view_->SetSize(widget_->GetClientAreaBoundsInScreen().size());
-    widget_->non_client_view()->frame_view()->AddChildView(view_.get());
-  }
-
-  void TearDown() override {
-    widget_->CloseNow();
-    WidgetTest::TearDown();
-  }
-
- private:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<ThreeFingerSwipeView, DanglingUntriaged> view_ = nullptr;
-};
-
-// Three-finger swipes send immediate events and they cannot be tracked.
-TEST_F(ViewMacTest, HandlesThreeFingerSwipeGestures) {
-  // Note that positive delta is left and up for NSEvent, which is the inverse
-  // of ui::GestureEventDetails.
-  EXPECT_EQ(gfx::Point(1, 0), *SwipeGestureVector(-1, 0));
-  EXPECT_EQ(gfx::Point(-1, 0), *SwipeGestureVector(1, 0));
-  EXPECT_EQ(gfx::Point(0, 1), *SwipeGestureVector(0, -1));
-  EXPECT_EQ(gfx::Point(0, -1), *SwipeGestureVector(0, 1));
-}
 
 }  // namespace views
