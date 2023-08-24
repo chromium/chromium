@@ -45,7 +45,8 @@ bool PermissionAuditingServiceFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* PermissionAuditingServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PermissionAuditingServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(features::kPermissionAuditing)) {
     return nullptr;
@@ -53,8 +54,9 @@ KeyedService* PermissionAuditingServiceFactory::BuildServiceInstanceFor(
   auto backend_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  auto* instance =
-      new permissions::PermissionAuditingService(backend_task_runner);
+  std::unique_ptr<permissions::PermissionAuditingService> instance =
+      std::make_unique<permissions::PermissionAuditingService>(
+          backend_task_runner);
   base::FilePath database_path =
       context->GetPath().Append(FILE_PATH_LITERAL("Permission Auditing Logs"));
   instance->Init(database_path);
