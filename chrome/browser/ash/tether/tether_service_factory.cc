@@ -64,7 +64,8 @@ TetherServiceFactory::TetherServiceFactory()
 
 TetherServiceFactory::~TetherServiceFactory() = default;
 
-KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+TetherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(NetworkHandler::IsInitialized());
 
@@ -73,16 +74,18 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kTetherStub)) {
-    FakeTetherService* fake_tether_service = new FakeTetherService(
-        Profile::FromBrowserContext(context),
-        chromeos::PowerManagerClient::Get(),
-        device_sync::DeviceSyncClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)),
-        secure_channel::SecureChannelClientProvider::GetInstance()->GetClient(),
-        multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-            Profile::FromBrowserContext(context)),
-        NetworkHandler::Get()->network_state_handler(),
-        session_manager::SessionManager::Get());
+    std::unique_ptr<FakeTetherService> fake_tether_service =
+        std::make_unique<FakeTetherService>(
+            Profile::FromBrowserContext(context),
+            chromeos::PowerManagerClient::Get(),
+            device_sync::DeviceSyncClientFactory::GetForProfile(
+                Profile::FromBrowserContext(context)),
+            secure_channel::SecureChannelClientProvider::GetInstance()
+                ->GetClient(),
+            multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
+                Profile::FromBrowserContext(context)),
+            NetworkHandler::Get()->network_state_handler(),
+            session_manager::SessionManager::Get());
 
     int num_tether_networks = 0;
     base::StringToInt(command_line->GetSwitchValueASCII(switches::kTetherStub),
@@ -92,7 +95,7 @@ KeyedService* TetherServiceFactory::BuildServiceInstanceFor(
     return fake_tether_service;
   }
 
-  return new TetherService(
+  return std::make_unique<TetherService>(
       Profile::FromBrowserContext(context), chromeos::PowerManagerClient::Get(),
       device_sync::DeviceSyncClientFactory::GetForProfile(
           Profile::FromBrowserContext(context)),
