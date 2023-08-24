@@ -413,6 +413,13 @@ BASE_FEATURE(kUseDecoderStreamForWebRTC,
              "UseDecoderStreamForWebRTC",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, element capture will be performed instead of region capture. Used
+// for testing until the restrictTo API is finished.
+// TODO(https://crbug.com/1473342): remove once restrictTo API is in place.
+BASE_FEATURE(kUseElementInsteadOfRegionCapture,
+             "UseElementInsteadOfRegionCapture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, when RTCVideoDecoderAdapter is used then SW decoders will be
 // exposed directly to WebRTC.
 BASE_FEATURE(kExposeSwDecodersToWebRTC,
