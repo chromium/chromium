@@ -311,6 +311,14 @@ void MediaItemUIDeviceSelectorView::ShowDevices() {
 
   device_entry_views_container_->SetVisible(true);
   PreferredSizeChanged();
+
+  // When this device selector view is used on Chrome OS ash with
+  // media::kGlobalMediaControlsCrOSUpdatedUI enabled, focus the first available
+  // device when the device list is shown for accessibility.
+  if (media_color_theme_.has_value() &&
+      device_entry_views_container_->children().size() > 0) {
+    device_entry_views_container_->children()[0]->RequestFocus();
+  }
 }
 
 void MediaItemUIDeviceSelectorView::HideDevices() {
