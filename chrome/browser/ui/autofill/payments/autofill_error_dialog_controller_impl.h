@@ -47,8 +47,7 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   // Dismiss the error dialog if showing.
   void Dismiss();
 
-  const raw_ptr<content::WebContents, AcrossTasksDanglingUntriaged>
-      web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   // The context of the error dialog that is being displayed. Contains
   // information such as the type of the error dialog that is being displayed.
   // |error_dialog_context_| may also contain extra information such as a
