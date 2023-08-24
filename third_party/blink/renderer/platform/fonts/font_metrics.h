@@ -20,6 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_METRICS_H_
 
+#include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
@@ -39,13 +40,18 @@ class FontMetrics {
   DISALLOW_NEW();
 
  public:
+  using ApplyBaselineTable =
+      base::StrongAlias<class ApplyBaselineTableTag, bool>;
+
   unsigned UnitsPerEm() const { return units_per_em_; }
   void SetUnitsPerEm(unsigned units_per_em) { units_per_em_ = units_per_em; }
 
-  float FloatAscent(FontBaseline baseline_type = kAlphabeticBaseline) const {
+  float FloatAscent(FontBaseline baseline_type = kAlphabeticBaseline,
+                    ApplyBaselineTable apply_baseline_table =
+                        ApplyBaselineTable(false)) const {
     if (baseline_type == kAlphabeticBaseline)
       return float_ascent_;
-    return FloatAscentInternal(baseline_type);
+    return FloatAscentInternal(baseline_type, apply_baseline_table);
   }
 
   void SetAscent(float ascent) {
@@ -53,10 +59,13 @@ class FontMetrics {
     int_ascent_ = static_cast<int>(lroundf(ascent));
   }
 
-  float FloatDescent(FontBaseline baseline_type = kAlphabeticBaseline) const {
+  float FloatDescent(FontBaseline baseline_type = kAlphabeticBaseline,
+                     ApplyBaselineTable apply_baseline_table =
+                         ApplyBaselineTable(false)) const {
     if (baseline_type == kAlphabeticBaseline)
       return float_descent_;
-    return FloatHeight() - FloatAscentInternal(baseline_type);
+    return FloatHeight() -
+           FloatAscentInternal(baseline_type, apply_baseline_table);
   }
 
   void SetDescent(float descent) {
@@ -85,16 +94,20 @@ class FontMetrics {
   void SetHasXHeight(bool has_x_height) { has_x_height_ = has_x_height; }
 
   // Integer variants of certain metrics, used for HTML rendering.
-  int Ascent(FontBaseline baseline_type = kAlphabeticBaseline) const {
+  int Ascent(FontBaseline baseline_type = kAlphabeticBaseline,
+             ApplyBaselineTable apply_baseline_table =
+                 ApplyBaselineTable(false)) const {
     if (baseline_type == kAlphabeticBaseline)
       return int_ascent_;
-    return IntAscentInternal(baseline_type);
+    return IntAscentInternal(baseline_type, apply_baseline_table);
   }
 
-  int Descent(FontBaseline baseline_type = kAlphabeticBaseline) const {
+  int Descent(FontBaseline baseline_type = kAlphabeticBaseline,
+              ApplyBaselineTable apply_baseline_table =
+                  ApplyBaselineTable(false)) const {
     if (baseline_type == kAlphabeticBaseline)
       return int_descent_;
-    return Height() - IntAscentInternal(baseline_type);
+    return Height() - IntAscentInternal(baseline_type, apply_baseline_table);
   }
 
   int Height() const { return int_ascent_ + int_descent_; }
@@ -163,6 +176,30 @@ class FontMetrics {
     underline_position_ = underline_position;
   }
 
+  void SetIdeographicBaseline(absl::optional<float> value) {
+    ideographic_baseline_position_ = value;
+  }
+
+  absl::optional<float> IdeographicBaseline() const {
+    return ideographic_baseline_position_;
+  }
+
+  void SetAlphabeticBaseline(absl::optional<float> value) {
+    alphabetic_baseline_position_ = value;
+  }
+
+  absl::optional<float> AlphabeticBaseline() const {
+    return alphabetic_baseline_position_;
+  }
+
+  void SetHangingBaseline(absl::optional<float> value) {
+    hanging_baseline_position_ = value;
+  }
+
+  absl::optional<float> HangingBaseline() const {
+    return hanging_baseline_position_;
+  }
+
   // Unfortunately we still need to keep metrics adjustments for certain Mac
   // fonts, see crbug.com/445830. Also, a potentially better solution for the
   // subpixel_ascent_descent flag would be to move line layout to LayoutUnit
@@ -195,10 +232,17 @@ class FontMetrics {
     has_x_height_ = false;
     underline_thickness_.reset();
     underline_position_.reset();
+    ideographic_baseline_position_.reset();
+    alphabetic_baseline_position_.reset();
+    hanging_baseline_position_.reset();
   }
 
-  PLATFORM_EXPORT float FloatAscentInternal(FontBaseline baseline_type) const;
-  PLATFORM_EXPORT int IntAscentInternal(FontBaseline baseline_type) const;
+  PLATFORM_EXPORT float FloatAscentInternal(
+      FontBaseline baseline_type,
+      ApplyBaselineTable apply_baseline_table) const;
+  PLATFORM_EXPORT int IntAscentInternal(
+      FontBaseline baseline_type,
+      ApplyBaselineTable apply_baseline_table) const;
 
   unsigned units_per_em_ = kGDefaultUnitsPerEm;
   float cap_height_ = 0;
@@ -211,6 +255,9 @@ class FontMetrics {
   absl::optional<float> ideographic_full_width_;
   absl::optional<float> underline_thickness_;
   absl::optional<float> underline_position_;
+  absl::optional<float> ideographic_baseline_position_;
+  absl::optional<float> alphabetic_baseline_position_;
+  absl::optional<float> hanging_baseline_position_;
   int int_ascent_ = 0;
   int int_descent_ = 0;
   bool has_x_height_ = false;

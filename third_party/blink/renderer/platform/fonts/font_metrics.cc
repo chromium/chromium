@@ -150,10 +150,15 @@ void FontMetrics::AscentDescentWithHacks(
 #endif
 }
 
-float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
+float FontMetrics::FloatAscentInternal(
+    FontBaseline baseline_type,
+    ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
       NOTREACHED();
+      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
+        return float_ascent_ - alphabetic_baseline_position_.value();
+      }
       return float_ascent_;
     case kCentralBaseline:
       return FloatHeight() / 2;
@@ -164,7 +169,9 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
     case kTextUnderBaseline:
       return FloatHeight();
     case kIdeographicUnderBaseline:
-      // TODO(layout-dev): Should refer to 'ideo' in OpenType.
+      if (ideographic_baseline_position_.has_value() && apply_baseline_table) {
+        return float_ascent_ - ideographic_baseline_position_.value();
+      }
       return FloatHeight();
     case kXMiddleBaseline:
       return float_ascent_ - XHeight() / 2;
@@ -173,8 +180,9 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
       // in TrueType AAT.
       return float_ascent_ * 0.5f;
     case kHangingBaseline:
-      // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3
-      // in TrueType AAT.
+      if (hanging_baseline_position_.has_value(), apply_baseline_table) {
+        return float_ascent_ - hanging_baseline_position_.value();
+      }
       return float_ascent_ * 0.2f;
     case kTextOverBaseline:
       return 0;
@@ -183,10 +191,17 @@ float FontMetrics::FloatAscentInternal(FontBaseline baseline_type) const {
   return float_ascent_;
 }
 
-int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
+int FontMetrics::IntAscentInternal(
+    FontBaseline baseline_type,
+    ApplyBaselineTable apply_baseline_table) const {
   switch (baseline_type) {
     case kAlphabeticBaseline:
       NOTREACHED();
+      if (alphabetic_baseline_position_.has_value() && apply_baseline_table) {
+        return static_cast<int>(
+            int_ascent_ -
+            static_cast<int>(lroundf(alphabetic_baseline_position_.value())));
+      }
       return int_ascent_;
     case kCentralBaseline:
       return Height() - Height() / 2;
@@ -197,13 +212,19 @@ int FontMetrics::IntAscentInternal(FontBaseline baseline_type) const {
     case kTextUnderBaseline:
       return Height();
     case kIdeographicUnderBaseline:
-      // TODO(layout-dev): Should refer to 'ideo' in OpenType.
+      if (ideographic_baseline_position_.has_value() && apply_baseline_table) {
+        return static_cast<int>(
+            int_ascent_ -
+            static_cast<int>(lroundf(ideographic_baseline_position_.value())));
+      }
       return Height();
     case kXMiddleBaseline:
       return int_ascent_ - static_cast<int>(XHeight() / 2);
     case kMathBaseline:
-      // TODO(layout-dev): Should refer to 'math' in OpenType or 'bsln' value 4
-      // in TrueType AAT.
+      if (hanging_baseline_position_.has_value() && apply_baseline_table) {
+        return int_ascent_ -
+               static_cast<int>(lroundf(hanging_baseline_position_.value()));
+      }
       return int_ascent_ / 2;
     case kHangingBaseline:
       // TODO(layout-dev): Should refer to 'hang' in OpenType or 'bsln' value 3

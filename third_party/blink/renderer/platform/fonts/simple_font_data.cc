@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/open_type_baseline_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
@@ -177,6 +178,13 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   DCHECK(face);
   if (int units_per_em = face->getUnitsPerEm())
     font_metrics_.SetUnitsPerEm(units_per_em);
+
+  // Read baselines value from OpenType Table.
+  OpenTypeBaselineMetrics m(PlatformData().GetHarfBuzzFace(),
+                            PlatformData().Orientation());
+  font_metrics_.SetIdeographicBaseline(m.OpenTypeIdeographicBaseline());
+  font_metrics_.SetAlphabeticBaseline(m.OpenTypeAlphabeticBaseline());
+  font_metrics_.SetHangingBaseline(m.OpenTypeHangingBaseline());
 }
 
 void SimpleFontData::PlatformGlyphInit() {
