@@ -1678,11 +1678,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 boolean wasStartSurfaceHomepageShowing = mStartSurfaceSupplier.hasValue()
                         && mStartSurfaceSupplier.get().isHomepageShown();
 
-                // Hides the overview page if we want to navigate the URL in the current Tab which
-                // isn't visible.
-                if (tabOpenType == TabOpenType.CLOBBER_CURRENT_TAB) {
-                    hideOverview();
-                }
+                // Hides the overview page to ensure proper layout change signals are sent.
+                hideOverview();
 
                 // If the Start Surface was showing, the ContentView for the currently selected Tab
                 // behind the Start Surface may not yet be attached and therefore the Tab may not

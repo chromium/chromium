@@ -78,6 +78,7 @@ public class StartSurfaceHomeLayout extends Layout {
             mStartSurface.show(animate);
 
             mIsShown = true;
+            doneShowing();
         }
     }
 
@@ -87,6 +88,7 @@ public class StartSurfaceHomeLayout extends Layout {
             super.startHiding(nextTabId, hintAtTabSelection);
             mIsShown = false;
             mStartSurface.hide(false);
+            doneHiding();
         }
     }
 
