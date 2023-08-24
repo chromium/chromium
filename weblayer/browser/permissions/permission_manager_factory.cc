@@ -159,10 +159,11 @@ PermissionManagerFactory::PermissionManagerFactory()
 
 PermissionManagerFactory::~PermissionManagerFactory() = default;
 
-KeyedService* PermissionManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PermissionManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new permissions::PermissionManager(context,
-                                            CreatePermissionContexts(context));
+  return std::make_unique<permissions::PermissionManager>(
+      context, CreatePermissionContexts(context));
 }
 
 content::BrowserContext* PermissionManagerFactory::GetBrowserContextToUse(
