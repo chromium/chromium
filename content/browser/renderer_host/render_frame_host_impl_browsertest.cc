@@ -8016,7 +8016,8 @@ class RenderFrameHostImplBrowserTestWithBFCache
     std::vector<base::test::FeatureRefAndParams> enabled_features =
         GetDefaultEnabledBackForwardCacheFeaturesForTesting(
             /*ignore_outstanding_network_request=*/false);
-    enabled_features.push_back({kNavigationUpdatesChildViewsVisibility, {{}}});
+    enabled_features.push_back(
+        {features::kNavigationUpdatesChildViewsVisibility, {{}}});
     enabled_features.push_back({features::kEvictSubtree, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,

@@ -18,10 +18,6 @@ namespace content {
 // navigation network responses in a kHigh priority queue.
 BASE_DECLARE_FEATURE(kBeforeUnloadBrowserResponseQueue);
 
-// When enabled, RenderFrameHostManager::CommitPending will also update the
-// visibility of all child views, not just that of the main frame.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enables skipping of calls to hideSoftInputFromWindow when there is not a
 // keyboard currently visible.
