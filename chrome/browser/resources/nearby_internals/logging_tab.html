@@ -1,5 +1,30 @@
 <style include="shared-style"></style>
 
+<div id='controlsPanel'>
+  <div class="control">
+    <div id='logControlSplit'>
+      <div id="logType">
+        <div class='control-title'>Log Type</div>
+        <div class="input-div">
+          <input aria-labelledby="nearbyPresenceLabel" type="checkbox">
+          <label id="nearbyPresenceLabel">Nearby Presence</label>
+        </div>
+        <div class="input-div">
+          <input aria-labelledby="nearbyShareLabel" type="checkbox">
+          <label id="nearbyShareLabel">Nearby Share</label>
+        </div>
+        <div class="input-div">
+          <input aria-labelledby="nearbyConnectionsLabel" type="checkbox">
+          <label id="nearbyConnectionsLabel">Nearby Connections</label>
+        </div>
+        <div class="input-div">
+          <input aria-labelledby="fastPairLabel" type="checkbox">
+          <label id="fastPairLabel">Fast Pair</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <div id="buttons">
   <cr-button disabled="[[!logList_.length]]" class="internals-button"
       on-click="onSaveUnfilteredLogsButtonClicked_">

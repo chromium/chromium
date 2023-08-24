@@ -65,7 +65,7 @@ cr-button {
   flex-direction: row-reverse;
 }
 
-#execute-button {
+#executeButton {
   margin-bottom: 0px;
   padding-bottom: 6px;
 }
@@ -83,7 +83,7 @@ cr-button {
   margin-right: 12px;
 }
 
-#controls-panel {
+#controlsPanel {
   padding: 40px;
 }
 
@@ -117,7 +117,7 @@ np-object {
 }
 
 /** CSS for logs panel */
-#logs-panel {
+#logsPanel {
   width: 50%;
   height: 100%;
   overflow: hidden;
@@ -126,7 +126,7 @@ np-object {
   border-left: 1px solid rgba(0,0,0,0.12);
 }
 
-#devices-section {
+#devicesSection {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -139,6 +139,25 @@ np-object {
   width: 30%;
   display: flex;
   flex-direction: column;
+}
+
+#logType {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+#logControlSplit {
+  display: flex;
+  flex-direction: row;
+}
+
+label {
+  width: 80%;
+}
+
+input {
+  width: 10%;
 }
 
 log-object {

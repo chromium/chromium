@@ -12,7 +12,7 @@
     <header>
       <div class='title'>Cross Device Internals</div>
     </header>
-    <div id='controls-panel'>
+    <div id='controlsPanel'>
       <div class='control'>
 
         <div id="actions">
@@ -42,18 +42,18 @@
               </template>
             </select>
           </div>
-          <cr-button id="execute-button" class="internals-button"
+          <cr-button id="executeButton" class="internals-button"
               on-click="perform_action">Execute
             </cr-button>
         </div>
       </div>
     </div>
 
-    <div class='control' id='remote-devices-control'>
+    <div class='control' id='remoteDevicesControl'>
       <div class='control-title'>Returned Objects</div>
 
       <iron-list items="[[npDiscoveredDevicesList_]]" as="generic-object"
-        id="devices-section">
+        id="devicesSection">
         <template>
           <np-object device="[[generic-object]]">
           </np-object>
@@ -63,5 +63,5 @@
 
   </section>
 
-  <logging-tab id="logs-panel" feature="nearby-share"></logging-tab>
+  <logging-tab id="logsPanel" feature="nearby-share"></logging-tab>
 </body>
