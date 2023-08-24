@@ -441,9 +441,9 @@ void MarkNoWithSingleFeature(BackForwardCacheCanStoreDocumentResult* result,
 }
 
 // Mark the result with No due to multiple features for `rfh`.
-void MarkNoWithMultilpleFeatures(BackForwardCacheCanStoreDocumentResult* result,
-                                 RenderFrameHostImpl* rfh,
-                                 WebSchedulerTrackedFeatures features) {
+void MarkNoWithMultipleFeatures(BackForwardCacheCanStoreDocumentResult* result,
+                                RenderFrameHostImpl* rfh,
+                                WebSchedulerTrackedFeatures features) {
   BackForwardCacheCanStoreDocumentResult::BlockingDetailsMap map;
   WebSchedulerTrackedFeatures features_added;
   for (const auto& details : rfh->GetBackForwardCacheBlockingDetails()) {
@@ -1016,22 +1016,19 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
            .Empty()) {
     banned_features.Put(
         WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
-
-    // "Check that `rfh` is not in back/forward cache (since it has sticky
-    // banned features). This means
-    // `OnBackForwardCacheDisablingStickyFeatureUsed()` won't accidentally
-    // trigger eviction of rfh, which would otherwise be a confusing side effect
-    // of this function.
-    CHECK(!rfh->IsInBackForwardCache());
     // Record the feature usage in `rfh`. This is needed because all
     // `banned_features` have to be recorded in `rfh` so that the blocking
     // details are also recorded.
-    rfh->OnBackForwardCacheDisablingStickyFeatureUsed(
+    // Call `RecordBackForwardCacheDisablingReason()` instead of
+    // `OnBackForwardCacheDisablingStickyFeatureUsed()` so that it won't
+    // accidentally trigger eviction of rfh, which would otherwise be a
+    // confusing side effect of this function.
+    rfh->RecordBackForwardCacheDisablingReason(
         WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore);
   }
   if (!banned_features.Empty()) {
     if (!ShouldIgnoreBlocklists()) {
-      MarkNoWithMultilpleFeatures(&result, rfh, banned_features);
+      MarkNoWithMultipleFeatures(&result, rfh, banned_features);
     }
   }
 }
@@ -1057,7 +1054,7 @@ void BackForwardCacheImpl::NotRestoredReasonBuilder::
     if (requested_features == RequestedFeatures::kAll ||
         (requested_features == RequestedFeatures::kAllIfAcked &&
          rfh->render_view_host()->DidReceiveBackForwardCacheAck())) {
-      MarkNoWithMultilpleFeatures(&result, rfh, banned_features);
+      MarkNoWithMultipleFeatures(&result, rfh, banned_features);
     }
   }
 

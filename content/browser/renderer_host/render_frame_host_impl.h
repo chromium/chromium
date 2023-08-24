@@ -3007,6 +3007,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // into a fenced frame, not out of a fenced frame.
   bool TakingFocusWillCrossFencedBoundary(RenderFrameHostImpl* focused_rfh);
 
+  // Record back/forward cache disabling reason. When adding a disabling
+  // feature, you should normally call
+  // `OnBackForwardCacheDisablingFeatureUsed()` or
+  // `OnBackForwardCacheDisablingStickyFeatureUsed()`. Call this only when you
+  // don't want eviction to happen.
+  void RecordBackForwardCacheDisablingReason(
+      BackForwardCacheDisablingFeature feature);
+
  protected:
   friend class RenderFrameHostFactory;
 
