@@ -11,6 +11,7 @@ PASS Fetching [GET] blob:not-backed-by-a-blob/ is KO
 PASS Fetching URL.createObjectURL(empty_blob) is OK
 PASS Fetching URL.createObjectURL(empty_type_blob) is OK
 PASS Fetching URL.createObjectURL(empty_data_blob) is OK
+FAIL Fetching URL.createObjectURL(invalid_type_blob) is OK assert_equals: Content-Type is invalid expected "" but got "invalid"
 PASS Blob content is not sniffed for a content type [image/png]
 PASS Blob content is not sniffed for a content type [text/xml]
 PASS Set content type to the empty string for slice with invalid content type
