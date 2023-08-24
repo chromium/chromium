@@ -9,7 +9,7 @@
 namespace safe_browsing {
 
 // Strips the filename from the |url|.
-std::string SanitizeURLWithoutFilename(const std::string url);
+std::string SanitizeURLWithoutFilename(std::string url);
 
 }  // namespace safe_browsing
 

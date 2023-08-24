@@ -7,7 +7,7 @@
 
 namespace safe_browsing {
 
-std::string SanitizeURLWithoutFilename(const std::string url) {
+std::string SanitizeURLWithoutFilename(std::string url) {
   return GURL(url).GetWithoutFilename().spec();
 }
 
