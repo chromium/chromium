@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
+#include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
@@ -37,11 +38,23 @@ using testing::Return;
 class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
  public:
   void SetUp() override {
+    OSCryptMocker::SetUp();
     db_.AddTable(&table_);
     db_.Init(base::FilePath(WebDatabase::kInMemoryPath));
     ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
     bridge_ = std::make_unique<AutofillWalletCredentialSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
+  }
+
+  void TearDown() override { OSCryptMocker::TearDown(); }
+
+  std::vector<ServerCvc> GetAllServerCvcDataFromTable() {
+    // In tests, it's more convenient to work without `std::unique_ptr`.
+    std::vector<ServerCvc> server_cvc_data;
+    for (const std::unique_ptr<ServerCvc>& data : table()->GetAllServerCvcs()) {
+      server_cvc_data.push_back(std::move(*data));
+    }
+    return server_cvc_data;
   }
 
   EntityData SpecificsToEntity(
@@ -51,7 +64,31 @@ class AutofillWalletCredentialSyncBridgeTest : public testing::Test {
     return data;
   }
 
+  void AddCvcDataViaMergeFullSync(const ServerCvc& server_cvc) {
+    syncer::EntityChangeList entity_change_list;
+    entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+        base::NumberToString(server_cvc.instrument_id),
+        SpecificsToEntity(
+            AutofillWalletCredentialSpecificsFromStructData(server_cvc))));
+    AddCvcDataViaMergeFullSync(entity_change_list);
+  }
+
+  void AddCvcDataViaMergeFullSync(
+      syncer::EntityChangeList& entity_change_list) {
+    EXPECT_EQ(bridge()->MergeFullSyncData(bridge()->CreateMetadataChangeList(),
+                                          std::move(entity_change_list)),
+              absl::nullopt);
+  }
+
   AutofillWalletCredentialSyncBridge* bridge() { return bridge_.get(); }
+
+  AutofillTable* table() { return &table_; }
+
+  MockAutofillWebDataBackend& backend() { return backend_; }
+
+  syncer::MockModelTypeChangeProcessor& mock_processor() {
+    return mock_processor_;
+  }
 
  private:
   NiceMock<MockAutofillWebDataBackend> backend_;
@@ -116,6 +153,121 @@ TEST_F(AutofillWalletCredentialSyncBridgeTest, IsEntityDataValid_InValidData) {
 
   EXPECT_FALSE(bridge()->IsEntityDataValid(
       SpecificsToEntity(wallet_credential_specifics)));
+}
+
+// Test to verify full merge sync for the server cvc data.
+// There is no existing server cvc data on the local storage.
+TEST_F(AutofillWalletCredentialSyncBridgeTest, MergeFullSyncData) {
+  const ServerCvc server_cvc =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  AddCvcDataViaMergeFullSync(server_cvc);
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc));
+}
+
+// Test to verify incremental sync to add a server cvc.
+// A server cvc on the local storage is added via MergeFullSync and then
+// incremental sync is called with new unique server cvc data.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       ApplyIncrementalSyncChanges_AddCvc) {
+  const ServerCvc server_cvc1 =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  AddCvcDataViaMergeFullSync(server_cvc1);
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc1));
+
+  // Add a new server cvc.
+  syncer::EntityChangeList entity_change_list;
+  const ServerCvc server_cvc2 =
+      ServerCvc(2, u"999", base::Time::UnixEpoch() + base::Milliseconds(50000));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      base::NumberToString(server_cvc2.instrument_id),
+      SpecificsToEntity(
+          AutofillWalletCredentialSpecificsFromStructData(server_cvc2))));
+
+  // Expect no changes to the remote server credential data.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+
+  EXPECT_EQ(
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
+      absl::nullopt);
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc1, server_cvc2));
+}
+
+// Test to verify incremental sync to delete a server cvc.
+// A server cvc on the local storage is added via MergeFullSync and then
+// incremental sync is called to delete the existing server cvc.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       ApplyIncrementalSyncChanges_DeleteCvc) {
+  const ServerCvc server_cvc1 =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  AddCvcDataViaMergeFullSync(server_cvc1);
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc1));
+
+  // Delete an existing server cvc.
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateDelete(
+      base::NumberToString(server_cvc1.instrument_id)));
+
+  // Expect no changes to the remote server credential data.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+
+  EXPECT_EQ(
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
+      absl::nullopt);
+  EXPECT_THAT(GetAllServerCvcDataFromTable(), testing::IsEmpty());
+}
+
+// Test to verify incremental sync to update a server cvc.
+// A server cvc on the local storage is added via MergeFullSync and then
+// incremental sync is called to update the existing server cvc.
+TEST_F(AutofillWalletCredentialSyncBridgeTest,
+       ApplyIncrementalSyncChanges_UpdateCvc) {
+  const ServerCvc server_cvc1 =
+      ServerCvc(1, u"123", base::Time::UnixEpoch() + base::Milliseconds(25000));
+
+  AddCvcDataViaMergeFullSync(server_cvc1);
+
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc1));
+
+  // Update the above CVC with new data and later timestamp.
+  syncer::EntityChangeList entity_change_list;
+  const ServerCvc server_cvc2 =
+      ServerCvc(1, u"999", base::Time::UnixEpoch() + base::Milliseconds(50000));
+  entity_change_list.push_back(syncer::EntityChange::CreateUpdate(
+      base::NumberToString(server_cvc2.instrument_id),
+      SpecificsToEntity(
+          AutofillWalletCredentialSpecificsFromStructData(server_cvc2))));
+
+  // Expect no changes to the remote server credential data.
+  EXPECT_CALL(mock_processor(), Delete).Times(0);
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  EXPECT_CALL(backend(), CommitChanges());
+  EXPECT_CALL(backend(), NotifyOfMultipleAutofillChanges());
+
+  EXPECT_EQ(
+      bridge()->ApplyIncrementalSyncChanges(
+          bridge()->CreateMetadataChangeList(), std::move(entity_change_list)),
+      absl::nullopt);
+  EXPECT_THAT(GetAllServerCvcDataFromTable(),
+              testing::UnorderedElementsAre(server_cvc2));
 }
 
 }  // namespace autofill

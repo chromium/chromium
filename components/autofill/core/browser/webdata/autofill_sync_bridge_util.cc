@@ -5,8 +5,10 @@
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/pickle.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -542,6 +544,22 @@ AutofillWalletCredentialSpecificsFromStructData(const ServerCvc& server_cvc) {
   return wallet_credential_specifics;
 }
 
+ServerCvc AutofillWalletCvcStructDataFromWalletCredentialSpecifics(
+    const sync_pb::AutofillWalletCredentialSpecifics&
+        wallet_credential_specifics) {
+  CHECK(IsAutofillWalletCredentialDataSpecificsValid(
+      wallet_credential_specifics));
+  int64_t instrument_id;
+  base::StringToInt64(wallet_credential_specifics.instrument_id(),
+                      &instrument_id);
+
+  return ServerCvc(
+      instrument_id, base::UTF8ToUTF16(wallet_credential_specifics.cvc()),
+      base::Time::UnixEpoch() +
+          base::Milliseconds(wallet_credential_specifics
+                                 .last_updated_time_unix_epoch_millis()));
+}
+
 VirtualCardUsageData VirtualCardUsageDataFromUsageSpecifics(
     const sync_pb::AutofillWalletUsageSpecifics& usage_specifics) {
   const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData
@@ -775,6 +793,19 @@ bool IsVirtualCardUsageDataSet(
   return *virtual_card_usage_data.instrument_id() != 0 &&
          !virtual_card_usage_data.usage_data_id()->empty() &&
          !virtual_card_usage_data.virtual_card_last_four()->empty();
+}
+
+bool IsAutofillWalletCredentialDataSpecificsValid(
+    const sync_pb::AutofillWalletCredentialSpecifics&
+        wallet_credential_specifics) {
+  int64_t temp_instrument_id;
+  return !wallet_credential_specifics.instrument_id().empty() &&
+         base::StringToInt64(wallet_credential_specifics.instrument_id(),
+                             &temp_instrument_id) &&
+         !wallet_credential_specifics.cvc().empty() &&
+         wallet_credential_specifics
+             .has_last_updated_time_unix_epoch_millis() &&
+         wallet_credential_specifics.last_updated_time_unix_epoch_millis() != 0;
 }
 
 }  // namespace autofill

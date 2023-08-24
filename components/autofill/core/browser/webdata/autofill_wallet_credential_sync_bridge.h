@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
+#include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
@@ -71,7 +72,7 @@ class AutofillWalletCredentialSyncBridge : public base::SupportsUserData::Data,
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
   // Returns the table associated with the `web_data_backend_`.
-  AutofillTable* GetAutofillTable();
+  AutofillTable* GetAutofillTable() const;
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.
