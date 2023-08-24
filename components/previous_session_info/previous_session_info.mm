@@ -280,9 +280,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
       }
     }
     gSharedInstance.reportParameters = reportParameters;
-    // TODO(crbug.com/1360033) Remove old deprecated params key, remove this
-    // after a few milestones.
-    [defaults removeObjectForKey:@"PreviousSessionInfoParams"];
 
     gSharedInstance.memoryFootprint =
         [defaults integerForKey:previous_session_info_constants::
