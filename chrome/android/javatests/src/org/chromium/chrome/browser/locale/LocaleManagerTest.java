@@ -5,78 +5,69 @@
 package org.chromium.chrome.browser.locale;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.Callback;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
-import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Integration tests for {@link LocaleManager}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocaleManagerTest {
-    @Before
-    public void setUp() throws ExecutionException {
-        TestThreadUtils.runOnUiThreadBlocking(new Callable<Void>() {
-            @Override
-            public Void call() {
-                ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
-                return null;
-            }
-        });
+    public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @BeforeClass
+    public static void setUpClass() throws ExecutionException {
+        // Launch any activity as an Activity ref is required to attempt to show the activity.
+        sActivityTestRule.startMainActivityOnBlankPage();
+        sActivityTestRule.waitForActivityNativeInitializationComplete();
+        sActivityTestRule.waitForDeferredStartup();
     }
 
     @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
     @SmallTest
     @Test
-    @DisabledTest(message = "https://crbug.com/1170670")
-    public void testShowSearchEnginePromoDseDisabled() throws TimeoutException {
+    public void testShowSearchEnginePromoDseDisabled() throws Exception {
         final CallbackHelper getShowTypeCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
-                @Override
-                public int getSearchEnginePromoShowType() {
-                    getShowTypeCallback.notifyCalled();
-                    return SearchEnginePromoType.DONT_SHOW;
-                }
-            });
-        });
-
-        // Launch any activity as an Activity ref is required to attempt to show the activity.
-        final SearchActivity searchActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SearchActivity.class);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
+                    @Override
+                    public int getSearchEnginePromoShowType() {
+                        getShowTypeCallback.notifyCalled();
+                        return SearchEnginePromoType.DONT_SHOW;
+                    }
+                }));
 
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
-                    searchActivity, new Callback<Boolean>() {
-                        @Override
-                        public void onResult(Boolean result) {
-                            Assert.assertTrue(result);
-                            searchEnginesFinalizedCallback.notifyCalled();
-                        }
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> LocaleManager.getInstance().showSearchEnginePromoIfNeeded(
+                                sActivityTestRule.getActivity(), result -> {
+                                    Assert.assertTrue(result);
+                                    searchEnginesFinalizedCallback.notifyCalled();
+                                }));
         searchEnginesFinalizedCallback.waitForCallback(0);
         Assert.assertEquals(0, getShowTypeCallback.getCallCount());
     }
