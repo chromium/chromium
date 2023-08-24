@@ -631,46 +631,27 @@ int NO_STACK_PROTECTOR RunZygote(ContentMainDelegate* delegate) {
 
   ContentClientInitializer::Set(process_type, delegate);
 
-  const ContentMainDelegate::InvokedInChildProcess invoked_in_child{
-      .is_zygote_child = true};
-  if (delegate->ShouldCreateFeatureList(invoked_in_child)) {
-    InitializeFieldTrialAndFeatureList();
-  }
-  if (delegate->ShouldInitializeMojo(invoked_in_child)) {
-    InitializeMojoCore();
-  }
-  delegate->PostEarlyInitialization(invoked_in_child);
-
-  base::allocator::PartitionAllocSupport::Get()
-      ->ReconfigureAfterFeatureListInit(process_type);
-
   MainFunctionParams main_params(command_line);
   main_params.zygote_child = true;
   main_params.needs_startup_tracing_after_mojo_init = true;
 
-  // The hang watcher needs to be created once the feature list is available
-  // but before the IO thread is started.
-  base::ScopedClosureRunner unregister_thread_closure;
-  if (base::HangWatcher::IsEnabled()) {
-    base::HangWatcher::CreateHangWatcherInstance();
-    unregister_thread_closure = base::HangWatcher::RegisterThread(
-        base::HangWatcher::ThreadType::kMainThread);
-
-    // If the process is unsandboxed the HangWatcher can start now. Otherwise,
-    // the sandbox can't be initialized with multiple threads, so the
-    // HangWatcher will be started after the sandbox is initialized.
-    if (sandbox::policy::IsUnsandboxedSandboxType(
-            sandbox::policy::SandboxTypeFromCommandLine(*command_line))) {
-      base::HangWatcher::GetInstance()->Start();
-    } else {
-      main_params.hang_watcher_not_started_time = base::TimeTicks::Now();
-    }
+  if (delegate->ShouldCreateFeatureList(
+          ContentMainDelegate::InvokedInChildProcess())) {
+    InitializeFieldTrialAndFeatureList();
   }
+  if (delegate->ShouldInitializeMojo(
+          ContentMainDelegate::InvokedInChildProcess())) {
+    InitializeMojoCore();
+  }
+  delegate->PostEarlyInitialization(
+      ContentMainDelegate::InvokedInChildProcess());
 
-  for (auto& kMainFunction : kMainFunctions) {
-    if (process_type == kMainFunction.name) {
-      return kMainFunction.function(std::move(main_params));
-    }
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit(process_type);
+
+  for (size_t i = 0; i < std::size(kMainFunctions); ++i) {
+    if (process_type == kMainFunctions[i].name)
+      return kMainFunctions[i].function(std::move(main_params));
   }
 
   auto exit_code = delegate->RunProcess(process_type, std::move(main_params));
@@ -750,9 +731,6 @@ RunOtherNamedProcessTypeMain(const std::string& process_type,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (start_hang_watcher_now) {
       base::HangWatcher::GetInstance()->Start();
-    } else {
-      main_function_params.hang_watcher_not_started_time =
-          base::TimeTicks::Now();
     }
   }
 
