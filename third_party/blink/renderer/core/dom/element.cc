@@ -4730,6 +4730,14 @@ void Element::CheckForEmptyStyleChange(const Node* node_before_change,
 }
 
 void Element::ChildrenChanged(const ChildrenChange& change) {
+  // ContainerNode::ChildrenChanged may run SynchronousMutationObservers which
+  // want to do flat tree traversals. If we SetNeedsAssignmentRecalc after those
+  // mutation observers, then they won't get to see an up to date version of the
+  // flat tree.
+  if (ShadowRoot* shadow_root = GetShadowRoot()) {
+    shadow_root->SetNeedsAssignmentRecalc();
+  }
+
   ContainerNode::ChildrenChanged(change);
 
   CheckForEmptyStyleChange(change.sibling_before_change,
@@ -4759,10 +4767,6 @@ void Element::ChildrenChanged(const ChildrenChange& change) {
           .GetStyleEngine()
           .ScheduleInvalidationsForHasPseudoWhenAllChildrenRemoved(*this);
     }
-  }
-
-  if (ShadowRoot* shadow_root = GetShadowRoot()) {
-    shadow_root->SetNeedsAssignmentRecalc();
   }
 }
 

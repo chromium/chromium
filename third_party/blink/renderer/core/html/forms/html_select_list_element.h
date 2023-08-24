@@ -34,6 +34,8 @@ class CORE_EXPORT HTMLSelectListElement final
  public:
   explicit HTMLSelectListElement(Document&);
 
+  void ManuallyAssignSlots() override;
+
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
 
@@ -232,6 +234,7 @@ class CORE_EXPORT HTMLSelectListElement final
   Member<HTMLSlotElement> listbox_slot_;
   Member<HTMLSlotElement> marker_slot_;
   Member<HTMLSlotElement> selected_value_slot_;
+  Member<HTMLSlotElement> options_slot_;
   Member<HTMLOptionElement> selected_option_;
   Member<HTMLOptionElement> selected_option_when_listbox_opened_;
   Member<HTMLOptionElement> suggested_option_;

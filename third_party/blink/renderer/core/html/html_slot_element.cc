@@ -228,6 +228,14 @@ void HTMLSlotElement::Assign(const HeapVector<Member<Node>>& nodes) {
   }
 }
 
+void HTMLSlotElement::Assign(Node* node) {
+  VectorOf<Node> nodes;
+  if (node) {
+    nodes.push_back(node);
+  }
+  Assign(nodes);
+}
+
 void HTMLSlotElement::AppendAssignedNode(Node& host_child) {
   DCHECK(host_child.IsSlotable());
   assigned_nodes_.push_back(&host_child);

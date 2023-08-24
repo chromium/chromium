@@ -122,6 +122,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   void assign(HeapVector<Member<V8UnionElementOrText>>& nodes, ExceptionState&);
   // assign() c++ implementation.
   void Assign(const HeapVector<Member<Node>>& nodes);
+  void Assign(Node* node);
 
   const HeapLinkedHashSet<WeakMember<Node>>& ManuallyAssignedNodes() const {
     return manually_assigned_nodes_;

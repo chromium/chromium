@@ -255,7 +255,8 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
   UseCounter::Count(document, WebFeature::kSelectListElement);
 
-  EnsureUserAgentShadowRoot();
+  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
+      SlotAssignmentMode::kManual);
   select_mutation_callback_ =
       MakeGarbageCollected<HTMLSelectListElement::SelectMutationCallback>(
           *this);
@@ -264,6 +265,38 @@ HTMLSelectListElement::HTMLSelectListElement(Document& document)
   // preview.
   IncrementImplicitlyAnchoredElementCount();
   IncrementImplicitlyAnchoredElementCount();
+}
+
+void HTMLSelectListElement::ManuallyAssignSlots() {
+  Element* button = nullptr;
+  Element* listbox = nullptr;
+  Element* selected_value = nullptr;
+  Element* marker = nullptr;
+  VectorOf<Node> options;
+  for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (!button && element->SlotName() == kButtonPartName) {
+        button = element;
+      } else if (!listbox && element->SlotName() == kListboxPartName) {
+        listbox = element;
+      } else if (!selected_value &&
+                 element->SlotName() == kSelectedValuePartName) {
+        selected_value = element;
+      } else if (!marker && element->SlotName() == kMarkerPartName) {
+        marker = element;
+      }
+      if (element->SlotName() == g_empty_atom) {
+        options.push_back(node);
+      }
+    } else if (node.IsSlotable()) {
+      options.push_back(node);
+    }
+  }
+  button_slot_->Assign(button);
+  listbox_slot_->Assign(listbox);
+  selected_value_slot_->Assign(selected_value);
+  marker_slot_->Assign(marker);
+  options_slot_->Assign(options);
 }
 
 // static
@@ -365,7 +398,7 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   new_popover->SetShadowPseudoId(AtomicString("-internal-selectlist-listbox"));
   SetListboxPart(new_popover);
 
-  auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
+  options_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
 
   button_part_->AppendChild(selected_value_slot_);
   button_part_->AppendChild(marker_slot_);
@@ -376,7 +409,7 @@ void HTMLSelectListElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   button_slot_->AppendChild(button_part_);
 
-  listbox_part_->appendChild(options_slot);
+  listbox_part_->appendChild(options_slot_);
   listbox_slot_->appendChild(listbox_part_);
 
   root.AppendChild(button_slot_);
@@ -1458,6 +1491,7 @@ void HTMLSelectListElement::Trace(Visitor* visitor) const {
   visitor->Trace(listbox_slot_);
   visitor->Trace(marker_slot_);
   visitor->Trace(selected_value_slot_);
+  visitor->Trace(options_slot_);
   visitor->Trace(selected_option_);
   visitor->Trace(selected_option_when_listbox_opened_);
   visitor->Trace(suggested_option_);
