@@ -205,9 +205,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         mThroughputListenerList.disableThreadAsserts();
         mNetworkQualityEstimatorEnabled = builder.networkQualityEstimatorEnabled();
         CronetLibraryLoader.ensureInitialized(builder.getContext(), builder);
-        if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
-            CronetUrlRequestContextJni.get().setMinLogLevel(getLoggingLevel());
-        }
+        CronetUrlRequestContextJni.get().setMinLogLevel(getLoggingLevel());
         if (builder.httpCacheMode() == HttpCacheType.DISK) {
             mInUseStoragePath = builder.storagePath();
             synchronized (sInUseStoragePaths) {
@@ -757,11 +755,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private void initNetworkThread() {
         mNetworkThread = Thread.currentThread();
         mInitCompleted.open();
-        if (!IntegratedModeState.INTEGRATED_MODE_ENABLED) {
-            // In integrated mode, network thread is shared from the host.
-            // Cronet shouldn't change the property of the thread.
-            Thread.currentThread().setName("ChromiumNet");
-        }
+        Thread.currentThread().setName("ChromiumNet");
     }
 
     @SuppressWarnings("unused")

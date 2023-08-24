@@ -32,7 +32,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/cronet/android/buildflags.h"
 #include "components/cronet/android/cronet_jni_headers/CronetUrlRequestContext_jni.h"
 #include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/cronet_prefs_manager.h"
@@ -58,10 +57,6 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_interceptor.h"
 
-#if BUILDFLAG(INTEGRATED_MODE)
-#include "components/cronet/android/cronet_integrated_mode_state.h"
-#endif
-
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -70,14 +65,8 @@ namespace cronet {
 CronetContextAdapter::CronetContextAdapter(
     std::unique_ptr<URLRequestContextConfig> context_config) {
   // Create context and pass ownership of |this| (self) to the context.
-  std::unique_ptr<CronetContextAdapter> self(this);
-#if BUILDFLAG(INTEGRATED_MODE)
-  // Create CronetContext running in integrated network task runner.
-  context_ = new CronetContext(std::move(context_config), std::move(self),
-                               GetIntegratedModeNetworkTaskRunner());
-#else
-  context_ = new CronetContext(std::move(context_config), std::move(self));
-#endif
+  context_ = new CronetContext(std::move(context_config),
+                               base::WrapUnique<CronetContextAdapter>(this));
 }
 
 CronetContextAdapter::~CronetContextAdapter() = default;

@@ -23,8 +23,9 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
-#include "components/cronet/android/buildflags.h"
 #include "components/cronet/android/cronet_jni_headers/CronetLibraryLoader_jni.h"
+#include "components/cronet/android/cronet_jni_registration_generated.h"
+#include "components/cronet/android/cronet_library_loader.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/version.h"
 #include "net/android/network_change_notifier_factory_android.h"
@@ -38,11 +39,6 @@
 #include "base/i18n/icu_util.h"  // nogncheck
 #endif
 
-#if !BUILDFLAG(INTEGRATED_MODE)
-#include "components/cronet/android/cronet_jni_registration_generated.h"
-#include "components/cronet/android/cronet_library_loader.h"
-#endif
-
 using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
@@ -53,22 +49,16 @@ namespace {
 // receive Java notifications generally live.
 base::SingleThreadTaskExecutor* g_init_task_executor = nullptr;
 
-#if !BUILDFLAG(INTEGRATED_MODE)
 std::unique_ptr<net::NetworkChangeNotifier> g_network_change_notifier;
-#endif
-
 base::WaitableEvent g_init_thread_init_done(
     base::WaitableEvent::ResetPolicy::MANUAL,
     base::WaitableEvent::InitialState::NOT_SIGNALED);
 
 void NativeInit() {
-// In integrated mode, ICU and FeatureList has been initialized by the host.
-#if !BUILDFLAG(INTEGRATED_MODE)
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
   base::i18n::InitializeICU();
 #endif
   base::FeatureList::InitializeInstance(std::string(), std::string());
-#endif
 
   if (!base::ThreadPoolInstance::Get())
     base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
@@ -81,9 +71,6 @@ bool OnInitThread() {
   return g_init_task_executor->task_runner()->RunsTasksInCurrentSequence();
 }
 
-// In integrated mode, Cronet native library is built and loaded together with
-// the native library of the host app.
-#if !BUILDFLAG(INTEGRATED_MODE)
 // Checks the available version of JNI. Also, caches Java reflection artifacts.
 jint CronetOnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
@@ -103,7 +90,6 @@ void CronetOnUnLoad(JavaVM* jvm, void* reserved) {
 
   base::android::LibraryLoaderExitHook();
 }
-#endif
 
 void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
   // Initialize SingleThreadTaskExecutor for init thread.
@@ -112,10 +98,6 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
   g_init_task_executor =
       new base::SingleThreadTaskExecutor(base::MessagePumpType::JAVA);
 
-// In integrated mode, NetworkChangeNotifier has been initialized by the host.
-#if BUILDFLAG(INTEGRATED_MODE)
-  CHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
-#else
   DCHECK(!g_network_change_notifier);
   if (!net::NetworkChangeNotifier::GetFactory()) {
     net::NetworkChangeNotifier::SetFactory(
@@ -123,7 +105,6 @@ void JNI_CronetLibraryLoader_CronetInitOnInitThread(JNIEnv* env) {
   }
   g_network_change_notifier = net::NetworkChangeNotifier::CreateIfNeeded();
   DCHECK(g_network_change_notifier);
-#endif
 
   g_init_thread_init_done.Signal();
 }

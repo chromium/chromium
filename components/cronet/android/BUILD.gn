@@ -25,19 +25,6 @@ _gn_path = "//buildtools/linux64/gn"
 assert(!is_component_build)
 assert(is_cronet_build)
 
-declare_args() {
-  # In integrated mode, CronetEngine will use the shared network task runner by
-  # other Chromium-based clients like webview without self-initialization.
-  # Besides, the native library would be compiled and loaded together with the
-  # native library of host. This mode is only for Android.
-  integrated_mode = false
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "INTEGRATED_MODE=$integrated_mode" ]
-}
-
 generate_jni("cronet_jni_headers") {
   sources = [
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
@@ -89,13 +76,6 @@ java_cpp_template("load_states_list") {
   inputs = [ "//net/base/load_states_list.h" ]
 }
 
-java_cpp_template("integrated_mode_state") {
-  sources = [ "java/src/org/chromium/net/impl/IntegratedModeState.template" ]
-  if (integrated_mode) {
-    defines = [ "INTEGRATED_MODE" ]
-  }
-}
-
 _generated_interface_api_version_java =
     "$_templates_dir/org/chromium/net/ApiVersion.java"
 _interface_api_level = read_file("interface_api_version.txt", "value")
@@ -145,7 +125,6 @@ proto_java_library("request_context_config_java_proto") {
 
 source_set("cronet_static") {
   deps = [
-    ":buildflags",
     ":cronet_jni_headers",
     ":cronet_jni_registration",
     ":request_context_config_proto",
@@ -167,6 +146,7 @@ source_set("cronet_static") {
     "//components/cronet/android/cronet_context_adapter.cc",
     "//components/cronet/android/cronet_context_adapter.h",
     "//components/cronet/android/cronet_library_loader.cc",
+    "//components/cronet/android/cronet_library_loader.h",
     "//components/cronet/android/cronet_upload_data_stream_adapter.cc",
     "//components/cronet/android/cronet_upload_data_stream_adapter.h",
     "//components/cronet/android/cronet_url_request_adapter.cc",
@@ -176,15 +156,6 @@ source_set("cronet_static") {
     "//components/cronet/android/url_request_error.cc",
     "//components/cronet/android/url_request_error.h",
   ]
-
-  if (integrated_mode) {
-    sources += [
-      "//components/cronet/android/cronet_integrated_mode_state.cc",
-      "//components/cronet/android/cronet_integrated_mode_state.h",
-    ]
-  } else {
-    sources += [ "//components/cronet/android/cronet_library_loader.h" ]
-  }
 
   include_dirs = [ _cronet_version_header_include_dir ]
 
@@ -283,7 +254,6 @@ android_library("cronet_api_java") {
 
 cronet_impl_common_java_srcjar_deps = [
   ":http_cache_type_java",
-  ":integrated_mode_state",
   ":load_states_list",
   ":rtt_throughput_values_java",
   "//net:effective_connection_type_java",
