@@ -15,7 +15,6 @@
 #import "components/variations/service/variations_field_trial_creator.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
-#import "components/version_info/version_info.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/launch_screen_view_controller.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_seed_store.h"
-#import "ios/chrome/common/channel_info.h"
 
 // Name of trial and experiment groups.
 const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
@@ -40,7 +38,6 @@ using ::variations::HasSeedExpiredSinceTime;
 using ::variations::SeedApplicationStage;
 using ::variations::VariationsSeedExpiry;
 using ::variations::VariationsSeedStore;
-using ::version_info::Channel;
 
 // The NSUserDefault key to store the time the last seed is fetched.
 NSString* kLastVariationsSeedFetchTimeKey = @"kLastVariationsSeedFetchTime";
@@ -60,20 +57,6 @@ enum class IOSChromeVariationsGroup {
 };
 
 #pragma mark - Helpers
-
-// Group weight for both enabled and control experiment groups.
-// NOTE: The value will be updated during the incremental rollout period.
-int GetGroupWeight() {
-  switch (GetChannel()) {
-    case Channel::UNKNOWN:
-    case Channel::CANARY:
-    case Channel::DEV:
-    case Channel::BETA:
-      return 50;
-    case Channel::STABLE:
-      return 50;
-  }
-}
 
 // Returns the fetch time of the variations seed store fetched by a previous
 // run, and null if such seed doesn't exist.
@@ -196,16 +179,14 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 @implementation VariationsAppStateAgent
 
 - (instancetype)init {
-  int groupWeight = GetGroupWeight();
-  DCHECK_LE(groupWeight, 50);
   // Note: `ShouldPresentFirstRunExperience()` will return YES as long as the
   // user has not completed a first run experience.
   return [self
       initWithFirstRunExperience:ShouldPresentFirstRunExperience()
                lastSeedFetchTime:GetLastVariationsSeedFetchTime()
                          fetcher:[[IOSChromeVariationsSeedFetcher alloc] init]
-              enabledGroupWeight:groupWeight
-              controlGroupWeight:groupWeight];
+              enabledGroupWeight:100
+              controlGroupWeight:0];
 }
 
 - (instancetype)initWithFirstRunExperience:(BOOL)shouldPresentFRE
