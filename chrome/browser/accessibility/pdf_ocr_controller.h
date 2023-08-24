@@ -27,6 +27,7 @@ class PdfOcrControllerFactory;
 // mode of WebContents when it changes, provided its feature flag is enabled.
 class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
  public:
+  explicit PdfOcrController(Profile* profile);
   PdfOcrController(const PdfOcrController&) = delete;
   PdfOcrController& operator=(const PdfOcrController&) = delete;
   ~PdfOcrController() override;
@@ -49,8 +50,6 @@ class PdfOcrController : public KeyedService, ScreenAIInstallState::Observer {
 
  private:
   friend class PdfOcrControllerFactory;
-
-  explicit PdfOcrController(Profile* profile);
 
   void OnPdfOcrAlwaysActiveChanged();
 

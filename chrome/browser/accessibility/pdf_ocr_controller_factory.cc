@@ -32,9 +32,11 @@ PdfOcrControllerFactory::PdfOcrControllerFactory()
 
 PdfOcrControllerFactory::~PdfOcrControllerFactory() = default;
 
-KeyedService* PdfOcrControllerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PdfOcrControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new PdfOcrController(Profile::FromBrowserContext(context));
+  return std::make_unique<PdfOcrController>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace screen_ai
