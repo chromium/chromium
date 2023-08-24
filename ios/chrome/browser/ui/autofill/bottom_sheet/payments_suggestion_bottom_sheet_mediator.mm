@@ -96,12 +96,13 @@
   // instead of "one thousand two hundred and fifteen".
   NSString* cardLastDigits =
       base::SysUTF16ToNSString(creditCard->LastFourDigits());
-  cardLastDigits = [@[
-    [cardLastDigits substringWithRange:NSMakeRange(0, 1)],
-    [cardLastDigits substringWithRange:NSMakeRange(1, 1)],
-    [cardLastDigits substringWithRange:NSMakeRange(2, 1)],
-    [cardLastDigits substringWithRange:NSMakeRange(3, 1)]
-  ] componentsJoinedByString:@" "];
+  NSMutableArray* digits = [[NSMutableArray alloc] init];
+  if (cardLastDigits.length > 0) {
+    for (NSUInteger i = 0; i < cardLastDigits.length; i++) {
+      [digits addObject:[cardLastDigits substringWithRange:NSMakeRange(i, 1)]];
+    }
+    cardLastDigits = [digits componentsJoinedByString:@" "];
+  }
 
   // Add mention that the credit card ends with the last 4 digits.
   cardAccessibleName = base::SysUTF16ToNSString(
