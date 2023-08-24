@@ -2,3 +2,15 @@ monorail {
   component: "Blink>SecurityFeature>CredentialManagement"
 }
 team_email: "identity-dev@chromium.org"
+
+overrides [
+  {
+    file_patterns: ["payment_credential_instrument.idl"]
+    metadata {
+      monorail {
+        component: "Blink>Payments"
+      }
+      team_email: "payments-dev@chromium.org"
+    }
+  }
+]

@@ -1,0 +1,11 @@
+overrides [
+  {
+    file_patterns: [".*[pP]ay.*aidl"]
+    metadata {
+      monorail {
+        component: "Blink>Payments"
+      }
+      team_email: "payments-dev@chromium.org"
+    }
+  }
+]
