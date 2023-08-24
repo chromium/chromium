@@ -2460,8 +2460,8 @@ TEST_P(DCompPresenterLetterboxingTest,
       (monitor_size.height() - texture_size.height()) / 2;
   const gfx::Rect quad_rect =
       gfx::Rect(0, 0, texture_size.width(), texture_size.height());
-  gfx::Rect clip_rect = gfx::Rect(0, letterboxing_height, texture_size.width(),
-                                  texture_size.height());
+  const gfx::Rect clip_rect = gfx::Rect(
+      0, letterboxing_height, texture_size.width(), texture_size.height());
   const gfx::Transform quad_to_root_transform(
       gfx::AxisTransform2d(1, gfx::Vector2dF(0, letterboxing_height)));
   {
@@ -2524,6 +2524,128 @@ TEST_P(DCompPresenterLetterboxingTest,
     EXPECT_EQ(quad_to_root_transform, visual_transform);
     EXPECT_EQ(clip_rect, visual_clip_rect);
   }
+}
+
+TEST_P(DCompPresenterLetterboxingTest, FullScreenLetterboxingKeepVisualInfo) {
+  // Define 1920x1200 monitor size.
+  const gfx::Size monitor_size(1920, 1200);
+  SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+  SetDirectCompositionMonitorInfoForTesting(1, monitor_size);
+  EXPECT_TRUE(presenter_->Resize(monitor_size, 1.0, gfx::ColorSpace(), true));
+
+  // Schedule the overlay for root surface.
+  InitializeRootAndScheduleRootSurface(monitor_size, SkColors::kBlack);
+
+  // Make a 1080p texture as display input.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      GetDirectCompositionD3D11Device();
+  const gfx::Size texture_size(1920, 1080);
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+      CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  // First full screen presentation with letterboxing.
+  const int letterboxing_height =
+      (monitor_size.height() - texture_size.height()) / 2;
+  const gfx::Rect quad_rect =
+      gfx::Rect(0, 0, texture_size.width(), texture_size.height());
+  const gfx::Rect clip_rect = gfx::Rect(
+      0, letterboxing_height, texture_size.width(), texture_size.height());
+  const gfx::Transform quad_to_root_transform(
+      gfx::AxisTransform2d(1, gfx::Vector2dF(0, letterboxing_height)));
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // Make sure it's a valid swap chain presentation
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain =
+      presenter_->GetLayerSwapChainForTesting(0);
+  ASSERT_TRUE(swap_chain);
+
+  // One present is normal, and a second present because it's the first frame
+  // and the other buffer needs to be drawn to.
+  UINT last_present_count = 0;
+  EXPECT_HRESULT_SUCCEEDED(
+      swap_chain->GetLastPresentCount(&last_present_count));
+  EXPECT_EQ(2u, last_present_count);
+
+  // Swap chain visual info is collected for the first presentation.
+  gfx::Transform visual_transform1;
+  gfx::Point visual_offset1;
+  gfx::Rect visual_clip_rect1;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform1, &visual_offset1, &visual_clip_rect1);
+
+  // Followed by second presentation with the same image.
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  // It's the same image, so it should have the same swapchain.
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain2 =
+      presenter_->GetLayerSwapChainForTesting(0);
+  EXPECT_EQ(swap_chain2.Get(), swap_chain.Get());
+
+  // No new presentation happened and no present count increase since it's with
+  // the same image.
+  EXPECT_HRESULT_SUCCEEDED(
+      swap_chain->GetLastPresentCount(&last_present_count));
+  EXPECT_EQ(2u, last_present_count);
+
+  // Swap chain visual info should be kept same as the previous presentation.
+  gfx::Transform visual_transform2;
+  gfx::Point visual_offset2;
+  gfx::Rect visual_clip_rect2;
+  presenter_->GetSwapChainVisualInfoForTesting(
+      0, &visual_transform2, &visual_offset2, &visual_clip_rect2);
+  EXPECT_EQ(visual_transform1, visual_transform2);
+  EXPECT_EQ(visual_offset1, visual_offset2);
+  EXPECT_EQ(visual_clip_rect1, visual_clip_rect2);
+
+  // More checks followed by third presentation with a new image.
+  texture = CreateNV12Texture(d3d11_device, texture_size);
+  ASSERT_NE(texture, nullptr);
+
+  {
+    auto dc_layer_params =
+        CreateParamsFromImage(DCLayerOverlayImage(texture_size, texture));
+    dc_layer_params->quad_rect = quad_rect;
+    dc_layer_params->transform = quad_to_root_transform;
+    dc_layer_params->clip_rect = clip_rect;
+    dc_layer_params->color_space = gfx::ColorSpace::CreateREC709();
+    dc_layer_params->z_order = 1;
+    dc_layer_params->possible_video_fullscreen_letterboxing = true;
+    presenter_->ScheduleDCLayer(std::move(dc_layer_params));
+
+    PresentAndCheckSwapResult(gfx::SwapResult::SWAP_ACK);
+  }
+
+  Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain3 =
+      presenter_->GetLayerSwapChainForTesting(0);
+  EXPECT_HRESULT_SUCCEEDED(
+      swap_chain3->GetLastPresentCount(&last_present_count));
+  // The present count should increase with the new image presentation.
+  EXPECT_EQ(3u, last_present_count);
 }
 
 }  // namespace gl

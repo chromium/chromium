@@ -131,7 +131,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // make sure the video full screen letterboxing take the whole monitor area,
   // and DWM will take care of the letterboxing info setup automatically.
   void SetTargetToFullScreen(gfx::Transform* visual_transform,
-                             gfx::Rect* visual_clip_rect) const;
+                             gfx::Rect* visual_clip_rect);
 
   // Takes in input DC layer params and the video overlay quad. The swap chain
   // backbuffer size will be rounded to the monitor size if it is within a close
@@ -295,6 +295,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
 
   // Overlay image that was presented in the last frame.
   absl::optional<DCLayerOverlayImage> last_overlay_image_;
+  // Desktop plane removal status from the presentation of last frame.
+  bool last_desktop_plane_removed_ = false;
 
   // NV12 staging texture used for software decoded YUV buffers.  Mapped to CPU
   // for copying from YUV buffers.  Texture usage is DYNAMIC or STAGING.

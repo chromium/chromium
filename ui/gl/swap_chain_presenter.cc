@@ -662,9 +662,8 @@ gfx::Size SwapChainPresenter::GetMonitorSize() const {
   }
 }
 
-void SwapChainPresenter::SetTargetToFullScreen(
-    gfx::Transform* visual_transform,
-    gfx::Rect* visual_clip_rect) const {
+void SwapChainPresenter::SetTargetToFullScreen(gfx::Transform* visual_transform,
+                                               gfx::Rect* visual_clip_rect) {
   // Reset the horizontal/vertical shift according to the visual clip and
   // original transform, since DWM will do the positioning in case of overlay.
   visual_transform->set_rc(
@@ -678,6 +677,8 @@ void SwapChainPresenter::SetTargetToFullScreen(
 
   // Expand the clip rect for swap chain to the whole screen.
   *visual_clip_rect = gfx::Rect(GetMonitorSize());
+
+  last_desktop_plane_removed_ = true;
 }
 
 void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
@@ -1418,6 +1419,12 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     // The swap chain is presenting the same images as last swap, which means
     // that the images were never returned to the video decoder and should
     // have the same contents as last time. It shouldn't need to be redrawn.
+    // But the visual transform and clip rectangle for DCLayerTree update need
+    // to keep the same as the last presentation when desktop plane was removed.
+    if (last_desktop_plane_removed_) {
+      SetTargetToFullScreen(visual_transform, visual_clip_rect);
+    }
+
     return true;
   }
 
@@ -1434,6 +1441,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     if (dest_size.has_value() && target_rect.has_value() &&
         params.z_order > 0) {
       SetTargetToFullScreen(visual_transform, visual_clip_rect);
+    } else {
+      last_desktop_plane_removed_ = false;
     }
 
     return true;
@@ -1575,6 +1584,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // letterboxing overlay presentation.
   if (is_letterboxing_overlay_ready) {
     SetTargetToFullScreen(visual_transform, visual_clip_rect);
+  } else {
+    last_desktop_plane_removed_ = false;
   }
 
   last_overlay_image_ = std::move(params.overlay_image);
