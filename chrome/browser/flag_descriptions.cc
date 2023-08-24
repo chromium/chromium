@@ -5809,6 +5809,12 @@ const char kFastPairHandshakeRefactorName[] =
 const char kFastPairHandshakeRefactorDescription[] =
     "Enables refactored handshake logic for Google Fast Pair service.";
 
+const char kFastPairHandshakeLongTermRefactorName[] =
+    "Enable Fast Pair Handshake Long Term Refactor";
+const char kFastPairHandshakeLongTermRefactorDescription[] =
+    "Enables long term refactored handshake logic for Google Fast Pair "
+    "service.";
+
 const char kFastPairHIDName[] = "Enable Fast Pair HID";
 const char kFastPairHIDDescription[] =
     "Enables prototype support for Fast Pair HID.";

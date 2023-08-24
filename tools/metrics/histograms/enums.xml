@@ -62412,6 +62412,7 @@ from previous Chrome versions.
   <int value="-1039889738" label="NativeNotifications:enabled"/>
   <int value="-1039555838" label="GamepadExtensions:enabled"/>
   <int value="-1039219684" label="ShoppingPageTypes:disabled"/>
+  <int value="-1037955654" label="FastPairHandshakeLongTermRefactor:disabled"/>
   <int value="-1037950113"
       label="ResamplingScrollEventsExperimentalPrediction:enabled"/>
   <int value="-1037620891"
@@ -63951,6 +63952,7 @@ from previous Chrome versions.
       label="AutofillSaveCreditCardUsesStrikeSystemV2:enabled"/>
   <int value="-268357961" label="enable-feature-policy"/>
   <int value="-265697837" label="PhoneHub:disabled"/>
+  <int value="-265277473" label="FastPairHandshakeLongTermRefactor:enabled"/>
   <int value="-263645996" label="InteractiveWindowCycleList:enabled"/>
   <int value="-263150202" label="BundledConnectionHelp:disabled"/>
   <int value="-262768194" label="TouchTextEditingRedesign:enabled"/>

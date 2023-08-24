@@ -994,6 +994,11 @@ BASE_FEATURE(kFastPairHandshakeRefactor,
              "FastPairHandshakeRefactor",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables using longterm Handshake retry logic for Fast Pair.
+BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
+             "FastPairHandshakeLongTermRefactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables prototype support for Fast Pair HID.
 BASE_FEATURE(kFastPairHID, "FastPairHID", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -3180,6 +3185,10 @@ bool IsFastPairDevicesBluetoothSettingsEnabled() {
 
 bool IsFastPairHandshakeRefactorEnabled() {
   return base::FeatureList::IsEnabled(kFastPairHandshakeRefactor);
+}
+
+bool IsFastPairHandshakeLongTermRefactorEnabled() {
+  return base::FeatureList::IsEnabled(kFastPairHandshakeLongTermRefactor);
 }
 
 bool IsFastPairHIDEnabled() {

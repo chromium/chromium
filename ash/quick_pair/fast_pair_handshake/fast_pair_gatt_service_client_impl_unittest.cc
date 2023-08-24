@@ -747,7 +747,8 @@ TEST_F(FastPairGattServiceClientTest, FailedGattConnection) {
 TEST_F(FastPairGattServiceClientTest,
        GattConnectionSuccess_HandshakeRefactorDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndDisableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionEffectiveSuccessRate, 0);
@@ -779,7 +780,8 @@ TEST_F(FastPairGattServiceClientTest,
 TEST_F(FastPairGattServiceClientTest,
        GattConnectionSuccess_HandshakeRefactorEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndEnableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kTotalGattConnectionTime, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionResult, 0);
   histogram_tester().ExpectTotalCount(kGattConnectionEffectiveSuccessRate, 0);
@@ -844,7 +846,8 @@ TEST_F(FastPairGattServiceClientTest, FailedPasskeyCharacteristics) {
 TEST_F(FastPairGattServiceClientTest,
        SuccessfulCharacteristicsStartNotify_HandshakeRefactorDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndDisableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SetKeybasedCharacteristicError(false);
@@ -863,7 +866,8 @@ TEST_F(FastPairGattServiceClientTest,
 TEST_F(FastPairGattServiceClientTest,
        SuccessfulCharacteristicsStartNotify_HandshakeRefactorEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndEnableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
   SetKeybasedCharacteristicError(false);
@@ -941,7 +945,8 @@ TEST_F(FastPairGattServiceClientTest, KeyBasedStartNotifyTimeout) {
 TEST_F(FastPairGattServiceClientTest,
        WriteKeyBasedRequest_HandshakeRefactorDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndDisableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
@@ -964,7 +969,8 @@ TEST_F(FastPairGattServiceClientTest,
 TEST_F(FastPairGattServiceClientTest,
        WriteKeyBasedRequest_HandshakeRefactorEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndEnableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyKeyBasedCharacteristicTime, 0);
   histogram_tester().ExpectTotalCount(kFastPairGattConnectionStep, 0);
@@ -1017,7 +1023,8 @@ TEST_F(FastPairGattServiceClientTest, WriteKeyBasedRequestTimeout) {
 TEST_F(FastPairGattServiceClientTest,
        WritePasskeyRequest_HandshakeRefactorDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndDisableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
   SuccessfulGattConnectionSetUp();
@@ -1038,7 +1045,8 @@ TEST_F(FastPairGattServiceClientTest,
 TEST_F(FastPairGattServiceClientTest,
        WritePasskeyRequest_HandshakeRefactorEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndEnableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicGattError, 0);
   histogram_tester().ExpectTotalCount(kNotifyPasskeyCharacteristicTime, 0);
   SuccessfulGattConnectionSetUp();
@@ -1090,7 +1098,8 @@ TEST_F(FastPairGattServiceClientTest, WritePasskeyRequestTimeout) {
 TEST_F(FastPairGattServiceClientTest,
        WriteAccountKey_HandshakeRefactorDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndDisableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       0);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
@@ -1113,7 +1122,8 @@ TEST_F(FastPairGattServiceClientTest,
 TEST_F(FastPairGattServiceClientTest,
        WriteAccountKey_HandshakeRefactorEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(ash::features::kFastPairHandshakeRefactor);
+  feature_list.InitAndEnableFeature(
+      ash::features::kFastPairHandshakeLongTermRefactor);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       0);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);

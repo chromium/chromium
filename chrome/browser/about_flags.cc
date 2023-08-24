@@ -7577,6 +7577,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairHandshakeRefactorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairHandshakeRefactor)},
 
+    {"fast-pair-handshake-long-term-refactor",
+     flag_descriptions::kFastPairHandshakeLongTermRefactorName,
+     flag_descriptions::kFastPairHandshakeLongTermRefactorDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kFastPairHandshakeLongTermRefactor)},
+
     {"fast-pair-hid", flag_descriptions::kFastPairHIDName,
      flag_descriptions::kFastPairHIDDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairHID)},
