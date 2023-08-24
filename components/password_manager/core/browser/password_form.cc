@@ -227,6 +227,9 @@ AlternativeElement::AlternativeElement(const AlternativeElement::Value& value,
                            const AlternativeElement::Name& name)
     : value(value), field_renderer_id(field_renderer_id), name(name) {}
 
+AlternativeElement::AlternativeElement(const AlternativeElement::Value& value)
+    : value(value) {}
+
 AlternativeElement::AlternativeElement(const AlternativeElement& rhs) = default;
 
 AlternativeElement::AlternativeElement(AlternativeElement&& rhs) = default;

@@ -254,6 +254,27 @@ PasswordForm UpdateFormPreservingDifferentFieldsAcrossStores(
   return result;
 }
 
+bool AlternativeElementsContainValue(const AlternativeElementVector& elements,
+                                     const std::u16string& value) {
+  return base::ranges::any_of(elements,
+                              [&value](const AlternativeElement& element) {
+                                return element.value == value;
+                              });
+}
+
+void PopulateAlternativeUsernames(
+    const std::vector<const PasswordForm*>& best_matches,
+    PasswordForm& form) {
+  for (const PasswordForm* match : best_matches) {
+    if ((match->username_value != form.username_value) &&
+        !AlternativeElementsContainValue(form.all_alternative_usernames,
+                                         match->username_value)) {
+      form.all_alternative_usernames.emplace_back(
+          AlternativeElement::Value(match->username_value));
+    }
+  }
+}
+
 }  // namespace
 
 PasswordSaveManagerImpl::PasswordSaveManagerImpl(
@@ -636,6 +657,10 @@ PasswordForm PasswordSaveManagerImpl::BuildPendingCredentials(
     // federation_host
     pending_credentials.signon_realm = parsed_submitted_form.signon_realm;
   }
+
+  // Add previously saved usernames as alternatives.
+  PopulateAlternativeUsernames(form_fetcher_->GetBestMatches(),
+                               pending_credentials);
 
   if (HasGeneratedPassword()) {
     pending_credentials.type = PasswordForm::Type::kGenerated;

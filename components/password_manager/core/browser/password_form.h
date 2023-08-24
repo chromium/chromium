@@ -38,6 +38,7 @@ struct AlternativeElement {
   AlternativeElement(const Value& value,
                autofill::FieldRendererId field_renderer_id,
                const Name& name);
+  explicit AlternativeElement(const Value& value);
   AlternativeElement(const AlternativeElement& rhs);
   AlternativeElement(AlternativeElement&& rhs);
   AlternativeElement& operator=(const AlternativeElement& rhs);
@@ -49,9 +50,11 @@ struct AlternativeElement {
 
   // The value of the field.
   std::u16string value;
-  // The renderer id of the field.
+  // The renderer id of the field. May be not set if the value is
+  // not present in the submitted form.
   autofill::FieldRendererId field_renderer_id;
-  // The name attribute of the field.
+  // The name attribute of the field. May be empty if the value is
+  // not present in the submitted form.
   std::u16string name;
 };
 
@@ -294,9 +297,9 @@ struct PasswordForm {
   // has implemented some form of autofill.
   std::u16string username_value;
 
-  // This member is populated in cases where we there are multiple input
-  // elements that could possibly be the username. Used when our heuristics for
-  // determining the username are incorrect. Optional.
+  // This member is populated in cases where we there are multiple possible
+  // username values. Used to populate a dropdown for possible usernames.
+  // Optional.
   AlternativeElementVector all_alternative_usernames;
 
   // This member is populated in cases where we there are multiple possible

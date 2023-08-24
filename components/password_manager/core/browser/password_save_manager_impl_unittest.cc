@@ -74,6 +74,8 @@ void CheckPendingCredentials(const PasswordForm& expected,
   EXPECT_EQ(expected.username_element, actual.username_element);
   EXPECT_EQ(expected.password_element, actual.password_element);
   EXPECT_EQ(expected.blocked_by_user, actual.blocked_by_user);
+  EXPECT_EQ(expected.all_alternative_usernames,
+            actual.all_alternative_usernames);
   EXPECT_TRUE(
       autofill::FormData::DeepEqual(expected.form_data, actual.form_data));
 }
@@ -438,7 +440,7 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsEmptyStore) {
 
   const base::Time kNow = base::Time::Now();
   password_save_manager_impl()->CreatePendingCredentials(
-      Parse(submitted_form_), &observed_form_, submitted_form_,
+      parsed_submitted_form_, &observed_form_, submitted_form_,
       /*is_http_auth=*/false,
       /*is_credential_api_save=*/false);
 
@@ -453,12 +455,15 @@ TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsEmptyStore) {
 TEST_P(PasswordSaveManagerImplTest, CreatePendingCredentialsNewCredentials) {
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
   password_save_manager_impl()->CreatePendingCredentials(
-      Parse(submitted_form_), &observed_form_, submitted_form_,
+      parsed_submitted_form_, &observed_form_, submitted_form_,
       /*is_http_auth=*/false,
       /*is_credential_api_save=*/false);
 
+  PasswordForm expected_credentials = parsed_submitted_form_;
+  expected_credentials.all_alternative_usernames.emplace_back(
+      AlternativeElement::Value(saved_match_.username_value));
   CheckPendingCredentials(
-      parsed_submitted_form_,
+      expected_credentials,
       password_save_manager_impl()->GetPendingCredentials());
 }
 
@@ -562,10 +567,43 @@ TEST_P(PasswordSaveManagerImplTest,
 
   PasswordForm expected = saved_match_;
   expected.password_value = u"verystrongpassword";
+  expected.all_alternative_usernames.emplace_back(
+      AlternativeElement::Value(another_saved_match.username_value));
+
   password_save_manager_impl()->CreatePendingCredentials(
       Parse(submitted_form), &observed_form_, submitted_form,
       /*is_http_auth=*/false,
       /*is_credential_api_save=*/false);
+
+  CheckPendingCredentials(
+      expected, password_save_manager_impl()->GetPendingCredentials());
+}
+
+// Tests creating pending credentials when there are multiple saved credentials,
+// ensuring that there are no duplicates in the alternative usernames vector.
+TEST_P(PasswordSaveManagerImplTest,
+       CreatePendingCredentialsMultipleSavedNoDuplicatedAlternatives) {
+  PasswordForm another_saved_match = saved_match_;
+  another_saved_match.username_value = u"last_name";
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_, &another_saved_match});
+
+  // Create submitted form, that has one of the previously saved usernames in
+  // it.
+  FormData submitted_form = observed_form_;
+  submitted_form.fields[0].value = another_saved_match.username_value;
+  submitted_form.fields[1].value = u"new_username";
+  submitted_form.fields[2].value = u"verystrongpassword";
+
+  PasswordForm parsed_form = Parse(submitted_form);
+  password_save_manager_impl()->CreatePendingCredentials(
+      parsed_form, &observed_form_, submitted_form,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  // Only the match that wasn't present in the submitted form should be added.
+  PasswordForm expected = parsed_form;
+  expected.all_alternative_usernames.emplace_back(
+      AlternativeElement::Value(saved_match_.username_value));
 
   CheckPendingCredentials(
       expected, password_save_manager_impl()->GetPendingCredentials());
