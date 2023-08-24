@@ -570,6 +570,7 @@ struct ItemEvent {
 };
 
 // A report of a change in the Sync Progress of a file or folder.
+// Next MinVersion: 1
 struct ProgressEvent {
   // The stable ID used by DriveFS.
   int64 stable_id;
@@ -583,6 +584,9 @@ struct ProgressEvent {
   // * Anything in between is considered "in progress";
   // * Other values are not defined.
   uint8 progress;
+
+  // Absolute path of the file or directory.
+  [MinVersion=1] mojo_base.mojom.FilePath? file_path;
 };
 
 struct SyncingStatus {
@@ -833,4 +837,3 @@ struct DocsOfflineStats {
   // The number of files available offline. -1 when extension is not available.
   int32 available_offline;
 };
-

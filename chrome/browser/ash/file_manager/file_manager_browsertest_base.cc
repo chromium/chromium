@@ -1471,7 +1471,7 @@ class DriveFsTestVolume : public TestVolume {
     CHECK(base::FilePath("/").AppendRelativePath(base::FilePath(*path),
                                                  &full_path))
         << "Failed to convert to full path";
-    progress_event->path = full_path.AsUTF8Unsafe();
+    progress_event->file_path = full_path;
     progress_event->progress = progress;
     progress_event->stable_id = md.value().stable_id;
 

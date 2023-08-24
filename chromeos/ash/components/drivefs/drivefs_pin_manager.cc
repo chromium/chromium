@@ -216,7 +216,8 @@ ostream& operator<<(ostream& out, Quoter<mojom::ItemEvent> q) {
 
 ostream& operator<<(ostream& out, Quoter<mojom::ProgressEvent> q) {
   const mojom::ProgressEvent& e = *q.value;
-  return out << "{" << PinManager::Id(e.stable_id) << " " << Quote(e.path)
+  return out << "{" << PinManager::Id(e.stable_id) << " "
+             << Quote(e.file_path.value())
              << ", progress: " << base::StringPrintf("%hhu", e.progress)
              << "%}";
 }
@@ -1435,8 +1436,15 @@ void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
   }
   VLOG(3) << "Received " << Quote(event);
 
+  base::FilePath file_path;
+  if (event.file_path.has_value()) {
+    file_path = *event.file_path;
+  } else {
+    file_path = base::FilePath(event.path);
+  }
+
   Path relative_path("/");
-  if (!mount_path_.AppendRelativePath(Path(event.path), &relative_path)) {
+  if (!mount_path_.AppendRelativePath(file_path, &relative_path)) {
     LOG(ERROR) << "Path not relative to drive mount";
     return;
   }

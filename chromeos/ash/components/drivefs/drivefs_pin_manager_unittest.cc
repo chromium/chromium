@@ -1682,7 +1682,7 @@ TEST_F(DriveFsPinManagerTest, OnSyncingStatusUpdate) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1.value();
+    event.file_path = path1;
     event.progress = 20;
     manager.OnItemProgress(event);
   }
@@ -1868,7 +1868,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1.value();
+    event.file_path = path1;
     event.progress = 0;
     manager.OnItemProgress(event);
   }
@@ -1901,7 +1901,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1.value();
+    event.file_path = path1;
     event.progress = 20;
     manager.OnItemProgress(event);
   }
@@ -1934,7 +1934,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id2);
-    event.path = path2.value();
+    event.file_path = path2;
     event.progress = 50;
     manager.OnItemProgress(event);
   }
@@ -1967,7 +1967,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id1);
-    event.path = path1.value();
+    event.file_path = path1;
     event.progress = 100;
     manager.OnItemProgress(event);
   }
@@ -1993,7 +1993,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = 329;
-    event.path = profile_path_.Append("Path 3").value();
+    event.file_path = profile_path_.Append("Path 3");
     event.progress = 0;
     manager.OnItemProgress(event);
   }
@@ -2014,7 +2014,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = 458;
-    event.path = mount_path_.Append("Path 2").value();
+    event.file_path = mount_path_.Append("Path 2");
     event.progress = 100;
     manager.OnItemProgress(event);
   }
@@ -2070,7 +2070,7 @@ TEST_F(DriveFsPinManagerTest, OnItemProgress) {
   {
     ProgressEvent event;
     event.stable_id = static_cast<int64_t>(id2);
-    event.path = path2.value();
+    event.file_path = path2;
     event.progress = 80;
     manager.OnItemProgress(event);
   }
