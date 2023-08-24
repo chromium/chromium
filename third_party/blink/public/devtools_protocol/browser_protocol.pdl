@@ -11444,6 +11444,12 @@ experimental domain FedCm
       string dialogId
       integer accountIndex
 
+  # Only valid if the dialog type is ConfirmIdpSignin. Acts as if the user had
+  # clicked the continue button.
+  command confirmIdpSignin
+    parameters
+      string dialogId
+
   command dismissDialog
     parameters
       string dialogId

@@ -4,13 +4,17 @@
 
 #include "content/browser/webid/fake_identity_request_dialog_controller.h"
 
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
 FakeIdentityRequestDialogController::FakeIdentityRequestDialogController(
-    absl::optional<std::string> selected_account)
-    : selected_account_(selected_account) {}
+    absl::optional<std::string> selected_account,
+    WebContents* web_contents)
+    : selected_account_(selected_account), web_contents_(web_contents) {}
 
 FakeIdentityRequestDialogController::~FakeIdentityRequestDialogController() =
     default;
@@ -72,7 +76,9 @@ void FakeIdentityRequestDialogController::ShowFailureDialog(
     const blink::mojom::RpContext& rp_context,
     const IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
-    SigninToIdPCallback signin_callback) {}
+    SigninToIdPCallback signin_callback) {
+  title_ = "Confirm IDP Signin";
+}
 
 std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
@@ -81,7 +87,39 @@ std::string FakeIdentityRequestDialogController::GetTitle() const {
 content::WebContents* FakeIdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     DismissCallback dismiss_callback) {
-  return nullptr;
+  if (!web_contents_) {
+    return nullptr;
+  }
+
+  popup_dismiss_callback_ = std::move(dismiss_callback);
+  // This follows the code in FedCmModalDialogView::ShowPopupWindow.
+  content::OpenURLParams params(
+      url, content::Referrer(), WindowOpenDisposition::NEW_POPUP,
+      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, /*is_renderer_initiated=*/false);
+  popup_window_ =
+      web_contents_->GetDelegate()->OpenURLFromTab(web_contents_, params);
+  Observe(popup_window_);
+  return popup_window_;
+}
+
+void FakeIdentityRequestDialogController::CloseModalDialog() {
+  // We do not want to trigger the dismiss callback when we close the popup
+  // here, because that would abort the signin flow.
+  popup_dismiss_callback_.Reset();
+  if (popup_window_) {
+    // Store this in a local variable to avoid triggering the dangling pointer
+    // detector.
+    WebContents* web_contents = popup_window_;
+    popup_window_ = nullptr;
+    web_contents->Close();
+  }
+}
+
+void FakeIdentityRequestDialogController::WebContentsDestroyed() {
+  if (popup_dismiss_callback_) {
+    std::move(popup_dismiss_callback_).Run(DismissReason::kOther);
+  }
+  popup_window_ = nullptr;
 }
 
 }  // namespace content

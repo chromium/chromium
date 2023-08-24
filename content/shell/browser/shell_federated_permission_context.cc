@@ -87,9 +87,14 @@ void ShellFederatedPermissionContext::RemoveEmbargoForAutoReauthn(
     const url::Origin& relying_party_embedder) {}
 
 void ShellFederatedPermissionContext::AddIdpSigninStatusObserver(
-    IdpSigninStatusObserver* observer) {}
+    IdpSigninStatusObserver* observer) {
+  idp_signin_status_observer_list_.AddObserver(observer);
+}
+
 void ShellFederatedPermissionContext::RemoveIdpSigninStatusObserver(
-    IdpSigninStatusObserver* observer) {}
+    IdpSigninStatusObserver* observer) {
+  idp_signin_status_observer_list_.RemoveObserver(observer);
+}
 
 // FederatedIdentityActiveSessionPermissionContextDelegate
 bool ShellFederatedPermissionContext::HasActiveSession(
@@ -172,8 +177,11 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     bool idp_signin_status) {
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
-  // TODO(crbug.com/1382989): Find a better way to do this than adding
-  // explicit helper code to signal completion.
+  for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
+    observer.OnIdpSigninStatusChanged(idp_origin, idp_signin_status);
+  }
+
+  // TODO(crbug.com/1382989): Replace this with AddIdpSigninStatusObserver.
   if (idp_signin_status_closure_)
     idp_signin_status_closure_.Run();
 }

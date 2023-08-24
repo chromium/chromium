@@ -155,6 +155,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void AcceptAccountsDialogForDevtools(const GURL& config_url,
                                        const IdentityRequestAccount& account);
   void DismissAccountsDialogForDevtools(bool should_embargo);
+  void AcceptConfirmIdpSigninDialogForDevtools();
   void DismissConfirmIdpSigninDialogForDevtools();
 
   // Check if the scope of the request allows the browser to mediate
@@ -404,6 +405,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
+
+  // If dialog_type_ is kConfirmIdpSignin, this is the signin URL for the IDP.
+  GURL signin_url_;
 
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;

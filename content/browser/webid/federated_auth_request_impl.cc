@@ -1414,6 +1414,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
   // ShowFailureDialog() a 2nd time should notify the user that sign-in
   // failed.
   dialog_type_ = kConfirmIdpSignin;
+  signin_url_ = idp_info->metadata.idp_signin_url;
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(idp_origin), idp_info->rp_context,
@@ -1424,8 +1425,7 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      TokenStatus::kNotSignedInWithIdp,
                      /*should_delay_callback=*/false),
       base::BindOnce(&FederatedAuthRequestImpl::ShowModalDialog,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     idp_info->metadata.idp_signin_url));
+                     weak_ptr_factory_.GetWeakPtr(), signin_url_));
   fedcm_metrics_->RecordMismatchDialogShown();
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   devtools_instrumentation::OnFedCmDialogShown(&render_frame_host());
@@ -2036,6 +2036,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   idp_order_.clear();
   metrics_endpoints_.clear();
   token_request_get_infos_.clear();
+  signin_url_ = GURL();
   dialog_type_ = kNone;
 }
 
@@ -2130,6 +2131,8 @@ FederatedAuthRequestImpl::CreateDialogController() {
     return std::move(mock_dialog_controller_);
   }
 
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeUIForFedCM)) {
     std::string selected_account =
@@ -2138,11 +2141,12 @@ FederatedAuthRequestImpl::CreateDialogController() {
     return std::make_unique<FakeIdentityRequestDialogController>(
         selected_account.empty()
             ? absl::nullopt
-            : absl::optional<std::string>(selected_account));
+            : absl::optional<std::string>(selected_account),
+        web_contents);
   }
 
   return GetContentClient()->browser()->CreateIdentityRequestDialogController(
-      WebContents::FromRenderFrameHost(&render_frame_host()));
+      web_contents);
 }
 
 std::unique_ptr<MDocProvider> FederatedAuthRequestImpl::CreateMDocProvider() {
@@ -2239,6 +2243,11 @@ void FederatedAuthRequestImpl::DismissAccountsDialogForDevtools(
           ? IdentityRequestDialogController::DismissReason::kCloseButton
           : IdentityRequestDialogController::DismissReason::kOther;
   OnDialogDismissed(reason);
+}
+
+void FederatedAuthRequestImpl::AcceptConfirmIdpSigninDialogForDevtools() {
+  DCHECK(signin_url_.is_valid());
+  ShowModalDialog(signin_url_);
 }
 
 void FederatedAuthRequestImpl::DismissConfirmIdpSigninDialogForDevtools() {

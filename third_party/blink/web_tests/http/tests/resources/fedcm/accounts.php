@@ -1,3 +1,10 @@
+<?php
+header("Content-Type: application/json; charset=utf-8");
+
+if (isset($_COOKIE["noaccounts"])) {
+?>
+{ "accounts": [] }
+<?php } else { ?>
 {
  "accounts": [{
    "id": "1234",
@@ -15,3 +22,4 @@
    "approved_clients": []
   }]
 }
+<?php } ?>

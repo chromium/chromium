@@ -8,18 +8,22 @@
 #include <string>
 
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
+class WebContents;
 
 // This fakes the request dialogs to always provide user consent.
 // Used by tests and if the --use-fake-ui-for-fedcm command-line
 // flag is provided.
 class CONTENT_EXPORT FakeIdentityRequestDialogController
-    : public IdentityRequestDialogController {
+    : public IdentityRequestDialogController,
+      public WebContentsObserver {
  public:
   explicit FakeIdentityRequestDialogController(
-      absl::optional<std::string> selected_account);
+      absl::optional<std::string> selected_account,
+      WebContents* web_contents = nullptr);
   ~FakeIdentityRequestDialogController() override;
 
   void ShowAccountsDialog(
@@ -45,9 +49,18 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
       const GURL& url,
       DismissCallback dismiss_callback) override;
 
+  void CloseModalDialog() override;
+
+  void WebContentsDestroyed() override;
+
  private:
   absl::optional<std::string> selected_account_;
   std::string title_;
+  // The caller ensures that this object does not outlive the web_contents_.
+  raw_ptr<WebContents> web_contents_;
+  // We observe WebContentsDestroyed to ensure that this pointer is valid.
+  raw_ptr<WebContents> popup_window_{nullptr};
+  DismissCallback popup_dismiss_callback_;
 };
 
 }  // namespace content

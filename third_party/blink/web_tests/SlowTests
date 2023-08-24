@@ -140,6 +140,7 @@ crbug.com/678482 [ Mac10.15 Release ] http/tests/devtools/debugger/fetch-breakpo
 crbug.com/678482 [ Mac11 Release ] http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/678482 [ Mac12 ] http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/678482 [ Release Win ] http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
+crbug.com/1451884 http/tests/inspector-protocol/fedcm/fedcm-confirm-idp-signin.js [ Slow ]
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Slow ]
 crbug.com/1229701 [ Debug Mac13-arm64 ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]

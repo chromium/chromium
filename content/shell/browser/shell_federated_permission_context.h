@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "content/public/browser/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_auto_reauthn_permission_context_delegate.h"
@@ -106,6 +107,7 @@ class ShellFederatedPermissionContext
   // Map of <IDP, IDPSigninStatus>
   std::map<std::string, absl::optional<bool>> idp_signin_status_;
 
+  base::ObserverList<IdpSigninStatusObserver> idp_signin_status_observer_list_;
   base::RepeatingClosure idp_signin_status_closure_;
 
   bool auto_reauthn_permission_{true};

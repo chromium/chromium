@@ -182,6 +182,27 @@ DispatchResponse FedCmHandler::SelectAccount(const String& in_dialogId,
   return DispatchResponse::InvalidParams("Invalid account index");
 }
 
+DispatchResponse FedCmHandler::ConfirmIdpSignin(const String& in_dialogId) {
+  if (in_dialogId != dialog_id_) {
+    return DispatchResponse::InvalidParams(
+        "Dialog ID does not match current dialog");
+  }
+
+  auto* auth_request = GetFederatedAuthRequest();
+  if (!auth_request) {
+    return DispatchResponse::ServerError(
+        "dismissDialog called while no FedCm dialog is shown");
+  }
+
+  FederatedAuthRequestImpl::DialogType type = auth_request->GetDialogType();
+  if (type != FederatedAuthRequestImpl::kConfirmIdpSignin) {
+    return DispatchResponse::ServerError(
+        "dismissDialog called while no confirm IDP signin dialog is shown");
+  }
+  auth_request->AcceptConfirmIdpSigninDialogForDevtools();
+  return DispatchResponse::Success();
+}
+
 DispatchResponse FedCmHandler::DismissDialog(const String& in_dialogId,
                                              Maybe<bool> in_triggerCooldown) {
   if (in_dialogId != dialog_id_) {

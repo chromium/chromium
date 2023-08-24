@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- generated with:
+generate_token.py https://devtools.test:8443/ FedCmIdpSigninStatus  --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A+njN2XSC/tnn/z5Z9NzUOwjhPTqCS/bhS9YXC2FpJ9wANZWFRDYz+eQiBZI0GrRH/lSJhT0JaWc4z+bSw5EXwUAAABheyJvcmlnaW4iOiAiaHR0cHM6Ly9kZXZ0b29scy50ZXN0Ojg0NDMiLCAiZmVhdHVyZSI6ICJGZWRDbUlkcFNpZ25pblN0YXR1cyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==">
+<script>
+async function triggerDialog() {
+  try {
+    const result = await navigator.credentials.get({
+      identity: {
+        providers: [{
+          configURL: `https://127.0.0.1:8443/resources/fedcm/fedcm.json`,
+          clientId: '123',
+          nonce: '2',
+        }]
+      },
+      mediation: 'required',
+    });
+    return result.token;
+  } catch (error) {
+    return error.toString();
+  }
+}
+</script>
+</head>
+<body>
+</body>
+</html>
