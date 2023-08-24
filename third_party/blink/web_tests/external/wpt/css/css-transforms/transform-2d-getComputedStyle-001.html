@@ -75,8 +75,15 @@
     }
     function clear(id) {
         const element = document.getElementById(id);
+        const value = window.getComputedStyle(element).transform;
         element.style.display = 'none';
-        assert_equals(window.getComputedStyle(element).getPropertyValue("transform"), "none", "Computed style for an element with 'display: none' should be 'transform: none'");
+        // Per spec, the resolved value doesn't depend on display value.
+        // https://drafts.csswg.org/css-transforms-2/#serialization-of-the-computed-value
+        // https://github.com/w3c/csswg-drafts/issues/9121
+        assert_equals(
+            window.getComputedStyle(element).transform, value,
+                "Computed style for an element with 'display: none' " +
+                "shouldn't be changed");
     }
 
     test(function() {
