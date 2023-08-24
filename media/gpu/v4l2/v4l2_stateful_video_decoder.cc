@@ -314,6 +314,15 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   DVLOGF(3) << buffer->AsHumanReadableString(/*verbose=*/false);
 
   if (buffer->end_of_stream()) {
+    if (!decoder_buffer_and_callbacks_.empty()) {
+      // We still have |buffer|s that haven't been enqueued in |OUTPUT_queue_|,
+      // and if we were to SendStopCommand(), they would not be processed. So
+      // let's store the end_of_stream() |buffer| for later processing.
+      decoder_buffer_and_callbacks_.emplace(std::move(buffer),
+                                            std::move(decode_cb));
+      return;
+    }
+
     if (!OUTPUT_queue_->SendStopCommand()) {
       std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
       return;
@@ -900,6 +909,18 @@ bool V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers() {
     auto media_decode_cb =
         std::move(decoder_buffer_and_callbacks_.front().second);
     decoder_buffer_and_callbacks_.pop();
+
+    if (media_buffer->end_of_stream()) {
+      // We had received an end_of_stream() buffer but there were still pending
+      // |decoder_buffer_and_callbacks_|, so we stored it; we can now process it
+      // and start the Flush.
+      if (!OUTPUT_queue_->SendStopCommand()) {
+        std::move(media_decode_cb).Run(DecoderStatus::Codes::kFailed);
+        return false;
+      }
+      flush_cb_ = std::move(media_decode_cb);
+      return true;
+    }
 
     CHECK_EQ(v4l2_buffer->PlanesCount(), 1u);
     uint8_t* dst = static_cast<uint8_t*>(v4l2_buffer->GetPlaneMapping(0));
