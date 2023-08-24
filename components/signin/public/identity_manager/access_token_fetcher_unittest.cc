@@ -148,7 +148,8 @@ class AccessTokenFetcherTest
     std::set<std::string> scopes{"scope"};
     return std::make_unique<AccessTokenFetcher>(
         account_id, "test_consumer", &token_service_, &primary_account_manager_,
-        url_loader_factory, scopes, std::move(callback), mode);
+        url_loader_factory, scopes, std::move(callback), mode,
+        /*should_verify_scope_access=*/true);
   }
 
   AccountTrackerService* account_tracker() { return account_tracker_.get(); }
@@ -179,7 +180,8 @@ class AccessTokenFetcherTest
       std::string oauth_consumer_name = "test_consumer") {
     return std::make_unique<AccessTokenFetcher>(
         account_id, oauth_consumer_name, &token_service_,
-        &primary_account_manager_, scopes, std::move(callback), mode);
+        &primary_account_manager_, scopes, std::move(callback), mode,
+        /*should_verify_scope_access=*/true);
   }
 
   // OAuth2AccessTokenManager::DiagnosticsObserver:

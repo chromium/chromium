@@ -208,6 +208,9 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 #if BUILDFLAG(IS_CHROMEOS)
   init_params.account_manager_facade = params->account_manager_facade;
 #endif
+#if BUILDFLAG(IS_IOS)
+  init_params.should_verify_scope_access = params->should_verify_scope_access;
+#endif
 
   return init_params;
 }

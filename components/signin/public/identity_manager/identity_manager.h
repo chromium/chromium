@@ -350,6 +350,7 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
     AccountConsistencyMethod account_consistency =
         AccountConsistencyMethod::kDisabled;
+    bool should_verify_scope_access = true;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     raw_ptr<SigninClient> signin_client = nullptr;
 #endif
@@ -667,6 +668,10 @@ class IdentityManager : public KeyedService,
 
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
+
+  // TODO(crbug.com/1462858): Remove this field once
+  // kReplaceSyncPromosWithSignInPromos launches.
+  const bool should_verify_scope_access_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.
