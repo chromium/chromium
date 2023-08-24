@@ -21,7 +21,7 @@ suite('scanDoneSectionTest', function() {
 
   setup(() => {
     scanningBrowserProxy = new TestScanningBrowserProxy();
-    ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
+    ScanningBrowserProxyImpl.setInstance(scanningBrowserProxy);
 
     scanDoneSection = /** @type {!ScanDoneSectionElement} */ (
         document.createElement('scan-done-section'));

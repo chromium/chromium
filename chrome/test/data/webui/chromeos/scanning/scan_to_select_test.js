@@ -23,7 +23,7 @@ suite('scanToSelectTest', function() {
 
   setup(() => {
     scanningBrowserProxy = new TestScanningBrowserProxy();
-    ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
+    ScanningBrowserProxyImpl.setInstance(scanningBrowserProxy);
 
     scanToSelect = /** @type {!ScanToSelectElement} */ (
         document.createElement('scan-to-select'));

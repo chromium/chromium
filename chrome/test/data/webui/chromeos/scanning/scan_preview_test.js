@@ -108,7 +108,7 @@ suite('scanPreviewTest', function() {
     scanPreview = /** @type {!ScanPreviewElement} */ (
         document.createElement('scan-preview'));
     assertTrue(!!scanPreview);
-    ScanningBrowserProxyImpl.instance_ = new TestScanningBrowserProxy();
+    ScanningBrowserProxyImpl.setInstance(new TestScanningBrowserProxy());
 
     // Setup mock for matchMedia.
     mockController = new MockController();

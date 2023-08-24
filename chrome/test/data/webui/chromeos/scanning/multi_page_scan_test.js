@@ -23,7 +23,7 @@ suite('multiPageScanTest', function() {
 
   setup(() => {
     scanningBrowserProxy = new TestScanningBrowserProxy();
-    ScanningBrowserProxyImpl.instance_ = scanningBrowserProxy;
+    ScanningBrowserProxyImpl.setInstance(scanningBrowserProxy);
 
     multiPageScan = /** @type {!MultiPageScanElement} */ (
         document.createElement('multi-page-scan'));

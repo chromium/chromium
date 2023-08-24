@@ -484,7 +484,7 @@ suite('scanningAppTest', function() {
     setScanServiceForTesting(fakeScanService_);
     fakeMultiPageScanController_ = new FakeMultiPageScanController();
     testBrowserProxy = new TestScanningBrowserProxy();
-    ScanningBrowserProxyImpl.instance_ = testBrowserProxy;
+    ScanningBrowserProxyImpl.setInstance(testBrowserProxy);
     testBrowserProxy.setMyFilesPath(MY_FILES_PATH);
   });
 
