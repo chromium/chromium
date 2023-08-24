@@ -1119,6 +1119,11 @@
       name: "CSSTextBoxTrim",
       status: "test",
     },
+    {
+      // crbug.com/1463891: CSS `text-spacing-trim` property
+      name: "CSSTextSpacingTrim",
+      status: "test",
+    },
     // Use the `NGSCoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
       name: "CSSTextWrapBalanceByScore",
