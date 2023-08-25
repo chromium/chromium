@@ -3405,6 +3405,33 @@
             ]
         }
     ],
+    "ChromeOSWelcomeTour": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Counterfactual_CANARY_DEV_10",
+                    "params": {
+                        "is-counterfactual": "true"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ]
+                },
+                {
+                    "name": "Enabled_CANARY_DEV_10",
+                    "params": {
+                        "is-counterfactual": "false"
+                    },
+                    "enable_features": [
+                        "WelcomeTour"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSZramWriteback": [
         {
             "platforms": [
