@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
+
 (async function() {
   TestRunner.addResult(
       `Test loading resource for frontend.\n`);

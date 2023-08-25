@@ -4,6 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
+
 (async function() {
   TestRunner.addResult(`Test loading file resource from front-end \n`);
 
