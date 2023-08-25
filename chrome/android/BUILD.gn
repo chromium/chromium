@@ -998,6 +998,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/safety_check/android:junit",
       "//chrome/browser/screenshot_monitor:java",
       "//chrome/browser/search_engines/android:java",
+      "//chrome/browser/search_engines/android:junit",
       "//chrome/browser/search_resumption:junit",
       "//chrome/browser/segmentation_platform:factory_java",
       "//chrome/browser/settings:junit_test_support",

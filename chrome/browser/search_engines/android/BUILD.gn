@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/SearchEnginePromoType.java",
     "java/src/org/chromium/chrome/browser/search_engines/SogouPromoDialog.java",
     "java/src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java",
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
   ]
@@ -46,6 +47,7 @@ android_library("java") {
     "//components/search_engines/android:java",
     "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//ui/android:ui_full_java",
@@ -69,5 +71,23 @@ android_resources("java_resources") {
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+robolectric_library("junit") {
+  resources_package = "org.chromium.chrome.browser.search_engines"
+  sources = [ "junit/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinatorUnitTest.java" ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }

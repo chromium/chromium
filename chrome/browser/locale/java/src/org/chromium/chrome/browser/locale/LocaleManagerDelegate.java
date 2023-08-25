@@ -16,7 +16,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,12 +26,12 @@ import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.PromoDialog;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.PageTransition;
@@ -190,7 +190,8 @@ public class LocaleManagerDelegate {
                 @SearchEnginePromoType
                 int promoType = getSearchEnginePromoShowType();
                 if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                        || promoType == SearchEnginePromoType.SHOW_NEW) {
+                        || promoType == SearchEnginePromoType.SHOW_NEW
+                        || promoType == SearchEnginePromoType.SHOW_WAFFLE) {
                     onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
                 }
             }
@@ -202,22 +203,31 @@ public class LocaleManagerDelegate {
         }
 
         final @SearchEnginePromoType int shouldShow = getSearchEnginePromoShowType();
-        Supplier<PromoDialog> dialogSupplier;
+        Runnable dialogPresenter;
 
         switch (shouldShow) {
             case SearchEnginePromoType.DONT_SHOW:
                 finalizeInternalCallback.onResult(true);
                 return;
             case SearchEnginePromoType.SHOW_SOGOU:
-                dialogSupplier = ()
+                dialogPresenter = ()
                         -> new SogouPromoDialog(activity, this::onSelectSearchEngine,
-                                finalizeInternalCallback, mSettingsLauncher);
+                                finalizeInternalCallback, mSettingsLauncher)
+                                   .show();
                 break;
             case SearchEnginePromoType.SHOW_EXISTING:
             case SearchEnginePromoType.SHOW_NEW:
-                dialogSupplier = ()
+                dialogPresenter = ()
                         -> new DefaultSearchEnginePromoDialog(activity, mSearchEngineHelperDelegate,
-                                shouldShow, finalizeInternalCallback);
+                                shouldShow, finalizeInternalCallback)
+                                   .show();
+                break;
+            case SearchEnginePromoType.SHOW_WAFFLE:
+                assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);
+                dialogPresenter = ()
+                        -> new ChoiceDialogCoordinator(
+                                activity, mSearchEngineHelperDelegate, finalizeInternalCallback)
+                                   .show();
                 break;
             default:
                 assert false;
@@ -231,7 +241,7 @@ public class LocaleManagerDelegate {
             finalizeInternalCallback.onResult(false);
             return;
         }
-        dialogSupplier.get().show();
+        dialogPresenter.run();
         mSearchEnginePromoShownThisSession = true;
     }
 

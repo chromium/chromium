@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
@@ -54,6 +55,9 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
             DefaultSearchEngineDialogHelper.Delegate delegate, int dialogType,
             @Nullable Callback<Boolean> onSuccessCallback) {
         super(activity);
+        assert dialogType == SearchEnginePromoType.SHOW_EXISTING
+                || dialogType == SearchEnginePromoType.SHOW_NEW;
+
         mDelegate = delegate;
         mDialogType = dialogType;
         mOnSuccessCallback = onSuccessCallback;
@@ -125,7 +129,8 @@ public class DefaultSearchEnginePromoDialog extends PromoDialog {
     }
 
     /** @return The current visible Default Search Engine dialog. */
-    static DefaultSearchEnginePromoDialog getCurrentDialog() {
+    @VisibleForTesting
+    public static DefaultSearchEnginePromoDialog getCurrentDialog() {
         return sCurrentDialog;
     }
 

@@ -389,6 +389,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kForceStartupSigninPromo,
     &switches::kIdentityStatusConsistency,
     &switches::kForceDisableExtendedSyncPromos,
+    &switches::kSearchEngineChoice,
     &switches::kTangibleSync,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,

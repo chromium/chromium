@@ -416,6 +416,7 @@ public abstract class ChromeFeatureList {
     public static final String SCREENSHOTS_FOR_ANDROID_V2 = "ScreenshotsForAndroidV2";
     public static final String SCROLL_TO_TLD_OPTIMIZATION = "ScrollToTLDOptimization";
     public static final String SEARCH_ENGINES_PROMO_V3 = "SearchEnginesPromoV3";
+    public static final String SEARCH_ENGINE_CHOICE = "SearchEngineChoice";
     public static final String SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT =
             "SearchReadyOmniboxAllowQueryEdit";
     public static final String SEARCH_RESUMPTION_MODULE_ANDROID = "SearchResumptionModuleAndroid";
@@ -576,6 +577,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sPaintPreviewDemo = new CachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sQueryTiles = new CachedFlag(QUERY_TILES, false);
     public static final CachedFlag sQueryTilesOnStart = new CachedFlag(QUERY_TILES_ON_START, false);
+    public static final CachedFlag sSearchEngineChoice =
+            new CachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShouldIgnoreIntentSkipInternalCheck =
             new CachedFlag(SHOULD_IGNORE_INTENT_SKIP_INTERNAL_CHECK, true);
     public static final CachedFlag sSpareTab = new CachedFlag(SPARE_TAB, false);
@@ -659,6 +662,7 @@ public abstract class ChromeFeatureList {
         sPaintPreviewDemo,
         sQueryTiles,
         sQueryTilesOnStart,
+        sSearchEngineChoice,
         sShouldIgnoreIntentSkipInternalCheck,
         sSpareTab,
         sStartSurfaceAndroid,
