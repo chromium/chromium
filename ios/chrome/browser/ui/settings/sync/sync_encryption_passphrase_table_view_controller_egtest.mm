@@ -71,7 +71,7 @@ NSString* const kPassphrase = @"hello";
         ensureAppLaunchedWithFeaturesEnabled:{}
                                     disabled:
                                         {feature_engagement::
-                                             kIPHiOSHistoryOnOverflowMenuFeature}
+                                             kIPHiOSTabGridToolbarItemFeature}
                               relaunchPolicy:ForceRelaunchByCleanShutdown];
   }
 
@@ -132,7 +132,7 @@ NSString* const kPassphrase = @"hello";
         ensureAppLaunchedWithFeaturesEnabled:{}
                                     disabled:
                                         {feature_engagement::
-                                             kIPHiOSHistoryOnOverflowMenuFeature}
+                                             kIPHiOSTabGridToolbarItemFeature}
                               relaunchPolicy:ForceRelaunchByCleanShutdown];
   }
 
