@@ -307,7 +307,10 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
     return;
   }
 
+  uint64_t access_id = base::RandUint64();
+
   ukm::builders::OpenerHeuristic_TopLevel(opener_source_id_)
+      .SetAccessId(access_id)
       .SetHasSameSiteIframe(static_cast<int64_t>(has_iframe))
       .SetPopupProvider(static_cast<int64_t>(GetPopupProvider(initial_url_)))
       .SetPopupId(popup_id_)
@@ -325,7 +328,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevel(
   dips->storage()
       ->AsyncCall(&DIPSStorage::WritePopup)
       .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
-                /*access_id=*/base::RandUint64(),
+                access_id,
                 /*popup_time=*/GetClock()->Now())
       .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
 }

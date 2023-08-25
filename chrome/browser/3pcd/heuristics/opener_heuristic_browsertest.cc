@@ -393,18 +393,23 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM events and DIPS entries were recorded.
+  int64_t access_id;
   ASSERT_EQ(
       ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupPastInteraction")
           .size(),
       1u);
-  ASSERT_EQ(ukm_recorder.GetEntriesByName("OpenerHeuristic.TopLevel").size(),
-            1u);
+  auto top_level_entries =
+      ukm_recorder.GetEntries("OpenerHeuristic.TopLevel", {"AccessId"});
+  ASSERT_EQ(top_level_entries.size(), 1u);
+  EXPECT_EQ(
+      ukm_recorder.GetSourceForSourceId(top_level_entries[0].source_id)->url(),
+      opener_url);
+  access_id = top_level_entries[0].metrics["AccessId"];
 
-  int64_t access_id;
   base::OnceCallback<void(absl::optional<PopupsStateValue>)> assert_popup =
       base::BindLambdaForTesting([&](absl::optional<PopupsStateValue> state) {
         ASSERT_TRUE(state.has_value());
-        access_id = state->access_id;
+        EXPECT_EQ(access_id, static_cast<int64_t>(state->access_id));
       });
   GetDipsService()
       ->storage()
@@ -561,17 +566,22 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   GetDipsService()->storage()->FlushPostedTasksForTesting();
 
   // Assert that the UKM events and DIPS entries were recorded.
+  int64_t access_id;
   ASSERT_EQ(
       ukm_recorder.GetEntriesByName("OpenerHeuristic.PopupInteraction").size(),
       1u);
-  ASSERT_EQ(ukm_recorder.GetEntriesByName("OpenerHeuristic.TopLevel").size(),
-            1u);
+  auto top_level_entries =
+      ukm_recorder.GetEntries("OpenerHeuristic.TopLevel", {"AccessId"});
+  ASSERT_EQ(top_level_entries.size(), 1u);
+  EXPECT_EQ(
+      ukm_recorder.GetSourceForSourceId(top_level_entries[0].source_id)->url(),
+      opener_url);
+  access_id = top_level_entries[0].metrics["AccessId"];
 
-  int64_t access_id;
   base::OnceCallback<void(absl::optional<PopupsStateValue>)> assert_popup =
       base::BindLambdaForTesting([&](absl::optional<PopupsStateValue> state) {
         ASSERT_TRUE(state.has_value());
-        access_id = state->access_id;
+        EXPECT_EQ(access_id, static_cast<int64_t>(state->access_id));
       });
   GetDipsService()
       ->storage()
