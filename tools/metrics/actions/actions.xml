@@ -37559,6 +37559,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="UpdateNotificaion.NotificationShown">
+  <owner>jiamingc@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <description>
+    A default priority update notification was displayed.
+  </description>
+</action>
+
 <action name="Updater.ServerCertificateChanged">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

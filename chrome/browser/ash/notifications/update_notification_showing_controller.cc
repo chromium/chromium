@@ -130,7 +130,9 @@ void UpdateNotificationShowingController::MaybeShowUpdateNotification() {
 }
 
 void UpdateNotificationShowingController::MarkNotificationShown() {
-  // TODO(b/284978852): Add UMA tracking.
+  // TODO(b/284978852): Update UMA tracking.
+  base::RecordAction(
+      base::UserMetricsAction("UpdateNotificaion.NotificationShown"));
   profile_->GetPrefs()->SetInteger(prefs::kUpdateNotificationLastShownMilestone,
                                    current_milestone_);
 }
