@@ -38,6 +38,8 @@ import java.util.concurrent.TimeoutException;
 public class DOMUtils {
     private static final long MEDIA_TIMEOUT_SECONDS = 10L;
     private static final long MEDIA_TIMEOUT_MILLISECONDS = MEDIA_TIMEOUT_SECONDS * 1000;
+    private static final String RESULT_OK = "RESULT_OK";
+    private static final String RESULT_ELEMENT_NOT_FOUND = "RESULT_ELEMENT_NOT_FOUND";
 
     /**
      * Plays the media with given {@code id}.
@@ -718,16 +720,46 @@ public class DOMUtils {
                     is(true));
         });
 
-        int updateSelectionListSize = inputMethodManagerWrapper.getUpdateSelectionList().size();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(webContents);
         // Enter the text.
         imeAdapter.setComposingTextForTest(input, 1);
         // Wait for the input to finish. After finishing the input, it will update the selection to
         // move the cursor to the right position. This indicated that the input has finished.
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(inputMethodManagerWrapper.getUpdateSelectionList().size(),
-                    is(updateSelectionListSize + 1));
-        });
+        waitForTextFieldValue(webContents, nodeId, input);
+    }
+
+    private static void waitForTextFieldValue(
+            WebContents webContents, String textFieldId, String value) throws TimeoutException {
+        StringBuilder func = new StringBuilder();
+        func.append("function valueCheck() {");
+        func.append("  var element = document.getElementById('" + textFieldId + "');");
+        func.append("  return element && element.value == '" + value + "';");
+        func.append("}");
+
+        func.append("new Promise(resolve => {");
+        func.append("  if (valueCheck()) {");
+        func.append("    return resolve(" + RESULT_OK + ");");
+
+        func.append("  } else {");
+        func.append("    var element = document.getElementById('" + textFieldId + "');");
+        func.append("    if (!element)");
+        func.append("      return resolve(" + RESULT_ELEMENT_NOT_FOUND + ");");
+
+        func.append("    element.oninput = function() {");
+        func.append("      if (valueCheck()) {");
+        func.append("        element.oninput = undefined;");
+        func.append("        return resolve(" + RESULT_OK + ");");
+        func.append("      }");
+        func.append("    };");
+        func.append("  }");
+        func.append("});");
+
+        String result =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, func.toString());
+        if (RESULT_ELEMENT_NOT_FOUND.equals(result)) {
+            Assert.fail("The expected value of the element with id " + textFieldId
+                    + " is different from the expected value " + value);
+        }
     }
 
     @NativeMethods
