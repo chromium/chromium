@@ -118,8 +118,7 @@ void SmartCardResourceManager::OnCreateContextDone(
   create_context_promises_.erase(resolver);
 
   if (result->is_error()) {
-    auto* error = SmartCardError::Create(result->get_error());
-    resolver->Reject(error);
+    SmartCardError::Reject(resolver, result->get_error());
     return;
   }
 
