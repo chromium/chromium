@@ -271,6 +271,13 @@ BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauthOnBling,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, Chrome will offer to pay with accounts supporting Pix.
+BASE_FEATURE(kEnablePixPayments,
+             "EnablePixPayments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 bool ShouldShowImprovedUserConsentForCreditCardSave() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
