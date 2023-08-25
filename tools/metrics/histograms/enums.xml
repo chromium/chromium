@@ -27358,6 +27358,9 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
       label="Sources - Override Tab - Delete Overrides Context Menu"/>
   <int value="107" label="Add Workspace folder via drag-drop"/>
   <int value="108" label="Add Workspace folder via select in placeholder"/>
+  <int value="109" label="Override Content Context Menu Source Mapped Warning"/>
+  <int value="110"
+      label="Override Content Context Menu Redirect To Deployed File"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
