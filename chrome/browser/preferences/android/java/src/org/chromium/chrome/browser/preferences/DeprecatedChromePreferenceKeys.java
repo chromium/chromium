@@ -47,6 +47,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.SigninPromo.NTPImpressions",
                 "Chrome.VideoTutorials.ShareUrls",
+                "LocaleManager_USR_TYPE",
                 "PersistedNotificationId",
                 "PhysicalWeb.ActivityReferral",
                 "PhysicalWeb.HasDeferredMetrics",

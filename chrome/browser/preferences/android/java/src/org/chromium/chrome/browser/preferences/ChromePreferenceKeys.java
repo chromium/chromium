@@ -446,7 +446,6 @@ public final class ChromePreferenceKeys {
             "LocaleManager_SEARCH_WIDGET_PRESENT_FIRST_START";
     public static final String LOCALE_MANAGER_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO =
             "LocaleManager_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO_KEYWORD";
-    public static final String LOCALE_MANAGER_USER_TYPE = "LocaleManager_USR_TYPE";
     public static final String LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE =
             "LocaleManager_WAS_IN_SPECIAL_LOCALE";
 

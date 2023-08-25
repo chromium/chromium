@@ -78,7 +78,6 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE,
                 ChromePreferenceKeys.LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START,
                 ChromePreferenceKeys.LOCALE_MANAGER_SHOULD_REPING_RLZ_FOR_SEARCH_PROMO,
-                ChromePreferenceKeys.LOCALE_MANAGER_USER_TYPE,
                 ChromePreferenceKeys.LOCALE_MANAGER_WAS_IN_SPECIAL_LOCALE,
                 ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS,
                 ChromePreferenceKeys.METRICS_MAIN_INTENT_LAUNCH_COUNT,
