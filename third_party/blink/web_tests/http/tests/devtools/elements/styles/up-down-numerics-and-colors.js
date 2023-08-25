@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
+
 (async function() {
   TestRunner.addResult(`Tests that numeric and color values are incremented/decremented correctly.\n`);
   await TestRunner.loadLegacyModule('elements');
@@ -32,7 +34,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
       // PageUp should change to 'FF3'
       colorTreeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('PageUp'));
       // Ctrl/Meta + Shift Down should change to 'EE3'
-      if (Host.isMac())
+      if (Host.Platform.isMac())
         colorTreeElement.valueElement.dispatchEvent(
             TestRunner.createKeyEvent('ArrowDown', /*Ctrl*/ false, /*Alt*/ false, /*Shift*/ true, /*Meta*/ true));
       else

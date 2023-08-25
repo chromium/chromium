@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
+import * as Host from 'devtools/core/host/host.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
@@ -18,7 +19,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   var debuggerModel = SDK.TargetManager.TargetManager.instance().rootTarget().model(SDK.DebuggerModel.DebuggerModel);
   var functionText = 'function foobar() { \nconsole.log(\'foobar execute!\');\n}';
-  var sourceURL = Host.isWin() ? '\n//# sourceURL=c:\\prog\\foobar.js' : '\n//# sourceURL=/usr/local/home/prog/foobar.js';
+  var sourceURL = Host.Platform.isWin() ? '\n//# sourceURL=c:\\prog\\foobar.js' : '\n//# sourceURL=/usr/local/home/prog/foobar.js';
   await TestRunner.evaluateInPageAnonymously(functionText + sourceURL);
   SourcesTestRunner.showScriptSource('foobar.js', didShowScriptSource);
 
