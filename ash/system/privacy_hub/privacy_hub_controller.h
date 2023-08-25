@@ -77,6 +77,8 @@ class ASH_EXPORT PrivacyHubController {
   // Gets the geolocation controller if available.
   GeolocationPrivacySwitchController* geolocation_controller();
 
+  CameraPrivacySwitchSynchronizer* CameraSynchronizerForTest();
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 

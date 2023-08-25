@@ -140,6 +140,14 @@ bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
   return (file_size != 0ll);
 }
 
+CameraPrivacySwitchSynchronizer*
+PrivacyHubController::CameraSynchronizerForTest() {
+  return camera_controller() ? static_cast<CameraPrivacySwitchSynchronizer*>(
+                                   camera_controller())
+                             : static_cast<CameraPrivacySwitchSynchronizer*>(
+                                   camera_disabled_.get());
+}
+
 ScopedLedFallbackForTesting::ScopedLedFallbackForTesting(bool value)
     : value(value) {
   CHECK(!g_scoped_led_fallback_for_testing);
