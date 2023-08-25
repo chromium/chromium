@@ -2957,10 +2957,6 @@ crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-012.html [ Failure 
 crbug.com/626703 external/wpt/css/selectors/selectors-4/lang-015.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/system-color-hightlights-vs-getSelection-001.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Timeout ]
-# `win-rel` fails but `win*-blink-rel` passes on this test.
-crbug.com/626703 [ Win ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure ]
 crbug.com/626703 external/wpt/svg/text/reftests/opacity.svg [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-002.html [ Failure ]
