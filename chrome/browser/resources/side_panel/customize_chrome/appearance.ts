@@ -80,6 +80,12 @@ export class AppearanceElement extends PolymerElement {
         computed: 'computeShowClassicChromeButton_(theme_)',
       },
 
+      showBottomDivider_: {
+        type: Boolean,
+        computed:
+            'computeShowBottomDivider_(showClassicChromeButton_, showDeviceThemeToggle_)',
+      },
+
       showManagedDialog_: Boolean,
     };
   }
@@ -88,9 +94,10 @@ export class AppearanceElement extends PolymerElement {
   private themeButtonClass_: string;
   private thirdPartyThemeId_: string|null = null;
   private thirdPartyThemeName_: string|null = null;
+  private showFirstPartyThemeView_: boolean;
   private showDeviceThemeToggle_: boolean;
   private showClassicChromeButton_: boolean;
-  private showFirstPartyThemeView_: boolean;
+  private showBottomDivider_: boolean;
   private showManagedDialog_: boolean;
 
   private setThemeListenerId_: number|null = null;
@@ -157,6 +164,10 @@ export class AppearanceElement extends PolymerElement {
     return !!(
         this.theme_ &&
         (this.theme_.backgroundImage || this.theme_.thirdPartyThemeInfo));
+  }
+
+  private computeShowBottomDivider_(): boolean {
+    return !!(this.showClassicChromeButton_ || this.showDeviceThemeToggle_);
   }
 
   private onEditThemeClicked_() {
