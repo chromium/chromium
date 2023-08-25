@@ -403,15 +403,9 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
 // If this feature is enabled and device permission is not granted by the user,
 // media-device enumeration will provide at most one device per type and the
 // device IDs will not be available.
-// TODO(crbug.com/1019176): remove the feature in M89.
 BASE_FEATURE(kEnumerateDevicesHideDeviceIDs,
              "EnumerateDevicesHideDeviceIDs",
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT
-#else
-             base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Content counterpart of ExperimentalContentSecurityPolicyFeatures in
 // third_party/blink/renderer/platform/runtime_enabled_features.json5. Enables
