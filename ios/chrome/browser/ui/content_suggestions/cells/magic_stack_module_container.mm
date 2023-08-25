@@ -104,6 +104,13 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     _title.accessibilityIdentifier =
         [MagicStackModuleContainer titleStringForModule:type];
     [titleStackView addArrangedSubview:_title];
+    // `setContentHuggingPriority:` does not guarantee that titleStackView
+    // completely resists vertical expansion since UIStackViews do not have
+    // intrinsic contentSize. Constraining the title label to the StackView will
+    // ensure contentView expands.
+    [NSLayoutConstraint activateConstraints:@[
+      [_title.bottomAnchor constraintEqualToAnchor:titleStackView.bottomAnchor]
+    ]];
 
     if ([self shouldShowSeeMore]) {
       UIButton* showMoreButton = [[UIButton alloc] init];
@@ -166,17 +173,25 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
     _contentViewWidthAnchor = [contentView.widthAnchor
         constraintEqualToConstant:[self contentViewWidth]];
     [NSLayoutConstraint activateConstraints:@[ _contentViewWidthAnchor ]];
-    // Ensures that the modules do not become larger than kModuleMaxHeight. The
-    // less than or equal to constraint coupled with a UIViewNoIntrinsicMetric
-    // vertical intrinsic content size declaration allows for it to still
-    // vertically shrink to intrinsic content size. In practice, the largest
-    // module will determine the height of all the modules, but it should not
-    // grow taller than kModuleMaxHeight. The less than or equal to
-    // configuration is for the MVT when it lives outside of the Magic Stack to
-    // stay as close to its intrinsic size as possible.
-    [NSLayoutConstraint activateConstraints:@[
-      [self.heightAnchor constraintLessThanOrEqualToConstant:kModuleMaxHeight]
-    ]];
+    // Configures `contentView` to be the view willing to expand if needed to
+    // fill extra vertical space in the container.
+    [contentView
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:UILayoutConstraintAxisVertical];
+    // Ensures that the modules conforms to a height of kModuleMaxHeight. For
+    // the MVT when it lives outside of the Magic Stack to stay as close to its
+    // intrinsic size as possible, the constraint is configured to be less than
+    // or equal to.
+    if (_type == ContentSuggestionsModuleType::kMostVisited &&
+        !ShouldPutMostVisitedSitesInMagicStack()) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.heightAnchor constraintLessThanOrEqualToConstant:kModuleMaxHeight]
+      ]];
+    } else {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.heightAnchor constraintEqualToConstant:kModuleMaxHeight]
+      ]];
+    }
 
     [self addSubview:stackView];
     AddSameConstraintsWithInsets(stackView, self, [self contentMargins]);
