@@ -6,16 +6,22 @@ Query "(display-mode: browser)": true
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 ------------- entered fullscreen -------------
 Query "(display-mode)": true
 Query "(display-mode: browser)": false
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": true
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 ------------- left fullscreen -------------
 Query "(display-mode)": true
 Query "(display-mode: browser)": true
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 

@@ -217,6 +217,10 @@ void InternalSettings::setDisplayModeOverride(const String& display_mode,
     mode = blink::mojom::DisplayMode::kStandalone;
   } else if (token == "fullscreen") {
     mode = blink::mojom::DisplayMode::kFullscreen;
+  } else if (token == "window-controls-overlay") {
+    mode = blink::mojom::DisplayMode::kWindowControlsOverlay;
+  } else if (token == "borderless") {
+    mode = blink::mojom::DisplayMode::kBorderless;
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,

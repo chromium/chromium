@@ -6,6 +6,8 @@ Query "(display-mode: browser)": true
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 Query "(display-mode: fine)": false
 Query "(display-mode: 1)": false
 Query "(display-mode: 3%)": false
@@ -15,6 +17,8 @@ Query "(display-mode: browser)": false
 Query "(display-mode: minimal-ui)": true
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 Query "(display-mode: fine)": false
 Query "(display-mode: 1)": false
 Query "(display-mode: 3%)": false
@@ -24,6 +28,8 @@ Query "(display-mode: browser)": false
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": true
 Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
 Query "(display-mode: fine)": false
 Query "(display-mode: 1)": false
 Query "(display-mode: 3%)": false
@@ -33,6 +39,30 @@ Query "(display-mode: browser)": false
 Query "(display-mode: minimal-ui)": false
 Query "(display-mode: standalone)": false
 Query "(display-mode: fullscreen)": true
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": false
+Query "(display-mode: fine)": false
+Query "(display-mode: 1)": false
+Query "(display-mode: 3%)": false
+------------- with 'window-controls-overlay' display mode -------------
+Query "(display-mode)": true
+Query "(display-mode: browser)": false
+Query "(display-mode: minimal-ui)": false
+Query "(display-mode: standalone)": false
+Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": true
+Query "(display-mode: borderless)": false
+Query "(display-mode: fine)": false
+Query "(display-mode: 1)": false
+Query "(display-mode: 3%)": false
+------------- with 'borderless' display mode -------------
+Query "(display-mode)": true
+Query "(display-mode: browser)": false
+Query "(display-mode: minimal-ui)": false
+Query "(display-mode: standalone)": false
+Query "(display-mode: fullscreen)": false
+Query "(display-mode: window-controls-overlay)": false
+Query "(display-mode: borderless)": true
 Query "(display-mode: fine)": false
 Query "(display-mode: 1)": false
 Query "(display-mode: 3%)": false
