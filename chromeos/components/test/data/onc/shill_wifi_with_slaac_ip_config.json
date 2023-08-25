@@ -1,0 +1,25 @@
+{
+  "GUID":"guid",
+  "IPConfigs":[
+    {
+      "Address":"123.123.123.123",
+      "Gateway":"1.1.1.1",
+      "Method":"ipv4",
+      "NameServers":[
+        "1.1.1.2",
+        "1.1.1.3"
+      ],
+      "Prefixlen":24,
+      "WebProxyAutoDiscoveryUrl":"proxy.url"
+    },
+    {
+      "Address":"2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+      "Gateway":"2001:db8:85a3::7a2e:370:7331",
+      "Method":"slaac",
+      "NameServers":[],
+      "Prefixlen":64
+    }
+  ],
+  "Type":"wifi",
+  "Name":"test_wifi"
+}
