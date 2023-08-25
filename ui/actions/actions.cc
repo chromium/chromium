@@ -58,6 +58,140 @@ std::unique_ptr<ActionItem> ActionList::RemoveAction(ActionItem* action_item) {
   return nullptr;
 }
 
+ActionItem::ActionItemBuilder::ActionItemBuilder() {
+  action_item_ = std::make_unique<ActionItem>();
+}
+
+ActionItem::ActionItemBuilder::ActionItemBuilder(
+    InvokeActionCallback callback) {
+  action_item_ = std::make_unique<ActionItem>(std::move(callback));
+}
+
+ActionItem::ActionItemBuilder::ActionItemBuilder(
+    ActionItem::ActionItemBuilder&&) = default;
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::operator=(
+    ActionItem::ActionItemBuilder&&) = default;
+
+ActionItem::ActionItemBuilder::~ActionItemBuilder() = default;
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::AddChild(
+    ActionItemBuilder&& child_item) & {
+  children_.emplace_back(child_item.Release());
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::AddChild(
+    ActionItemBuilder&& child_item) && {
+  return std::move(this->AddChild(std::move(child_item)));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetActionId(
+    absl::optional<ActionId> action_id) & {
+  action_item_->SetActionId(action_id);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetActionId(
+    absl::optional<ActionId> action_id) && {
+  return std::move(this->SetActionId(action_id));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetAccelerator(
+    ui::Accelerator accelerator) & {
+  action_item_->SetAccelerator(accelerator);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetAccelerator(
+    ui::Accelerator accelerator) && {
+  return std::move(this->SetAccelerator(accelerator));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetEnabled(
+    bool enabled) & {
+  action_item_->SetEnabled(enabled);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetEnabled(
+    bool enabled) && {
+  return std::move(this->SetEnabled(enabled));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetImage(
+    const ui::ImageModel& image) & {
+  action_item_->SetImage(image);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetImage(
+    const ui::ImageModel& image) && {
+  return std::move(this->SetImage(image));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetText(
+    const std::u16string& text) & {
+  action_item_->SetText(text);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetText(
+    const std::u16string& text) && {
+  return std::move(this->SetText(text));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetTooltipText(
+    const std::u16string& tooltip) & {
+  action_item_->SetTooltipText(tooltip);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetTooltipText(
+    const std::u16string& tooltip) && {
+  return std::move(this->SetTooltipText(tooltip));
+}
+
+ActionItem::ActionItemBuilder& ActionItem::ActionItemBuilder::SetVisible(
+    bool visible) & {
+  action_item_->SetVisible(visible);
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&& ActionItem::ActionItemBuilder::SetVisible(
+    bool visible) && {
+  return std::move(this->SetVisible(visible));
+}
+
+ActionItem::ActionItemBuilder&
+ActionItem::ActionItemBuilder::SetInvokeActionCallback(
+    InvokeActionCallback callback) & {
+  action_item_->SetInvokeActionCallback(std::move(callback));
+  return *this;
+}
+
+ActionItem::ActionItemBuilder&&
+ActionItem::ActionItemBuilder::SetInvokeActionCallback(
+    InvokeActionCallback callback) && {
+  return std::move(this->SetInvokeActionCallback(std::move(callback)));
+}
+
+std::unique_ptr<ActionItem> ActionItem::ActionItemBuilder::Build() && {
+  CreateChildren();
+  return std::move(action_item_);
+}
+
+void ActionItem::ActionItemBuilder::CreateChildren() {
+  for (auto& child : children_) {
+    action_item_->AddChild(std::move(*child).Build());
+  }
+}
+
+std::unique_ptr<ActionItem::ActionItemBuilder>
+ActionItem::ActionItemBuilder::Release() {
+  return std::make_unique<ActionItemBuilder>(std::move(*this));
+}
+
 ActionItem::ActionItem() = default;
 
 ActionItem::ActionItem(InvokeActionCallback callback)
@@ -183,6 +317,17 @@ void ActionItem::InvokeAction() {
   if (callback_ && enabled_) {
     callback_.Run(this);
   }
+}
+
+// static
+ActionItem::ActionItemBuilder ActionItem::Builder(
+    InvokeActionCallback callback) {
+  return ActionItemBuilder(std::move(callback));
+}
+
+// static
+ActionItem::ActionItemBuilder ActionItem::Builder() {
+  return ActionItemBuilder();
 }
 
 void ActionItem::ActionListChanged() {

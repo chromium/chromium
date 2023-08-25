@@ -51,6 +51,61 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
   using InvokeActionCallback = base::RepeatingCallback<void(ActionItem*)>;
+
+  class COMPONENT_EXPORT(ACTIONS) ActionItemBuilder {
+   public:
+    using ChildList = std::vector<std::unique_ptr<ActionItemBuilder>>;
+    ActionItemBuilder();
+    explicit ActionItemBuilder(InvokeActionCallback callback);
+    ActionItemBuilder(ActionItemBuilder&&);
+    ActionItemBuilder& operator=(ActionItemBuilder&&);
+    ~ActionItemBuilder();
+
+    ActionItemBuilder& AddChild(ActionItemBuilder&& child_item) &;
+    ActionItemBuilder&& AddChild(ActionItemBuilder&& child_item) &&;
+    template <typename Child, typename... Types>
+    ActionItemBuilder& AddChildren(Child&& child, Types&&... args) & {
+      return AddChildrenImpl(&child, &args...);
+    }
+    template <typename Child, typename... Types>
+    ActionItemBuilder&& AddChildren(Child&& child, Types&&... args) && {
+      return std::move(this->AddChildrenImpl(&child, &args...));
+    }
+    ActionItemBuilder& SetActionId(absl::optional<ActionId> action_id) &;
+    ActionItemBuilder&& SetActionId(absl::optional<ActionId> action_id) &&;
+    ActionItemBuilder& SetAccelerator(ui::Accelerator accelerator) &;
+    ActionItemBuilder&& SetAccelerator(ui::Accelerator accelerator) &&;
+    ActionItemBuilder& SetEnabled(bool enabled) &;
+    ActionItemBuilder&& SetEnabled(bool enabled) &&;
+    ActionItemBuilder& SetImage(const ui::ImageModel& image) &;
+    ActionItemBuilder&& SetImage(const ui::ImageModel& image) &&;
+    ActionItemBuilder& SetText(const std::u16string& text) &;
+    ActionItemBuilder&& SetText(const std::u16string& text) &&;
+    ActionItemBuilder& SetTooltipText(const std::u16string& tooltip) &;
+    ActionItemBuilder&& SetTooltipText(const std::u16string& tooltip) &&;
+    ActionItemBuilder& SetVisible(bool visible) &;
+    ActionItemBuilder&& SetVisible(bool visible) &&;
+    ActionItemBuilder& SetInvokeActionCallback(InvokeActionCallback callback) &;
+    ActionItemBuilder&& SetInvokeActionCallback(
+        InvokeActionCallback callback) &&;
+    [[nodiscard]] std::unique_ptr<ActionItem> Build() &&;
+
+   private:
+    template <typename... Args>
+    ActionItemBuilder& AddChildrenImpl(Args*... args) & {
+      std::vector<ActionItemBuilder*> children = {args...};
+      for (auto* child : children) {
+        children_.emplace_back(child->Release());
+      }
+      return *this;
+    }
+    void CreateChildren();
+    [[nodiscard]] std::unique_ptr<ActionItemBuilder> Release();
+
+    std::unique_ptr<ActionItem> action_item_;
+    ChildList children_;
+  };
+
   METADATA_HEADER_BASE(ActionItem);
 
   ActionItem();
@@ -85,6 +140,11 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem
   void AddSynonyms(std::initializer_list<std::u16string> synonyms);
 
   void InvokeAction();
+
+  static ActionItemBuilder Builder(InvokeActionCallback callback);
+  static ActionItemBuilder Builder();
+
+  ActionList& GetChildrenForTesting() { return children_; }
 
  protected:
   // ActionList::Delegate override.
