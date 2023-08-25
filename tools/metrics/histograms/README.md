@@ -715,12 +715,16 @@ Delete the entry in the histograms.xml file.
 
 #### Add an Obsoletion Message
 
+An obsoletion message is displayed on the dashboard and provides developers
+context for why the histogram was removed and, if applicable, which histogram
+it was replaced by.
+
 **Note:** You can skip this step if the histogram is already expired or
 obsolete. This is because tooling automatically records the date and milestone
 of a histogram's expiration or obsoletion.
 
-There are a couple options for adding a message to the removed histogram's
-entry to provide relevant information to interested Chrome developers.
+You can provide a custom obsoletion message for a removed histogram via tags
+on the CL description:
 
 * Add the obsoletion message in the CL description in the format
   OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g.
