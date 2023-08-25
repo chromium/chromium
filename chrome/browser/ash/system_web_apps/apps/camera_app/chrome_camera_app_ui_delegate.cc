@@ -40,9 +40,11 @@
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/pref_names.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/devicetype.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/render_frame_host.h"
@@ -330,6 +332,10 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
                                       ash::features::kCameraAppTimeLapse));
   source->AddBoolean("jelly",
                      base::FeatureList::IsEnabled(chromeos::features::kJelly));
+
+  const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
+  source->AddBoolean("video_capture_disallowed",
+                     !prefs->GetBoolean(prefs::kVideoCaptureAllowed));
 
   const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";
   const char kTestImageRelease[] = "testimage-channel";

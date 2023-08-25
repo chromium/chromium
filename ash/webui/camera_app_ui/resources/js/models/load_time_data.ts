@@ -72,3 +72,10 @@ export function getBrowserVersion(): string {
 export function isLocalDev(): boolean {
   return getBoard() === 'local-dev';
 }
+
+/**
+ * Returns if the video capture capability is disallowed by the policy.
+ */
+export function isVideoCaptureDisallowed(): boolean {
+  return loadTimeData.getBoolean('video_capture_disallowed');
+}
