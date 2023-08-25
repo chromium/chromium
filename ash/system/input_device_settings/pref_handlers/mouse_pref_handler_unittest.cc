@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -680,6 +681,33 @@ TEST_F(MousePrefHandlerTest, UpdateButtonRemapping) {
   EXPECT_EQ(
       static_cast<int>(button_remappings[0]->remapping_action->get_action()),
       *updated_button_remapping_dict.FindInt(prefs::kButtonRemappingAction));
+}
+
+TEST_F(MousePrefHandlerTest, InitializeButtonRemappings) {
+  mojom::MouseSettingsPtr settings = CallInitializeMouseSettings(kMouseKey1);
+  ASSERT_NE(nullptr, settings.get());
+  EXPECT_EQ(0u, settings->button_remappings.size());
+
+  const auto& button_remappings_dict =
+      pref_service_->GetDict(prefs::kMouseButtonRemappingsDictPref);
+  auto* button_remappings_list = button_remappings_dict.FindList(kMouseKey1);
+  ASSERT_NE(nullptr, button_remappings_list);
+  ASSERT_EQ(0u, button_remappings_list->size());
+
+  // Update the button remappings pref dict to mock adding a new
+  // button remapping in the future.
+  std::vector<mojom::ButtonRemappingPtr> button_remappings;
+  button_remappings.push_back(button_remapping1.Clone());
+  base::Value::Dict updated_button_remappings_dict;
+  updated_button_remappings_dict.Set(
+      kMouseKey1, ConvertButtonRemappingArrayToList(button_remappings));
+
+  pref_service_->SetDict(prefs::kMouseButtonRemappingsDictPref,
+                         updated_button_remappings_dict.Clone());
+
+  mojom::MouseSettingsPtr updated_settings =
+      CallInitializeMouseSettings(kMouseKey1);
+  EXPECT_EQ(button_remappings, updated_settings->button_remappings);
 }
 
 class MouseSettingsPrefConversionTest

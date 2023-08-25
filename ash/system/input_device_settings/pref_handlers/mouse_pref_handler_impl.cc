@@ -285,6 +285,16 @@ void MousePrefHandlerImpl::InitializeMouseSettings(
   } else {
     mouse->settings = GetDefaultMouseSettings(mouse_policies);
   }
+  if (features::IsPeripheralCustomizationEnabled()) {
+    const auto& button_remappings_dict =
+        pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref);
+    const auto* button_remappings_list =
+        button_remappings_dict.FindList(mouse->device_key);
+    if (button_remappings_list) {
+      mouse->settings->button_remappings =
+          ConvertListToButtonRemappingArray(*button_remappings_list);
+    }
+  }
   DCHECK(mouse->settings);
 
   UpdateMouseSettingsImpl(pref_service, mouse_policies, *mouse,
