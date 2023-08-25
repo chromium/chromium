@@ -677,6 +677,13 @@
       status: "stable",
     },
     {
+      name: "CompositionForegroundMarkers",
+      status: {
+        "Android": "stable",
+        "default": "",
+      }
+    },
+    {
       name: "CompressionDictionaryTransport",
       base_feature: "none",
       origin_trial_feature_name: "CompressionDictionaryTransport",

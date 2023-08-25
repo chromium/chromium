@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -609,6 +608,12 @@ void NGHighlightPainter::Paint(Phase phase) {
               LayoutUnit(font_data->GetFontMetrics().Height()),
               fragment_item_.GetNode()->GetDocument().InDarkMode());
         }
+        if (marker->GetType() == DocumentMarker::kComposition &&
+            !styleable_marker.TextColor().IsFullyTransparent() &&
+            RuntimeEnabledFeatures::CompositionForegroundMarkersEnabled()) {
+          PaintDecoratedText(text, styleable_marker.TextColor(),
+                             paint_start_offset, paint_end_offset);
+        }
       } break;
 
       case DocumentMarker::kTextFragment:
@@ -635,44 +640,10 @@ void NGHighlightPainter::Paint(Phase phase) {
         DCHECK_EQ(phase, kForeground);
         Color text_color =
             originating_style_.VisitedDependentColor(GetCSSPropertyColor());
-
-        TextPaintStyle text_style;
-        text_style.current_color = text_style.fill_color =
-            text_style.stroke_color = text_style.emphasis_mark_color =
-                text_color;
-        text_style.stroke_width = originating_style_.TextStrokeWidth();
-        text_style.color_scheme = originating_style_.UsedColorScheme();
-        text_style.shadow = nullptr;
-
-        const TextPaintStyle final_text_style =
-            HighlightStyleUtils::HighlightPaintingStyle(
-                document, originating_style_, node_,
-                highlight_pseudo_marker.GetPseudoId(), text_style, paint_info_,
-                highlight_pseudo_marker.GetPseudoArgument());
-
-        const ComputedStyle* pseudo_style =
-            HighlightStyleUtils::HighlightPseudoStyle(
-                node_, originating_style_,
-                highlight_pseudo_marker.GetPseudoId(),
-                highlight_pseudo_marker.GetPseudoArgument());
-        PhysicalRect decoration_rect = fragment_item_.LocalRect(
-            text, paint_start_offset, paint_end_offset);
-        decoration_rect.Move(PhysicalOffset(box_origin_));
-        NGTextDecorationPainter decoration_painter(
-            text_painter_, fragment_item_, paint_info_,
-            pseudo_style ? *pseudo_style : originating_style_, final_text_style,
-            decoration_rect, selection_);
-
-        decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
-        decoration_painter.PaintExceptLineThrough(
-            fragment_paint_info_.Slice(paint_start_offset, paint_end_offset));
-
-        text_painter_.Paint(
-            fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
-            paint_end_offset - paint_start_offset, final_text_style,
-            kInvalidDOMNodeId, foreground_auto_dark_mode_);
-
-        decoration_painter.PaintOnlyLineThrough();
+        PaintDecoratedText(text, text_color, paint_start_offset,
+                           paint_end_offset,
+                           highlight_pseudo_marker.GetPseudoId(),
+                           highlight_pseudo_marker.GetPseudoArgument());
       } break;
 
       default:
@@ -1263,6 +1234,52 @@ void NGHighlightPainter::PaintSpellingGrammarDecorations(
         break;
     }
   }
+}
+
+void NGHighlightPainter::PaintDecoratedText(
+    const StringView& text,
+    const Color& text_color,
+    unsigned paint_start_offset,
+    unsigned paint_end_offset,
+    const PseudoId pseudo,
+    const AtomicString& pseudo_argument) {
+  const Document& document = node_->GetDocument();
+  TextPaintStyle text_style;
+  text_style.current_color = text_style.fill_color = text_style.stroke_color =
+      text_style.emphasis_mark_color = text_color;
+  text_style.stroke_width = originating_style_.TextStrokeWidth();
+  text_style.color_scheme = originating_style_.UsedColorScheme();
+  text_style.shadow = nullptr;
+
+  const ComputedStyle* pseudo_style =
+      pseudo == PseudoId::kPseudoIdNone
+          ? nullptr
+          : HighlightStyleUtils::HighlightPseudoStyle(node_, originating_style_,
+                                                      pseudo, pseudo_argument);
+
+  if (pseudo_style) {
+    text_style = HighlightStyleUtils::HighlightPaintingStyle(
+        document, originating_style_, node_, pseudo, text_style, paint_info_,
+        pseudo_argument);
+  }
+  PhysicalRect decoration_rect =
+      fragment_item_.LocalRect(text, paint_start_offset, paint_end_offset);
+  decoration_rect.Move(PhysicalOffset(box_origin_));
+  NGTextDecorationPainter decoration_painter(
+      text_painter_, fragment_item_, paint_info_,
+      pseudo_style ? *pseudo_style : originating_style_, text_style,
+      decoration_rect, selection_);
+
+  decoration_painter.Begin(NGTextDecorationPainter::kOriginating);
+  decoration_painter.PaintExceptLineThrough(
+      fragment_paint_info_.Slice(paint_start_offset, paint_end_offset));
+
+  text_painter_.Paint(
+      fragment_paint_info_.Slice(paint_start_offset, paint_end_offset),
+      paint_end_offset - paint_start_offset, text_style, kInvalidDOMNodeId,
+      foreground_auto_dark_mode_);
+
+  decoration_painter.PaintOnlyLineThrough();
 }
 
 NGHighlightPainter::LayerPaintState::LayerPaintState(

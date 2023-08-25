@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
+#include "third_party/blink/renderer/core/editing/markers/highlight_pseudo_marker.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/selection_state.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_overlay.h"
@@ -257,6 +258,16 @@ class CORE_EXPORT NGHighlightPainter {
       const NGHighlightOverlay::HighlightPart&);
   void PaintSpellingGrammarDecorations(
       const NGHighlightOverlay::HighlightPart&);
+
+  // Paints text with a highlight color. For composition markers, omit the last
+  // two arguments. For PseudoHighlightMarkers, include both the PseudoId and
+  // PseudoArgument.
+  void PaintDecoratedText(const StringView& text,
+                          const Color& text_color,
+                          unsigned paint_start_offset,
+                          unsigned paint_end_offset,
+                          const PseudoId pseudo = PseudoId::kPseudoIdNone,
+                          const AtomicString& pseudo_argument = g_empty_atom);
 
   const NGTextFragmentPaintInfo& fragment_paint_info_;
   NGTextPainter& text_painter_;
