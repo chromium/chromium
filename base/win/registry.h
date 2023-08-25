@@ -80,9 +80,9 @@ class BASE_EXPORT RegKey {
   // occurrs while attempting to access it.
   bool HasValue(const wchar_t* value_name) const;
 
-  // Returns the number of values for this key, or an error code if the number
-  // cannot be determined.
-  base::expected<DWORD, LONG> GetValueCount() const;
+  // Returns the number of values for this key, or 0 if the number cannot be
+  // determined.
+  DWORD GetValueCount() const;
 
   // Returns the last write time or 0 on failure.
   FILETIME GetLastWriteTime() const;
@@ -96,6 +96,10 @@ class BASE_EXPORT RegKey {
   // Kills a key and everything that lives below it; please be careful when
   // using it.
   LONG DeleteKey(const wchar_t* name);
+
+  // Deletes an empty subkey.  If the subkey has subkeys or values then this
+  // will fail.
+  LONG DeleteEmptyKey(const wchar_t* name);
 
   // Deletes a single value within the key.
   LONG DeleteValue(const wchar_t* name);

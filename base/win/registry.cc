@@ -257,15 +257,12 @@ bool RegKey::HasValue(const wchar_t* name) const {
          ERROR_SUCCESS;
 }
 
-base::expected<DWORD, LONG> RegKey::GetValueCount() const {
+DWORD RegKey::GetValueCount() const {
   DWORD count = 0;
   LONG result =
       RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr, nullptr,
                       nullptr, &count, nullptr, nullptr, nullptr, nullptr);
-  if (result == ERROR_SUCCESS) {
-    return base::ok(count);
-  }
-  return base::unexpected(result);
+  return (result == ERROR_SUCCESS) ? count : 0;
 }
 
 FILETIME RegKey::GetLastWriteTime() const {
@@ -303,6 +300,38 @@ LONG RegKey::DeleteKey(const wchar_t* name) {
   RegCloseKey(subkey);
 
   return RegDelRecurse(key_, name, wow64access_);
+}
+
+LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
+  DCHECK(name);
+
+  if (!Valid()) {
+    return ERROR_INVALID_HANDLE;
+  }
+  RegKey target_key;
+  LONG result = target_key.Open(key_, name, REG_OPTION_OPEN_LINK,
+                                wow64access_ | KEY_QUERY_VALUE | DELETE);
+  if (result != ERROR_SUCCESS) {
+    return result;
+  }
+
+  // A symbolic link has one REG_LINK value identifying the target and no
+  // subkeys, so it satisfies the criteria of being an "empty" key.
+  if (auto deleted_link = target_key.DeleteIfLink(); deleted_link.has_value()) {
+    return deleted_link.value();
+  }
+
+  // The key is not a symbolic link, so see if it has any values.
+  DWORD value_count = 0;
+  result = RegQueryInfoKey(target_key.key_, nullptr, nullptr, nullptr, nullptr,
+                           nullptr, nullptr, &value_count, nullptr, nullptr,
+                           nullptr, nullptr);
+  if (result != ERROR_SUCCESS) {
+    return result;
+  }
+  target_key.Close();
+  return value_count == 0 ? RegDeleteKeyEx(key_, name, wow64access_, 0)
+                          : ERROR_DIR_NOT_EMPTY;
 }
 
 LONG RegKey::DeleteValue(const wchar_t* value_name) {
