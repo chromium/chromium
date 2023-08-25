@@ -1,5 +1,8 @@
 {
   "$build/reclient": {
+    "bootstrap_env": {
+      "RBE_v": "3"
+    },
     "instance": "rbe-chromium-untrusted",
     "jobs": 250,
     "metrics_project": "chromium-reclient-metrics",

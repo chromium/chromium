@@ -164,6 +164,10 @@ ci.builder(
         short_name = "32",
     ),
     cq_mirrors_console_view = "mirrors",
+    # TODO(crbug/1473182): Remove once the bug is closed.
+    reclient_bootstrap_env = {
+        "RBE_v": "3",
+    },
 )
 
 ci.builder(
