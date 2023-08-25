@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
 #include "chrome/browser/printing/print_error_dialog.h"
+#include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
 #include "chrome/browser/printing/test_print_preview_observer.h"
+#include "chrome/browser/printing/test_print_view_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/chrome_switches.h"
@@ -32,57 +38,15 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#include "chrome/browser/printing/print_view_manager.h"
 #include "ui/base/ui_base_types.h"
-#else
-#include "chrome/browser/printing/print_view_manager_basic.h"
 #endif
 
 using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
-namespace {
-
-class PrintObserver : public printing::PrintViewManagerBase::TestObserver {
- public:
-  explicit PrintObserver(content::RenderFrameHost* rfh)
-      : print_view_manager_(PrintViewManagerImpl::FromWebContents(
-            content::WebContents::FromRenderFrameHost(rfh))),
-        rfh_(rfh) {
-    print_view_manager_->AddTestObserver(*this);
-  }
-
-  ~PrintObserver() override { print_view_manager_->RemoveTestObserver(*this); }
-
-  // printing::PrintViewManagerBase::TestObserver:
-  void OnReleasePrintJob() override {
-    EXPECT_FALSE(print_job_released_);
-    run_loop_.Quit();
-    print_job_released_ = true;
-  }
-
-  void WaitForPrintJobRelease() {
-    run_loop_.Run();
-    EXPECT_TRUE(print_job_released_);
-  }
-
- private:
-  bool print_job_released_ = false;
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  using PrintViewManagerImpl = printing::PrintViewManager;
-#else
-  using PrintViewManagerImpl = printing::PrintViewManagerBasic;
-#endif
-  const raw_ptr<PrintViewManagerImpl> print_view_manager_;
-  const raw_ptr<const content::RenderFrameHost, FlakyDanglingUntriaged> rfh_;
-  base::RunLoop run_loop_;
-};
-
-}  // namespace
-
 class PDFExtensionPrintingTest : public PDFExtensionTestBase,
+                                 public printing::PrintJob::Observer,
                                  public testing::WithParamInterface<bool> {
  public:
   PDFExtensionPrintingTest() = default;
@@ -130,12 +94,50 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     return {printing::features::kEnableOopPrintDrivers};
   }
 
+  void SetupPrintViewManagerForJobMonitoring(content::RenderFrameHost* frame) {
+    auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
+    auto manager = std::make_unique<printing::TestPrintViewManager>(
+        web_contents,
+        base::BindRepeating(&PDFExtensionPrintingTest::OnCreatedPrintJob,
+                            weak_factory_.GetWeakPtr()));
+    web_contents->SetUserData(printing::PrintViewManager::UserDataKey(),
+                              std::move(manager));
+  }
+
+  void WaitForPrintJobDestruction() {
+    if (!print_job_destroyed_) {
+      base::RunLoop run_loop;
+      base::AutoReset<raw_ptr<base::RunLoop>> auto_reset(&run_loop_, &run_loop);
+      run_loop.Run();
+      EXPECT_TRUE(print_job_destroyed_);
+    }
+  }
+
  private:
   bool UseService() const { return GetParam(); }
+
+  void OnCreatedPrintJob(printing::PrintJob* print_job) {
+    EXPECT_FALSE(observing_print_job_);
+    print_job->AddObserver(*this);
+    observing_print_job_ = true;
+  }
+
+  // PrintJob::Observer:
+  void OnDestruction() override {
+    EXPECT_FALSE(print_job_destroyed_);
+    if (run_loop_) {
+      run_loop_->Quit();
+    }
+    print_job_destroyed_ = true;
+  }
 
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+  bool observing_print_job_ = false;
+  bool print_job_destroyed_ = false;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
+  base::WeakPtrFactory<PDFExtensionPrintingTest> weak_factory_{this};
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
@@ -144,9 +146,9 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPrintingTest, BasicPrintCommand) {
   content::RenderFrameHost* frame = GetPluginFrame(guest);
   ASSERT_TRUE(frame);
 
-  PrintObserver print_observer(frame);
+  SetupPrintViewManagerForJobMonitoring(frame);
   chrome::BasicPrint(browser());
-  print_observer.WaitForPrintJobRelease();
+  WaitForPrintJobDestruction();
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -294,12 +296,12 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
   // Executes the print command as soon as the context menu is shown.
   ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
 
-  PrintObserver print_observer(plugin_frame);
+  SetupPrintViewManagerForJobMonitoring(plugin_frame);
   SetInputFocusOnPlugin(guest);
   plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
       {1, 1}, ui::MENU_SOURCE_MOUSE);
   menu_interceptor.Wait();
-  print_observer.WaitForPrintJobRelease();
+  WaitForPrintJobDestruction();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFExtensionBasicPrintingTest, testing::Bool());
