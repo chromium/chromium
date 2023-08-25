@@ -2177,6 +2177,14 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSuggestions) {
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Check that the button that triggers passkeys from a different devices uses
+  // the "Use a *different* passkey" string since passkeys are being offered.
+  EXPECT_EQ(
+      open_args.suggestions[2].main_text.value,
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   password_autofill_manager_->DidAcceptSuggestion(suggestion,
                                                   /*position=*/1);
 }
@@ -2216,9 +2224,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithAnotherDevice) {
                   autofill::PopupItemId::kAllSavedPasswordsEntry));
 
   // Check that the button shows the correct text.
-  EXPECT_EQ(
-      open_args.suggestions[1].main_text.value,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
+  EXPECT_EQ(open_args.suggestions[1].main_text.value,
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY));
 }
 
 TEST_F(PasswordAutofillManagerTest, DoesntShowWebAuthnSignInWithAnotherDevice) {
@@ -2343,9 +2350,8 @@ TEST_F(PasswordAutofillManagerTest, ShowsWebAuthnSignInWithoutPasswordData) {
                   autofill::PopupItemId::kWebauthnSignInWithAnotherDevice));
 
   // Check that the button shows the correct text.
-  EXPECT_EQ(
-      open_args.suggestions[0].main_text.value,
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
+  EXPECT_EQ(open_args.suggestions[0].main_text.value,
+            l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY));
 }
 
 TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
@@ -2366,7 +2372,7 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
 
   Suggestion suggestion;
   suggestion.main_text.value =
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY);
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY);
   suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
   suggestion.payload = autofill::Suggestion::BackendId();

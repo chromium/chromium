@@ -249,9 +249,10 @@ void MaybeAppendManagePasswordsEntry(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-autofill::Suggestion CreateWebAuthnEntry() {
-  autofill::Suggestion suggestion(
-      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY));
+autofill::Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
+  autofill::Suggestion suggestion(l10n_util::GetStringUTF16(
+      listed_passkeys ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
+                      : IDS_PASSWORD_MANAGER_USE_PASSKEY));
   suggestion.icon = "device";
   suggestion.popup_item_id =
       autofill::PopupItemId::kWebauthnSignInWithAnotherDevice;
@@ -777,7 +778,9 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
 #if !BUILDFLAG(IS_ANDROID)
   // Add "Sign in with another device" button.
   if (uses_passkeys && delegate->OfferPasskeysFromAnotherDeviceOption()) {
-    suggestions.push_back(CreateWebAuthnEntry());
+    bool listed_passkeys = delegate->GetPasskeys().has_value() &&
+                           delegate->GetPasskeys()->size() > 0;
+    suggestions.push_back(CreateWebAuthnEntry(listed_passkeys));
   }
 #endif
 
