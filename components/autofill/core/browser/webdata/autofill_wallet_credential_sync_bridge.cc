@@ -180,6 +180,12 @@ bool AutofillWalletCredentialSyncBridge::IsEntityDataValid(
              entity_data.specifics.autofill_wallet_credential());
 }
 
+void AutofillWalletCredentialSyncBridge::ServerCvcChanged(
+    const ServerCvcChange& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ActOnLocalChange(change);
+}
+
 AutofillTable* AutofillWalletCredentialSyncBridge::GetAutofillTable() const {
   return AutofillTable::FromWebDatabase(web_data_backend_->GetDatabase());
 }
