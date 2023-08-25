@@ -273,7 +273,7 @@ If the event name in the XML contains a period (`.`), it is replaced with an und
 
 To avoid having UKM report becoming unbounded in size, an upper limit is placed on the number of events recorded for each event type. Events that are recorded too frequently may be subject to downsampling (see [go/ukm-downsampling](http://go/ukm-downsampling)). As a rule of thumb, it is recommended that most entries be recorded at most once per 100 page loads on average to limit data volume.
 
-For data quality purposes, if you have the option to record an event from either the browser process or a renderer process, prefer the former. Because renderer processes are not trusted, events recorded in them are more complex to attribute to the corresponding the browser-side navigations using the `DocumentCreated` event (see [go/ukm-readable-guide](http://go/ukm-readable-guide#processing-events-attached-to-blink-document-sources)). Joining using the `DocumentCreated` method also has limitations, such as partial availability of the event due to downsampling, and query performance impacted by the additional join operation.
+For data quality purposes, if you have the option to record an event from either the browser process or a renderer process, prefer the former. Because renderer processes are not trusted, events recorded in them are more complex to attribute to the corresponding browser-side navigations using the `DocumentCreated` event (see [go/ukm-readable-guide](http://go/ukm-readable-guide#processing-events-attached-to-blink-document-sources)). Joining using the `DocumentCreated` method also has limitations, such as partial availability of the event due to downsampling, and query performance impacted by the additional join operation.
 
 ### Singular UKM Events
 
