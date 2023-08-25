@@ -10,6 +10,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/apple/scoped_cftyperef.h"
 #import "base/containers/contains.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"
@@ -127,12 +128,23 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
   NSString* language = [lang_pref_locale objectForKey:NSLocaleLanguageCode];
   if (!language.length)
     language = [current_locale objectForKey:NSLocaleLanguageCode];
-  DCHECK(language.length);
+  // In production, in very rare cases the language cannot be detected. Default
+  // to en-US.
+  if (!language.length) {
+    base::debug::DumpWithoutCrashing();
+    return GetCanonicalLocaleForLocale(@"en-US");
+  }
   // Prioritize the country portion of `current_locale`.
   NSString* country = [current_locale objectForKey:NSLocaleCountryCode];
   if (!country.length)
     country = [lang_pref_locale objectForKey:NSLocaleCountryCode];
-  DCHECK(country.length);
+  // In production, in very rare cases the country code cannot be detected.
+  // Default to en-US.
+  if (!country.length) {
+    base::debug::DumpWithoutCrashing();
+    return GetCanonicalLocaleForLocale(@"en-US");
+  }
+
   return GetCanonicalLocaleForLocale(
       [NSString stringWithFormat:@"%@-%@", language, country]);
 }
