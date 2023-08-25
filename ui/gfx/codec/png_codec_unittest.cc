@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libpng/png.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -292,12 +293,21 @@ TEST(PNGCodec, EncodeDecodeRGBA) {
                                std::vector<PNGCodec::Comment>(),
                                &encoded));
 
-  // decode, it should have the same size as the original
+  // decode
   std::vector<unsigned char> decoded;
   int outw, outh;
-  ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
-                               PNGCodec::FORMAT_RGBA, &decoded,
-                               &outw, &outh));
+  {
+    base::HistogramTester histograms;
+    ASSERT_TRUE(PNGCodec::Decode(&encoded[0], encoded.size(),
+                                 PNGCodec::FORMAT_RGBA, &decoded, &outw,
+                                 &outh));
+    std::vector<base::Bucket> buckets =
+        histograms.GetAllSamples("ImageDecoder.Png.UiGfxIntoVector");
+    ASSERT_EQ(buckets.size(), 1u);
+    ASSERT_GE(buckets[0].min, 0);
+  }
+
+  // It should have the same size as the original
   ASSERT_EQ(w, outw);
   ASSERT_EQ(h, outh);
   ASSERT_EQ(original.size(), decoded.size());
@@ -685,8 +695,16 @@ TEST(PNGCodec, DecodeInterlacedRGBtoSkBitmap) {
 
   // Decode the encoded string.
   SkBitmap decoded_bitmap;
-  ASSERT_TRUE(PNGCodec::Decode(&encoded.front(), encoded.size(),
-                               &decoded_bitmap));
+  {
+    base::HistogramTester histograms;
+    ASSERT_TRUE(
+        PNGCodec::Decode(&encoded.front(), encoded.size(), &decoded_bitmap));
+    std::vector<base::Bucket> buckets =
+        histograms.GetAllSamples("ImageDecoder.Png.UiGfxIntoSkBitmap");
+    ASSERT_EQ(buckets.size(), 1u);
+    ASSERT_GE(buckets[0].min, 0);
+  }
+
   EXPECT_EQ(decoded_bitmap.alphaType(), kOpaque_SkAlphaType);
 
   for (int x = 0; x < w; x++) {
