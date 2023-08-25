@@ -37,7 +37,6 @@ constexpr int kChromeRefreshHeaderChipVerticalInset = 2;
 constexpr int kChromeRefreshEmptyChipSize = 20;
 constexpr int kChromeRefreshSyncIconWidth = 16;
 constexpr int kChromeRefreshCornerRadius = 6;
-constexpr int kTabGroupRefreshBottomMargin = 10;
 constexpr int kTabGroupOverlapAdjustment = 2;
 
 }  // namespace
@@ -188,10 +187,10 @@ gfx::Rect ChromeRefresh2023TabGroupStyle::GetEmptyTitleChipBounds(
 
 gfx::Point ChromeRefresh2023TabGroupStyle::GetTitleChipOffset(
     absl::optional<int> text_height) const {
-  return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2,
-                    GetLayoutConstant(TAB_HEIGHT) -
-                        GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP) -
-                        kTabGroupRefreshBottomMargin - GetEmptyChipSize());
+  const int total_space = GetLayoutConstant(TAB_STRIP_HEIGHT) -
+                          GetEmptyChipSize() -
+                          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
+  return gfx::Point(TabStyle::Get()->GetTabOverlap() - 2, total_space / 2);
 }
 
 gfx::Insets ChromeRefresh2023TabGroupStyle::GetInsetsForHeaderChip() const {

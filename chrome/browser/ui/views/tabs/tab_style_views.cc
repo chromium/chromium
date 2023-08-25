@@ -608,12 +608,15 @@ TabStyle::SeparatorBounds GM2TabStyleViews::GetSeparatorBounds(
 
   TabStyle::SeparatorBounds separator_bounds;
 
+  const int extra_vertical_space =
+      aligned_bounds.height() -
+      (separator_size.height() + separator_margin.bottom() +
+       separator_margin.top());
+
   separator_bounds.leading = gfx::RectF(
       aligned_bounds.x() + corner_radius - separator_margin.right() -
           separator_size.width(),
-      aligned_bounds.y() + (aligned_bounds.height() - separator_size.height() -
-                            separator_margin.bottom()) /
-                               2,
+      aligned_bounds.y() + extra_vertical_space / 2 + separator_margin.top(),
       separator_size.width(), separator_size.height());
 
   separator_bounds.trailing = separator_bounds.leading;
