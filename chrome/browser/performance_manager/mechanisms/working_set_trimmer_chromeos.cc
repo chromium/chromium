@@ -64,11 +64,11 @@ bool WorkingSetTrimmerChromeOS::PlatformSupportsWorkingSetTrim() {
 void WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
   const std::string reclaim_file = base::StringPrintf("/proc/%d/reclaim", pid);
   const std::string kReclaimMode = "all";
-  [[maybe_unused]] bool success =
-      base::WriteFile(base::FilePath(reclaim_file), kReclaimMode);
+  ssize_t written = base::WriteFile(base::FilePath(reclaim_file),
+                                    kReclaimMode.c_str(), kReclaimMode.size());
 
   // We won't log an error if reclaim failed due to the process being dead.
-  PLOG_IF(ERROR, success && errno != ENOENT)
+  PLOG_IF(ERROR, written < 0 && errno != ENOENT)
       << "Write failed on " << reclaim_file << " mode: " << kReclaimMode;
 }
 
