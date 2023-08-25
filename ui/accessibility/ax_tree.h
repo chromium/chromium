@@ -283,7 +283,8 @@ class AX_EXPORT AXTree {
   // This allows us to notify observers of structure changes when the
   // tree is still in a stable and unchanged state.
   bool ComputePendingChanges(const AXTreeUpdate& update,
-                             AXTreeUpdateState* update_state);
+                             AXTreeUpdateState* update_state,
+                             bool& has_stale_data);
 
   // Populates |update_state| with information about actions that will
   // be performed on the tree during the update, such as adding or
@@ -291,7 +292,8 @@ class AX_EXPORT AXTree {
   // Nothing within this call should modify tree structure or node data.
   bool ComputePendingChangesToNode(const AXNodeData& new_data,
                                    bool is_new_root,
-                                   AXTreeUpdateState* update_state);
+                                   AXTreeUpdateState* update_state,
+                                   bool& has_stale_data);
 
   // This is called from within Unserialize(), it returns true on success.
   bool UpdateNode(const AXNodeData& src,

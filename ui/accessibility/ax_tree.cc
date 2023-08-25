@@ -1065,8 +1065,27 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // Accumulates the work that will be required to update the AXTree.
   // This allows us to notify observers of structure changes when the
   // tree is still in a stable and unchanged state.
-  if (!ComputePendingChanges(update, &update_state))
+  bool has_stale_data = false;
+  if (!ComputePendingChanges(update, &update_state, has_stale_data)) {
+    if (has_stale_data) {
+      // Temporary workaround for crbug.com/1471373.
+      // Toss stale data that was sent for an old AXTree that no longer exists.
+      // TODO(crbug.com/1471373) Remove this workaround and fix properly.
+      // This generally occurs where the old root id == 1 indicating this
+      // update is being applied on top of a new AXTree.
+#if defined(AX_FAIL_FAST_BUILD)
+      LOG(FATAL) << "Stale data received:\n** Pending tree update **\n"
+                 << update_state.pending_tree_update->ToString(
+                        /*verbose*/ false)
+                 << "** Root **\n"
+                 << root() << "\n** AXTreeData **\n"
+                 << data_.ToString() + "\n** AXTree **\n"
+                 << TreeToStringHelper(root_, 0, false).substr(0, 1000);
+#endif
+      return true;
+    }
     return false;
+  }
 
   // Log unserialize perf after early returns.
   SCOPED_UMA_HISTOGRAM_TIMER("Accessibility.Performance.Tree.Unserialize");
@@ -1477,7 +1496,8 @@ AXNode* AXTree::CreateNode(AXNode* parent,
 }
 
 bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
-                                   AXTreeUpdateState* update_state) {
+                                   AXTreeUpdateState* update_state,
+                                   bool& has_stale_data) {
   DCHECK_EQ(AXTreePendingStructureStatus::kNotStarted,
             update_state->pending_update_status)
       << "Pending changes have already started being computed.";
@@ -1574,7 +1594,8 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
       continue;
     bool is_new_root =
         update_state->root_will_be_created && new_data.id == update.root_id;
-    if (!ComputePendingChangesToNode(new_data, is_new_root, update_state)) {
+    if (!ComputePendingChangesToNode(new_data, is_new_root, update_state,
+                                     has_stale_data)) {
       update_state->pending_update_status =
           AXTreePendingStructureStatus::kFailed;
       return false;
@@ -1587,7 +1608,8 @@ bool AXTree::ComputePendingChanges(const AXTreeUpdate& update,
 
 bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                                          bool is_new_root,
-                                         AXTreeUpdateState* update_state) {
+                                         AXTreeUpdateState* update_state,
+                                         bool& has_stale_data) {
   // Compare every child's index in parent in the update with the existing
   // index in parent.  If the order has changed, invalidate the cached
   // unignored index in parent.
@@ -1607,6 +1629,7 @@ bool AXTree::ComputePendingChangesToNode(const AXNodeData& new_data,
                   base::StringPrintf(
                       "%d will not be in the tree and is not the new root",
                       new_data.id));
+      has_stale_data = true;
       return false;
     }
 

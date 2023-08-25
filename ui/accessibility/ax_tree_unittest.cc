@@ -5239,7 +5239,8 @@ TEST(AXTreeTest, UnserializeErrors) {
       tree.Unserialize(tree_update_3),
       "2 will not be in the tree and is not the new root");
 #else
-  EXPECT_FALSE(tree.Unserialize(tree_update_3));
+  // TODO(crbug.com/1471373) Restore to returning false.
+  EXPECT_TRUE(tree.Unserialize(tree_update_3));
   EXPECT_EQ("2 will not be in the tree and is not the new root", tree.error());
   histogram_tester.ExpectUniqueSample(
       "Accessibility.Reliability.Tree.UnserializeError",
