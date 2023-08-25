@@ -39,17 +39,10 @@ BridgeConstants.Braille = {
   TARGET: 'Braille',
   Action: {
     BACK_TRANSLATE: 'backTranslate',
+    ENABLE_COMMAND_HANDLER: 'enableCommandHandler',
     PAN_LEFT: 'panLeft',
     PAN_RIGHT: 'panRight',
     WRITE: 'write',
-  },
-};
-
-/** @public {!BridgeEntry} */
-BridgeConstants.BrailleCommandHandler = {
-  TARGET: 'BrailleCommandHandler',
-  Action: {
-    SET_ENABLED: 'setEnabled',
   },
 };
 
@@ -122,6 +115,7 @@ BridgeConstants.LearnMode = {
     ON_BRAILLE_KEY_EVENT: 'onBrailleKeyEvent',
     ON_KEY_DOWN: 'onKeyDown',
     ON_KEY_UP: 'onKeyUp',
+    READY: 'ready',
   },
 };
 

@@ -30,7 +30,7 @@ export class LearnMode {
   /**
    * Initialize keyboard explorer.
    */
-  static async init() {
+  static init() {
     // Export global objects from the background page context into this one.
     window.backgroundWindow = chrome.extension.getBackgroundPage();
 
@@ -44,7 +44,7 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.addListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, true);
-    BackgroundBridge.BrailleCommandHandler.setEnabled(false);
+    BackgroundBridge.Braille.enableCommandHandler(false);
     BackgroundBridge.GestureCommandHandler.setEnabled(false);
 
     ChromeVoxKbHandler.commandHandler = LearnMode.onCommand;
@@ -69,6 +69,9 @@ export class LearnMode {
         TARGET, Action.ON_KEY_DOWN, event => LearnMode.onKeyDown(event));
     BridgeHelper.registerHandler(
         TARGET, Action.ON_KEY_UP, event => LearnMode.onKeyUp(event));
+    BridgeHelper.registerHandler(TARGET, Action.READY, () => readyPromise);
+
+    readyCallback();
   }
 
   /**
@@ -312,7 +315,7 @@ export class LearnMode {
     chrome.accessibilityPrivate.onAccessibilityGesture.removeListener(
         LearnMode.onAccessibilityGesture);
     chrome.accessibilityPrivate.setKeyboardListener(true, false);
-    BackgroundBridge.BrailleCommandHandler.setEnabled(true);
+    BackgroundBridge.Braille.enableCommandHandler(true);
     BackgroundBridge.GestureCommandHandler.setEnabled(true);
   }
 
@@ -370,3 +373,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function $(id) {
   return document.getElementById(id);
 }
+
+/** @private {function()} */
+let readyCallback;
+
+/** @private {!Promise} */
+const readyPromise = new Promise(resolve => readyCallback = resolve);

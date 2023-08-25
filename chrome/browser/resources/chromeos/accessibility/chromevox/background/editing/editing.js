@@ -1001,7 +1001,7 @@ export class AutomationRichEditableText extends AutomationEditableText {
  */
 class EditingRangeObserver {
   constructor() {
-    ChromeVoxRange.addObserver(this);
+    ChromeVoxState.ready().then(() => ChromeVoxRange.addObserver(this));
   }
 
   /**

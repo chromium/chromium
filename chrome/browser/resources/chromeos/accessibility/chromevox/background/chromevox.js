@@ -12,7 +12,9 @@ import {BridgeHelper} from '../common/bridge_helper.js';
 import {Spannable} from '../common/spannable.js';
 
 import {AbstractEarcons} from './abstract_earcons.js';
+import {BrailleCommandHandler} from './braille/braille_command_handler.js';
 import {BrailleInterface} from './braille/braille_interface.js';
+import {ChromeVoxState} from './chromevox_state.js';
 import {TtsInterface} from './tts_interface.js';
 
 export const ChromeVox = {
@@ -29,6 +31,15 @@ BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET,
     BridgeConstants.Braille.Action.BACK_TRANSLATE,
     cells => Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
+
+BridgeHelper.registerHandler(
+    BridgeConstants.Braille.TARGET,
+    BridgeConstants.Braille.Action.ENABLE_COMMAND_HANDLER, async enable => {
+      await ChromeVoxState.ready();
+      if (BrailleCommandHandler.instance) {
+        BrailleCommandHandler.setEnabled(enable);
+      }
+    });
 
 BridgeHelper.registerHandler(
     BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.PAN_LEFT,

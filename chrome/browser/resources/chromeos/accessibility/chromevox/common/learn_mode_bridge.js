@@ -53,4 +53,9 @@ export class LearnModeBridge {
   static onKeyUp(event) {
     return BridgeHelper.sendMessage(TARGET, Action.ON_KEY_UP, event);
   }
+
+  /** @return {!Promise} */
+  static ready() {
+    return BridgeHelper.sendMessage(TARGET, Action.READY);
+  }
 }

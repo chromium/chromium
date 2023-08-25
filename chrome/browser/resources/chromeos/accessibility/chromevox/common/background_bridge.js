@@ -30,6 +30,16 @@ BackgroundBridge.Braille = {
         BridgeConstants.Braille.Action.BACK_TRANSLATE, cells);
   },
 
+  /**
+   * @param {boolean} enabled
+   * @return {!Promise}
+   */
+  async enableCommandHandler(enabled) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.Braille.TARGET,
+        BridgeConstants.Braille.Action.ENABLE_COMMAND_HANDLER, enabled);
+  },
+
   /** @return {!Promise} */
   async panLeft() {
     return BridgeHelper.sendMessage(
@@ -52,18 +62,6 @@ BackgroundBridge.Braille = {
     return BridgeHelper.sendMessage(
         BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.WRITE,
         text);
-  },
-};
-
-BackgroundBridge.BrailleCommandHandler = {
-  /**
-   * @param {boolean} enabled
-   * @return {!Promise}
-   */
-  async setEnabled(enabled) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.BrailleCommandHandler.TARGET,
-        BridgeConstants.BrailleCommandHandler.Action.SET_ENABLED, enabled);
   },
 };
 
@@ -176,7 +174,7 @@ BackgroundBridge.GestureCommandHandler = {
   async setEnabled(enabled) {
     return BridgeHelper.sendMessage(
         BridgeConstants.GestureCommandHandler.TARGET,
-        BridgeConstants.GestureCommandHandler.Action.SET_ENABLED);
+        BridgeConstants.GestureCommandHandler.Action.SET_ENABLED, enabled);
   },
 };
 

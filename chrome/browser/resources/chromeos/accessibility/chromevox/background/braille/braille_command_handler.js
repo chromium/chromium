@@ -38,12 +38,11 @@ export class BrailleCommandHandler {
   }
 
   static init() {
+    if (BrailleCommandHandler.instance) {
+      throw new Error(
+          'BrailleCommandHandler cannot be instantiated more than once');
+    }
     BrailleCommandHandler.instance = new BrailleCommandHandler();
-
-    BridgeHelper.registerHandler(
-        BridgeConstants.BrailleCommandHandler.TARGET,
-        BridgeConstants.BrailleCommandHandler.Action.SET_ENABLED,
-        enabled => BrailleCommandHandler.setEnabled(enabled));
   }
 
   /**
