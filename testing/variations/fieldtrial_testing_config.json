@@ -15711,6 +15711,24 @@
             ]
         }
     ],
+    "UnoPhase2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledUno",
+                    "enable_features": [
+                        "FeedBottomSyncStringRemoval",
+                        "ReplaceSyncPromosWithSignInPromos",
+                        "SyncEnableContactInfoDataTypeForCustomPassphraseUsers",
+                        "SyncEnableContactInfoDataTypeInTransportMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "UploadOfficeToCloud": [
         {
             "platforms": [
