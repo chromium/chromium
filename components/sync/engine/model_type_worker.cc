@@ -43,6 +43,7 @@
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state_helper.h"
+#include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/proto_memory_estimations.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 
@@ -181,7 +182,7 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 
 // Attempts to decrypt the given password specifics and return them in the
 // |out| parameter. The cryptographer must know the decryption key, i.e.
-// cryptographer.CanDecrypt(in.password().encrypted()) must return true.
+// cryptographer.CanDecrypt(in.encrypted()) must return true.
 //
 // Returns false if the decryption failed. There are no guarantees about the
 // contents of |out| when that happens.
@@ -190,25 +191,22 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 // cause this to fail, and no clients are known to create such entries. The
 // failure case is an attempt to be defensive against bad input.
 bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
-                              const sync_pb::EntitySpecifics& in,
-                              sync_pb::EntitySpecifics* out) {
-  DCHECK(in.has_password());
-  DCHECK(in.password().has_encrypted());
-  DCHECK(cryptographer.CanDecrypt(in.password().encrypted()));
+                              const sync_pb::PasswordSpecifics& in,
+                              sync_pb::PasswordSpecificsData* out) {
+  CHECK(in.has_encrypted());
+  CHECK(cryptographer.CanDecrypt(in.encrypted()));
 
-  if (!cryptographer.Decrypt(
-          in.password().encrypted(),
-          out->mutable_password()->mutable_client_only_encrypted_data())) {
+  if (!cryptographer.Decrypt(in.encrypted(), out)) {
     DLOG(ERROR) << "Failed to decrypt a decryptable password";
     return false;
   }
   // The `notes` field in the PasswordSpecificsData is the authoritative value.
   // When set, it disregards whatever `encrypted_notes_backup` contains.
-  if (out->password().client_only_encrypted_data().has_notes()) {
+  if (out->has_notes()) {
     LogPasswordNotesState(PasswordNotesStateForUMA::kSetInSpecificsData);
     return true;
   }
-  if (!in.password().has_encrypted_notes_backup()) {
+  if (!in.has_encrypted_notes_backup()) {
     LogPasswordNotesState(PasswordNotesStateForUMA::kUnset);
     return true;
   }
@@ -218,10 +216,8 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
   // It is guaranteed that if `encrypted()` is decryptable, then
   // `encrypted_notes_backup()` must be decryptable too. Failure to decrypt
   // `encrypted_notes_backup()` indicates a data corruption.
-  if (!cryptographer.Decrypt(in.password().encrypted_notes_backup(),
-                             out->mutable_password()
-                                 ->mutable_client_only_encrypted_data()
-                                 ->mutable_notes())) {
+  if (!cryptographer.Decrypt(in.encrypted_notes_backup(),
+                             out->mutable_notes())) {
     LogPasswordNotesState(
         PasswordNotesStateForUMA::kSetOnlyInBackupButCorrupted);
     return false;
@@ -591,7 +587,9 @@ ModelTypeWorker::DecryptionStatus ModelTypeWorker::PopulateUpdateResponseData(
     if (!cryptographer.CanDecrypt(specifics.password().encrypted())) {
       return DECRYPTION_PENDING;
     }
-    if (!DecryptPasswordSpecifics(cryptographer, specifics, &data.specifics)) {
+    if (!DecryptPasswordSpecifics(cryptographer, specifics.password(),
+                                  data.specifics.mutable_password()
+                                      ->mutable_client_only_encrypted_data())) {
       return FAILED_TO_DECRYPT;
     }
     specifics_were_encrypted = true;
