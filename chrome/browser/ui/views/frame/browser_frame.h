@@ -189,9 +189,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // Callback for MenuRunner.
   void OnMenuClosed();
 
-  // Select a native theme that is appropriate for the current context.
-  ui::NativeTheme* SelectNativeTheme() const;
-
   // Regenerate the frame on theme change if necessary. Returns true if
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);

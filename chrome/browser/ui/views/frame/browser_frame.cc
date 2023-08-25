@@ -153,7 +153,21 @@ void BrowserFrame::InitBrowserFrame() {
     }
   }
 
-  params.native_theme = SelectNativeTheme();
+  params.native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+#if BUILDFLAG(IS_LINUX)
+  const auto* linux_ui_theme =
+      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
+  // Ignore the system theme for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  // Use the regular NativeTheme instance if running incognito mode, regardless
+  // of system theme (gtk, qt etc).
+  if (!IsIncognitoBrowser() && linux_ui_theme &&
+      !browser_view_->AppUsesWindowControlsOverlay()) {
+    params.native_theme = linux_ui_theme->GetNativeTheme();
+  }
+#endif
 
   Init(std::move(params));
 
@@ -254,8 +268,6 @@ void BrowserFrame::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // TODO(tluk): This should no longer be necessary as the dark NativeTheme is
   // no longer used for dark mode.
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme) {
-    SetNativeTheme(SelectNativeTheme());
-
     // Browser theme changes are directly observed by the BrowserFrame. However
     // the other Widgets in the frame's hierarchy may inherit this new theme
     // information in their ColorProviderKeys and thus should also be forwarded
@@ -544,30 +556,6 @@ void BrowserFrame::OnTouchUiChanged() {
     non_client_view()->InvalidateLayout();
   }
   GetRootView()->Layout();
-}
-
-ui::NativeTheme* BrowserFrame::SelectNativeTheme() const {
-  // Select between regular and Linux toolkit themes.
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-
-  // Use the regular NativeTheme instance if running incognito mode, regardless
-  // of system theme (gtk, qt etc).
-  if (IsIncognitoBrowser()) {
-    return native_theme;
-  }
-
-#if BUILDFLAG(IS_LINUX)
-  const auto* linux_ui_theme =
-      ui::LinuxUiTheme::GetForWindow(GetNativeWindow());
-  // Ignore the system theme for web apps with window-controls-overlay as the
-  // display_override so the web contents can blend with the overlay by using
-  // the developer-provided theme color for a better experience. Context:
-  // https://crbug.com/1219073.
-  if (linux_ui_theme && !browser_view_->AppUsesWindowControlsOverlay())
-    native_theme = linux_ui_theme->GetNativeTheme();
-#endif
-
-  return native_theme;
 }
 
 bool BrowserFrame::RegenerateFrameOnThemeChange(
