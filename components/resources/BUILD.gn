@@ -131,6 +131,7 @@ action("about_credits") {
 if (is_android) {
   source_set("android_resources") {
     sources = [
+      "android/autofill_resource_id.h",
       "android/blocked_content_resource_id.h",
       "android/page_info_resource_id.h",
       "android/permissions_resource_id.h",

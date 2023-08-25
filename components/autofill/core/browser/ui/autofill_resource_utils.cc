@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/autofill/autofill_popup_controller_utils.h"
+#include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -11,7 +11,7 @@
 #include "components/strings/grit/components_strings.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/android_theme_resources.h"
+#include "components/resources/android/theme_resources.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {

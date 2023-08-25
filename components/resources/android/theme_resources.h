@@ -14,6 +14,7 @@ enum {
   // Not used; just provides a starting value for the enum. These must
   // not conflict with IDR_* values, which top out at 2^16 - 1.
   ANDROID_COMPONENTS_RESOURCE_ID_NONE = 1 << 16,
+#include "components/resources/android/autofill_resource_id.h"
 #include "components/resources/android/blocked_content_resource_id.h"
 #include "components/resources/android/page_info_resource_id.h"
 #include "components/resources/android/permissions_resource_id.h"

@@ -7,7 +7,7 @@
 #include "base/android/jni_string.h"
 #include "chrome/android/chrome_jni_headers/VirtualCardEnrollmentFields_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/autofill/autofill_popup_controller_utils.h"
+#include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"

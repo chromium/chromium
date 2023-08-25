@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_UTILS_H_
-#define CHROME_BROWSER_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_UTILS_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_RESOURCE_UTILS_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_RESOURCE_UTILS_H_
 
 #include <string>
 #include <utility>
@@ -15,4 +15,4 @@ int GetIconResourceID(const std::string& resource_name);
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_AUTOFILL_AUTOFILL_POPUP_CONTROLLER_UTILS_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_UI_AUTOFILL_RESOURCE_UTILS_H_

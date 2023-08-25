@@ -12,6 +12,7 @@ class ResourceId {
 #define LINK_RESOURCE_ID(c_id,java_id) java_id,
 #define DECLARE_RESOURCE_ID(c_id,java_id) java_id,
 #include "chrome/browser/android/resource_id.h"
+#include "components/resources/android/autofill_resource_id.h"
 #include "components/resources/android/blocked_content_resource_id.h"
 #include "components/resources/android/page_info_resource_id.h"
 #include "components/resources/android/permissions_resource_id.h"

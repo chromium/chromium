@@ -13,6 +13,7 @@ include_rules = [
   "+components/plus_addresses",
   "+components/profile_metrics",
   "+components/policy",
+  "+components/resources",
   "+components/security_state",
   "+components/security_interstitials/core/pref_names.h",
   "+components/signin/public",

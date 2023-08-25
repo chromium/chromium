@@ -450,6 +450,8 @@ static_library("browser") {
     "ui/autofill_image_fetcher.cc",
     "ui/autofill_image_fetcher.h",
     "ui/autofill_popup_delegate.h",
+    "ui/autofill_resource_utils.cc",
+    "ui/autofill_resource_utils.h",
     "ui/contact_form_label_formatter.cc",
     "ui/contact_form_label_formatter.h",
     "ui/country_combobox_model.cc",
@@ -679,6 +681,7 @@ static_library("browser") {
     deps += [
       "//components/autofill/android:main_autofill_jni_headers",
       "//components/messages/android:feature_flags",
+      "//components/resources:android_resources",
     ]
   }
 
