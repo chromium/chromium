@@ -33,34 +33,10 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1468551
   "dlp.DataLeakPreventionRulesListClipboardOmni.ash",
 
-  # crbug.com/1364499
-  "documentscanapi.Scan",
-
-  # b/251833060
-  "graphics.KmsvncConnect",
-  "graphics.Smoke.chrome",
-
-  # https://crbug.com/1400636
-  "graphics.ScreenshotCLI",
-
-  # https://crbug.com/1430723
-  "graphics.FPS.lacros",
-
   # https://crbug.com/1379756
   "inputs.VirtualKeyboardGlideTyping.clamshell_a11y_floating",
   "inputs.VirtualKeyboardGlideTyping.tablet_floating",
   "inputs.VirtualKeyboardHandwriting.floating",
-
-  # b/251833060
-  "peripherals.LaunchAppFromGuestSession.diagnostics",
-
-  # https://crbug.com/1252352
-  "quicksettings.SignInScreen.battery",
-  "quicksettings.SignInScreen.noaudio_nobattery",
-  "quicksettings.SignInScreen.audio",
-
-  # crbug.com/1263234
-  "quicksettings.ManagedDeviceInfo",
 
   # b/251833060
   "ui.GuestModeExtension",
@@ -111,35 +87,8 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1260046
   "wmp.WindowCycle",
 
-  # b/217362120
-  "security.SELinuxFilesARC.vm",
-
   # crbug.com/1364513
   "policy.ArcEnabled.vm",
-
-  # https://crbug.com/1297581
-  "policy.ImagesForURLCheck.blocklist",
-  "policy.ImagesForURLCheck.default",
-  "policy.Disable3DAPIs",
-  "policy.JavaScriptAllowedForUrls",
-  "policy.JavaScriptBlockedForUrls",
-  "policy.ImagesForURLCheck.default",
-
-  # https://crbug.com/1300941
-  "ui.WebUIJSErrors",
-
-  # https://crbug.com/1351654
-  "ui.ForceRegion",
-  "ui.ForceRegion.lacros",
-
-  # https://crbug.com/1306441
-  "policy.UserAvatarImage",
-
-  # https://crbug.com/1308288
-  "policy.BasicAuthOverHTTPEnabled",
-
-  # https://crbug.com/1307671
-  "policy.SafeBrowsingProtectionLevel",
 
   # https://crbug.com/1309331
   "policy.CookiesAllowedForUrls",
@@ -151,16 +100,9 @@ tast_disabled_tests_from_chrome_all = [
   "policy.AudioCaptureAllowed",
   "policy.AlternateErrorPagesEnabled",
 
-  # https://crbug.com/1309289
-  "policy.AllowDeletingBrowserHistory",
-
   # https://crbug.com/1309052
   "policy.ShowHomeButton",
   "policy.ShowLogoutButtonInTray",
-
-  # https://crbug.com/1309075
-  "policy.AccessibilityPolicies.virtual_keyboard",
-  "policy.AccessibilityPolicies.spoken_feedback",
 
   # https://crbug.com/1309466
   "arc.StartStop.vm",
@@ -175,40 +117,7 @@ tast_disabled_tests_from_chrome_all = [
   "arc.OptinNetworkError.vm",
 
   # https://crbug.com/1312121
-  "policy.DefaultJavaScriptSetting",
   "policy.CookiesBlockedForUrls",
-
-  # https://crbug.com/1312908
-  "policy.DefaultNotificationsSetting",
-
-  # https://crbug.com/1401568
-  "assistant.Hotkey.search_plus_a",
-
-  # https://crbug.com/1326279
-  "policy.AccessibilityPolicies.focus_highlight",
-
-  # https://crbug.com/1326331
-  "policy.AccessibilityPolicies.high_contrast",
-
-  # https://crbug.com/1326403
-  "policy.AccessibilityPolicies.large_cursor",
-
-  # https://crbug.com/1327361
-  "policy.FullscreenAllowed",
-
-  # https://crbug.com/1329761
-  "policy.DefaultSerialGuardSetting",
-
-  # http://b/229032436
-  "health.DiagnosticsRun.captive_portal",
-  "health.DiagnosticsRun.cpu_cache",
-  "health.DiagnosticsRun.cpu_stress",
-  "health.DiagnosticsRun.dns_latency",
-  "health.DiagnosticsRun.dns_resolution",
-  "health.DiagnosticsRun.dns_resolver_present",
-
-  # b/235279574
-  "wmp.DragAndDropWindow",
 
   # http://crbug.com/1335213
   "arc.WindowState.clamshell",
@@ -219,9 +128,6 @@ tast_disabled_tests_from_chrome_all = [
   # http://crbug.com/1363667
   "apps.CalculatorSmoke",
 
-  # https://crbug.com/1340557
-  "apps.LaunchSystemWebAppsFromURL",
-
   # https://crbug.com/1341074
   "launcher.BubbleLaunchApp.enable_launcher_app_sort",
 
@@ -230,10 +136,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/241122961
   "policy.BlockThirdPartyCookies",
-
-  # https://crbug.com/1350180
-  # also see http://crbug.com/1350191
-  "printer.Print",
 
   # https://crbug.com/1350191
   "arc.Print",
@@ -247,14 +149,8 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1362182
   "feedback.AttachFile",
 
-  # https://crbug.com/1360968
-  "launcher.BubbleSmoke",
-
   # https://crbug.com/1360969
   "launcher.SearchBuiltInApps.productivity_launcher_tablet_mode",
-
-  # https://crbug.com/1361078
-  "shelf.HotseatSmoke",
 
   # https://crbug.com/1365284
   "crostini.RestartApp.clamshell_stable",
@@ -279,28 +175,8 @@ tast_disabled_tests_from_chrome_all = [
   "u2fd.WebauthnUsingPassword.gsc_lacros",
 
   # https://crbug.com/1368859
-  "a11y.Smoke",
-  "apps.SystemWebAppsInstallGuest",
   "arc.Drivefs",
   "arc.Drivefs.vm",
-  "camera.CCAUILauncher",
-  "example.ChromeExtension",
-  "hwsec.Login",
-  "hwsec.LoginGuest",
-  "lockscreen.KeyboardShortcut",
-  "security.UserFilesGuest",
-  "session.LogoutCleanup",
-  "session.OwnershipTaken",
-  "shelf.AutoHideSmoke.clamshell_mode_rtl",
-  "peripherals.LaunchAppFromSettings.diagnostics",
-  "peripherals.LaunchAppFromSettings.print_management",
-
-  # b/249879125
-  "launcher.SearchBuiltInApps.tablet_mode",
-
-  # https://crbug.com/1373329
-  "peripherals.LaunchAppFromSettings.scan",
-  "policy.AllowedLanguages",
 
   # https://crbug.com/1374943
   "hwsec.CrossVersionLogin",
@@ -350,7 +226,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.CheckAndroidVersion",
   "arc.ContainerMount",
   "arc.Downloads",
-  "network.ConfigBaseline.login",
 
   # https://b/294977915
   "bruschetta.*@eve",
