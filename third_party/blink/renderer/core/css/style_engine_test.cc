@@ -3246,6 +3246,73 @@ TEST_F(StyleEngineTest, PrintNoForceDarkMode) {
             true);
 }
 
+TEST_F(StyleEngineTest, PrintScriptingEnabled) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+      <style>
+        @media (scripting) {
+          body { color: green; }
+        }
+        @media (scripting: none) {
+          body { color: red; }
+        }
+      </style>
+    )HTML");
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  UpdateAllLifecyclePhases();
+  Element* body = GetDocument().body();
+
+  EXPECT_EQ(true,
+            GetDocument().GetExecutionContext()->CanExecuteScripts(
+                ReasonForCallingCanExecuteScripts::kNotAboutToExecuteScript));
+
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      body->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  gfx::SizeF page_size(400, 400);
+  GetDocument().GetFrame()->StartPrinting(page_size, 1);
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      body->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  GetDocument().GetFrame()->EndPrinting();
+}
+
+TEST_F(StyleEngineTest, MediaQueriesChangeScripting) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+        <style>
+          @media (scripting) {
+            body { color: green; }
+          }
+          @media (scripting: none) {
+            body { color: red; }
+          }
+        </style>
+      )HTML");
+  GetFrame().GetSettings()->SetScriptEnabled(true);
+  UpdateAllLifecyclePhases();
+  Element* body = GetDocument().body();
+
+  EXPECT_EQ(true,
+            GetDocument().GetExecutionContext()->CanExecuteScripts(
+                ReasonForCallingCanExecuteScripts::kNotAboutToExecuteScript));
+
+  EXPECT_EQ(
+      Color::FromRGB(0, 128, 0),
+      body->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+
+  GetFrame().GetSettings()->SetScriptEnabled(false);
+  UpdateAllLifecyclePhases();
+
+  EXPECT_EQ(false,
+            GetDocument().GetExecutionContext()->CanExecuteScripts(
+                ReasonForCallingCanExecuteScripts::kNotAboutToExecuteScript));
+
+  EXPECT_EQ(
+      Color::FromRGB(255, 0, 0),
+      body->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
+}
+
 TEST_F(StyleEngineTest, AtPropertyUseCount) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style>

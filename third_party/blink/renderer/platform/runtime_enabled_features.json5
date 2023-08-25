@@ -3194,6 +3194,10 @@
       base_feature: "none",
     },
     {
+      name: "ScriptingMediaFeature",
+      status: "experimental",
+    },
+    {
       name: "ScrollableAreaNoSnapping",
       status: "stable",
     },

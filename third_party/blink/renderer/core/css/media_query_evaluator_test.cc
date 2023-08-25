@@ -443,6 +443,30 @@ MediaQueryEvaluatorTestCase g_invertedcolors_inverted_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_scripting_none_cases[] = {
+    {"(scripting)", false},
+    {"(scripting: none)", true},
+    {"(scripting: initial-only)", false},
+    {"(scripting: enabled)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_scripting_initial_only_cases[] = {
+    {"(scripting)", false},
+    {"(scripting: none)", false},
+    {"(scripting: initial-only)", true},
+    {"(scripting: enabled)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_scripting_enabled_cases[] = {
+    {"(scripting)", true},
+    {"(scripting: none)", false},
+    {"(scripting: initial-only)", false},
+    {"(scripting: enabled)", true},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
@@ -869,6 +893,34 @@ TEST(MediaQueryEvaluatorTest, CachedInvertedColors) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(media_values);
     TestMQEvaluator(g_invertedcolors_inverted_cases, media_query_evaluator);
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CachedScripting) {
+  MediaValuesCached::MediaValuesCachedData data;
+
+  // scripting - none
+  {
+    data.scripting = Scripting::kNone;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_scripting_none_cases, media_query_evaluator);
+  }
+
+  // scripting - initial-only
+  {
+    data.scripting = Scripting::kInitialOnly;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_scripting_initial_only_cases, media_query_evaluator);
+  }
+
+  // scripting - enabled
+  {
+    data.scripting = Scripting::kEnabled;
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(media_values);
+    TestMQEvaluator(g_scripting_enabled_cases, media_query_evaluator);
   }
 }
 
@@ -1610,6 +1662,33 @@ TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
                 IdentifiableToken(
                     IdentifiableSurface::MediaFeatureName::kInvertedColors)));
   EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(false));
+}
+
+TEST_F(MediaQueryEvaluatorIdentifiabilityTest,
+       MediaFeatureIdentifiableSurfaceScripting) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      @media (scripting: enabled) {
+        div { color: green }
+      }
+    </style>
+    <div id="green"></div>
+    <span></span>
+  )HTML");
+
+  UpdateAllLifecyclePhases();
+  EXPECT_TRUE(GetDocument().WasMediaFeatureEvaluated(
+      static_cast<int>(IdentifiableSurface::MediaFeatureName::kScripting)));
+  EXPECT_EQ(collector()->entries().size(), 1u);
+
+  auto& entry = collector()->entries().front();
+  EXPECT_EQ(entry.metrics.size(), 1u);
+  EXPECT_EQ(entry.metrics.begin()->surface,
+            IdentifiableSurface::FromTypeAndToken(
+                IdentifiableSurface::Type::kMediaFeature,
+                IdentifiableToken(
+                    IdentifiableSurface::MediaFeatureName::kScripting)));
+  EXPECT_EQ(entry.metrics.begin()->value, IdentifiableToken(Scripting::kNone));
 }
 
 }  // namespace blink

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
+#include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -268,6 +269,10 @@ int MediaValuesDynamic::GetVerticalViewportSegments() const {
 device::mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture()
     const {
   return CalculateDevicePosture(frame_);
+}
+
+Scripting MediaValuesDynamic::GetScripting() const {
+  return CalculateScripting(frame_);
 }
 
 Document* MediaValuesDynamic::GetDocument() const {

@@ -8,6 +8,7 @@
 #include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
+#include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink.h"
@@ -78,6 +79,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     int vertical_viewport_segments = 0;
     device::mojom::blink::DevicePostureType device_posture =
         device::mojom::blink::DevicePostureType::kContinuous;
+    Scripting scripting = Scripting::kNone;
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
@@ -118,6 +120,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.vertical_viewport_segments = vertical_viewport_segments;
       data.device_posture = device_posture;
       data.inverted_colors = inverted_colors;
+      data.scripting = scripting;
       return data;
     }
   };
@@ -158,6 +161,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   int GetHorizontalViewportSegments() const override;
   int GetVerticalViewportSegments() const override;
   device::mojom::blink::DevicePostureType GetDevicePosture() const override;
+  Scripting GetScripting() const override;
 
   void OverrideViewportDimensions(double width, double height);
 

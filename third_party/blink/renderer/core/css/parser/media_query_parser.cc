@@ -103,7 +103,9 @@ class MediaQueryFeatureSet : public MediaQueryParser::FeatureSet {
            (feature == media_feature_names::kInvertedColorsMediaFeature &&
             RuntimeEnabledFeatures::InvertedColorsEnabled()) ||
            (CSSVariableParser::IsValidVariableName(feature) &&
-            RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled());
+            RuntimeEnabledFeatures::CSSStyleQueriesBooleanEnabled()) ||
+           (feature == media_feature_names::kScriptingMediaFeature &&
+            RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled());
   }
 
   bool IsCaseSensitive(const String& feature) const override { return false; }

@@ -1727,5 +1727,10 @@
     // size,
     "snap",
     // sticky,
+
+    // (scripting:) media feature
+    "enabled",
+    "initial-only",
+    // none
   ],
 }

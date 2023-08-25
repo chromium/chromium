@@ -84,6 +84,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
         MediaValues::CalculateVerticalViewportSegments(frame);
     device_posture = MediaValues::CalculateDevicePosture(frame);
     inverted_colors = MediaValues::CalculateInvertedColors(frame);
+    scripting = MediaValues::CalculateScripting(frame);
   }
 }
 
@@ -329,6 +330,10 @@ int MediaValuesCached::GetVerticalViewportSegments() const {
 device::mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture()
     const {
   return data_.device_posture;
+}
+
+Scripting MediaValuesCached::GetScripting() const {
+  return data_.scripting;
 }
 
 }  // namespace blink

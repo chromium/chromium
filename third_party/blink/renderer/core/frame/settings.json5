@@ -556,6 +556,7 @@
     {
       name: "scriptEnabled",
       initial: false,
+      invalidate: ["MediaQuery"],
     },
 
     {

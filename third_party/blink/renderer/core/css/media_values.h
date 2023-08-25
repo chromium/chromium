@@ -30,6 +30,7 @@ enum class CSSValueID;
 enum class ColorSpaceGamut;
 enum class ForcedColors;
 enum class NavigationControls;
+enum class Scripting;
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
@@ -130,6 +131,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   // when computing the computed value of a style() container query.
   virtual Element* ContainerElement() const { return nullptr; }
 
+  virtual Scripting GetScripting() const = 0;
+
  protected:
   virtual ContainerSnappedFlags SnappedFlags() const {
     return static_cast<ContainerSnappedFlags>(ContainerSnapped::kNone);
@@ -180,6 +183,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   static int CalculateVerticalViewportSegments(LocalFrame*);
   static device::mojom::blink::DevicePostureType CalculateDevicePosture(
       LocalFrame*);
+  static Scripting CalculateScripting(LocalFrame*);
 
   bool ComputeLengthImpl(double value,
                          CSSPrimitiveValue::UnitType,

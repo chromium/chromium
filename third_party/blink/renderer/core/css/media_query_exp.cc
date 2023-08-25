@@ -182,6 +182,12 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
           return false;
       }
     }
+
+    if (RuntimeEnabledFeatures::ScriptingMediaFeatureEnabled() &&
+        media_feature == media_feature_names::kScriptingMediaFeature) {
+      return ident == CSSValueID::kEnabled ||
+             ident == CSSValueID::kInitialOnly || ident == CSSValueID::kNone;
+    }
   }
 
   if (RuntimeEnabledFeatures::CSSSnapContainerQueriesEnabled()) {

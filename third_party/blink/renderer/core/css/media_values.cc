@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/media_values.h"
 
+#include "third_party/blink/public/common/css/scripting.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -16,10 +17,12 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
@@ -456,6 +459,17 @@ int MediaValues::CalculateVerticalViewportSegments(LocalFrame* frame) {
 device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
     LocalFrame* frame) {
   return frame->GetDevicePosture();
+}
+
+Scripting MediaValues::CalculateScripting(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  if (!frame->GetDocument()->GetExecutionContext()->CanExecuteScripts(
+          kNotAboutToExecuteScript)) {
+    return Scripting::kNone;
+  }
+
+  return Scripting::kEnabled;
 }
 
 bool MediaValues::ComputeLengthImpl(double value,
