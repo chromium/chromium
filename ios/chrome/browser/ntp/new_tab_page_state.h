@@ -25,6 +25,9 @@
 // The currently visible feed.
 @property(nonatomic, assign) FeedType selectedFeed;
 
+// Whether the NTP should be scrolled to the top of the feed.
+@property(nonatomic, assign) BOOL shouldScrollToTopOfFeed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_STATE_H_

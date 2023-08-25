@@ -167,7 +167,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     [self.NTPContentDelegate updateForSelectedFeed:ntpState.selectedFeed];
   }
 
-  [self.consumer restoreScrollPosition:ntpState.scrollPosition];
+  if (ntpState.shouldScrollToTopOfFeed) {
+    [self.consumer restoreScrollPositionToTopOfFeed];
+    // Prevent next NTP from being scrolled to the top of feed.
+    ntpState.shouldScrollToTopOfFeed = NO;
+    NewTabPageTabHelper::FromWebState(webState)->SetNTPState(ntpState);
+  } else {
+    [self.consumer restoreScrollPosition:ntpState.scrollPosition];
+  }
 }
 
 #pragma mark - FeedManagementNavigationDelegate

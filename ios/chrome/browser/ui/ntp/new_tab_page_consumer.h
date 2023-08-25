@@ -22,6 +22,9 @@
 // Restores a given scroll position if applicable.
 - (void)restoreScrollPosition:(CGFloat)scrollPosition;
 
+// Restores the scroll position to the top of the feed.
+- (void)restoreScrollPositionToTopOfFeed;
+
 // Returns the height of the content above the feed. The views above the feed
 // (like the content suggestions) are added through a content inset in the feed
 // collection view, so this property is used to track the total height of those

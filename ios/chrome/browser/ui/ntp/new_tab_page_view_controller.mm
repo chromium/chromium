@@ -573,7 +573,7 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   return heightAboveFeed;
 }
 
-- (void)setContentOffsetToTopOfFeed:(CGFloat)contentOffset {
+- (void)setContentOffsetToTopOfFeedOrLess:(CGFloat)contentOffset {
   if (contentOffset < [self offsetWhenScrolledIntoFeed]) {
     [self setContentOffset:contentOffset];
   } else {
@@ -635,6 +635,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     // ensures that new content is being fetched.
     [self.NTPContentDelegate refreshNTPContent];
   }
+}
+
+- (void)restoreScrollPositionToTopOfFeed {
+  [self setSavedContentOffset:[self offsetWhenScrolledIntoFeed]];
 }
 
 - (CGFloat)scrollPosition {
