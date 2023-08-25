@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -326,4 +327,59 @@ TEST_F(SafetyHubHandlerTest, HandleResetNotificationPermissionForOrigins) {
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 
   ValidateNotificationPermissionUpdate();
+}
+
+// Test that revocation is happen correctly for all content setting types.
+TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
+  // TODO(crbug.com/1459305): Remove this after adding names for those
+  // types.
+  std::list<ContentSettingsType> no_name_types = {
+      ContentSettingsType::MIDI,
+      ContentSettingsType::DURABLE_STORAGE,
+      ContentSettingsType::ACCESSIBILITY_EVENTS,
+      ContentSettingsType::NFC,
+      ContentSettingsType::FILE_SYSTEM_READ_GUARD,
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS};
+
+  // Add all content settings in the content setting registry to revoked
+  // permissions list.
+  auto* content_settings_registry =
+      content_settings::ContentSettingsRegistry::GetInstance();
+  for (const content_settings::ContentSettingsInfo* info :
+       *content_settings_registry) {
+    ContentSettingsType type = info->website_settings_info()->type();
+
+    // If the permission can not be tracked, then also can not be revoked.
+    if (!content_settings::CanTrackLastVisit(type)) {
+      continue;
+    }
+
+    // If the permission can not set to ALLOW, then also can not be revoked.
+    if (!content_settings_registry->Get(type)->IsSettingValid(
+            ContentSetting::CONTENT_SETTING_ALLOW)) {
+      continue;
+    }
+
+    // Add the permission to revoked permission list.
+    auto dict = base::Value::Dict().Set(
+        permissions::kRevokedKey,
+        base::Value::List().Append(static_cast<int32_t>(type)));
+    hcsm()->SetWebsiteSettingDefaultScope(
+        GURL(kUnusedTestSite), GURL(kUnusedTestSite),
+        ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS,
+        base::Value(dict.Clone()));
+
+    // Unless the permission in no_name_types, it should be shown on the UI.
+    const auto& revoked_permissions =
+        handler()->PopulateUnusedSitePermissionsData();
+    bool is_no_name_type =
+        (std::find(no_name_types.begin(), no_name_types.end(), type) !=
+         no_name_types.end());
+    if (is_no_name_type) {
+      EXPECT_EQ(revoked_permissions.size(), 0U);
+    } else {
+      EXPECT_EQ(revoked_permissions.size(), 1U);
+    }
+  }
 }

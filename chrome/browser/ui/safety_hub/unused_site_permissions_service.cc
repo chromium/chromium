@@ -362,7 +362,9 @@ void UnusedSitePermissionsService::RevokeUnusedPermissions() {
       }
 
       DCHECK_EQ(entry.source.primary_pattern, primary_pattern);
-      DCHECK_EQ(entry.source.secondary_pattern, secondary_pattern);
+      DCHECK(entry.source.secondary_pattern ==
+                 ContentSettingsPattern::Wildcard() ||
+             entry.source.secondary_pattern == entry.source.primary_pattern);
 
       // Reset the permission to default if the site is visited before
       // threshold. Also, the secondary pattern should be wildcard.

@@ -197,9 +197,21 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
         stored_value.GetDict().FindList(permissions::kRevokedKey)->Clone();
     base::Value::List permissions_value_list;
     for (base::Value& type : type_list) {
-      permissions_value_list.Append(
+      base::StringPiece permission_str =
           site_settings::ContentSettingsTypeToGroupName(
-              static_cast<ContentSettingsType>(type.GetInt())));
+              static_cast<ContentSettingsType>(type.GetInt()));
+      if (!permission_str.empty()) {
+        permissions_value_list.Append(permission_str);
+      }
+    }
+
+    // Some permissions have no readable name, although Safety Hub revokes them.
+    // To prevent crashes, if there is no permission to be shown in the UI, the
+    // origin will not be added to the revoked permissions list.
+    // TODO(crbug.com/1459305): Remove this after adding check for
+    // ContentSettingsTypeToGroupName.
+    if (permissions_value_list.empty()) {
+      continue;
     }
 
     revoked_permission_value.Set(

@@ -505,12 +505,18 @@ ContentSettingsType ContentSettingsTypeFromGroupName(base::StringPiece name) {
 }
 
 base::StringPiece ContentSettingsTypeToGroupName(ContentSettingsType type) {
-  for (size_t i = 0; i < std::size(kContentSettingsTypeGroupNames); ++i) {
-    if (type == kContentSettingsTypeGroupNames[i].type) {
-      const char* name = kContentSettingsTypeGroupNames[i].name;
-      if (name)
-        return name;
-      break;
+  for (const auto& entry : kContentSettingsTypeGroupNames) {
+    if (type == entry.type) {
+      // Content setting types that aren't represented in the settings UI
+      // will have `nullptr` as their `name`. Although they are valid content
+      // settings types, they don't have a readable name.
+      // TODO(crbug.com/1459305): Replace LOG with CHECK.
+      if (!entry.name) {
+        LOG(ERROR) << static_cast<int32_t>(type)
+                   << " does not have a readable name.";
+      }
+
+      return entry.name ? entry.name : base::StringPiece();
     }
   }
 

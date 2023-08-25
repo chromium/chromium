@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -137,4 +138,53 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
   EXPECT_EQ(CONTENT_SETTING_ASK,
             map->GetContentSetting(url, url, ContentSettingsType::GEOLOCATION));
+}
+
+// Test that revocation happens correctly for all content setting types.
+IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
+                       RevokeAllContentSettingTypes) {
+  auto* map =
+      HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+  auto* service =
+      UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
+
+  base::Time time;
+  ASSERT_TRUE(base::Time::FromString("2022-09-07 13:00", &time));
+  base::SimpleTestClock clock;
+  clock.SetNow(time);
+  map->SetClockForTesting(&clock);
+  service->SetClockForTesting(&clock);
+
+  // Allow all content settings in the content setting registry.
+  auto* content_settings_registry =
+      content_settings::ContentSettingsRegistry::GetInstance();
+  for (const content_settings::ContentSettingsInfo* info :
+       *content_settings_registry) {
+    ContentSettingsType type = info->website_settings_info()->type();
+
+    // Add last visited timestamp if the setting can be tracked.
+    content_settings::ContentSettingConstraints constraint;
+    if (content_settings::CanTrackLastVisit(type)) {
+      constraint.set_track_last_visit_for_autoexpiration(true);
+    }
+
+    if (!content_settings_registry->Get(type)->IsSettingValid(
+            ContentSetting::CONTENT_SETTING_ALLOW)) {
+      continue;
+    }
+
+    const GURL url("https://example1.com");
+    map->SetContentSettingDefaultScope(GURL(url), GURL(url), type,
+                                       ContentSetting::CONTENT_SETTING_ALLOW,
+                                       constraint);
+  }
+
+  // Travel through time for 70 days to make permissions be revoked.
+  clock.Advance(base::Days(70));
+  service->UpdateUnusedPermissionsForTesting();
+  ASSERT_EQ(GetRevokedUnusedPermissions(map).size(), 1u);
+
+  // Navigate to content settings page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("chrome://settings/content")));
 }

@@ -168,8 +168,7 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     const permissionsI18n = permissions.map(permission => {
       const localizationString =
           getLocalizationStringForContentType(permission);
-      assert(localizationString !== null);
-      return this.i18n(localizationString);
+      return localizationString ? this.i18n(localizationString) : '';
     });
 
     switch (permissionsI18n.length) {
