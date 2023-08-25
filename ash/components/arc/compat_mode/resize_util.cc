@@ -69,9 +69,10 @@ gfx::Size GetPossibleSizeInWorkArea(views::Widget* widget,
 }
 
 void ResizeToPhone(views::Widget* widget) {
-  // Clear the restore state key to make sure it's going to be restored to
-  // normal state.
+  // Clear the restore state/bounds key to make sure it's going to be restored
+  // to normal state.
   widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreShowStateKey);
+  widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreBoundsKey);
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
   widget->Restore();
@@ -82,9 +83,10 @@ void ResizeToPhone(views::Widget* widget) {
 }
 
 void ResizeToTablet(views::Widget* widget) {
-  // Clear the restore state key to make sure it's going to be restored to
-  // normal state.
+  // Clear the restore state/bounds key to make sure it's going to be restored
+  // to normal state.
   widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreShowStateKey);
+  widget->GetNativeWindow()->ClearProperty(aura::client::kRestoreBoundsKey);
   // Always make sure the window is in normal state because the window might be
   // maximized/snapped.
   widget->Restore();
