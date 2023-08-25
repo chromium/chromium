@@ -1069,7 +1069,10 @@ void AddDeviceAudioStrings(content::WebUIDataSource* html_source) {
 }
 
 void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kPowerStrings[] = {
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kPowerStrings[] = {
       {"calculatingPower", IDS_SETTINGS_POWER_SOURCE_CALCULATING},
       {"powerAdaptiveChargingLabel",
        IDS_SETTINGS_POWER_ADAPTIVE_CHARGING_LABEL},
@@ -1083,12 +1086,16 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
       {"powerIdleLabel", IDS_SETTINGS_POWER_IDLE_LABEL},
       {"powerIdleWhileChargingAriaLabel",
        IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_ARIA_LABEL},
-      {"powerIdleWhileChargingLabel",
-       IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_LABEL},
+      {"powerInactiveWhilePluggedInLabel",
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL
+           : IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_LABEL},
       {"powerIdleWhileOnBatteryAriaLabel",
        IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL},
-      {"powerIdleWhileOnBatteryLabel",
-       IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_LABEL},
+      {"powerInactiveWhileOnBatteryLabel",
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL
+           : IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_LABEL},
       {"powerLidShutDownLabel", IDS_SETTINGS_POWER_LID_CLOSED_SHUT_DOWN_LABEL},
       {"powerLidSignOutLabel", IDS_SETTINGS_POWER_LID_CLOSED_SIGN_OUT_LABEL},
       {"powerLidSleepLabel", IDS_SETTINGS_POWER_LID_CLOSED_SLEEP_LABEL},

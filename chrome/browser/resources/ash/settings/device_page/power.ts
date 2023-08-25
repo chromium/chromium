@@ -22,6 +22,7 @@ import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -179,6 +180,13 @@ class SettingsPowerElement extends SettingsPowerElementBase {
             'computeBatterySaverToggleDisabled_(powerSources_, lowPowerCharger_)',
       },
 
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value: () => {
+          return isRevampWayfindingEnabled();
+        },
+      },
+
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -204,9 +212,11 @@ class SettingsPowerElement extends SettingsPowerElementBase {
   private adaptiveChargingPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private batteryIdleManaged_: boolean;
   private batteryIdleOptions_: IdleOption[];
+  private batterySaverHidden_: boolean;
   private batteryStatus_: BatteryStatus|undefined;
   private browserProxy_: DevicePageBrowserProxy;
   private hasLid_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
   private lidClosedLabel_: string;
   private lidClosedPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private lowPowerCharger_: boolean;
@@ -499,22 +509,53 @@ class SettingsPowerElement extends SettingsPowerElementBase {
    * @return the class for the given row
    */
   private getClassForRow_(batteryPresent: boolean, element: string): string {
-    let c = 'cr-row';
+    const classes = ['cr-row'];
 
     switch (element) {
-      case 'adaptiveCharging':
+      case 'batterySaver':
         if (!batteryPresent) {
-          c += ' first';
+          classes.push('first');
+        }
+        break;
+      case 'adaptiveCharging':
+        if (!batteryPresent && this.batterySaverHidden_) {
+          classes.push('first');
         }
         break;
       case 'idle':
-        if (!batteryPresent && !this.adaptiveChargingEnabled_) {
-          c += ' first';
+        if (!batteryPresent && this.batterySaverHidden_ &&
+            !this.adaptiveChargingEnabled_) {
+          classes.push('first');
+        }
+        break;
+      case 'acIdle':
+        if (!batteryPresent && this.batterySaverHidden_ &&
+            !this.adaptiveChargingEnabled_) {
+          classes.push('first');
+        }
+        if (this.isRevampWayfindingEnabled_) {
+          classes.push('dropdown-row');
+        } else {
+          classes.push('indented');
+        }
+        break;
+      case 'batteryIdle':
+        if (this.isRevampWayfindingEnabled_) {
+          classes.push('dropdown-row');
+        } else {
+          classes.push('indented');
+        }
+        break;
+      case 'lidClosed':
+        if (this.isRevampWayfindingEnabled_) {
+          classes.push('dropdown-row');
+        } else {
+          classes.push('first');
         }
         break;
     }
 
-    return c;
+    return classes.join(' ');
   }
 
   private isEqual_(lhs: string, rhs: string): boolean {

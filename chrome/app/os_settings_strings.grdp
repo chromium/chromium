@@ -4896,11 +4896,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_LABEL" desc="In Device Settings > Power, label for behavior when device is idle.">
     While charging
   </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_PLUGGED_IN_LABEL" desc="In Device Settings > Power, label for behavior when device is inactive and plugged in.">
+    While inactive and plugged in
+  </message>
   <message name="IDS_SETTINGS_POWER_IDLE_WHILE_CHARGING_ARIA_LABEL" desc="In Device Settings > Power, aria label for behavior when device is idle.">
     Idle action while charging
   </message>
   <message name="IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_LABEL" desc="In Device Settings > Power, label for behavior when device is idle.">
     While on battery
+  </message>
+  <message name="IDS_OS_SETTINGS_REVAMP_POWER_INACTIVE_WHILE_ON_BATTERY_LABEL" desc="In Device Settings > Power, label for behavior when device is inactive and on battery.">
+    While inactive and on battery
   </message>
   <message name="IDS_SETTINGS_POWER_IDLE_WHILE_ON_BATTERY_ARIA_LABEL" desc="In Device Settings > Power, aria label for behavior when device is idle.">
     Idle action while on battery
