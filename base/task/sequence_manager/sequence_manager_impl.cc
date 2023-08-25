@@ -460,9 +460,11 @@ void SequenceManagerImpl::SetObserver(Observer* observer) {
 
 void SequenceManagerImpl::ShutdownTaskQueueGracefully(
     std::unique_ptr<internal::TaskQueueImpl> task_queue) {
-  recordreplay::Assert(
-      "[RUN-2217-2269] SequenceManagerImpl::ShutdownTaskQueueGracefully %d",
-      recordreplay::PointerId(task_queue.get()));
+  // [RUN-2217] Leak the TaskQueueImpl during GC.
+  if (recordreplay::AreEventsDisallowed("ShutdownTaskQueueGracefully")) {
+    task_queue.release();
+    return;
+  }
   main_thread_only().queues_to_gracefully_shutdown[task_queue.get()] =
       std::move(task_queue);
 }
@@ -1142,7 +1144,8 @@ void SequenceManagerImpl::ReclaimMemory() {
 }
 
 void SequenceManagerImpl::CleanUpQueues() {
-  recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues");
+  recordreplay::Assert("[RUN-2217] SequenceManagerImpl::CleanUpQueues %zu",
+                       main_thread_only().queues_to_gracefully_shutdown.size());
 
   for (auto it = main_thread_only().queues_to_gracefully_shutdown.begin();
        it != main_thread_only().queues_to_gracefully_shutdown.end();) {

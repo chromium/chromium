@@ -4695,8 +4695,8 @@ static void HandleBrowserEvent(const char* name, const char* payload) {
 // We don't want flawed uses of the API to crash the recording.
 static void InvokeOnAnnotation(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (! (args.Length() >= 2 && args[0]->IsString())) {
-    recordreplay::Print("%s called with incorrect arguments",
-      AnnotationHookJSName);
+    recordreplay::Print("[RuntimeError] %s called with incorrect arguments",
+                        AnnotationHookJSName);
     return;
   }
 
@@ -4707,8 +4707,8 @@ static void InvokeOnAnnotation(const v8::FunctionCallbackInfo<v8::Value>& args) 
 
   v8::Local<v8::String> json;
   if (!v8::JSON::Stringify(context, payload).ToLocal(&json)) {
-    recordreplay::Print("%s contents failed to json stringify",
-      AnnotationHookJSName);
+    recordreplay::Print("[RuntimeError] %s contents failed to json stringify",
+                        AnnotationHookJSName);
     return;
   }
 
