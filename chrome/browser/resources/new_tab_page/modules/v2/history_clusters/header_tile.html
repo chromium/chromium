@@ -16,6 +16,14 @@
     border: none;
   }
 
+  @media (forced-colors: active) {
+   /* Set outline since background isn't visible in hcm */
+    :host {
+      border-radius: var(--ntp-module-item-border-radius);
+      outline: var(--cr-border-hcm);
+    }
+  }
+
   #label-container {
     color: var(--color-new-tab-page-primary-foreground);
     display: flex;

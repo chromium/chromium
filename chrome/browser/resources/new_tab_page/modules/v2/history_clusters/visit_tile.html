@@ -3,7 +3,6 @@
     background: var(--color-new-tab-page-module-item-background);
     border-radius: var(--ntp-module-item-border-radius);
     display: inline-flex;
-    overflow: hidden;
     height: 100%;
     width: 100%;
   }
@@ -34,7 +33,6 @@
 
   #content {
     flex: 1;
-    overflow: hidden;
     position: relative;
   }
 
@@ -150,7 +148,7 @@
 
     /* Set outline since background isn't visible in hcm */
     a {
-      border-radius: 12px;
+      border-radius: var(--ntp-module-item-border-radius);
       outline: var(--cr-border-hcm);
     }
   }
@@ -176,7 +174,6 @@
     height: 20px;
     margin-bottom: 0px;
   }
-
 </style>
 <a id="content" href="[[visit.normalizedUrl.url]]"
    aria-label$="[[visit.pageTitle]], [[label_]], [[visit.relativeDate]]">
