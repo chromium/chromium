@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -101,6 +102,7 @@ views::UniqueWidgetPtr EditorMenuView::CreateWidget(
 
 void EditorMenuView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
+  AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
 void EditorMenuView::RequestFocus() {
@@ -111,6 +113,12 @@ void EditorMenuView::RequestFocus() {
 void EditorMenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kDialog;
   node_data->SetName(kContainerTitle);
+}
+
+bool EditorMenuView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  CHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+  GetWidget()->Close();
+  return true;
 }
 
 void EditorMenuView::OnWidgetDestroying(views::Widget* widget) {
