@@ -28,8 +28,6 @@ ChromeVoxPortalsTest = class extends ChromeVoxE2ETest {
       // Alphabetical based on file path.
       importModule(
           'ChromeVoxRange', '/chromevox/background/chromevox_range.js'),
-      importModule(
-          'ChromeVoxState', '/chromevox/background/chromevox_state.js'),
     ]);
 
     globalThis.EventType = chrome.automation.EventType;
