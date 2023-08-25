@@ -15,6 +15,23 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
+namespace {
+
+constexpr char kTypeSLAAC[] = "slaac";
+
+bool IpTypeMatchesIpConfigMethod(const std::string& type,
+                                 const std::string& method) {
+  if (type == method) {
+    return true;
+  }
+  if (type == shill::kTypeIPv4) {
+    return method == shill::kTypeDHCP;
+  }
+  return type == shill::kTypeIPv6 &&
+         (method == shill::kTypeDHCP6 || method == kTypeSLAAC);
+}
+
+}  // namespace
 
 DeviceState::DeviceState(const std::string& path)
     : ManagedState(MANAGED_TYPE_DEVICE, path) {}
@@ -194,9 +211,7 @@ std::string DeviceState::GetIpAddressByType(const std::string& type) const {
         ip_config.FindString(shill::kMethodProperty);
     if (!ip_config_method)
       continue;
-    if (type == *ip_config_method ||
-        (type == shill::kTypeIPv4 && *ip_config_method == shill::kTypeDHCP) ||
-        (type == shill::kTypeIPv6 && *ip_config_method == shill::kTypeDHCP6)) {
+    if (IpTypeMatchesIpConfigMethod(type, *ip_config_method)) {
       const std::string* address =
           ip_config.FindString(shill::kAddressProperty);
       if (!address)

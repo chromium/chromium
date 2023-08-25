@@ -531,6 +531,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
  private:
   typedef std::map<std::string, std::string> SpecifierGuidMap;
+  friend class DeviceStateTest;
   friend class NetworkStateHandlerTest;
   friend class TechnologyStateController;
 
