@@ -570,6 +570,9 @@ void ExtensionFunctionDispatcher::DispatchWithCallbackInternal(
                Feature::WEBUI_UNTRUSTED_CONTEXT) {
       base::UmaHistogramSparse("Extensions.Functions.WebUIUntrustedCalls",
                                function->histogram_value());
+    } else if (function->source_context_type() == Feature::WEB_PAGE_CONTEXT) {
+      base::UmaHistogramSparse("Extensions.Functions.NonExtensionWebPageCalls",
+                               function->histogram_value());
     }
 
     // Skip the quota, event page, activity logging stuff if there

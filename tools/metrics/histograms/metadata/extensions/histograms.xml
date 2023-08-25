@@ -2132,7 +2132,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a component extension calls an extension API. Recorded once
     per function call. See also Extensions.Functions.WebUICalls,
-    Extensions.Functions.WebUIUntrustedCalls, and
+    Extensions.Functions.WebUIUntrustedCalls,
+    Extensions.Functions.NonExtensionWebPageCalls and
     Extensions.Functions.ExtensionCalls.
   </summary>
 </histogram>
@@ -2146,7 +2147,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a non-component extension calls an extension API. Recorded
     once per function call. See also Extensions.Functions.WebUICalls,
-    Extensions.Functions.WebUIUntrustedCalls, and
+    Extensions.Functions.WebUIUntrustedCalls,
+    Extensions.Functions.NonExtensionWebPageCalls and
     Extensions.Functions.ComponentExtensionCalls.
   </summary>
 </histogram>
@@ -2233,6 +2235,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.Functions.NonExtensionWebPageCalls"
+    enum="ExtensionFunctions" expires_after="never">
+<!-- expires-never: Used for monitoring extension API usage. -->
+
+  <owner>tjudkins@chromium.org</owner>
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Recorded when a Web Page context not associated with an extension calls an
+    extension API. Generally extension APIs are only exposed to extensions or
+    WebUI, but there are rare cases where an API is exposed to a web page not
+    associated with an extension e.g. the Chrome Webstore. Recorded once per
+    function call. See also Extensions.Functions.WebUICalls,
+    Extensions.Functions.WebUIUntrustedCalls,
+    Extensions.Functions.ComponentExtensionCalls and
+    Extensions.Functions.ExtensionCalls.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Functions.StartRequestElapsedTime" units="ms"
     expires_after="never">
 <!-- expires-never: Used for monitoring extension API performance. -->
@@ -2299,6 +2320,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a WebUI context calls an extension API. Recorded once per
     function call. See also Extensions.Functions.WebUIUntrustedCalls,
+    Extensions.Functions.NonExtensionWebPageCalls,
     Extensions.Functions.ComponentExtensionCalls and
     Extensions.Functions.ExtensionCalls.
   </summary>
@@ -2313,6 +2335,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded when a WebUI context calls an extension API. Recorded once per
     function call. See also Extensions.Functions.WebUICalls,
+    Extensions.Functions.NonExtensionWebPageCalls,
     Extensions.Functions.ComponentExtensionCalls and
     Extensions.Functions.ExtensionCalls.
   </summary>
