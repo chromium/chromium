@@ -85,7 +85,7 @@ class GpuDiskCache : public base::RefCounted<GpuDiskCache> {
   void EntryComplete(GpuDiskCacheEntry* entry);
   void ReadComplete();
 
-  raw_ptr<GpuDiskCacheFactory, LeakedDanglingUntriaged> factory_;
+  raw_ptr<GpuDiskCacheFactory> factory_;
   bool cache_available_ = false;
   base::FilePath cache_path_;
   bool is_initialized_ = false;
