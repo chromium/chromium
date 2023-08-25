@@ -211,7 +211,7 @@ void Installer::Install(const base::FilePath& unpack_path,
   base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::USER_VISIBLE,
+       base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&Installer::InstallWithSyncPrimitives, this, unpack_path,
                      std::move(install_params), std::move(progress_callback),

@@ -135,7 +135,7 @@ class ProxyImplBase {
   // callbacks. This task runner is thread-affine with the platform COM STA.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_ =
       base::ThreadPool::CreateCOMSTATaskRunner(
-          {base::TaskPriority::USER_VISIBLE,
+          {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED);
 
