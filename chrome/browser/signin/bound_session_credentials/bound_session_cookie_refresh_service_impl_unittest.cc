@@ -35,6 +35,7 @@ constexpr char kRegistrationParamsPref[] =
     "bound_session_credentials_registration_params";
 const char kSessionTerminationHeader[] = "Sec-Session-Google-Termination";
 constexpr char kWrappedKey[] = "wrapped_key";
+constexpr char kTestSessionId[] = "test_session_id";
 
 class FakeBoundSessionCookieController : public BoundSessionCookieController {
  public:
@@ -199,7 +200,7 @@ class BoundSessionCookieRefreshServiceImplTest : public testing::Test {
   bound_session_credentials::RegistrationParams CreateTestRegistrationParams() {
     bound_session_credentials::RegistrationParams params;
     params.set_site(kTestGaiaURL.spec());
-    params.set_session_id("test_session_id");
+    params.set_session_id(kTestSessionId);
     params.set_wrapped_key(kWrappedKey);
     return params;
   }
@@ -221,6 +222,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
   FakeBoundSessionCookieController* controller = cookie_controller();
   EXPECT_TRUE(controller);
   EXPECT_EQ(controller->url(), kTestGaiaURL);
+  EXPECT_EQ(controller->session_id(), kTestSessionId);
   EXPECT_EQ(
       controller->cookie_names(),
       base::flat_set<std::string>({k1PSIDTSCookieName, k3PSIDTSCookieName}));
@@ -350,18 +352,27 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
   VerifyNoBoundSession();
 }
 
-// TODO(b/293433229): Verify session terminated only if `session_id` matches the
-// current session's id.
 TEST_F(BoundSessionCookieRefreshServiceImplTest,
        TerminateSessionOnSessionTerminationHeader) {
   SetupPreConditionForBoundSession();
   scoped_refptr<net::HttpResponseHeaders> headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("");
-  headers->AddHeader(kSessionTerminationHeader, "session-id");
-
+  headers->AddHeader(kSessionTerminationHeader, kTestSessionId);
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   service->MaybeTerminateSession(headers.get());
   VerifyNoBoundSession();
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplTest,
+       DontTerminateSessionSessionIdsMismatch) {
+  SetupPreConditionForBoundSession();
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeader, "different_session_id");
+
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(headers.get());
+  VerifyBoundSession();
 }
 
 TEST_F(BoundSessionCookieRefreshServiceImplTest,

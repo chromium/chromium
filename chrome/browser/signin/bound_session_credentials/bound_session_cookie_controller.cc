@@ -11,7 +11,9 @@ BoundSessionCookieController::BoundSessionCookieController(
     const bound_session_credentials::RegistrationParams& registration_params,
     const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
-    : url_(registration_params.site()), delegate_(delegate) {
+    : url_(registration_params.site()),
+      session_id_(registration_params.session_id()),
+      delegate_(delegate) {
   CHECK(!url_.is_empty());
   CHECK(!cookie_names.empty());
   for (const std::string& cookie_name : cookie_names) {

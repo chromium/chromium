@@ -68,8 +68,13 @@ void BoundSessionCookieRefreshServiceImpl::MaybeTerminateSession(
   std::string session_id;
   if (headers->GetNormalizedHeader(kGoogleSessionTerminationHeader,
                                    &session_id)) {
-    // TODO(b/293433229): Verify `session_id` matches the current session's id.
-    TerminateSession();
+    if (session_id == cookie_controller_->session_id()) {
+      TerminateSession();
+    } else {
+      DVLOG(1) << "Session id on session termination header (" << session_id
+               << ") doesn't match with the current session id ("
+               << cookie_controller_->session_id() << ")";
+    }
   }
 }
 
