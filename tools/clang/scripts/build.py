@@ -717,11 +717,6 @@ def main():
 
   global CLANG_REVISION, PACKAGE_VERSION, LLVM_BUILD_DIR
 
-  # TODO(crbug.com/1467585): Remove in next Clang roll.
-  if args.llvm_force_head_revision:
-    global RELEASE_VERSION
-    RELEASE_VERSION = '18'
-
   if (args.pgo or args.thinlto) and not args.bootstrap:
     print('--pgo/--thinlto requires --bootstrap')
     return 1
@@ -1277,8 +1272,8 @@ def main():
     }
 
   if args.with_android:
-    toolchain_dir = ANDROID_NDK_TOOLCHAIN_DIR
     for target_arch in ['aarch64', 'arm', 'i686', 'riscv64', 'x86_64']:
+      toolchain_dir = ANDROID_NDK_TOOLCHAIN_DIR
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
