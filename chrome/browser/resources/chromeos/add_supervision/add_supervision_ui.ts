@@ -8,16 +8,20 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AddSupervisionHandler, OAuthTokenFetchStatus} from './add_supervision.mojom-webui.js';
-import {AddSupervisionAPIServer} from './add_supervision_api_server.js';
+import {AddSupervisionApiServer} from './add_supervision_api_server.js';
+import {getTemplate} from './add_supervision_ui.html.js';
 
-/**
- * List of URL hosts that can be requested by the webview.
- * @const {!Array<string>}
- */
-const ALLOWED_HOSTS = [
+declare global {
+  interface HTMLElementEventMap {
+    'newwindow': chrome.webviewTag.NewWindowEvent;
+  }
+}
+
+/** List of URL hosts that can be requested by the webview. */
+const ALLOWED_HOSTS: string[] = [
   'google.com',
   'gstatic.com',
   'googleapis.com',
@@ -32,53 +36,45 @@ const ALLOWED_HOSTS = [
 /**
  * Time in ms to wait before focusing the webview. Refer to the webview's
  * loadstop event listener for details.
- * @const {number}
  */
-const INITIAL_FOCUS_DELAY_MS = 50;
+const INITIAL_FOCUS_DELAY_MS: number = 50;
 
-/**
- * Returns true if the URL references an HTTP request to localhost.
- * @param {URL} url
- * @return {boolean}
- */
-export function isLocalHostForTesting(url) {
+/** Returns true if the URL references an HTTP request to localhost. */
+export function isLocalHostForTesting(url: URL): boolean {
   return url.protocol == 'http:' && url.hostname == '127.0.0.1';
 }
 
-/**
- * Returns true if the URL references one of the allowed hosts.
- * @param {URL} url
- * @return {boolean}
- */
-function isAllowedHost(url) {
+/** Returns true if the URL references one of the allowed hosts. */
+function isAllowedHost(url: URL): boolean {
   return url.protocol == 'https:' &&
       ALLOWED_HOSTS.some(
           (allowedHost) =>
               url.host == allowedHost || url.host.endsWith('.' + allowedHost));
 }
 
-/**
- * Returns true if the request should be allowed.
- * @param {!{url: string}} requestDetails Request that is issued by the webview.
- * @return {boolean}
- */
-function isAllowedRequest(requestDetails) {
-  const requestUrl = new URL(requestDetails.url);
+/** Returns true if the request should be allowed. */
+function isAllowedRequest(requestDetails: string): boolean {
+  const requestUrl = new URL(requestDetails);
   return isLocalHostForTesting(requestUrl) || isAllowedHost(requestUrl);
 }
 
-class AddSupervisionUi extends PolymerElement {
+export interface AddSupervisionUi {
+  $: {
+    webview: chrome.webviewTag.WebView,
+  };
+}
+
+export class AddSupervisionUi extends PolymerElement {
   static get is() {
     return 'add-supervision-ui';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
-      /** Indicates whether the webview is loading. */
       webviewLoading: {
         type: Boolean,
         value: true,
@@ -86,13 +82,10 @@ class AddSupervisionUi extends PolymerElement {
     };
   }
 
-  constructor() {
-    super();
-    this.server_ = null;
-  }
+  webviewLoading: boolean;
+  private server_: AddSupervisionApiServer|null;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     const addSupervisionHandler = AddSupervisionHandler.getRemote();
     addSupervisionHandler.getOAuthToken().then((result) => {
@@ -104,8 +97,7 @@ class AddSupervisionUi extends PolymerElement {
 
       const webviewUrl = loadTimeData.getString('webviewUrl');
       const eventOriginFilter = loadTimeData.getString('eventOriginFilter');
-      const webview =
-          /** @type {!WebView} */ (this.$.webview);
+      const webview = this.$.webview;
 
       const accessToken = result.oauthToken;
       const flowType = loadTimeData.getString('flowType');
@@ -119,9 +111,10 @@ class AddSupervisionUi extends PolymerElement {
       url.searchParams.set('hl', languageCode);
 
       // Allow guest webview content to open links in new windows.
-      webview.addEventListener('newwindow', function(e) {
-        window.open(e.targetUrl);
-      });
+      webview.addEventListener(
+          'newwindow', (e: chrome.webviewTag.NewWindowEvent) => {
+            window.open(e.targetUrl);
+          });
 
       // Change loading indicator on load in order to hide loading spinner.
       webview.addEventListener('contentload', () => {
@@ -147,15 +140,15 @@ class AddSupervisionUi extends PolymerElement {
 
       // Block any requests to URLs other than one specified
       // by eventOriginFilter.
-      webview.request.onBeforeRequest.addListener(function(details) {
-        return {cancel: !isAllowedRequest(details)};
+      webview.request.onBeforeRequest.addListener((details: {url: string}) => {
+        return {cancel: !isAllowedRequest(details.url)};
       }, {urls: ['<all_urls>']}, ['blocking']);
 
       webview.src = url.toString();
 
       // Set up the server.
-      this.server_ =
-          new AddSupervisionAPIServer(this, webview, url, eventOriginFilter);
+      this.server_ = new AddSupervisionApiServer(
+          this, webview, url.toString(), eventOriginFilter);
     });
   }
 
@@ -166,7 +159,7 @@ class AddSupervisionUi extends PolymerElement {
     }));
   }
 
-  getAPIServerForTest() {
+  getApiServerForTest(): AddSupervisionApiServer|null {
     return this.server_;
   }
 }

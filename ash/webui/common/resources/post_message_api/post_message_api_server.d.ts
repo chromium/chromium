@@ -16,7 +16,8 @@ import {RequestHandler} from './post_message_api_request_handler.js';
  */
 export class PostMessageApiServer extends RequestHandler {
   constructor(
-      clientElement: Element, targetUrl: URL, messageOriginUrlFilter: string);
+      clientElement: Element, targetUrl: string,
+      messageOriginUrlFilter: string);
 
   /** Send initialization message to client element. */
   initialize(): void;

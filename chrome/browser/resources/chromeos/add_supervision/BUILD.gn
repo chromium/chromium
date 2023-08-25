@@ -2,57 +2,36 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "js_module_root=" + rebase_path(".", root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/ash/add_supervision/",
-                            root_build_dir),
-                  ]
-  deps = [
-    ":add_supervision_api_server",
-    ":add_supervision_app",
-    ":add_supervision_ui",
-  ]
-}
+build_webui("build") {
+  grd_prefix = "add_supervision"
 
-js_library("add_supervision_api_server") {
-  deps = [
-    "//ash/webui/common/resources/post_message_api:post_message_api_server",
-    "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_js_library_for_compile",
-  ]
-}
+  static_files = [ "add_supervision.html" ]
 
-js_library("add_supervision_app") {
-  deps = [
-    ":add_supervision_ui",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  web_component_files = [
+    "add_supervision_app.ts",
+    "add_supervision_ui.ts",
   ]
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
-}
 
-js_library("add_supervision_ui") {
-  deps = [
-    ":add_supervision_api_server",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
+  non_web_component_files = [ "add_supervision_api_server.ts" ]
 
-html_to_js("web_components") {
-  js_files = [
-    "add_supervision_app.js",
-    "add_supervision_ui.js",
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/add_supervision/add_supervision.mojom-webui.ts" ]
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings_ts__generator",
+  ]
+  ts_definitions = [
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+  ]
+
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 }

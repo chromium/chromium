@@ -128,6 +128,10 @@
     "META": {"sizes": {"includes": [5],}},
     "includes": [2400],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/add_supervision/resources.grd": {
+    "META": {"sizes": {"includes": [10],}},
+    "includes": [2410],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/arc_account_picker/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2420],

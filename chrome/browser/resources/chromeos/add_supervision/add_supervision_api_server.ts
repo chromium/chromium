@@ -4,8 +4,8 @@
 
 import {PostMessageApiServer} from 'chrome://resources/ash/common/post_message_api/post_message_api_server.js';
 
-import {AddSupervisionHandler} from './add_supervision.mojom-webui.js';
-import {isLocalHostForTesting} from './add_supervision_ui.js';
+import {AddSupervisionHandler, AddSupervisionHandlerRemote} from './add_supervision.mojom-webui.js';
+import {AddSupervisionUi, isLocalHostForTesting} from './add_supervision_ui.js';
 
 /**
  * Class that implements the server side of the AddSupervision postMessage
@@ -13,18 +13,13 @@ import {isLocalHostForTesting} from './add_supervision_ui.js';
  * the remote website that calls the API  is the client.  This is the opposite
  * of the normal browser/web-server client/server relationship.
  */
-export class AddSupervisionAPIServer extends PostMessageApiServer {
-  /*
-   * @constructor
-   * @param {!Element} ui  Polymer object add-supervision-ui
-   * @param {!Element} webviewElement  The <webview> element to listen to as a
-   *     client.
-   * @param {string} targetURL  The target URL to use for outgoing messages.
-   *     This should be the same as the URL loaded in the webview.
-   * @param {string} originURLPrefix  The URL prefix to use to filter incoming
-   *     messages via the postMessage API.
-   */
-  constructor(ui, webviewElement, targetURL, originURLPrefix) {
+export class AddSupervisionApiServer extends PostMessageApiServer {
+  private ui_: AddSupervisionUi;
+  private addSupervisionHandler_: AddSupervisionHandlerRemote;
+
+  constructor(
+      ui: AddSupervisionUi, webviewElement: Element, targetURL: string,
+      originURLPrefix: string) {
     super(webviewElement, targetURL, originURLPrefix);
 
     this.ui_ = ui;
@@ -40,8 +35,7 @@ export class AddSupervisionAPIServer extends PostMessageApiServer {
     this.registerMethod('setCloseOnEscape', this.setCloseOnEscape.bind(this));
   }
 
-  /** @override */
-  initialize() {
+  override initialize() {
     // The server cannot communicate with the mock webview used
     // in the browser test, so skip initialization during tests.
     if (isLocalHostForTesting(this.targetUrl())) {
@@ -50,58 +44,45 @@ export class AddSupervisionAPIServer extends PostMessageApiServer {
     super.initialize();
   }
 
-  /** @override */
-  onInitializationError(origin) {
+  override onInitializationError() {
     this.ui_.showErrorPage();
   }
 
-  /**
-   * Logs out of the device.
-   * @param {!Array} unused Placeholder unused empty parameter.
-   */
-  logOut(unused) {
+  logOut(): void {
     return this.addSupervisionHandler_.logOut();
   }
 
   /**
-   * @param {!Array} unused Placeholder unused empty parameter.
-   * @return {Promise<{
-   *         packageNames: !Array<string>,
-   *  }>}  a promise whose success result is an array of package names of ARC
-   *     apps installed on the device.
+   * Returns a promise whose success result is an array of package names of ARC
+   * apps installed on the device.
    */
-  getInstalledArcApps(unused) {
+  getInstalledArcApps(): Promise<{packageNames: string[]}> {
     return this.addSupervisionHandler_.getInstalledArcApps();
   }
 
   /**
    * Attempts to close the widget hosting the Add Supervision flow.
    * If supervision has already been enabled, this will prompt the
-   * user to sign out.
-   * @param {!Array} unused Placeholder unused empty parameter.
-   * @return {Promise <{closed: boolean}>} If the dialog is not closed
-   *     this promise will
+   * user to sign out. If the dialog is not closed this promise will
    * resolve with boolean result indicating whether the dialog was closed.
    */
-  requestClose(unused) {
+  requestClose(): Promise<{closed: boolean}> {
     return this.addSupervisionHandler_.requestClose();
   }
 
   /**
    * Signals to the API that supervision has been enabled for the current user.
-   * @param {!Array} unused Placeholder unused empty parameter.
    */
-  notifySupervisionEnabled(unused) {
+  notifySupervisionEnabled(): void {
     return this.addSupervisionHandler_.notifySupervisionEnabled();
   }
 
   /**
    * Configures whether the Add Supervision dialog should close when
    * the user presses the Escape key.
-   * @param {!Array} params Param 0 is a <boolean> that denotes whether the
-   * dialog should close.
    */
-  setCloseOnEscape(params) {
+  setCloseOnEscape(params: any[]): void {
+    // Param 0 is a <boolean> that denotes whether the dialog should close.
     const enabled = params[0];
     return this.addSupervisionHandler_.setCloseOnEscape(enabled);
   }

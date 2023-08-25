@@ -20,6 +20,8 @@
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/add_supervision_resources.h"
+#include "chrome/grit/add_supervision_resources_map.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/supervision_resources.h"
@@ -204,12 +206,8 @@ void AddSupervisionUI::SetUpResources() {
   source->EnableReplaceI18nInJS();
 
   // Forward data to the WebUI.
-  source->AddResourcePath("add_supervision_api_server.js",
-                          IDR_ADD_SUPERVISION_API_SERVER_JS);
-  source->AddResourcePath("add_supervision_ui.js", IDR_ADD_SUPERVISION_UI_JS);
-  source->AddResourcePath("add_supervision_app.js", IDR_ADD_SUPERVISION_APP_JS);
-  source->AddResourcePath("add_supervision.mojom-webui.js",
-                          IDR_ADD_SUPERVISION_MOJOM_WEBUI_JS);
+  source->AddResourcePaths(
+      base::make_span(kAddSupervisionResources, kAddSupervisionResourcesSize));
   source->AddResourcePaths(
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 
@@ -226,7 +224,7 @@ void AddSupervisionUI::SetUpResources() {
                              IDS_SUPERVISED_USER_OFFLINE_TITLE);
 
   source->UseStringsJs();
-  source->SetDefaultResource(IDR_ADD_SUPERVISION_HTML);
+  source->SetDefaultResource(IDR_ADD_SUPERVISION_ADD_SUPERVISION_HTML);
   source->AddString("webviewUrl", supervision_url_.spec());
   source->AddString("eventOriginFilter",
                     supervision_url_.DeprecatedGetOriginAsURL().spec());

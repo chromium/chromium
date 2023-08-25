@@ -10,7 +10,8 @@
 /** Handler for requests that come to the window containing the contents. */
 export class RequestHandler {
   constructor(
-      clientElement: Element, messageOriginUrlFilter: string, targetUrl: URL);
+      clientElement: Element, messageOriginUrlFilter: string,
+      targetUrl: string);
 
   /** Returns the target url that this request handler is communicating with. */
   targetUrl(): URL;

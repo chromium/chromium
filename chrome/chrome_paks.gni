@@ -252,6 +252,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/ash/webui/connectivity_diagnostics_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/resources/file_manager_swa_resources.pak",
         "$root_gen_dir/ash/webui/file_manager/untrusted_resources/file_manager_untrusted_resources.pak",
+        "$root_gen_dir/chrome/add_supervision_resources.pak",
         "$root_gen_dir/chrome/arc_account_picker_resources.pak",
         "$root_gen_dir/chrome/assistant_optin_resources.pak",
         "$root_gen_dir/chrome/audio_resources.pak",
