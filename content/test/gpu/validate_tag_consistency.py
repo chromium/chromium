@@ -9,17 +9,164 @@ from __future__ import print_function
 import argparse
 import logging
 import os
+import textwrap
+from typing import Dict, List
 import sys
+
+# Constants for tag set generation.
+LINE_START = '# '
+TAG_SET_START = 'tags: [ '
+TAG_SET_END = ' ]'
+DEFAULT_LINE_LENGTH = 80 - len(LINE_START) - len(TAG_SET_START)
+BREAK_INDENTATION = ' ' * 4
+
+# Certain tags are technically subsets of other tags, e.g. win10 falls under the
+# general win umbrella. We take this into account when checking for conflicting
+# expectations, so we store the source of truth here and generate the resulting
+# strings for the tag header.
+TAG_SPECIALIZATIONS = {
+    'OS_TAGS': {
+        'android': [
+            'android-lollipop',
+            'android-marshmallow',
+            'android-nougat',
+            'android-oreo',
+            'android-pie',
+            'android-r',
+            'android-s',
+            'android-t',
+        ],
+        'chromeos': [],
+        'fuchsia': [],
+        'linux': [
+            'ubuntu',
+        ],
+        'mac': [
+            'highsierra',
+            'mojave',
+            'catalina',
+            'bigsur',
+            'monterey',
+            'ventura',
+        ],
+        'win': [
+            'win8',
+            'win10',
+        ],
+    },
+    'BROWSER_TAGS': {
+        'android-chromium': [],
+        'android-webview-instrumentation': [],
+        'debug': [
+            'debug-x64',
+        ],
+        'release': [
+            'release-x64',
+        ],
+        # These two are both Fuchsia-related.
+        'fuchsia-chrome': [],
+        'web-engine-shell': [],
+        # These two are both ChromeOS-related.
+        'lacros-chrome': [],
+        'cros-chrome': [],
+    },
+    'GPU_TAGS': {
+        'amd': [
+            'amd-0x6613',
+            'amd-0x679e',
+            'amd-0x67ef',
+            'amd-0x6821',
+            'amd-0x7340',
+        ],
+        'apple': [
+            'apple-apple-m1',
+            'apple-apple-m2',
+            'apple-angle-metal-renderer:-apple-m1',
+            'apple-angle-metal-renderer:-apple-m2',
+        ],
+        'arm': [],
+        'google': [
+            'google-0xffff',
+            'google-0xc0de',
+        ],
+        'intel': [
+            # Individual GPUs should technically fit under intel-gen-X, but we
+            # only support one level of nesting, so treat the generation tags as
+            # individual GPUs.
+            'intel-gen-9',
+            'intel-gen-12',
+            'intel-0xa2e',
+            'intel-0xd26',
+            'intel-0xa011',
+            'intel-0x3e92',
+            'intel-0x3e9b',
+            'intel-0x5912',
+            'intel-0x9bc5',
+        ],
+        'nvidia': [
+            'nvidia-0xfe9',
+            'nvidia-0x1cb3',
+            'nvidia-0x2184',
+        ],
+        'qualcomm': [],
+    },
+}
+
+
+def _GenerateTagSpecializationStrings() -> Dict[str, str]:
+  """Generates string a string representation of |TAG_SPECIALIZATIONS|.
+
+  The resulting dictionary can be fed directly into string.format().
+
+  Returns:
+    A dict mapping tag_set_name to tag_set_string. |tag_set_string| is the
+    formatted, expectation parser-compatible string for the information
+    contained within TAG_SPECIALIZATIONS[tag_set_name].
+  """
+  tag_specialization_strings = {}
+  for tag_set_name, tag_set in TAG_SPECIALIZATIONS.items():
+    # Create an appropriately wrapped set of lines for each group, join them,
+    # and add the necessary bits to make them a parseable tag set.
+    wrapped_tag_lines = []
+    num_groups = len(tag_set)
+    current_group = 0
+    for general_tag, specialized_tags in tag_set.items():
+      current_group += 1
+      wrapped_tag_lines.extend(
+          _CreateWrappedLinesForTagGroup([general_tag] + specialized_tags,
+                                         current_group == num_groups))
+
+    wrapped_tags_string = '\n'.join(wrapped_tag_lines)
+    tag_set_string = ''
+    for i, line in enumerate(wrapped_tags_string.splitlines(True)):
+      tag_set_string += LINE_START
+      if i == 0:
+        tag_set_string += TAG_SET_START
+      else:
+        tag_set_string += (' ' * len(TAG_SET_START))
+      tag_set_string += line
+    tag_set_string += TAG_SET_END
+    tag_specialization_strings[tag_set_name] = tag_set_string
+  return tag_specialization_strings
+
+
+def _CreateWrappedLinesForTagGroup(tag_group: List[str],
+                                   is_last_group: bool) -> List[str]:
+  tag_line = ' '.join(tag_group)
+  line_length = DEFAULT_LINE_LENGTH
+  # If this will be the last group, we have to make sure we wrap such that
+  # there will be enough room for the closing bracket of the tag set.
+  if is_last_group:
+    line_length -= len(TAG_SET_END)
+  return textwrap.wrap(tag_line,
+                       width=line_length,
+                       subsequent_indent=BREAK_INDENTATION,
+                       break_on_hyphens=False)
+
 
 TAG_HEADER = """\
 # OS
-# tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-oreo android-pie android-r android-s android-t
-#         chromeos
-#         fuchsia
-#         linux ubuntu
-#         mac highsierra mojave catalina bigsur monterey ventura
-#         win win8 win10 ]
+{OS_TAGS}
 # Devices
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
@@ -31,22 +178,9 @@ TAG_HEADER = """\
 # tags: [ desktop
 #         mobile ]
 # Browser
-# tags: [ android-chromium android-webview-instrumentation
-#         debug debug-x64
-#         release release-x64
-#         fuchsia-chrome web-engine-shell
-#         lacros-chrome cros-chrome ]
+{BROWSER_TAGS}
 # GPU
-# tags: [ amd amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-apple-m2
-#             apple-angle-metal-renderer:-apple-m1
-#             apple-angle-metal-renderer:-apple-m2
-#         arm
-#         google google-0xffff google-0xc0de
-#         intel intel-gen-9 intel-gen-12 intel-0xa2e intel-0xd26 intel-0xa011
-#               intel-0x3e92 intel-0x3e9b intel-0x5912 intel-0x9bc5
-#         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
-#         qualcomm ]
+{GPU_TAGS}
 # Architecture
 # tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
@@ -85,7 +219,7 @@ TAG_HEADER = """\
 # Skia Graphite
 # tags: [ graphite-enabled graphite-disabled ]
 # results: [ Failure RetryOnFailure Skip Slow ]
-"""
+""".format(**_GenerateTagSpecializationStrings())
 
 TAG_HEADER_BEGIN =\
     '# BEGIN TAG HEADER (autogenerated, see validate_tag_consistency.py)'

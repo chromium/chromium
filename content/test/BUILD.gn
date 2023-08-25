@@ -933,6 +933,7 @@ group("telemetry_gpu_common_data") {
 
     "//content/test/gpu/gpu_project_config.py",
     "//content/test/gpu/run_gpu_integration_test.py",
+    "//content/test/gpu/validate_tag_consistency.py",
   ]
   data_deps = [
     # For WebGPU CTS tests.

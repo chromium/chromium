@@ -3,15 +3,15 @@
 # found in the LICENSE file.
 
 import inspect
-import itertools
 import os
 import re
 import sys
-from typing import Iterable, List, Optional, Set, Type
+from typing import Dict, List, Optional, Type
 import unittest
 import unittest.mock as mock
 
 import gpu_project_config
+import validate_tag_consistency
 
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
@@ -28,40 +28,6 @@ from py_utils import tempfile_ext
 from typ import expectations_parser
 from typ import json_results
 
-OS_CONDITIONS = ['win', 'mac', 'android']
-GPU_CONDITIONS = [
-    'amd',
-    'arm',
-    'broadcom',
-    'hisilicon',
-    'intel',
-    'imagination',
-    'nvidia',
-    'qualcomm',
-    'vivante',
-]
-WIN_CONDITIONS = ['xp', 'vista', 'win7', 'win8', 'win10']
-MAC_CONDITIONS = [
-    'leopard',
-    'snowleopard',
-    'lion',
-    'mountainlion',
-    'mavericks',
-    'yosemite',
-    'sierra',
-    'highsierra',
-    'mojave',
-]
-ANDROID_CONDITIONS = [
-    'android-lollipop',
-    'android-marshmallow',
-    'anroid-nougat',
-    'android-oreo',
-    'android-pie',
-    'android-10',
-    'android-kitkat',
-]
-GENERIC_CONDITIONS = OS_CONDITIONS + GPU_CONDITIONS
 
 VALID_BUG_REGEXES = [
     re.compile(r'crbug\.com\/\d+'),
@@ -72,11 +38,19 @@ VALID_BUG_REGEXES = [
     re.compile(r'skbug\.com\/\d+'),
 ]
 
-_map_specific_to_generic = {sos: 'win' for sos in WIN_CONDITIONS}
-_map_specific_to_generic.update({sos: 'mac' for sos in MAC_CONDITIONS})
-_map_specific_to_generic.update({sos: 'android' for sos in ANDROID_CONDITIONS})
-_map_specific_to_generic['debug-x64'] = 'debug'
-_map_specific_to_generic['release-x64'] = 'release'
+
+# Handled in a helper function to avoid polluting the global scope with
+# variable names that will potentially be used elsewhere.
+def _CreateSpecificToGenericMapping() -> Dict[str, str]:
+  _specific_to_generic = {}
+  for _, tag_set in validate_tag_consistency.TAG_SPECIALIZATIONS.items():
+    for general_tag, specific_tags in tag_set.items():
+      for tag in specific_tags:
+        _specific_to_generic[tag] = general_tag
+  return _specific_to_generic
+
+
+_map_specific_to_generic = _CreateSpecificToGenericMapping()
 
 _get_generic = lambda tags: set(
     _map_specific_to_generic.get(tag, tag) for tag in tags)
@@ -105,17 +79,6 @@ def check_intel_driver_version(version: str) -> bool:
     if not ver.isdigit():
       return False
   return True
-
-
-def _MapGpuDevicesToVendors(tag_sets: Iterable[Set[str]]) -> None:
-  for tag_set in tag_sets:
-    if any(gpu in tag_set for gpu in GPU_CONDITIONS):
-      _map_specific_to_generic.update({
-          t[0]: t[1]
-          for t in itertools.permutations(tag_set, 2)
-          if t[0].startswith(t[1] + '-')
-      })
-      break
 
 
 # No good way to reduce the number of return statements to the required level
@@ -229,7 +192,6 @@ def CheckTestExpectationPatternsForConflicts(expectations: str,
   test_expectations = expectations_parser.TestExpectations()
   test_expectations.parse_tagged_list(
       expectations, file_name=file_name, tags_conflict=_DoTagsConflict)
-  _MapGpuDevicesToVendors(test_expectations.tag_sets)
   return test_expectations.check_test_expectations_patterns_for_conflicts()
 
 
@@ -443,11 +405,11 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
 
   def testConflictBetweenTestExpectationsWithOsNameAndOSVersionTags(self
                                                                     ) -> None:
-    test_expectations = """# tags: [ mac win linux xp ]
+    test_expectations = """# tags: [ mac win linux win10 ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
-    [ intel xp ] a/b/c/d [ Failure ]
+    [ intel win10 ] a/b/c/d [ Failure ]
     [ intel win debug ] a/b/c/d [ Skip ]
     """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
@@ -468,10 +430,10 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
 
   def testConflictBetweenGpuVendorAndGpuDeviceIdTags(self) -> None:
     test_expectations = """# tags: [ mac win linux xp win7 ]
-    # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
+    # tags: [ intel amd nvidia nvidia-0x1cb3 nvidia-0x2184 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
-    [ nvidia-0x01 ] a/b/c/d [ Failure ]
+    [ nvidia-0x1cb3 ] a/b/c/d [ Failure ]
     [ nvidia debug ] a/b/c/d [ Skip ]
     """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
