@@ -175,7 +175,8 @@ void AutofillProviderAndroid::StartNewSession(AndroidAutofillManager* manager,
   Java_AutofillProvider_startAutofillSession(
       env, obj, form_obj, index, transformed_bounding.x(),
       transformed_bounding.y(), transformed_bounding.width(),
-      transformed_bounding.height(), manager->has_server_prediction());
+      transformed_bounding.height(),
+      manager->has_server_prediction(form.global_id()));
 }
 
 void AutofillProviderAndroid::OnAutofillAvailable(JNIEnv* env,
@@ -376,23 +377,25 @@ void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
   }
 }
 
-void AutofillProviderAndroid::OnServerPredictionsAvailable(
-    AndroidAutofillManager* manager) {
+void AutofillProviderAndroid::OnServerPredictionsAvailable(FormGlobalId form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (manager != manager_.get() || !form_.get())
+  if (!form_ || form_->form().global_id() != form) {
     return;
-
-  if (auto* form_structure =
-          manager_->FindCachedFormById(form_->form().global_id())) {
-    form_->UpdateFieldTypes(*form_structure);
-
-    JNIEnv* env = AttachCurrentThread();
-    ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-    if (obj.is_null())
-      return;
-
-    Java_AutofillProvider_onQueryDone(env, obj, /*success=*/true);
   }
+
+  CHECK(manager_);
+  const FormStructure* form_structure = manager_->FindCachedFormById(form);
+  if (!form_structure) {
+    return;
+  }
+
+  form_->UpdateFieldTypes(*form_structure);
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_AutofillProvider_onQueryDone(env, obj, /*success=*/true);
 }
 
 void AutofillProviderAndroid::OnServerQueryRequestError(

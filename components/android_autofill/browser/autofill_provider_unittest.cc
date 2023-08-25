@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/android_autofill/browser/autofill_provider.h"
+
 #include "base/memory/raw_ptr.h"
 #include "components/android_autofill/browser/android_autofill_manager.h"
 #include "components/android_autofill/browser/test_autofill_provider.h"
@@ -9,6 +11,8 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,13 +24,21 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
                                       ContentAutofillClient* client)
       : AndroidAutofillManager(driver, client) {}
 
-  void SimulatePropagateAutofillPredictions() {
-    PropagateAutofillPredictionsDeprecated({});
+  void SimulatePropagateAutofillPredictions(FormGlobalId form_id) {
+    NotifyObservers(&Observer::OnFieldTypesDetermined, form_id,
+                    Observer::FieldTypeSource::kAutofillServer);
   }
 
-  void SimulateOnAskForValuesToFillImpl() {
+  void SimulateOnAskForValuesToFillImpl(FormGlobalId form_id) {
+    FormData form;
+    form.host_frame = form_id.frame_token;
+    form.unique_renderer_id = form_id.renderer_id;
+
+    FormFieldData field;
+    field.host_frame = form.host_frame;
+    field.unique_renderer_id = test::MakeFieldRendererId();
     OnAskForValuesToFillImpl(
-        FormData(), FormFieldData(), gfx::RectF(),
+        form, field, gfx::RectF(),
         AutofillSuggestionTriggerSource::kTextFieldDidChange);
   }
 };
@@ -35,7 +47,9 @@ class FakeAutofillProvider : public TestAutofillProvider {
  public:
   using TestAutofillProvider::TestAutofillProvider;
 
-  bool HasServerPrediction() const { return manager_->has_server_prediction(); }
+  bool HasServerPrediction(FormGlobalId form_id) const {
+    return manager_->has_server_prediction(form_id);
+  }
 
  private:
   // AutofillProvider:
@@ -80,6 +94,7 @@ class AutofillProviderTest : public content::RenderViewHostTestHarness {
     ASSERT_TRUE(FakeAutofillProvider::FromWebContents(web_contents()));
   }
 
+  test::AutofillUnitTestEnvironment autofill_environment_;
   TestAutofillClientInjector<TestContentAutofillClient>
       autofill_client_injector_;
   TestAutofillManagerInjector<TestAndroidAutofillManager>
@@ -88,21 +103,23 @@ class AutofillProviderTest : public content::RenderViewHostTestHarness {
 
 TEST_F(AutofillProviderTest, HasServerPredictionAfterQuery) {
   // Simulate the result arrives after starting autofill.
-  android_autofill_manager().SimulateOnAskForValuesToFillImpl();
-  EXPECT_FALSE(autofill_provider().HasServerPrediction());
-  android_autofill_manager().SimulatePropagateAutofillPredictions();
-  EXPECT_TRUE(autofill_provider().HasServerPrediction());
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  android_autofill_manager().SimulateOnAskForValuesToFillImpl(form_id);
+  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(form_id);
+  EXPECT_TRUE(autofill_provider().HasServerPrediction(form_id));
   android_autofill_manager().Reset();
-  EXPECT_FALSE(autofill_provider().HasServerPrediction());
+  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
 }
 
 TEST_F(AutofillProviderTest, HasServerPredictionBeforeQuery) {
   // Simulate the result arrives before starting autofill.
-  android_autofill_manager().SimulatePropagateAutofillPredictions();
-  android_autofill_manager().SimulateOnAskForValuesToFillImpl();
-  EXPECT_TRUE(autofill_provider().HasServerPrediction());
+  FormGlobalId form_id = test::MakeFormGlobalId();
+  android_autofill_manager().SimulatePropagateAutofillPredictions(form_id);
+  android_autofill_manager().SimulateOnAskForValuesToFillImpl(form_id);
+  EXPECT_TRUE(autofill_provider().HasServerPrediction(form_id));
   android_autofill_manager().Reset();
-  EXPECT_FALSE(autofill_provider().HasServerPrediction());
+  EXPECT_FALSE(autofill_provider().HasServerPrediction(form_id));
 }
 
 }  // namespace autofill

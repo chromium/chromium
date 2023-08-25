@@ -4,6 +4,11 @@
 
 #include "components/android_autofill/browser/android_autofill_manager.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "components/android_autofill/browser/autofill_provider.h"
@@ -30,6 +35,7 @@ AndroidAutofillManager::AndroidAutofillManager(AutofillDriver* driver,
                                                AutofillClient* client)
     : AutofillManager(driver, client) {
   StartNewLoggingSession();
+  autofill_manager_observation.Observe(this);
 }
 
 AndroidAutofillManager::~AndroidAutofillManager() = default;
@@ -163,13 +169,6 @@ void AndroidAutofillManager::OnHidePopupImpl() {
     provider->OnHidePopup(this);
 }
 
-void AndroidAutofillManager::PropagateAutofillPredictionsDeprecated(
-    const std::vector<FormStructure*>& forms) {
-  has_server_prediction_ = true;
-  if (auto* provider = GetAutofillProvider())
-    provider->OnServerPredictionsAvailable(this);
-}
-
 void AndroidAutofillManager::OnFormProcessed(
     const FormData& form,
     const FormStructure& form_structure) {
@@ -191,9 +190,10 @@ void AndroidAutofillManager::OnServerRequestError(
 
 void AndroidAutofillManager::Reset() {
   AutofillManager::Reset();
-  has_server_prediction_ = false;
-  if (auto* provider = GetAutofillProvider())
+  forms_with_server_predictions_.clear();
+  if (auto* provider = GetAutofillProvider()) {
     provider->Reset(this);
+  }
   StartNewLoggingSession();
 }
 
@@ -202,6 +202,20 @@ void AndroidAutofillManager::OnContextMenuShownInField(
     const FieldGlobalId& field_global_id) {
   // Not relevant for Android. Only called via context menu in Desktop.
   NOTREACHED();
+}
+
+void AndroidAutofillManager::OnFieldTypesDetermined(AutofillManager& manager,
+                                                    FormGlobalId form,
+                                                    FieldTypeSource source) {
+  CHECK_EQ(&manager, this);
+  if (source != FieldTypeSource::kAutofillServer) {
+    return;
+  }
+
+  forms_with_server_predictions_.insert(form);
+  if (auto* provider = GetAutofillProvider()) {
+    provider->OnServerPredictionsAvailable(form);
+  }
 }
 
 AutofillProvider* AndroidAutofillManager::GetAutofillProvider() {
