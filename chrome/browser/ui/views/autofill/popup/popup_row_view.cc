@@ -158,16 +158,6 @@ bool PopupRowView::HandleKeyPressEvent(
     return true;
   }
   switch (event.windows_key_code) {
-    case ui::VKEY_RETURN:
-      if (*GetSelectedCell() == CellType::kControl &&
-          GetControlView()->GetOnAcceptedCallback()) {
-        GetControlView()->GetOnAcceptedCallback().Run();
-        return true;
-      }
-      // TODO(crbug.com/1411172): Handle all return key presses here once the
-      // reaction delay for accepting suggestions is the same between keyboard
-      // and mouse/gesture events.
-      return false;
     case ui::VKEY_LEFT:
       // `base::i18n::IsRTL` is used here instead of the controller's method
       // because the controller's `IsRTL` depends on the language of the focused

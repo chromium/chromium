@@ -40,8 +40,16 @@ PopupCellView::~PopupCellView() = default;
 
 bool PopupCellView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
-  // By default let the parent handle.
-  return false;
+  switch (event.windows_key_code) {
+    case ui::VKEY_RETURN:
+      if (on_accepted_callback_) {
+        on_accepted_callback_.Run();
+        return true;
+      }
+      return false;
+    default:
+      return false;
+  }
 }
 
 void PopupCellView::SetSelected(bool selected) {

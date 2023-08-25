@@ -34,6 +34,7 @@ namespace autofill {
 
 namespace {
 
+using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -113,8 +114,8 @@ class PopupRowViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
-  MockAccessibilitySelectionDelegate mock_a11y_selection_delegate_;
-  MockSelectionDelegate mock_selection_delegate_;
+  NiceMock<MockAccessibilitySelectionDelegate> mock_a11y_selection_delegate_;
+  NiceMock<MockSelectionDelegate> mock_selection_delegate_;
   raw_ptr<PopupRowView> row_view_ = nullptr;
 };
 
@@ -259,7 +260,7 @@ TEST_F(PopupRowViewTest, LeftAndRightKeyEventsAreHandledWithoutControl) {
   EXPECT_EQ(*row_view().GetSelectedCell(), CellType::kContent);
 }
 
-TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandledForControls) {
+TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   ShowView(0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetControlView());
   row_view().SetSelectedCell(CellType::kContent);
@@ -270,9 +271,8 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandledForControls) {
   row_view().GetContentView().SetOnAcceptedCallback(content_callback.Get());
   row_view().GetControlView()->SetOnAcceptedCallback(control_callback.Get());
 
-  // Return keys are ignored on the content area.
+  EXPECT_CALL(content_callback, Run);
   SimulateKeyPress(ui::VKEY_RETURN);
-  // However, they are executed on the control area.
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_CALL(control_callback, Run);
   SimulateKeyPress(ui::VKEY_RETURN);
