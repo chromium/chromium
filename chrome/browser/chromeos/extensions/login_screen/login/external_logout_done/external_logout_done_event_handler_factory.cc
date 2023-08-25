@@ -41,9 +41,10 @@ ExternalLogoutDoneEventHandlerFactory::ExternalLogoutDoneEventHandlerFactory()
 ExternalLogoutDoneEventHandlerFactory::
     ~ExternalLogoutDoneEventHandlerFactory() = default;
 
-KeyedService* ExternalLogoutDoneEventHandlerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExternalLogoutDoneEventHandlerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-  return new ExternalLogoutDoneEventHandler(browser_context);
+  return std::make_unique<ExternalLogoutDoneEventHandler>(browser_context);
 }
 
 bool ExternalLogoutDoneEventHandlerFactory::ServiceIsNULLWhileTesting() const {
