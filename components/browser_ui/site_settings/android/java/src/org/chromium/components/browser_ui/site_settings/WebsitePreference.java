@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -33,6 +34,7 @@ class WebsitePreference extends ChromeImageViewPreference {
     private final SiteSettingsDelegate mSiteSettingsDelegate;
     private final Website mSite;
     private final SiteSettingsCategory mCategory;
+    private Runnable mRefreshZoomsListFunction;
 
     // TODO(crbug.com/1076571): Move these constants to dimens.xml
     private static final int TEXT_SIZE_SP = 13;
@@ -56,6 +58,10 @@ class WebsitePreference extends ChromeImageViewPreference {
         setIcon(new ColorDrawable(Color.TRANSPARENT));
 
         refresh();
+    }
+
+    public void setRefreshZoomsListFunction(Runnable refreshZoomsListCallback) {
+        mRefreshZoomsListFunction = refreshZoomsListCallback;
     }
 
     public void putSiteIntoExtras(String key) {
@@ -90,8 +96,11 @@ class WebsitePreference extends ChromeImageViewPreference {
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
             // Create and set the delete button for this preference.
             setImageView(R.drawable.btn_close, R.string.webstorage_clear_data_dialog_title,
-                    (OnClickListener) view
-                    -> mSiteSettingsDelegate.resetZoomLevel(mSite.getAddress().getHost()));
+                    (OnClickListener) view -> {
+                        SiteSettingsUtil.resetZoomLevel(
+                                mSite, mSiteSettingsDelegate.getBrowserContextHandle());
+                        mRefreshZoomsListFunction.run();
+                    });
             setImageViewEnabled(true);
             setImagePadding(25, 0, 0, 0);
         }
@@ -172,10 +181,10 @@ class WebsitePreference extends ChromeImageViewPreference {
             }
         }
         if (mCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
-            // TODO(crbug.com/1459631): Get current zoom for the URL to replace this "100" with.
-            String currentZoom =
-                    String.format(getContext().getString(R.string.page_zoom_level), 100);
-            usageText.setText(currentZoom);
+            long readableZoomLevel = Math.round(
+                    100 * PageZoomUtils.convertZoomFactorToZoomLevel(mSite.getZoomFactor()));
+            usageText.setText(String.format(
+                    getContext().getString(R.string.page_zoom_level), readableZoomLevel));
             usageText.setTextSize(TEXT_SIZE_SP);
             usageText.setVisibility(View.VISIBLE);
             setViewClickable(false);

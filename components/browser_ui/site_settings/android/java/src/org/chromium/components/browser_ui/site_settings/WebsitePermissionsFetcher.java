@@ -17,6 +17,7 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.ArrayList;
@@ -44,7 +45,11 @@ public class WebsitePermissionsFetcher {
     private BrowserContextHandle mBrowserContextHandle;
     private WebsitePreferenceBridge mWebsitePreferenceBridge;
 
+    private SiteSettingsCategory mSiteSettingsCategory;
     private static final String SCHEME_SUFFIX = "://";
+    // This regex check comes from google3/java/com/google/net/bns/HostPortName.java which checks
+    // for valid DNS name patterns
+    private static final String VALID_HOST_NAME_REGEX = "[a-zA-Z0-9][a-zA-Z0-9._-]*";
 
     /**
      * A callback to pass to WebsitePermissionsFetcher. This is run when the
@@ -232,16 +237,18 @@ public class WebsitePermissionsFetcher {
         @NonNull
         private TaskQueue createFetchersForCategory(SiteSettingsCategory category) {
             TaskQueue queue = new TaskQueue();
+            mSiteSettingsCategory = category;
 
-            if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
+            if (mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ALL_SITES) {
                 addAllFetchers(queue);
-                // TODO(crbug.com/1459631): Add in fetcher for Zoom info.
-            } else if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE
-                    || category.getType() == SiteSettingsCategory.Type.ZOOM) {
+            } else if (mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+                addFetcherForZoom(queue);
+            } else if (mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
                 addFetcherForStorage(queue);
             } else {
-                assert getPermissionsType(category.getContentSettingsType()) != null;
-                addFetcherForContentSettingsType(queue, category.getContentSettingsType());
+                assert getPermissionsType(mSiteSettingsCategory.getContentSettingsType()) != null;
+                addFetcherForContentSettingsType(
+                        queue, mSiteSettingsCategory.getContentSettingsType());
             }
             return queue;
         }
@@ -272,6 +279,10 @@ public class WebsitePermissionsFetcher {
             queue.add(new WebStorageInfoFetcher());
             // Shared Dictionary info is per {origin, top level site}.
             queue.add(new SharedDictionaryInfoFetcher());
+        }
+
+        private void addFetcherForZoom(TaskQueue queue) {
+            queue.add(new ZoomInfoFetcher());
         }
 
         private void addFetcherForContentSettingsType(
@@ -327,7 +338,15 @@ public class WebsitePermissionsFetcher {
 
         private Website findOrCreateSite(String origin, String embedder) {
             // Ensure that the origin parameter is actually an origin or a wildcard.
-            assert containsPatternWildcards(origin) || origin.contains(SCHEME_SUFFIX);
+            // The purpose of the check is to prevent duplicate entries in the list when getting a
+            // mix of origins and hosts. Except, in the case of the Zoom category, where we want to
+            // allow any valid hostname to be displayed.
+            if (mSiteSettingsCategory != null
+                    && mSiteSettingsCategory.getType() == SiteSettingsCategory.Type.ZOOM) {
+                assert origin.matches(VALID_HOST_NAME_REGEX);
+            } else {
+                assert containsPatternWildcards(origin) || origin.contains(SCHEME_SUFFIX);
+            }
 
             // This allows us to show multiple entries in "All sites" for the same origin, based on
             // the (origin, embedder) combination. For example, "cnn.com", "cnn.com all cookies on
@@ -472,6 +491,19 @@ public class WebsitePermissionsFetcher {
                                 queue.next();
                             }
                         }, mFetchSiteImportantInfo);
+            }
+        }
+
+        private class ZoomInfoFetcher extends Task {
+            @Override
+            public void run() {
+                Map<String, Double> result =
+                        HostZoomMap.getAllHostZoomLevels(mBrowserContextHandle);
+                for (String host : result.keySet()) {
+                    if (host == null) continue;
+                    double zoomFactor = result.get(host);
+                    findOrCreateSite(host, null).setZoomFactor(zoomFactor);
+                }
             }
         }
 

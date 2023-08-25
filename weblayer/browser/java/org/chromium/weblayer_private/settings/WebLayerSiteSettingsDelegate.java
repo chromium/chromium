@@ -48,9 +48,6 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
-    public void resetZoomLevel(String host) {}
-
-    @Override
     public void getFaviconImageForURL(GURL faviconUrl, Callback<Drawable> callback) {
         // We don't currently support favicons on WebLayer.
         callback.onResult(null);

@@ -10,9 +10,12 @@ import android.text.format.Formatter;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
+import org.chromium.content_public.browser.HostZoomMap;
 
 /**
  * Util class for site settings UI.
@@ -109,5 +112,19 @@ public class SiteSettingsUtil {
                             cookie_str);
         }
         return result;
+    }
+
+    /**
+     * Callback method for when the ImageView on a zoom setting (displayed as a WebsitePreference
+     * row) is clicked.
+     *
+     * @param site Website for which to reset zoom level.
+     */
+    public static void resetZoomLevel(Website site, BrowserContextHandle browserContextHandle) {
+        double defaultZoomFactor =
+                PageZoomUtils.getDefaultZoomLevelAsZoomFactor(browserContextHandle);
+        // Propagate the change through HostZoomMap.
+        HostZoomMap.setZoomLevelForHost(
+                browserContextHandle, site.getAddress().getHost(), defaultZoomFactor);
     }
 }

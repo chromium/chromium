@@ -18,7 +18,10 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
+import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
+
+import java.util.HashMap;
 
 /**
  * Implementations of {@link HostZoomMap}
@@ -36,6 +39,34 @@ public class HostZoomMapImpl {
     public static void setZoomLevel(
             WebContents webContents, double newZoomLevel, double adjustedZoomLevel) {
         HostZoomMapImplJni.get().setZoomLevel(webContents, newZoomLevel, adjustedZoomLevel);
+    }
+
+    /**
+     * Set a new zoom level for the given host.
+     * @param host   host url to update.
+     * @param level  double - new zoom level.
+     * @param browserContextHandle BrowserContextHandle to update host zoom for.
+     */
+    public static void setZoomLevelForHost(
+            BrowserContextHandle browserContextHandle, String host, double level) {
+        HostZoomMapImplJni.get().setZoomLevelForHost(browserContextHandle, host, level);
+    }
+
+    /**
+     * Gets zoom levels for all hosts.
+     * @param browserContextHandle BrowserContextHandle to get host zooms for.
+     */
+    public static HashMap<String, Double> getAllHostZoomLevels(
+            BrowserContextHandle browserContextHandle) {
+        SiteZoomInfo[] siteZoomInfoList =
+                HostZoomMapImplJni.get().getAllHostZoomLevels(browserContextHandle);
+        HashMap<String, Double> hostToZoomLevel = new HashMap<>();
+        if (siteZoomInfoList != null) {
+            for (int i = 0; i < siteZoomInfoList.length; i++) {
+                hostToZoomLevel.put(siteZoomInfoList[i].host, siteZoomInfoList[i].zoomLevel);
+            }
+        }
+        return hostToZoomLevel;
     }
 
     /**
@@ -86,6 +117,11 @@ public class HostZoomMapImpl {
         return adjustZoomLevel(zoomLevel, systemFontScale, (float) desktopSiteZoomScale);
     }
 
+    @CalledByNative
+    public static SiteZoomInfo buildSiteZoomInfo(String host, double zoomLevel) {
+        return new SiteZoomInfo(host, zoomLevel);
+    }
+
     /**
      * Adjust a given zoom level to account for the OS-level |fontScale| configuration and/or the
      * scaling factor applicable when a site uses the desktop user agent on Android.
@@ -132,5 +168,7 @@ public class HostZoomMapImpl {
         void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
         double getDefaultZoomLevel(BrowserContextHandle context);
         double getDesktopSiteZoomScale(WebContents webContents);
+        SiteZoomInfo[] getAllHostZoomLevels(BrowserContextHandle context);
+        void setZoomLevelForHost(BrowserContextHandle context, String host, double level);
     }
 }

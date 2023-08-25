@@ -8,6 +8,8 @@ import androidx.annotation.NonNull;
 
 import org.chromium.content.browser.HostZoomMapImpl;
 
+import java.util.Map;
+
 /**
  * Implementations of various static methods related to page zoom.
  */
@@ -84,6 +86,28 @@ public class HostZoomMap {
         return HostZoomMapImpl.adjustZoomLevel(HostZoomMapImpl.getZoomLevel(webContents),
                 (float) 1 / sSystemFontScale,
                 (float) 1 / HostZoomMapImpl.getDesktopSiteZoomScale(webContents));
+    }
+
+    /**
+     * Get the zoom levels for all hosts.
+     * @param browserContextHandle BrowserContextHandle to get zoom level for.
+     * @return  HashMap<String, Double> map containing the host name as a string to the zoom factor
+     *         (called zoom level on the c++ side) as a double.
+     */
+    public static Map<String, Double> getAllHostZoomLevels(
+            BrowserContextHandle browserContextHandle) {
+        return HostZoomMapImpl.getAllHostZoomLevels(browserContextHandle);
+    }
+
+    /**
+     * Set the zoom level to the given level for the given host.
+     * @param host  host to set zoom level for.
+     * @param level new zoom level (as a zoom factor as described in PageZoomUtils.java).
+     * @param browserContextHandle  BrowserContextHandle to set zoom level for.
+     */
+    public static void setZoomLevelForHost(
+            BrowserContextHandle browserContextHandle, String host, double level) {
+        HostZoomMapImpl.setZoomLevelForHost(browserContextHandle, host, level);
     }
 
     /**

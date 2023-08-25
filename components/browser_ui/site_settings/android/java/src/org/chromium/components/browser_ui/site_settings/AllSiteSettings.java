@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
+import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -40,6 +41,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -197,12 +199,20 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     }
 
     /**
-     * This clears all the zooms for websites that are displayed to the user.
+     * This resets the zooms for all websites to the default zoom set in Chrome Site Settings.
      */
     public void clearZooms() {
-        // TODO(crbug.com/1459631)
-        // - Hook up to HostZoomMap and reset all zooms to default zoom.
-        // - Remove all preferences from page and reset page if needed.
+        BrowserContextHandle browserContextHandle =
+                getSiteSettingsDelegate().getBrowserContextHandle();
+        double defaultZoomFactor =
+                PageZoomUtils.getDefaultZoomLevelAsZoomFactor(browserContextHandle);
+        for (WebsitePreference preference : mWebsites) {
+            // Propagate the change through HostZoomMap.
+            HostZoomMap.setZoomLevelForHost(browserContextHandle,
+                    preference.site().getAddress().getHost(), defaultZoomFactor);
+        }
+        // Refresh this fragment to trigger UI change.
+        getInfoForOrigins();
     }
 
     /** OnClickListener for the zoom button **/
@@ -442,8 +452,10 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             // Find origins matching the current search.
             for (Website site : sites) {
                 if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
-                    websites.add(new WebsitePreference(
-                            getStyledContext(), getSiteSettingsDelegate(), site, mCategory));
+                    WebsitePreference preference = new WebsitePreference(
+                            getStyledContext(), getSiteSettingsDelegate(), site, mCategory);
+                    preference.setRefreshZoomsListFunction(this::getInfoForOrigins);
+                    websites.add(preference);
                 }
             }
             Collections.sort(websites);

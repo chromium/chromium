@@ -43,6 +43,7 @@ public final class Website implements WebsiteEntry {
     private LocalStorageInfo mLocalStorageInfo;
     private FPSCookieInfo mFPSCookieInfo;
     private CookiesInfo mCookiesInfo;
+    private double mZoomFactor;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
     private final List<SharedDictionaryInfo> mSharedDictionaryInfo = new ArrayList<>();
 
@@ -285,6 +286,15 @@ public final class Website implements WebsiteEntry {
         mStorageInfo.add(info);
     }
 
+    /**
+     * Sets the zoom factor for the website (see PageZoomUtils.java).
+     *
+     * @param zoomFactor The zoom factor to set the website to.
+     */
+    public void setZoomFactor(double zoomFactor) {
+        mZoomFactor = zoomFactor;
+    }
+
     public List<StorageInfo> getStorageInfo() {
         return new ArrayList<StorageInfo>(mStorageInfo);
     }
@@ -367,6 +377,10 @@ public final class Website implements WebsiteEntry {
         for (StorageInfo info : mStorageInfo) usage += info.getSize();
         for (SharedDictionaryInfo info : mSharedDictionaryInfo) usage += info.getSize();
         return usage;
+    }
+
+    public double getZoomFactor() {
+        return mZoomFactor;
     }
 
     @Override

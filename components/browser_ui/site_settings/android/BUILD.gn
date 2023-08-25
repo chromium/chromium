@@ -112,6 +112,7 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//components/browser_ui/accessibility/android:java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:constants_java",
