@@ -13,7 +13,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './logging_tab.html.js';
 import {NearbyLogsBrowserProxy} from './nearby_logs_browser_proxy.js';
-import {LogMessage, LogProvider, Severity} from './types.js';
+import {LogMessage, LogProvider, SelectOption, Severity} from './types.js';
 
 /**
  * Converts log message to string format for saved download file.
@@ -112,6 +112,23 @@ Polymer({
     currentFilter: {
       type: String,
     },
+
+    /** @private {!Severity} */
+    currentSeverity: {
+      type: Severity,
+      value: Severity.VERBOSE,
+    },
+
+    /** @private {!Array<!SelectOption>} */
+    logLevelList: {
+      type: Array,
+      value: [
+        {name: 'VERBOSE', value: Severity.VERBOSE},
+        {name: 'INFO', value: Severity.INFO},
+        {name: 'WARNING', value: Severity.WARNING},
+        {name: 'ERROR', value: Severity.ERROR},
+      ],
+    },
   },
 
   /** @private {?LogProvider}*/
@@ -197,17 +214,45 @@ Polymer({
    */
   onLogMessageAdded_(log) {
     this.push('logList_', log);
-    if (log.text.match(this.currentFilter) ||
-        log.file.match(this.currentFilter)) {
+    if ((log.text.match(this.currentFilter) ||
+         log.file.match(this.currentFilter)) &&
+        log.severity >= this.currentSeverity) {
       this.push('filteredLogList_', log);
     }
   },
 
   addLogFilter() {
+    switch (Number(this.$.logLevelSelector.value)) {
+      case Severity.VERBOSE:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.VERBOSE));
+        this.currentSeverity = Severity.VERBOSE;
+        break;
+      case Severity.INFO:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.INFO));
+        this.currentSeverity = Severity.INFO;
+        break;
+      case Severity.WARNING:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.WARNING));
+        this.currentSeverity = Severity.WARNING;
+        break;
+      case Severity.ERROR:
+        this.set(
+            'filteredLogList_',
+            this.logList_.filter((log) => log.severity >= Severity.ERROR));
+        this.currentSeverity = Severity.ERROR;
+        break;
+    }
+
     this.currentFilter = this.$.logSearch.value;
     this.set(
         'filteredLogList_',
-        this.logList_.filter(
+        this.filteredLogList_.filter(
             (log) =>
                 (log.text.match(this.currentFilter) ||
                  log.file.match(this.currentFilter))));

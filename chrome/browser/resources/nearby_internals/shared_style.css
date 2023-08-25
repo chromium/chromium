@@ -169,6 +169,11 @@ input {
   width: 15%;
 }
 
+#filterApplyDiv {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 log-object {
   border-inline-end: var(--standard-border);
   border-inline-start: var(--standard-border);

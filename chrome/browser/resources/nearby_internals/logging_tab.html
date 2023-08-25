@@ -27,6 +27,15 @@
           <label id="logSearchLabel">Search</label>
           <input aria-labelledby="logSearchLabel" id="logSearch" type="text">
         </div>
+        <label id="logLevelLabel">Min Log Level</label>
+        <select aria-labelledby="logLevelLabel" id="logLevelSelector">
+          <template is="dom-repeat" items="[[logLevelList]]">
+            <option
+                value="[[item.value]]">
+              [[item.name]]
+            </option>
+          </template>
+        </select>
         <div id="filterApplyDiv">
           <cr-button class="internals-button" id="filterApply"
               on-click="addLogFilter">Apply Filters</cr-button>
