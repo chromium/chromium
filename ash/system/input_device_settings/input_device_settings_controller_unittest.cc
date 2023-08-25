@@ -799,6 +799,37 @@ TEST_F(InputDeviceSettingsControllerTest, RecordSetMouseSettingsValidMetric) {
   histogram_tester.ExpectBucketCount(
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", false,
       /*expected_count=*/1u);
+
+  // Set mouse with valid id and valid settings.
+  controller_->SetMouseSettings(/*id=*/3, mojom::MouseSettings::New());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", true,
+      /*expected_count=*/2u);
+
+  // Create invalid settings.
+  mojom::ButtonRemapping button_remapping(
+      /*name=*/"test",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      /*remapping_action=*/
+      mojom::RemappingAction::NewAction(
+          ash::AcceleratorAction::kBrightnessDown));
+  std::vector<mojom::ButtonRemappingPtr> button_remappings;
+  button_remappings.push_back(button_remapping.Clone());
+  mojom::MouseSettingsPtr settings = mojom::MouseSettings::New(
+      /*swap_right=*/kDefaultSwapRight, /*sensitivity=*/kDefaultSensitivity,
+      /*reverse_scrolling=*/kDefaultReverseScrolling,
+      /*acceleration_enabled=*/kDefaultAccelerationEnabled,
+      /*scroll_sensitivity=*/kDefaultSensitivity,
+      /*scroll_acceleration=*/kDefaultScrollAcceleration,
+      /*button_remappings=*/mojo::Clone(button_remappings));
+
+  // Set mouse with valid id and invalid settings.
+  controller_->SetMouseSettings(
+      /*id=*/3, settings->Clone());
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", false,
+      /*expected_count=*/2u);
 }
 
 // Tests that given an invalid id, keyboard settings are not updated and

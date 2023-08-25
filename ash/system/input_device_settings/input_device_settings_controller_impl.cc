@@ -218,6 +218,18 @@ bool GraphicsTabletSettingsAreValid(
              settings.pen_button_remappings);
 }
 
+// Valid mouse settings should have the same buttons as those
+// in the mouse and all the button remapping names should be
+// fewer than 64 characters.
+bool MouseSettingsAreValid(const mojom::Mouse& mouse,
+                           const mojom::MouseSettings& settings) {
+  if (!features::IsPeripheralCustomizationEnabled()) {
+    return true;
+  }
+  return ValidateButtonRemappingList(mouse.settings->button_remappings,
+                                     settings.button_remappings);
+}
+
 void RecordSetKeyboardSettingsValidMetric(bool is_valid) {
   base::UmaHistogramBoolean(
       "ChromeOS.Settings.Device.Keyboard.SetSettingsSucceeded", is_valid);
@@ -802,9 +814,13 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
     RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
     return;
   }
-  RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
 
   auto& found_mouse = *found_mouse_iter->second;
+  if (!MouseSettingsAreValid(found_mouse, *settings)) {
+    RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
+    return;
+  }
+  RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
   const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
   mouse_pref_handler_->UpdateMouseSettings(
