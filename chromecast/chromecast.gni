@@ -36,11 +36,6 @@ declare_args() {
   # when the default value is used.
   cast_build_incremental = "999999"
 
-  if (is_android) {
-    # If true, run receiver apps in an Android service instead of an activity.
-    display_web_contents_in_service = is_cast_audio_only
-  }
-
   # Set true to enable assistant features.
   enable_assistant = false
 
@@ -63,13 +58,6 @@ declare_args() {
     # Set to true to get logcat from a remote service
     # If false, will only get the logs of the app.
     use_remote_service_logcat = false
-
-    # Set the package name and class path for the component which will provide device logs
-    # Values defined in eureka-internal
-    # These values are unused if use_remote_service_logcat is false
-    # device_logs_provider_package is a CSV, and the first resolved one would be used.
-    device_logs_provider_package = ""
-    device_logs_provider_class = ""
   }
 
   # Set to true to enable a CMA media backend that allows mixed audio to be

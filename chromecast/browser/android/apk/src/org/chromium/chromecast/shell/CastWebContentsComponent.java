@@ -25,8 +25,8 @@ import org.chromium.ui.display.DisplayAndroidManager;
 /**
  * A layer of indirection between CastContentWindowAndroid and CastWebContents(Activity|Service).
  * <p>
- * On builds with DISPLAY_WEB_CONTENTS_IN_SERVICE set to false, it will use CastWebContentsActivity,
- * otherwise, it will use CastWebContentsService.
+ * If running in "headless" mode, it will use CastWebContentsService; otherwise, it will use
+ * CastWebContentsActivity.
  */
 public class CastWebContentsComponent {
     /**
@@ -227,7 +227,7 @@ public class CastWebContentsComponent {
     }
 
     public void start(StartParams params, boolean isHeadless) {
-        if (BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE || isHeadless) {
+        if (isHeadless) {
             if (DEBUG) Log.d(TAG, "Creating service delegate...");
             start(params, new ServiceDelegate());
         } else {

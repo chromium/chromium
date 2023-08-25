@@ -19,16 +19,8 @@ public final class CastCrashUploaderFactory {
         if (sExecutorService == null) {
             sExecutorService = Executors.newScheduledThreadPool(1);
         }
-        ElidedLogcatProvider logcatProvider = shouldUseRemoteServiceLogs()
-                ? new ExternalServiceDeviceLogcatProvider()
-                : new AndroidAppLogcatProvider();
+        ElidedLogcatProvider logcatProvider = new AndroidAppLogcatProvider();
         return new CastCrashUploader(sExecutorService, logcatProvider, crashDumpPath,
                 crashReportsPath, uuid, applicationFeedback, uploadCrashToStaging);
-    }
-
-    private static boolean shouldUseRemoteServiceLogs() {
-        return BuildConfig.USE_REMOTE_SERVICE_LOGCAT
-                && !BuildConfig.DEVICE_LOGS_PROVIDER_PACKAGE.equals("")
-                && !BuildConfig.DEVICE_LOGS_PROVIDER_CLASS.equals("");
     }
 }

@@ -27,7 +27,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
-import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,8 +78,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testStartStartsWebContentsActivity() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
         component.start(mStartParams, false);
@@ -94,8 +91,6 @@ public class CastWebContentsComponentTest {
     @Test
     @Config(minSdk = VERSION_CODES.R)
     public void testStartStartsWebContentsActivityWithDisplayId() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         ContextWrapper context =
                 Mockito.spy(new ContextWrapper(ContextUtils.getApplicationContext()) {
                     @Override
@@ -116,8 +111,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testStartStartsWebContentsService() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
         component.start(mStartParams, true);
@@ -132,8 +125,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testStopSendsStopSignalToActivity() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         BroadcastReceiver receiver = Mockito.mock(BroadcastReceiver.class);
         IntentFilter intentFilter = new IntentFilter(CastIntents.ACTION_STOP_WEB_CONTENT);
         LocalBroadcastManager.getInstance(ContextUtils.getApplicationContext())
@@ -151,12 +142,10 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    public void testStartBindsWebContentsService() {
-        Assume.assumeTrue(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
+    public void testStartBindsWebContentsServiceInHeadlessMode() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
-        component.start(mStartParams, false);
+        component.start(mStartParams, true);
         component.stop(mActivity);
 
         ArgumentCaptor<Intent> intent = ArgumentCaptor.forClass(Intent.class);
@@ -167,12 +156,10 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    public void testStopUnbindsWebContentsService() {
-        Assume.assumeTrue(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
+    public void testStopUnbindsWebContentsServiceInHeadlessMode() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
-        component.start(mStartParams, false);
+        component.start(mStartParams, true);
         component.stop(mActivity);
 
         verify(mActivity).unbindService(any(ServiceConnection.class));
@@ -180,8 +167,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testEnableTouchInputSendsEnableTouchToActivity() {
-        Assume.assumeTrue(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         BroadcastReceiver receiver = Mockito.mock(BroadcastReceiver.class);
         IntentFilter intentFilter =
                 new IntentFilter(CastWebContentsIntentUtils.ACTION_ENABLE_TOUCH_INPUT);
@@ -200,8 +185,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testEnableTouchInputBeforeStartedSendsEnableTouchToActivity() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
         component.enableTouchInput(true);
@@ -215,8 +198,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void testDisableTouchInputBeforeStartedSendsEnableTouchToActivity() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
-
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
         component.enableTouchInput(false);
@@ -303,7 +284,6 @@ public class CastWebContentsComponentTest {
     public void testSetMediaPlayingBroadcastsMediaStatus() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, false);
-        IntentFilter filter = new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING);
         Intent receivedIntent0 = verifyBroadcastedIntent(
                 new IntentFilter(CastWebContentsIntentUtils.ACTION_MEDIA_PLAYING),
                 () -> component.setMediaPlaying(true), true);
@@ -336,7 +316,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void requestsAudioFocusIfStartParamsAsks() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.Delegate delegate = component.new ActivityDelegate();
@@ -349,7 +328,6 @@ public class CastWebContentsComponentTest {
 
     @Test
     public void doesNotRequestAudioFocusIfStartParamsDoNotAsk() {
-        Assume.assumeFalse(BuildConfig.DISPLAY_WEB_CONTENTS_IN_SERVICE);
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, true, true);
         CastWebContentsComponent.Delegate delegate = component.new ActivityDelegate();

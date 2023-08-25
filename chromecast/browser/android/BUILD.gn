@@ -31,24 +31,6 @@ foreach(device_type, android_device_types) {
   }
 }
 
-java_cpp_template("cast_shell_build_config_gen") {
-  sources = [ "apk/templates/BuildConfig.template" ]
-
-  defines = []
-  if (display_web_contents_in_service) {
-    defines += [ "_DISPLAY_WEB_CONTENTS_IN_SERVICE" ]
-  }
-
-  if (use_remote_service_logcat) {
-    defines += [ "_USE_REMOTE_SERVICE_LOGCAT" ]
-  }
-
-  # Component name which will provide the device logs
-  defines +=
-      [ "_DEVICE_LOGS_PROVIDER_PACKAGE=\"${device_logs_provider_package}\"" ]
-  defines += [ "_DEVICE_LOGS_PROVIDER_CLASS=\"${device_logs_provider_class}\"" ]
-}
-
 common_resources = [
   "apk/res-values/values-v17/styles.xml",
   "apk/res-values/values/colors.xml",
@@ -134,13 +116,9 @@ android_library("crash_handler_java") {
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
     "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
     "$java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
-    "$java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
     "$java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
   ]
-  srcjar_deps = [
-    ":cast_shell_build_config_gen",
-    ":logs_provider_aidl",
-  ]
+  srcjar_deps = [ ":logs_provider_aidl" ]
   deps = [
     ":reactive_android_java",
     "//base:base_java",
@@ -271,8 +249,6 @@ robolectric_binary("cast_shell_junit_tests") {
     "junit/src/org/chromium/chromecast/shell/LogcatElisionUnitTest.java",
     "junit/src/org/chromium/chromecast/shell/TaskRemovedMonitorServiceTest.java",
   ]
-
-  srcjar_deps = [ ":cast_shell_build_config_gen" ]
 
   deps = [
     ":cast_intents_java",
