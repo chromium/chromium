@@ -63,4 +63,20 @@ TEST(CSSPropertyNamesTest, AlternativeAnimationDelay) {
   }
 }
 
+TEST(CSSPropertyNamesTest, AlternativeViewTimelineWithInset) {
+  {
+    ScopedCSSViewTimelineInsetShorthandForTest feature(false);
+    EXPECT_EQ(CSSPropertyID::kViewTimeline,
+              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
+                                      "view-timeline"));
+  }
+
+  {
+    ScopedCSSViewTimelineInsetShorthandForTest feature(true);
+    EXPECT_EQ(CSSPropertyID::kAlternativeViewTimelineWithInset,
+              UnresolvedCSSPropertyID(/* execution_context */ nullptr,
+                                      "view-timeline"));
+  }
+}
+
 }  // namespace blink

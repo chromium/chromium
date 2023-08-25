@@ -8806,12 +8806,7 @@ const CSSValue* ViewTimelineInset::CSSValueFromComputedStyleInternal(
   }
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
   for (const TimelineInset& inset : vector) {
-    list->Append(*MakeGarbageCollected<CSSValuePair>(
-        ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetStart(),
-                                                            style),
-        ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetEnd(),
-                                                            style),
-        CSSValuePair::kDropIdenticalValues));
+    list->Append(*ComputedStyleUtils::ValueForTimelineInset(inset, style));
   }
   return list;
 }

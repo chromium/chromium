@@ -72,6 +72,7 @@ class CORE_EXPORT StylePropertySerializer {
   String TimelineValue(const StylePropertyShorthand&) const;
   String ScrollTimelineValue() const;
   String ViewTimelineValue() const;
+  String AlternativeViewTimelineWithInsetValue() const;
   String AnimationDelayShorthandValue() const;
   String AnimationRangeShorthandValue() const;
   String FontValue() const;

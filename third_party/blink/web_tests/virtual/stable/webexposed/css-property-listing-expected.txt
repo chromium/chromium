@@ -776,6 +776,7 @@ All changes to this list should go through Blink's feature review process: http:
         transition-timing-function
     view-timeline
         view-timeline-axis
+        view-timeline-inset
         view-timeline-name
     white-space
         text-wrap

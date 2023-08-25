@@ -2631,13 +2631,29 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimelineList(
       &ValueForAnimationTimeline);
 }
 
+CSSValue* ComputedStyleUtils::ValueForTimelineInset(
+    const TimelineInset& inset,
+    const ComputedStyle& style) {
+  return MakeGarbageCollected<CSSValuePair>(
+      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetStart(),
+                                                          style),
+      ComputedStyleUtils::ZoomAdjustedPixelValueForLength(inset.GetEnd(),
+                                                          style),
+      CSSValuePair::kDropIdenticalValues);
+}
+
 CSSValue* ComputedStyleUtils::SingleValueForTimelineShorthand(
     const ScopedCSSName* name,
-    TimelineAxis axis) {
+    TimelineAxis axis,
+    absl::optional<TimelineInset> inset,
+    const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ValueForCustomIdentOrNone(name));
   if (axis != TimelineAxis::kBlock) {
     list->Append(*CSSIdentifierValue::Create(axis));
+  }
+  if (inset.value_or(TimelineInset()) != TimelineInset()) {
+    list->Append(*ValueForTimelineInset(inset.value(), style));
   }
   return list;
 }

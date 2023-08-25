@@ -7398,6 +7398,13 @@
       runtime_flag: "ScrollTimeline",
     },
     {
+      name: "-alternative-view-timeline-with-inset",
+      alternative_of: "view-timeline",
+      longhands: ["view-timeline-name", "view-timeline-axis", "view-timeline-inset"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSViewTimelineInsetShorthand",
+    },
+    {
       name: "-webkit-border-after",
       alias_for: "border-block-end",
     },

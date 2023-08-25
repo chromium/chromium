@@ -682,6 +682,8 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kViewTimeline:
       return ViewTimelineValue();
+    case CSSPropertyID::kAlternativeViewTimelineWithInset:
+      return AlternativeViewTimelineWithInsetValue();
     case CSSPropertyID::kWhiteSpace:
       return WhiteSpaceValue();
     case CSSPropertyID::kGridColumnGap:
@@ -837,14 +839,28 @@ String StylePropertySerializer::ContainerValue() const {
 
 namespace {
 
+bool IsIdentifier(const CSSValue& value, CSSValueID ident) {
+  const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
+  return ident_value && ident_value->GetValueID() == ident;
+}
+
+bool IsIdentifierPair(const CSSValue& value, CSSValueID ident) {
+  const auto* pair_value = DynamicTo<CSSValuePair>(value);
+  return pair_value && IsIdentifier(pair_value->First(), ident) &&
+         IsIdentifier(pair_value->Second(), ident);
+}
+
 CSSValue* TimelineValueItem(wtf_size_t index,
                             const CSSValueList& name_list,
-                            const CSSValueList& axis_list) {
+                            const CSSValueList& axis_list,
+                            const CSSValueList* inset_list) {
   DCHECK_LT(index, name_list.length());
   DCHECK_LT(index, axis_list.length());
+  DCHECK(!inset_list || index < inset_list->length());
 
   const CSSValue& name = name_list.Item(index);
   const CSSValue& axis = axis_list.Item(index);
+  const CSSValue* inset = inset_list ? &inset_list->Item(index) : nullptr;
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
@@ -853,9 +869,11 @@ CSSValue* TimelineValueItem(wtf_size_t index,
   // (It would set view-timeline-name to inline).
   list->Append(name);
 
-  if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(axis);
-      !ident_value || ident_value->GetValueID() != CSSValueID::kBlock) {
+  if (!IsIdentifier(axis, CSSValueID::kBlock)) {
     list->Append(axis);
+  }
+  if (inset && !IsIdentifierPair(*inset, CSSValueID::kAuto)) {
+    list->Append(*inset);
   }
 
   return list;
@@ -865,12 +883,18 @@ CSSValue* TimelineValueItem(wtf_size_t index,
 
 String StylePropertySerializer::TimelineValue(
     const StylePropertyShorthand& shorthand) const {
-  CHECK_EQ(shorthand.length(), 2u);
+  CHECK_GE(shorthand.length(), 2u);
+  CHECK_LE(shorthand.length(), 3u);
 
   const CSSValueList& name_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[0]));
   const CSSValueList& axis_list = To<CSSValueList>(
       *property_set_.GetPropertyCSSValue(*shorthand.properties()[1]));
+  const CSSValueList* inset_list =
+      shorthand.length() == 3u
+          ? To<CSSValueList>(
+                property_set_.GetPropertyCSSValue(*shorthand.properties()[2]))
+          : nullptr;
 
   // The scroll/view-timeline shorthand can not expand to longhands of two
   // different lengths, so we can also not contract two different-longhands
@@ -878,11 +902,14 @@ String StylePropertySerializer::TimelineValue(
   if (name_list.length() != axis_list.length()) {
     return "";
   }
+  if (inset_list && name_list.length() != inset_list->length()) {
+    return "";
+  }
 
   CSSValueList* list = CSSValueList::CreateCommaSeparated();
 
   for (wtf_size_t i = 0; i < name_list.length(); ++i) {
-    list->Append(*TimelineValueItem(i, name_list, axis_list));
+    list->Append(*TimelineValueItem(i, name_list, axis_list, inset_list));
   }
 
   return list->CssText();
@@ -904,6 +931,17 @@ String StylePropertySerializer::ViewTimelineValue() const {
   CHECK_EQ(viewTimelineShorthand().properties()[1],
            &GetCSSPropertyViewTimelineAxis());
   return TimelineValue(viewTimelineShorthand());
+}
+
+String StylePropertySerializer::AlternativeViewTimelineWithInsetValue() const {
+  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().length(), 3u);
+  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[0],
+           &GetCSSPropertyViewTimelineName());
+  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[1],
+           &GetCSSPropertyViewTimelineAxis());
+  CHECK_EQ(alternativeViewTimelineWithInsetShorthand().properties()[2],
+           &GetCSSPropertyViewTimelineInset());
+  return TimelineValue(alternativeViewTimelineWithInsetShorthand());
 }
 
 namespace {

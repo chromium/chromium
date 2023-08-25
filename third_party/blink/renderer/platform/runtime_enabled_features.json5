@@ -1220,6 +1220,14 @@
       base_feature: "none",
     },
     {
+      // The view-timeline shorthand includes the view-timeline-inset
+      // property.
+      //
+      // https://github.com/w3c/csswg-drafts/pull/9189
+      name: "CSSViewTimelineInsetShorthand",
+      status: "stable",
+    },
+    {
       // https://html.spec.whatwg.org/#dom-customelementregistry-getname
       name: "CustomElementsGetName",
       status: "stable",
