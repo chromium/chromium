@@ -622,15 +622,6 @@ component("skia") {
     public_deps += [ ":skia_graphite_public" ]
     deps += [ ":skia_graphite_private" ]
 
-    # Even though we only use Dawn and Metal with Graphite, we need to build the
-    # Ganesh sources, since both Ganesh and Graphite use the same defines for
-    # enabling backends, otherwise we'll get undefined symbol errors in Ganesh.
-    if (skia_use_dawn) {
-      # It's ok to not make these public since they aren't meant to be used
-      # outside of Skia.
-      sources += skia_gpu_dawn_public
-      sources += skia_gpu_dawn_private
-    }
     if (skia_use_metal) {
       deps += [ ":skia_ganesh_metal" ]
     }
