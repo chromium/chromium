@@ -101,6 +101,8 @@ class ArcNetHostImpl : public KeyedService,
       mojom::PasspointApprovalRequestPtr request,
       RequestPasspointAppApprovalCallback callback) override;
   void NotifyAndroidWifiMulticastLockChange(bool is_held) override;
+  void NotifySocketConnectionEvent(
+      mojom::SocketConnectionEventPtr msg) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;

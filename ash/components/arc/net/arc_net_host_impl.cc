@@ -1402,4 +1402,6 @@ void ArcNetHostImpl::NotifyAndroidWifiMulticastLockChange(bool is_held) {
   ash::PatchPanelClient::Get()->NotifyAndroidWifiMulticastLockChange(is_held);
 }
 
+void ArcNetHostImpl::NotifySocketConnectionEvent(
+    mojom::SocketConnectionEventPtr msg) {}
 }  // namespace arc

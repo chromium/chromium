@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 34
+// Next MinVersion: 35
 
 // This file defines the mojo interface between the ARC networking stack and
 // Chrome OS. There are three different groups of interactions:
@@ -12,6 +12,8 @@
 
 module arc.mojom;
 
+import "ash/components/arc/mojom/app.mojom";
+import "services/network/public/mojom/ip_address.mojom";
 import "url/mojom/url.mojom";
 
 // Indicates if a request send by ARC to the host has successfully completed.
@@ -767,10 +769,15 @@ struct PasspointApprovalResponse {
   bool allowed;
 };
 
-// Next Method ID: 23
+// Next Method ID: 24
 // IDs 3 and 9 are missing as they belonged to deprecated methods.
 // Mojo interface exposed by the Chrome browser process for
 // networking/WiFi/VPN, ARC is the client.
+// The reason for using int for uint fields such as port is: Mojo
+// uint values are byte cast when deserialized in Java, the practical
+// and safe solution is to pick the next signed type that includes the
+// whole unsigned range of possible values. Otherwise it forces writing
+// error-prone conversion code at the entry or exit of mojo data.
 interface NetHost {
   // Sends a request to get enabled / disabled status of WiFi.
   GetWifiEnabledState@1() => (bool is_enabled);
@@ -865,12 +872,17 @@ interface NetHost {
   // Sends a notification to Chrome about the change in whether Android WiFi
   // multicast lock is held by any app in ARC.
   [MinVersion=32] NotifyAndroidWifiMulticastLockChange@22(bool is_held);
+
+  // Sends a notification to Chrome about a socket connection event in ARC.
+  [MinVersion=34] NotifySocketConnectionEvent@23(SocketConnectionEvent msg);
 };
 
 // Next Method ID: 12
 // IDs 0 and 2 are missing as they belonged to deprecated method.
 // Mojo interface exposed by ARC for networking/WiFi/VPN, the Chrome
 // browser process is the client.
+// The reason for using int for uint fields like port is the same and
+// can be found in description for interface |NetHost|.
 interface NetInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=8] Init@6(pending_remote<NetHost> host_remote) => ();
@@ -919,4 +931,56 @@ interface NetInstance {
 
   // Pass a Chrome flag value into ARC.
   [MinVersion=24] SetUpFlag@11(Flag flag, bool value);
+};
+
+// IP protocols used in a socket connection. Currently we are only interested
+// in TCP and UDP for WiFi QoS and ignore other protocols such as ICMP.
+[Extensible]
+enum IpProtocol {
+  [Default] kUnknown = 0,
+  kTcp = 1,
+  kUdp = 2,
+};
+
+// Events to describe status change of a socket.
+[Extensible]
+enum SocketEvent {
+  [Default] kUnknown = 0,
+  kOpen = 1,
+  kClose = 2,
+};
+
+// QoS categories for a socket connection defined in RFC4594.
+[Extensible]
+enum QosCategory {
+  [Default] kUnknown = 0,
+  kRealtimeInteractive = 1,
+  kMultimediaConferencing = 2,
+};
+
+struct SocketConnectionEvent {
+  // Source IP address for this socket connection.
+  network.mojom.IPAddress src_addr@0;
+
+  // Destination IP address for this socket connection.
+  network.mojom.IPAddress dst_addr@1;
+
+  // Source IP port for this socket connection.
+  int32 src_port@2;
+
+  // Destination IP port for this socket connection.
+  int32 dst_port@3;
+
+  // Procotol used for this socket connection.
+  IpProtocol proto@4;
+
+  // Socket event of this socket connection, whether this connection is opened
+  // or closed.
+  SocketEvent event@5;
+
+  // Category of App that this socket connection is associated with.
+  AppCategory app_category@6;
+
+  // The inferred QoS category of this socket connection.
+  QosCategory qos_category@7;
 };
