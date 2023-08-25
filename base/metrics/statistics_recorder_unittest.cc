@@ -103,7 +103,8 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
     // Note: We can't clear |top_| in the locked block, because the
     // StatisticsRecorder destructor expects that the lock isn't already held.
     {
-      const absl::MutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
+      const StatisticsRecorder::SrAutoWriterLock auto_lock(
+          StatisticsRecorder::GetLock());
       statistics_recorder_.reset(StatisticsRecorder::top_);
     }
     statistics_recorder_.reset();
@@ -111,7 +112,8 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
   }
 
   bool HasGlobalRecorder() {
-    const absl::ReaderMutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
+    const StatisticsRecorder::SrAutoReaderLock auto_lock(
+        StatisticsRecorder::GetLock());
     return StatisticsRecorder::top_ != nullptr;
   }
 
