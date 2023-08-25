@@ -237,6 +237,27 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Crypto.UnexportableKeys.BackgroundTaskResult{TaskType}"
+    enum="UnexportableKeyServiceResult" expires_after="2024-01-14">
+  <owner>alexilin@chromium.org</owner>
+  <owner>kristianm@chromium.org</owner>
+  <summary>
+    Records the result of the subset of TPM operations that are scheduled
+    asynchronously through unexportable_keys::UnexportableKeyService. In some
+    error cases, the result might be returned synchronously.
+
+    Recorded right after a TPM operation completes. Recorded only for
+    {TaskType}.
+  </summary>
+  <token key="TaskType">
+    <variant name=".FromWrappedKey"
+        summary="operations to create a signing key from a wrapped key"/>
+    <variant name=".GenerateKey"
+        summary="operations to generate a new signing key"/>
+    <variant name=".Sign" summary="signing operations"/>
+  </token>
+</histogram>
+
 <histogram name="Crypto.VirtualKeySupport" enum="TPMSupport"
     expires_after="2024-03-01">
   <owner>kristianm@chromium.org</owner>

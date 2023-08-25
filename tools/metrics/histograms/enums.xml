@@ -107956,6 +107956,16 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Occluding and Non-Occluding Damages"/>
 </enum>
 
+<enum name="UnexportableKeyServiceResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Crypto API failed"/>
+  <int value="2" label="Key not found"/>
+  <int value="3" label="Key collision"/>
+  <int value="4" label="No key provider"/>
+  <int value="5" label="Algorithm not supported"/>
+  <int value="6" label="Key not ready"/>
+</enum>
+
 <enum name="UnifiedConsentBumpAction">
   <int value="0" label="Opt into Unified Consent was clicked"/>
   <int value="1" label="More options: Opt into Unified Consent was selected"/>
