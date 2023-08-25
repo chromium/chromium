@@ -11,15 +11,10 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
-class GURL;
-
 namespace apps {
-
-bool ShouldCheckAppsForUrl(content::WebContents* web_contents);
 
 void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
                                    std::vector<IntentPickerAppInfo> apps,
@@ -27,18 +22,7 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
                                    bool show_remember_selection,
                                    IntentPickerResponse callback);
 
-bool InAppBrowser(content::WebContents* web_contents);
-
-bool ShouldOverrideUrlLoading(const GURL& previous_url,
-                              const GURL& current_url);
-
-GURL GetStartingGURL(content::NavigationHandle* navigation_handle);
-
-bool IsNavigateFromLink(content::NavigationHandle* navigation_handle);
-
 void CloseOrGoBack(content::WebContents* web_contents);
-
-bool IsGoogleRedirectorUrlForTesting(const GURL& url);
 
 PickerEntryType GetPickerEntryType(AppType app_type);
 

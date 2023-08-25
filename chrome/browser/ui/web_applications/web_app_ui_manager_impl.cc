@@ -158,8 +158,9 @@ void WebAppUiManagerImpl::Start() {
   started_ = true;
 
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (!IsBrowserForInstalledApp(browser))
+    if (!IsBrowserForInstalledApp(browser)) {
       continue;
+    }
 
     ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
   }
@@ -184,8 +185,9 @@ size_t WebAppUiManagerImpl::GetNumWindowsForApp(const AppId& app_id) {
   DCHECK(started_);
 
   auto it = num_windows_for_apps_map_.find(app_id);
-  if (it == num_windows_for_apps_map_.end())
+  if (it == num_windows_for_apps_map_.end()) {
     return 0;
+  }
 
   return it->second;
 }
@@ -255,9 +257,16 @@ bool WebAppUiManagerImpl::IsAppInQuickLaunchBar(const AppId& app_id) const {
 bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
                                         const AppId* app_id) const {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (app_id)
+  if (app_id) {
     return AppBrowserController::IsForWebApp(browser, *app_id);
+  }
   return AppBrowserController::IsWebApp(browser);
+}
+
+bool WebAppUiManagerImpl::IsAppAffiliatedWindowOrNone(
+    content::WebContents* web_contents) const {
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  return !browser || browser->is_type_app_popup() || browser->is_type_app();
 }
 
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
@@ -266,8 +275,9 @@ void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
     const absl::optional<AppId>& new_app_id) const {
   WebAppMetrics* web_app_metrics = WebAppMetrics::Get(profile_);
   // Unavailable in guest sessions.
-  if (!web_app_metrics)
+  if (!web_app_metrics) {
     return;
+  }
   web_app_metrics->NotifyOnAssociatedAppChanged(web_contents, previous_app_id,
                                                 new_app_id);
 }
@@ -425,16 +435,18 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
 
 void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   DCHECK(started_);
-  if (!IsBrowserForInstalledApp(browser))
+  if (!IsBrowserForInstalledApp(browser)) {
     return;
+  }
 
   ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
 }
 
 void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   DCHECK(started_);
-  if (!IsBrowserForInstalledApp(browser))
+  if (!IsBrowserForInstalledApp(browser)) {
     return;
+  }
 
   const auto& app_id = GetAppIdForBrowser(browser);
 
@@ -442,15 +454,18 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   DCHECK_GT(num_windows_for_app, 0u);
   --num_windows_for_app;
 
-  if (num_windows_for_app > 0)
+  if (num_windows_for_app > 0) {
     return;
+  }
 
   auto it = windows_closed_requests_map_.find(app_id);
-  if (it == windows_closed_requests_map_.end())
+  if (it == windows_closed_requests_map_.end()) {
     return;
+  }
 
-  for (auto& callback : it->second)
+  for (auto& callback : it->second) {
     std::move(callback).Run();
+  }
 
   windows_closed_requests_map_.erase(app_id);
 }
@@ -466,11 +481,13 @@ void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
 #endif  //  BUILDFLAG(IS_WIN)
 
 bool WebAppUiManagerImpl::IsBrowserForInstalledApp(Browser* browser) {
-  if (browser->profile() != profile_)
+  if (browser->profile() != profile_) {
     return false;
+  }
 
-  if (!browser->app_controller())
+  if (!browser->app_controller()) {
     return false;
+  }
 
   return true;
 }

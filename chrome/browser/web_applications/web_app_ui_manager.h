@@ -30,7 +30,7 @@ class Profile;
 namespace content {
 class WebContents;
 class NavigationHandle;
-}
+}  // namespace content
 
 namespace web_app {
 
@@ -130,6 +130,11 @@ class WebAppUiManager {
   // |app_id|, or any web app window if |app_id| is nullptr.
   virtual bool IsInAppWindow(content::WebContents* web_contents,
                              const AppId* app_id = nullptr) const = 0;
+  // Returns true if the given web contents is associated with an app window, or
+  // if there is no browser associated with this web contents yet.
+  // TODO(https://crbug.com/1474984): Remove the 'none' condition here.
+  virtual bool IsAppAffiliatedWindowOrNone(
+      content::WebContents* web_contents) const = 0;
   virtual void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<AppId>& previous_app_id,

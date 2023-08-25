@@ -21,11 +21,13 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/favicon_size.h"
@@ -41,6 +43,28 @@
 namespace apps {
 
 namespace {
+
+bool ShouldConsiderWebContentsForIntentPicker(
+    content::WebContents* web_contents) {
+  if (!web_app::AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) ||
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents) != nullptr) {
+    return false;
+  }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+    return false;
+  }
+  return true;
+}
 
 void AppendAppsForUrlSync(
     content::WebContents* web_contents,
@@ -187,14 +211,7 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 void GetAppsForIntentPicker(
     content::WebContents* web_contents,
     base::OnceCallback<void(std::vector<IntentPickerAppInfo>)> callback) {
-  if (!ShouldCheckAppsForUrl(web_contents)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+  if (!ShouldConsiderWebContentsForIntentPicker(web_contents)) {
     std::move(callback).Run({});
     return;
   }

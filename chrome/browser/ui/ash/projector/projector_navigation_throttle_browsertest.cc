@@ -13,7 +13,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/intent_helper/chromeos_apps_navigation_throttle.h"
+#include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -69,7 +69,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
     base::TimeDelta forward_by = start_time - task_runner_->Now();
     EXPECT_LT(base::TimeDelta(), forward_by);
     task_runner_->AdvanceMockTickClock(forward_by);
-    apps::ChromeOsAppsNavigationThrottle::SetClockForTesting(
+    apps::ChromeOsLinkCapturingDelegate::SetClockForTesting(
         task_runner_->GetMockTickClock());
   }
 

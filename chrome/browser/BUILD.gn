@@ -3541,8 +3541,6 @@ static_library("browser") {
       "accessibility/invert_bubble_prefs.h",
       "accessibility/live_translate_controller_factory.cc",
       "accessibility/live_translate_controller_factory.h",
-      "apps/intent_helper/apps_navigation_throttle.cc",
-      "apps/intent_helper/apps_navigation_throttle.h",
       "apps/intent_helper/apps_navigation_types.cc",
       "apps/intent_helper/apps_navigation_types.h",
       "apps/intent_helper/intent_picker_auto_display_prefs.cc",
@@ -3555,8 +3553,6 @@ static_library("browser") {
       "apps/intent_helper/intent_picker_helpers.h",
       "apps/intent_helper/intent_picker_internal.cc",
       "apps/intent_helper/intent_picker_internal.h",
-      "apps/intent_helper/page_transition_util.cc",
-      "apps/intent_helper/page_transition_util.h",
       "autocomplete/tab_matcher_desktop.cc",
       "autocomplete/tab_matcher_desktop.h",
       "background/background_contents.cc",
@@ -4491,6 +4487,7 @@ static_library("browser") {
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/app/vector_icons",
       "//chrome/browser/apps/app_service",
+      "//chrome/browser/apps/link_capturing",
       "//chrome/browser/cart:mojo_bindings",
       "//chrome/browser/companion/visual_search",
       "//chrome/browser/enterprise/connectors/analysis:features",
@@ -5637,8 +5634,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "apps/intent_helper/chromeos_apps_navigation_throttle.cc",
-      "apps/intent_helper/chromeos_apps_navigation_throttle.h",
       "apps/intent_helper/chromeos_disabled_apps_throttle.cc",
       "apps/intent_helper/chromeos_disabled_apps_throttle.h",
       "apps/intent_helper/chromeos_intent_picker_helpers.cc",

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/apps/intent_helper/metrics/intent_handling_metrics.h"
 
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

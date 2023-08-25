@@ -13,7 +13,11 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -43,6 +47,29 @@ std::string GetAppDisabledErrorPage() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   return webui::GetI18nTemplateHtml(html, strings);
+}
+
+bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
+  // Do not check apps for url if no apps can be installed, e.g. in incognito.
+  // Do not check apps for a no-state prefetcher navigation.
+  if (!web_app::AreWebAppsUserInstallable(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext())) ||
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents) != nullptr) {
+    return false;
+  }
+
+  // Do not check apps for url if we are already in an app browser.
+  // It is possible that the web contents is not inserted to tab strip
+  // model at this stage (e.g. open url in new tab). So if we cannot
+  // find a browser at this moment, skip the check and this will be handled
+  // in later stage.
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace

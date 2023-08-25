@@ -4661,6 +4661,7 @@ if (!is_android) {
         "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
         "//ash/webui/web_applications/test:test_support",
         "//chrome/browser/apps/app_preload_service:browser_tests",
+        "//chrome/browser/apps/link_capturing:link_capturing",
         "//chrome/browser/ash",
         "//chrome/browser/ash:add_remove_user_event_proto",
         "//chrome/browser/ash:arc_test_support",
@@ -7221,8 +7222,6 @@ test("unit_tests") {
     # !is_android
     sources += [
       "../browser/apps/intent_helper/intent_picker_auto_display_prefs_unittest.cc",
-      "../browser/apps/intent_helper/intent_picker_internal_unittest.cc",
-      "../browser/apps/intent_helper/page_transition_util_unittest.cc",
       "../browser/autocomplete/tab_matcher_desktop_unittest.cc",
       "../browser/autofill/autofill_image_fetcher_impl_unittest.cc",
       "../browser/browser_commands_unittest.cc",
@@ -7806,6 +7805,7 @@ test("unit_tests") {
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/apps/app_service:unit_tests",
+      "//chrome/browser/apps/link_capturing:unit_tests",
       "//chrome/browser/companion/core",
       "//chrome/browser/companion/core/mojom:mojo_bindings",
       "//chrome/browser/companion/core/proto",

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
@@ -10,8 +11,8 @@
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/intent_helper/chromeos_apps_navigation_throttle.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -26,11 +27,10 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/embedder_support/switches.h"
-#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
@@ -48,18 +48,23 @@ using content::test::PrerenderTestHelper;
 using ui_test_utils::BrowserChangeObserver;
 
 namespace web_app {
-
+namespace {
 using ClientMode = LaunchHandler::ClientMode;
-
-#if BUILDFLAG(IS_CHROMEOS)
 
 // Tests that links are captured correctly into an installed WebApp using the
 // 'tabbed' display mode, which allows the webapp window to have multiple tabs.
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
  public:
   WebAppLinkCapturingBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppEnableLaunchHandler);
+    std::vector<base::test::FeatureRef> features = {
+        blink::features::kWebAppEnableLaunchHandler};
+#if !BUILDFLAG(IS_CHROMEOS)
+    features.push_back(features::kDesktopPWAsLinkCapturing);
+#endif
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        features,
+        /*disabled_features=*/{});
   }
   ~WebAppLinkCapturingBrowserTest() override = default;
 
@@ -119,7 +124,9 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     return observer.Wait();
   }
 
-  void ExpectTabs(Browser* test_browser, std::vector<GURL> urls) {
+  void ExpectTabs(Browser* test_browser,
+                  std::vector<GURL> urls,
+                  base::Location location = FROM_HERE) {
     std::string debug_info = "\nOpen browsers:\n";
     for (Browser* open_browser : *BrowserList::GetInstance()) {
       debug_info += "  ";
@@ -139,6 +146,7 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
                       "\n";
       }
     }
+    SCOPED_TRACE(location.ToString());
     SCOPED_TRACE(debug_info);
     TabStripModel& tab_strip = *test_browser->tab_strip_model();
     ASSERT_EQ(static_cast<size_t>(tab_strip.count()), urls.size());
@@ -152,7 +160,14 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   void TurnOnLinkCapturing() {
+#if BUILDFLAG(IS_CHROMEOS)
     apps_util::SetSupportedLinksPreferenceAndWait(profile(), app_id_);
+#else
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    WebApp* app = update->UpdateApp(app_id_);
+    CHECK(app);
+    app->SetIsUserSelectedAppForSupportedLinks(true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
@@ -252,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
   // Must wait for link capturing launch to complete so that its keep alives go
   // out of scope.
   base::test::TestFuture<void> future;
-  apps::ChromeOsAppsNavigationThrottle::
+  apps::LinkCapturingNavigationThrottle::
       GetLinkCaptureLaunchCallbackForTesting() = future.GetCallback();
   ASSERT_TRUE(future.Wait());
 }
@@ -283,9 +298,14 @@ class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
-    features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripSettings},
-                               {});
+    std::vector<base::test::FeatureRef> features = {
+        features::kDesktopPWAsTabStrip, features::kDesktopPWAsTabStripSettings};
+#if !BUILDFLAG(IS_CHROMEOS)
+    features.push_back(features::kDesktopPWAsLinkCapturing);
+#endif
+    features_.InitWithFeatures(
+        /*enabled_features=*/features,
+        /*disabled_features=*/{});
   }
 
   void InstallTestTabbedApp() {
@@ -338,6 +358,5 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
+}  // namespace
 }  // namespace web_app

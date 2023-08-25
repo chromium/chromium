@@ -55,7 +55,7 @@ source_set("browser_tests") {
 
   if (!is_chromeos_lacros) {
     sources += [
-      # Test not valid on Lacros as web apps are only enabled in the main
+      # This is not valid on Lacros as web apps are only enabled in the main
       # profile which can never be deleted.
       "web_app_profile_deletion_browsertest.cc",
     ]
@@ -65,6 +65,7 @@ source_set("browser_tests") {
     sources += [
       "app_browser_controller_browsertest_chromeos.cc",
       "web_app_guest_session_browsertest_chromeos.cc",
+      "web_app_link_capturing_browsertest.cc",
     ]
   }
 
@@ -76,6 +77,8 @@ source_set("browser_tests") {
     "//chrome/browser:theme_properties",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/apps/link_capturing",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/devtools",
     "//chrome/browser/web_applications:web_applications_test_support",
@@ -115,7 +118,6 @@ source_set("app_service_browser_tests") {
   sources = [
     "launch_web_app_browsertest.cc",
     "web_app_badging_browsertest.cc",
-    "web_app_link_capturing_browsertest.cc",
     "web_app_protocol_handling_browsertest.cc",
     "web_app_tab_restore_browsertest.cc",
     "web_app_url_handling_browsertest.cc",
@@ -133,6 +135,7 @@ source_set("app_service_browser_tests") {
     sources += [
       "lacros_web_app_browsertest.cc",
       "lacros_web_app_shelf_browsertest.cc",
+      "web_app_link_capturing_browsertest.cc",
     ]
   }
 
@@ -142,6 +145,7 @@ source_set("app_service_browser_tests") {
     "//chrome/app:command_ids",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
+    "//chrome/browser/apps/link_capturing",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui/web_applications/diagnostics:app_service_browser_tests",
     "//chrome/browser/web_applications",
