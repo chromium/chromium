@@ -1289,8 +1289,7 @@
 
 - (UIView*)toolbarSnapshotViewForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  return [[self.headerViewController toolBarView]
-      snapshotViewAfterScreenUpdates:NO];
+  return nil;
 }
 
 - (UIView*)headerViewForOverscrollActionsController:
