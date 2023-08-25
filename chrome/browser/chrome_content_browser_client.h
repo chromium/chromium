@@ -494,7 +494,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::wstring GetLPACCapabilityNameForNetworkService() override;
   bool IsUtilityCetCompatible(const std::string& utility_sub_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
-  void SessionEnding() override;
+  void SessionEnding(absl::optional<DWORD> control_type) override;
   bool ShouldEnableAudioProcessHighPriority() override;
 #endif
   void ExposeInterfacesToRenderer(

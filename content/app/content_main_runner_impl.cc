@@ -463,7 +463,7 @@ mojo::ScopedMessagePipeHandle MaybeAcceptMojoInvitation() {
 
 #if BUILDFLAG(IS_WIN)
 void HandleConsoleControlEventOnBrowserUiThread(DWORD control_type) {
-  GetContentClient()->browser()->SessionEnding();
+  GetContentClient()->browser()->SessionEnding(control_type);
 }
 
 // A console control event handler for browser processes that initiates end

@@ -4897,7 +4897,8 @@ bool ChromeContentBrowserClient::IsUtilityCetCompatible(
   return true;
 }
 
-void ChromeContentBrowserClient::SessionEnding() {
+void ChromeContentBrowserClient::SessionEnding(
+    absl::optional<DWORD> control_type) {
   chrome::SessionEnding();
 }
 

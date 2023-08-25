@@ -1495,8 +1495,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   // This is called on the UI thread.
   virtual bool IsRendererCodeIntegrityEnabled();
 
-  // Performs a fast and orderly shutdown of the browser.
-  virtual void SessionEnding() {}
+  // Performs a fast and orderly shutdown of the browser. If present,
+  // `control_type` is a CTRL_* value from a Windows console control handler;
+  // see https://learn.microsoft.com/en-us/windows/console/handlerroutine.
+  virtual void SessionEnding(absl::optional<DWORD> control_type) {}
 
   // Returns true if the audio process should run with high priority. false
   // otherwise.

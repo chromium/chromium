@@ -464,6 +464,14 @@ absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
   return absl::nullopt;
 }
 
+#if BUILDFLAG(IS_WIN)
+bool HeadlessContentMainDelegate::ShouldHandleConsoleControlEvents() {
+  // Handle console control events so that orderly shutdown can be performed by
+  // HeadlessContentBrowserClient's override of SessionEnding.
+  return true;
+}
+#endif
+
 content::ContentClient* HeadlessContentMainDelegate::CreateContentClient() {
   return &content_client_;
 }

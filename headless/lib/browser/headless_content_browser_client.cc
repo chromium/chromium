@@ -348,6 +348,14 @@ HeadlessContentBrowserClient::GetGeolocationManager() {
 #endif
 }
 
+#if BUILDFLAG(IS_WIN)
+void HeadlessContentBrowserClient::SessionEnding(
+    absl::optional<DWORD> control_type) {
+  DCHECK_LT(control_type.value_or(0), 0x7fu);
+  browser_->ShutdownWithExitCode(control_type.value_or(0) + 0x80u);
+}
+#endif
+
 #if defined(HEADLESS_USE_POLICY)
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 HeadlessContentBrowserClient::CreateThrottlesForNavigation(
