@@ -61,6 +61,10 @@ using signin::GaiaIdHash;
 
 namespace password_manager {
 
+#if BUILDFLAG(IS_IOS)
+using metrics_util::MigrationToOSCrypt;
+#endif
+
 // The current version number of the login database schema.
 constexpr int kCurrentVersionNumber = 39;
 // The oldest version of the schema such that a legacy Chrome client using that
@@ -698,29 +702,11 @@ bool PasswordNotesPostMigrationStepCallback(
   return true;
 }
 
-// This enum indicates migration status from Keychain to OSCrypt on iOS in the
-// version 39.
-//
-// Needs to stay in sync with PasswordManagerMatchedFormType in
-// enums.xml.
-enum class MigrationToOSCrypt {
-  kStarted,
-  kFailedToCopyPasswordColumn,
-  kFailedToDecryptFromKeychain,
-  kFailedToEncrypt,
-  kFailedToUpdate,
-  kSuccess,
-  kMaxValue = kSuccess,
-};
-
-void RecordMigrationToOSCryptStatus(MigrationToOSCrypt status) {
-  base::UmaHistogramEnumeration("PasswordManager.MigrationToOSCrypt", status);
-}
-
 // Call this after having called InitializeBuilders(), to migrate the database
 // from the current version to kCurrentVersionNumber.
 bool MigrateDatabase(unsigned current_version,
                      SQLTableBuilders builders,
+                     IsAccountStore is_account_store,
                      sql::Database* db) {
   if (!builders.logins->MigrateFrom(
           current_version, db,
@@ -823,7 +809,14 @@ bool MigrateDatabase(unsigned current_version,
 
 #if BUILDFLAG(IS_IOS)
   if (current_version < 39) {
-    RecordMigrationToOSCryptStatus(MigrationToOSCrypt::kStarted);
+    base::TimeTicks migration_start_time = base::TimeTicks::Now();
+    metrics_util::RecordMigrationToOSCryptStatus(migration_start_time,
+                                                 is_account_store.value(),
+                                                 MigrationToOSCrypt::kStarted);
+    base::OnceCallback<void(metrics_util::MigrationToOSCrypt)>
+        record_completion_metrics =
+            base::BindOnce(&metrics_util::RecordMigrationToOSCryptStatus,
+                           migration_start_time, is_account_store.value());
     // Before version 39, password_value was used to store keychain identifier
     // where the actual password is. After this version password_value is
     // encrypted password using OSCrypt. To ensure Credential Provider works as
@@ -832,8 +825,8 @@ bool MigrateDatabase(unsigned current_version,
     sql::Statement copy_keychain_identifier(db->GetUniqueStatement(
         "UPDATE logins SET keychain_identifier = password_value"));
     if (!copy_keychain_identifier.Run()) {
-      RecordMigrationToOSCryptStatus(
-          MigrationToOSCrypt::kFailedToCopyPasswordColumn);
+      std::move(record_completion_metrics)
+          .Run(MigrationToOSCrypt::kFailedToCopyPasswordColumn);
       return false;
     }
     sql::Statement get_passwords_statement(
@@ -846,8 +839,8 @@ bool MigrateDatabase(unsigned current_version,
       std::u16string plaintext_password;
       if (!GetTextFromKeychainIdentifier(
               get_passwords_statement.ColumnString(1), &plaintext_password)) {
-        RecordMigrationToOSCryptStatus(
-            MigrationToOSCrypt::kFailedToDecryptFromKeychain);
+        std::move(record_completion_metrics)
+            .Run(MigrationToOSCrypt::kFailedToDecryptFromKeychain);
         return false;
       }
       // Encrypt password using OSCrypt.
@@ -855,7 +848,8 @@ bool MigrateDatabase(unsigned current_version,
       if (LoginDatabase::EncryptedString(plaintext_password,
                                          &encrypted_password) !=
           LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
-        RecordMigrationToOSCryptStatus(MigrationToOSCrypt::kFailedToEncrypt);
+        std::move(record_completion_metrics)
+            .Run(MigrationToOSCrypt::kFailedToEncrypt);
         return false;
       }
       // Updated password_value in the database.
@@ -864,11 +858,12 @@ bool MigrateDatabase(unsigned current_version,
       password_value_update.BindBlob(0, encrypted_password);
       password_value_update.BindInt(1, id);
       if (!password_value_update.Run()) {
-        RecordMigrationToOSCryptStatus(MigrationToOSCrypt::kFailedToUpdate);
+        std::move(record_completion_metrics)
+            .Run(MigrationToOSCrypt::kFailedToUpdate);
         return false;
       }
     }
-    RecordMigrationToOSCryptStatus(MigrationToOSCrypt::kSuccess);
+    std::move(record_completion_metrics).Run(MigrationToOSCrypt::kSuccess);
   }
 #endif
 
@@ -1055,8 +1050,9 @@ bool LoginDatabase::Init() {
 
   // If the file on disk is an older database version, bring it up to date.
   if (migration_success && current_version < kCurrentVersionNumber) {
-    migration_success = MigrateDatabase(
-        base::checked_cast<unsigned>(current_version), builders, &db_);
+    migration_success =
+        MigrateDatabase(base::checked_cast<unsigned>(current_version), builders,
+                        is_account_store_, &db_);
   }
   // Enforce that 'insecure_credentials' is created only after the 'logins'
   // table was created and migrated to the latest version. This guarantees the
