@@ -326,6 +326,12 @@ void Copier::OnFlush(int result) {
     return;
   }
 
+  // Destroying this storage::FileStreamWriter closes the temp_url file. We're
+  // about to rename (or delete, on failure) that file, having finished writing
+  // and flushing its contents, but some AsyncFileUtil implementations disallow
+  // that on files that are still open.
+  fs_writer_.reset();
+
   async_file_util_.GetFileInfo(
       DuplicateFileSystemOperationContext(*context_), dest_url_,
       storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
