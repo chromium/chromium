@@ -1959,11 +1959,6 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   }
 }
 
-void BrowserAutofillManager::PropagateAutofillPredictionsDeprecated(
-    const std::vector<FormStructure*>& forms) {
-  client().PropagateAutofillPredictionsDeprecated(&driver(), forms);
-}
-
 void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
                                                  const CreditCard* credit_card,
                                                  const std::u16string& cvc) {

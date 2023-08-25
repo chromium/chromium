@@ -264,8 +264,6 @@ class BrowserAutofillManager : public AutofillManager,
       const FormData& form,
       const FormFieldData& field,
       const std::u16string& old_value) override;
-  void PropagateAutofillPredictionsDeprecated(
-      const std::vector<FormStructure*>& forms) override;
   void Reset() override;
   void OnContextMenuShownInField(const FormGlobalId& form_global_id,
                                  const FieldGlobalId& field_global_id) override;
