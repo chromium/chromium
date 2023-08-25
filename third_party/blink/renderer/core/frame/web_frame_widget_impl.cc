@@ -266,11 +266,44 @@ bool IsElementNotNullAndEditable(Element* element) {
   return false;
 }
 
+bool& InputDisabledPerBrowsingContextGroup(
+    const base::UnguessableToken& token) {
+  using BrowsingContextGroupMap = std::map<base::UnguessableToken, bool>;
+  DEFINE_STATIC_LOCAL(BrowsingContextGroupMap, values, ());
+  return values[token];
+}
+
 }  // namespace
 
 // WebFrameWidget ------------------------------------------------------------
 
 bool WebFrameWidgetImpl::ignore_input_events_ = false;
+
+// static
+void WebFrameWidgetImpl::SetIgnoreInputEvents(
+    const base::UnguessableToken& browsing_context_group_token,
+    bool value) {
+  if (base::FeatureList::IsEnabled(
+          features::kPausePagesPerBrowsingContextGroup)) {
+    CHECK_NE(InputDisabledPerBrowsingContextGroup(browsing_context_group_token),
+             value);
+    InputDisabledPerBrowsingContextGroup(browsing_context_group_token) = value;
+  } else {
+    CHECK_NE(ignore_input_events_, value);
+    ignore_input_events_ = value;
+  }
+}
+
+// static
+bool WebFrameWidgetImpl::IgnoreInputEvents(
+    const base::UnguessableToken& browsing_context_group_token) {
+  if (base::FeatureList::IsEnabled(
+          features::kPausePagesPerBrowsingContextGroup)) {
+    return InputDisabledPerBrowsingContextGroup(browsing_context_group_token);
+  } else {
+    return ignore_input_events_;
+  }
+}
 
 WebFrameWidgetImpl::WebFrameWidgetImpl(
     base::PassKey<WebLocalFrame>,
@@ -488,8 +521,7 @@ void WebFrameWidgetImpl::DragTargetDragLeave(
     const gfx::PointF& screen_point) {
   base::ScopedClosureRunner runner(
       WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
-
-  if (IgnoreInputEvents() || !current_drag_data_) {
+  if (ShouldIgnoreInputEvents() || !current_drag_data_) {
     return;
   }
 
@@ -512,7 +544,7 @@ void WebFrameWidgetImpl::DragTargetDrop(const WebDragData& web_drag_data,
   base::ScopedClosureRunner runner(
       WTF::BindOnce(&WebFrameWidgetImpl::CancelDrag, WrapWeakPersistent(this)));
 
-  if (IgnoreInputEvents() || !current_drag_data_) {
+  if (ShouldIgnoreInputEvents() || !current_drag_data_) {
     return;
   }
 
@@ -552,7 +584,7 @@ void WebFrameWidgetImpl::DragSourceEndedAt(const gfx::PointF& point_in_viewport,
       WTF::BindOnce(&WebFrameWidgetImpl::DragSourceSystemDragEnded,
                     WrapWeakPersistent(this)));
 
-  if (IgnoreInputEvents()) {
+  if (ShouldIgnoreInputEvents()) {
     return;
   }
 
@@ -1233,7 +1265,7 @@ void WebFrameWidgetImpl::DragTargetDragEnterOrOver(
     const gfx::PointF& screen_point,
     DragAction drag_action,
     uint32_t key_modifiers) {
-  if (IgnoreInputEvents() || !current_drag_data_) {
+  if (ShouldIgnoreInputEvents() || !current_drag_data_) {
     CancelDrag();
     return;
   }
@@ -1457,6 +1489,11 @@ void WebFrameWidgetImpl::NotifyViewTransitionRenderingHasBegun() {
           transition->NotifyRenderingHasBegun();
         }
       });
+}
+
+bool WebFrameWidgetImpl::ShouldIgnoreInputEvents() {
+  CHECK(GetPage());
+  return IgnoreInputEvents(GetPage()->BrowsingContextGroupToken());
 }
 
 std::unique_ptr<cc::LayerTreeFrameSink>
@@ -2754,8 +2791,9 @@ WebInputEventResult WebFrameWidgetImpl::HandleInputEvent(
 
   // Report the event to be NOT processed by WebKit, so that the browser can
   // handle it appropriately.
-  if (IgnoreInputEvents())
+  if (ShouldIgnoreInputEvents()) {
     return WebInputEventResult::kNotHandled;
+  }
 
   base::AutoReset<const WebInputEvent*> current_event_change(
       &CurrentInputEvent::current_input_event_, &input_event);

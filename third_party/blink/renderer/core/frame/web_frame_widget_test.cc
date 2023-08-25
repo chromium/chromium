@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/test/property_tree_test_utils.h"
@@ -783,9 +784,31 @@ TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
 }
 
+class WebFrameWidgetInputEventsSimTest
+    : public WebFrameWidgetSimTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebFrameWidgetInputEventsSimTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kPausePagesPerBrowsingContextGroup);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kPausePagesPerBrowsingContextGroup);
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebFrameWidgetInputEventsSimTest,
+                         testing::Values(true, false));
+
 // Tests that dispatch buffered touch events does not process events during
 // drag and devtools handling.
-TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
+TEST_P(WebFrameWidgetInputEventsSimTest, DispatchBufferedTouchEvents) {
   auto* widget = WebView().MainFrameViewWidget();
 
   auto* listener = MakeGarbageCollected<TouchMoveEventListener>();
@@ -809,15 +832,19 @@ TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
       base::DoNothing());
   EXPECT_TRUE(listener->GetInvokedStateAndReset());
 
+  const base::UnguessableToken browsing_context_group_token =
+      WebView().GetPage()->BrowsingContextGroupToken();
+
   // Expect listener does not get called, due to devtools flag.
   touch.MovePoint(0, 12, 12);
-  WebFrameWidgetImpl::SetIgnoreInputEvents(true);
+  WebFrameWidgetImpl::SetIgnoreInputEvents(browsing_context_group_token, true);
   widget->ProcessInputEventSynchronouslyForTesting(
       WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
       base::DoNothing());
-  EXPECT_TRUE(WebFrameWidgetImpl::IgnoreInputEvents());
+  EXPECT_TRUE(
+      WebFrameWidgetImpl::IgnoreInputEvents(browsing_context_group_token));
   EXPECT_FALSE(listener->GetInvokedStateAndReset());
-  WebFrameWidgetImpl::SetIgnoreInputEvents(false);
+  WebFrameWidgetImpl::SetIgnoreInputEvents(browsing_context_group_token, false);
 
   // Expect listener does not get called, due to drag.
   touch.MovePoint(0, 14, 14);
@@ -827,7 +854,8 @@ TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
       WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
       base::DoNothing());
   EXPECT_TRUE(widget->DoingDragAndDrop());
-  EXPECT_FALSE(WebFrameWidgetImpl::IgnoreInputEvents());
+  EXPECT_FALSE(
+      WebFrameWidgetImpl::IgnoreInputEvents(browsing_context_group_token));
   EXPECT_FALSE(listener->GetInvokedStateAndReset());
 }
 
