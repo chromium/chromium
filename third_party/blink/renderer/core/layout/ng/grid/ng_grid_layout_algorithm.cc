@@ -3765,6 +3765,16 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       // fragmentainer.
       if (fragmentainer_space != kIndefiniteSize &&
           grid_area.offset.block_offset >= fragmentainer_space) {
+        if (constraint_space.IsInsideBalancedColumns() &&
+            !constraint_space.IsInitialColumnBalancingPass()) {
+          // Although we know that this item isn't going to fit here, we're
+          // inside balanced multicol, so we need to figure out how much more
+          // fragmentainer space we'd need to fit more content.
+          auto* result = grid_item.node.Layout(space, break_token);
+          PropagateSpaceShortage(constraint_space, result,
+                                 fragment_relative_block_offset,
+                                 &container_builder_);
+        }
         has_subsequent_children = true;
         continue;
       }
