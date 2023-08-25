@@ -478,6 +478,8 @@ void DownloadBubbleSecurityView::AddIconAndContents() {
                                /*adjust_height_for_width=*/true));
   // Set min height for checkbox, so that it can layout label accordingly.
   checkbox_->SetMinSize(gfx::Size(0, kCheckboxHeight));
+  // Will be updated later if checkbox should exist.
+  checkbox_->SetVisible(false);
 
   // TODO(chlily): Implement deep_scanning_link_ as a learn_more_link_.
   deep_scanning_link_ =
