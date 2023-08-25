@@ -41,9 +41,12 @@ void RecordDisplayLinkCreateStatus(DisplayLinkResult result) {
 ///////////////////////////////////////////////////////////////////////////////
 // ExternalBeginFrameSourceMac
 
-ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(uint32_t restart_id,
-                                                         int64_t display_id)
-    : ExternalBeginFrameSource(this, restart_id) {
+ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
+    uint32_t restart_id,
+    int64_t display_id,
+    OutputSurface* output_surface)
+    : ExternalBeginFrameSource(this, restart_id),
+      output_surface_(output_surface) {
   if (display_id == display::kInvalidDisplayId) {
     RecordDisplayLinkCreateStatus(DisplayLinkResult::kFailedInvalidDisplayId);
     DLOG(ERROR)
@@ -77,6 +80,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id) {
   if (display_id_ == display_id) {
     return;
   }
+  output_surface_->SetVSyncDisplayID(display_id);
 
   display_id_ = display_id;
 

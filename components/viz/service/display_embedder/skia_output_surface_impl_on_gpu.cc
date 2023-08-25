@@ -1920,7 +1920,8 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     }
 
 #if BUILDFLAG(IS_MAC)
-    if (features::UseGpuVsync()) {
+    if (base::FeatureList::IsEnabled(
+            features::kCVDisplayLinkBeginFrameSource)) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
     }
 #endif

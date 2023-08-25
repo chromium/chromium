@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/display/mac/display_link_mac.h"
 #include "ui/display/types/display_constants.h"
 
 namespace viz {
+class OutputSurface;
 
 // An external begin frame source for use on macOS. This listens to a
 // DisplayLinkMac in order to tick.
@@ -24,7 +27,9 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
       public ExternalBeginFrameSourceClient,
       public DelayBasedTimeSourceClient {
  public:
-  ExternalBeginFrameSourceMac(uint32_t restart_id, int64_t display_id);
+  ExternalBeginFrameSourceMac(uint32_t restart_id,
+                              int64_t display_id,
+                              OutputSurface* output_surface);
 
   ExternalBeginFrameSourceMac(const ExternalBeginFrameSourceMac&) = delete;
   ExternalBeginFrameSourceMac& operator=(const ExternalBeginFrameSourceMac&) =
@@ -93,6 +98,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   bool just_started_begin_frame_ = false;
 
+  const raw_ptr<OutputSurface, DanglingUntriaged> output_surface_;
   UpdateVSyncParametersCallback update_vsync_params_callback_;
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};

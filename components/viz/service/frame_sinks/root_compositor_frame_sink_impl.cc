@@ -175,7 +175,8 @@ RootCompositorFrameSinkImpl::Create(
               features::kCVDisplayLinkBeginFrameSource)) {
         external_begin_frame_source =
             std::make_unique<ExternalBeginFrameSourceMac>(
-                restart_id, params->renderer_settings.display_id);
+                restart_id, params->renderer_settings.display_id,
+                output_surface.get());
       } else {
         synthetic_begin_frame_source =
             std::make_unique<DelayBasedBeginFrameSourceMac>(

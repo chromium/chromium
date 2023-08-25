@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
@@ -85,13 +86,6 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
 #endif
     ca_context_.layer = ca_layer_tree_coordinator_->GetCALayerForDisplay();
   }
-
-#if BUILDFLAG(IS_MAC)
-  if (features::UseGpuVsync()) {
-    gpu_vsync_mac_ =
-        std::make_unique<GpuVSyncMac>(delegate->GetGpuVSyncCallback());
-  }
-#endif
 }
 
 ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
@@ -122,6 +116,14 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     PresentationCallback presentation_callback,
     gfx::FrameData data) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::Present");
+
+  // Only one commited CALayer tree is permitted. Populate the last frame if
+  // there is already a commited CALayer tree waiting to be populated. At the
+  // end of this function, another commited CALayer tree will be produced.
+  if (num_committed_ca_layer_trees_ >= 1) {
+    PopulateCALayerParameters();
+  }
+  DCHECK_EQ(num_committed_ca_layer_trees_, 0);
 
   constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
   constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(16);
@@ -170,6 +172,31 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
 
+  // Delay PopulateCALayerParameters until the next Vsync on Mac. No delay if
+  // kCVDisplayLinkBeginFrameSource feature is off or DisplayLink fails.
+  completion_callback_ = std::move(completion_callback);
+  presentation_callback_ = std::move(presentation_callback);
+  num_committed_ca_layer_trees_++;
+
+#if BUILDFLAG(IS_MAC)
+  if (display_link_mac_ && !vsync_callback_mac_) {
+    vsync_callback_mac_ = display_link_mac_->RegisterCallback(
+        base::BindRepeating(
+            &ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation,
+            weak_ptr_factory_.GetWeakPtr()),
+        /*do_callback_on_register_thread=*/true);
+  }
+
+  if (vsync_callback_mac_) {
+    // PopulateCALayerParameters will be called in OnVSyncPresentation.
+    return;
+  }
+#endif
+
+  PopulateCALayerParameters();
+}
+
+void ImageTransportSurfaceOverlayMacEGL::PopulateCALayerParameters() {
   // Populate the CA layer parameters to send to the browser.
   gfx::CALayerParams params;
   {
@@ -191,14 +218,15 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   }
 
   // Send the swap parameters to the browser.
-  if (completion_callback) {
+  if (completion_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(completion_callback),
+        base::BindOnce(std::move(completion_callback_),
                        gfx::SwapCompletionResult(
                            gfx::SwapResult::SWAP_ACK,
                            std::make_unique<gfx::CALayerParams>(params))));
   }
+
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
                                      /*flags=*/0);
   feedback.ca_layer_error_code = ca_layer_error_code_;
@@ -207,7 +235,9 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
       FROM_HERE,
       base::BindOnce(&ImageTransportSurfaceOverlayMacEGL::BufferPresented,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(presentation_callback), feedback));
+                     std::move(presentation_callback_), feedback));
+
+  num_committed_ca_layer_trees_--;
 }
 
 bool ImageTransportSurfaceOverlayMacEGL::ScheduleOverlayPlane(
@@ -269,24 +299,33 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
 }
 
 #if BUILDFLAG(IS_MAC)
-bool ImageTransportSurfaceOverlayMacEGL::SupportsGpuVSync() const {
-  return features::UseGpuVsync();
-}
-
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!features::UseGpuVsync()) {
+  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource)) {
     return;
   }
 
-  gpu_vsync_mac_->SetVSyncDisplayID(display_id);
+  if ((!display_link_mac_ || display_id != display_id_) &&
+      display_id != display::kInvalidDisplayId) {
+    if (vsync_callback_mac_) {
+      OnVSyncPresentation(ui::VSyncParamsMac());
+      DCHECK(!vsync_callback_mac_);
+    }
+    display_link_mac_ = ui::DisplayLinkMac::GetForDisplay(display_id);
+  }
+
+  display_id_ = display_id;
 }
 
-void ImageTransportSurfaceOverlayMacEGL::SetGpuVSyncEnabled(bool enabled) {
-  if (!features::UseGpuVsync()) {
-    return;
+void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
+    ui::VSyncParamsMac params) {
+  if (num_committed_ca_layer_trees_) {
+    PopulateCALayerParameters();
   }
 
-  gpu_vsync_mac_->SetGpuVSyncEnabled(enabled);
+  // No more pending frames. Now stop the vsync callback.
+  if (!num_committed_ca_layer_trees_) {
+    vsync_callback_mac_ = nullptr;
+  }
 }
 #endif
 
