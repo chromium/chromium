@@ -23,6 +23,7 @@
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1449,6 +1450,76 @@ TEST_P(CookieControlsUserBypassTest, MediumConfidenceStatefulBounce) {
   EXPECT_CALL(*mock(), OnBreakageConfidenceLevelChanged(
                            CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->Update(web_contents());
+}
+
+TEST_P(CookieControlsUserBypassTest, CachedCookieAccessReports) {
+  if (!GetParam()) {
+    return;
+  }
+
+  NavigateAndCommit(GURL("https://example.com"));
+  cookie_controls()->Update(web_contents());
+
+  GURL origin1("http://google.com");
+  std::unique_ptr<net::CanonicalCookie> cookie1(net::CanonicalCookie::Create(
+      origin1, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */));
+  ASSERT_TRUE(cookie1);
+
+  // Regardless of how many times a cookie access is reported, it should only
+  // fire one update.
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0)).Times(1);
+
+  for (int i = 0; i < 3; i++) {
+    page_specific_content_settings()->OnCookiesAccessed(
+        {content::CookieAccessDetails::Type::kChange,
+         origin1,
+         origin1,
+         {*cookie1},
+         false});
+  }
+
+  // Accessing a cookie for a different origin should however trigger an update.
+  GURL origin2("http://another-google.com");
+  std::unique_ptr<net::CanonicalCookie> cookie2(net::CanonicalCookie::Create(
+      origin2, "A=B", base::Time::Now(), absl::nullopt /* server_time */,
+      absl::nullopt /* cookie_partition_key */));
+  ASSERT_TRUE(cookie2);
+
+  testing::Mock::VerifyAndClearExpectations(mock());
+  EXPECT_CALL(*mock(), OnSitesCountChanged(2, 0)).Times(1);
+  page_specific_content_settings()->OnCookiesAccessed(
+      {content::CookieAccessDetails::Type::kChange,
+       origin2,
+       origin2,
+       {*cookie2},
+       false});
+
+  // Accessing non cookie storage twice should result in the same site access
+  // count being fired twice (no caching).
+  testing::Mock::VerifyAndClearExpectations(mock());
+  EXPECT_CALL(*mock(), OnSitesCountChanged(3, 0)).Times(2);
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateUnpartitionedStorageKey(GURL("https://another-example.com")),
+      /*blocked_by_policy=*/false);
+  page_specific_content_settings()->OnStorageAccessed(
+      StorageType::DATABASE,
+      CreateUnpartitionedStorageKey(GURL("https://another-example.com")),
+      /*blocked_by_policy=*/false);
+
+  // Re-navigating to the page should result in the cache being cleared, and
+  // cookie access being re-reported.
+  testing::Mock::VerifyAndClearExpectations(mock());
+  EXPECT_CALL(*mock(), OnSitesCountChanged(1, 0)).Times(1);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  page_specific_content_settings()->OnCookiesAccessed(
+      {content::CookieAccessDetails::Type::kChange,
+       origin1,
+       origin1,
+       {*cookie1},
+       false});
 }
 
 INSTANTIATE_TEST_SUITE_P(All, CookieControlsUserBypassTest, testing::Bool());

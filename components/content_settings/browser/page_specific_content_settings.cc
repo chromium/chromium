@@ -502,6 +502,13 @@ AccessDetails::AccessDetails(SiteDataType site_data_type,
 
 AccessDetails::~AccessDetails() = default;
 
+bool AccessDetails::operator<(const AccessDetails& other) const {
+  return std::tie(site_data_type, access_type, url, blocked_by_policy,
+                  is_from_primary_page) <
+         std::tie(other.site_data_type, other.access_type, other.url,
+                  other.blocked_by_policy, other.is_from_primary_page);
+}
+
 PageSpecificContentSettings::SiteDataObserver::SiteDataObserver(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {

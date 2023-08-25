@@ -618,8 +618,37 @@ CookieControlsController::TabObserver::TabObserver(
       content::WebContentsObserver::web_contents()->GetVisibleURL();
 }
 
+CookieControlsController::TabObserver::~TabObserver() = default;
+
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
     const AccessDetails& access_details) {
+  if (access_details.site_data_type != SiteDataType::kCookies ||
+      !base::FeatureList::IsEnabled(
+          content_settings::features::kUserBypassUI)) {
+    cookie_controls_->PresentBlockedCookieCounter();
+    return;
+  }
+
+  // When User Bypass is enabled, a large number of string comparisons are
+  // performed to determine what sites are 3P / 1P. Cookie accesses are
+  // reported _very_ frequently as many sites are always reading or writing to
+  // the same cookie, and there is no caching of these accesses anywhere before
+  // here (in constrast to JS storage, which does cache accesses earlier).
+  // A simple cache of cookie accesses is used here to limit the number of
+  // repeated updates.
+  // We can't cache all types of accesses here, because the `site_data_type` is
+  // not always populated with sufficient granularity (often aliasing to
+  // kUnknown). This is relevant as some daya types may impact the block 3P
+  // count, while others may not.
+  // TODO(crbug.com/1271155): Replace the SiteDataType with the Browsing Data
+  // Model's StorageType, which would let us remove an enum, and let us cache
+  // all accesses here.
+
+  if (cookie_accessed_set_.count(access_details)) {
+    return;
+  }
+
+  cookie_accessed_set_.insert(access_details);
   cookie_controls_->PresentBlockedCookieCounter();
 }
 
@@ -631,6 +660,7 @@ void CookieControlsController::TabObserver::PrimaryPageChanged(
     content::Page& page) {
   const GURL& current_url =
       content::WebContentsObserver::web_contents()->GetVisibleURL();
+  cookie_accessed_set_.clear();
 
   if (current_url != last_visited_url_) {
     reload_count_ = 0;
