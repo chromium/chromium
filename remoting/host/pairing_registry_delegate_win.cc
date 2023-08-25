@@ -128,7 +128,7 @@ base::Value::List PairingRegistryDelegateWin::LoadAll() {
   base::Value::List pairings;
 
   // Enumerate and parse all values under the unprivileged key.
-  DWORD count = unprivileged_.GetValueCount();
+  DWORD count = unprivileged_.GetValueCount().value_or(0);
   for (DWORD index = 0; index < count; ++index) {
     // presubmit: allow wstring
     std::wstring value_name;
@@ -157,7 +157,7 @@ bool PairingRegistryDelegateWin::DeleteAll() {
   // Enumerate and delete the values in the privileged and unprivileged keys
   // separately in case they get out of sync.
   bool success = true;
-  DWORD count = unprivileged_.GetValueCount();
+  DWORD count = unprivileged_.GetValueCount().value_or(0);
   while (count > 0) {
     // presubmit: allow wstring
     std::wstring value_name;
@@ -167,10 +167,10 @@ bool PairingRegistryDelegateWin::DeleteAll() {
     }
 
     success = success && (result == ERROR_SUCCESS);
-    count = unprivileged_.GetValueCount();
+    count = unprivileged_.GetValueCount().value_or(0);
   }
 
-  count = privileged_.GetValueCount();
+  count = privileged_.GetValueCount().value_or(0);
   while (count > 0) {
     // presubmit: allow wstring
     std::wstring value_name;
@@ -180,7 +180,7 @@ bool PairingRegistryDelegateWin::DeleteAll() {
     }
 
     success = success && (result == ERROR_SUCCESS);
-    count = privileged_.GetValueCount();
+    count = privileged_.GetValueCount().value_or(0);
   }
 
   return success;

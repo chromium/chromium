@@ -118,7 +118,12 @@ void DeleteUpdaterKey(UpdaterScope scope) {
   }
 
   // Finally, delete `UPDATER_KEY` if it is empty.
-  base::win::RegKey(root, L"", Wow6432(KEY_WRITE)).DeleteEmptyKey(UPDATER_KEY);
+  base::win::RegKey updater_key;
+  if (updater_key.Open(root, UPDATER_KEY, Wow6432(KEY_QUERY_VALUE)) ==
+          ERROR_SUCCESS &&
+      updater_key.GetValueCount().value_or(1) == 0) {
+    updater_key.DeleteKey(L"", base::win::RegKey::RecursiveDelete(false));
+  }
 }
 
 void DeleteGoogleUpdateFilesAndKeys(UpdaterScope scope) {

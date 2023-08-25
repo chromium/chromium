@@ -257,12 +257,15 @@ bool RegKey::HasValue(const wchar_t* name) const {
          ERROR_SUCCESS;
 }
 
-DWORD RegKey::GetValueCount() const {
+base::expected<DWORD, LONG> RegKey::GetValueCount() const {
   DWORD count = 0;
   LONG result =
       RegQueryInfoKey(key_, nullptr, nullptr, nullptr, nullptr, nullptr,
                       nullptr, &count, nullptr, nullptr, nullptr, nullptr);
-  return (result == ERROR_SUCCESS) ? count : 0;
+  if (result == ERROR_SUCCESS) {
+    return base::ok(count);
+  }
+  return base::unexpected(result);
 }
 
 FILETIME RegKey::GetLastWriteTime() const {
@@ -285,29 +288,15 @@ LONG RegKey::GetValueNameAt(DWORD index, std::wstring* name) const {
   return r;
 }
 
-LONG RegKey::DeleteKey(const wchar_t* name) {
-  DCHECK(name);
-
-  // Verify the key exists before attempting delete to replicate previous
-  // behavior.
-  // `RegOpenKeyEx()` will return an error if `key_` is invalid.
-  HKEY subkey = nullptr;
-  LONG result =
-      RegOpenKeyEx(key_, name, 0, READ_CONTROL | wow64access_, &subkey);
-  if (result != ERROR_SUCCESS) {
-    return result;
-  }
-  RegCloseKey(subkey);
-
-  return RegDelRecurse(key_, name, wow64access_);
-}
-
-LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
+LONG RegKey::DeleteKey(const wchar_t* name, RecursiveDelete recursive) {
   DCHECK(name);
 
   if (!Valid()) {
     return ERROR_INVALID_HANDLE;
   }
+
+  // Verify the key exists before attempting delete to replicate previous
+  // behavior.
   RegKey target_key;
   LONG result = target_key.Open(key_, name, REG_OPTION_OPEN_LINK,
                                 wow64access_ | KEY_QUERY_VALUE | DELETE);
@@ -315,23 +304,18 @@ LONG RegKey::DeleteEmptyKey(const wchar_t* name) {
     return result;
   }
 
-  // A symbolic link has one REG_LINK value identifying the target and no
-  // subkeys, so it satisfies the criteria of being an "empty" key.
+  if (recursive.value()) {
+    target_key.Close();
+    return RegDelRecurse(key_, name, wow64access_);
+  }
+
+  // Next, try to delete the key if it is a symbolic link.
   if (auto deleted_link = target_key.DeleteIfLink(); deleted_link.has_value()) {
     return deleted_link.value();
   }
 
-  // The key is not a symbolic link, so see if it has any values.
-  DWORD value_count = 0;
-  result = RegQueryInfoKey(target_key.key_, nullptr, nullptr, nullptr, nullptr,
-                           nullptr, nullptr, &value_count, nullptr, nullptr,
-                           nullptr, nullptr);
-  if (result != ERROR_SUCCESS) {
-    return result;
-  }
-  target_key.Close();
-  return value_count == 0 ? RegDeleteKeyEx(key_, name, wow64access_, 0)
-                          : ERROR_DIR_NOT_EMPTY;
+  // It's not a symbolic link, so try to delete it without recursing.
+  return ::RegDeleteKeyEx(target_key.key_, L"", wow64access_, 0);
 }
 
 LONG RegKey::DeleteValue(const wchar_t* value_name) {
@@ -532,16 +516,11 @@ absl::optional<LONG> RegKey::DeleteIfLink() {
   static const RtlNtStatusToDosErrorFunction rtl_nt_status_to_dos_error =
       reinterpret_cast<RtlNtStatusToDosErrorFunction>(::GetProcAddress(
           ::GetModuleHandle(L"ntdll.dll"), "RtlNtStatusToDosError"));
-  if (rtl_nt_status_to_dos_error) {
-    return static_cast<LONG>(rtl_nt_status_to_dos_error(delete_result));
-  }
-  if (delete_result == STATUS_CANNOT_DELETE) {
-    // The most common cause of failure is the presence of subkeys.
-    return ERROR_DIR_NOT_EMPTY;
-  }
-  // This shouldn't happen since the key was opened with DELETE rights, but it
-  // is a sensible fallback.
-  return ERROR_ACCESS_DENIED;
+  // The most common cause of failure is the presence of subkeys, which is
+  // reported as `STATUS_CANNOT_DELETE` and maps to `ERROR_ACCESS_DENIED`.
+  return rtl_nt_status_to_dos_error
+             ? static_cast<LONG>(rtl_nt_status_to_dos_error(delete_result))
+             : ERROR_ACCESS_DENIED;
 }
 
 // static

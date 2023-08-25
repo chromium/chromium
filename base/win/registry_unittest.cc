@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -88,7 +89,7 @@ TEST_F(RegistryTest, ValueTest) {
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kDWORDValueName, kDWORDData));
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kInt64ValueName, &kInt64Data,
                                           sizeof(kInt64Data), REG_QWORD));
-  EXPECT_EQ(3U, key.GetValueCount());
+  EXPECT_THAT(key.GetValueCount(), base::test::ValueIs(3U));
   EXPECT_TRUE(key.HasValue(kStringValueName));
   EXPECT_TRUE(key.HasValue(kDWORDValueName));
   EXPECT_TRUE(key.HasValue(kInt64ValueName));
@@ -117,7 +118,7 @@ TEST_F(RegistryTest, ValueTest) {
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kStringValueName));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kDWORDValueName));
   ASSERT_EQ(ERROR_SUCCESS, key.DeleteValue(kInt64ValueName));
-  EXPECT_EQ(0U, key.GetValueCount());
+  EXPECT_THAT(key.GetValueCount(), base::test::ValueIs(0U));
   EXPECT_FALSE(key.HasValue(kStringValueName));
   EXPECT_FALSE(key.HasValue(kDWORDValueName));
   EXPECT_FALSE(key.HasValue(kInt64ValueName));
@@ -197,6 +198,48 @@ TEST_F(RegistryTest, ValueIteratorDefaultValue) {
   EXPECT_FALSE(iterator.Valid());
 }
 
+TEST_F(RegistryTest, NonRecursiveDelete) {
+  RegKey key;
+  // Create root_key()
+  //                  \->Bar (TestValue)
+  //                     \->Foo (TestValue)
+  ASSERT_EQ(ERROR_SUCCESS, key.Open(HKEY_CURRENT_USER, root_key().c_str(),
+                                    KEY_CREATE_SUB_KEY));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Bar", KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
+  ASSERT_EQ(ERROR_SUCCESS, key.CreateKey(L"Foo", KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
+  key.Close();
+
+  const std::wstring bar_path = root_key() + L"\\Bar";
+  // Non-recursive delete of Bar from root_key() should fail.
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_QUERY_VALUE));
+  ASSERT_NE(ERROR_SUCCESS,
+            key.DeleteKey(L"Bar", RegKey::RecursiveDelete(false)));
+  key.Close();
+  ASSERT_TRUE(
+      RegKey(HKEY_CURRENT_USER, bar_path.c_str(), KEY_QUERY_VALUE).Valid());
+
+  // Non-recursive delete of Bar from itself should fail.
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, bar_path.c_str(), KEY_QUERY_VALUE));
+  ASSERT_NE(ERROR_SUCCESS, key.DeleteKey(L"", RegKey::RecursiveDelete(false)));
+  key.Close();
+  ASSERT_TRUE(
+      RegKey(HKEY_CURRENT_USER, root_key().c_str(), KEY_QUERY_VALUE).Valid());
+
+  // Non-recursive delete of the subkey and then root_key() should succeed.
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Open(HKEY_CURRENT_USER, bar_path.c_str(), KEY_QUERY_VALUE));
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.DeleteKey(L"Foo", RegKey::RecursiveDelete(false)));
+  ASSERT_EQ(ERROR_SUCCESS, key.DeleteKey(L"", RegKey::RecursiveDelete(false)));
+  key.Close();
+  ASSERT_FALSE(
+      RegKey(HKEY_CURRENT_USER, bar_path.c_str(), KEY_QUERY_VALUE).Valid());
+}
+
 TEST_F(RegistryTest, RecursiveDelete) {
   RegKey key;
   // Create root_key()
@@ -227,13 +270,6 @@ TEST_F(RegistryTest, RecursiveDelete) {
   ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(L"TestValue", L"TestData"));
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, key_path.c_str(), KEY_READ));
-
-  ASSERT_EQ(ERROR_SUCCESS,
-            key.Open(HKEY_CURRENT_USER, root_key().c_str(), KEY_WRITE));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L""));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Bar\\Foo"));
-  ASSERT_NE(ERROR_SUCCESS, key.DeleteEmptyKey(L"Bar"));
-  ASSERT_EQ(ERROR_SUCCESS, key.DeleteEmptyKey(L"Foo"));
 
   ASSERT_EQ(ERROR_SUCCESS,
             key.Open(HKEY_CURRENT_USER, key_path.c_str(), KEY_CREATE_SUB_KEY));
@@ -464,12 +500,22 @@ TEST_F(RegistryTest, DeleteWithInvalidRegKey) {
   static const wchar_t kFooName[] = L"foo";
 
   EXPECT_EQ(key.DeleteKey(kFooName), ERROR_INVALID_HANDLE);
-  EXPECT_EQ(key.DeleteEmptyKey(kFooName), ERROR_INVALID_HANDLE);
   EXPECT_EQ(key.DeleteValue(kFooName), ERROR_INVALID_HANDLE);
 }
 
+// A test harness for tests of RegKey::DeleteKey; parameterized on whether to
+// perform non-recursive or recursive deletes.
+class DeleteKeyRegistryTest
+    : public RegistryTest,
+      public ::testing::WithParamInterface<RegKey::RecursiveDelete> {
+ protected:
+  DeleteKeyRegistryTest() = default;
+
+ private:
+};
+
 // Test that DeleteKey does not follow symbolic links.
-TEST_F(RegistryTest, DeleteDoesNotFollowLinks) {
+TEST_P(DeleteKeyRegistryTest, DoesNotFollowLinks) {
   // Create a subkey that should not be deleted.
   std::wstring target_path = root_key() + L"\\LinkTarget";
   {
@@ -513,7 +559,7 @@ TEST_F(RegistryTest, DeleteDoesNotFollowLinks) {
 
   // Now delete the link and ensure that it was deleted, but not the target.
   ASSERT_EQ(RegKey(HKEY_CURRENT_USER, root_key().c_str(), KEY_READ)
-                .DeleteKey(L"LinkSource"),
+                .DeleteKey(L"LinkSource", GetParam()),
             ERROR_SUCCESS);
   {
     RegKey source;
@@ -526,6 +572,13 @@ TEST_F(RegistryTest, DeleteDoesNotFollowLinks) {
               ERROR_SUCCESS);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(NonRecursive,
+                         DeleteKeyRegistryTest,
+                         ::testing::Values(RegKey::RecursiveDelete(false)));
+INSTANTIATE_TEST_SUITE_P(Recursive,
+                         DeleteKeyRegistryTest,
+                         ::testing::Values(RegKey::RecursiveDelete(true)));
 
 // A test harness for tests that use HKLM to test WoW redirection and such.
 // TODO(https://crbug.com/377917): The tests here that write to the registry are
