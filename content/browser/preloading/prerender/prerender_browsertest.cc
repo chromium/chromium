@@ -11923,12 +11923,23 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
                    web_contents_impl());
 }
 
-// TODO(crbug.com/1475447): Re-enable this test
 IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
-                       DISABLED_BackNavigationOfCloneWebContents) {
+                       BackNavigationOfCloneWebContents) {
   const GURL url1 = GetUrl("/title1.html");
   const GURL url2 = GetCrossSiteUrl("/title2.html");
   PerformInitialNavigations(web_contents_impl(), url1, url2);
+
+  // Whether the navigation from `url1` to `url2` swapped BrowsingInstances
+  // depends on test parameterization and additional configuration options that
+  // are not particularly relevant for the intended scope of this test. So we'll
+  // just handle both possibilities as part of this test.
+  SiteInstanceImpl* prev_site_instance = web_contents_impl()
+                                             ->GetController()
+                                             .GetEntryAtOffset(-1)
+                                             ->site_instance();
+  const bool original_navs_swapped_browsing_instance =
+      !web_contents_impl()->GetSiteInstance()->IsRelatedSiteInstance(
+          prev_site_instance);
 
   std::unique_ptr<WebContents> new_web_contents_owned =
       web_contents_impl()->Clone();
@@ -11944,9 +11955,13 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   PredictBackNavigation(new_web_contents);
   PerformBackNavigation(new_web_contents);
 
+  const PrerenderBackNavigationEligibility expected_eligibility =
+      original_navs_swapped_browsing_instance
+          ? PrerenderBackNavigationEligibility::kEligible
+          : PrerenderBackNavigationEligibility::kRelatedActiveContents;
   histogram_tester.ExpectUniqueSample(
       "Preloading.PrerenderBackNavigationEligibility.MouseBackButton",
-      PrerenderBackNavigationEligibility::kEligible, 1);
+      expected_eligibility, 1);
   histogram_tester.ExpectUniqueSample(
       "Preloading.Predictor.MouseBackButton.Precision",
       PredictorConfusionMatrix::kTruePositive, 1);
@@ -11959,7 +11974,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderSessionHistoryBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Preloading.Prerender.Attempt.MouseBackButton.Recall",
       PredictorConfusionMatrix::kTruePositive, 1);
-  ExpectAttemptUkm(ukm_recorder, true, PreloadingEligibility::kEligible,
+  ExpectAttemptUkm(ukm_recorder, true,
+                   ToPreloadingEligibility(expected_eligibility),
                    new_web_contents);
 }
 
