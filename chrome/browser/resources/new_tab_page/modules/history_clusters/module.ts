@@ -83,6 +83,15 @@ export class HistoryClustersModuleElement extends I18nMixin
         value: null,
       },
 
+      /**
+         The discounts displayed on the visit tiles of this element, could be
+         empty.
+       */
+      discounts: {
+        type: Array,
+        value: [],
+      },
+
       searchResultPage: Object,
 
       overflowScroll_: {
@@ -95,6 +104,7 @@ export class HistoryClustersModuleElement extends I18nMixin
 
   cluster: Cluster;
   cart: Cart|null;
+  discounts: string[];
   layoutType: LayoutType;
   searchResultPage: URLVisit;
   private setDisabledModulesListenerId_: number|null = null;
@@ -309,6 +319,22 @@ async function createElement(): Promise<HistoryClustersModuleElement|null> {
                                  visit.hasUrlKeyedImage && visit.isKnownToSync)
                          .length;
   const visitCount = element.cluster.visits.length;
+  if (loadTimeData.getBoolean('historyClustersModuleDiscountsEnabled')) {
+    const {discounts} = await HistoryClustersProxyImpl.getInstance()
+                            .handler.getDiscountsForCluster(clusters[0]);
+    for (const visit of clusters[0].visits) {
+      let discountInValue = '';
+      for (const [url, discount] of discounts) {
+        if (url.url === visit.normalizedUrl.url && discount.length > 0) {
+          discountInValue = discount[0].valueInText;
+          visit.normalizedUrl.url = discount[0].annotatedVisitUrl.url;
+        }
+      }
+      element.discounts.push(discountInValue);
+    }
+  } else {
+    element.discounts = Array(visitCount).fill('');
+  }
 
   // Calculate which layout to use.
   if (imageCount >= LAYOUT_3_MIN_IMAGE_VISITS) {

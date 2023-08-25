@@ -42,6 +42,7 @@ if (optimize_webui) {
   # Transpiled Mojo JS files to be excluded from the bundle in optimized builds.
   mojo_js_files = [
     "cart.mojom-webui.js",
+    "discount.mojom-webui.js",
     "chrome_cart.mojom-webui.js",
     "drive.mojom-webui.js",
     "feed.mojom-webui.js",

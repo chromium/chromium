@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 import {Cart} from 'chrome://new-tab-page/cart.mojom-webui.js';
+import {Discount} from 'chrome://new-tab-page/discount.mojom-webui.js';
 import {Cluster, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://new-tab-page/history_clusters.mojom-webui.js';
 import {LayoutType} from 'chrome://new-tab-page/history_clusters_layout_type.mojom-webui.js';
-import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, PageImageServiceBrowserProxy} from 'chrome://new-tab-page/lazy_load.js';
+import {DismissModuleEvent, HistoryClusterElementType, HistoryClusterImageDisplayState, historyClustersDescriptor, HistoryClustersModuleElement, HistoryClustersProxyImpl, LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS, LAYOUT_2_MIN_IMAGE_VISITS, LAYOUT_2_MIN_VISITS, LAYOUT_3_MIN_IMAGE_VISITS, LAYOUT_3_MIN_VISITS, PageImageServiceBrowserProxy, TileModuleElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -90,10 +92,15 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
             .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
-  async function initializeModule(clusters: Cluster[], cart: Cart|null = null):
-      Promise<HistoryClustersModuleElement> {
+  async function initializeModule(
+      clusters: Cluster[], cart: Cart|null = null,
+      discounts: Map<Url, Discount[]> =
+          new Map<Url, Discount[]>()): Promise<HistoryClustersModuleElement> {
     handler.setResultFor('getClusters', Promise.resolve({clusters}));
     handler.setResultFor('getCartForCluster', Promise.resolve({cart}));
+    handler.setResultFor(
+        'getDiscountsForCluster', Promise.resolve({discounts}));
+
     const moduleElement = await historyClustersDescriptor.initialize(0) as
         HistoryClustersModuleElement;
     await handler.whenCalled('getClusters');
@@ -641,6 +648,68 @@ suite('NewTabPageModulesHistoryClustersModuleTest', () => {
       const clusterId = await handler.whenCalled('recordClick');
       assertEquals(BigInt(111), clusterId);
       await waitForUsageEvent;
+    });
+  });
+
+  suite('DiscountChipRendering', () => {
+    test('Discount is not initialized when feature is disabled', async () => {
+      loadTimeData.overrideValues({
+        historyClustersModuleDiscountsEnabled: false,
+      });
+
+      const moduleElement = await initializeModule(
+          [createLayoutSuitableSampleCluster(LayoutType.kLayout1)]);
+
+      assertEquals(0, handler.getCallCount('getDiscountsForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      assertEquals(moduleElement.discounts.length, LAYOUT_1_MIN_VISITS);
+      for (const discount of moduleElement.discounts) {
+        assertEquals('', discount);
+      }
+    });
+
+    test('Discount initialization', async () => {
+      loadTimeData.overrideValues({
+        historyClustersModuleDiscountsEnabled: true,
+      });
+
+      const cluster = createLayoutSuitableSampleCluster(LayoutType.kLayout3);
+      // Ignore SRP visit when compare length.
+      assertEquals(LAYOUT_3_MIN_VISITS, cluster.visits.length - 1);
+      const discoutMap = new Map<Url, Discount[]>();
+      discoutMap.set(cluster.visits[2]!.normalizedUrl, [{
+                       valueInText: '15% off',
+                       annotatedVisitUrl: {url: 'https://www.annotated.com/1'},
+                     }]);
+      discoutMap.set(cluster.visits[3]!.normalizedUrl, [{
+                       valueInText: '$10 off',
+                       annotatedVisitUrl: {url: 'https://www.annotated.com/2'},
+                     }]);
+
+      const moduleElement = await initializeModule([cluster], null, discoutMap);
+
+      assertEquals(1, handler.getCallCount('getDiscountsForCluster'));
+      assertTrue(!!moduleElement);
+      await waitAfterNextRender(moduleElement);
+      assertEquals(moduleElement.discounts.length, LAYOUT_3_MIN_VISITS);
+
+      const expectedDiscounts = ['', '15% off', '$10 off', ''];
+      const visitTiles: TileModuleElement[] =
+          Array.from(moduleElement.shadowRoot!.querySelectorAll(
+              'ntp-history-clusters-tile'));
+      for (let i = 0; i < moduleElement.discounts.length; i++) {
+        assertEquals(expectedDiscounts[i], moduleElement.discounts[i]);
+        assertEquals(expectedDiscounts[i], visitTiles[i]!.discount);
+      }
+      assertEquals(
+          'https://www.annotated.com/1',
+          visitTiles[1]!.visit.normalizedUrl.url);
+      assertEquals('15% off', visitTiles[1]!.discount);
+      assertEquals(
+          'https://www.annotated.com/2',
+          visitTiles[2]!.visit.normalizedUrl.url);
+      assertEquals('$10 off', visitTiles[2]!.discount);
     });
   });
 });

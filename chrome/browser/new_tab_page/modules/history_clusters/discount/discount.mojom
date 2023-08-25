@@ -1,0 +1,16 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.history_clusters.discount.mojom;
+
+import "url/mojom/url.mojom";
+
+// Information needed to show discount for one visit in Resume browsing module.
+struct Discount {
+  // Text indicating the discount value (e.g. 10$ off).
+  string value_in_text;
+  // Original visit URL plus UTM annotations to indicate that
+  // this visit has an associated discount.
+  url.mojom.Url annotated_visit_url;
+};

@@ -13,6 +13,7 @@ mojom("mojo_bindings") {
   use_typescript_sources = true
   public_deps = [
     "//chrome/browser/new_tab_page/modules/history_clusters/cart:mojo_bindings",
+    "//chrome/browser/new_tab_page/modules/history_clusters/discount:mojo_bindings",
     "//components/history_clusters/public/mojom:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",

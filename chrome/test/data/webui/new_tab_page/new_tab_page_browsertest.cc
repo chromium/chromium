@@ -281,6 +281,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
           "CartTileRendering')");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       DiscountChipRendering) {
+  RunTest("new_tab_page/modules/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
+          "DiscountChipRendering')");
+}
+
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest, Tile) {
   RunTest("new_tab_page/modules/history_clusters/tile_test.js", "mocha.run()");
 }
