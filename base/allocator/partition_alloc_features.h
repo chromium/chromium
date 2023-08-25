@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -164,15 +165,18 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanStackScanning);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocDCScan);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanImmediateFreeing);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocPCScanEagerClearing);
-BASE_EXPORT BASE_DECLARE_FEATURE(
-    kPartitionAllocStraightenLargerSlotSpanFreeLists);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists);
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseDenserDistribution);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMemoryReclaimer);
 extern const BASE_EXPORT base::FeatureParam<TimeDelta>
     kPartitionAllocMemoryReclaimerInterval;
+BASE_EXPORT BASE_DECLARE_FEATURE(
+    kPartitionAllocStraightenLargerSlotSpanFreeLists);
+extern const BASE_EXPORT
+    base::FeatureParam<partition_alloc::StraightenLargerSlotSpanFreeListsMode>
+        kPartitionAllocStraightenLargerSlotSpanFreeListsMode;
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists);
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocSortActiveSlotSpans);
 
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPageAllocatorRetryOnCommitFailure);

@@ -198,6 +198,14 @@ struct PartitionOptions {
 #endif
 };
 
+// When/if free lists should be "straightened" when calling
+// PartitionRoot::PurgeMemory(..., accounting_only=false).
+enum class StraightenLargerSlotSpanFreeListsMode {
+  kNever,
+  kOnlyWhenUnprovisioning,
+  kAlways,
+};
+
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
@@ -823,19 +831,23 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   // Enables/disables the free list straightening for larger slot spans in
   // PurgeMemory().
-  static void SetStraightenLargerSlotSpanFreeListsEnabled(bool new_value);
+  static void SetStraightenLargerSlotSpanFreeListsMode(
+      StraightenLargerSlotSpanFreeListsMode new_value);
   // Enables/disables the free list sorting for smaller slot spans in
   // PurgeMemory().
   static void SetSortSmallerSlotSpanFreeListsEnabled(bool new_value);
   // Enables/disables the sorting of active slot spans in PurgeMemory().
   static void SetSortActiveSlotSpansEnabled(bool new_value);
 
-  static bool IsStraightenLargerSlotSpanFreeListsEnabled() {
+  static StraightenLargerSlotSpanFreeListsMode
+  GetStraightenLargerSlotSpanFreeListsMode() {
     return straighten_larger_slot_span_free_lists_;
   }
 
  private:
-  static inline bool straighten_larger_slot_span_free_lists_ = true;
+  static inline StraightenLargerSlotSpanFreeListsMode
+      straighten_larger_slot_span_free_lists_ =
+          StraightenLargerSlotSpanFreeListsMode::kOnlyWhenUnprovisioning;
   static inline bool sort_smaller_slot_span_free_lists_ = true;
   static inline bool sort_active_slot_spans_ = false;
 

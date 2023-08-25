@@ -21,6 +21,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
@@ -1329,9 +1330,11 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif
 
-  partition_alloc::PartitionRoot::SetStraightenLargerSlotSpanFreeListsEnabled(
+  partition_alloc::PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
       base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocStraightenLargerSlotSpanFreeLists));
+          base::features::kPartitionAllocStraightenLargerSlotSpanFreeLists)
+          ? features::kPartitionAllocStraightenLargerSlotSpanFreeListsMode.Get()
+          : partition_alloc::StraightenLargerSlotSpanFreeListsMode::kNever);
   partition_alloc::PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocSortSmallerSlotSpanFreeLists));

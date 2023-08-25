@@ -5,6 +5,7 @@
 #include "base/allocator/partition_alloc_features.h"
 
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/features.h"
@@ -280,6 +281,23 @@ BASE_FEATURE(kPartitionAllocDCScan,
 BASE_FEATURE(kPartitionAllocStraightenLargerSlotSpanFreeLists,
              "PartitionAllocStraightenLargerSlotSpanFreeLists",
              FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<
+    partition_alloc::StraightenLargerSlotSpanFreeListsMode>::Option
+    kPartitionAllocStraightenLargerSlotSpanFreeListsModeOption[] = {
+        {partition_alloc::StraightenLargerSlotSpanFreeListsMode::
+             kOnlyWhenUnprovisioning,
+         "only-when-unprovisioning"},
+        {partition_alloc::StraightenLargerSlotSpanFreeListsMode::kAlways,
+         "always"},
+};
+const base::FeatureParam<partition_alloc::StraightenLargerSlotSpanFreeListsMode>
+    kPartitionAllocStraightenLargerSlotSpanFreeListsMode = {
+        &kPartitionAllocStraightenLargerSlotSpanFreeLists,
+        "mode",
+        partition_alloc::StraightenLargerSlotSpanFreeListsMode::
+            kOnlyWhenUnprovisioning,
+        &kPartitionAllocStraightenLargerSlotSpanFreeListsModeOption,
+};
 
 // Whether to sort free lists for smaller slot spans in PurgeMemory().
 BASE_FEATURE(kPartitionAllocSortSmallerSlotSpanFreeLists,

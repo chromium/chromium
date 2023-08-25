@@ -430,7 +430,8 @@ class PartitionAllocTest
   }
 
   void SetUp() override {
-    PartitionRoot::SetStraightenLargerSlotSpanFreeListsEnabled(true);
+    PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
+        StraightenLargerSlotSpanFreeListsMode::kOnlyWhenUnprovisioning);
     PartitionRoot::SetSortSmallerSlotSpanFreeListsEnabled(true);
     PartitionRoot::SetSortActiveSlotSpansEnabled(true);
     PartitionAllocGlobalInit(HandleOOM);
@@ -3303,7 +3304,7 @@ TEST_P(PartitionAllocTest, PurgeDiscardableManyPages) {
   }
 }
 
-TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
+TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListStraightening) {
   // This sub-test tests truncation of the provisioned slots in a trickier
   // case where the freelist is rewritten.
   allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
@@ -3363,11 +3364,84 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListRewrite) {
   void* ptr2b = allocator.root()->Alloc(
       SystemPageSize() - ExtraAllocSize(allocator), type_name);
   PA_EXPECT_PTR_EQ(ptr2, ptr2b);
+  EXPECT_FALSE(slot_span->get_freelist_head());  // ptr4 was unprovisioned
+  void* ptr4b = allocator.root()->Alloc(
+      SystemPageSize() - ExtraAllocSize(allocator), type_name);
+  PA_EXPECT_PTR_EQ(ptr4, ptr4b);
   EXPECT_FALSE(slot_span->get_freelist_head());
 
+  // Free objects such that they're in this order on the list:
+  //   head -> ptr2 -> ptr3 -> ptr1
+  // However, ptr4 is still unfreed preventing any unprovisioning.
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr2);
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  // The test by default runs in
+  // StraightenLargerSlotSpanFreeListsMode::kOnlyWhenUnprovisioning mode, so the
+  // freelist wasn't modified, and the allocations will happen in LIFO order.
+  ptr2b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr2, ptr2b);
+  void* ptr3b = allocator.root()->Alloc(
+      SystemPageSize() - ExtraAllocSize(allocator), type_name);
+  PA_EXPECT_PTR_EQ(ptr3, ptr3b);
+  ptr1b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr1, ptr1b);
+  EXPECT_FALSE(slot_span->get_freelist_head());
+
+  // Free objects such that they're in this order on the list:
+  //   head -> ptr2 -> ptr3 -> ptr1
+  // However, ptr4 is still unfreed preventing any unprovisioning.
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr2);
+  PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
+      StraightenLargerSlotSpanFreeListsMode::kAlways);
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  // In StraightenLargerSlotSpanFreeListsMode::kAlways mode, the freelist is
+  // ordered from left to right.
+  ptr1b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr1, ptr1b);
+  ptr2b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr2, ptr2b);
+  ptr3b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr3, ptr3b);
+  EXPECT_FALSE(slot_span->get_freelist_head());
+
+  // Free objects such that they're in this order on the list:
+  //   head -> ptr2 -> ptr4 -> ptr1
+  // ptr3 is still unfreed preventing unprovisioning of ptr1 and ptr2, but not
+  // ptr4.
+  allocator.root()->Free(ptr1);
+  allocator.root()->Free(ptr4);
+  allocator.root()->Free(ptr2);
+  PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
+      StraightenLargerSlotSpanFreeListsMode::kNever);
+  allocator.root()->PurgeMemory(PurgeFlags::kDiscardUnusedSystemPages);
+  // In StraightenLargerSlotSpanFreeListsMode::kNever mode, unprovisioned
+  // entries willbe removed form the freelist but the list won't be reordered.
+  ptr2b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr2, ptr2b);
+  ptr1b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr1, ptr1b);
+  EXPECT_FALSE(slot_span->get_freelist_head());
+  ptr4b = allocator.root()->Alloc(SystemPageSize() - ExtraAllocSize(allocator),
+                                  type_name);
+  PA_EXPECT_PTR_EQ(ptr4, ptr4b);
+  EXPECT_FALSE(slot_span->get_freelist_head());
+
+  // Clean up.
   allocator.root()->Free(ptr1);
   allocator.root()->Free(ptr2);
   allocator.root()->Free(ptr3);
+  allocator.root()->Free(ptr4);
 }
 
 TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {

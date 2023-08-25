@@ -434,12 +434,10 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   }
   // First, do the work of calculating the discardable bytes. Don't actually
   // discard anything if `accounting_only` is set.
+  size_t unprovisioned_bytes = 0;
+  uintptr_t begin_addr = slot_span_start + (num_provisioned_slots * slot_size);
+  uintptr_t end_addr = begin_addr + (slot_size * truncated_slots);
   if (truncated_slots) {
-    size_t unprovisioned_bytes = 0;
-    uintptr_t begin_addr =
-        slot_span_start + (num_provisioned_slots * slot_size);
-    uintptr_t end_addr = begin_addr + (slot_size * truncated_slots);
-
     // The slots that do not contain discarded pages should not be included to
     // |truncated_slots|. Detects those slots and fixes |truncated_slots| and
     // |num_provisioned_slots| accordingly.
@@ -461,77 +459,90 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       unprovisioned_bytes = end_addr - begin_addr;
       discardable_bytes += unprovisioned_bytes;
     }
+  }
 
-    // If there are any unprovisioned slots, and `accounting_only` isn't set,
-    // then take action to remove these slots from the free list. "straighten"
-    // it, while at it (if requested), to help reduce fragmentation in the
-    // future.
-    if (unprovisioned_bytes && !accounting_only) {
-      PA_DCHECK(truncated_slots > 0);
-      size_t new_unprovisioned_slots =
-          truncated_slots + slot_span->num_unprovisioned_slots;
-      PA_DCHECK(new_unprovisioned_slots <= bucket->get_slots_per_span());
-      slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
+  // If `accounting_only` isn't set, then take action to remove unprovisioned
+  // slots from the free list (if any) and "straighten" the list (if
+  // requested) to help reduce fragmentation in the future. Then
+  // discard/decommit the pages hosting the unprovisioned slots.
+  if (!accounting_only) {
+    auto straighten_mode =
+        PartitionRoot::GetStraightenLargerSlotSpanFreeListsMode();
+    bool straighten =
+        straighten_mode == StraightenLargerSlotSpanFreeListsMode::kAlways ||
+        (straighten_mode ==
+             StraightenLargerSlotSpanFreeListsMode::kOnlyWhenUnprovisioning &&
+         unprovisioned_bytes);
 
-      size_t num_new_freelist_entries = 0;
-      internal::EncodedNextFreelistEntry* back = nullptr;
-      if (PartitionRoot::IsStraightenLargerSlotSpanFreeListsEnabled()) {
-        // Rewrite the freelist to "straighten" it. The entries will be ordered
-        // based on how close they're to the slot span start. This reduce
-        // chances of allocating further slots, in hope that we'll get some
-        // unused pages at the end of the span that can be unprovisioned.
-        for (size_t slot_index = 0; slot_index < num_provisioned_slots;
-             ++slot_index) {
-          if (slot_usage[slot_index]) {
-            continue;
-          }
-          // Add the slot to the end of the list. The most proper thing to do
-          // would be to null-terminate the new entry with:
-          //   auto* entry = EncodedNextFreelistEntry::EmplaceAndInitNull(
-          //       slot_span_start + (slot_size * slot_index));
-          // But no need to do this, as it's last-ness is likely temporary, and
-          // the next iteration's back->SetNext(), or the post-loop
-          // EncodedNextFreelistEntry::EmplaceAndInitNull(back) will override it
-          // anyway.
-          auto* entry = static_cast<EncodedNextFreelistEntry*>(
-              SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
+    PA_DCHECK((unprovisioned_bytes > 0) == (truncated_slots > 0));
+    size_t new_unprovisioned_slots =
+        truncated_slots + slot_span->num_unprovisioned_slots;
+    PA_DCHECK(new_unprovisioned_slots <= bucket->get_slots_per_span());
+    slot_span->num_unprovisioned_slots = new_unprovisioned_slots;
+
+    size_t num_new_freelist_entries = 0;
+    internal::EncodedNextFreelistEntry* back = nullptr;
+    if (straighten) {
+      // Rewrite the freelist to "straighten" it. This achieves two things:
+      // getting rid of unprovisioned entries, ordering etnries based on how
+      // close they're to the slot span start. This reduces chances of
+      // allocating further slots, in hope that we'll get some unused pages at
+      // the end of the span that can be unprovisioned, thus reducing
+      // fragmentation.
+      for (size_t slot_index = 0; slot_index < num_provisioned_slots;
+           ++slot_index) {
+        if (slot_usage[slot_index]) {
+          continue;
+        }
+        // Add the slot to the end of the list. The most proper thing to do
+        // would be to null-terminate the new entry with:
+        //   auto* entry = EncodedNextFreelistEntry::EmplaceAndInitNull(
+        //       slot_span_start + (slot_size * slot_index));
+        // But no need to do this, as it's last-ness is likely temporary, and
+        // the next iteration's back->SetNext(), or the post-loop
+        // EncodedNextFreelistEntry::EmplaceAndInitNull(back) will override it
+        // anyway.
+        auto* entry = static_cast<EncodedNextFreelistEntry*>(
+            SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
+        if (num_new_freelist_entries) {
+          back->SetNext(entry);
+        } else {
+          slot_span->SetFreelistHead(entry);
+        }
+        back = entry;
+        num_new_freelist_entries++;
+      }
+    } else if (unprovisioned_bytes) {
+      // If there are any unprovisioned entries, scan the list to remove them,
+      // without "straightening" it.
+      uintptr_t first_unprovisioned_slot =
+          slot_span_start + (num_provisioned_slots * slot_size);
+      bool skipped = false;
+      for (EncodedNextFreelistEntry* entry = slot_span->get_freelist_head();
+           entry; entry = entry->GetNext(slot_size)) {
+        uintptr_t entry_addr = SlotStartPtr2Addr(entry);
+        if (entry_addr >= first_unprovisioned_slot) {
+          skipped = true;
+          continue;
+        }
+        // If the last visited entry was skipped (due to being unprovisioned),
+        // update the next pointer of the last not skipped entry (or the head
+        // if no entry exists). Otherwise the link is already correct.
+        if (skipped) {
           if (num_new_freelist_entries) {
             back->SetNext(entry);
           } else {
             slot_span->SetFreelistHead(entry);
           }
-          back = entry;
-          num_new_freelist_entries++;
+          skipped = false;
         }
-      } else {
-        // Scan the list to remove unprovisioned entries, without
-        // "straightening" it.
-        uintptr_t first_unprovisioned_slot =
-            slot_span_start + (num_provisioned_slots * slot_size);
-        bool skipped = false;
-        for (EncodedNextFreelistEntry* entry = slot_span->get_freelist_head();
-             entry; entry = entry->GetNext(slot_size)) {
-          uintptr_t entry_addr = SlotStartPtr2Addr(entry);
-          if (entry_addr >= first_unprovisioned_slot) {
-            skipped = true;
-            continue;
-          }
-          // If the last visited entry was skipped (due to being unprovisioned),
-          // updated the next pointer of the last not skipped entry (or the head
-          // if no entry exists). Otherwise the link is already correct.
-          if (skipped) {
-            if (num_new_freelist_entries) {
-              back->SetNext(entry);
-            } else {
-              slot_span->SetFreelistHead(entry);
-            }
-            skipped = false;
-          }
-          back = entry;
-          num_new_freelist_entries++;
-        }
+        back = entry;
+        num_new_freelist_entries++;
       }
-      // Now null-terminate the last entry, or the head if no entry exists.
+    }
+    // If any of the above loops were executed, null-terminate the last entry,
+    // or the head if no entry exists.
+    if (straighten || unprovisioned_bytes) {
       if (num_new_freelist_entries) {
         PA_DCHECK(back);
         EncodedNextFreelistEntry::EmplaceAndInitNull(back);
@@ -548,12 +559,14 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
       }
       PA_DCHECK(num_new_freelist_entries ==
                 num_provisioned_slots - slot_span->num_allocated_slots);
+    }
 
 #if BUILDFLAG(USE_FREESLOT_BITMAP)
-      FreeSlotBitmapReset(slot_span_start + (slot_size * num_provisioned_slots),
-                          end_addr, slot_size);
+    FreeSlotBitmapReset(slot_span_start + (slot_size * num_provisioned_slots),
+                        end_addr, slot_size);
 #endif
 
+    if (unprovisioned_bytes) {
       if (!kUseLazyCommit) {
         // Discard the memory.
         ScopedSyscallTimer timer{root};
@@ -591,8 +604,8 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     // The first address we can safely discard is just after the freelist
     // pointer. There's one quirk: if the freelist pointer is actually nullptr,
     // we can discard that pointer value too (except on Windows).
-    uintptr_t begin_addr = slot_span_start + (i * slot_size);
-    uintptr_t end_addr = begin_addr + slot_size;
+    begin_addr = slot_span_start + (i * slot_size);
+    end_addr = begin_addr + slot_size;
 
     bool can_discard_free_list_pointer = false;
 #if !BUILDFLAG(IS_WIN)
@@ -1749,8 +1762,8 @@ ThreadCache* PartitionRoot::MaybeInitThreadCache() {
 }
 
 // static
-void PartitionRoot::SetStraightenLargerSlotSpanFreeListsEnabled(
-    bool new_value) {
+void PartitionRoot::SetStraightenLargerSlotSpanFreeListsMode(
+    StraightenLargerSlotSpanFreeListsMode new_value) {
   straighten_larger_slot_span_free_lists_ = new_value;
 }
 
