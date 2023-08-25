@@ -45,6 +45,9 @@ export function getEmptyState(): State {
   return {
     allEntries: {},
     currentDirectory: undefined,
+    device: {
+      connection: chrome.fileManagerPrivate.DeviceConnectionState.ONLINE,
+    },
     search: {
       query: undefined,
       status: undefined,

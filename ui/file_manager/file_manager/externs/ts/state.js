@@ -375,10 +375,20 @@ export let Volume;
 export let VolumeMap;
 
 /**
+ * This carries the state related to physical user device.
+ *
+ * @typedef {{
+ *   connection: (chrome.fileManagerPrivate.DeviceConnectionState),
+ * }}
+ */
+export let Device;
+
+/**
  * Files app's state.
  * @typedef {{
  *   allEntries: !Object<!FileKey, !FileData>,
  *   currentDirectory: (CurrentDirectory|undefined),
+ *   device: !Device,
  *   search: (!SearchData|undefined),
  *   navigation: !NavigationTree,
  *   volumes: !Object<!VolumeId, !Volume>,

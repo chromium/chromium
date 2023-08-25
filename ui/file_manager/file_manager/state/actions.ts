@@ -6,6 +6,7 @@ import {AddChildEntriesAction, ClearStaleCachedEntriesAction, UpdateMetadataActi
 import {ChangeDirectoryAction, ChangeFileTasksAction, ChangeSelectionAction, UpdateDirectoryContentAction} from './actions/current_directory.js';
 import {AddAndroidAppsAction} from './ducks/android_apps.js';
 import {UpdateBulkPinProgressAction} from './ducks/bulk_pinning.js';
+import {UpdateDeviceConnectionStateAction} from './ducks/device.js';
 import {AddFolderShortcutAction, RefreshFolderShortcutAction, RemoveFolderShortcutAction} from './ducks/folder_shortcuts.js';
 import {RefreshNavigationRootsAction, UpdateNavigationEntryAction} from './ducks/navigation.js';
 import {UpdatePreferencesAction} from './ducks/preferences.js';
@@ -27,7 +28,8 @@ export type Action = AddVolumeAction|RemoveVolumeAction|
     UpdateMetadataAction|RefreshFolderShortcutAction|AddFolderShortcutAction|
     RemoveFolderShortcutAction|AddAndroidAppsAction|AddChildEntriesAction|
     UpdateNavigationEntryAction|UpdateBulkPinProgressAction|
-    UpdatePreferencesAction|UpdateIsInteractiveVolumeAction;
+    UpdatePreferencesAction|UpdateIsInteractiveVolumeAction|
+    UpdateDeviceConnectionStateAction;
 
 
 /** Enum to identify every Action in Files app. */
@@ -53,4 +55,5 @@ export const enum ActionType {
   UPDATE_BULK_PIN_PROGRESS = 'update-bulk-pin-progress',
   UPDATE_PREFERENCES = 'update-preferences',
   UPDATE_IS_INTERACTIVE_VOLUME = 'update-is-interactive-volume',
+  UPDATE_DEVICE_CONNECTION_STATE = 'update-device-connection-state',
 }

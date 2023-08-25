@@ -32,8 +32,9 @@ import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfa
 import {ForegroundWindow} from '../../externs/foreground_window.js';
 import {PropStatus} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
-import {updatePreferences} from '../../state/ducks/preferences.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
+import {updateDeviceConnectionState} from '../../state/ducks/device.js';
+import {updatePreferences} from '../../state/ducks/preferences.js';
 import {updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {trashRootKey} from '../../state/ducks/volumes.js';
@@ -1810,7 +1811,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   updateDeviceConnectionState_(state) {
-    // TODO(jboulic): Update device connection state in the store.
+    this.store_.dispatch(updateDeviceConnectionState({connection: state}));
   }
 
   /**

@@ -6,6 +6,7 @@ import {State} from '../../externs/ts/state.js';
 import {Action, ActionType} from '../actions.js';
 import {androidAppsReducersMap} from '../ducks/android_apps.js';
 import {bulkPinningReducersMap} from '../ducks/bulk_pinning.js';
+import {deviceReducersMap} from '../ducks/device.js';
 import {folderShortcutsReducersMap} from '../ducks/folder_shortcuts.js';
 import {navigationReducersMap} from '../ducks/navigation.js';
 import {preferencesReducersMap} from '../ducks/preferences.js';
@@ -26,6 +27,7 @@ const rootReducersMap = new Map([
   ...folderShortcutsReducersMap,
   ...navigationReducersMap,
   ...preferencesReducersMap,
+  ...deviceReducersMap,
 ]);
 
 /**
