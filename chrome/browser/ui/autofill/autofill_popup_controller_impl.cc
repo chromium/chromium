@@ -211,7 +211,9 @@ AutofillPopupControllerImpl::GetAutofillSuggestionTriggerSource() const {
 
 bool AutofillPopupControllerImpl::
     ShouldIgnoreMouseObservedOutsideItemBoundsCheck() const {
-  return should_ignore_mouse_observed_outside_item_bounds_check_;
+  return should_ignore_mouse_observed_outside_item_bounds_check_ ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillPopupDisablePaintChecks);
 }
 
 void AutofillPopupControllerImpl::UpdateDataListValues(

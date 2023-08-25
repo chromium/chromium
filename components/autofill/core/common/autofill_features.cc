@@ -480,6 +480,13 @@ BASE_FEATURE(kAutofillPassRendererFormsToPasswordManager,
              "AutofillPassRendererFormsToPasswordManager",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If the feature is enabled, paint checks over individual `PopupCellView`s (to
+// verify that a user's cursor has been outside the cell before accepting it)
+// are disabled.
+BASE_FEATURE(kAutofillPopupDisablePaintChecks,
+             "kutofillPopupDisablePaintChecks",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If the feature is enabled, FormTracker's probable-form-submission detection
 // is disabled and replaced with browser-side detection.
 // TODO(crbug/1117451): Remove once it works.
