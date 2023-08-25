@@ -45,6 +45,7 @@ struct AppUpdateExpectation {
   AppUpdateExpectation(const std::string& app_id,
                        const base::Version& from_version,
                        const base::Version& to_version,
+                       bool is_install,
                        bool should_update,
                        bool allow_rollback,
                        const std::string& target_version_prefix,
@@ -55,6 +56,7 @@ struct AppUpdateExpectation {
   const std::string app_id;
   const base::Version from_version;
   const base::Version to_version;
+  const bool is_install;
   const bool should_update;
   const bool allow_rollback;
   const std::string target_version_prefix;
@@ -161,6 +163,10 @@ void CheckForUpdate(UpdaterScope scope, const std::string& app_id);
 
 // Invokes the active instance's UpdateService::UpdateAll (via RPC).
 void UpdateAll(UpdaterScope scope);
+
+// Invokes the active instance's UpdateService::Install (via RPC) for an
+// app.
+void InstallAppViaService(UpdaterScope scope, const std::string& app_id);
 
 void GetAppStates(UpdaterScope updater_scope,
                   const base::Value::Dict& expected_app_states);

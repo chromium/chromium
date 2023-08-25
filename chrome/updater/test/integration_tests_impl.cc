@@ -317,6 +317,7 @@ AppUpdateExpectation::AppUpdateExpectation(
     const std::string& app_id,
     const base::Version& from_version,
     const base::Version& to_version,
+    bool is_install,
     bool should_update,
     bool allow_rollback,
     const std::string& target_version_prefix,
@@ -324,6 +325,7 @@ AppUpdateExpectation::AppUpdateExpectation(
     : app_id(app_id),
       from_version(from_version),
       to_version(to_version),
+      is_install(is_install),
       should_update(should_update),
       allow_rollback(allow_rollback),
       target_version_prefix(target_version_prefix),
@@ -539,10 +541,11 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
           {request::GetPathMatcher(test_server->update_path()),
            request::GetContentMatcher({base::StringPrintf(
                R"(.*"appid":"%s",.*)"
-               R"("eventresult":1,"eventtype":3,)"
+               R"("eventresult":1,"eventtype":%d,)"
                R"("nextversion":"%s","previousversion":"%s".*)"
                R"("version":"%s".*)",
-               app.app_id.c_str(), app.to_version.GetString().c_str(),
+               app.app_id.c_str(), app.is_install ? 2 : 3,
+               app.to_version.GetString().c_str(),
                app.from_version.GetString().c_str(),
                app.to_version.GetString().c_str())})},
           ")]}'\n");
@@ -638,6 +641,20 @@ void UpdateAll(UpdaterScope scope) {
   base::RunLoop loop;
   update_service->UpdateAll(
       base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
+  loop.Run();
+}
+
+void InstallAppViaService(UpdaterScope scope, const std::string& app_id) {
+  RegistrationRequest registration;
+  registration.app_id = app_id;
+  registration.version = base::Version({0, 0, 0, 0});
+  scoped_refptr<UpdateService> update_service = CreateUpdateServiceProxy(scope);
+  base::RunLoop loop;
+  update_service->Install(
+      registration, /*client_install_data=*/"", /*install_data_index=*/"",
+      UpdateService::Priority::kForeground, base::DoNothing(),
       base::BindLambdaForTesting(
           [&loop](UpdateService::Result result_unused) { loop.Quit(); }));
   loop.Run();

@@ -339,6 +339,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void RunHandoff(const std::string& app_id) const override {
     RunCommand("run_handoff", {Param("app_id", app_id)});
   }
+
+  void InstallAppViaService(const std::string& app_id) const override {
+    RunCommand("install_app_via_service", {Param("app_id", app_id)});
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {

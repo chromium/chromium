@@ -298,6 +298,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   void RunHandoff(const std::string& app_id) const override {
     updater::test::RunHandoff(updater_scope_, app_id);
   }
+
+  void InstallAppViaService(const std::string& app_id) const override {
+    updater::test::InstallAppViaService(updater_scope_, app_id);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {

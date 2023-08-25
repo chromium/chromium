@@ -35,6 +35,7 @@
 #include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
@@ -263,6 +264,11 @@ class IntegrationTest : public ::testing::Test {
   void RunHandoff(const std::string& app_id) {
     test_commands_->RunHandoff(app_id);
   }
+
+  void InstallAppViaService(const std::string& app_id) {
+    test_commands_->InstallAppViaService(app_id);
+  }
+
 #endif  // BUILDFLAG(IS_WIN)
 
   void SetupFakeUpdaterHigherVersion() {
@@ -1680,6 +1686,44 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
 }
 
 #if !defined(COMPONENT_BUILD)
+
+TEST_F(IntegrationTestDeviceManagement, AppInstall) {
+  const base::Version kApp1Version = base::Version("1.2.3.4");
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_install_default(
+      enterprise_management::INSTALL_DEFAULT_DISABLED);
+  ApplicationSettings app;
+  app.set_app_guid(kAppId1);
+  app.set_install(enterprise_management::INSTALL_ENABLED);
+  omaha_settings.mutable_application_settings()->Add(std::move(app));
+
+  PushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+
+  const base::FilePath crx_path = GetInstallerPath(kAppCRX);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation({kAppId1, base::Version({0, 0, 0, 0}),
+                                kApp1Version,
+                                /*is_install=*/true,
+                                /*should_update=*/true, false, "", crx_path}),
+      });
+
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId1));
+  ASSERT_NO_FATAL_FAILURE(InstallAppViaService(kAppId2));
+  ExpectAppInstalled(kAppId1, kApp1Version);
+  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered(kAppId2));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
   const base::Version kApp1InitialVersion = base::Version("1.2.3.4");
   const base::Version kApp1UpdatedVersion = base::Version("2.3.4.5");
@@ -1719,12 +1763,15 @@ TEST_F(IntegrationTestDeviceManagement, AppUpdateConflictPolicies) {
       {
           AppUpdateExpectation({kAppId1, kApp1InitialVersion,
                                 kApp1UpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/true, false, "", crx_path}),
           AppUpdateExpectation({kAppId2, kApp2InitialVersion,
                                 kApp2UpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/true, false, "", crx_path}),
           AppUpdateExpectation({kAppId3, kApp3InitialVersion,
                                 kApp3UpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/false, false, "", crx_path}),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
@@ -1779,12 +1826,15 @@ TEST_F(IntegrationTestDeviceManagement, CloudPolicyOverridesPlatformPolicy) {
       {
           AppUpdateExpectation({kAppId1, kApp1InitialVersion,
                                 kApp1UpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/true, false, "", crx_path}),
           AppUpdateExpectation({kAppId2, kApp2InitialVersion,
                                 kApp2InitialVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/false, false, "", crx_path}),
           AppUpdateExpectation({kAppId3, kApp3InitialVersion,
                                 kApp3UpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/true, false, "", crx_path}),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
@@ -1823,6 +1873,7 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ExpectAppsUpdateSequence(
       UpdaterScope::kSystem, test_server_.get(),
       {AppUpdateExpectation(kAppId1, kAppInitialVersion, kAppRollbackVersion,
+                            /*is_install=*/false,
                             /*should_update=*/true, /*allow_rollback=*/true,
                             kTargetVersionPrefix, GetInstallerPath(kAppCRX))});
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
@@ -1884,6 +1935,7 @@ TEST_F(IntegrationTestDeviceManagement, MsiInstallUpgrade) {
       {
           AppUpdateExpectation({kMsiAppId, kMsiInitialVersion,
                                 kMsiUpdatedVersion,
+                                /*is_install=*/false,
                                 /*should_update=*/true, false, "", crx_path}),
       });
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
