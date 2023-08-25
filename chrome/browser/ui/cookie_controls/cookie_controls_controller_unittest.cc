@@ -344,6 +344,22 @@ TEST_F(CookieControlsTest, Incognito) {
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+
+  // This should be enforced regardless of the default cookie setting in the
+  // default profile.
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kDisabled,
+                              CookieControlsEnforcement::kNoEnforcement, 0, 0));
+  EXPECT_CALL(incognito_mock_,
+              OnStatusChanged(
+                  CookieControlsStatus::kDisabledForSite,
+                  CookieControlsEnforcement::kEnforcedByCookieSetting, 0, 0));
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
+  incognito_cookie_controls.Update(incognito_web_contents.get());
+  testing::Mock::VerifyAndClearExpectations(mock());
+  testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
 }
 
 TEST_F(CookieControlsTest, CookieBlockingChanged) {
@@ -769,6 +785,27 @@ TEST_P(CookieControlsUserBypassTest, Incognito) {
               OnBreakageConfidenceLevelChanged(
                   CookieControlsBreakageConfidenceLevel::kMedium));
   cookie_controls()->OnCookieBlockingEnabledForSite(false);
+  testing::Mock::VerifyAndClearExpectations(mock());
+  testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
+
+  // This should be enforced regardless of the default cookie setting in the
+  // default profile.
+  EXPECT_CALL(*mock(),
+              OnStatusChanged(CookieControlsStatus::kDisabled,
+                              CookieControlsEnforcement::kNoEnforcement,
+                              // Although there is an allow exception with an
+                              // expiration, because the default allow never
+                              // expires, zero_expiration is correct.
+                              zero_expiration()));
+  EXPECT_CALL(
+      incognito_mock_,
+      OnStatusChanged(CookieControlsStatus::kDisabledForSite,
+                      CookieControlsEnforcement::kEnforcedByCookieSetting,
+                      expiration()));
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kIncognitoOnly));
+  incognito_cookie_controls.Update(incognito_web_contents.get());
   testing::Mock::VerifyAndClearExpectations(mock());
   testing::Mock::VerifyAndClearExpectations(&incognito_mock_);
 }

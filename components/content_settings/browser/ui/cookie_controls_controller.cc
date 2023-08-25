@@ -175,8 +175,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   SettingInfo info;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(url, &info);
 
-  const bool is_default_setting = info.primary_pattern.MatchesAllHosts() &&
-                                  info.secondary_pattern.MatchesAllHosts();
+  const bool is_default_setting =
+      info.primary_pattern == ContentSettingsPattern::Wildcard() &&
+      info.secondary_pattern == ContentSettingsPattern::Wildcard();
 
   // The UI can reset only host-scoped (without wildcards in the domain) or
   // site-scoped exceptions.
@@ -185,11 +186,15 @@ CookieControlsController::Status CookieControlsController::GetStatus(
       info.secondary_pattern == URLToSchemefulSitePattern(url);
 
   // Rules from regular mode can't be temporarily overridden in incognito.
-  const bool is_exception_from_regular_mode_in_incognito =
-      is_allowed && original_cookie_settings_ &&
-      original_cookie_settings_->ShouldBlockThirdPartyCookies() &&
-      original_cookie_settings_->IsThirdPartyAccessAllowed(url,
-                                                           nullptr /* info */);
+  bool exception_exists_in_regular_profile = false;
+  if (is_allowed && original_cookie_settings_) {
+    SettingInfo original_info;
+    original_cookie_settings_->IsThirdPartyAccessAllowed(url, &original_info);
+
+    exception_exists_in_regular_profile =
+        original_info.primary_pattern != ContentSettingsPattern::Wildcard() ||
+        original_info.secondary_pattern != ContentSettingsPattern::Wildcard();
+  }
 
   CookieControlsStatus status = is_allowed
                                     ? CookieControlsStatus::kDisabledForSite
@@ -199,7 +204,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
     enforcement = CookieControlsEnforcement::kEnforcedByPolicy;
   } else if (info.source == SETTING_SOURCE_EXTENSION) {
     enforcement = CookieControlsEnforcement::kEnforcedByExtension;
-  } else if (is_exception_from_regular_mode_in_incognito ||
+  } else if (exception_exists_in_regular_profile ||
              (!is_default_setting && !host_or_site_scoped_exception)) {
     // If the exception cannot be reset in-context because of the nature of the
     // setting, display as managed by setting.
