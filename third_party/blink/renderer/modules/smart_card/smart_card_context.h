@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
@@ -21,6 +22,7 @@ class ScriptPromiseResolver;
 class SmartCardReaderStateIn;
 
 class SmartCardGetStatusChangeOptions;
+class SmartCardConnection;
 class SmartCardConnectOptions;
 
 class SmartCardContext final : public ScriptWrappable,
@@ -91,6 +93,9 @@ class SmartCardContext final : public ScriptWrappable,
 
   // Whether request_ comes from a blink::SmartCardConnection.
   bool is_connection_request_ = false;
+
+  // The connections created by this context.
+  HeapHashSet<WeakMember<SmartCardConnection>> connections_;
 };
 }  // namespace blink
 

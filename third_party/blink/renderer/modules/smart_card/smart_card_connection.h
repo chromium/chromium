@@ -61,6 +61,8 @@ class SmartCardConnection final : public ScriptWrappable,
                                  V8SmartCardTransactionCallback* transaction,
                                  SmartCardTransactionOptions* options,
                                  ExceptionState& exception_state);
+  // Called by SmartCardContext
+  void OnOperationInProgressCleared();
 
   void OnTransactionCallbackDone(
       device::mojom::blink::SmartCardDisposition disposition);
@@ -90,7 +92,6 @@ class SmartCardConnection final : public ScriptWrappable,
   void OnEndTransactionDone(device::mojom::blink::SmartCardResultPtr result);
   void CloseMojoConnection();
   void EndTransaction(device::mojom::blink::SmartCardDisposition);
-  void MaybeEndTransaction();
 
   Member<ScriptPromiseResolver> ongoing_request_;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;

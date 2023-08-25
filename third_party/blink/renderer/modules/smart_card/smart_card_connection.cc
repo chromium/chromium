@@ -497,6 +497,14 @@ ScriptPromise SmartCardConnection::startTransaction(
   return resolver->Promise();
 }
 
+void SmartCardConnection::OnOperationInProgressCleared() {
+  if (!transaction_state_ || !transaction_state_->HasPendingEnd()) {
+    return;
+  }
+
+  EndTransaction(transaction_state_->TakePendingEnd());
+}
+
 void SmartCardConnection::OnTransactionCallbackDone(
     SmartCardDisposition disposition) {
   CHECK(transaction_state_);
@@ -577,8 +585,6 @@ void SmartCardConnection::OnDisconnectDone(
   connection_.reset();
 
   resolver->Resolve();
-
-  MaybeEndTransaction();
 }
 
 void SmartCardConnection::OnPlainResult(
@@ -592,8 +598,6 @@ void SmartCardConnection::OnPlainResult(
   }
 
   resolver->Resolve();
-
-  MaybeEndTransaction();
 }
 
 void SmartCardConnection::OnDataResult(
@@ -610,8 +614,6 @@ void SmartCardConnection::OnDataResult(
   const Vector<uint8_t>& data = result->get_data();
 
   resolver->Resolve(DOMArrayBuffer::Create(data.data(), data.size()));
-
-  MaybeEndTransaction();
 }
 
 void SmartCardConnection::OnStatusDone(
@@ -645,8 +647,6 @@ void SmartCardConnection::OnStatusDone(
                                mojo_status->answer_to_reset.size()));
   }
   resolver->Resolve(status);
-
-  MaybeEndTransaction();
 }
 
 void SmartCardConnection::OnBeginTransactionDone(
@@ -756,14 +756,6 @@ void SmartCardConnection::EndTransaction(SmartCardDisposition disposition) {
                                  WrapPersistent(this)));
 
   SetOperationInProgress(transaction_state_->GetStartTransactionRequest());
-}
-
-void SmartCardConnection::MaybeEndTransaction() {
-  if (!transaction_state_ || !transaction_state_->HasPendingEnd()) {
-    return;
-  }
-
-  EndTransaction(transaction_state_->TakePendingEnd());
 }
 
 }  // namespace blink
