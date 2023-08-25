@@ -1066,6 +1066,15 @@ public class ImeAdapterImpl
                         (int) (nodeBottomDip * deviceScale));
                 editableNodeBoundsPixOnScreen.offset(
                         0, mWebContents.getRenderCoordinates().getContentOffsetYPixInt());
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+                    RectF bounds = new RectF(editableNodeBoundsPixOnScreen);
+                    EditorBoundsInfo editorBoundsInfo = new EditorBoundsInfo.Builder()
+                                                                .setEditorBounds(bounds)
+                                                                .setHandwritingBounds(bounds)
+                                                                .build();
+                    mCursorAnchorInfoController.updateWithEditorBoundsInfo(
+                            editorBoundsInfo, getContainerView());
+                }
             } else {
                 editableNodeBoundsPixOnScreen = new Rect();
             }
@@ -1108,8 +1117,10 @@ public class ImeAdapterImpl
                 focusedEditBounds, cursorPosition);
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
             RectF bounds = new RectF(focusedEditBounds);
-            EditorBoundsInfo editorBoundsInfo =
-                    new EditorBoundsInfo.Builder().setHandwritingBounds(bounds).build();
+            EditorBoundsInfo editorBoundsInfo = new EditorBoundsInfo.Builder()
+                                                        .setEditorBounds(bounds)
+                                                        .setHandwritingBounds(bounds)
+                                                        .build();
             mCursorAnchorInfoController.updateWithEditorBoundsInfo(
                     editorBoundsInfo, getContainerView());
         }
