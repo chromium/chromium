@@ -7,6 +7,7 @@
 
 #include "base/check_deref.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -786,6 +787,63 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   EXPECT_EQ(cookie_list.size(), 0UL);
   // Verify localStorage cleared.
   EXPECT_EQ(GetLocalStorageCount(cookie_iframe_rfh), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
+                       ControlledFrameClearSiteDataHeader) {
+  std::vector<const bool> in_memory_test_cases{true, false};
+  const std::string partition_name("test_partition");
+  for (const bool& in_memory : in_memory_test_cases) {
+    SCOPED_TRACE(base::StrCat({"Controlled Frame partition is in-memory: ",
+                               (in_memory ? "true" : "false")}));
+    IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+
+    Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+
+    ASSERT_NE(https_server()->GetOrigin(), url_info.origin());
+
+    GURL cookie_url =
+        https_server()->GetURL("/web_apps/simple_isolated_app/cookie.html");
+    ASSERT_TRUE(CreateControlledFrame(
+        web_contents, cookie_url,
+        base::StrCat({(in_memory ? "" : "persist:") + partition_name})));
+    ASSERT_EQ(web_contents->GetInnerWebContents().size(), 1UL);
+
+    content::StoragePartition* controlled_frame_partition =
+        profile()->GetStoragePartition(
+            url_info.GetStoragePartitionConfigForControlledFrame(
+                profile(), partition_name, in_memory),
+            /*can_create=*/false);
+    ASSERT_TRUE(controlled_frame_partition);
+
+    net::CookieList cookie_list = GetAllCookies(controlled_frame_partition);
+    ASSERT_EQ(cookie_list.size(), 1UL);
+    ASSERT_EQ(cookie_list[0].Domain(), https_server()->GetOrigin().host());
+
+    content::RenderFrameHost* controlled_frame_rfh =
+        web_contents->GetInnerWebContents()[0]->GetPrimaryMainFrame();
+    SetLocalStorageValue(controlled_frame_rfh, "foo", "bar");
+    ASSERT_EQ(GetLocalStorageCount(controlled_frame_rfh), 1);
+    ASSERT_EQ(GetLocalStorageValue(controlled_frame_rfh, "foo"), "bar");
+
+    int64_t old_cache_size = GetCacheSize(controlled_frame_partition);
+
+    GURL clear_site_data_url = https_server()->GetURL(
+        "/web_apps/simple_isolated_app/clear_site_data.html");
+    ASSERT_TRUE(content::NavigateToURLFromRenderer(controlled_frame_rfh,
+                                                   clear_site_data_url));
+
+    // Not all cache on the StoragePartition is deleted. But it should be
+    // smaller than previous value.
+    EXPECT_LT(GetCacheSize(controlled_frame_partition), old_cache_size);
+    // Verify cookie cleared.
+    cookie_list = GetAllCookies(controlled_frame_partition);
+    EXPECT_EQ(cookie_list.size(), 0UL);
+    // Verify localStorage cleared.
+    EXPECT_EQ(GetLocalStorageCount(controlled_frame_rfh), 0);
+  }
 }
 
 }  // namespace web_app
