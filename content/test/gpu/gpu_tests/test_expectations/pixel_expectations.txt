@@ -401,6 +401,8 @@ crbug.com/1469875 [ mac graphite-enabled ] Pixel_WebGPUImportVideoFrameUnacceler
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
+crbug.com/1476029 [ mac asan graphite-enabled ] Pixel_Video_BackdropFilter [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
