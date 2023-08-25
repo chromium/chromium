@@ -19,7 +19,7 @@ public class LocaleManagerDelegateImpl implements LocaleManagerDelegate {
      */
     @Override
     public Locale getApplicationLocale() {
-        // TODO(https://crbug.com/1293523): Replace with calls to {@link LocaleManager} once the T
+        // TODO(https://crbug.com/1348676): Replace with calls to {@link LocaleManager} once the T
         // SDK is available.
         return null;
     }
@@ -31,7 +31,7 @@ public class LocaleManagerDelegateImpl implements LocaleManagerDelegate {
      */
     @Override
     public void setApplicationLocale(String languageName) {
-        // TODO(https://crbug.com/1293523): Replace with calls to {@link LocaleManager} once the T
+        // TODO(https://crbug.com/1348676): Replace with calls to {@link LocaleManager} once the T
         // SDK is available.
         return;
     }
