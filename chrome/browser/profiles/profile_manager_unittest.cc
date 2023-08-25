@@ -589,6 +589,39 @@ TEST_F(ProfileManagerTest, CreateProfilesAsync) {
   content::RunAllTasksUntilIdle();
 }
 
+// Regression test for https://crbug.com/1472849
+TEST_F(ProfileManagerTest, ConcurrentCreationAsyncAndSync) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::_)).Times(0);
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::_)).Times(0);
+
+  base::FilePath profile_path = temp_dir_.GetPath().AppendASCII("New Profile");
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer);
+
+  // The profile is being created, but creation is not complete.
+  EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(profile_path));
+
+  // Request synchronous creation of the same profile, this should not crash.
+  Profile* profile_created = nullptr;
+  Profile* profile_initialized = nullptr;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull()))
+      .Times(1)
+      .WillOnce(testing::SaveArg<0>(&profile_created));
+  EXPECT_CALL(mock_observer, OnProfileInitialized(testing::NotNull()))
+      .Times(1)
+      .WillOnce(testing::SaveArg<0>(&profile_initialized));
+  Profile* profile = profile_manager->GetProfile(profile_path);
+
+  // The profile has been loaded correctly, and all callbacks were called.
+  EXPECT_EQ(profile, profile_manager->GetProfileByPath(profile_path));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+  EXPECT_EQ(profile->GetPath(), profile_path);
+  EXPECT_EQ(profile, profile_initialized);
+  EXPECT_EQ(profile, profile_created);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // There's no multi-profiles on Android.
 TEST_F(ProfileManagerTest, CreateMultiProfileAsync) {
