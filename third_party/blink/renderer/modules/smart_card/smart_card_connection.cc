@@ -327,8 +327,7 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
   }
 
   if (send_buffer.IsDetached() || send_buffer.IsNull()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid send buffer.");
+    exception_state.ThrowTypeError("Invalid send buffer.");
     return ScriptPromise();
   }
 
@@ -387,8 +386,7 @@ ScriptPromise SmartCardConnection::control(ScriptState* script_state,
   }
 
   if (data.IsDetached() || data.IsNull()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid data.");
+    exception_state.ThrowTypeError("Invalid data.");
     return ScriptPromise();
   }
 
@@ -438,8 +436,7 @@ ScriptPromise SmartCardConnection::setAttribute(
   }
 
   if (data.IsDetached() || data.IsNull()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid data.");
+    exception_state.ThrowTypeError("Invalid data.");
     return ScriptPromise();
   }
 
