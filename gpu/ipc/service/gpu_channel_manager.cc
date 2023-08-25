@@ -98,8 +98,10 @@ void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
   // during the first rendering operations after the Trim call, therefore
   // apps should only call Trim when going idle for a period of time or during
   // low memory conditions.
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      context_state->GetD3D11Device();
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
+  if (context_state) {
+    d3d11_device = context_state->GetD3D11Device();
+  }
   if (d3d11_device) {
     Microsoft::WRL::ComPtr<IDXGIDevice3> dxgi_device;
     if (SUCCEEDED(d3d11_device.As(&dxgi_device))) {
