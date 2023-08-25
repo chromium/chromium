@@ -38,7 +38,8 @@ namespace ash {
 namespace {
 
 gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
-                           const gfx::Size& view_size) {
+                           const gfx::Size& view_size,
+                           const bool force_resize_to_fit) {
   if (image.isNull())
     return gfx::ImageSkia();
 
@@ -51,14 +52,23 @@ gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
   const double image_ratio = image_height / image_width;
   const double view_ratio = view_height / view_width;
 
-  // If the image and the container view has the same orientation, e.g. both
-  // portrait, the |scale| will make the image filled the whole view with
-  // possible cropping on one direction. If they are in different orientation,
-  // the |scale| will display the image in the view without any cropping, but
-  // with empty background.
-  const double scale = (image_ratio - 1) * (view_ratio - 1) > 0
-                           ? std::max(horizontal_ratio, vertical_ratio)
-                           : std::min(horizontal_ratio, vertical_ratio);
+  double scale = 1.0;
+
+  // If force fitting is enabled, we will always scale to the smaller ratio to
+  // ensure that no part of the image is cropped out and the whole image is
+  // shown on the screen with possible black bars.
+  if (force_resize_to_fit) {
+    scale = std::min(horizontal_ratio, vertical_ratio);
+  } else {
+    // If the image and the container view has the same orientation, e.g. both
+    // portrait, the |scale| will make the image filled the whole view with
+    // possible cropping on one direction. If they are in different orientation,
+    // the |scale| will display the image in the view without any cropping, but
+    // with empty background.
+    scale = (image_ratio - 1) * (view_ratio - 1) > 0
+                ? std::max(horizontal_ratio, vertical_ratio)
+                : std::min(horizontal_ratio, vertical_ratio);
+  }
   const gfx::Size& resized = gfx::ScaleToCeiledSize(image.size(), scale);
   return gfx::ImageSkiaOperations::CreateResizedImage(
       image, skia::ImageOperations::RESIZE_BEST, resized);
@@ -277,7 +287,8 @@ void AmbientBackgroundImageView::SetResizedImage(
       topic_type_ == ::ambient::TopicType::kGeo
           ? MaybeRotateImage(image_unscaled, image_view->size(), GetWidget())
           : image_unscaled;
-  image_view->SetImage(ResizeImage(image_rotated, image_view->size()));
+  image_view->SetImage(
+      ResizeImage(image_rotated, image_view->size(), force_resize_to_fit_));
 
   // Intend to update the image origin in image view.
   // There is no bounds change or preferred size change when updating image from
@@ -286,8 +297,12 @@ void AmbientBackgroundImageView::SetResizedImage(
   image_view->ResetImageSize();
 }
 
-void AmbientBackgroundImageView::SetPeripheralUiVisibility(bool visibile) {
-  ambient_peripheral_ui_->SetVisible(visibile);
+void AmbientBackgroundImageView::SetPeripheralUiVisibility(bool visible) {
+  ambient_peripheral_ui_->SetVisible(visible);
+}
+
+void AmbientBackgroundImageView::SetForceResizeToFit(bool force_resize_to_fit) {
+  force_resize_to_fit_ = force_resize_to_fit;
 }
 
 bool AmbientBackgroundImageView::MustShowPairs() const {

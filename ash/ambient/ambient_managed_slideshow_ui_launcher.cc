@@ -75,8 +75,10 @@ void AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths(
 }
 
 std::unique_ptr<views::View> AmbientManagedSlideshowUiLauncher::CreateView() {
-  return std::make_unique<PhotoView>(delegate_,
-                                     /*peripheral_ui_visible=*/false);
+  PhotoViewConfig config{.peripheral_ui_visible = false,
+                         .force_resize_to_fit = true};
+
+  return std::make_unique<PhotoView>(delegate_, config);
 }
 
 void AmbientManagedSlideshowUiLauncher::Finalize() {

@@ -55,6 +55,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   // Shows/Hides the peripheral ui.
   void SetPeripheralUiVisibility(bool visible);
 
+  void SetForceResizeToFit(bool force_resize_to_fit);
+
   gfx::ImageSkia GetCurrentImage();
 
   gfx::Rect GetImageBoundsInScreenForTesting() const;
@@ -93,6 +95,10 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
   std::u16string related_details_;
 
   bool is_portrait_ = false;
+
+  // Flag that changes the resize behavior such that full image is always shown
+  // without any cropping. False by default.
+  bool force_resize_to_fit_ = false;
 
   ::ambient::TopicType topic_type_ = ::ambient::TopicType::kOther;
 
