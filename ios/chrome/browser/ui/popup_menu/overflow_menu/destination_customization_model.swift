@@ -57,7 +57,7 @@ import Combine
         return
       }
       hiddenDestinations.remove(at: index)
-      shownDestinations.append(destination)
+      shownDestinations.insert(destination, at: 0)
     } else {
       guard let index = shownDestinations.firstIndex(of: destination) else {
         return
