@@ -269,6 +269,11 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_GIF_SUPPORT);
   }
+  if (base::FeatureList::IsEnabled(
+          features::kImeSystemEmojiPickerJellySupport)) {
+    enabled_features.push_back(
+        emoji_picker::mojom::Feature::EMOJI_PICKER_JELLY_SUPPORT);
+  }
 
   std::move(callback).Run(enabled_features);
 }

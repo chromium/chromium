@@ -18,6 +18,8 @@ enum Feature {
   // Extends the emoji picker to include gifs as an insertable option for the
   // user.
   EMOJI_PICKER_GIF_SUPPORT = 2,
+  // Extends the emoji picker to display jelly coloring.
+  EMOJI_PICKER_JELLY_SUPPORT = 3,
 };
 
 // The below structs are used to represent the Response format from the Tenor
