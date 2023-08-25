@@ -26,6 +26,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -76,6 +77,19 @@ std::u16string GetPinButtonTooltip(bool is_force_pinned, bool is_pinned) {
     tooltip_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR;
   }
   return l10n_util::GetStringUTF16(tooltip_id);
+}
+
+std::u16string GetPinButtonAccessibleName(
+    bool is_force_pinned,
+    bool is_pinned,
+    const std::u16string& extension_name) {
+  int tooltip_id = IDS_EXTENSIONS_PIN_TO_TOOLBAR_ACCESSIBLE_NAME;
+  if (is_force_pinned) {
+    tooltip_id = IDS_EXTENSIONS_PINNED_BY_ADMIN_ACCESSIBLE_NAME;
+  } else if (is_pinned) {
+    tooltip_id = IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR_ACCESSIBLE_NAME;
+  }
+  return l10n_util::GetStringFUTF16(tooltip_id, extension_name);
 }
 
 std::u16string GetContextMenuAccessibleName(bool is_pinned) {
@@ -185,6 +199,13 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                 ChromeLayoutProvider::Get()->GetDistanceMetric(
                     DISTANCE_EXTENSIONS_MENU_BUTTON_MARGIN))),
         index);
+    // By default, the button's accessible description is set to the button's
+    // tooltip text. For the pin button, we only want the accessible name to be
+    // read on accessibility mode since it includes the tooltip text. Thus we
+    // override the accessible description.
+    pin_button_->GetViewAccessibility().OverrideDescription(
+        std::u16string(),
+        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
   }
 
   std::move(builder).BuildChildren();
@@ -386,6 +407,8 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   }
 
   pin_button_->SetTooltipText(GetPinButtonTooltip(is_force_pinned, is_pinned));
+  pin_button_->SetAccessibleName(GetPinButtonAccessibleName(
+      is_force_pinned, is_pinned, controller_->GetActionName()));
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
   pin_button_->SetEnabled(!is_force_pinned &&

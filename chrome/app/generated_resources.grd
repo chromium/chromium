@@ -5748,6 +5748,15 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN" desc="The text indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (sentence case).">
             Pinned by your administrator
           </message>
+          <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to pin an extension to the toolbar (sentence case).">
+            Pin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
+          </message>
+          <message name="IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to unpin an extension from the toolbar (sentence case).">
+            Unpin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
+          </message>
+          <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN_ACCESSIBLE_NAME" desc="The accessible name indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (sentence case).">
+            <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> is pinned by your administrator
+          </message>
           <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (sentence case).">
             Manage extension
           </message>
@@ -5833,6 +5842,15 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN" desc="The text indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (title case).">
             Pinned by your Administrator
+          </message>
+          <message name="IDS_EXTENSIONS_PIN_TO_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to pin an extension to the toolbar (sentence case).">
+            Pin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
+          </message>
+          <message name="IDS_EXTENSIONS_UNPIN_FROM_TOOLBAR_ACCESSIBLE_NAME" desc="The accessible name for the menu item to unpin an extension from the toolbar (sentence case).">
+            Unpin <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph>
+          </message>
+          <message name="IDS_EXTENSIONS_PINNED_BY_ADMIN_ACCESSIBLE_NAME" desc="The accessible name indicating that an extension has been 'pinned' to the toolbar by the controlling administrator (sentence case).">
+            <ph name="EXTENSION_NAME">$1<ex>Gmail Checker</ex></ph> is pinned by your Administrator
           </message>
           <message name="IDS_MANAGE_EXTENSION" desc="The text for the button in the extension's context menu used to open the chrome://extensions/?id=xxx page and manage a specific extension (title case).">
             Manage Extension
