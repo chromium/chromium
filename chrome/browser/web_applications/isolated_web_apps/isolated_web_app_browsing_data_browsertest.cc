@@ -7,6 +7,7 @@
 
 #include "base/check_deref.h"
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_browsing_data.h"
@@ -110,6 +112,24 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
         ->GetLocalStorageControl()
         ->Flush(test_future.GetCallback());
     EXPECT_TRUE(test_future.Wait());
+  }
+
+  void SetLocalStorageValue(const content::ToRenderFrameHost& target,
+                            const base::StringPiece& key,
+                            const base::StringPiece& value) {
+    EXPECT_TRUE(
+        ExecJs(target,
+               content::JsReplace("localStorage.setItem($1, $2)", key, value)));
+  }
+
+  std::string GetLocalStorageValue(const content::ToRenderFrameHost& target,
+                                   const base::StringPiece& key) {
+    return EvalJs(target, content::JsReplace("localStorage.getItem($1)", key))
+        .ExtractString();
+  }
+
+  int GetLocalStorageCount(const content::ToRenderFrameHost& target) {
+    return EvalJs(target, "localStorage.length").ExtractInt();
   }
 
   [[nodiscard]] bool CreateControlledFrame(content::WebContents* web_contents,
@@ -722,6 +742,50 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     // All cookies should be cleared, 0 left.
     EXPECT_EQ(GetAllCookies(partition).size(), 0UL);
   }
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
+                       CrossOriginIframeClearSiteDataHeader) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp();
+  content::StoragePartition* iwa_main_storage_partition =
+      profile()->GetStoragePartition(
+          url_info.storage_partition_config(profile()));
+
+  Browser* browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  content::RenderFrameHost* rfh =
+      browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame();
+
+  ASSERT_NE(https_server()->GetOrigin(), url_info.origin());
+
+  GURL cookie_url =
+      https_server()->GetURL("/web_apps/simple_isolated_app/cookie.html");
+  CreateIframe(rfh, "child_0", cookie_url, "");
+  auto* iframe_rfh = content::ChildFrameAt(rfh, 0);
+
+  net::CookieList cookie_list = GetAllCookies(iwa_main_storage_partition);
+  ASSERT_EQ(cookie_list.size(), 1UL);
+  ASSERT_EQ(cookie_list[0].Domain(), https_server()->GetOrigin().host());
+
+  content::RenderFrameHost* cookie_iframe_rfh = content::ChildFrameAt(rfh, 0);
+  SetLocalStorageValue(cookie_iframe_rfh, "foo", "bar");
+  ASSERT_EQ(GetLocalStorageCount(cookie_iframe_rfh), 1);
+  ASSERT_EQ(GetLocalStorageValue(cookie_iframe_rfh, "foo"), "bar");
+
+  int64_t old_cache_size = GetCacheSize(iwa_main_storage_partition);
+
+  GURL clear_site_data_url = https_server()->GetURL(
+      "/web_apps/simple_isolated_app/clear_site_data.html");
+  ASSERT_TRUE(
+      content::NavigateToURLFromRenderer(iframe_rfh, clear_site_data_url));
+
+  // Not all cache on the StoragePartition is deleted. But it should be smaller
+  // than previous value.
+  EXPECT_LT(GetCacheSize(iwa_main_storage_partition), old_cache_size);
+  // Verify cookie cleared.
+  cookie_list = GetAllCookies(iwa_main_storage_partition);
+  EXPECT_EQ(cookie_list.size(), 0UL);
+  // Verify localStorage cleared.
+  EXPECT_EQ(GetLocalStorageCount(cookie_iframe_rfh), 0);
 }
 
 }  // namespace web_app
