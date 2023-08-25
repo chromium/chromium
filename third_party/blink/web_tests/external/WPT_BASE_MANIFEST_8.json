@@ -258444,6 +258444,84 @@
        ]
       },
       "reset": {
+       "2d.reset.render.drop_shadow.html": [
+        "264355c8b315b8a69b9d5007a2d450fa5a91e075",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.drop_shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.global_composite_operation.html": [
+        "fc851b84b8e774f488c4a29338aa109e7d71d4d4",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.global_composite_operation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.line.html": [
+        "0dda7c7a7e628aca9fb3b951a82dbeda4e36ca34",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.line-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.misc.html": [
+        "61d2dbe2f05fbfeb79b9d64a2e98fa5b014623fb",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.misc-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.miter_limit.html": [
+        "f6eaed00f6fd88989a168e2814a7b81b6cf3172a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.miter_limit-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.text.html": [
+        "3d76ddf2920f53a85e57af510f4fba3d2319809a",
+        [
+         null,
+         [
+          [
+           "/html/canvas/element/reset/2d.reset.render.text-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.reset.state.clip.html": [
         "ab3fa1081ca9be4e21fc751fd44e1b69324d4318",
         [
@@ -259649,6 +259727,162 @@
        ]
       },
       "reset": {
+       "2d.reset.render.drop_shadow.html": [
+        "e6decd1687e8dcf78036fdeb3cbfa866738db1ae",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.drop_shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.drop_shadow.w.html": [
+        "0ceba2f91d243fad1fb3bb37635a28fa63ffbf62",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.drop_shadow-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.global_composite_operation.html": [
+        "4ddcc8d8f0b77494927572c776e49f970d527192",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.global_composite_operation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.global_composite_operation.w.html": [
+        "6df07a47e2f08ca930a0c90459cc7be0fa267dd6",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.global_composite_operation-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.line.html": [
+        "0e478cbf9d4b4337fbf8ed294b060f5c7a4e1162",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.line-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.line.w.html": [
+        "e85f155b328a5f2bb3d82469c389f431f558147e",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.line-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.misc.html": [
+        "b471327d989fb6c2e1623f945c8af926bb4603e1",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.misc-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.misc.w.html": [
+        "eef646df663992245b7c9728ec838386042fb0da",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.misc-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.miter_limit.html": [
+        "c00284bbc23bc83078a95ed44f7191d5a4f7a315",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.miter_limit-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.miter_limit.w.html": [
+        "1f98606b55ee4d5ce5caba4cf90c4a26302ff3d7",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.miter_limit-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.text.html": [
+        "31e35db71cbe2ed0b89f7f6c7c5b6a7c1d53c6af",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.text-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "2d.reset.render.text.w.html": [
+        "6ddfd9fd9d99642aeccc6b9508168948ebdcb278",
+        [
+         null,
+         [
+          [
+           "/html/canvas/offscreen/reset/2d.reset.render.text-expected.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "2d.reset.state.clip.html": [
         "2f53da7a496c57a7148a0d252bcdf7788095ca06",
         [
@@ -279306,11 +279540,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "2007900b8dadd36d746b945687204e1bda6266fb",
+     "bad48fc63ed3458c504047dfe9c2007313836530",
      []
     ],
     "mtime.json": [
-     "a7e07a4dfa3aabf8110cb03351cc6fcb1f631d5d",
+     "f2dded7fbfff13f848826b7d296ce0a50dbf5c0b",
      []
     ]
    },
@@ -353026,7 +353260,11 @@
        []
       ],
       "kind-of-widget-fallback-button-border-image-outset-001.html.ini": [
-       "a44ef6ac2c389a6549ffd5d5f981233cbc620a83",
+       "6d26b67eda2083faa08a548f669a6f4c54c4889c",
+       []
+      ],
+      "kind-of-widget-fallback-button-border-image-repeat-001.html.ini": [
+       "28820d8d788234559c565ad0c6397d8038df2f08",
        []
       ],
       "kind-of-widget-fallback-button-border-image-slice-001.html.ini": [
@@ -353517,6 +353755,10 @@
        "e4ccc150d6d1880ad330eedf765a54550d4e66cb",
        []
       ],
+      "kind-of-widget-fallback-input-reset-border-end-start-radius-001.html.ini": [
+       "1ca2c0e8ce1be4644589f83371d491254ff87b38",
+       []
+      ],
       "kind-of-widget-fallback-input-reset-border-image-outset-001.html.ini": [
        "d83716391ed3ef9e94640e68194ec8a130af462c",
        []
@@ -353662,7 +353904,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-bottom-left-radius-001.html.ini": [
-       "2abe94d21bdaca11f29b98473db7cf1ddd18d1cf",
+       "3f7f5064df97a5e1fbe246469b46265862be8025",
        []
       ],
       "kind-of-widget-fallback-input-search-border-bottom-right-radius-001.html.ini": [
@@ -382508,6 +382750,30 @@
        ]
       },
       "reset": {
+       "2d.reset.render.drop_shadow-expected.html": [
+        "182f7e40cd088ce569d9ca41bdc351c486548ef8",
+        []
+       ],
+       "2d.reset.render.global_composite_operation-expected.html": [
+        "1f9d247634c6d9fc206f219611bdd859d666a828",
+        []
+       ],
+       "2d.reset.render.line-expected.html": [
+        "dcd648d8c3494e44b851f8f08a9eaaa61ac79686",
+        []
+       ],
+       "2d.reset.render.misc-expected.html": [
+        "c359e6b42e20ddc5d8c2dba059cfbb81f8febc32",
+        []
+       ],
+       "2d.reset.render.miter_limit-expected.html": [
+        "c91f485c531fb232d7ff4caeda696b61eede2db7",
+        []
+       ],
+       "2d.reset.render.text-expected.html": [
+        "7221483b02fe379e2aebcca708be235fd4a74e2c",
+        []
+       ],
        "2d.reset.state.clip-expected.html": [
         "974b37fab4ecf087a518b14306ade81b4f8c924f",
         []
@@ -383078,6 +383344,30 @@
        ]
       },
       "reset": {
+       "2d.reset.render.drop_shadow-expected.html": [
+        "182f7e40cd088ce569d9ca41bdc351c486548ef8",
+        []
+       ],
+       "2d.reset.render.global_composite_operation-expected.html": [
+        "1f9d247634c6d9fc206f219611bdd859d666a828",
+        []
+       ],
+       "2d.reset.render.line-expected.html": [
+        "dcd648d8c3494e44b851f8f08a9eaaa61ac79686",
+        []
+       ],
+       "2d.reset.render.misc-expected.html": [
+        "c359e6b42e20ddc5d8c2dba059cfbb81f8febc32",
+        []
+       ],
+       "2d.reset.render.miter_limit-expected.html": [
+        "c91f485c531fb232d7ff4caeda696b61eede2db7",
+        []
+       ],
+       "2d.reset.render.text-expected.html": [
+        "7221483b02fe379e2aebcca708be235fd4a74e2c",
+        []
+       ],
        "2d.reset.state.clip-expected.html": [
         "974b37fab4ecf087a518b14306ade81b4f8c924f",
         []
@@ -383481,7 +383771,7 @@
         []
        ],
        "reset.yaml": [
-        "fdb7f815c27ee7f3826276a64c52076b5074d22c",
+        "086fb04e04ae34763294879f302086730afe7f69",
         []
        ],
        "scroll.yaml": [
@@ -548801,7 +549091,7 @@
         ]
        ],
        "PopStateEvent.html": [
-        "5774c150f4275c6527c0457a2562db71a0c109cf",
+        "9ee75762493b04360af01cd3966ecf3500d03041",
         [
          null,
          {}
@@ -613567,7 +613857,7 @@
       ]
      ],
      "event-constructor.html": [
-      "065884240e092c59b3ce2178aa7a8162fdabe0c4",
+      "a668730e35f1aa26177cf7d35070fa0d9273c9ae",
       [
        null,
        {}
