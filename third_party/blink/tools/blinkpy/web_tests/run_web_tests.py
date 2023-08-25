@@ -140,8 +140,6 @@ def parse_args(args):
 
     # FIXME: Move these into json_results_generator.py.
     json_group = parser.add_argument_group('Result JSON Options')
-    # TODO(qyearsley): --build-name is unused and should be removed.
-    json_group.add_argument('--build-name', help=argparse.SUPPRESS)
     json_group.add_argument(
         '--step-name',
         default='blink_web_tests',
