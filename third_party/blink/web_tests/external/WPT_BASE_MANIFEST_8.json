@@ -279538,16 +279538,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "bc3ce95f291f3d195ab38dbda4077e09c21dabd1",
-     []
-    ],
-    "mtime.json": [
-     "4741053b0732931aa7e2bee45ea236d936d2c55a",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -306640,7 +306630,7 @@
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "d57796da379d135c7b0d85ae694095b5e03d54e4",
+       "60e4785c184a56e804c0fc26a1f65d2c2de159f7",
        []
       ],
       "color-computed-relative-color.html.ini": [
@@ -306664,7 +306654,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "c2204b5dc05622c82c94ab9edfd5db400095c12d",
+       "42ce55a07ee6286822e5d285451b501f2c0badbb",
        []
       ],
       "color-valid-relative-color.html.ini": [
@@ -364430,28 +364420,12 @@
        []
       ]
      },
-     "scripting-expected.txt": [
-      "b24009718e8958e6e753249b691b1bce2d3f47f0",
-      []
-     ],
      "scripting-print-noscript-ref.html": [
       "2dd7aff83136a14dd9559249615438183d3b0d88",
       []
      ],
-     "scripting-print-noscript.html.ini": [
-      "f8256a3571751ec315c9743226636d05fdff3667",
-      []
-     ],
      "scripting-print-script-ref.html": [
       "d2da3f840586d803c83dc6bba11080e7b27d88ad",
-      []
-     ],
-     "scripting-print-script.html.ini": [
-      "2143b97f4b4b810d80150c326dd0484d02280623",
-      []
-     ],
-     "scripting.html.ini": [
-      "cfe3783f2c342e818eff0077d5181ea7b045f362",
       []
      ],
      "support": {
@@ -366524,8 +366498,12 @@
       "85dd7324815b8f8ef1a1d0496224c1a0661db9d8",
       []
      ],
+     "color-testcommon.js": [
+      "ab0c4efc9fa9fe751e3861fb920e11b7f69f95c4",
+      []
+     ],
      "computed-testcommon.js": [
-      "31bf451ecf371ec1e45f11ea404ab4d0ea607b24",
+      "8e746258061009f29f6ccdde164241729cf065b0",
       []
      ],
      "delete-other-rule-crash.css": [
@@ -366565,7 +366543,7 @@
       []
      ],
      "parsing-testcommon.js": [
-      "cc040be5116cdca8857a2fe14c0fa6aee8fcea42",
+      "e480f26b3f3db5bc95ecd152c9711c3bccfcfcfe",
       []
      ],
      "pattern-grg-rgr-grg.png": [
@@ -474657,7 +474635,7 @@
        ]
       ],
       "color-computed-color-mix-function.html": [
-       "c1ca47491ffe165c76b8cf3187effd8ee10da126",
+       "bb5d90fa71841e0494c504a3570bb497956bc9a5",
        [
         null,
         {}
@@ -474699,7 +474677,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "d9459113e2073abb9064160420e78e7c90393509",
+       "6dadf3c6008576e7601fc48b17dd6744061e97e7",
        [
         null,
         {}
@@ -474797,7 +474775,7 @@
        ]
       ],
       "color-mix-out-of-gamut.html": [
-       "1803397f8a71dcfea8be93621fd47b33591f464e",
+       "d3e8a3560d02fae71bb0ce62074a0de2a533625c",
        [
         null,
         {}
@@ -474846,7 +474824,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "85a27dff768e5c17bf7add8e43d9f9b32406de28",
+       "3700d69865dfc10a8f01e116035e120537d3d023",
        [
         null,
         {}
@@ -621233,9 +621211,9 @@
      ]
     ],
     "pointerevent_attributes_nohover_pointers.html": [
-     "d501ae0afd45612f5bad13d08cdd7cb2646a38d9",
+     "902e23b4d2e43ecdbe8601c496acda5318e99f2d",
      [
-      null,
+      "pointerevents/pointerevent_attributes_nohover_pointers.html?touch",
       {
        "testdriver": true
       }
@@ -676073,7 +676051,7 @@
      ]
     ],
     "videoFrame-canvasImageSource.html": [
-     "397404be4ec99b56efbef730085ddc2b8d73ebcc",
+     "a60040e56a8dcd8060e512c8240776b5cb723297",
      [
       null,
       {}
