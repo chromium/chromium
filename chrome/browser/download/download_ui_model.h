@@ -231,6 +231,11 @@ class DownloadUIModel {
     BubbleUIInfo& AddLearnMoreLink(int label_text_id,
                                    int link_text_id,
                                    DownloadCommands::Command command);
+    // Same as above but takes the link text string itself, and assumes that
+    // the whole string should be linked, rather than a substring.
+    BubbleUIInfo& AddLearnMoreLink(const std::u16string& link_text,
+                                   DownloadCommands::Command command);
+
     BubbleUIInfo& DisableMainButton();
 
     // Set common characteristics for dangerous or suspicious downloads.

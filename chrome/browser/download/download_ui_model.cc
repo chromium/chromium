@@ -892,6 +892,14 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddLearnMoreLink(
   return *this;
 }
 
+DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddLearnMoreLink(
+    const std::u16string& link_text,
+    DownloadCommands::Command command) {
+  learn_more_link = LabelWithLink{
+      link_text, LabelWithLink::LinkedRange{0u, link_text.length(), command}};
+  return *this;
+}
+
 DownloadUIModel::BubbleUIInfo&
 DownloadUIModel::BubbleUIInfo::DisableMainButton() {
   main_button_enabled = false;
@@ -904,8 +912,8 @@ DownloadUIModel::BubbleUIInfo DownloadUIModel::BubbleUIInfo::DangerousUiPattern(
   return DownloadUIModel::BubbleUIInfo()
       .AddSubpageSummary(subpage_summary)
       .AddLearnMoreLink(
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL,
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK,
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK),
           DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED)
       .AddIconAndColor(features::IsChromeRefresh2023()
                            ? vector_icons::kDangerousChromeRefreshIcon
@@ -924,14 +932,14 @@ DownloadUIModel::BubbleUIInfo::SuspiciousUiPattern(
     const std::u16string& secondary_subpage_button_label) {
   return DownloadUIModel::BubbleUIInfo()
       .AddSubpageSummary(subpage_summary)
+      .AddLearnMoreLink(
+          l10n_util::GetStringUTF16(
+              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK),
+          DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED)
       .AddIconAndColor(features::IsChromeRefresh2023()
                            ? kDownloadWarningIcon
                            : vector_icons::kNotSecureWarningIcon,
                        kColorDownloadItemIconWarning)
-      .AddLearnMoreLink(
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL,
-          IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK,
-          DownloadCommands::Command::LEARN_MORE_DOWNLOAD_BLOCKED)
       .AddSecondaryTextColor(kColorDownloadItemTextWarning)
       .AddPrimarySubpageButton(
           l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DELETE_FROM_HISTORY),

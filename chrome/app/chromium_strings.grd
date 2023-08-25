@@ -693,8 +693,8 @@ Permissions you've already given to websites and apps may apply to this account.
         Chromium recommends scanning this file because it may be dangerous
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK"
-               desc="Text for the link to the help page about why Chromium blocks some downloaded files. This string will be embedded in a longer sentence that makes up the whole label.">
-        Chromium blocks some downloads
+               desc="Text for the link to the help page about why Chromium blocks some downloaded files.">
+        Learn why Chromium blocks some downloads
       </message>
 
       <!-- Download Shelf Items -->

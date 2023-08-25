@@ -3040,10 +3040,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Subpage summary text for a download item when the download could not be verified due to Safe Browsing being off.">
         This file can't be verified because Safe Browsing is off
       </message>
-      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LABEL"
-               desc="Sentence including the link to the help page about why Chrome blocks some downloaded files, indicating to the user that they can learn more by clicking on the link.">
-        Learn why <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_BLOCKED_LEARN_MORE_LINK">$1<ex>Chrome blocks some downloads</ex></ph>
-      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LABEL"
                desc="Sentence including the link to the settings page allowing the user to turn on Safe Browsing, indicating to the user that they can change the setting by clicking on the link.">
         <ph name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_WARNING_SAFE_BROWSING_SETTING_LINK">$1<ex>Turn on Safe Browsing</ex></ph> to make downloading files safer
