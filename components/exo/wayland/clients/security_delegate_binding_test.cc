@@ -30,7 +30,7 @@ class SecurityDelegateBindingTest : public test::WaylandServerTest {
   void SetUp() override {
     WaylandServerTest::SetUp();
     server_security_delegate_ =
-        GetSecurityDelegate(server_->GetWaylandDisplayForTesting());
+        GetSecurityDelegate(server_->GetWaylandDisplay());
     ASSERT_NE(server_security_delegate_, nullptr);
   }
 

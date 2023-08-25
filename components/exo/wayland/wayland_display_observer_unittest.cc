@@ -120,24 +120,6 @@ TEST_F(WaylandDisplayObserverTest, SendLogicalPositionAndSize) {
   handler_->OnDisplayMetricsChanged(display, kAllChanges);
 }
 
-// Regression test for crbug.com/1433187. Ensures that the AuraOutputManager is
-// not accessible after client destruction (the client and its resources may be
-// destroyed before the handler).
-TEST_F(WaylandDisplayObserverTest,
-       AuraOutputManagerInaccessibleAfterClientDestruction) {
-  // Prior to client destruction the AuraOutputManager should be accessible.
-  EXPECT_FALSE(handler_->IsClientDestroyedForTesting());
-  EXPECT_TRUE(handler_->GetAuraOutputManagerForTesting());
-
-  // Destroys the client, which also destroys all associated resources.
-  DestroyClient();
-
-  // After client destruction has occurred assert the handler has been notified
-  // and the AuraOutputManager is no longer accessible.
-  EXPECT_TRUE(handler_->IsClientDestroyedForTesting());
-  EXPECT_FALSE(handler_->GetAuraOutputManagerForTesting());
-}
-
 }  // namespace
 }  // namespace wayland
 }  // namespace exo

@@ -77,6 +77,11 @@ SecurityDelegate* GetSecurityDelegate(wl_display* display);
 // connected to.
 SecurityDelegate* GetSecurityDelegate(wl_client* client);
 
+// Returns whether a client has initiated destruction. After destruction begins
+// resources associated with the client start to be freed and there is a risk of
+// UAFs in querying for client resources (see crbug.com/1433187).
+bool IsClientDestroyed(wl_client* client);
+
 }  // namespace wayland
 }  // namespace exo
 

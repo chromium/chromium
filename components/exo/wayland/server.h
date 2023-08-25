@@ -27,6 +27,7 @@ class Display;
 
 namespace wayland {
 
+class ClientTracker;
 class SerialTracker;
 class UiControls;
 struct WaylandDataDeviceManager;
@@ -45,6 +46,7 @@ class WaylandWatcher;
 // requests are dispatched into the given Exosphere display.
 class Server : public display::DisplayObserver {
  public:
+  using ServerGetter = base::RepeatingCallback<Server*(wl_display*)>;
   using StartCallback = base::OnceCallback<void(bool)>;
 
   Server(Display* display, std::unique_ptr<SecurityDelegate> security_delegate);
@@ -62,6 +64,12 @@ class Server : public display::DisplayObserver {
   static std::unique_ptr<Server> Create(
       Display* display,
       std::unique_ptr<SecurityDelegate> security_delegate);
+
+  // Gets the Server instance for a given wl_display.
+  static Server* GetServerForDisplay(wl_display* display);
+
+  // Sets the callback used to find the Server instance for a given wl_display.
+  static void SetServerGetter(ServerGetter server_getter);
 
   void StartWithDefaultPath(StartCallback callback);
   void StartWithFdAsync(base::ScopedFD fd, StartCallback callback);
@@ -93,18 +101,17 @@ class Server : public display::DisplayObserver {
   wl_resource* GetOutputResource(wl_client* client, int64_t display_id);
 
   Display* GetDisplay() { return display_; }
+  wl_display* GetWaylandDisplay() { return wl_display_.get(); }
 
-  // Public version of the protected accessor below, to be used in tests.
-  wl_display* GetWaylandDisplayForTesting() const {
-    return GetWaylandDisplay();
-  }
+  // Returns whether a client associated with this server has started
+  // destruction.
+  bool IsClientDestroyed(wl_client* client) const;
 
  protected:
   friend class UiControls;
   friend class WestonTest;
   void AddWaylandOutput(int64_t id,
                         std::unique_ptr<WaylandDisplayOutput> output);
-  wl_display* GetWaylandDisplay() const { return wl_display_.get(); }
 
  private:
   friend class ScopedEventDispatchDisabler;
@@ -132,6 +139,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
   std::unique_ptr<UiControls> ui_controls_holder_;
+  std::unique_ptr<ClientTracker> client_tracker_;
 };
 
 }  // namespace wayland

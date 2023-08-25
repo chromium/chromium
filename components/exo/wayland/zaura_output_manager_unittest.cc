@@ -4,8 +4,10 @@
 
 #include "components/exo/wayland/zaura_output_manager.h"
 
+#include <sys/socket.h>
 #include <cstdint>
 
+#include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/test/test_client.h"
 #include "components/exo/wayland/test/wayland_server_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -210,11 +212,55 @@ class AuraOutputManagerTest : public test::WaylandServerTest {
     return test_client;
   }
 
+  // Creates a wl_client instance for this test.
+  void CreateClient() {
+    ASSERT_FALSE(client_);
+    socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, 0, fds_);
+    client_ = wl_client_create(server_->GetWaylandDisplay(), fds_[0]);
+  }
+
+  // Destroys the wl_client instance for this test if it exists.
+  void DestroyClient() {
+    if (client_) {
+      wl_client_destroy(client_.ExtractAsDangling());
+      close(fds_[1]);
+      client_ = nullptr;
+    }
+  }
+
  protected:
   std::unique_ptr<MockAuraOutputManagerListener> mock_aura_output_manager_;
+  int fds_[2] = {0, 0};
+  raw_ptr<wl_client> client_ = nullptr;
 };
 
 }  // namespace
+
+// Regression test for crbug.com/1433187. Ensures AuraOutputManager::Get() does
+// not cause UAF crashes by attempting to iterate over resources belonging to a
+// client that has started destruction.
+TEST_F(AuraOutputManagerTest, GetterReturnsNullAfterClientDestroyed) {
+  CreateClient();
+  EXPECT_FALSE(IsClientDestroyed(client_));
+
+  // Create a resource associated with the client.
+  wl_resource* output_resource =
+      wl_resource_create(client_, &wl_output_interface, 2, 0);
+  wl_resource_set_user_data(output_resource, client_);
+
+  // Ensure that calls to AuraOutputManager::Get() after client destruction
+  // does not result in UAF crashes. This callback will run after the client's
+  // destruction sequence begins and associated resources are freed.
+  auto wl_resource_callback = [](wl_resource* resource) {
+    wl_client* client =
+        static_cast<wl_client*>(wl_resource_get_user_data(resource));
+    EXPECT_TRUE(IsClientDestroyed(client));
+    EXPECT_FALSE(AuraOutputManager::Get(client));
+  };
+  wl_resource_set_destructor(output_resource, wl_resource_callback);
+
+  DestroyClient();
+}
 
 TEST_F(AuraOutputManagerTest, SendOverscanInsets) {
   wl_output* client_output = nullptr;

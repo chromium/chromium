@@ -52,8 +52,24 @@ WaylandServerController::~WaylandServerController() {
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   display_->Shutdown();
+  wayland::Server::SetServerGetter(base::NullCallback());
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
+}
+
+wayland::Server* WaylandServerController::GetServerForDisplay(
+    wl_display* display) {
+  if (default_server_ && default_server_->GetWaylandDisplay() == display) {
+    return default_server_.get();
+  }
+
+  for (const auto& pair : on_demand_servers_) {
+    if (pair.second->GetWaylandDisplay() == display) {
+      return pair.second.get();
+    }
+  }
+
+  return nullptr;
 }
 
 WaylandServerController::WaylandServerController(
@@ -74,6 +90,8 @@ WaylandServerController::WaylandServerController(
   default_server_->StartWithDefaultPath(base::BindOnce([](bool success) {
     DCHECK(success) << "Failed to start the default wayland server.";
   }));
+  wayland::Server::SetServerGetter(base::BindRepeating(
+      &WaylandServerController::GetServerForDisplay, base::Unretained(this)));
 }
 
 void WaylandServerController::ListenOnSocket(

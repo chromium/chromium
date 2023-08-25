@@ -64,7 +64,7 @@ int ScopedWlcsServer::AddClient() {
   }
 
   struct wl_client* client =
-      wl_client_create(Get()->GetWaylandDisplayForTesting(), server_fd.get());
+      wl_client_create(Get()->GetWaylandDisplay(), server_fd.get());
   if (!client) {
     return -1;
   }
