@@ -20,6 +20,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -296,6 +297,11 @@ OverviewController::GetWindowsListInOverviewGridsForTest() {
 }
 
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
+  // Pause raster scale updates while the overview is being toggled. This is to
+  // handle the case where a mirror view is deleted then recreated when
+  // cancelling an overview exit animation, for example.
+  ScopedPauseRasterScaleUpdates scoped_pause;
+
   // Hide the virtual keyboard as it obstructs the overview mode.
   // Don't need to hide if it's the a11y keyboard, as overview mode
   // can accept text input and it resizes correctly with the a11y keyboard.

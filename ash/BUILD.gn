@@ -2545,6 +2545,8 @@ component("ash") {
     "wm/pip/pip_window_resizer.h",
     "wm/raster_scale/raster_scale_controller.cc",
     "wm/raster_scale/raster_scale_controller.h",
+    "wm/raster_scale/raster_scale_layer_observer.cc",
+    "wm/raster_scale/raster_scale_layer_observer.h",
     "wm/resize_shadow.cc",
     "wm/resize_shadow.h",
     "wm/resize_shadow_controller.cc",

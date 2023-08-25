@@ -31,6 +31,7 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/overview/scoped_overview_hide_windows.h"
+#include "ash/wm/raster_scale/raster_scale_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -340,6 +341,12 @@ gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
 
 void OverviewItem::SetBounds(const gfx::RectF& target_bounds,
                              OverviewAnimationType animation_type) {
+  // Pause raster scale updates during SetBounds. For example, if we perform an
+  // item spawned animation, we set the initial transform but immediately start
+  // an animation, so we don't want to trigger a raster scale update for the
+  // initial transform.
+  ScopedPauseRasterScaleUpdates scoped_pause;
+
   if (in_bounds_update_ ||
       !Shell::Get()->overview_controller()->InOverviewSession()) {
     return;

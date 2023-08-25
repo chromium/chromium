@@ -115,6 +115,8 @@ void RasterScaleController::PopRasterScale(aura::Window* window,
 }
 
 float RasterScaleController::ComputeRasterScaleForWindow(aura::Window* window) {
+  // TODO(crbug.com/1473882): Consider adding slop threshold for not updating
+  // the raster scale.
   auto iter = window_scales_.find(window);
   if (iter == window_scales_.end() || iter->second.empty()) {
     return 1.0f;
