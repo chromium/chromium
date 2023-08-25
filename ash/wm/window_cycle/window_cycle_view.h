@@ -137,6 +137,10 @@ class ASH_EXPORT WindowCycleView : public views::WidgetDelegateView,
     return mirror_container_;
   }
 
+  const std::vector<WindowMiniViewBase*>& cycle_views_for_testing() const {
+    return cycle_views_;
+  }
+
  private:
   friend class WindowCycleListTestApi;
 

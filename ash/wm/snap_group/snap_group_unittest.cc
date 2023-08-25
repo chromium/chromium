@@ -33,6 +33,7 @@
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
 #include "ash/wm/window_cycle/window_cycle_view.h"
+#include "ash/wm/window_mini_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -45,14 +46,17 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/timer.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -67,6 +71,8 @@ namespace {
 using ::ui::mojom::CursorType;
 
 using WindowCyclingDirection = WindowCycleController::WindowCyclingDirection;
+
+constexpr int kWindowMiniViewCornerRadius = 16;
 
 SplitViewController* split_view_controller() {
   return SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -164,8 +170,11 @@ class SnapGroupTest : public AshTestBase {
     // TODO(michelefan@): Change it back to
     // `scoped_feature_list_.InitAndEnableFeature(features::kSnapGroup)` when
     // do the refactor work for the snap group unit tests.
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSnapGroup, {{"AutomaticLockGroup", "false"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSnapGroup, {{"AutomaticLockGroup", "false"}}},
+         {chromeos::features::kJellyroll, {}},
+         {chromeos::features::kJelly, {}}},
+        {});
   }
   SnapGroupTest(const SnapGroupTest&) = delete;
   SnapGroupTest& operator=(const SnapGroupTest&) = delete;
@@ -1269,6 +1278,45 @@ TEST_F(SnapGroupEntryPointArm1Test, SteppingInWindowCycleView) {
   CycleWindow(WindowCyclingDirection::kBackward, /*steps=*/1);
   CompleteWindowCycling();
   EXPECT_TRUE(wm::IsActiveWindow(window2.get()));
+}
+
+// Tests that the exposed rounded corners of the cycling items are rounded
+// corners. The visuals will be refreshed on window destruction that belongs to
+// a snap group.
+TEST_F(SnapGroupEntryPointArm1Test, WindowCycleRoundedCorners) {
+  std::unique_ptr<aura::Window> window0 =
+      CreateAppWindow(gfx::Rect(100, 200), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window1 =
+      CreateAppWindow(gfx::Rect(200, 300), AppType::BROWSER);
+  std::unique_ptr<aura::Window> window2 =
+      CreateAppWindow(gfx::Rect(300, 400), AppType::BROWSER);
+  SnapTwoTestWindowsInArm1(window0.get(), window1.get());
+
+  WindowCycleController* window_cycle_controller =
+      Shell::Get()->window_cycle_controller();
+  CycleWindow(WindowCyclingDirection::kForward, /*steps=*/3);
+  EXPECT_TRUE(window_cycle_controller->IsCycling());
+  const auto* window_cycle_list = window_cycle_controller->window_cycle_list();
+  const auto* cycle_view = window_cycle_list->cycle_view();
+  auto& cycle_item_views = cycle_view->cycle_views_for_testing();
+  ASSERT_EQ(cycle_item_views.size(), 2u);
+  for (auto* cycle_item_view : cycle_item_views) {
+    EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
+              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+
+  // Destroy `window0` which belongs to a snap group.
+  window0.reset();
+  auto& new_cycle_item_views = cycle_view->cycle_views_for_testing();
+  EXPECT_EQ(new_cycle_item_views.size(), 2u);
+
+  // Verify that the visuals of the cycling items will be refreshed so that the
+  // exposed corners will be rounded corners.
+  for (auto* cycle_item_view : new_cycle_item_views) {
+    EXPECT_EQ(cycle_item_view->GetRoundedCorners(),
+              gfx::RoundedCornersF(kWindowMiniViewCornerRadius));
+  }
+  CompleteWindowCycling();
 }
 
 // Tests that after creating a snap group in clamshell, transition to tablet

@@ -53,29 +53,6 @@ std::u16string GetWindowTitle(aura::Window* window) {
              : transient_root->GetTitle();
 }
 
-gfx::RoundedCornersF GetHeaderRoundedCorners(aura::Window* window) {
-  const float scale = window->layer()->GetTargetTransform().To2dScale().x();
-  const float scaled_corner_radius = kHeaderTopCornerRadius / scale;
-  SnapGroupController* snap_group_controller =
-      Shell::Get()->snap_group_controller();
-  if (snap_group_controller) {
-    SnapGroup* snap_group =
-        snap_group_controller->GetSnapGroupForGivenWindow(window);
-    if (snap_group) {
-      auto* window1 = snap_group->window1();
-      auto* window2 = snap_group->window2();
-      CHECK(window == window1 || window == window2);
-      // `window1` is guaranteed to be the primary snapped window in a snap
-      // group and `window2` is guaranteed to be the secondary snapped window in
-      // a snap group.
-      return window == window1
-                 ? gfx::RoundedCornersF(scaled_corner_radius, 0, 0, 0)
-                 : gfx::RoundedCornersF(0, scaled_corner_radius, 0, 0);
-    }
-  }
-  return gfx::RoundedCornersF(scaled_corner_radius, scaled_corner_radius, 0, 0);
-}
-
 }  // namespace
 
 WindowMiniViewHeaderView::~WindowMiniViewHeaderView() = default;
@@ -108,12 +85,7 @@ WindowMiniViewHeaderView::WindowMiniViewHeaderView(
   icon_label_view_->SetFlexForView(title_label_, 1);
 
   if (is_jellyroll_enabled) {
-    SetBackground(views::CreateThemedRoundedRectBackground(
-        chromeos::features::IsJellyrollEnabled()
-            ? cros_tokens::kCrosSysHeader
-            : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
-        GetHeaderRoundedCorners(window_mini_view_->source_window()),
-        /*for_border_thickness=*/0));
+    RefreshHeaderViewRoundedCorners();
 
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
@@ -145,6 +117,39 @@ void WindowMiniViewHeaderView::UpdateIconView(aura::Window* window) {
 
 void WindowMiniViewHeaderView::UpdateTitleLabel(aura::Window* window) {
   title_label_->SetText(GetWindowTitle(window));
+}
+
+void WindowMiniViewHeaderView::RefreshHeaderViewRoundedCorners() {
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      chromeos::features::IsJellyrollEnabled()
+          ? cros_tokens::kCrosSysHeader
+          : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
+      GetHeaderRoundedCorners(window_mini_view_->source_window()),
+      /*for_border_thickness=*/0));
+}
+
+gfx::RoundedCornersF WindowMiniViewHeaderView::GetHeaderRoundedCorners(
+    aura::Window* window) const {
+  const float scale = window->layer()->GetTargetTransform().To2dScale().x();
+  const float scaled_corner_radius = kHeaderTopCornerRadius / scale;
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  if (snap_group_controller) {
+    SnapGroup* snap_group =
+        snap_group_controller->GetSnapGroupForGivenWindow(window);
+    if (snap_group) {
+      auto* window1 = snap_group->window1();
+      auto* window2 = snap_group->window2();
+      CHECK(window == window1 || window == window2);
+      // `window1` is guaranteed to be the primary snapped window in a snap
+      // group and `window2` is guaranteed to be the secondary snapped window in
+      // a snap group.
+      return window == window1
+                 ? gfx::RoundedCornersF(scaled_corner_radius, 0, 0, 0)
+                 : gfx::RoundedCornersF(0, scaled_corner_radius, 0, 0);
+    }
+  }
+  return gfx::RoundedCornersF(scaled_corner_radius, scaled_corner_radius, 0, 0);
 }
 
 BEGIN_METADATA(WindowMiniViewHeaderView, views::View)

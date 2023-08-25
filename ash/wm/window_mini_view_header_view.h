@@ -6,19 +6,27 @@
 #define ASH_WM_WINDOW_MINI_VIEW_HEADER_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/wm/window_mini_view.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/view.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
+
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
 
 namespace views {
-class Label;
 class ImageView;
+class Label;
+class View;
 }  // namespace views
 
 namespace ash {
+
+class WindowMiniView;
 
 // A view that represents the header for the window mini view. It contains an
 // icon and a title label from the source window of the `window_mini_view_` and
@@ -37,6 +45,15 @@ class ASH_EXPORT WindowMiniViewHeaderView : public views::BoxLayoutView {
 
   void UpdateIconView(aura::Window* window);
   void UpdateTitleLabel(aura::Window* window);
+
+  // Refreshes the rounded corners on `this` by recreating the background view.
+  // Please note that there might be minor pixel difference if the rounded
+  // corner is set on the layer of this since the way to draw the rounded
+  // corners is different which may fail the pixel test
+  // (WmPixelDiffTest.WindowCycleBasic).
+  void RefreshHeaderViewRoundedCorners();
+
+  gfx::RoundedCornersF GetHeaderRoundedCorners(aura::Window* window) const;
 
  private:
   // The parent view of `this`, which is guaranteed not null during the lifetime

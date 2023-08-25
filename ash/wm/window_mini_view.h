@@ -8,13 +8,17 @@
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace aura {
+class Window;
+}  // namespace aura
+
 namespace gfx {
 class Point;
+class RoundedCornersF;
 }  // namespace gfx
 
 namespace views {
@@ -36,6 +40,9 @@ class WindowMiniViewBase : public views::View {
   WindowMiniViewBase& operator=(const WindowMiniViewBase&) = delete;
   ~WindowMiniViewBase() override;
 
+  // Shows or hides a focus ring around this.
+  void UpdateFocusState(bool focus);
+
   // Returns true if a preview of the given `window` is contained in `this`.
   virtual bool Contains(aura::Window* window) const = 0;
 
@@ -55,8 +62,8 @@ class WindowMiniViewBase : public views::View {
   // rather than a child item.
   virtual int TryRemovingChildItem(aura::Window* destroying_window) = 0;
 
-  // Shows or hides a focus ring around this.
-  void UpdateFocusState(bool focus);
+  // Returns the exposed rounded corners.
+  virtual gfx::RoundedCornersF GetRoundedCorners() const = 0;
 
  protected:
   WindowMiniViewBase();
@@ -106,13 +113,17 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   // Creates or deletes |preview_view_| as needed.
   void SetShowPreview(bool show);
 
-  // Sets or hides rounded corners on |preview_view_|, if it exists.
+  // Sets or hides rounded corners on `preview_view_`, if it exists.
   void UpdatePreviewRoundedCorners(bool show);
+
+  // Updates the rounded corners on `header_view_`, if it exists.
+  void UpdateHeaderViewRoundedCorners();
 
   // WindowMiniViewBase:
   bool Contains(aura::Window* window) const override;
   aura::Window* GetWindowAtPoint(const gfx::Point& screen_point) const override;
   int TryRemovingChildItem(aura::Window* destroying_window) override;
+  gfx::RoundedCornersF GetRoundedCorners() const override;
 
  protected:
   explicit WindowMiniView(aura::Window* source_window);

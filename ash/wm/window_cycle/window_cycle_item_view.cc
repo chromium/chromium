@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view.h"
 
@@ -134,10 +135,9 @@ bool WindowCycleItemView::HandleAccessibleAction(
 }
 
 void WindowCycleItemView::RefreshItemVisuals() {
-  CHECK(!preview_view());
-
   header_view()->UpdateIconView(source_window());
   SetShowPreview(/*show=*/true);
+  UpdateHeaderViewRoundedCorners();
   UpdatePreviewRoundedCorners(/*show=*/true);
 }
 
@@ -205,6 +205,8 @@ int GroupContainerCycleView::TryRemovingChildItem(
     }
   }
 
+  RefreshItemVisuals();
+
   return base::ranges::count_if(
       mini_views_ptrs,
       [](raw_ptr<WindowCycleItemView>* ptr) { return *ptr != nullptr; });
@@ -216,6 +218,32 @@ void GroupContainerCycleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   // TODO(b/297062026): Update the string after been finalized by consulting
   // with a11y team.
   node_data->SetName(u"Group container view");
+}
+
+gfx::RoundedCornersF GroupContainerCycleView::GetRoundedCorners() const {
+  if (!mini_view1_ && !mini_view2_) {
+    return gfx::RoundedCornersF();
+  }
+
+  // In normal use cases, the left corners (`upper_left` and `lower_left`) will
+  // depend on the primary snapped window, and likewise for the right corners.
+  // However, if one window gets destructed leaving only one mini view hosted by
+  // this. All the rounded corners have to be from the remaining mini view.
+  // TODO(b/294294344): for vertical split view, the upper corners will depend
+  // on the primary snapped window and likewise for the lower corners.
+  const float upper_left = mini_view1_
+                               ? mini_view1_->GetRoundedCorners().upper_left()
+                               : mini_view2_->GetRoundedCorners().upper_left();
+  const float upper_right =
+      mini_view2_ ? mini_view2_->GetRoundedCorners().upper_right()
+                  : mini_view1_->GetRoundedCorners().upper_right();
+  const float lower_right = mini_view2_
+                                ? mini_view2_->GetRoundedCorners().lower_right()
+                                : mini_view1_->GetRoundedCorners().lower_left();
+  const float lower_left = mini_view1_
+                               ? mini_view1_->GetRoundedCorners().lower_left()
+                               : mini_view2_->GetRoundedCorners().lower_right();
+  return gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left);
 }
 
 BEGIN_METADATA(GroupContainerCycleView, WindowMiniViewBase)

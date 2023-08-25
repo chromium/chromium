@@ -198,6 +198,14 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
   layer->SetIsFastRoundedCorner(true);
 }
 
+void WindowMiniView::UpdateHeaderViewRoundedCorners() {
+  if (!header_view_) {
+    return;
+  }
+
+  header_view_->RefreshHeaderViewRoundedCorners();
+}
+
 bool WindowMiniView::Contains(aura::Window* window) const {
   return source_window_ == window;
 }
@@ -209,6 +217,20 @@ aura::Window* WindowMiniView::GetWindowAtPoint(
 
 int WindowMiniView::TryRemovingChildItem(aura::Window* destroying_window) {
   return 0;
+}
+
+gfx::RoundedCornersF WindowMiniView::GetRoundedCorners() const {
+  if (!header_view_ || !preview_view_) {
+    return gfx::RoundedCornersF();
+  }
+
+  auto header_rounded_corners =
+      header_view_->GetHeaderRoundedCorners(source_window_);
+  auto preview_rounded_corners = preview_view_->layer()->rounded_corner_radii();
+  return gfx::RoundedCornersF(header_rounded_corners.upper_left(),
+                              header_rounded_corners.upper_right(),
+                              preview_rounded_corners.lower_right(),
+                              preview_rounded_corners.lower_left());
 }
 
 gfx::Rect WindowMiniView::GetHeaderBounds() const {
