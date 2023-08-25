@@ -1164,7 +1164,24 @@ const base::UnguessableToken& Page::CoopRelatedGroupToken() {
 
 void Page::UpdateBrowsingContextGroup(
     const blink::BrowsingContextGroupInfo& browsing_context_group_info) {
+  if (browsing_context_group_info_ == browsing_context_group_info) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kPausePagesPerBrowsingContextGroup) &&
+      ScopedBrowsingContextGroupPauser::IsActive(*this)) {
+    CHECK(paused_);
+    SetPaused(false);
+  }
+
   browsing_context_group_info_ = browsing_context_group_info;
+
+  if (base::FeatureList::IsEnabled(
+          features::kPausePagesPerBrowsingContextGroup) &&
+      ScopedBrowsingContextGroupPauser::IsActive(*this)) {
+    SetPaused(true);
+  }
 }
 
 template class CORE_TEMPLATE_EXPORT Supplement<Page>;
