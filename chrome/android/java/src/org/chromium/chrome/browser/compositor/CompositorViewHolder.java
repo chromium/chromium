@@ -113,8 +113,6 @@ public class CompositorViewHolder extends FrameLayout
                     ChromeFeatureList.DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
     private static final MutableFlagWithSafeDefault sDeferNotifyInMotion =
             new MutableFlagWithSafeDefault(ChromeFeatureList.DEFER_NOTIFY_IN_MOTION, false);
-    private static final MutableFlagWithSafeDefault sResizeOnlyActiveTab =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.RESIZE_ONLY_ACTIVE_TAB, false);
 
     /**
      * Initializer interface used to decouple initialization from the class that owns
@@ -403,27 +401,16 @@ public class CompositorViewHolder extends FrameLayout
         addOnLayoutChangeListener((v, left, top, right, bottom, oldLeft, oldTop, oldRight,
                                           oldBottom) -> {
             Tab tab = getCurrentTab();
-            if (sResizeOnlyActiveTab.isEnabled()) {
-                if (tab != null) {
-                    // Set the size of NTP if we're in the attached state as it may have not been
-                    // sized properly when initializing tab. See the comment in #initializeTab() for
-                    // why.
-                    boolean attachedNativePage =
-                            tab.isNativePage() && isAttachedToWindow(tab.getView());
-                    boolean sizeChanged = (right - left) != (oldRight - oldLeft)
-                            || (top - bottom) != (oldTop - oldBottom);
-                    if (attachedNativePage || sizeChanged) {
-                        tryUpdateControlsAndWebContentsSizing();
-                    }
-                }
-            } else {
-                // TODO(bokan): This old path is behind an on-by-default flag as changing it is
-                // potentially risky. Can be removed after successful landing.
-
-                // Set the size of NTP if we're in the attached state as it may have not been sized
-                // properly when initializing tab. See the comment in #initializeTab() for why.
-                if (tab != null && tab.isNativePage() && isAttachedToWindow(tab.getView())) {
-                    updateWebContentsSize(tab);
+            if (tab != null) {
+                // Set the size of NTP if we're in the attached state as it may have not been
+                // sized properly when initializing tab. See the comment in #initializeTab() for
+                // why.
+                boolean attachedNativePage =
+                        tab.isNativePage() && isAttachedToWindow(tab.getView());
+                boolean sizeChanged = (right - left) != (oldRight - oldLeft)
+                        || (top - bottom) != (oldTop - oldBottom);
+                if (attachedNativePage || sizeChanged) {
+                    tryUpdateControlsAndWebContentsSizing();
                 }
             }
 
@@ -850,9 +837,6 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
-        // TODO(bokan): On-by-default flag guard, remove once landed.
-        if (sResizeOnlyActiveTab.isEnabled()) return;
 
         if (mTabModelSelector == null) return;
 

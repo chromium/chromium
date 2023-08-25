@@ -188,7 +188,6 @@ BASE_DECLARE_FEATURE(kToolbarMicIphAndroid);
 BASE_DECLARE_FEATURE(kToolbarScrollAblationAndroid);
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 BASE_DECLARE_FEATURE(kTrustedWebActivityPostMessage);
-BASE_DECLARE_FEATURE(kResizeOnlyActiveTab);
 BASE_DECLARE_FEATURE(kSpareTab);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
