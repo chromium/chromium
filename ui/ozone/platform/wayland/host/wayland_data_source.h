@@ -81,12 +81,13 @@ class DataSource {
   void HandleFinishEvent(bool completed);
   void HandleSendEvent(const std::string& mime_type, int32_t fd);
 
+  // {T}_listener callbacks:
   static void OnSend(void* data, T* source, const char* mime_type, int32_t fd);
-  static void OnCancel(void* data, T* source);
-  static void OnDnDFinished(void* data, T* source);
+  static void OnCancelled(void* data, T* source);
+  static void OnDndFinished(void* data, T* source);
   static void OnAction(void* data, T* source, uint32_t dnd_action);
   static void OnTarget(void* data, T* source, const char* mime_type);
-  static void OnDnDDropPerformed(void* data, T* source);
+  static void OnDndDropPerformed(void* data, T* source);
 
   wl::Object<T> data_source_;
 

@@ -82,13 +82,13 @@ void DataSource<T>::OnSend(void* data,
 }
 
 template <typename T>
-void DataSource<T>::OnCancel(void* data, T* source) {
+void DataSource<T>::OnCancelled(void* data, T* source) {
   auto* self = static_cast<DataSource<T>*>(data);
   self->HandleFinishEvent(/*completed=*/false);
 }
 
 template <typename T>
-void DataSource<T>::OnDnDFinished(void* data, T* source) {
+void DataSource<T>::OnDndFinished(void* data, T* source) {
   auto* self = static_cast<DataSource<T>*>(data);
   self->HandleFinishEvent(/*completed=*/true);
 }
@@ -105,7 +105,7 @@ void DataSource<T>::OnTarget(void* data, T* source, const char* mime_type) {
 }
 
 template <typename T>
-void DataSource<T>::OnDnDDropPerformed(void* data, T* source) {
+void DataSource<T>::OnDndDropPerformed(void* data, T* source) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
@@ -116,8 +116,12 @@ void DataSource<T>::OnDnDDropPerformed(void* data, T* source) {
 template <>
 void DataSource<wl_data_source>::Initialize() {
   static constexpr wl_data_source_listener kDataSourceListener = {
-      &OnTarget,           &OnSend,        &OnCancel,
-      &OnDnDDropPerformed, &OnDnDFinished, &OnAction};
+      .target = &OnTarget,
+      .send = &OnSend,
+      .cancelled = &OnCancelled,
+      .dnd_drop_performed = &OnDndDropPerformed,
+      .dnd_finished = &OnDndFinished,
+      .action = &OnAction};
   wl_data_source_add_listener(data_source_.get(), &kDataSourceListener, this);
 }
 
@@ -151,7 +155,7 @@ template class DataSource<wl_data_source>;
 template <>
 void DataSource<gtk_primary_selection_source>::Initialize() {
   static constexpr gtk_primary_selection_source_listener kDataSourceListener = {
-      &OnSend, &OnCancel};
+      .send = &OnSend, .cancelled = &OnCancelled};
   gtk_primary_selection_source_add_listener(data_source_.get(),
                                             &kDataSourceListener, this);
 }
@@ -168,8 +172,9 @@ template <>
 void DataSource<zwp_primary_selection_source_v1>::Initialize() {
   static constexpr zwp_primary_selection_source_v1_listener
       kDataSourceListener = {
-          DataSource<zwp_primary_selection_source_v1>::OnSend,
-          DataSource<zwp_primary_selection_source_v1>::OnCancel};
+          .send = DataSource<zwp_primary_selection_source_v1>::OnSend,
+          .cancelled =
+              DataSource<zwp_primary_selection_source_v1>::OnCancelled};
   zwp_primary_selection_source_v1_add_listener(data_source_.get(),
                                                &kDataSourceListener, this);
 }

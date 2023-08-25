@@ -17,10 +17,11 @@ GtkPrimarySelectionDevice::GtkPrimarySelectionDevice(
     WaylandConnection* connection,
     gtk_primary_selection_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
-  static constexpr gtk_primary_selection_device_listener kListener = {
-      &OnDataOffer, &OnSelection};
-  gtk_primary_selection_device_add_listener(data_device_.get(), &kListener,
-                                            this);
+  static constexpr gtk_primary_selection_device_listener
+      kPrimarySelectionListener = {.data_offer = &OnDataOffer,
+                                   .selection = &OnSelection};
+  gtk_primary_selection_device_add_listener(data_device_.get(),
+                                            &kPrimarySelectionListener, this);
 }
 
 GtkPrimarySelectionDevice::~GtkPrimarySelectionDevice() = default;
@@ -37,7 +38,7 @@ void GtkPrimarySelectionDevice::SetSelectionSource(
 // static
 void GtkPrimarySelectionDevice::OnDataOffer(
     void* data,
-    gtk_primary_selection_device* data_device,
+    gtk_primary_selection_device* selection_device,
     gtk_primary_selection_offer* offer) {
   auto* self = static_cast<GtkPrimarySelectionDevice*>(data);
   DCHECK(self);
@@ -47,7 +48,7 @@ void GtkPrimarySelectionDevice::OnDataOffer(
 // static
 void GtkPrimarySelectionDevice::OnSelection(
     void* data,
-    gtk_primary_selection_device* data_device,
+    gtk_primary_selection_device* selection_device,
     gtk_primary_selection_offer* offer) {
   auto* self = static_cast<GtkPrimarySelectionDevice*>(data);
   DCHECK(self);

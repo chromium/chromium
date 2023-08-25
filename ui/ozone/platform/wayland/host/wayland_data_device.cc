@@ -27,7 +27,12 @@ WaylandDataDevice::WaylandDataDevice(WaylandConnection* connection,
                                      wl_data_device* data_device)
     : WaylandDataDeviceBase(connection), data_device_(data_device) {
   static constexpr wl_data_device_listener kDataDeviceListener = {
-      &OnOffer, &OnEnter, &OnLeave, &OnMotion, &OnDrop, &OnSelection};
+      .data_offer = &OnDataOffer,
+      .enter = &OnEnter,
+      .leave = &OnLeave,
+      .motion = &OnMotion,
+      .drop = &OnDrop,
+      .selection = &OnSelection};
   wl_data_device_add_listener(data_device_.get(), &kDataDeviceListener, this);
 }
 
@@ -99,9 +104,9 @@ void WaylandDataDevice::ReadDragDataFromFD(base::ScopedFD fd,
 }
 
 // static
-void WaylandDataDevice::OnOffer(void* data,
-                                wl_data_device* data_device,
-                                wl_data_offer* offer) {
+void WaylandDataDevice::OnDataOffer(void* data,
+                                    wl_data_device* data_device,
+                                    wl_data_offer* offer) {
   auto* self = static_cast<WaylandDataDevice*>(data);
   DCHECK(self);
   DCHECK(!self->new_offer_);
