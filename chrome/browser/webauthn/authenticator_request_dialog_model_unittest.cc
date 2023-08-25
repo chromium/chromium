@@ -2473,6 +2473,10 @@ struct {
     {L, false, false, true, true, HasCreds::kHasRecognizedCredential,
      kNoWinButton},
 
+    // Windows v7+ with empty allow-list.
+    {L, false, false, false, true, HasCreds::kHasRecognizedCredential,
+     kPhoneOrSk},
+
     // Windows v5+ with all transports.
     {L, true, true, true, false, HasCreds::kHasRecognizedCredential, kSk},
 
@@ -2487,6 +2491,9 @@ struct {
     {L, false, false, true, false, HasCreds::kHasRecognizedCredential,
      kNoWinButton},
 
+    // Windows v5+ with empty allow-list.
+    {L, false, false, false, false, HasCreds::kHasRecognizedCredential, kSk},
+
     // Windows <v4 with all transports.
     {L, true, true, true, false, HasCreds::kUnknown, kHelloOrSk},
 
@@ -2498,6 +2505,9 @@ struct {
 
     // Windows <v4 with only internal creds.
     {L, false, false, true, false, HasCreds::kUnknown, kHello},
+
+    // Windows <v4 with empty allow-list.
+    {L, false, false, false, false, HasCreds::kUnknown, kHelloOrSk},
 };
 #undef L
 
@@ -2517,6 +2527,9 @@ TEST_F(ListPasskeysFromSyncTest, WindowsHelloButtonLabel_GetAssertion) {
     transports_info.has_platform_authenticator_credential = test_case.has_creds;
     if (test_case.has_creds == HasCreds::kHasRecognizedCredential) {
       transports_info.recognized_credentials = {kCred1};
+    }
+    if (!test_case.has_sk && !test_case.has_hybrid && !test_case.has_internal) {
+      transports_info.has_empty_allow_list = true;
     }
     fake_win_webauthn_api.set_version(test_case.supports_hybrid ? 7 : 4);
     SCOPED_TRACE(testing::Message() << "Line number: " << test_case.line_num);
