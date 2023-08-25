@@ -1277,8 +1277,8 @@ def main():
     }
 
   if args.with_android:
-    toolchain_dir = ANDROID_NDK_TOOLCHAIN_DIR
     for target_arch in ['aarch64', 'arm', 'i686', 'riscv64', 'x86_64']:
+      toolchain_dir = ANDROID_NDK_TOOLCHAIN_DIR
       target_triple = target_arch
       if target_arch == 'arm':
         target_triple = 'armv7'
