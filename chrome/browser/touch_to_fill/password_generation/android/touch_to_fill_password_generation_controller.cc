@@ -8,11 +8,14 @@
 #include <string>
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+
+using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 TouchToFillPasswordGenerationController::
     ~TouchToFillPasswordGenerationController() {
@@ -27,12 +30,14 @@ TouchToFillPasswordGenerationController::
         content::WebContents* web_contents,
         PasswordGenerationElementData generation_element_data,
         std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
-        OnDismissedCallback on_dismissed_callback)
+        OnDismissedCallback on_dismissed_callback,
+        base::WeakPtr<ManualFillingController> manual_filling_controller)
     : frame_driver_(frame_driver),
       web_contents_(web_contents),
       generation_element_data_(std::move(generation_element_data)),
       bridge_(std::move(bridge)),
-      on_dismissed_callback_(std::move(on_dismissed_callback)) {
+      on_dismissed_callback_(std::move(on_dismissed_callback)),
+      manual_filling_controller_(manual_filling_controller) {
   CHECK(bridge_);
   CHECK(on_dismissed_callback_);
   suppress_showing_ime_callback_ = base::BindRepeating([]() {
@@ -50,8 +55,7 @@ bool TouchToFillPasswordGenerationController::ShowTouchToFill(
           generation_element_data_.form_signature,
           generation_element_data_.field_signature,
           generation_element_data_.max_password_length);
-  if (!bridge_->Show(web_contents_, base::AsWeakPtr(this),
-                     std::move(generated_password),
+  if (!bridge_->Show(web_contents_, this, std::move(generated_password),
                      std::move(account_display_name))) {
     return false;
   }
@@ -75,6 +79,12 @@ void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
   frame_driver_->GeneratedPasswordAccepted(
       generation_element_data_.form_data,
       generation_element_data_.generation_element_id, password);
+}
+
+void TouchToFillPasswordGenerationController::OnGeneratedPasswordRejected() {
+  manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
+      ShouldShowAction(true),
+      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
 }
 
 void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {

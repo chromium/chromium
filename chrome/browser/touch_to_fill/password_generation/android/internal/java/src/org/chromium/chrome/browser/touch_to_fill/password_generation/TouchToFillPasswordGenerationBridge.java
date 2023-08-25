@@ -63,10 +63,19 @@ class TouchToFillPasswordGenerationBridge
                 mNativeTouchToFillPasswordGenerationBridge, password);
     }
 
+    @Override
+    public void onGeneratedPasswordRejected() {
+        if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
+
+        TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordRejected(
+                mNativeTouchToFillPasswordGenerationBridge);
+    }
+
     @NativeMethods
     interface Natives {
         void onDismissed(long nativeTouchToFillPasswordGenerationBridge);
         void onGeneratedPasswordAccepted(
                 long nativeTouchToFillPasswordGenerationBridge, String password);
+        void onGeneratedPasswordRejected(long nativeTouchToFillPasswordGenerationBridge);
     }
 }

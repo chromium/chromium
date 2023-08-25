@@ -68,4 +68,10 @@ public class TouchToFillPasswordGenerationBridgeTest {
         mBridge.onGeneratedPasswordAccepted(generatedPassword);
         verify(mBridgeJniMock).onGeneratedPasswordAccepted(sTestNativePointer, generatedPassword);
     }
+
+    @Test
+    public void testOnGeneratedPasswordRejected() {
+        mBridge.onGeneratedPasswordRejected();
+        verify(mBridgeJniMock).onGeneratedPasswordRejected(sTestNativePointer);
+    }
 }

@@ -63,6 +63,11 @@ class TouchToFillPasswordGenerationView implements BottomSheetContent {
                 (v) -> callback.onResult(mPasswordView.getText().toString()));
     }
 
+    void setPasswordRejectedCallback(Runnable callback) {
+        Button passwordRejectedButton = mContent.findViewById(R.id.reject_password_button);
+        passwordRejectedButton.setOnClickListener((v) -> callback.run());
+    }
+
     @Override
     public View getContentView() {
         return mContent;

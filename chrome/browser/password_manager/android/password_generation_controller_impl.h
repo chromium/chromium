@@ -78,7 +78,9 @@ class PasswordGenerationControllerImpl
   // for testing.
   std::unique_ptr<TouchToFillPasswordGenerationController>
   CreateTouchToFillGenerationControllerForTesting(
-      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) override;
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
+      base::WeakPtr<ManualFillingController> manual_filling_controller)
+      override;
   gfx::NativeWindow top_level_native_window() override;
   content::WebContents* web_contents() override;
   autofill::FieldSignature get_field_signature_for_testing() override;

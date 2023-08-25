@@ -123,4 +123,23 @@ public class TouchToFillPasswordGenerationModuleTest {
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
         verify(mDelegate).onDismissed();
     }
+
+    @Test
+    public void testGeneratedPasswordRejectedCalled() {
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+
+        Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
+        rejectPasswordButton.performClick();
+        verify(mDelegate).onGeneratedPasswordRejected();
+    }
+
+    @Test
+    public void testBottomSheetIsHiddenAfterRejectingPassword() {
+        mCoordinator.show(sGeneratedPassword, sTestEmailAddress);
+
+        Button rejectPasswordButton = mContent.findViewById(R.id.reject_password_button);
+        rejectPasswordButton.performClick();
+        verify(mBottomSheetController).hideContent(any(), anyBoolean());
+        verify(mDelegate).onDismissed();
+    }
 }

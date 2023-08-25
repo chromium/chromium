@@ -224,19 +224,22 @@ PasswordGenerationControllerImpl::CreateTouchToFillGenerationController() {
       std::make_unique<TouchToFillPasswordGenerationBridgeImpl>(),
       base::BindOnce(&PasswordGenerationControllerImpl::
                          OnTouchToFillForGenerationDismissed,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      ManualFillingController::GetOrCreate(&GetWebContents()));
 }
 
 std::unique_ptr<TouchToFillPasswordGenerationController>
 PasswordGenerationControllerImpl::
     CreateTouchToFillGenerationControllerForTesting(
-        std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) {
+        std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
+        base::WeakPtr<ManualFillingController> manual_filling_controller) {
   return std::make_unique<TouchToFillPasswordGenerationController>(
       active_frame_driver_, &GetWebContents(), *generation_element_data_,
       std::move(bridge),
       base::BindOnce(&PasswordGenerationControllerImpl::
                          OnTouchToFillForGenerationDismissed,
-                     base::Unretained(this)));
+                     base::Unretained(this)),
+      manual_filling_controller);
 }
 
 void PasswordGenerationControllerImpl::ShowDialog(PasswordGenerationType type) {

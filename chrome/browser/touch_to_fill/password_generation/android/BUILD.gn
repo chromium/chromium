@@ -8,6 +8,7 @@ source_set("public") {
   deps = [
     ":android",
     "//base",
+    "//chrome/browser/autofill:autofill",
     "//chrome/browser/password_manager/android:password_generation_utils",
     "//components/password_manager/content/browser:browser",
     "//content/public/browser",

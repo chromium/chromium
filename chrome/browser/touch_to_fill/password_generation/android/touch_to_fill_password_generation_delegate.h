@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 
-#include "base/memory/weak_ptr.h"
-
 // The delegate, which handles the Password generation bottom sheet
 // (Touch-To-Fill) functionality. Implemented by
 // `TouchToFillPasswordGenerationController`.
-class TouchToFillPasswordGenerationDelegate
-    : public base::SupportsWeakPtr<TouchToFillPasswordGenerationDelegate> {
+class TouchToFillPasswordGenerationDelegate {
  public:
   virtual ~TouchToFillPasswordGenerationDelegate() = default;
 
@@ -22,6 +19,11 @@ class TouchToFillPasswordGenerationDelegate
   // Called if the user accepts the proposed generated password. Here the
   // password should be saved and filled into the form.
   virtual void OnGeneratedPasswordAccepted(const std::u16string& password) = 0;
+
+  // Called if the user doesn't accept the proposed generated password. Here the
+  // keyboard accessory bar with "Suggest strong password" button should be
+  // displayed.
+  virtual void OnGeneratedPasswordRejected() = 0;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_

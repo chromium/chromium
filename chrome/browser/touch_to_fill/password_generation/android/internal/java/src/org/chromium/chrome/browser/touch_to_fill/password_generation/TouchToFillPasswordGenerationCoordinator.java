@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.touch_to_fill.password_generation;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.ACCOUNT_EMAIL;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.GENERATED_PASSWORD;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.PASSWORD_ACCEPTED_CALLBACK;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationProperties.PASSWORD_REJECTED_CALLBACK;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -35,6 +36,9 @@ class TouchToFillPasswordGenerationCoordinator {
          * @param password the password, which was used.
          */
         void onGeneratedPasswordAccepted(String password);
+
+        /** Called when the user rejects the generated password. */
+        void onGeneratedPasswordRejected();
     }
 
     private final TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
@@ -76,6 +80,7 @@ class TouchToFillPasswordGenerationCoordinator {
                         .with(ACCOUNT_EMAIL, account)
                         .with(GENERATED_PASSWORD, generatedPassword)
                         .with(PASSWORD_ACCEPTED_CALLBACK, this::onGeneratedPasswordAccepted)
+                        .with(PASSWORD_REJECTED_CALLBACK, this::onGeneratedPasswordRejected)
                         .build();
         setUpModelChangeProcessors(model, mTouchToFillPasswordGenerationView);
 
@@ -99,7 +104,12 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private void onGeneratedPasswordAccepted(String password) {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordAccepted(password);
-        onDismissed(StateChangeReason.NONE);
+        onDismissed(StateChangeReason.INTERACTION_COMPLETE);
+    }
+
+    private void onGeneratedPasswordRejected() {
+        mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
+        onDismissed(StateChangeReason.INTERACTION_COMPLETE);
     }
 
     /**

@@ -113,7 +113,8 @@ class PasswordGenerationController {
 
   virtual std::unique_ptr<TouchToFillPasswordGenerationController>
   CreateTouchToFillGenerationControllerForTesting(
-      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge) = 0;
+      std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
+      base::WeakPtr<ManualFillingController> manual_filling_controller) = 0;
 
   // -----------------
   // Member accessors:
