@@ -353,4 +353,29 @@ TEST_F(PromiseAppServiceTest, CompleteAppInstallationRemovesPromiseApp) {
   EXPECT_FALSE(cache()->HasPromiseApp(package_id));
   EXPECT_FALSE(icon_cache()->DoesPackageIdHaveIcons(package_id));
 }
+
+TEST_F(PromiseAppServiceTest,
+       SuppressPromiseAppsForAppsRegisteredInAppRegistryCache) {
+  AppType app_type = AppType::kArc;
+  std::string identifier = "test.com.example";
+  PackageId package_id(app_type, identifier);
+
+  // Register sample test app in AppRegistryCache.
+  apps::AppPtr app = std::make_unique<apps::App>(app_type, "asdfghjkl");
+  app->publisher_id = identifier;
+  app->readiness = apps::Readiness::kReady;
+  std::vector<apps::AppPtr> apps;
+  apps.push_back(std::move(app));
+  app_cache()->OnApps(std::move(apps), app_type,
+                      /*should_notify_initialized=*/false);
+
+  // Attempt to register test promise app with a matching package ID.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kPending;
+  service()->OnPromiseApp(std::move(promise_app));
+
+  // Confirm that the promise app does NOT get created.
+  EXPECT_FALSE(cache()->HasPromiseApp(package_id));
+}
+
 }  // namespace apps

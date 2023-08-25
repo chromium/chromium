@@ -103,6 +103,10 @@ class PromiseAppService : public AppRegistryCache::Observer {
                         const gfx::Image& image,
                         const image_fetcher::RequestMetadata& metadata);
 
+  // Check whether there is a registered app in AppRegistryCache with the
+  // specified package ID.
+  bool IsRegisteredInAppRegistryCache(const PackageId& package_id);
+
   // The cache that contains all the promise apps in the system.
   std::unique_ptr<apps::PromiseAppRegistryCache> promise_app_registry_cache_;
 
@@ -115,6 +119,8 @@ class PromiseAppService : public AppRegistryCache::Observer {
 
   // Fetches images from a given URL.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
+
+  raw_ptr<apps::AppRegistryCache> app_registry_cache_;
 
   // Keeps track of how many icon downloads we are waiting on for each promise
   // app. When all downloads are completed, we can proceed to set (or not set)

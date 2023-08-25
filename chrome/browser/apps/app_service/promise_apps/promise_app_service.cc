@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/package_id.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
@@ -83,7 +84,8 @@ PromiseAppService::PromiseAppService(Profile* profile,
       promise_app_icon_cache_(std::make_unique<apps::PromiseAppIconCache>()),
       image_fetcher_(std::make_unique<image_fetcher::ImageFetcherImpl>(
           std::make_unique<ImageDecoderImpl>(),
-          profile->GetURLLoaderFactory())) {
+          profile->GetURLLoaderFactory())),
+      app_registry_cache_(&app_registry_cache) {
   app_registry_cache_observation_.Observe(&app_registry_cache);
 }
 
@@ -102,7 +104,19 @@ void PromiseAppService::OnPromiseApp(PromiseAppPtr delta) {
 
   const PackageId package_id = delta->package_id;
   bool is_existing_registration =
-      promise_app_registry_cache_->HasPromiseApp(package_id);
+      promise_app_registry_cache_->HasPromiseApp(delta->package_id);
+
+  // If the app is in the AppRegistryCache, then it already has an item in the
+  // Launcher/ Shelf and we don't need to create a new promise app item to
+  // represent it. This scenario happens when we start installing a default ARC
+  // app (which is a stubbed app in App Registry Cache to show an icon in the
+  // Launcher/ Shelf but uses legacy ARC default apps implementation).
+  // TODO(b/286981938): Remove this check after refactoring to allow the Promise
+  // App Service to manage ARC default app icons.
+  if (!is_existing_registration && IsRegisteredInAppRegistryCache(package_id)) {
+    return;
+  }
+
   promise_app_registry_cache_->OnPromiseApp(std::move(delta));
 
   if (is_existing_registration) {
@@ -187,6 +201,7 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
 void PromiseAppService::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observation_.Reset();
+  app_registry_cache_ = nullptr;
 }
 
 void PromiseAppService::SetSkipAlmanacForTesting(bool skip_almanac) {
@@ -308,4 +323,23 @@ void PromiseAppService::OnIconDownloaded(
   promise_app->should_show = true;
   promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
 }
+
+bool PromiseAppService::IsRegisteredInAppRegistryCache(
+    const PackageId& package_id) {
+  if (!app_registry_cache_) {
+    return false;
+  }
+  bool is_registered = false;
+  app_registry_cache_->ForEachApp([&package_id,
+                                   &is_registered](const AppUpdate& update) {
+    absl::optional<PackageId> app_package_id =
+        apps_util::GetPackageIdForApp(update);
+    if (app_package_id.has_value() && app_package_id.value() == package_id) {
+      is_registered = true;
+      return;
+    }
+  });
+  return is_registered;
+}
+
 }  // namespace apps

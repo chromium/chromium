@@ -37,6 +37,8 @@ source_set("app_service") {
     "metrics/app_service_metrics.h",
     "package_id.cc",
     "package_id.h",
+    "package_id_util.cc",
+    "package_id_util.h",
     "paused_apps.cc",
     "paused_apps.h",
     "policy_util.cc",
