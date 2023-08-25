@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -10,10 +10,10 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
+#include "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

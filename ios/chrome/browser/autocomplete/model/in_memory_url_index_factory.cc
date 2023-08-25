@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#include "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
 
 #include <utility>
 

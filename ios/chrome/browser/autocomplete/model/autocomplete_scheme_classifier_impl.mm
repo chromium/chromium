@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 
 #import "base/check_op.h"
 #import "base/strings/string_util.h"

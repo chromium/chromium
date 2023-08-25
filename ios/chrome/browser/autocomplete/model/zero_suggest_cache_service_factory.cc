@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#include "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"

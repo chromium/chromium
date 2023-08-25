@@ -34,7 +34,7 @@ source_set("toolbar") {
     "//components/segmentation_platform/public",
     "//components/strings",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autocomplete",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/first_run",

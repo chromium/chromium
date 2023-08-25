@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_OMNIBOX_PEDAL_IMPLEMENTATION_H_
-#define IOS_CHROME_BROWSER_AUTOCOMPLETE_OMNIBOX_PEDAL_IMPLEMENTATION_H_
+#ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_OMNIBOX_PEDAL_IMPLEMENTATION_H_
+#define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_OMNIBOX_PEDAL_IMPLEMENTATION_H_
 
 #include <unordered_map>
 
@@ -15,4 +15,4 @@
 std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>>
 GetPedalImplementations(bool incognito, bool testing);
 
-#endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_OMNIBOX_PEDAL_IMPLEMENTATION_H_
+#endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_OMNIBOX_PEDAL_IMPLEMENTATION_H_

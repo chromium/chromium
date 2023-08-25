@@ -17,7 +17,7 @@ source_set("start_suggest") {
     "//components/keyed_service/ios",
     "//components/prefs",
     "//components/search:start_suggest",
-    "//ios/chrome/browser/autocomplete",
+    "//ios/chrome/browser/autocomplete/model",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",

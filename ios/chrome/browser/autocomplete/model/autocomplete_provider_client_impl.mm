@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 
 #import "base/notreached.h"
 #import "base/strings/utf_string_conversions.h"
@@ -18,13 +18,13 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/service/sync_service.h"
 #import "components/unified_consent/url_keyed_data_collection_consent_helper.h"
-#import "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#import "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
-#import "ios/chrome/browser/autocomplete/omnibox_pedal_implementation.h"
-#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
-#import "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
-#import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
-#import "ios/chrome/browser/autocomplete/zero_suggest_cache_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_classifier_factory.h"
+#import "ios/chrome/browser/autocomplete/model/in_memory_url_index_factory.h"
+#import "ios/chrome/browser/autocomplete/model/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/shortcuts_backend_factory.h"
+#import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
+#import "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"

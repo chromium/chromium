@@ -14,7 +14,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/omnibox/browser/autocomplete_input.h"
-#import "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"

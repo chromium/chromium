@@ -13,7 +13,7 @@
 #import "components/history/core/browser/top_sites.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/variations/variations_ids_provider.h"
-#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 #import "ios/chrome/browser/history/top_sites_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"

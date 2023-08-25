@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
+#import "ios/chrome/browser/autocomplete/model/remote_suggestions_service_factory.h"
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"

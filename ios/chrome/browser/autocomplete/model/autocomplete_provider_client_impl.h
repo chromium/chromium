@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
-#define IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
+#define IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
 
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
-#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
+#include "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 
 class ChromeBrowserState;
 class AutocompleteScoringModelService;
@@ -110,4 +110,4 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
 };
 
-#endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_MODEL_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_

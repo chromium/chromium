@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
+#import "ios/chrome/browser/autocomplete/model/tab_matcher_impl.h"
 
 #import <set>
 

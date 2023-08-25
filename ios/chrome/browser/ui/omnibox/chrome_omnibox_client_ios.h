@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "components/omnibox/browser/omnibox_client.h"
-#include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 
 class ChromeBrowserState;
 class WebLocationBar;

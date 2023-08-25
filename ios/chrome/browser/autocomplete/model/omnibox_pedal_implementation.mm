@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autocomplete/omnibox_pedal_implementation.h"
+#import "ios/chrome/browser/autocomplete/model/omnibox_pedal_implementation.h"
 
 #import "components/omnibox/browser/actions/omnibox_pedal.h"
 #import "components/omnibox/browser/autocomplete_input.h"
