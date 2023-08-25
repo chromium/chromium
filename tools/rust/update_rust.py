@@ -42,7 +42,7 @@ RUST_SUB_REVISION = 11
 # If not None, this overrides the `CLANG_REVISION` in
 # //tools/clang/scripts/update.py in order to download a Rust toolchain that
 # was built against a different LLVM than the latest Clang package.
-OVERRIDE_CLANG_REVISION = 'llvmorg-17-init-16420-g0c545a44'
+OVERRIDE_CLANG_REVISION = None
 
 # Trunk on 2022-10-15.
 #
