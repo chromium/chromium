@@ -268,6 +268,7 @@ void InputDeviceSettingsControllerImpl::RegisterProfilePrefs(
       prefs::kPointingStickDeviceSettingsDictPref);
   pref_registry->RegisterDictionaryPref(prefs::kTouchpadDeviceSettingsDictPref);
   pref_registry->RegisterListPref(prefs::kKeyboardDeviceImpostersListPref);
+  pref_registry->RegisterDictionaryPref(prefs::kMouseButtonRemappingsDictPref);
 }
 
 void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(

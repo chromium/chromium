@@ -121,6 +121,8 @@ struct MouseSettings {
   uint8 scroll_sensitivity;
   // Toggles whether scroll acceleration is enabled.
   bool scroll_acceleration;
+  // Store all the button remappings.
+  array<ButtonRemapping> button_remappings;
 };
 
 // Contains all information needed to display, apply, and update touchpad

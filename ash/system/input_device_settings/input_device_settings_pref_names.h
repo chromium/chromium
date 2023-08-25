@@ -54,6 +54,8 @@ constexpr char kGraphicsTabletTabletButtonRemappingsDictPref[] =
     "settings.graphics_tablet.tablet_button_remappings";
 constexpr char kGraphicsTabletPenButtonRemappingsDictPref[] =
     "settings.graphics_tablet.pen_button_remappings";
+constexpr char kMouseButtonRemappingsDictPref[] =
+    "settings.mouse.button_remappings";
 
 // Keyboard settings dictionary keys.
 constexpr char kKeyboardSettingAutoRepeatDelay[] = "auto_repeat_delay";

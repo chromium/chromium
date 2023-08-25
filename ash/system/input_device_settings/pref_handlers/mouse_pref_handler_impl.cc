@@ -199,6 +199,18 @@ base::Value::Dict ConvertSettingsToDict(
   return settings_dict;
 }
 
+void UpdateButtonRemappingDictPref(PrefService* pref_service,
+                                   const mojom::Mouse& mouse) {
+  const mojom::MouseSettings& settings = *mouse.settings;
+  base::Value::List button_remappings =
+      ConvertButtonRemappingArrayToList(settings.button_remappings);
+  base::Value::Dict button_remappings_dict =
+      pref_service->GetDict(prefs::kMouseButtonRemappingsDictPref).Clone();
+  button_remappings_dict.Set(mouse.device_key, std::move(button_remappings));
+  pref_service->SetDict(std::string(prefs::kMouseButtonRemappingsDictPref),
+                        std::move(button_remappings_dict));
+}
+
 void UpdateMouseSettingsImpl(
     PrefService* pref_service,
     const mojom::MousePolicies& mouse_policies,
@@ -223,6 +235,10 @@ void UpdateMouseSettingsImpl(
 
   pref_service->SetDict(std::string(prefs::kMouseDeviceSettingsDictPref),
                         std::move(devices_dict));
+
+  if (features::IsPeripheralCustomizationEnabled()) {
+    UpdateButtonRemappingDictPref(pref_service, mouse);
+  }
 }
 
 mojom::MouseSettingsPtr GetMouseSettingsFromOldLocalStatePrefs(

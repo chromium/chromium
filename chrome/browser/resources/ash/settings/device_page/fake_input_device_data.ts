@@ -241,6 +241,7 @@ export const fakeMice: Mouse[] = [
       accelerationEnabled: true,
       scrollSensitivity: 5,
       scrollAcceleration: true,
+      buttonRemappings: [],
     },
   },
   {
@@ -255,6 +256,7 @@ export const fakeMice: Mouse[] = [
       accelerationEnabled: false,
       scrollSensitivity: 1,
       scrollAcceleration: false,
+      buttonRemappings: [],
     },
   },
 ];
@@ -272,6 +274,7 @@ export const fakeMice2: Mouse[] = [
       accelerationEnabled: true,
       scrollSensitivity: 5,
       scrollAcceleration: true,
+      buttonRemappings: [],
     },
   },
 ];
