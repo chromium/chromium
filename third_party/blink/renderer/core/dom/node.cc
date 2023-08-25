@@ -1590,8 +1590,9 @@ void Node::AttachLayoutTree(AttachContext& context) {
 
   ClearNeedsReattachLayoutTree();
 
-  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
-    cache->UpdateCacheAfterNodeIsAttached(this);
+  if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->NodeIsAttached(this);
+  }
 
   if (context.performing_reattach)
     ReattachHookScope::NotifyAttach(*this);
@@ -2271,6 +2272,9 @@ Node::InsertionNotificationRequest Node::InsertedInto(
   if (ParentOrShadowHostNode()->IsInShadowTree())
     SetFlag(kIsInShadowTreeFlag);
   if (auto* cache = GetDocument().ExistingAXObjectCache()) {
+    cache->NodeIsConnected(this);
+    // TODO(accessibility) NodeIsAttached() calls ChildrenChanged(), so we may
+    // not need this.
     cache->ChildrenChanged(&insertion_point);
   }
   return kInsertionDone;

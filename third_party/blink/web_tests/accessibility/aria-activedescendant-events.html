@@ -57,7 +57,7 @@ var idsToTest = [ [ "contenteditable-textbox", "list1" ],
                   [ "input-textbox", "list2" ],
                   [ "input-combobox", "list3" ],
                   [ "textarea-searchbox", "list4" ],
-                  [  "pure-native-input-textbox", "list5" ] ];
+                  [ "pure-native-input-textbox", "list5" ] ];
 
 function testEventExpectations(t, widgetId, listboxId) {
     var focusChangedEventCount = 0;
@@ -71,17 +71,20 @@ function testEventExpectations(t, widgetId, listboxId) {
     var axWidget = accessibilityController.accessibleElementById(widgetId);
     var focusChangedEventCount = 0;
     var markDirtyEventCount = 0;
+    var eventsComplete = false;
     axWidget.addNotificationListener(t.step_func(function(notification) {
         if (notification == "Focus") {
-            console.log("Got focus notification on " + widgetId);
             ++focusChangedEventCount;
+            console.log("Got focus notification #" + focusChangedEventCount + " on " + widgetId);
         }
         if (notification == "MarkDirty") {
-            console.log("Got MarkDirty notification on " + widgetId);
             ++markDirtyEventCount;
+            console.log("Got MarkDirty notification #" + markDirtyEventCount + " on " + widgetId);
         }
-        if (focusChangedEventCount == 1 && markDirtyEventCount == 3) {
+        if (focusChangedEventCount >= 1 && markDirtyEventCount >= 3 && !eventsComplete) {
+            eventsComplete = true;
             window.setTimeout(t.step_func(() => {
+                console.log('** Events complete for ' + widgetId);
                 testNext(t);
             }, 0));
         }

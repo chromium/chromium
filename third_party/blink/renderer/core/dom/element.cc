@@ -3493,6 +3493,19 @@ static bool LayoutViewCanHaveChildren(Element& element) {
   return false;
 }
 
+void Element::NotifyAXOfAttachedSubtree() {
+  if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
+    // NodeIsAttached is normally called when a node becomes connected, but if
+    // this subtree is display:none or content-visibility:hidden/auto, there's
+    // no guarantee that AttachLayoutTree will be called.
+    Node* node = this;
+    do {
+      ax_cache->NodeIsAttached(node);
+      node = FlatTreeTraversal::Next(*node, this);
+    } while (node);
+  }
+}
+
 // This function performs two important tasks:
 //
 //  1. It computes the correct style for the element itself.
@@ -3567,13 +3580,13 @@ StyleRecalcChange Element::RecalcOwnStyle(
   bool base_is_display_none =
       !new_style ||
       new_style->GetBaseComputedStyleOrThis()->Display() == EDisplay::kNone;
-  if (new_style && !ShouldStoreComputedStyle(*new_style)) {
-    new_style = nullptr;
-    if (auto* ax_cache = GetDocument().ExistingAXObjectCache()) {
-      // UpdateCacheAfterNodeIsAttached is normally called from
-      // Node::AttachLayoutTree, but if this Element is display:none, there's no
-      // guarantee that AttachLayoutTree will be called.
-      ax_cache->UpdateCacheAfterNodeIsAttached(this);
+
+  if (new_style) {
+    if (!ShouldStoreComputedStyle(*new_style)) {
+      new_style = nullptr;
+      NotifyAXOfAttachedSubtree();
+    } else if (!new_style->IsContentVisibilityVisible()) {
+      NotifyAXOfAttachedSubtree();
     }
   }
 

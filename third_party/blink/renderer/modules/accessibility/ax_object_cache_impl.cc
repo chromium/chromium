@@ -692,7 +692,6 @@ AXObjectCacheImpl::AXObjectCacheImpl(Document& document,
       ax_mode_(ax_mode),
       validation_message_axid_(0),
       active_aria_modal_dialog_(nullptr),
-      relation_cache_(std::make_unique<AXRelationCache>(this)),
       accessibility_event_permission_(mojom::blink::PermissionStatus::ASK),
       permission_service_(document.GetExecutionContext()),
       permission_observer_receiver_(this, document.GetExecutionContext()),
@@ -739,6 +738,13 @@ void AXObjectCacheImpl::AddInspectorAgent(InspectorAccessibilityAgent* agent) {
 void AXObjectCacheImpl::RemoveInspectorAgent(
     InspectorAccessibilityAgent* agent) {
   agents_.erase(agent);
+}
+
+void AXObjectCacheImpl::EnsureRelationCache() {
+  if (!relation_cache_) {
+    relation_cache_ = std::make_unique<AXRelationCache>(this);
+    relation_cache_->Init();
+  }
 }
 
 AXObject* AXObjectCacheImpl::Root() {
@@ -1020,6 +1026,7 @@ void AXObjectCacheImpl::Invalidate(Document& document, AXID ax_id) {
 }
 
 AXID AXObjectCacheImpl::GetAXID(Node* node) {
+  UpdateAXForAllDocuments();
   AXObject* ax_object = GetOrCreate(node);
   if (!ax_object)
     return ui::AXNodeData::kInvalidAXID;
@@ -1321,6 +1328,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
   if (!node)
     return nullptr;
 
+  // The relation cache must exit before the creation of any object, as it
+  // can affect the parent chain of any object returned.
+  EnsureRelationCache();
+
   if (AXObject* obj = Get(node)) {
     return obj;
   }
@@ -1433,11 +1444,20 @@ AXObject* AXObjectCacheImpl::CreateAndInit(Node* node,
   AssociateAXID(new_obj, axid);
   new_obj->Init(parent);
 
-  // Register incomplete relations with the relation cache, so that when the
-  // target id shows up at a later time, the source node can be reserialized
-  // with the completed relation.
-  relation_cache_->RegisterIncompleteRelations(new_obj);
-
+  // Process new relations.
+  // Only elements (non-pseudo ones) can have relations.
+  CHECK(relation_cache_);
+  if (IsA<Element>(node) && !node->IsPseudoElement()) {
+    // Register incomplete relations with the relation cache, so that when the
+    // target id shows up at a later time, the source node can be reserialized
+    // with the completed relation.
+    relation_cache_->RegisterIncompleteRelations(new_obj);
+#if DCHECK_IS_ON()
+    // Ensure that the relation cache is properly initialized with information
+    // from this element.
+    relation_cache_->CheckRelationsCached(*To<Element>(node));
+#endif
+  }
   return new_obj;
 }
 
@@ -1991,7 +2011,9 @@ void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
   fixed_or_sticky_node_ids_.erase(obj_id);
   cached_bounding_boxes_.erase(obj_id);
   // Clear id from relation cache.
-  relation_cache_->RemoveAXID(obj_id);
+  if (relation_cache_) {
+    relation_cache_->RemoveAXID(obj_id);
+  }
 }
 
 AXObject* AXObjectCacheImpl::NearestExistingAncestor(Node* node) {
@@ -2143,13 +2165,6 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
     MarkElementDirty(text_control);
 }
 
-void AXObjectCacheImpl::UpdateReverseTextRelations(
-    const AXObject* relation_source,
-    const Vector<String>& target_ids) {
-  relation_cache_->UpdateReverseTextRelations(relation_source->GetNode(),
-                                              target_ids);
-}
-
 void AXObjectCacheImpl::StyleChanged(const LayoutObject* layout_object,
                                      bool visibility_or_inertness_changed) {
   DCHECK(layout_object);
@@ -2254,8 +2269,10 @@ void AXObjectCacheImpl::TextChangedWithCleanLayout(
     MarkAXObjectDirtyWithCleanLayout(obj);
   }
 
-  if (optional_node_for_relation_update)
+  if (optional_node_for_relation_update) {
+    CHECK(relation_cache_);
     relation_cache_->UpdateRelatedTree(optional_node_for_relation_update, obj);
+  }
 }
 
 void AXObjectCacheImpl::TextChangedWithCleanLayout(Node* node) {
@@ -2296,7 +2313,16 @@ void AXObjectCacheImpl::DocumentTitleChanged() {
     PostNotification(root, ax::mojom::blink::Event::kDocumentTitleChanged);
 }
 
-void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
+void AXObjectCacheImpl::NodeIsConnected(Node* node) {
+  // Register relation ids so that reverse relations can be computed.
+  if (relation_cache_) {
+    if (Element* element = DynamicTo<Element>(node)) {
+      relation_cache_->CacheRelationIds(*element);
+    }
+  }
+}
+
+void AXObjectCacheImpl::NodeIsAttached(Node* node) {
   DCHECK(node);
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
 
@@ -2331,11 +2357,10 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttached(Node* node) {
                                    /* notify_parent */ false);
   }
 
-  DeferTreeUpdate(TreeUpdateReason::kUpdateCacheAfterNodeIsAttached, node);
+  DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
 }
 
-void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
-    Node* node) {
+void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   if (!node || !node->isConnected()) {
     return;
   }
@@ -2350,11 +2375,11 @@ void AXObjectCacheImpl::UpdateCacheAfterNodeIsAttachedWithCleanLayout(
 #endif  // DCHECK_IS_ON()
 
   // Process any relation attributes that can affect ax objects already created.
-
   // Force computation of aria-owns, so that original parents that already
   // computed their children get the aria-owned children removed.
   if (AXObject::HasARIAOwns(element)) {
     if (AXObject* obj = GetOrCreate(element)) {
+      CHECK(relation_cache_);
       relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
     }
   }
@@ -2613,8 +2638,10 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       return;
   }
 
-  if (optional_node)
+  if (optional_node) {
+    CHECK(relation_cache_);
     relation_cache_->UpdateRelatedTree(optional_node, obj);
+  }
 
   TableCellRoleMaybeChanged(optional_node);
 }
@@ -2698,6 +2725,15 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
     return;
   }
 
+  if (GetPopupDocumentIfShowing()) {
+    UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
+  }
+
+  // Changes to ids or aria-owns may have resulted in queued up relation
+  // cache work; do that now.
+  EnsureRelationCache();
+  relation_cache_->ProcessUpdatesWithCleanLayout();
+
   // If MarkDocumentDirty() was called, do it now, so that the entire tree is
   // invalidated before updating it.
   if (mark_all_dirty_) {
@@ -2706,7 +2742,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {
 
   if (IsDirty()) {
     if (GetPopupDocumentIfShowing()) {
-      UpdateLifecycleIfNeeded(*GetPopupDocumentIfShowing());
       ProcessDeferredAccessibilityEventsImpl(*GetPopupDocumentIfShowing());
     }
     ProcessDeferredAccessibilityEventsImpl(document);
@@ -2779,10 +2814,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     // FooBarredWithCleanLayout().
     ProcessCleanLayoutCallbacks(document);
 
-    // Changes to ids or aria-owns may have resulted in queued up relation
-    // cache work; do that now.
-    relation_cache_->ProcessUpdatesWithCleanLayout();
-
     // Keep going if there are more ids to invalidate or children changes to
     // process from previous steps. For example, a display locked
     // (content-visibility:auto) element could be invalidated as it is scrolled
@@ -2815,7 +2846,7 @@ bool AXObjectCacheImpl::IsPopupDocumentDirty() const {
 }
 
 bool AXObjectCacheImpl::IsDirty() {
-  if (IsMainDocumentDirty() || IsPopupDocumentDirty() ||
+  if (IsMainDocumentDirty() || IsPopupDocumentDirty() || !relation_cache_ ||
       relation_cache_->IsDirty()) {
     return true;
   }
@@ -2930,6 +2961,7 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
       // new object.
       if (AXObject::HasARIAOwns(DynamicTo<Element>(node)) &&
           AXRelationCache::IsValidOwner(new_object)) {
+        CHECK(relation_cache_);
         relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
       }
     } else {
@@ -3251,9 +3283,6 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kInvalidateCachedValuesOnSubtree:
       InvalidateCachedValuesOnSubtreeWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kLabelChanged:
-      LabelChangedWithCleanLayout(node);
-      break;
     case TreeUpdateReason::kMarkDirtyFromHandleLayout:
     case TreeUpdateReason::kMarkDirtyFromHandleScroll:
     case TreeUpdateReason::kMarkDirtyFromRemove:
@@ -3270,6 +3299,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       break;
     case TreeUpdateReason::kPostNotificationFromHandleLoadComplete:
     case TreeUpdateReason::kPostNotificationFromHandleLoadStart:
+    case TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor:
       EnsurePostNotification(node, tree_update->event);
       break;
     case TreeUpdateReason::kRemoveValidationMessageObjectFromFocusedUIElement:
@@ -3286,6 +3316,7 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
       HandleRoleMaybeChangedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel:
+    case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy:
     case TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle:
       SectionOrRegionRoleMaybeChangedWithCleanLayout(node);
       break;
@@ -3298,8 +3329,8 @@ void AXObjectCacheImpl::FireTreeUpdatedEventImmediately(
     case TreeUpdateReason::kUpdateActiveMenuOption:
       HandleUpdateActiveMenuOptionWithCleanLayout(node);
       break;
-    case TreeUpdateReason::kUpdateCacheAfterNodeIsAttached:
-      UpdateCacheAfterNodeIsAttachedWithCleanLayout(node);
+    case TreeUpdateReason::kNodeIsAttached:
+      NodeIsAttachedWithCleanLayout(node);
       break;
     case TreeUpdateReason::kUpdateTableRole:
       UpdateTableRoleWithCleanLayout(node);
@@ -3336,10 +3367,14 @@ void AXObjectCacheImpl::FireAXEventImmediately(
 }
 
 bool AXObjectCacheImpl::IsAriaOwned(const AXObject* object) const {
+  CHECK(relation_cache_);
   return relation_cache_->IsAriaOwned(object);
 }
 
 AXObject* AXObjectCacheImpl::ValidatedAriaOwner(const AXObject* object) const {
+  DCHECK(GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean);
+  CHECK(relation_cache_);
   return relation_cache_->ValidatedAriaOwner(object);
 }
 
@@ -3348,19 +3383,26 @@ void AXObjectCacheImpl::ValidatedAriaOwnedChildren(
     HeapVector<Member<AXObject>>& owned_children) {
   DCHECK(GetDocument().Lifecycle().GetState() >=
          DocumentLifecycle::kLayoutClean);
+  CHECK(relation_cache_);
   relation_cache_->ValidatedAriaOwnedChildren(owner, owned_children);
 }
 
 bool AXObjectCacheImpl::MayHaveHTMLLabel(const HTMLElement& elem) {
+  CHECK(elem.GetDocument().Lifecycle().GetState() >=
+        DocumentLifecycle::kLayoutClean)
+      << "Unclean document at lifecycle " << elem.GetDocument().ToString();
+  CHECK(relation_cache_);
+
   // Return false if this type of element will not accept a <label for> label.
   if (!elem.IsLabelable())
     return false;
 
   // Return true if a <label for> pointed to this element at some point.
-  if (relation_cache_->MayHaveHTMLLabelViaForAttribute(elem))
+  if (relation_cache_->MayHaveHTMLLabelViaForAttribute(elem)) {
     return true;
+  }
 
-  // Return true if any amcestor is a label, as in <label><input></label>.
+  // Return true if any ancestor is a label, as in <label><input></label>.
   return Traversal<HTMLLabelElement>::FirstAncestor(elem);
 }
 
@@ -3562,6 +3604,7 @@ void AXObjectCacheImpl::HandleNodeGainedFocusWithCleanLayout(Node* node) {
 // This might be the new target of a relation. Handle all possible cases.
 void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
   // Track reverse relations
+  CHECK(relation_cache_);
   relation_cache_->UpdateRelatedTree(&node, obj);
 
   if (!obj)
@@ -3569,7 +3612,8 @@ void AXObjectCacheImpl::MaybeNewRelationTarget(Node& node, AXObject* obj) {
 
   DCHECK_EQ(obj->GetNode(), &node);
 
-  // Process completed relations for new ids.
+  // Process completed relations for new ids. These are relations where
+  // the target AXObject didn't exist when the relation was initially cached.
   if (Element* element = DynamicTo<Element>(node)) {
     const AtomicString& id = element->GetIdAttribute();
     if (!id.IsNull()) {
@@ -3595,13 +3639,6 @@ void AXObjectCacheImpl::HandleActiveDescendantChangedWithCleanLayout(
     Node* node) {
   DCHECK(node);
   DCHECK(!node->GetDocument().NeedsLayoutTreeUpdateForNode(*node));
-
-  if (Element* element = DynamicTo<Element>(node)) {
-    if (auto& value = AccessibleNode::GetPropertyOrARIAAttributeValue(
-            element, AOMRelationProperty::kActiveDescendant)) {
-      relation_cache_->UpdateReverseActiveDescendantRelations(node, value);
-    }
-  }
 
   if (AXObject* obj = GetOrCreate(node))
     obj->HandleActiveDescendantChanged();
@@ -3687,6 +3724,7 @@ void AXObjectCacheImpl::HandleRoleChangeWithCleanLayout(Node* node) {
     // In addition, any owned objects need to reset their parent_ to point
     // to the new object.
     if (AXObject* new_object = GetOrCreate(node)) {
+      CHECK(relation_cache_);
       relation_cache_->UpdateAriaOwnsWithCleanLayout(new_object, true);
       // Notify parent synchronously (Remove() does it async).
       DCHECK(new_object->CachedParentObject());
@@ -3701,17 +3739,36 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   if (attr_name.LocalName().StartsWith("aria-")) {
     // Perform updates specific to each attribute.
     if (attr_name == html_names::kAriaActivedescendantAttr) {
+      if (relation_cache_) {
+        if (auto& value = AccessibleNode::GetPropertyOrARIAAttributeValue(
+                element, AOMRelationProperty::kActiveDescendant)) {
+          relation_cache_->UpdateReverseActiveDescendantRelations(element,
+                                                                  value);
+        }
+      }
       DeferTreeUpdate(TreeUpdateReason::kActiveDescendantChanged, element);
     } else if (attr_name == html_names::kAriaValuenowAttr ||
                attr_name == html_names::kAriaValuetextAttr) {
       HandleValueChanged(element);
-    } else if (attr_name == html_names::kAriaLabelAttr ||
-               attr_name == html_names::kAriaLabeledbyAttr ||
-               attr_name == html_names::kAriaLabelledbyAttr) {
+    } else if (attr_name == html_names::kAriaLabelAttr) {
+      TextChanged(element);
       DeferTreeUpdate(
           TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabel, element);
-    } else if (attr_name == html_names::kAriaDescriptionAttr ||
-               attr_name == html_names::kAriaDescribedbyAttr) {
+    } else if (attr_name == html_names::kAriaLabeledbyAttr ||
+               attr_name == html_names::kAriaLabelledbyAttr) {
+      if (relation_cache_) {
+        relation_cache_->UpdateReverseTextRelations(*element, attr_name);
+      }
+      DeferTreeUpdate(
+          TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromLabelledBy,
+          element);
+      TextChanged(element);
+    } else if (attr_name == html_names::kAriaDescriptionAttr) {
+      TextChanged(element);
+    } else if (attr_name == html_names::kAriaDescribedbyAttr) {
+      if (relation_cache_) {
+        relation_cache_->UpdateReverseTextRelations(*element, attr_name);
+      }
       TextChanged(element);
     } else if (attr_name == html_names::kAriaCheckedAttr) {
       PostNotification(element, ax::mojom::blink::Event::kCheckedStateChanged);
@@ -3741,8 +3798,10 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
                attr_name == html_names::kAriaErrormessageAttr ||
                attr_name == html_names::kAriaFlowtoAttr) {
       MarkElementDirty(element);
-      if (AXObject* obj = SafeGet(element)) {
-        relation_cache_->RegisterIncompleteRelation(obj, attr_name);
+      if (relation_cache_) {
+        if (AXObject* obj = SafeGet(element)) {
+          relation_cache_->RegisterIncompleteRelation(obj, attr_name);
+        }
       }
     } else {
       MarkElementDirty(element);
@@ -3768,9 +3827,12 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
   } else if (attr_name == html_names::kTitleAttr) {
     DeferTreeUpdate(TreeUpdateReason::kSectionOrRegionRoleMaybeChangedFromTitle,
                     element);
-  } else if (attr_name == html_names::kForAttr &&
-             IsA<HTMLLabelElement>(*element)) {
-    DeferTreeUpdate(TreeUpdateReason::kLabelChanged, element);
+  } else if (attr_name == html_names::kForAttr) {
+    if (relation_cache_) {
+      if (HTMLLabelElement* label = DynamicTo<HTMLLabelElement>(element)) {
+        MarkElementDirty(relation_cache_->LabelChanged(*label));
+      }
+    }
   } else if (attr_name == html_names::kIdAttr) {
     DeferTreeUpdate(TreeUpdateReason::kIdChanged, element);
   } else if (attr_name == html_names::kTabindexAttr) {
@@ -4007,11 +4069,6 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   }
 }
 
-void AXObjectCacheImpl::LabelChangedWithCleanLayout(Node* node) {
-  // Will call back to TextChanged() when done updating relation cache.
-  relation_cache_->LabelChanged(To<Element>(node));
-}
-
 void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
   if (AXObject* obj = Get(node)) {
     // The id attribute has changed, which can change an object's ignored
@@ -4031,6 +4088,7 @@ void AXObjectCacheImpl::IdChangedWithCleanLayout(Node* node) {
 }
 
 void AXObjectCacheImpl::AriaOwnsChangedWithCleanLayout(Node* node) {
+  CHECK(relation_cache_);
   if (AXObject* obj = GetOrCreate(node)) {
     relation_cache_->UpdateAriaOwnsWithCleanLayout(obj);
   }
@@ -4741,6 +4799,15 @@ void AXObjectCacheImpl::HandleDeletionOrInsertionInTextField(
   Position start_pos = changed_selection.ComputeStartPosition();
   Position end_pos = changed_selection.ComputeEndPosition();
 
+#if DCHECK_IS_ON()
+  Document& selection_document =
+      start_pos.ComputeContainerNode()->GetDocument();
+  DCHECK(selection_document.Lifecycle().GetState() >=
+         DocumentLifecycle::kAfterPerformLayout)
+      << "Unclean document at lifecycle "
+      << selection_document.Lifecycle().ToString();
+#endif
+
   // Currently there are scenarios where the start/end are not offset in
   // anchor, if this is the case, we need to compute their offset in the
   // container node since we need this information on the browser side.
@@ -4961,14 +5028,9 @@ void AXObjectCacheImpl::HandleScrolledToAnchor(const Node* anchor_node) {
   if (!anchor_node)
     return;
 
-  SCOPED_DISALLOW_LIFECYCLE_TRANSITION();
-
-  AXObject* obj = GetOrCreate(anchor_node->GetLayoutObject());
-  if (!obj)
-    return;
-  if (!obj->AccessibilityIsIncludedInTree())
-    obj = obj->ParentObjectUnignored();
-  PostNotification(obj, ax::mojom::Event::kScrolledToAnchor);
+  DeferTreeUpdate(TreeUpdateReason::kPostNotificationFromHandleScrolledToAnchor,
+                  const_cast<Node*>(anchor_node),
+                  ax::mojom::blink::Event::kScrolledToAnchor);
 }
 
 void AXObjectCacheImpl::HandleFrameRectsChanged(Document& document) {

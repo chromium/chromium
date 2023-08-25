@@ -5286,10 +5286,9 @@ AXObject::AXObjectVector AXNodeObject::ErrorMessageFromAria() const {
     return AXObjectVector();
   }
 
-  Vector<String> ignored;
   HeapVector<Member<Element>> elements_from_attribute;
   if (!ElementsFromAttribute(el, elements_from_attribute,
-                             html_names::kAriaErrormessageAttr, ignored)) {
+                             html_names::kAriaErrormessageAttr)) {
     return AXObjectVector();
   }
 
@@ -5988,10 +5987,9 @@ String AXNodeObject::Description(
   if (!element)
     return String();
 
-  Vector<String> ids;
   HeapVector<Member<Element>> elements_from_attribute;
   if (ElementsFromAttribute(element, elements_from_attribute,
-                            html_names::kAriaDescribedbyAttr, ids)) {
+                            html_names::kAriaDescribedbyAttr)) {
     // TODO(meredithl): Determine description sources when |aria_describedby| is
     // the empty string, in order to make devtools work with attr-associated
     // elements.
@@ -6002,12 +6000,6 @@ String AXNodeObject::Description(
     AXObjectSet visited;
     description = TextFromElements(true, visited, elements_from_attribute,
                                    related_objects);
-
-    for (auto& member_element : elements_from_attribute)
-      ids.push_back(member_element->GetIdAttribute());
-
-    TokenVectorFromAttribute(element, ids, html_names::kAriaDescribedbyAttr);
-    AXObjectCache().UpdateReverseTextRelations(this, ids);
 
     if (!description.IsNull()) {
       if (description_sources) {

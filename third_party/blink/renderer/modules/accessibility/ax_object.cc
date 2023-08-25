@@ -2501,10 +2501,9 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   // the textfield's invalid aria-owns to be remapped to aria-controls.
   DCHECK(GetElement());
   HeapVector<Member<Element>> owned_elements;
-  Vector<String> ids;
   AXObject* listbox_candidate = nullptr;
   if (ElementsFromAttribute(GetElement(), owned_elements,
-                            html_names::kAriaOwnsAttr, ids) &&
+                            html_names::kAriaOwnsAttr) &&
       owned_elements.size() > 0) {
     DCHECK(owned_elements[0]);
     listbox_candidate = AXObjectCache().GetOrCreate(owned_elements[0]);
@@ -4526,8 +4525,7 @@ String AXObject::AriaTextAlternative(
     Element* element = GetElement();
     if (element) {
       HeapVector<Member<Element>> elements_from_attribute;
-      Vector<String> ids;
-      ElementsFromAttribute(element, elements_from_attribute, attr, ids);
+      ElementsFromAttribute(element, elements_from_attribute, attr);
 
       const AtomicString& aria_labelledby = GetAttribute(attr);
 
@@ -4541,8 +4539,6 @@ String AXObject::AriaTextAlternative(
         AXObjectSet visited_copy = visited;
         text_alternative = TextFromElements(
             true, visited_copy, elements_from_attribute, related_objects);
-        if (!ids.empty())
-          AXObjectCache().UpdateReverseTextRelations(this, ids);
         if (!text_alternative.IsNull()) {
           if (name_sources) {
             NameSource& source = name_sources->back();
@@ -4641,39 +4637,33 @@ void AXObject::TokenVectorFromAttribute(Element* element,
 // static
 bool AXObject::ElementsFromAttribute(Element* from,
                                      HeapVector<Member<Element>>& elements,
-                                     const QualifiedName& attribute,
-                                     Vector<String>& ids) {
+                                     const QualifiedName& attribute) {
   if (!from)
     return false;
 
-  // We compute the attr-associated elements, which are either explicitly set
-  // element references set via the IDL, or computed from the content attribute.
-  TokenVectorFromAttribute(from, ids, attribute);
   HeapVector<Member<Element>>* attr_associated_elements =
       from->GetElementArrayAttribute(attribute);
   if (!attr_associated_elements)
-    return ids.size();
+    return false;
 
   for (const auto& element : *attr_associated_elements)
     elements.push_back(element);
 
-  return ids.size();
+  return elements.size();
 }
 
 // static
 bool AXObject::AriaLabelledbyElementVector(
     Element* from,
-    HeapVector<Member<Element>>& elements,
-    Vector<String>& ids) {
+    HeapVector<Member<Element>>& elements) {
   // Try both spellings, but prefer aria-labelledby, which is the official spec.
-  if (ElementsFromAttribute(from, elements, html_names::kAriaLabelledbyAttr,
-                            ids) &&
+  if (ElementsFromAttribute(from, elements, html_names::kAriaLabelledbyAttr) &&
       elements.size() > 0) {
     return true;
   }
 
-  return ElementsFromAttribute(from, elements, html_names::kAriaLabeledbyAttr,
-                               ids) &&
+  return ElementsFromAttribute(from, elements,
+                               html_names::kAriaLabeledbyAttr) &&
          elements.size() > 0;
 }
 
@@ -4685,9 +4675,9 @@ bool AXObject::IsNameFromAriaAttribute(Element* element) {
     return false;
 
   HeapVector<Member<Element>> elements_from_attribute;
-  Vector<String> ids;
-  if (AriaLabelledbyElementVector(element, elements_from_attribute, ids))
+  if (AriaLabelledbyElementVector(element, elements_from_attribute)) {
     return true;
+  }
 
   const AtomicString& aria_label = AccessibleNode::GetPropertyOrARIAAttribute(
       element, AOMStringProperty::kLabel);
@@ -7548,23 +7538,24 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     // Add useful HTML element info, like <div.myClass#myId>.
     if (GetNode()) {
       string_builder = string_builder + " " + GetNodeString(GetNode());
-      if (IsA<Document>(GetNode())) {
-        if (IsRoot())
-          string_builder = string_builder + " isRoot";
+      if (IsRoot()) {
+        string_builder = string_builder + " isRoot";
+      }
+      if (GetDocument()) {
         if (GetDocument()->GetFrame() &&
             GetDocument()->GetFrame()->PagePopupOwner()) {
-          string_builder = string_builder + " isPopup";
+          string_builder = string_builder + " inPopup";
         }
+      } else {
+        string_builder = string_builder + " missingDocument";
       }
+
       if (!GetNode()->isConnected()) {
         // TODO(accessibility) Do we have a handy helper for determining whether
         // a node is still in the flat tree? That would be useful to log.
         string_builder = string_builder + " nodeDisconnected";
       }
     }
-
-    if (!GetDocument())
-      string_builder = string_builder + " missingDocument";
 
     if (cached_values_need_update_) {
       string_builder = string_builder + " needsToUpdateCachedValues";

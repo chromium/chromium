@@ -1436,11 +1436,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Returns true if |attribute| was present on |from|.
   static bool ElementsFromAttribute(Element* from,
                                     HeapVector<Member<Element>>& elements,
-                                    const QualifiedName& attribute,
-                                    Vector<String>& ids);
-  static bool AriaLabelledbyElementVector(Element* from,
-                                          HeapVector<Member<Element>>& elements,
-                                          Vector<String>& ids);
+                                    const QualifiedName& attribute);
+  static bool AriaLabelledbyElementVector(
+      Element* from,
+      HeapVector<Member<Element>>& elements);
   // Return true if the ame is from @aria-label / @aria-labelledby.
   static bool IsNameFromAriaAttribute(Element* element);
   // Return true if the name is from @aria-label / @aria-labelledby / @title.

@@ -545,6 +545,8 @@ int32_t HTMLFormControlElement::GetAxId() const {
   Document& document = GetDocument();
   if (!document.IsActive() || !document.View())
     return 0;
+  // TODO(accessibility) Simplify this once AXIDs use DOMNodeIds. At that
+  // point it will be safe to get the AXID at any time.
   if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
     LocalFrameView* local_frame_view = document.View();
     if (local_frame_view->IsUpdatingLifecycle()) {
@@ -555,11 +557,6 @@ int32_t HTMLFormControlElement::GetAxId() const {
       return cache->GetExistingAXID(const_cast<HTMLFormControlElement*>(this));
     }
 
-    if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-        document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
-      document.View()->UpdateAllLifecyclePhasesExceptPaint(
-          DocumentUpdateReason::kAccessibility);
-    }
     return cache->GetAXID(const_cast<HTMLFormControlElement*>(this));
   }
 

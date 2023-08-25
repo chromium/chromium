@@ -120,9 +120,10 @@ class CORE_EXPORT AXObjectCache : public GarbageCollected<AXObjectCache> {
   // Called when the NGOffsetMapping is invalidated for the given object.
   virtual void TextOffsetsChanged(const LayoutBlockFlow*) = 0;
   virtual void DocumentTitleChanged() = 0;
-  // Called when a layout tree for a node has just been attached, so we can make
-  // sure we have the right subclass of AXObject.
-  virtual void UpdateCacheAfterNodeIsAttached(Node*) = 0;
+  // Called when a node is connected to the document.
+  virtual void NodeIsConnected(Node*) = 0;
+  // Called when a node is attached to the layout tree.
+  virtual void NodeIsAttached(Node*) = 0;
   // A DOM node was inserted , but does not necessarily have a layout tree.
   virtual void DidInsertChildrenOfNode(Node*) = 0;
 
