@@ -17,7 +17,7 @@ absl::optional<GroupConfig> GetClientSideGroupConfig(
   if (kiOSFullscreenPromosGroup.name == group->name) {
     absl::optional<GroupConfig> config = GroupConfig();
     config->valid = true;
-    config->session_rate = Comparator(LESS_THAN, 0);
+    config->session_rate = Comparator(EQUAL, 0);
     // Only show a fullscreen promo once every two days.
     config->trigger = EventConfig("fullscreen_promos_group_trigger",
                                   Comparator(LESS_THAN, 1), 2, 1000);

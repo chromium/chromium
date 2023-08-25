@@ -25,6 +25,7 @@
 #include "components/feature_engagement/internal/display_lock_controller.h"
 #include "components/feature_engagement/internal/editable_configuration.h"
 #include "components/feature_engagement/internal/event_model_impl.h"
+#include "components/feature_engagement/internal/feature_config_condition_validator.h"
 #include "components/feature_engagement/internal/in_memory_event_store.h"
 #include "components/feature_engagement/internal/never_availability_model.h"
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
@@ -308,7 +309,7 @@ class TrackerImplTest : public ::testing::Test {
         std::make_unique<TestTrackerDisplayLockController>();
     display_lock_controller_ = display_lock_controller.get();
 
-    auto condition_validator = std::make_unique<OnceConditionValidator>();
+    auto condition_validator = CreateConditionValidator();
     condition_validator_ = condition_validator.get();
 
     auto time_provider = std::make_unique<TestTimeProvider>();
@@ -521,6 +522,10 @@ class TrackerImplTest : public ::testing::Test {
     return std::make_unique<TestTrackerInMemoryEventStore>(true);
   }
 
+  virtual std::unique_ptr<ConditionValidator> CreateConditionValidator() {
+    return std::make_unique<OnceConditionValidator>();
+  }
+
   virtual bool ShouldAvailabilityStoreBeReady() { return true; }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -528,10 +533,10 @@ class TrackerImplTest : public ::testing::Test {
   raw_ptr<TestTrackerInMemoryEventStore> event_store_;
   raw_ptr<TestTrackerAvailabilityModel> availability_model_;
   raw_ptr<TestTrackerDisplayLockController> display_lock_controller_;
-  raw_ptr<Configuration> configuration_;
+  raw_ptr<EditableConfiguration> configuration_;
   std::unique_ptr<TestTrackerEventExporter> event_exporter_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<OnceConditionValidator> condition_validator_;
+  raw_ptr<ConditionValidator> condition_validator_;
   raw_ptr<TestTimeProvider> time_provider_;
 };
 
@@ -1308,8 +1313,24 @@ TEST_F(TrackerImplTest, TrackingOnly_ShownTimeNotLogged) {
   histogram_tester_.ExpectTotalCount(histogram_name, 0);
 }
 
+// Base class for any tests that specifically require a
+// |OnceConditionValidator|.
+class OnceConditionTrackerImplTest : public TrackerImplTest {
+ public:
+  OnceConditionTrackerImplTest() = default;
+  ~OnceConditionTrackerImplTest() override = default;
+
+ protected:
+  std::unique_ptr<ConditionValidator> CreateConditionValidator() override {
+    auto once_condition_validator = std::make_unique<OnceConditionValidator>();
+    once_condition_validator_ = once_condition_validator.get();
+    return once_condition_validator;
+  }
+  raw_ptr<OnceConditionValidator> once_condition_validator_;
+};
+
 // Checks that the times are logged even when multiple IPH are presented.
-TEST_F(TrackerImplTest, MultipleShownTimeLogged) {
+TEST_F(OnceConditionTrackerImplTest, MultipleShownTimeLogged) {
   // Ensure all initialization is finished.
   StoringInitializedCallback callback;
   tracker_->AddOnInitializedCallback(base::BindOnce(
@@ -1318,7 +1339,7 @@ TEST_F(TrackerImplTest, MultipleShownTimeLogged) {
   const char histogram_name_foo[] = "InProductHelp.ShownTime.test_foo";
   const char histogram_name_bar[] = "InProductHelp.ShownTime.test_bar";
 
-  condition_validator_->AllowMultipleFeaturesForTesting(true);
+  once_condition_validator_->AllowMultipleFeaturesForTesting(true);
 
   base::Time start = base::Time::Now();
   time_provider_->SetCurrentTime(start);
@@ -1608,6 +1629,48 @@ TEST_F(ScopedIphFeatureListTest, NestedScopes_SameFeature) {
   }
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
   tracker_->Dismissed(kTrackerTestFeatureBar);
+}
+
+// Test class for tests that require an actual
+// |FeatureConfigConditionValidator|.
+class FeatureConfigConditionValidatorTrackerTest : public TrackerImplTest {
+ public:
+  FeatureConfigConditionValidatorTrackerTest() = default;
+  ~FeatureConfigConditionValidatorTrackerTest() override = default;
+
+ protected:
+  std::unique_ptr<ConditionValidator> CreateConditionValidator() override {
+    return std::make_unique<FeatureConfigConditionValidator>();
+  }
+};
+
+TEST_F(FeatureConfigConditionValidatorTrackerTest, GroupRulesApplied) {
+  // Set up the group config to only allow 1 feature from its group to be
+  // displayed.
+  GroupConfig custom_group_config;
+  custom_group_config.valid = true;
+  custom_group_config.trigger.name = "custom_group_trigger";
+  custom_group_config.trigger.comparator = Comparator(EQUAL, 0);
+  custom_group_config.trigger.window = 1u;
+  custom_group_config.trigger.storage = 1u;
+  configuration_->SetConfiguration(&kTrackerTestGroupOne, custom_group_config);
+
+  ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {kTrackerTestFeatureFoo, kTrackerTestFeatureBar, kTrackerTestGroupOne});
+
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+  base::UserActionTester user_action_tester;
+
+  // The first feature should display, but the second one should not, as they
+  // share a group that only allows its features to be displayed once.
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
+  tracker_->Dismissed(kTrackerTestFeatureFoo);
+  EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
 }
 
 }  // namespace test
