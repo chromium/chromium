@@ -1620,6 +1620,20 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
     EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
   }
 
+  void RemoveMsiProductData(const std::wstring& msi_product_id) {
+    ASSERT_FALSE(msi_product_id.empty());
+    for (const auto& [root, key] :
+         {std::make_pair(HKEY_LOCAL_MACHINE,
+                         L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Instal"
+                         L"ler\\UserData\\S-1-5-18\\Products"),
+          std::make_pair(HKEY_CLASSES_ROOT, L"Installer\\Products")}) {
+      for (const auto& access_mask : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+        base::win::RegKey(root, key, DELETE | access_mask)
+            .DeleteKey(msi_product_id.c_str());
+      }
+    }
+  }
+
   std::unique_ptr<ScopedServer> test_server_;
   static constexpr char kEnrollmentToken[] = "integration-enrollment-token";
   static constexpr char kDMToken[] = "integration-dm-token";
@@ -1818,6 +1832,69 @@ TEST_F(IntegrationTestDeviceManagement, RollbackToTargetVersion) {
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
+
+// TODO(crbug.com/1472846): WiX tools are only available on `src-internal`.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(IntegrationTestDeviceManagement, MsiInstallUpgrade) {
+  constexpr char kMsiAppId[] = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}";
+  constexpr char kMsiCrx[] = "TestSystemMsiInstaller.msi.crx3";
+  const base::Version kMsiInitialVersion = base::Version("1.0.0.0");
+  const base::Version kMsiUpdatedVersion = base::Version("2.0.0.0");
+  constexpr wchar_t kMsiProductIdInitialVersion[] =
+      L"40C670A26D240095081B31C3EDEF2BD2";
+  constexpr wchar_t kMsiProductIdUpdatedVersion[] =
+      L"D2B2AC298EFCE2757A975961532CDE7D";
+
+  ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdInitialVersion));
+  ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdUpdatedVersion));
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  InstallApp(kMsiAppId, kMsiInitialVersion, [&]() {
+    base::FilePath msi_path;
+    ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &msi_path));
+    msi_path = msi_path.Append(
+        GetInstallerPath(
+            base::StrCat({kMsiAppId, ".", kMsiInitialVersion.GetString()}))
+            .AppendASCII(kMsiCrx)
+            .RemoveExtension());
+    const std::wstring command = BuildMsiCommandLine({}, {}, msi_path);
+    base::Process process = base::LaunchProcess(command, {});
+    if (!process.IsValid()) {
+      LOG(ERROR) << "Invalid process launching command: " << command;
+    }
+    int exit_code = -1;
+    EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                               &exit_code));
+    EXPECT_EQ(0, exit_code);
+  });
+  ExpectAppInstalled(kMsiAppId, kMsiInitialVersion);
+
+  // Cloud policy sets update default to enabled.
+  PushEnrollmentToken(kEnrollmentToken);
+  ExpectDeviceManagementRegistrationRequest(test_server_.get(),
+                                            kEnrollmentToken, kDMToken);
+  OmahaSettingsClientProto omaha_settings;
+  omaha_settings.set_update_default(enterprise_management::UPDATES_ENABLED);
+  ExpectDeviceManagementPolicyFetchRequest(test_server_.get(), kDMToken,
+                                           omaha_settings);
+
+  const base::FilePath crx_path = GetInstallerPath(kMsiCrx);
+  ExpectAppsUpdateSequence(
+      UpdaterScope::kSystem, test_server_.get(),
+      {
+          AppUpdateExpectation({kMsiAppId, kMsiInitialVersion,
+                                kMsiUpdatedVersion,
+                                /*should_update=*/true, false, "", crx_path}),
+      });
+  ASSERT_NO_FATAL_FAILURE(RunWake(0));
+  ASSERT_TRUE(WaitForUpdaterExit());
+  ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kMsiAppId, kMsiUpdatedVersion));
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+  ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdInitialVersion));
+  ASSERT_NO_FATAL_FAILURE(RemoveMsiProductData(kMsiProductIdUpdatedVersion));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #endif  // !defined(COMPONENT_BUILD)
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(IS_WIN) || !defined(COMPONENT_BUILD)

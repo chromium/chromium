@@ -505,17 +505,20 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
     const base::FilePath crx_path = exe_path.Append(app.crx_relative_path);
     app_requests.push_back(
         base::StringPrintf(R"("appid":"%s")", app.app_id.c_str()));
+    const base::FilePath base_name = crx_path.BaseName().RemoveExtension();
+    const base::FilePath run_action =
+        base_name.Extension().empty() ? base_name.AddExtension(kExeExtension)
+                                      : base_name;
+    const std::string args =
+        base_name.Extension().empty()
+            ? base::StringPrintf(
+                  "%s --appid=%s --company=%s --product_version=%s",
+                  IsSystemInstall(scope) ? "--system" : "", app.app_id.c_str(),
+                  COMPANY_SHORTNAME_STRING, app.to_version.GetString().c_str())
+            : "";
     app_responses.push_back(GetUpdateResponseForApp(
         app.app_id, "", test_server->update_url().spec(), app.to_version,
-        crx_path,
-        crx_path.BaseName()
-            .ReplaceExtension(kExeExtension)
-            .MaybeAsASCII()
-            .c_str(),
-        base::StringPrintf("%s --appid=%s --company=%s --product_version=%s",
-                           IsSystemInstall(scope) ? "--system" : "",
-                           app.app_id.c_str(), COMPANY_SHORTNAME_STRING,
-                           app.to_version.GetString().c_str())));
+        crx_path, run_action.MaybeAsASCII().c_str(), args));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetContentMatcher(app_requests),

@@ -866,6 +866,14 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win/test:updater_test_process",
       ]
 
+      # TODO(crbug.com/1472846): WiX tools are only available on `src-internal`.
+      if (is_chrome_branded) {
+        data_deps += [
+          "//chrome/updater/test/test_installer:test_msi_installer1.0.0.0",
+          "//chrome/updater/test/test_installer:test_msi_installer_crx",
+        ]
+      }
+
       data += [
         "test/data/ProcmonConfiguration.pmc",
         "//chrome/test/data/updater/OfflineManifest.gup",

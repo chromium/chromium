@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
 
 executable("test_meta_installer") {
@@ -99,4 +100,74 @@ crx3("test_app2_installer_crx") {
 
   inputs = [ "$root_build_dir/test_installer/TestApp2Setup.exe" ]
   deps = [ ":test_app2_installer" ]
+}
+
+# TODO(crbug.com/1472846): WiX tools are only available on `src-internal`.
+if (is_chrome_branded) {
+  template("test_msi_installer") {
+    action("test_msi_installer" + target_name) {
+      testonly = true
+      script = "create_test_msi_installer.py"
+      test_installer_wxs_xml = "test_installer.wxs.xml"
+      appid = "{c28fcf72-bcf2-45c5-8def-31a74ac02012}"
+      version = invoker.version
+      msi_base_name = "TestSystemMsiInstaller"
+
+      inputs = [
+        script,
+        test_installer_wxs_xml,
+      ]
+
+      output_installer = "$root_build_dir/test_installer/" + appid + "." +
+                         version + "/" + msi_base_name + ".msi"
+      outputs = [ output_installer ]
+
+      args = [
+        "--candle_path",
+        rebase_path("//third_party/wix/candle.exe", root_build_dir),
+        "--light_path",
+        rebase_path("//third_party/wix/light.exe", root_build_dir),
+        "--product_name",
+        "Test System MSI Installer",
+        "--product_version",
+        version,
+        "--appid",
+        appid,
+        "--msi_base_name",
+        msi_base_name,
+        "--msi_template_path",
+        rebase_path(test_installer_wxs_xml),
+        "--company_name",
+        updater_company_short_name,
+        "--company_full_name",
+        updater_company_full_name,
+        "--output_dir",
+        rebase_path("$root_build_dir/test_installer"),
+      ]
+    }
+  }
+
+  test_msi_installer("1.0.0.0") {
+    version = "1.0.0.0"
+  }
+
+  test_msi_installer("2.0.0.0") {
+    version = "2.0.0.0"
+  }
+
+  copy("copy_test_msi_installer2.0.0.0") {
+    testonly = true
+    sources = get_target_outputs(":test_msi_installer2.0.0.0")
+    deps = [ ":test_msi_installer2.0.0.0" ]
+    outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+  }
+
+  crx3("test_msi_installer_crx") {
+    testonly = true
+    base_dir = "$root_build_dir/test_installer"
+    key = "//chrome/updater/test/data/selfupdate_test_key.der"
+    inputs = get_target_outputs(":copy_test_msi_installer2.0.0.0")
+    output = "$root_build_dir/test_installer/TestSystemMsiInstaller.msi.crx3"
+    deps = [ ":copy_test_msi_installer2.0.0.0" ]
+  }
 }
