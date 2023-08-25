@@ -135,7 +135,8 @@ using password_manager_test_utils::SavePasswordForm;
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testFetchingRecipientsNoFamilyStatus {
+// TODO(crbug.com/1475783): Test crashes in multiple builders.
+- (void)DISABLED_testFetchingRecipientsNoFamilyStatus {
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.additional_args.push_back(std::string("-") +
