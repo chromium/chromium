@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -76,17 +75,15 @@ public class QuickDeleteController {
                 LayoutInflater.from(context).inflate(R.layout.quick_delete_dialog, null);
         mPropertyModel = new PropertyModel.Builder(QuickDeleteProperties.ALL_KEYS)
                                  .with(QuickDeleteProperties.CONTEXT, mContext)
-                                 .with(QuickDeleteProperties.ON_MORE_OPTIONS_CLICKED,
-                                         this::onMoreOptionsButtonClicked)
                                  .build();
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel, quickDeleteView, QuickDeleteViewBinder::bind);
         mQuickDeleteMediator = new QuickDeleteMediator(
                 mPropertyModel, profile, mQuickDeleteBridge, mDeleteTabsFilter);
 
-        QuickDeleteDialogDelegate dialogDelegate =
-                new QuickDeleteDialogDelegate(context, quickDeleteView, modalDialogManager,
-                        this::onDialogDismissed, tabModelSelector, mQuickDeleteMediator);
+        QuickDeleteDialogDelegate dialogDelegate = new QuickDeleteDialogDelegate(context,
+                quickDeleteView, modalDialogManager, this::onDialogDismissed, tabModelSelector,
+                mDelegate.getSettingsLauncher(), mQuickDeleteMediator);
         dialogDelegate.showDialog();
     }
 
@@ -165,12 +162,5 @@ public class QuickDeleteController {
         Snackbar snackbar = Snackbar.make(snackbarMessage, /*controller= */ null,
                 Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
         mSnackbarManager.showSnackbar(snackbar);
-    }
-
-    private void onMoreOptionsButtonClicked() {
-        QuickDeleteMetricsDelegate.recordHistogram(
-                QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED);
-        mDelegate.getSettingsLauncher().launchSettingsActivity(
-                mContext, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
     }
 }

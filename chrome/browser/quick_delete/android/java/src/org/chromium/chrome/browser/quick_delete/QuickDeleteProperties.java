@@ -30,10 +30,8 @@ class QuickDeleteProperties {
 
     public static final PropertyModel.ReadableObjectPropertyKey<Context> CONTEXT =
             new PropertyModel.ReadableObjectPropertyKey();
-    public static final PropertyModel.ReadableObjectPropertyKey<Runnable> ON_MORE_OPTIONS_CLICKED =
-            new PropertyModel.ReadableObjectPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {TIME_PERIOD, DOMAIN_VISITED_DATA,
             CLOSED_TABS_COUNT, IS_SIGNED_IN, IS_SYNCING_HISTORY, IS_DOMAIN_VISITED_DATA_PENDING,
-            CONTEXT, ON_MORE_OPTIONS_CLICKED};
+            CONTEXT};
 }

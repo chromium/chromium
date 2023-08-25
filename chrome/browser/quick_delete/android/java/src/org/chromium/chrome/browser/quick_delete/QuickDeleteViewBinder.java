@@ -48,11 +48,6 @@ class QuickDeleteViewBinder {
             updateBrowsingHistoryRowIfPending(model.get(QuickDeleteProperties.CONTEXT),
                     quickDeleteView,
                     model.get(QuickDeleteProperties.IS_DOMAIN_VISITED_DATA_PENDING));
-        } else if (QuickDeleteProperties.ON_MORE_OPTIONS_CLICKED == propertyKey) {
-            Runnable runnable = model.get(QuickDeleteProperties.ON_MORE_OPTIONS_CLICKED);
-            assert runnable != null : "More options runnable can't be null.";
-            quickDeleteView.findViewById(R.id.quick_delete_more_options)
-                    .setOnClickListener(view -> runnable.run());
         }
     }
 

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.browsing_data.TimePeriodUtils.TimePeriodSpinnerOption;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -31,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 import java.util.Objects;
@@ -54,6 +56,7 @@ class QuickDeleteDialogDelegate {
     private final @NonNull View mQuickDeleteView;
     private final @NonNull Callback<Integer> mOnDismissCallback;
     private final @NonNull TabModelSelector mTabModelSelector;
+    private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull TimePeriodChangeObserver mTimePeriodChangeObserver;
     /**
      * The {@link PropertyModel} of the underlying dialog where the quick dialog view would be
@@ -94,19 +97,22 @@ class QuickDeleteDialogDelegate {
      *                           cancels the deletion;
      * @param tabModelSelector   {@link TabModelSelector} to use for opening the links in search
      *                           history disambiguation notice.
+     * @param settingsLauncher   @link SettingsLauncher} used to launch the Clear browsing data
+     *                           settings fragment.
      * @param timePeriodChangeObserver {@link TimePeriodChangeObserver} which would be notified when
      *         the spinner is toggled.
      */
     QuickDeleteDialogDelegate(@NonNull Context context, @NonNull View quickDeleteView,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull Callback<Integer> onDismissCallback,
-            @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabModelSelector tabModelSelector, @NonNull SettingsLauncher settingsLauncher,
             @NonNull TimePeriodChangeObserver timePeriodChangeObserver) {
         mContext = context;
         mQuickDeleteView = quickDeleteView;
         mModalDialogManager = modalDialogManager;
         mOnDismissCallback = onDismissCallback;
         mTabModelSelector = tabModelSelector;
+        mSettingsLauncher = settingsLauncher;
         mTimePeriodChangeObserver = timePeriodChangeObserver;
 
         mCurrentTimePeriodOption = new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
@@ -120,6 +126,11 @@ class QuickDeleteDialogDelegate {
         // Update Spinner
         Spinner quickDeleteSpinner = mQuickDeleteView.findViewById(R.id.quick_delete_spinner);
         updateSpinner(quickDeleteSpinner);
+
+        // Update the "More options" button.
+        ButtonCompat moreOptionsView =
+                mQuickDeleteView.findViewById(R.id.quick_delete_more_options);
+        moreOptionsView.setOnClickListener(view -> openClearBrowsingDataDialog());
 
         // Update search history text
         setUpSearchHistoryText();
@@ -178,6 +189,15 @@ class QuickDeleteDialogDelegate {
                         mContext.getString(R.string.clear_browsing_data_tab_period_15_minutes));
             }
         });
+    }
+
+    private void openClearBrowsingDataDialog() {
+        QuickDeleteMetricsDelegate.recordHistogram(
+                QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED);
+        mSettingsLauncher.launchSettingsActivity(
+                mContext, SettingsLauncher.SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+        mModalDialogManager.dismissDialog(
+                mModalDialogPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     private void setUpSearchHistoryText() {

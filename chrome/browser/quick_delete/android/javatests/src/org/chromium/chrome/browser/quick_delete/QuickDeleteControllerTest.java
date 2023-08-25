@@ -292,8 +292,13 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
-                        QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction.MORE_OPTIONS_CLICKED)
+                        .expectIntRecord(QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
+                                QuickDeleteMetricsDelegate.QuickDeleteAction
+                                        .DIALOG_DISMISSED_IMPLICITLY)
+                        .build();
 
         onViewWaiting(withId(R.id.quick_delete_more_options)).perform(click());
 
