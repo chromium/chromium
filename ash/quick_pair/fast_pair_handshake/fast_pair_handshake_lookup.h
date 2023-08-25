@@ -38,9 +38,7 @@ class FastPairHandshakeLookup {
 
   static FastPairHandshakeLookup* GetInstance();
 
-  // TODO(b/265853116): Move this function to the impl as it will not be used
-  // in the refactored code.
-  static void SetCreateFunctionForTesting(CreateFunction create_function);
+  static void UseFakeInstance();
 
   // Get an existing instance for |device|.
   virtual FastPairHandshake* Get(scoped_refptr<Device> device) = 0;

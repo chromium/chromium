@@ -3,21 +3,29 @@
 // found in the LICENSE file.
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup_impl.h"
 
 namespace ash {
 namespace quick_pair {
 
+bool is_unittest = false;
+
 // static
 FastPairHandshakeLookup* FastPairHandshakeLookup::GetInstance() {
+  if (is_unittest) {
+    // TODO(b/265853116): Remove the GetFakeInstance() and provide the fake via
+    // constructor injection instead so we don't have to include the fake in the
+    // production source set.
+    return FakeFastPairHandshakeLookup::GetFakeInstance();
+  }
+
   return FastPairHandshakeLookupImpl::GetImplInstance();
 }
 
 // static
-void FastPairHandshakeLookup::SetCreateFunctionForTesting(
-    CreateFunction create_function) {
-  FastPairHandshakeLookupImpl::SetImplCreateFunctionForTesting(
-      std::move(create_function));
+void FastPairHandshakeLookup::UseFakeInstance() {
+  is_unittest = true;
 }
 }  // namespace quick_pair
 }  // namespace ash

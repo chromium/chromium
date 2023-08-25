@@ -10,6 +10,10 @@ assert(is_chromeos_ash,
 
 source_set("fast_pair_handshake") {
   sources = [
+    "fake_fast_pair_handshake.cc",
+    "fake_fast_pair_handshake.h",
+    "fake_fast_pair_handshake_lookup.cc",
+    "fake_fast_pair_handshake_lookup.h",
     "fast_pair_data_encryptor.h",
     "fast_pair_data_encryptor_impl.cc",
     "fast_pair_data_encryptor_impl.h",

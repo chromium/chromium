@@ -14,19 +14,9 @@
 namespace ash {
 namespace quick_pair {
 
-// Create function override which can be set by tests.
-absl::optional<FastPairHandshakeLookup::CreateFunction> g_test_create_function =
-    absl::nullopt;
-
 // static
 FastPairHandshakeLookupImpl* FastPairHandshakeLookupImpl::GetImplInstance() {
   return base::Singleton<FastPairHandshakeLookupImpl>::get();
-}
-
-// static
-void FastPairHandshakeLookupImpl::SetImplCreateFunctionForTesting(
-    CreateFunction create_function) {
-  g_test_create_function = std::move(create_function);
 }
 
 FastPairHandshakeLookupImpl::FastPairHandshakeLookupImpl() {}
@@ -75,10 +65,8 @@ void FastPairHandshakeLookupImpl::Create(
     scoped_refptr<Device> device,
     OnCompleteCallback on_complete) {
   auto it = fast_pair_handshakes_.emplace(
-      device, g_test_create_function.has_value()
-                  ? g_test_create_function->Run(device, std::move(on_complete))
-                  : std::make_unique<FastPairHandshakeImpl>(
-                        std::move(adapter), device, std::move(on_complete)));
+      device, std::make_unique<FastPairHandshakeImpl>(
+                  std::move(adapter), device, std::move(on_complete)));
 
   DCHECK(it.second) << "An existing item shouldn't exist.";
 }

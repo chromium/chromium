@@ -142,9 +142,7 @@ class MediatorTest : public AshTestBase {
     mock_fast_pair_repository_ =
         static_cast<MockFastPairRepository*>(fast_pair_repository.get());
 
-    FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
-        &MediatorTest::CreateHandshake, base::Unretained(this)));
-
+    FastPairHandshakeLookup::UseFakeInstance();
     mediator_ = std::make_unique<Mediator>(
         std::move(tracker), std::move(scanner_broker),
         std::move(retroactive_pairing_detector),

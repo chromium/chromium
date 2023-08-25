@@ -12,6 +12,7 @@
 #include "ash/quick_pair/common/fake_bluetooth_adapter.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_data_encryptor.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
@@ -91,6 +92,8 @@ class FastPairScannerImplTest : public testing::Test {
         .WillByDefault(
             Invoke(this, &FastPairScannerImplTest::StartLowEnergyScanSession));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+    FastPairHandshakeLookup::UseFakeInstance();
+
     scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
     scanner_observer_ = std::make_unique<FastPairScannerObserver>();
     scanner().AddObserver(scanner_observer_.get());
@@ -150,10 +153,6 @@ class FastPairScannerImplTest : public testing::Test {
   }
 
   void AddConnectedHandshake(const std::string& address) {
-    FastPairHandshakeLookup::SetCreateFunctionForTesting(
-        base::BindRepeating(&FastPairScannerImplTest::CreateConnectedHandshake,
-                            base::Unretained(this)));
-
     FastPairHandshakeLookup::GetInstance()->Create(
         adapter_,
         base::MakeRefCounted<Device>("", address, Protocol::kFastPairInitial),
