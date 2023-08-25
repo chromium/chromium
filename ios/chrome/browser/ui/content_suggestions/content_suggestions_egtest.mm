@@ -737,6 +737,8 @@ void TapMoreButtonIfVisible() {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [[self class] closeAllTabs];
+  [ChromeEarlGrey openNewTab];
 }
 
 // Setup a most visited tile, and open the context menu by long pressing on it.

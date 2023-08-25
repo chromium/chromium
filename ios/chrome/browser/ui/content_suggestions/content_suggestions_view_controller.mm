@@ -1228,6 +1228,21 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   };
 
   if (newModule) {
+    ProceduralBlock fadeOtherSetUpListItemsOut = ^{
+      __typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      for (NSNumber* viewIndex in viewIndicesToRemove) {
+        UIView* view = [strongSelf->_magicStack arrangedSubviews]
+            [[viewIndex integerValue]];
+        // Animate module away in the upward direction.
+        view.transform = CGAffineTransformTranslate(
+            CGAffineTransformIdentity, 0,
+            -kMagicStackReplaceModuleFadeAnimationDistance);
+        view.alpha = 0;
+      }
+    };
     // Replace last Set Up List item with "All Set" hero cell.
     NSUInteger moduleIndexToReplace =
         [[viewIndicesToRemove lastObject] integerValue];
@@ -1235,16 +1250,19 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     [viewIndicesToRemove removeObjectAtIndex:moduleIndexToReplace];
     [self replaceModuleAtIndex:moduleIndexToReplace
                     withModule:newModule
+          additionalAnimations:fadeOtherSetUpListItemsOut
                     completion:removeRemainingModules];
   } else {
     removeRemainingModules();
   }
 }
 
-// Replaces the module at `index` with `newModule` in the Magic Stack, executing
-// `completion` after the completion of the replace animation.
+// Replaces the module at `index` with `newModule` in the Magic Stack along with
+// any additional animations in `additionalAnimations`, executing `completion`
+// after the completion of the replace animation.
 - (void)replaceModuleAtIndex:(NSUInteger)index
                   withModule:(MagicStackModuleContainer*)newModule
+        additionalAnimations:(ProceduralBlock)additionalAnimations
                   completion:(ProceduralBlock)completion {
   UIView* moduleToHide = [_magicStack arrangedSubviews][index];
   __weak __typeof(self) weakSelf = self;
@@ -1283,6 +1301,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
             CGAffineTransformIdentity, 0,
             -kMagicStackReplaceModuleFadeAnimationDistance);
         moduleToHide.alpha = 0;
+        additionalAnimations();
       }
       completion:^(BOOL finished) {
         __typeof(self) strongSelf = weakSelf;
