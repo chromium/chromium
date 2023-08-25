@@ -9,6 +9,9 @@ import ios_chrome_common_ui_colors_swift
 /// border when the toggle is off and a circle with checkmark when the toggle
 /// is on.
 struct OverflowMenuActionToggleStyle: ToggleStyle {
+  static let onStyle = AnyShapeStyle(.tint)
+  static let offStyle = AnyShapeStyle(Color.grey500)
+
   @ViewBuilder
   func makeBody(configuration: Configuration) -> some View {
     Button {
@@ -18,7 +21,7 @@ struct OverflowMenuActionToggleStyle: ToggleStyle {
         configuration.label
       } icon: {
         Image(systemName: configuration.isOn ? "checkmark.circle.fill" : "circle")
-          .foregroundStyle(configuration.isOn ? .primary : .secondary)
+          .foregroundStyle(configuration.isOn ? Self.onStyle : Self.offStyle)
           .imageScale(.large)
       }
     }
