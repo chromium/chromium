@@ -56,6 +56,7 @@ build_webui_tests("build") {
     "i18n_mixin_test.ts",
     "iron_list_focus_test.ts",
     "list_property_update_mixin_test.ts",
+    "store_client_test.ts",
     "web_ui_listener_mixin_test.ts",
   ]
 

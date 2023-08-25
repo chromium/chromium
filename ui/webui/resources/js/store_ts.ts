@@ -64,6 +64,10 @@ export class Store<S, A extends Action = Action> {
     this.observers_.splice(index, 1);
   }
 
+  hasObserver(observer: StoreObserver<S>): boolean {
+    return this.observers_.includes(observer);
+  }
+
   /**
    * Begin a batch update to store data, which will disable updates to the
    * UI until `endBatchUpdate` is called. This is useful when a single UI
