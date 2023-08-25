@@ -302,8 +302,6 @@ class SplitViewController::DividerSnapAnimation
     : public gfx::SlideAnimation,
       public gfx::AnimationDelegate {
  public:
-  // Before you change the value of `duration`, read the comment on
-  // kIsWindowMovedTimeoutMs in tablet_mode_window_drag_delegate.cc.
   DividerSnapAnimation(SplitViewController* split_view_controller,
                        int starting_position,
                        int ending_position,
@@ -1399,7 +1397,7 @@ bool SplitViewController::IsDividerAnimating() const {
 
 void SplitViewController::StartResizeWithDivider(
     const gfx::Point& location_in_screen) {
-  DCHECK(InSplitViewMode());
+  CHECK(InSplitViewMode());
 
   // `is_resizing_with_divider_` may be true here, because you can start
   // dragging the divider with a pointing device while already dragging it by
@@ -2198,10 +2196,9 @@ void SplitViewController::OnTabletModeStarting() {
 
 void SplitViewController::OnTabletModeStarted() {
   is_previous_layout_right_side_up_ = IsCurrentScreenOrientationPrimary();
-  // If splitview is active when tablet mode is starting, do the clamshell mode
-  // splitview to tablet mode splitview transition by adding the split view
-  // divider bar and also adjust the |divider_position_| so that it's on one of
-  // the three fixed positions.
+  // If splitview is active when tablet mode is starting, create the split view
+  // divider if not exists and adjust the `divider_position_` to be one
+  // of the fixed positions.
   if (InSplitViewMode()) {
     divider_position_ = GetClosestFixedDividerPosition();
     if (!split_view_divider_) {
@@ -2216,9 +2213,6 @@ void SplitViewController::OnTabletModeStarted() {
 void SplitViewController::OnTabletModeEnding() {
   split_view_type_ = SplitViewType::kClamshellType;
 
-  // There is no divider in clamshell split view unless the feature flag
-  // `kSnapGroup` is enabled and the feature param `kAutomaticallyLockGroup` is
-  // true.
   const bool is_divider_animating = IsDividerAnimating();
   if (is_resizing_with_divider_ || is_divider_animating) {
     is_resizing_with_divider_ = false;
@@ -2229,7 +2223,12 @@ void SplitViewController::OnTabletModeEnding() {
     EndResizeWithDividerImpl();
   }
 
-  if (state_ != State::kBothSnapped) {
+  // There is no divider in clamshell split view unless the two snapped windows
+  // belong to a snap group.
+  auto* snap_group_controller = SnapGroupController::Get();
+  if (state_ != State::kBothSnapped || !snap_group_controller ||
+      !snap_group_controller->AreWindowsInSnapGroup(primary_window_,
+                                                    secondary_window_)) {
     split_view_divider_.reset();
   }
 }
@@ -2666,7 +2665,7 @@ int SplitViewController::GetClosestFixedDividerPosition() {
   // the endpoints.
   int divider_end_position = GetDividerEndPosition();
   divider_closest_ratio_ = FindClosestPositionRatio(
-      divider_position_ + kSplitviewDividerShortSideLength / 2,
+      float(divider_position_ + kSplitviewDividerShortSideLength / 2) /
       divider_end_position);
   int fixed_position = divider_end_position * divider_closest_ratio_;
   if (divider_closest_ratio_ > 0.f && divider_closest_ratio_ < 1.f) {
@@ -2891,9 +2890,7 @@ void SplitViewController::OnSnappedWindowDetached(aura::Window* window,
   }
 }
 
-float SplitViewController::FindClosestPositionRatio(float distance,
-                                                    float length) {
-  const float current_ratio = distance / length;
+float SplitViewController::FindClosestPositionRatio(float current_ratio) {
   float closest_ratio = 0.f;
   std::vector<float> position_ratios(
       kFixedPositionRatios,

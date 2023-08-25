@@ -9,6 +9,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -1358,6 +1359,77 @@ TEST_F(SnapGroupEntryPointArm1Test, ClamshellTabletTransitionWithOneSnapGroup) {
   EXPECT_EQ(0.5f, *WindowState::Get(window1.get())->snap_ratio());
   EXPECT_EQ(0.5f, *WindowState::Get(window2.get())->snap_ratio());
   EXPECT_TRUE(split_view_divider());
+}
+
+// Tests that when converting to tablet mode with split view divider at an
+// arbitrary location, the bounds of the two windows and the divider will be
+// updated such that the snap ratio of the layout is one of the fixed snap
+// ratios.
+TEST_F(SnapGroupEntryPointArm1Test,
+       ClamshellTabletTransitionGetClosestFixedRatio) {
+  UpdateDisplay("900x600");
+  std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(1));
+  SnapTwoTestWindowsInArm1(window1.get(), window2.get(), /*horizontal=*/true);
+  ASSERT_TRUE(split_view_divider());
+  EXPECT_EQ(*WindowState::Get(window1.get())->snap_ratio(),
+            chromeos::kDefaultSnapRatio);
+
+  // Build test cases to be used for divider dragging, with expected fixed ratio
+  // and corresponding pixels shown in the ASCII diagram below:
+  //   ┌────────────────┬────────────────┐
+  //   │                │                │
+  //   │                │                │
+  //   │                │                │
+  //   │                │                │
+  //   │                │                │
+  //   │                │                │
+  //   │                │                │
+  //   └─────────┬──────┼───────┬────────┘
+  //             │      │       │
+  // ratio:     1/3    1/2     2/3
+  // pixel:     300    450     600      900
+
+  struct {
+    int distance_delta;
+    float expected_snap_ratio;
+  } kTestCases[]{{/*distance_delta=*/-200, chromeos::kOneThirdSnapRatio},
+                 {/*distance_delta=*/400, chromeos::kTwoThirdSnapRatio},
+                 {/*distance_delta=*/-180, chromeos::kDefaultSnapRatio}};
+
+  auto* event_generator = GetEventGenerator();
+  const gfx::Rect work_area_bounds_in_screen =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          split_view_controller()->root_window()->GetChildById(
+              desks_util::GetActiveDeskContainerId()));
+  for (const auto test_case : kTestCases) {
+    event_generator->set_current_screen_location(
+        split_view_divider_bounds_in_screen().CenterPoint());
+    event_generator->DragMouseBy(test_case.distance_delta, 0);
+    split_view_controller()->EndResizeWithDivider(
+        event_generator->current_screen_location());
+    SwitchToTabletMode();
+    const auto current_divider_position =
+        split_view_divider()
+            ->GetDividerBoundsInScreen(/*is_dragging=*/false)
+            .x();
+
+    // We need to take into consideration of the variation introduced by the
+    // divider shorter side length when calculating using snap ratio, i.e.
+    // `kSplitviewDividerShortSideLength / 2`.
+    const auto expected_divider_position = std::round(
+        work_area_bounds_in_screen.width() * test_case.expected_snap_ratio -
+        kSplitviewDividerShortSideLength / 2);
+
+    // Verifies that the bounds of the windows and divider are updated correctly
+    // such that snap ratio in the new window layout is expected.
+    EXPECT_NEAR(current_divider_position, expected_divider_position,
+                /*abs_error=*/1);
+    EXPECT_NEAR(float(window1->GetBoundsInScreen().width()) /
+                    work_area_bounds_in_screen.width(),
+                test_case.expected_snap_ratio, /*abs_error=*/1);
+    ExitTabletMode();
+  }
 }
 
 // Tests that the swap window source histogram is recorded correctly.

@@ -27,8 +27,11 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/wm/public/activation_change_observer.h"
+
+namespace gfx {
+class Point;
+}  // namespace gfx
 
 namespace ui {
 class Layer;
@@ -566,8 +569,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnSnappedWindowDetached(aura::Window* window,
                                WindowDetachedReason reason);
 
-  // Returns the closest position ratio based on |distance| and |length|.
-  float FindClosestPositionRatio(float distance, float length);
+  // Returns the closest ratio to the `current_ratio`. `current_ratio` is the
+  // the ratio between current divider position and the farthest position
+  // divider is allowed to end at.
+  float FindClosestPositionRatio(float current_ratio);
 
   // Gets the divider optional position ratios. The divider can always be
   // moved to the positions in `kFixedPositionRatios`. Whether the divider can

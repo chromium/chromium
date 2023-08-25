@@ -214,8 +214,6 @@ void SnapGroupController::RestoreSnapGroups() {
   // TODO(b/288335850): Currently `SplitViewController` only supports two
   // windows, the group at the end will overwrite any split view operations.
   // This will be addressed in multiple snap groups feature.
-  // TODO(b/288333989): The order in `snap_groups_` doesn't reflect the mru
-  // order yet, which will be addressed in b/288333989.
   // TODO(b/288334530): Iterate through all the displays and restore the snap
   // groups based on the mru order.
   for (const auto& snap_group : snap_groups_) {
