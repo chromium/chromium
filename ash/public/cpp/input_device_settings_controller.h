@@ -110,6 +110,11 @@ class ASH_PUBLIC_EXPORT InputDeviceSettingsController {
   virtual void SetPointingStickSettings(
       DeviceId id,
       mojom::PointingStickSettingsPtr settings) = 0;
+  // Configure the settings for graphics tablet of `id` with the provided
+  // `settings`.
+  virtual void SetGraphicsTabletSettings(
+      DeviceId id,
+      mojom::GraphicsTabletSettingsPtr settings) = 0;
 
   // Used to configure device settings on the login screen.
   virtual void OnLoginScreenFocusedPodChanged(const AccountId& account_id) = 0;

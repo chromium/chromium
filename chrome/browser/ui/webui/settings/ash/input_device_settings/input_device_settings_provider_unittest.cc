@@ -15,6 +15,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -271,6 +272,12 @@ class FakeInputDeviceSettingsController : public InputDeviceSettingsController {
       DeviceId id,
       ::ash::mojom::PointingStickSettingsPtr settings) override {
     ++num_times_set_pointing_stick_settings_called_;
+  }
+  // TODO(wangdanny): Implement SetGraphicsTabletSettings.
+  void SetGraphicsTabletSettings(
+      DeviceId id,
+      ::ash::mojom::GraphicsTabletSettingsPtr settings) override {
+    NOTIMPLEMENTED();
   }
 
   void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override {}

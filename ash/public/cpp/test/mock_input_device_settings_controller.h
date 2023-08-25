@@ -82,6 +82,10 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               (DeviceId id, mojom::PointingStickSettingsPtr settings),
               (override));
   MOCK_METHOD(void,
+              SetGraphicsTabletSettings,
+              (DeviceId id, mojom::GraphicsTabletSettingsPtr settings),
+              (override));
+  MOCK_METHOD(void,
               OnLoginScreenFocusedPodChanged,
               (const AccountId&),
               (override));

@@ -15,6 +15,7 @@
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_defaults.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler_impl.h"
 #include "ash/system/input_device_settings/pref_handlers/pointing_stick_pref_handler_impl.h"
@@ -279,7 +280,8 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         local_state(), std::move(keyboard_pref_handler),
         std::make_unique<TouchpadPrefHandlerImpl>(),
         std::make_unique<MousePrefHandlerImpl>(),
-        std::make_unique<PointingStickPrefHandlerImpl>(), task_runner_);
+        std::make_unique<PointingStickPrefHandlerImpl>(),
+        std::make_unique<GraphicsTabletPrefHandlerImpl>(), task_runner_);
     controller_->AddObserver(observer_.get());
     sample_keyboards_ = {kSampleKeyboardUsb, kSampleKeyboardInternal,
                          kSampleKeyboardBluetooth};

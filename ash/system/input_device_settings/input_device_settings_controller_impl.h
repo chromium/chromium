@@ -42,6 +42,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
       std::unique_ptr<MousePrefHandler> mouse_pref_handler,
       std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler,
+      std::unique_ptr<GraphicsTabletPrefHandler> graphics_tablet_pref_handler,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   InputDeviceSettingsControllerImpl(const InputDeviceSettingsControllerImpl&) =
       delete;
@@ -72,6 +73,9 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void SetPointingStickSettings(
       DeviceId id,
       mojom::PointingStickSettingsPtr settings) override;
+  void SetGraphicsTabletSettings(
+      DeviceId id,
+      mojom::GraphicsTabletSettingsPtr settings) override;
   void OnLoginScreenFocusedPodChanged(const AccountId& account_id) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -121,6 +125,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   void DispatchGraphicsTabletConnected(DeviceId id);
   void DispatchGraphicsTabletDisconnectedAndEraseFromList(DeviceId id);
+  void DispatchGraphicsTabletSettingsChanged(DeviceId id);
 
   void InitializePolicyHandler();
   void OnKeyboardPoliciesChanged();
@@ -155,6 +160,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;
   std::unique_ptr<MousePrefHandler> mouse_pref_handler_;
   std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler_;
+  std::unique_ptr<GraphicsTabletPrefHandler> graphics_tablet_pref_handler_;
 
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
   base::flat_map<DeviceId, mojom::TouchpadPtr> touchpads_;

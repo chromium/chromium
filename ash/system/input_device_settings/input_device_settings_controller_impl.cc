@@ -29,6 +29,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -204,6 +205,8 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
       mouse_pref_handler_(std::make_unique<MousePrefHandlerImpl>()),
       pointing_stick_pref_handler_(
           std::make_unique<PointingStickPrefHandlerImpl>()),
+      graphics_tablet_pref_handler_(
+          std::make_unique<GraphicsTabletPrefHandlerImpl>()),
       sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   Init();
 }
@@ -214,12 +217,14 @@ InputDeviceSettingsControllerImpl::InputDeviceSettingsControllerImpl(
     std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler,
     std::unique_ptr<MousePrefHandler> mouse_pref_handler,
     std::unique_ptr<PointingStickPrefHandler> pointing_stick_pref_handler,
+    std::unique_ptr<GraphicsTabletPrefHandler> graphics_tablet_pref_handler,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : local_state_(local_state),
       keyboard_pref_handler_(std::move(keyboard_pref_handler)),
       touchpad_pref_handler_(std::move(touchpad_pref_handler)),
       mouse_pref_handler_(std::move(mouse_pref_handler)),
       pointing_stick_pref_handler_(std::move(pointing_stick_pref_handler)),
+      graphics_tablet_pref_handler_(std::move(graphics_tablet_pref_handler)),
       sequenced_task_runner_(std::move(task_runner)) {
   Init();
 }
@@ -811,6 +816,33 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   RefreshStoredLoginScreenPointingStickSettings();
 }
 
+void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
+    DeviceId id,
+    mojom::GraphicsTabletSettingsPtr settings) {
+  DCHECK(active_pref_service_);
+
+  // If a device with the given id does not exist, do nothing.
+  auto found_graphics_tablet_iter = graphics_tablets_.find(id);
+  if (found_graphics_tablet_iter == graphics_tablets_.end()) {
+    return;
+  }
+
+  auto& found_graphics_tablet = *found_graphics_tablet_iter->second;
+  found_graphics_tablet.settings = settings.Clone();
+  graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
+      active_pref_service_, found_graphics_tablet);
+  DispatchGraphicsTabletSettingsChanged(id);
+  // Check the list of graphics tablets to see if any have the same
+  // |device_key|. If so, their settings need to also be updated.
+  for (const auto& [device_id, graphics_tablet] : graphics_tablets_) {
+    if (device_id != found_graphics_tablet.id &&
+        graphics_tablet->device_key == found_graphics_tablet.device_key) {
+      graphics_tablet->settings = settings->Clone();
+      DispatchGraphicsTabletSettingsChanged(device_id);
+    }
+  }
+}
+
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
@@ -970,6 +1002,11 @@ void InputDeviceSettingsControllerImpl::
   for (auto& observer : observers_) {
     observer.OnGraphicsTabletDisconnected(*graphics_tablet);
   }
+}
+// TODO(wangdanny): Implement DispatchGraphicsTabletSettingsChanged.
+void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
+    DeviceId id) {
+  NOTIMPLEMENTED();
 }
 
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(

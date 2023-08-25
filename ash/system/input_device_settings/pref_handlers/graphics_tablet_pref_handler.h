@@ -15,6 +15,8 @@ namespace ash {
 // Handles reading and updating prefs that store graphics tablet settings.
 class ASH_EXPORT GraphicsTabletPrefHandler {
  public:
+  virtual ~GraphicsTabletPrefHandler() = default;
+
   // Initializes device settings in prefs and update the `settings` member of
   // the `mojom::GraphicsTablet` object.
   virtual void InitializeGraphicsTabletSettings(
@@ -26,9 +28,6 @@ class ASH_EXPORT GraphicsTabletPrefHandler {
   virtual void UpdateGraphicsTabletSettings(
       PrefService* pref_service,
       const mojom::GraphicsTablet& graphics_tablet) = 0;
-
- protected:
-  virtual ~GraphicsTabletPrefHandler() = default;
 };
 
 }  // namespace ash
