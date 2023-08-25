@@ -35,7 +35,16 @@ bool IsTabPickupMinimumDelayEnabled() {
   return base::FeatureList::IsEnabled(kTabPickupMinimumDelay);
 }
 
-const base::TimeDelta TabPickupTimeThreshold() {
+const base::TimeDelta TabPickupMinTimeThreshold() {
+  CHECK(IsTabPickupEnabled());
+  if (IsTabPickupMinimumDelayEnabled()) {
+    return base::Seconds(0);
+  } else {
+    return base::Seconds(30);
+  }
+}
+
+const base::TimeDelta TabPickupMaxTimeThreshold() {
   CHECK(IsTabPickupEnabled());
 
   std::string feature_param = base::GetFieldTrialParamValueByFeature(

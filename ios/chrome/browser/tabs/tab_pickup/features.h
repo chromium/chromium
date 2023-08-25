@@ -37,8 +37,12 @@ bool IsTabPickupMinimumDelayEnabled();
 // disabled by the user.
 bool IsTabPickupDisabledByUser();
 
-// Convenience method for determining the tab pickup threshold.
+// Convenience method for determining the max tab pickup threshold.
 // The default is 10 minutes.
-const base::TimeDelta TabPickupTimeThreshold();
+const base::TimeDelta TabPickupMaxTimeThreshold();
+
+// Convenience method for determining the min tab pickup threshold.
+// The default is 30 seconds.
+const base::TimeDelta TabPickupMinTimeThreshold();
 
 #endif  // IOS_CHROME_BROWSER_TABS_TAB_PICKUP_FEATURES_H_
