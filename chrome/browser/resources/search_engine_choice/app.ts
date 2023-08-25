@@ -52,9 +52,12 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
         },
       },
 
+      // The choice will always be > 0 when selected.
+      // TODO(b/280753754): Handle custom search engines that do not have a
+      // prepopulate_id.
       selectedChoice_: {
-        type: String,
-        value: '',
+        type: Number,
+        value: -1,
       },
 
       isSubmitDisabled_: {
@@ -65,7 +68,7 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
   }
 
   private choiceList_: SearchEngineChoice[];
-  private selectedChoice_: string;
+  private selectedChoice_: number;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -84,7 +87,12 @@ export class SearchEngineChoiceAppElement extends PolymerElement {
   }
 
   private isSubmitButtonDisabled_() {
-    return this.selectedChoice_.length === 0;
+    return this.selectedChoice_ === -1;
+  }
+
+  private onSubmitClicked_() {
+    SearchEngineChoiceBrowserProxy.getInstance()
+        .handler.handleSearchEngineChoiceSelected(this.selectedChoice_);
   }
 }
 

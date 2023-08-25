@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,20 +28,16 @@
 #include "content/public/browser/web_ui_data_source.h"
 
 namespace {
-std::string GetChoiceListJSON(Profile* profile) {
-  if (!profile) {
-    return "";
-  }
-
+std::string GetChoiceListJSON(Profile& profile) {
   base::Value::List choice_value_list;
-  auto* pref_service = profile->GetPrefs();
+  auto* pref_service = profile.GetPrefs();
   const std::vector<std::unique_ptr<TemplateURLData>> choices =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(
           pref_service, /*default_search_provider_index=*/nullptr);
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
-    choice_value.Set("id", base::NumberToString(choice->prepopulate_id));
+    choice_value.Set("prepopulate_id", choice->prepopulate_id);
     choice_value.Set("name", choice->short_name());
     choice_value_list.Append(std::move(choice_value));
   }
@@ -50,9 +49,9 @@ std::string GetChoiceListJSON(Profile* profile) {
 }  // namespace
 
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
-    : ui::MojoWebUIController(web_ui, true) {
+    : ui::MojoWebUIController(web_ui, true),
+      profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))) {
   CHECK(base::FeatureList::IsEnabled(switches::kSearchEngineChoice));
-  auto* profile = Profile::FromWebUI(web_ui);
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -83,7 +82,7 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-  source->AddString("choiceList", GetChoiceListJSON(profile));
+  source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
 
   webui::SetupWebUIDataSource(
       source,
@@ -109,8 +108,16 @@ void SearchEngineChoiceUI::Initialize(
   display_dialog_callback_ = std::move(display_dialog_callback);
 }
 
+void SearchEngineChoiceUI::HandleSearchEngineChoiceMade(int prepopulate_id) {
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(&profile_.get());
+  search_engine_choice_service->NotifyChoiceMade(prepopulate_id);
+}
+
 void SearchEngineChoiceUI::CreatePageHandler(
     mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver) {
   page_handler_ = std::make_unique<SearchEngineChoiceHandler>(
-      std::move(receiver), std::move(display_dialog_callback_));
+      std::move(receiver), std::move(display_dialog_callback_),
+      base::BindOnce(&SearchEngineChoiceUI::HandleSearchEngineChoiceMade,
+                     weak_ptr_factory_.GetWeakPtr()));
 }

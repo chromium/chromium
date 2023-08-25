@@ -28,7 +28,6 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_context.h"
@@ -46,7 +45,8 @@ namespace {
 // class' functions but is needed to be able to use `EXPECT_CALL`.
 class MockSearchEngineChoiceService : public SearchEngineChoiceService {
  public:
-  MockSearchEngineChoiceService() {
+  explicit MockSearchEngineChoiceService(Profile* profile)
+      : SearchEngineChoiceService(*profile) {
     ON_CALL(*this, NotifyDialogOpened)
         .WillByDefault([this](Browser* browser, base::OnceClosure callback) {
           number_of_browsers_with_dialogs_open_++;
@@ -54,16 +54,17 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
                                                         std::move(callback));
         });
 
-    ON_CALL(*this, NotifyChoiceMade).WillByDefault([this]() {
+    ON_CALL(*this, NotifyChoiceMade).WillByDefault([this](int prepopulate_id) {
       number_of_browsers_with_dialogs_open_ = 0;
-      SearchEngineChoiceService::NotifyChoiceMade();
+      SearchEngineChoiceService::NotifyChoiceMade(prepopulate_id);
     });
   }
   ~MockSearchEngineChoiceService() override = default;
 
   static std::unique_ptr<KeyedService> Create(
       content::BrowserContext* context) {
-    return std::make_unique<testing::NiceMock<MockSearchEngineChoiceService>>();
+    return std::make_unique<testing::NiceMock<MockSearchEngineChoiceService>>(
+        Profile::FromBrowserContext(context));
   }
 
   unsigned int GetNumberOfBrowsersWithDialogsOpen() const {
@@ -74,7 +75,7 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
               NotifyDialogOpened,
               (Browser*, base::OnceClosure),
               (override));
-  MOCK_METHOD(void, NotifyChoiceMade, (), (override));
+  MOCK_METHOD(void, NotifyChoiceMade, (int), (override));
 
  private:
   unsigned int number_of_browsers_with_dialogs_open_ = 0;
@@ -269,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
 #endif
   // Simulate a dialog closing event for the first profile and test that the
   // dialogs for that profile are closed.
-  first_profile_service->NotifyChoiceMade();
+  first_profile_service->NotifyChoiceMade(/*prepopulate_id=*/1);
   EXPECT_FALSE(
       first_profile_service->IsShowingDialog(first_browser_with_first_profile));
   EXPECT_FALSE(first_profile_service->IsShowingDialog(
@@ -292,10 +293,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceBrowserTest,
   EXPECT_TRUE(service->IsShowingDialog(browser()));
 
   // Set the pref and simulate a dialog closing event.
-  PrefService* prefs = profile->GetPrefs();
-  prefs->SetInt64(prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-                  base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
-  service->NotifyChoiceMade();
+  service->NotifyChoiceMade(/*prepopulate_id=*/1);
   EXPECT_FALSE(service->IsShowingDialog(browser()));
 
   // Test that the dialog doesn't get shown again after opening a new tab.

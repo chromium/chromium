@@ -12,6 +12,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/util.h"
 #include "components/signin/public/base/signin_switches.h"
 
 namespace {
@@ -37,9 +40,26 @@ void SearchEngineChoiceService::BrowserObserver::OnBrowserRemoved(
 
 SearchEngineChoiceService::~SearchEngineChoiceService() = default;
 
-SearchEngineChoiceService::SearchEngineChoiceService() = default;
+SearchEngineChoiceService::SearchEngineChoiceService(Profile& profile)
+    : profile_(profile) {}
 
-void SearchEngineChoiceService::NotifyChoiceMade() {
+void SearchEngineChoiceService::NotifyChoiceMade(int prepopulate_id) {
+  // Sets the timestamp and search engine choice preferences.
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+
+  // TODO(b/280753754): Handle custom search engines that do not have a
+  // prepopulate_id
+  std::unique_ptr<TemplateURLData> search_engine =
+      TemplateURLPrepopulateData::GetPrepopulatedEngine(pref_service,
+                                                        prepopulate_id);
+  CHECK(search_engine);
+  SetDefaultSearchProviderPrefValue(*pref_service, search_engine->sync_guid);
+
+  // Closes the dialogs that are open on other browser windows that
+  // have the same profile as the one on which the choice was made.
   for (auto& browsers_with_open_dialog : browsers_with_open_dialogs_) {
     std::move(browsers_with_open_dialog.second).Run();
   }

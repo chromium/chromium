@@ -20,7 +20,7 @@ class BrowserListObserver;
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
  public:
-  SearchEngineChoiceService();
+  explicit SearchEngineChoiceService(Profile& profile);
   ~SearchEngineChoiceService() override;
 
   // Informs the service that a Search Engine Choice dialog has been opened
@@ -31,9 +31,12 @@ class SearchEngineChoiceService : public KeyedService {
 
   // This function is called when the user makes a search engine choice. It
   // closes the dialogs that are open on other browser windows that
-  // have the same profile as the one on which the choice was made.
+  // have the same profile as the one on which the choice was made and sets the
+  // corresponding preferences.
+  // `prepopulate_id` is the `prepopulate_id` of the search engine found in
+  // `components/search_engines/template_url_data.h`. It will always be > 0.
   // Virtual to be able to mock in tests.
-  virtual void NotifyChoiceMade();
+  virtual void NotifyChoiceMade(int prepopulate_id);
 
   // Informs the service that a Search Engine Choice dialog has been closed for
   // `browser`.
@@ -78,6 +81,8 @@ class SearchEngineChoiceService : public KeyedService {
   // Observes the browser list for closed browsers.
   BrowserObserver browser_observer_{*this};
 
+  // The `KeyedService` lifetime is expected to exceed the profile's.
+  const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
 };
 

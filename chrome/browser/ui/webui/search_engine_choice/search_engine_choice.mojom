@@ -17,4 +17,9 @@ interface PageHandler {
   // Triggered by the `displayDialog()` call in
   // `chrome/browser/resources/search_engine_choice/app.ts`
   DisplayDialog(uint32 content_height);
+
+  // Changes the search engine based on the user's choice.
+  // Triggered by the `handleSearchEngineChoiceSelected()` call in
+  // `chrome/browser/resources/search_engine_choice/app.ts`
+  HandleSearchEngineChoiceSelected(int32 prepopulate_id);
 };

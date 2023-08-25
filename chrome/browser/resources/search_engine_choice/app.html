@@ -173,7 +173,7 @@
   </p>
   <cr-radio-group class="choice-list" selected="{{selectedChoice_}}">
     <template is="dom-repeat" items="[[choiceList_]]">
-      <cr-radio-button class="label-first" name="[[item.id]]">
+      <cr-radio-button class="label-first" name="[[item.prepopulate_id]]">
         <div class="choice">
           <div class="choice-icon"></div>
           <div class="choice-title">[[item.name]]</div>
@@ -182,7 +182,7 @@
     </template>
   </cr-radio-group>
 </div>
-<cr-button class="action-button" id="submitButton"
+<cr-button class="action-button" id="submitButton" on-click="onSubmitClicked_"
     disabled="[[isSubmitDisabled_]]">
   $i18n{buttonText}
 </cr-button>

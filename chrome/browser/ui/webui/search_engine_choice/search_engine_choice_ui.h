@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_UI_WEBUI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_UI_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+
+class Profile;
 
 // The WebUI controller for `chrome://search-engine-choice`.
 class SearchEngineChoiceUI
@@ -39,12 +42,17 @@ class SearchEngineChoiceUI
       mojo::PendingReceiver<search_engine_choice::mojom::PageHandler> receiver)
       override;
 
+  // Notifies the search engine choice service that a choice has been made.
+  void HandleSearchEngineChoiceMade(int prepopulate_id);
+
   std::unique_ptr<SearchEngineChoiceHandler> page_handler_;
 
   mojo::Receiver<search_engine_choice::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
   base::OnceCallback<void(int)> display_dialog_callback_;
+  const raw_ref<Profile> profile_;
+  base::WeakPtrFactory<SearchEngineChoiceUI> weak_ptr_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

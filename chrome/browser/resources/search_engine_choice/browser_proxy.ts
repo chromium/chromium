@@ -10,22 +10,28 @@
 import {PageHandlerFactory, PageHandlerInterface, PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoice {
+  prepopulate_id: number;
   name: string;
 }
 
 export class SearchEngineChoiceBrowserProxy {
   handler: PageHandlerInterface;
 
-  constructor() {
-    this.handler = new PageHandlerRemote();
-
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+  constructor(handler: PageHandlerRemote) {
+    this.handler = handler;
   }
 
   static getInstance(): SearchEngineChoiceBrowserProxy {
-    return instance || (instance = new SearchEngineChoiceBrowserProxy());
+    if (instance) {
+      return instance;
+    }
+
+    const handler = new PageHandlerRemote();
+    const factory = PageHandlerFactory.getRemote();
+    factory.createPageHandler(
+        (handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+
+    return instance = new SearchEngineChoiceBrowserProxy(handler);
   }
 
   static setInstance(obj: SearchEngineChoiceBrowserProxy) {

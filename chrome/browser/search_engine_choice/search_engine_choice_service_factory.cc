@@ -94,5 +94,5 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
           CHECK_DEREF(g_browser_process->policy_service()), profile)) {
     return nullptr;
   }
-  return std::make_unique<SearchEngineChoiceService>();
+  return std::make_unique<SearchEngineChoiceService>(profile);
 }
