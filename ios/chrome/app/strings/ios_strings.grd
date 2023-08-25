@@ -4618,7 +4618,7 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
         Hidden
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SORT_TITLE" desc="The title of the overflow menu option where the menu will be auto-sorted by frequency." meaning="[iOS only] [Length: Unlimited]">
-        Smart Order Menu Bar
+        Smart Sort Menu Bar
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION" desc="The description of the overflow menu option where the menu will be auto-sorted by frequency." meaning="[iOS only] [Length: Unlimited]">
         Show frequently used items first.
