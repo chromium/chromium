@@ -47,6 +47,7 @@ namespace {
 
 // Following definitions are equal to content::PrerenderFinalStatus.
 constexpr int kFinalStatusActivated = 0;
+constexpr int kFinalStatusInvalidSchemeNavigation = 6;
 constexpr int kFinalStatusCrossSiteNavigationInMainFrameNavigation = 64;
 
 }  // namespace
@@ -175,6 +176,31 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       kFinalStatusActivated, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ChromeUrl) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  GURL prerender_url("chrome://new-tab-page");
+  ASSERT_FALSE(prerender_url.SchemeIsHTTPOrHTTPS());
+
+  // Start embedder triggered prerendering.
+  std::unique_ptr<content::PrerenderHandle> prerender_handle =
+      GetActiveWebContents()->StartPrerendering(
+          prerender_url, content::PrerenderTriggerType::kEmbedder,
+          prerender_utils::kDirectUrlInputMetricSuffix,
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_FALSE(prerender_handle);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      kFinalStatusInvalidSchemeNavigation, 1);
 }
 
 // Tests that UseCounter for SpeculationRules-triggered prerender is recorded.

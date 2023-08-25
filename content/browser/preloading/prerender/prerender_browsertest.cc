@@ -9321,6 +9321,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ViewSource) {
       PrerenderFinalStatus::kInvalidSchemeNavigation, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_DataUrl) {
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  // The content is "<h1>Hello, World!</h1>".
+  const GURL prerendering_url(
+      "data:text/html,%3Ch1%3EHello%2C%20World%21%3C%2Fh1%3E");
+  ASSERT_FALSE(prerendering_url.SchemeIsHTTPOrHTTPS());
+
+  // Start prerendering by embedder triggered prerendering.
+  std::unique_ptr<PrerenderHandle> prerender_handle =
+      web_contents_impl()->StartPrerendering(
+          prerendering_url, PrerenderTriggerType::kEmbedder,
+          "EmbedderSuffixForTest",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          PreloadingHoldbackStatus::kUnspecified, nullptr);
+  EXPECT_FALSE(prerender_handle);
+
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+      "EmbedderSuffixForTest",
+      PrerenderFinalStatus::kInvalidSchemeNavigation, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
                        EmbedderTrigger_SameOriginRedirection) {
   const GURL initial_url = GetUrl("/empty.html");
