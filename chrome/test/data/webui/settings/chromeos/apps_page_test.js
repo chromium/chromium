@@ -11,7 +11,7 @@ import {createBoolPermission} from 'chrome://resources/cr_components/app_managem
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestAndroidAppsBrowserProxy} from './test_android_apps_browser_proxy.js';
 
@@ -60,6 +60,17 @@ function setPrefs(restoreOption) {
       },
     },
   };
+}
+
+function preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides) {
+  if (loadTimeDataOverrides) {
+    loadTimeData.overrideValues(loadTimeDataOverrides);
+  }
+
+  androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
+  AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
+
+  testing.Test.disableAnimationsAndTransitions();
 }
 
 /**
@@ -517,13 +528,10 @@ suite('AppsPageTests', function() {
     let subpage = null;
 
     setup(function() {
-      androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
-      AndroidAppsBrowserProxyImpl.setInstanceForTesting(
-          androidAppsBrowserProxy);
-      PolymerTest.clearBody();
+      preliminarySetupForAndroidAppsSubpage(/*loadTimeDataOverrides=*/ null);
+
       subpage = document.createElement('settings-android-apps-subpage');
       document.body.appendChild(subpage);
-      testing.Test.disableAnimationsAndTransitions();
 
       // Because we can't simulate the loadTimeData value androidAppsVisible,
       // this route doesn't exist for tests. Add it in for testing.
@@ -537,12 +545,12 @@ suite('AppsPageTests', function() {
         playStoreEnabled: true,
         settingsAppAvailable: false,
       };
+
       flush();
     });
 
     teardown(function() {
-      subpage.remove();
-      subpage = null;
+      document.body.innerHTML = window.trustedTypes.emptyHTML;
     });
 
     test('Sanity', function() {
@@ -679,6 +687,64 @@ suite('AppsPageTests', function() {
       flush();
       assertTrue(
           !!subpage.shadowRoot.querySelector('#manageArcvmShareUsbDevices'));
+    });
+  });
+
+  suite('with OsSettingsRevampWayfinding feature enabled', () => {
+    let subpage = null;
+
+    setup(() => {
+      const loadTimeDataOverrides = {
+        isRevampWayfindingEnabled: true,
+      };
+
+      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
+
+      subpage = document.createElement('settings-android-apps-subpage');
+      document.body.appendChild(subpage);
+
+      flush();
+    });
+
+    teardown(() => {
+      document.body.innerHTML = window.trustedTypes.emptyHTML;
+    });
+
+    test(
+        'Open Google Play link row appears and once clicked, opens the play store app',
+        async function() {
+          const row = subpage.shadowRoot.querySelector('#openGooglePlayRow');
+          assertTrue(isVisible(row));
+
+          row.click();
+          flush();
+          await androidAppsBrowserProxy.whenCalled('showPlayStoreApps');
+        });
+  });
+
+  suite('with OsSettingsRevampWayfinding feature disabled', () => {
+    let subpage = null;
+
+    setup(() => {
+      const loadTimeDataOverrides = {
+        isRevampWayfindingEnabled: false,
+      };
+
+      preliminarySetupForAndroidAppsSubpage(loadTimeDataOverrides);
+
+      subpage = document.createElement('settings-android-apps-subpage');
+      document.body.appendChild(subpage);
+
+      flush();
+    });
+
+    teardown(() => {
+      document.body.innerHTML = window.trustedTypes.emptyHTML;
+    });
+
+    test('Open Google Play link row does not appear.', function() {
+      const row = subpage.shadowRoot.querySelector('#openGooglePlayRow');
+      assertFalse(isVisible(row));
     });
   });
 });

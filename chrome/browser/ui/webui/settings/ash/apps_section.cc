@@ -320,6 +320,8 @@ void AddGuestOsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE},
       {"guestOsSharedUsbDevicesLabel",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL},
+      {"guestOsSharedUsbDevicesDescription",
+       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_DESCRIPTION},
       {"guestOsSharedUsbDevicesExtraDescription",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_EXTRA_DESCRIPTION},
       {"guestOsSharedUsbDevicesListEmptyMessage",
@@ -576,22 +578,37 @@ void AppsSection::OnAppRegistered(const std::string& app_id,
 }
 
 void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"androidAppsPageLabel", IDS_SETTINGS_ANDROID_APPS_LABEL},
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+
+  webui::LocalizedString kLocalizedStrings[] = {
+      {"androidAppsPageLabel", kIsRevampEnabled
+                                   ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_LABEL
+                                   : IDS_SETTINGS_ANDROID_APPS_LABEL},
       {"androidAppsEnable", IDS_SETTINGS_TURN_ON},
-      {"androidAppsManageApps", IDS_SETTINGS_ANDROID_APPS_MANAGE_APPS},
-      {"androidAppsRemove", IDS_SETTINGS_ANDROID_APPS_REMOVE},
+      {"androidAppsManageApps",
+       kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_MANAGE_APPS
+                        : IDS_SETTINGS_ANDROID_APPS_MANAGE_APPS},
+      {"androidAppsRemove", kIsRevampEnabled
+                                ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_REMOVE
+                                : IDS_SETTINGS_ANDROID_APPS_REMOVE},
       {"androidAppsRemoveButton", IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON},
       {"androidAppsDisableDialogTitle",
-       IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_TITLE},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_DISABLE_DIALOG_TITLE
+           : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_TITLE},
       {"androidAppsDisableDialogMessage",
-       IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
+       kIsRevampEnabled
+           ? IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_DISABLE_DIALOG_MESSAGE
+           : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE},
       {"androidAppsDisableDialogRemove",
-       IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
+       kIsRevampEnabled ? IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON
+                        : IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
       {"arcvmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION},
       {"androidAppsEnableButtonRole",
        IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE},
+      {"androidOpenGooglePlay", IDS_OS_SETTINGS_REVAMP_OPEN_GOOGLE_PLAY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",
@@ -600,9 +617,13 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
                                       : IDS_SETTINGS_ANDROID_SETTINGS_TITLE);
   html_source->AddString(
       "androidAppsSubtext",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ANDROID_APPS_SUBTEXT, ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
+      kIsRevampEnabled
+          ? l10n_util::GetStringFUTF16(
+                IDS_OS_SETTINGS_REVAMP_ANDROID_APPS_SUBTEXT,
+                GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL))
+          : l10n_util::GetStringFUTF16(
+                IDS_SETTINGS_ANDROID_APPS_SUBTEXT, ui::GetChromeOSDeviceName(),
+                GetHelpUrlWithBoard(chrome::kAndroidAppsLearnMoreURL)));
 }
 
 void AppsSection::AddPluginVmLoadTimeData(

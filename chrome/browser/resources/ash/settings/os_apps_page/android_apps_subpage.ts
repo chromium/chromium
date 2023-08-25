@@ -19,6 +19,7 @@ import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
+import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
@@ -32,6 +33,8 @@ interface SettingsAndroidAppsSubpageElement {
     confirmDisableDialog: CrDialogElement,
   };
 }
+
+const GOOGLE_PLAY_STORE_URL = 'https://play.google.com/store/';
 
 const SettingsAndroidAppsSubpageElementBase =
     DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
@@ -80,6 +83,14 @@ class SettingsAndroidAppsSubpageElement extends
           Setting.kRemovePlayStore,
         ]),
       },
+
+      isRevampWayfindingEnabled_: {
+        type: Boolean,
+        value() {
+          return isRevampWayfindingEnabled();
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -87,6 +98,7 @@ class SettingsAndroidAppsSubpageElement extends
   isArcVmManageUsbAvailable: boolean;
   private dialogBody_: string;
   private playStoreEnabled_: boolean;
+  private isRevampWayfindingEnabled_: boolean;
 
   override currentRouteChanged(route: Route) {
     // Does not apply to this page.
@@ -151,6 +163,17 @@ class SettingsAndroidAppsSubpageElement extends
   private onSharedUsbDevicesClick_(): void {
     Router.getInstance().navigateTo(
         routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES);
+  }
+
+  private getGuestOsSharedUsbDevicesSublabel_(): string|null {
+    return this.isRevampWayfindingEnabled_ ?
+        this.i18n('guestOsSharedUsbDevicesDescription') :
+        null;
+  }
+
+  private onOpenGooglePlayClick_(): void {
+    AndroidAppsBrowserProxyImpl.getInstance().openGooglePlayStore(
+        GOOGLE_PLAY_STORE_URL);
   }
 }
 

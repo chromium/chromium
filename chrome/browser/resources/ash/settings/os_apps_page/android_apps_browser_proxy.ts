@@ -25,6 +25,8 @@ export interface AndroidAppsBrowserProxy {
    * @param keyboardAction True if the app was opened using a keyboard action.
    */
   showAndroidAppsSettings(keyboardAction: boolean): void;
+
+  openGooglePlayStore(url: string): void;
 }
 
 let instance: AndroidAppsBrowserProxy|null = null;
@@ -44,5 +46,9 @@ export class AndroidAppsBrowserProxyImpl implements AndroidAppsBrowserProxy {
 
   showAndroidAppsSettings(keyboardAction: boolean): void {
     chrome.send('showAndroidAppsSettings', [keyboardAction]);
+  }
+
+  openGooglePlayStore(url: string): void {
+    chrome.send('showPlayStoreApps', [url]);
   }
 }
