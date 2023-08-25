@@ -57,13 +57,13 @@ class CORE_EXPORT URLSearchParams final
                                 const String& name);
   void deleteAllWithNameOrTuple(ExecutionContext* execution_context,
                                 const String& name,
-                                const String& value);
+                                const String& val);
   String get(const String&) const;
   Vector<String> getAll(const String&) const;
   bool has(ExecutionContext* execution_context, const String& name) const;
   bool has(ExecutionContext* execution_context,
            const String& name,
-           const String& value) const;
+           const String& val) const;
   void set(const String& name, const String& value);
   void sort();
   void SetInputWithoutUpdate(const String&);

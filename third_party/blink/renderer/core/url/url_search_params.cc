@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/url/dom_url.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -199,7 +200,12 @@ void URLSearchParams::deleteAllWithNameOrTuple(
 void URLSearchParams::deleteAllWithNameOrTuple(
     ExecutionContext* execution_context,
     const String& name,
-    const String& value) {
+    const String& val) {
+  String value = val;
+  if (!RuntimeEnabledFeatures::
+          URLSearchParamsHasAndDeleteMultipleArgsEnabled()) {
+    value = String();
+  }
   // TODO(debadree333): Remove the code to count
   // kURLSearchParamsDeleteFnBehaviourDiverged in October 2023.
   Vector<wtf_size_t, 1u> indices_to_remove_with_name_value;
@@ -253,7 +259,12 @@ bool URLSearchParams::has(ExecutionContext* execution_context,
 
 bool URLSearchParams::has(ExecutionContext* execution_context,
                           const String& name,
-                          const String& value) const {
+                          const String& val) const {
+  String value = val;
+  if (!RuntimeEnabledFeatures::
+          URLSearchParamsHasAndDeleteMultipleArgsEnabled()) {
+    value = String();
+  }
   // TODO(debadree333): Remove the code to count
   // kURLSearchParamsHasFnBehaviourDiverged in October 2023.
   bool found_match_using_name_and_value = false;
