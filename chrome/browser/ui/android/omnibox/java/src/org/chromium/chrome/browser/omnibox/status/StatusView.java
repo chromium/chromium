@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RotateDrawable;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -24,6 +26,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.widget.TooltipCompat;
 
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
@@ -100,6 +103,12 @@ public class StatusView extends LinearLayout {
         mStatusExtraSpace = findViewById(R.id.location_bar_verbose_status_extra_space);
 
         configureAccessibilityDescriptions();
+
+        // Set tooltip text in StatusView.
+        if (VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            TooltipCompat.setTooltipText((View) this,
+                    mStatusIconView.getContext().getString(R.string.accessibility_menu_info));
+        }
     }
 
     /**
