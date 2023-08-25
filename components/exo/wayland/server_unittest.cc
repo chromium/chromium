@@ -68,7 +68,7 @@ TEST_F(ServerTest, SecurityDelegateAssociation) {
 
   auto server = CreateServer(std::move(security_delegate));
 
-  EXPECT_EQ(GetSecurityDelegate(server->GetWaylandDisplay()),
+  EXPECT_EQ(GetSecurityDelegate(server->GetWaylandDisplayForTesting()),
             security_delegate_ptr);
 }
 
@@ -101,7 +101,7 @@ TEST_F(ServerTest, StartFd) {
   EXPECT_NE(client_display, nullptr);
 
   wl_list* all_clients =
-      wl_display_get_client_list(server->GetWaylandDisplay());
+      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
   ASSERT_FALSE(wl_list_empty(all_clients));
   wl_client* client = wl_client_from_link(all_clients->next);
 
@@ -126,7 +126,7 @@ TEST_F(ServerTest, Dispatch) {
   client_thread.Start();
 
   TestListener client_creation_listener;
-  wl_display_add_client_created_listener(server->GetWaylandDisplay(),
+  wl_display_add_client_created_listener(server->GetWaylandDisplayForTesting(),
                                          &client_creation_listener.listener);
 
   base::Lock lock;
@@ -154,7 +154,7 @@ TEST_F(ServerTest, Dispatch) {
   }
 
   wl_list* all_clients =
-      wl_display_get_client_list(server->GetWaylandDisplay());
+      wl_display_get_client_list(server->GetWaylandDisplayForTesting());
   ASSERT_FALSE(wl_list_empty(all_clients));
   wl_client* client = wl_client_from_link(all_clients->next);
 
