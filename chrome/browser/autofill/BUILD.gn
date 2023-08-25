@@ -196,6 +196,8 @@ if (!is_android) {
     testonly = true
 
     sources = [
+      "autofill_flow_test_util.cc",
+      "autofill_flow_test_util.h",
       "autofill_uitest.cc",
       "autofill_uitest.h",
     ]

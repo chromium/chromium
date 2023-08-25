@@ -28,6 +28,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/autofill/autofill_flow_test_util.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/autofill/autofill_uitest_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -175,11 +176,8 @@ content::RenderFrameHost* RenderFrameHostForName(
       base::BindRepeating(&content::FrameMatchesName, name));
 }
 
-// Represents a JavaScript expression that evaluates to a HTMLElement.
-using ElementExpr = base::StrongAlias<struct ElementExprTag, std::string>;
-
-ElementExpr GetElementById(const std::string& id) {
-  return ElementExpr(
+autofill::ElementExpr GetElementById(const std::string& id) {
+  return autofill::ElementExpr(
       base::StringPrintf("document.getElementById(`%s`)", id.c_str()));
 }
 
@@ -225,93 +223,9 @@ std::vector<FieldValue> GetFieldValues(
   return fields;
 }
 
-// Returns the center point of a DOM element.
-gfx::Point GetCenter(const ElementExpr& e,
-                     content::ToRenderFrameHost execution_target) {
-  std::string x_script = base::StringPrintf(
-      R"( const bounds = (%s).getBoundingClientRect();
-          Math.floor(bounds.left + bounds.width / 2))",
-      e->c_str());
-  std::string y_script = base::StringPrintf(
-      R"( const bounds = (%s).getBoundingClientRect();
-          Math.floor(bounds.top + bounds.height / 2)
-      )",
-      e->c_str());
-  int x = content::EvalJs(execution_target, x_script).ExtractInt();
-  int y = content::EvalJs(execution_target, y_script).ExtractInt();
-  return gfx::Point(x, y);
-}
-
-// Triggers a JavaScript event like 'focus' and waits for the event to happen.
-[[nodiscard]] AssertionResult TriggerAndWaitForEvent(
-    const ElementExpr& e,
-    const std::string& event_name,
-    content::ToRenderFrameHost execution_target) {
-  std::string script = base::StringPrintf(
-      R"( new Promise(resolve => {
-            if (document.readyState === 'complete') {
-              function handler(e) {
-                e.target.removeEventListener(e.type, arguments.callee);
-                resolve(true);
-              }
-              const target = %s;
-              target.addEventListener('%s', handler);
-              target.%s();
-            } else {
-              resolve(false);
-            }
-          });
-          )",
-      e->c_str(), event_name.c_str(), event_name.c_str());
-  content::EvalJsResult result = content::EvalJs(execution_target, script);
-  if (!result.error.empty()) {
-    return AssertionFailure() << __func__ << "(): " << result.error;
-  } else if (false == result) {
-    return AssertionFailure()
-           << __func__ << "(): couldn't trigger " << event_name << " on " << *e;
-  } else {
-    return AssertionSuccess();
-  }
-}
-
-// True iff `e` is the deepest active element in the given frame.
-//
-// "Deepest" refers to the shadow DOM: if an <input> in the shadow DOM is
-// focused, then this <input> and the shadow host are active elements, but
-// IsFocusedField() only returns true for the <input>.
-bool IsFocusedField(const ElementExpr& e,
-                    content::ToRenderFrameHost execution_target) {
-  std::string script = base::StringPrintf(
-      "const e = (%s); e === e.getRootNode().activeElement", e->c_str());
-  return true == content::EvalJs(execution_target, script);
-}
-
-// Unfocuses the currently focused field.
-[[nodiscard]] AssertionResult BlurFocusedField(
-    content::ToRenderFrameHost execution_target) {
-  std::string script = R"(
-    if (document.activeElement !== null)
-      document.activeElement.blur();
-  )";
-  return content::ExecJs(execution_target, script);
-}
-
-// A helper function for focusing a field in AutofillFlow().
-// Consider using AutofillFlow() instead.
-[[nodiscard]] AssertionResult FocusField(
-    const ElementExpr& e,
-    content::ToRenderFrameHost execution_target) {
-  if (IsFocusedField(e, execution_target)) {
-    AssertionResult r = BlurFocusedField(execution_target);
-    if (!r)
-      return r;
-  }
-  return TriggerAndWaitForEvent(e, "focus", execution_target);
-}
-
 // Types the characters of `value` after focusing field `e`.
 [[nodiscard]] AssertionResult EnterTextIntoField(
-    const ElementExpr& e,
+    const autofill::ElementExpr& e,
     base::StringPiece value,
     AutofillUiTest* test,
     content::ToRenderFrameHost execution_target) {
@@ -333,7 +247,7 @@ bool IsFocusedField(const ElementExpr& e,
 
 // Executes `EnterTextIntoField()` for a series of fields.
 [[nodiscard]] AssertionResult EnterTextsIntoFields(
-    std::vector<std::pair<ElementExpr, std::string>> values,
+    std::vector<std::pair<autofill::ElementExpr, std::string>> values,
     AutofillUiTest* test,
     content::ToRenderFrameHost execution_target) {
   for (const auto& [element, value] : values) {
@@ -343,340 +257,6 @@ bool IsFocusedField(const ElementExpr& e,
       return AssertionFailure() << __func__ << "(): " << a;
     }
   }
-  return AssertionSuccess();
-}
-
-// The different ways of triggering the Autofill dropdown.
-//
-// A difference in their behaviour is that (only) ByArrow() opens implicitly
-// selects the top-most suggestion.
-struct ShowMethod {
-  constexpr static ShowMethod ByArrow() { return {.arrow = true}; }
-  constexpr static ShowMethod ByClick() { return {.click = true}; }
-  constexpr static ShowMethod ByChar(char c) { return {.character = c}; }
-
-  bool selects_first_suggestion() { return arrow; }
-
-  // Exactly one of the members should be evaluate to `true`.
-  const bool arrow = false;
-  const char character = '\0';
-  const bool click = false;
-};
-
-// We choose the timeout empirically. 250 ms are not enough; tests become flaky:
-// in ShowAutofillPopup(), the preview triggered by an "arrow down" sometimes
-// only arrives after >250 ms and thus arrives during the DoNothingAndWait(),
-// which causes a crash.
-constexpr base::TimeDelta kAutofillFlowDefaultTimeout = base::Seconds(2);
-
-struct ShowAutofillPopupParams {
-  ShowMethod show_method = ShowMethod::ByArrow();
-  int num_profile_suggestions = 1;
-  size_t max_tries = 5;
-  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
-};
-
-// A helper function for showing the popup in AutofillFlow().
-// Consider using AutofillFlow() instead.
-[[nodiscard]] AssertionResult ShowAutofillPopup(const ElementExpr& e,
-                                                AutofillUiTest* test,
-                                                ShowAutofillPopupParams p) {
-  constexpr auto kSuggest = ObservedUiEvents::kSuggestionsShown;
-  constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
-
-  content::ToRenderFrameHost execution_target =
-      p.execution_target.value_or(test->GetWebContents());
-  content::RenderFrameHost* rfh = execution_target.render_frame_host();
-  content::RenderWidgetHostView* view = rfh->GetView();
-  content::RenderWidgetHost* widget = view->GetRenderWidgetHost();
-
-  auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
-    constexpr auto kDown = ui::DomKey::ARROW_DOWN;
-    if (base::Contains(exp, ObservedUiEvents::kSuggestionsShown)) {
-      return test->SendKeyToPageAndWait(kDown, std::move(exp), p.timeout);
-    } else {
-      return test->SendKeyToPopupAndWait(kDown, std::move(exp), widget,
-                                         p.timeout);
-    }
-  };
-  auto Backspace = [&]() {
-    return test->SendKeyToPageAndWait(ui::DomKey::BACKSPACE, {}, p.timeout);
-  };
-  auto Char = [&](const std::string& code, std::list<ObservedUiEvents> exp) {
-    ui::DomCode dom_code = ui::KeycodeConverter::CodeStringToDomCode(code);
-    ui::DomKey dom_key;
-    ui::KeyboardCode keyboard_code;
-    CHECK(ui::DomCodeToUsLayoutDomKey(dom_code, ui::EF_SHIFT_DOWN, &dom_key,
-                                      &keyboard_code));
-    return test->SendKeyToPageAndWait(dom_key, dom_code, keyboard_code,
-                                      std::move(exp), p.timeout);
-  };
-  auto Click = [&](std::list<ObservedUiEvents> exp) {
-    gfx::Point point = view->TransformPointToRootCoordSpace(GetCenter(e, rfh));
-    test->test_delegate()->SetExpectations(
-        {ObservedUiEvents::kSuggestionsShown}, p.timeout);
-    content::SimulateMouseClickAt(test->GetWebContents(), 0,
-                                  blink::WebMouseEvent::Button::kLeft, point);
-    return test->test_delegate()->Wait();
-  };
-
-  // It seems that due to race conditions with Blink's layouting
-  // (crbug.com/1175735#c9), the below focus events are sometimes too early:
-  // Autofill closes the popup right away because it is outside of the content
-  // area. To work around this, we attempt to bring up the Autofill popup
-  // multiple times, with some delay.
-  AssertionResult a = AssertionFailure()
-                      << __func__ << "(): with " << p.num_profile_suggestions
-                      << " profile suggestions";
-  bool field_was_focused_initially = IsFocusedField(e, rfh);
-  for (size_t i = 1; i <= p.max_tries; ++i) {
-    a = a << "Iteration " << i << "/" << p.max_tries << ". ";
-    // A Translate bubble may overlap with the Autofill popup, which causes
-    // flakiness. See crbug.com/1175735#c10.
-    // Also, the address-save prompts and others may overlap with the Autofill
-    // popup. So we preemptively close all bubbles, which however is not
-    // reliable on Windows.
-    translate::test_utils::CloseCurrentBubble(test->browser());
-    TryToCloseAllPrompts(test->GetWebContents());
-    if (i > 1) {
-      test->DoNothingAndWaitAndIgnoreEvents(p.timeout);
-      if (field_was_focused_initially) {
-        // The Autofill popup may have opened due to a severely delayed event on
-        // a slow bot. To reset the popup, we re-focus the field.
-        a << "Trying to re-focus the field. ";
-        if (AssertionResult b = BlurFocusedField(rfh); !b)
-          a = a << b;
-        if (AssertionResult b = FocusField(e, rfh); !b)
-          a = a << b;
-      }
-    }
-
-    bool has_preview = 0 < p.num_profile_suggestions;
-    if (p.show_method.arrow) {
-      // Press arrow down to open the popup and select first suggestion.
-      // Depending on the platform, this requires one or two arrow-downs.
-      if (!IsFocusedField(e, rfh))
-        return a << "Field " << *e << " must be focused. ";
-      if (!ShouldAutoselectFirstSuggestionOnArrowDown()) {
-        if (AssertionResult b = ArrowDown({kSuggest}); !b) {
-          a << "Cannot trigger suggestions by first arrow: " << b;
-          continue;
-        }
-        if (AssertionResult b =
-                has_preview ? ArrowDown({kPreview}) : ArrowDown({});
-            !b) {
-          a << "Cannot select first suggestion by second arrow: " << b;
-          continue;
-        }
-      } else if (AssertionResult b = has_preview
-                                         ? ArrowDown({kSuggest, kPreview})
-                                         : ArrowDown({kSuggest});
-                 !b) {
-        a << "Cannot trigger and select first suggestion by arrow: " << b;
-        continue;
-      }
-    } else if (p.show_method.character) {
-      // Enter character to open the popup, but do not select an option.
-      // If necessary, delete past iterations character first.
-      if (!IsFocusedField(e, rfh))
-        return a << "Field " << *e << " must be focused. ";
-      if (i > 1) {
-        if (AssertionResult b = Backspace(); !b) {
-          a << "Cannot undo past iteration's key: " << b;
-        }
-      }
-      std::string code = std::string("Key") + p.show_method.character;
-      if (AssertionResult b = Char(code, {kSuggest}); !b) {
-        a << "Cannot trigger suggestions by key: " << b;
-        continue;
-      }
-    } else if (p.show_method.click) {
-      // Click item to open the popup, but do not select an option.
-      if (AssertionResult b = Click({kSuggest}); !b) {
-        a << "Cannot trigger and select first suggestion by click: " << b;
-        continue;
-      }
-    }
-    return AssertionSuccess();
-  }
-  return a << "Couldn't show Autofill suggestions on " << *e << ". ";
-}
-
-struct AutofillSuggestionParams {
-  int num_profile_suggestions = 1;
-  int current_index = 0;
-  int target_index = 0;
-  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
-};
-
-// A helper function for selecting a suggestion in AutofillFlow().
-// Consider using AutofillFlow() instead.
-[[nodiscard]] AssertionResult SelectAutofillSuggestion(
-    const ElementExpr& e,
-    AutofillUiTest* test,
-    AutofillSuggestionParams p) {
-  content::RenderWidgetHost* widget =
-      p.execution_target.value_or(test->GetWebContents())
-          .render_frame_host()
-          ->GetView()
-          ->GetRenderWidgetHost();
-
-  constexpr auto kPreview = ObservedUiEvents::kPreviewFormData;
-
-  auto ArrowDown = [&](std::list<ObservedUiEvents> exp) {
-    return test->SendKeyToPopupAndWait(ui::DomKey::ARROW_DOWN, std::move(exp),
-                                       widget, p.timeout);
-  };
-
-  for (int i = p.current_index + 1; i <= p.target_index; ++i) {
-    bool has_preview = i < p.num_profile_suggestions;
-    if (!(has_preview ? ArrowDown({kPreview}) : ArrowDown({}))) {
-      return AssertionFailure()
-             << __func__ << "(): Couldn't go to " << i << "th suggestion with"
-             << (has_preview ? "" : "out") << " preview";
-    }
-  }
-  return AssertionSuccess();
-}
-
-// A helper function for accepting a suggestion in AutofillFlow().
-// Consider using AutofillFlow() instead.
-[[nodiscard]] AssertionResult AcceptAutofillSuggestion(
-    const ElementExpr& e,
-    AutofillUiTest* test,
-    AutofillSuggestionParams p) {
-  content::RenderWidgetHost* widget =
-      p.execution_target.value_or(test->GetWebContents())
-          .render_frame_host()
-          ->GetView()
-          ->GetRenderWidgetHost();
-
-  // If `kAutofillPopupUseThresholdForKeyboardAndMobileAccept` is enabled,
-  // then all attempts to accept Autofill suggestions using keyboard "ENTER"
-  // keystrokes will be ignored for the first 500ms after the popup is first
-  // shown. This overrides this threshold.
-  if (base::WeakPtr<AutofillPopupControllerImpl> controller =
-          ChromeAutofillClient::FromWebContentsForTesting(
-              test->GetWebContents())
-              ->popup_controller_for_testing()) {
-    controller->DisableThresholdForTesting(true);
-  }
-
-  constexpr auto kSuggestionsHidden = ObservedUiEvents::kSuggestionsHidden;
-  constexpr auto kFill = ObservedUiEvents::kFormDataFilled;
-
-  auto Enter = [&](std::list<ObservedUiEvents> exp) {
-    return test->SendKeyToPopupAndWait(ui::DomKey::ENTER, std::move(exp),
-                                       widget);
-  };
-
-  bool has_fill = p.target_index < p.num_profile_suggestions;
-  if (AssertionResult a = SelectAutofillSuggestion(e, test, p); !a)
-    return a;
-  if (!(has_fill ? Enter({kSuggestionsHidden, kFill})
-                 : Enter({kSuggestionsHidden}))) {
-    return AssertionFailure()
-           << __func__ << "(): Couldn't accept to " << p.target_index
-           << "th suggestion with" << (has_fill ? "" : "out") << " fill";
-  }
-  return AssertionSuccess();
-}
-
-// An Autofill consists of four stages:
-// 1. focusing the field,
-// 2. showing the Autofill popup,
-// 3. selecting the desired suggestion,
-// 4. accepting the selected suggestion.
-//
-// To reduce flakiness when in Stage 2, this does multiple attempts.
-// Depending on the `show_method`, showing may already select the first
-// suggestion; see ShowMethod for details.
-//
-// Selecting a profile suggestion (address or credit card) also triggers
-// preview. By contrast, "Clear" and "Manage" do not cause a preview. The
-// Autofill flow expects a preview for (only) the indices less than
-// `num_profile_suggestions`. The selected `target_index` may be greater or
-// equal to `num_profile_suggestions` to select "Clear" or "Manager".
-//
-// A callback can be set to be executed after each stage. Again note that
-// `show_method` may select the first suggestion.
-//
-// The default `execution_target` is the main frame.
-struct AutofillFlowParams {
-  bool do_focus = true;
-  bool do_show = true;
-  bool do_select = true;
-  bool do_accept = true;
-  ShowMethod show_method = ShowMethod::ByArrow();
-  int num_profile_suggestions = 1;
-  int target_index = 0;
-  base::RepeatingClosure after_focus = {};
-  base::RepeatingClosure after_show = {};
-  base::RepeatingClosure after_select = {};
-  base::RepeatingClosure after_accept = {};
-  size_t max_show_tries = 5;
-  base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
-};
-
-[[nodiscard]] AssertionResult AutofillFlow(const ElementExpr& e,
-                                           AutofillUiTest* test,
-                                           AutofillFlowParams p = {}) {
-  content::ToRenderFrameHost execution_target =
-      p.execution_target.value_or(test->GetWebContents());
-
-  if (p.do_focus) {
-    AssertionResult a = FocusField(e, execution_target);
-    if (!a)
-      return a;
-    if (p.after_focus)
-      p.after_focus.Run();
-  }
-
-  if (p.do_show) {
-    AssertionResult a =
-        ShowAutofillPopup(e, test,
-                          {.show_method = p.show_method,
-                           .num_profile_suggestions = p.num_profile_suggestions,
-                           .max_tries = p.max_show_tries,
-                           .timeout = p.timeout,
-                           .execution_target = execution_target});
-    if (!a)
-      return a;
-    if (p.after_show)
-      p.after_show.Run();
-  }
-
-  if (p.do_select) {
-    AssertionResult a = SelectAutofillSuggestion(
-        e, test,
-        {.num_profile_suggestions = p.num_profile_suggestions,
-         .current_index = p.show_method.selects_first_suggestion() ? 0 : -1,
-         .target_index = p.target_index,
-         .timeout = p.timeout,
-         .execution_target = execution_target});
-    if (!a)
-      return a;
-    if (p.after_select)
-      p.after_select.Run();
-  }
-
-  if (p.do_accept) {
-    AssertionResult a = AcceptAutofillSuggestion(
-        e, test,
-        {.num_profile_suggestions = p.num_profile_suggestions,
-         .current_index = p.target_index,
-         .target_index = p.target_index,
-         .timeout = p.timeout,
-         .execution_target = execution_target});
-    if (!a)
-      return a;
-    if (p.after_accept)
-      p.after_accept.Run();
-  }
-
   return AssertionSuccess();
 }
 
@@ -1543,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ClearTwoSection) {
 }
 
 // TODO(crbug.com/1468282) Flaky on Mac.
-#if BUILDFLAG(IS_MAC) 
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ModifyTextFieldAndFill DISABLED_ModifyTextFieldAndFill
 #else
 #define MAYBE_ModifyTextFieldAndFill ModifyTextFieldAndFill
