@@ -595,6 +595,8 @@ void IDBRequest::OnGotKeyGeneratorCurrentNumber(
 
 void IDBRequest::SendError(DOMException* error, bool force) {
   TRACE_EVENT0("IndexedDB", "IDBRequest::SendError()");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "error");
   if (!GetExecutionContext() || (request_aborted_ && !force)) {
     metrics_.RecordAndReset();
     return;

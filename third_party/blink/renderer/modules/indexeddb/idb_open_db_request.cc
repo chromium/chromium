@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -92,6 +93,8 @@ const AtomicString& IDBOpenDBRequest::InterfaceName() const {
 
 void IDBOpenDBRequest::OnBlocked(int64_t old_version) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onBlocked()");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "blocked");
   if (!CanStillSendResult()) {
     return;
   }
@@ -109,6 +112,8 @@ void IDBOpenDBRequest::OnUpgradeNeeded(int64_t old_version,
                                        mojom::blink::IDBDataLoss data_loss,
                                        String data_loss_message) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onUpgradeNeeded()");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "upgradeNeeded");
   if (!CanStillSendResult()) {
     metrics_.RecordAndReset();
     return;
@@ -144,6 +149,9 @@ void IDBOpenDBRequest::OnUpgradeNeeded(int64_t old_version,
 void IDBOpenDBRequest::OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase> backend,
                                        const IDBDatabaseMetadata& metadata) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onSuccess(database)");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "success");
+
   if (!CanStillSendResult()) {
     metrics_.RecordAndReset();
     return;
@@ -170,6 +178,8 @@ void IDBOpenDBRequest::OnOpenDBSuccess(std::unique_ptr<WebIDBDatabase> backend,
 
 void IDBOpenDBRequest::OnDeleteDBSuccess(int64_t old_version) {
   TRACE_EVENT0("IndexedDB", "IDBOpenDBRequest::onDeleteDBSuccess(int64_t)");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "success");
   if (!CanStillSendResult()) {
     metrics_.RecordAndReset();
     return;

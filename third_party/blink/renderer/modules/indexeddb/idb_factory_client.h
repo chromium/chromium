@@ -32,7 +32,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
-#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -70,7 +69,6 @@ class MODULES_EXPORT IDBFactoryClient final
   void DetachFromRequest();
 
   Persistent<IDBOpenDBRequest> request_;
-  probe::AsyncTaskContext async_task_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

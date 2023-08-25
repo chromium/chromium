@@ -368,6 +368,8 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   // registered against it.
   v8::Isolate* isolate_;
 
+  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
+
   AsyncTraceState metrics_;
 
  private:
