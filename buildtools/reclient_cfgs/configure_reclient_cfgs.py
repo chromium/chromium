@@ -74,6 +74,7 @@ $ParanoidMode CheckIntegrity
 def IsCipdLoggedIn():
     ret = subprocess.call(
        ['cipd', 'auth-info'],
+       shell=True,
        stderr=subprocess.PIPE,
        stdout=subprocess.DEVNULL)
     return ret == 0
