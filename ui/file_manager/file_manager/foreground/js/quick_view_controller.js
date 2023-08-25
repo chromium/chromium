@@ -7,6 +7,7 @@ import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chro
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {parseActionId} from '../../common/js/file_tasks.js';
 import {FileType} from '../../common/js/file_type.js';
 import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -14,10 +15,9 @@ import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 
-import {constants} from './constants.js';
 import {CommandHandler} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
-import {FileTasks, parseActionId} from './file_tasks.js';
+import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataBoxController} from './metadata_box_controller.js';

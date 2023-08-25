@@ -10,6 +10,7 @@
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
 import {getMimeType, startIOTask} from '../../common/js/api.js';
+import {AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
 import {metrics} from '../../common/js/metrics.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {Crostini} from '../../externs/background/crostini.js';
@@ -23,7 +24,7 @@ import {FilesPasswordDialog} from '../elements/files_password_dialog.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelection, FileSelectionHandler} from './file_selection.js';
-import {AnnotatedTask, FileTasks, getDefaultTask, TaskPickerType} from './file_tasks.js';
+import {FileTasks, TaskPickerType} from './file_tasks.js';
 import {FileTransferController} from './file_transfer_controller.js';
 import {MetadataModel} from './metadata/metadata_model.js';
 import {MetadataUpdateController} from './metadata_update_controller.js';

@@ -5,12 +5,12 @@
 import {getFileTasks} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {getNativeEntry} from '../../common/js/entry_utils.js';
+import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../common/js/file_tasks.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData, PropStatus} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
-import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} from '../../foreground/js/file_tasks.js';
 import {ActionsProducerGen} from '../../lib/actions_producer.js';
 import {keyedKeepFirst} from '../../lib/concurrency_models.js';
 import {ActionType} from '../actions.js';
