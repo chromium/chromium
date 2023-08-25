@@ -16,13 +16,13 @@ import {AnimationTheme} from '../../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getCheckmarkIcon, isSelectionEvent} from '../utils.js';
 
-import {setAnimationTheme} from './ambient_controller.js';
+import {setAmbientTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
-import {getTemplate} from './animation_theme_item_element.html.js';
+import {getTemplate} from './ambient_theme_item_element.html.js';
 
-export class AnimationThemeItem extends WithPersonalizationStore {
+export class AmbientThemeItem extends WithPersonalizationStore {
   static get is() {
-    return 'animation-theme-item';
+    return 'ambient-theme-item';
   }
 
   static get template() {
@@ -31,14 +31,14 @@ export class AnimationThemeItem extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      animationTheme: AnimationTheme,
+      ambientTheme: AnimationTheme,
       itemDescription_: {
         type: String,
-        computed: 'computeItemDescription_(animationTheme)',
+        computed: 'computeItemDescription_(ambientTheme)',
       },
       imgSrc_: {
         type: String,
-        computed: 'computeImgSrc_(animationTheme)',
+        computed: 'computeImgSrc_(ambientTheme)',
       },
       checkmarkIcon_: {
         type: String,
@@ -49,7 +49,7 @@ export class AnimationThemeItem extends WithPersonalizationStore {
     };
   }
 
-  animationTheme: AnimationTheme;
+  ambientTheme: AnimationTheme;
   private itemDescription_: string;
   private imgSrc_: string;
 
@@ -62,7 +62,7 @@ export class AnimationThemeItem extends WithPersonalizationStore {
 
   /** Compute the animation theme description. */
   private computeItemDescription_(): string {
-    switch (this.animationTheme) {
+    switch (this.ambientTheme) {
       case AnimationTheme.kSlideshow:
         return this.i18n('ambientModeAnimationSlideshowLabel');
       case AnimationTheme.kFeelTheBreeze:
@@ -72,15 +72,14 @@ export class AnimationThemeItem extends WithPersonalizationStore {
       case AnimationTheme.kVideo:
         return this.i18n('ambientModeAnimationVideoLabel');
       default:
-        assertNotReached(
-            'Invalid AnimationTheme value: ${this.animationTheme}');
+        assertNotReached('Invalid AmbientTheme value: ${this.ambientTheme}');
     }
   }
 
   /** Return the display image for animation theme option. */
-  private computeImgSrc_(animationTheme: AnimationThemeItem['animationTheme']):
+  private computeImgSrc_(ambientTheme: AmbientThemeItem['ambientTheme']):
       string {
-    switch (animationTheme) {
+    switch (ambientTheme) {
       case AnimationTheme.kSlideshow:
         return 'chrome://personalization/images/slideshow.png';
       case AnimationTheme.kFeelTheBreeze:
@@ -102,9 +101,8 @@ export class AnimationThemeItem extends WithPersonalizationStore {
 
     event.preventDefault();
     event.stopPropagation();
-    setAnimationTheme(
-        this.animationTheme, getAmbientProvider(), this.getStore());
+    setAmbientTheme(this.ambientTheme, getAmbientProvider(), this.getStore());
   }
 }
 
-customElements.define(AnimationThemeItem.is, AnimationThemeItem);
+customElements.define(AmbientThemeItem.is, AmbientThemeItem);

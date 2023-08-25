@@ -17,16 +17,16 @@
   }
 </style>
 
-<h3 id="animationThemeDescription" class="ambient-subpage-element-title">
+<h3 id="ambientThemeDescription" class="ambient-subpage-element-title">
   $i18n{ambientModeAnimationTitle}
 </h3>
-<iron-list items="[[animationThemes]]" as="theme" grid id="grid"
-    role="radiogroup" aria-describedby="animationThemeDescription">
+<iron-list items="[[ambientThemes]]" as="theme" grid id="grid"
+    role="radiogroup" aria-describedby="ambientThemeDescription">
   <template>
-    <animation-theme-item tabindex$="[[tabIndex]]"
+    <ambient-theme-item tabindex$="[[tabIndex]]"
         role="radio"
-        animation-theme="[[theme]]"
-        aria-checked$="[[getAriaChecked_(theme, selectedAnimationTheme)]]">
-      </animation-theme-item>
+        ambient-theme="[[theme]]"
+        aria-checked$="[[getAriaChecked_(theme, selectedAmbientTheme)]]">
+      </ambient-theme-item>
   </template>
 </iron-list>

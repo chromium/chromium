@@ -52,9 +52,9 @@ export function getZerosArray(x: number): number[] {
  * Note: TopicSource.kVideo is exclusively paired with AnimationTheme.kVideo
  */
 export function isValidTopicSourceAndTheme(
-    topicSource: TopicSource, animationTheme: AnimationTheme|null) {
-  return (animationTheme === AnimationTheme.kVideo &&
+    topicSource: TopicSource, ambientTheme: AnimationTheme|null) {
+  return (ambientTheme === AnimationTheme.kVideo &&
           topicSource === TopicSource.kVideo) ||
-      (animationTheme !== AnimationTheme.kVideo &&
+      (ambientTheme !== AnimationTheme.kVideo &&
        topicSource !== TopicSource.kVideo);
 }

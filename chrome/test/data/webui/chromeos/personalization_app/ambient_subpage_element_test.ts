@@ -5,7 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientUiVisibility, AnimationTheme, AnimationThemeItem, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAnimationThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
+import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, AmbientSubpage, AmbientThemeItem, AmbientUiVisibility, AnimationTheme, emptyState, Paths, PersonalizationRouter, QueryParams, ScrollableTarget, SetAlbumsAction, SetAmbientModeEnabledAction, SetAmbientThemeAction, SetScreenSaverDurationAction, SetTemperatureUnitAction, SetTopicSourceAction, TemperatureUnit, TopicSource, TopicSourceItem, WallpaperGridItem} from 'chrome://personalization/js/personalization_app.js';
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
@@ -63,11 +63,11 @@ suite('AmbientSubpageTest', function() {
   async function displayMainSettings(
       topicSource: TopicSource|null, temperatureUnit: TemperatureUnit|null,
       ambientModeEnabled: boolean|null,
-      animationTheme = AnimationTheme.kSlideshow, previews: Url[] = [],
+      ambientTheme = AnimationTheme.kSlideshow, previews: Url[] = [],
       duration: number|null = 10,
       queryParams: QueryParams = {}): Promise<AmbientSubpage> {
     personalizationStore.data.ambient.albums = ambientProvider.albums;
-    personalizationStore.data.ambient.animationTheme = animationTheme;
+    personalizationStore.data.ambient.ambientTheme = ambientTheme;
     personalizationStore.data.ambient.topicSource = topicSource;
     personalizationStore.data.ambient.temperatureUnit = temperatureUnit;
     personalizationStore.data.ambient.ambientModeEnabled = ambientModeEnabled;
@@ -104,15 +104,15 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!ambientPreview, 'ambient-preview element exists');
 
     // Should show image placeholders for the 3 theme items.
-    const animationThemePlaceholder =
+    const ambientThemePlaceholder =
         ambientSubpageElement.shadowRoot!.querySelector(
-            '#animationThemePlaceholder');
-    assertTrue(!!animationThemePlaceholder);
+            '#ambientThemePlaceholder');
+    assertTrue(!!ambientThemePlaceholder);
 
-    const animationItemPlaceholders =
+    const ambientThemeItemPlaceholders =
         ambientSubpageElement!.shadowRoot!.querySelectorAll(
-            '.animation-placeholder-container:not([hidden])');
-    assertEquals(3, animationItemPlaceholders!.length);
+            '.ambient-theme-placeholder-container:not([hidden])');
+    assertEquals(3, ambientThemeItemPlaceholders!.length);
 
     // Should show placeholders for the 2 topic source radio buttons.
     const topicSourcePlaceholder =
@@ -156,12 +156,12 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!toggleButton, 'cr-toggle element exists');
     assertFalse(toggleButton!.checked);
 
-    // Placeholders will be hidden for animation theme, topic source
+    // Placeholders will be hidden for ambient theme, topic source
     // and temperature unit elements.
-    assertTrue(!!animationThemePlaceholder);
+    assertTrue(!!ambientThemePlaceholder);
     assertEquals(
-        'none', getComputedStyle(animationThemePlaceholder).display,
-        'animation theme placeholder is hidden');
+        'none', getComputedStyle(ambientThemePlaceholder).display,
+        'ambient theme placeholder is hidden');
 
     assertTrue(!!topicSourcePlaceholder);
     assertEquals(
@@ -287,8 +287,8 @@ suite('AmbientSubpageTest', function() {
     assertTrue(action.enabled);
   });
 
-  test('has correct animation theme on load', async () => {
-    personalizationStore.expectAction(AmbientActionName.SET_ANIMATION_THEME);
+  test('has correct ambient theme on load', async () => {
+    personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
     ambientSubpageElement = initElement(AmbientSubpage);
 
     await ambientProvider.whenCalled('setAmbientObserver');
@@ -296,52 +296,45 @@ suite('AmbientSubpageTest', function() {
 
     const action =
         await personalizationStore.waitForAction(
-            AmbientActionName.SET_ANIMATION_THEME) as SetAnimationThemeAction;
-    assertEquals(AnimationTheme.kSlideshow, action.animationTheme);
+            AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
+    assertEquals(AnimationTheme.kSlideshow, action.ambientTheme);
   });
 
-  test(
-      'sets animation theme when animation theme item is clicked', async () => {
-        // See "shows video animation theme on supported devices" for expected
-        // behavior when `isTimeOfDayScreenSaverEnabled` is true.
-        loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': false});
-        ambientSubpageElement = await displayMainSettings(
-            TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
-            /*ambientModeEnabled=*/ true);
+  test('sets ambient theme when ambient theme item is clicked', async () => {
+    // See "shows video ambient theme on supported devices" for expected
+    // behavior when `isTimeOfDayScreenSaverEnabled` is true.
+    loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': false});
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
 
-        const animationThemeList =
-            ambientSubpageElement.shadowRoot!.querySelector(
-                'animation-theme-list');
-        assertTrue(!!animationThemeList);
-        const animationThemeItems =
-            animationThemeList!.shadowRoot!.querySelectorAll(
-                'animation-theme-item:not([hidden])');
-        assertEquals(3, animationThemeItems!.length);
-        const slideshow = animationThemeItems[0] as AnimationThemeItem;
-        const feelTheBreeze = animationThemeItems[1] as AnimationThemeItem;
-        assertEquals(AnimationTheme.kSlideshow, slideshow.animationTheme);
-        assertEquals(
-            AnimationTheme.kFeelTheBreeze, feelTheBreeze.animationTheme);
+    const ambientThemeList =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-theme-list');
+    assertTrue(!!ambientThemeList);
+    const AmbientThemeItems = ambientThemeList!.shadowRoot!.querySelectorAll(
+        'ambient-theme-item:not([hidden])');
+    assertEquals(3, AmbientThemeItems!.length);
+    const slideshow = AmbientThemeItems[0] as AmbientThemeItem;
+    const feelTheBreeze = AmbientThemeItems[1] as AmbientThemeItem;
+    assertEquals(AnimationTheme.kSlideshow, slideshow.ambientTheme);
+    assertEquals(AnimationTheme.kFeelTheBreeze, feelTheBreeze.ambientTheme);
 
-        assertEquals(feelTheBreeze.ariaChecked, 'false');
-        assertEquals(slideshow.ariaChecked, 'true');
+    assertEquals(feelTheBreeze.ariaChecked, 'false');
+    assertEquals(slideshow.ariaChecked, 'true');
 
-        personalizationStore.expectAction(
-            AmbientActionName.SET_ANIMATION_THEME);
-        feelTheBreeze!.click();
-        let action = await personalizationStore.waitForAction(
-                         AmbientActionName.SET_ANIMATION_THEME) as
-            SetAnimationThemeAction;
-        assertEquals(AnimationTheme.kFeelTheBreeze, action.animationTheme);
+    personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
+    feelTheBreeze!.click();
+    let action =
+        await personalizationStore.waitForAction(
+            AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
+    assertEquals(AnimationTheme.kFeelTheBreeze, action.ambientTheme);
 
-        personalizationStore.expectAction(
-            AmbientActionName.SET_ANIMATION_THEME);
-        slideshow!.click();
-        action = await personalizationStore.waitForAction(
-                     AmbientActionName.SET_ANIMATION_THEME) as
-            SetAnimationThemeAction;
-        assertEquals(AnimationTheme.kSlideshow, action.animationTheme);
-      });
+    personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
+    slideshow!.click();
+    action = await personalizationStore.waitForAction(
+                 AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
+    assertEquals(AnimationTheme.kSlideshow, action.ambientTheme);
+  });
 
   test('has correct topic sources on load', async () => {
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
@@ -806,8 +799,8 @@ suite('AmbientSubpageTest', function() {
 
     assertEquals(
         null,
-        ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list'),
-        'animation theme list should be absent');
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-theme-list'),
+        'ambient theme list should be absent');
 
     assertEquals(
         null,
@@ -902,7 +895,7 @@ suite('AmbientSubpageTest', function() {
     assertTrue(!!downloadingButton, 'downloading button should be present');
   });
 
-  test('shows video animation theme on supported devices', async () => {
+  test('shows video ambient theme on supported devices', async () => {
     // Enabled `isTimeOfDayScreensaverEnabled` to show the updated UI.
     loadTimeData.overrideValues({'isTimeOfDayScreenSaverEnabled': true});
 
@@ -910,24 +903,24 @@ suite('AmbientSubpageTest', function() {
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ true);
 
-    const animationThemeList =
-        ambientSubpageElement.shadowRoot!.querySelector('animation-theme-list');
-    assertTrue(!!animationThemeList);
+    const ambientThemeList =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-theme-list');
+    assertTrue(!!ambientThemeList);
 
-    const animationThemeItems =
-        animationThemeList!.shadowRoot!.querySelectorAll<AnimationThemeItem>(
-            'animation-theme-item:not([hidden])');
-    assertEquals(4, animationThemeItems.length);
-    const videoTheme = animationThemeItems[3] as AnimationThemeItem;
-    assertEquals(AnimationTheme.kVideo, videoTheme.animationTheme);
+    const ambientThemeItems =
+        ambientThemeList!.shadowRoot!.querySelectorAll<AmbientThemeItem>(
+            'ambient-theme-item:not([hidden])');
+    assertEquals(4, ambientThemeItems.length);
+    const videoTheme = ambientThemeItems[3] as AmbientThemeItem;
+    assertEquals(AnimationTheme.kVideo, videoTheme.ambientTheme);
     assertEquals('false', videoTheme.ariaChecked);
 
-    personalizationStore.expectAction(AmbientActionName.SET_ANIMATION_THEME);
+    personalizationStore.expectAction(AmbientActionName.SET_AMBIENT_THEME);
     videoTheme.click();
     const action =
         await personalizationStore.waitForAction(
-            AmbientActionName.SET_ANIMATION_THEME) as SetAnimationThemeAction;
-    assertEquals(AnimationTheme.kVideo, action.animationTheme);
+            AmbientActionName.SET_AMBIENT_THEME) as SetAmbientThemeAction;
+    assertEquals(AnimationTheme.kVideo, action.ambientTheme);
   });
 
   test('disables non-video topic sources for video animation', async () => {

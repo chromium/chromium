@@ -12,7 +12,7 @@ import {AmbientModeAlbum, AmbientUiVisibility, AnimationTheme, TemperatureUnit, 
 export interface AmbientState {
   albums: AmbientModeAlbum[]|null;
   ambientModeEnabled: boolean|null;
-  animationTheme: AnimationTheme|null;
+  ambientTheme: AnimationTheme|null;
   duration: number|
       null;  // number of minutes to run screen saver. 0 means forever.
   previews: Url[]|null;
@@ -26,7 +26,7 @@ export function emptyState(): AmbientState {
   return {
     albums: null,
     ambientModeEnabled: null,
-    animationTheme: null,
+    ambientTheme: null,
     duration: null,
     previews: null,
     temperatureUnit: null,

@@ -11,7 +11,7 @@ import '../../css/common.css.js';
 import './albums_subpage_element.js';
 import './ambient_weather_element.js';
 import './ambient_preview_small_element.js';
-import './animation_theme_list_element.js';
+import './ambient_theme_list_element.js';
 import './toggle_row_element.js';
 import './topic_source_list_element.js';
 
@@ -46,7 +46,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
         type: Array,
         value: null,
       },
-      animationTheme_: {
+      ambientTheme_: {
         type: Object,
         value: null,
       },
@@ -99,7 +99,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   queryParams: Record<string, string>;
   private albums_: AmbientModeAlbum[]|null;
   private ambientModeEnabled_: boolean|null;
-  private animationTheme_: AnimationTheme|null;
+  private ambientTheme_: AnimationTheme|null;
   private duration_: number|null;
   private temperatureUnit_: TemperatureUnit|null;
   private topicSource_: TopicSource|null;
@@ -143,8 +143,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
         'albums_', state => state.ambient.albums);
     this.watch<AmbientSubpage['ambientModeEnabled_']>(
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
-    this.watch<AmbientSubpage['animationTheme_']>(
-        'animationTheme_', state => state.ambient.animationTheme);
+    this.watch<AmbientSubpage['ambientTheme_']>(
+        'ambientTheme_', state => state.ambient.ambientTheme);
     this.watch<AmbientSubpage['temperatureUnit_']>(
         'temperatureUnit_', state => state.ambient.temperatureUnit);
     this.watch<AmbientSubpage['topicSource_']>(

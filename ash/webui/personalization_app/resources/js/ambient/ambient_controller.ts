@@ -7,7 +7,7 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {AmbientModeAlbum, AmbientProviderInterface, AnimationTheme, TemperatureUnit, TopicSource} from '../../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
-import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAnimationThemeAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
+import {setAlbumSelectedAction, setAmbientModeEnabledAction, setAmbientThemeAction, setScreenSaverDurationAction, setShouldShowTimeOfDayBannerAction, setTemperatureUnitAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {isValidTopicSourceAndTheme} from './utils.js';
 
@@ -28,13 +28,13 @@ export async function setAmbientModeEnabled(
   store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
 }
 
-// Set the animation theme.
-export function setAnimationTheme(
-    animationTheme: AnimationTheme, provider: AmbientProviderInterface,
+// Set the ambient theme.
+export function setAmbientTheme(
+    ambientTheme: AnimationTheme, provider: AmbientProviderInterface,
     store: PersonalizationStore): void {
-  provider.setAnimationTheme(animationTheme);
+  provider.setAnimationTheme(ambientTheme);
 
-  store.dispatch(setAnimationThemeAction(animationTheme));
+  store.dispatch(setAmbientThemeAction(ambientTheme));
 }
 
 // Set ambient mode screen saver running duration in minutes.
@@ -50,9 +50,8 @@ export function setTopicSource(
     topicSource: TopicSource, provider: AmbientProviderInterface,
     store: PersonalizationStore): void {
   assert(
-      isValidTopicSourceAndTheme(
-          topicSource, store.data.ambient.animationTheme),
-      'invalid topic source and animation theme combination');
+      isValidTopicSourceAndTheme(topicSource, store.data.ambient.ambientTheme),
+      'invalid topic source and ambient theme combination');
   provider.setTopicSource(topicSource);
 
   // Dispatch action to select topic source.

@@ -43,7 +43,7 @@ export class TopicSourceList extends WithPersonalizationStore {
         },
       },
 
-      selectedAnimationTheme: AnimationTheme,
+      selectedAmbientTheme: AnimationTheme,
 
       selectedTopicSource: TopicSource,
 
@@ -52,7 +52,7 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   topicSources: TopicSource[];
-  selectedAnimationTheme: AnimationTheme;
+  selectedAmbientTheme: AnimationTheme;
   selectedTopicSource: TopicSource;
   hasGooglePhotosAlbums: boolean;
 
@@ -65,9 +65,8 @@ export class TopicSourceList extends WithPersonalizationStore {
   }
 
   private isTopicSourceDisabled_(
-      topicSource: TopicSource,
-      selectedAnimationTheme: AnimationTheme): boolean {
-    return !isValidTopicSourceAndTheme(topicSource, selectedAnimationTheme);
+      topicSource: TopicSource, selectedAmbientTheme: AnimationTheme): boolean {
+    return !isValidTopicSourceAndTheme(topicSource, selectedAmbientTheme);
   }
 
   private isSelected_(

@@ -15,7 +15,7 @@ export enum AmbientActionName {
   SET_ALBUMS = 'set_albums',
   SET_ALBUM_SELECTED = 'set_album_selected',
   SET_AMBIENT_MODE_ENABLED = 'set_ambient_mode_enabled',
-  SET_ANIMATION_THEME = 'set_animation_theme',
+  SET_AMBIENT_THEME = 'set_ambient_theme',
   SET_PREVIEWS = 'set_previews',
   SET_SCREEN_SAVER_DURATION = 'set_screen_saver_duration',
   SET_TEMPERATURE_UNIT = 'set_temperature_unit',
@@ -25,7 +25,7 @@ export enum AmbientActionName {
 }
 
 export type AmbientActions = SetAlbumsAction|SetAlbumSelectedAction|
-    SetAmbientModeEnabledAction|SetAnimationThemeAction|SetPreviewsAction|
+    SetAmbientModeEnabledAction|SetAmbientThemeAction|SetPreviewsAction|
     SetScreenSaverDurationAction|SetTopicSourceAction|SetTemperatureUnitAction|
     SetAmbientUiVisibilityAction|SetShouldShowTimeOfDayBannerAction;
 
@@ -46,9 +46,9 @@ export interface SetAmbientModeEnabledAction extends Action {
 }
 
 
-export interface SetAnimationThemeAction extends Action {
-  name: AmbientActionName.SET_ANIMATION_THEME;
-  animationTheme: AnimationTheme;
+export interface SetAmbientThemeAction extends Action {
+  name: AmbientActionName.SET_AMBIENT_THEME;
+  ambientTheme: AnimationTheme;
 }
 
 
@@ -108,11 +108,11 @@ export function setAmbientModeEnabledAction(enabled: boolean):
 }
 
 /**
- * Sets the current value of the animation theme.
+ * Sets the current value of the ambient theme.
  */
-export function setAnimationThemeAction(animationTheme: AnimationTheme):
-    SetAnimationThemeAction {
-  return {name: AmbientActionName.SET_ANIMATION_THEME, animationTheme};
+export function setAmbientThemeAction(ambientTheme: AnimationTheme):
+    SetAmbientThemeAction {
+  return {name: AmbientActionName.SET_AMBIENT_THEME, ambientTheme};
 }
 
 /**
