@@ -16,6 +16,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/common/content_features.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
