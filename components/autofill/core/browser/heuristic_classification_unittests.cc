@@ -432,7 +432,17 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {// This is always enabled to classify autocomplete=invalid fields.
-       features::kAutofillPredictionsForAutocompleteUnrecognized},
+       features::kAutofillPredictionsForAutocompleteUnrecognized,
+       // Support for new field types.
+       features::kAutofillEnableSupportForBetweenStreets,
+       features::kAutofillEnableSupportForAdminLevel2,
+       features::kAutofillEnableSupportForAddressOverflow,
+       features::kAutofillEnableSupportForLandmark,
+       features::kAutofillEnableSupportForApartmentNumbers,
+       features::kAutofillEnableDependentLocalityParsing,
+       features::kAutofillEnableExpirationDateImprovements,
+       // Allow local heuristics to take precedence.
+       features::kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete},
       /*disabled_features=*/{});
 
   base::FilePath input_file = GetParam();
