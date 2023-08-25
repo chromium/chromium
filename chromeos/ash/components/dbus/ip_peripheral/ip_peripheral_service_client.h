@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) IpPeripheralServiceClient {
 
   // Getters for pan/tilt/zoom values for an IP camera. The first argument is
   // the IP address of the camera. The callback returns whether or not the call
-  // succeeded, the current value, the minimimum possible value, and the maximum
+  // succeeded, the current value, the minimum possible value, and the maximum
   // possible value.
   virtual void GetPan(const std::string& ip, GetCallback callback) = 0;
   virtual void GetTilt(const std::string& ip, GetCallback callback) = 0;
@@ -68,6 +68,27 @@ class COMPONENT_EXPORT(DBUS_IP_PERIPHERAL_CLIENT) IpPeripheralServiceClient {
   virtual void SetZoom(const std::string& ip,
                        int32_t zoom,
                        SetCallback callback) = 0;
+
+  // GetControl and SetControl for UVC XU controls as implemented for an IP
+  // camera.  The first argument is the IP address of the camera.  The second
+  // argument is the little-endian UVC GUID for the extension unit.  The third
+  // argument is the control selector.  In the case of GetControl, the fourth
+  // argument is the UVC_GET request.  For SetControl, the fourth argument is
+  // a byte vector providing the control setting.  The callback returns whether
+  // the dbus call succeeded and for GetControl, the byte vector result.
+  using GetControlCallback =
+      base::OnceCallback<void(bool success, std::vector<uint8_t> result)>;
+  using SetControlCallback = base::OnceCallback<void(bool success)>;
+  virtual void GetControl(const std::string& ip,
+                          const std::vector<uint8_t>& guid_le,
+                          uint8_t control_selector,
+                          uint8_t uvc_get_request,
+                          GetControlCallback callback) = 0;
+  virtual void SetControl(const std::string& ip,
+                          const std::vector<uint8_t>& guid_le,
+                          uint8_t control_selector,
+                          const std::vector<uint8_t>& control_setting,
+                          SetControlCallback callback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.
