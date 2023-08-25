@@ -113,11 +113,13 @@ struct COLOR_SPACE_EXPORT HdrMetadataExtendedRange {
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
 struct COLOR_SPACE_EXPORT HDRMetadata {
+  // Mastering display color volume (MDCV) metadata.
   absl::optional<HdrMetadataSmpteSt2086> smpte_st_2086;
+
+  // Content light level information (CLLI) metadata.
   absl::optional<HdrMetadataCta861_3> cta_861_3;
 
   // Brightness points for extended range color spaces.
-  // NOTE: Is not serialized over IPC.
   absl::optional<HdrMetadataExtendedRange> extended_range;
 
   HDRMetadata() = default;
