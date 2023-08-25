@@ -9,7 +9,7 @@
 // title bar.
 constexpr int kBubbleTopOffset = -2;
 
-// Used to set the control view buttons corner radious.
+// Used to set the control view buttons corner radius.
 constexpr int kControlViewButtonCornerRadius = 20;
 
 // Control view buttons width and height.
@@ -31,6 +31,12 @@ constexpr char16_t kAutopipDescription[] =
 // Bubble fixed width.
 constexpr int kBubbleFixedWidth = 320;
 
+// Bubble border corner radius.
+constexpr int kBubbleBorderCornerRadius = 15;
+
+// Bubble border MD shadow elevation.
+constexpr int kBubbleBorderMdShadowElevation = 3;
+
 AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     base::OnceCallback<void()> hide_view_cb,
@@ -48,6 +54,10 @@ AutoPipSettingView::AutoPipSettingView(
   set_fixed_width(kBubbleFixedWidth);
   // Set up callback to hide AutoPiP overlay view semi-opaque background layer.
   SetCloseCallback(std::move(hide_view_cb));
+  set_fixed_width(kBubbleFixedWidth);
+  set_use_custom_frame(true);
+
+  // Initialize Bubble.
   InitBubble();
 }
 
@@ -116,6 +126,15 @@ raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
 
 void AutoPipSettingView::Show() {
   auto* widget = BubbleDialogDelegateView::CreateBubble(base::WrapUnique(this));
+
+  // Customize Bubble border.
+  auto bubble_border = std::make_unique<views::BubbleBorder>(
+      arrow(), views::BubbleBorder::STANDARD_SHADOW);
+  bubble_border->SetCornerRadius(kBubbleBorderCornerRadius);
+  bubble_border->set_md_shadow_elevation(kBubbleBorderMdShadowElevation);
+  bubble_border->set_draw_border_stroke(true);
+  GetBubbleFrameView()->SetBubbleBorder(std::move(bubble_border));
+
   widget->Show();
 }
 

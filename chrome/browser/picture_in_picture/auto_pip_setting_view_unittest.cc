@@ -145,6 +145,20 @@ TEST_F(AutoPipSettingViewTest, TestShow) {
   EXPECT_TRUE(setting_view()->GetVisible());
 }
 
+TEST_F(AutoPipSettingViewTest, TestViewConstructor) {
+  EXPECT_TRUE(setting_view()->GetVisible());
+  EXPECT_EQ(views::BubbleBorder::TOP_CENTER, setting_view()->arrow());
+  EXPECT_TRUE(setting_view()->use_custom_frame());
+}
+
+TEST_F(AutoPipSettingViewTest, VerifyBubbleBorderCustomizations) {
+  EXPECT_TRUE(setting_view()->GetVisible());
+
+  // Verify Bubble border customizations.
+  EXPECT_EQ(views::BubbleBorder::STANDARD_SHADOW,
+            setting_view()->GetBubbleFrameView()->bubble_border()->shadow());
+}
+
 const struct TestParams kTestParams[] = {{UiResult::kAllowOnce},
                                          {UiResult::kAllowOnEveryVisit},
                                          {UiResult::kBlock}};
