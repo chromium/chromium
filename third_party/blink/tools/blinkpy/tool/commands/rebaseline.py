@@ -39,6 +39,7 @@ from typing import (
     Dict,
     List,
     NamedTuple,
+    Optional,
     Set,
     Tuple,
 )
@@ -245,7 +246,11 @@ class TestBaselineSet(collections.abc.Set):
     def runs_for_test(self, test: str):
         return list(self._test_map[test])
 
-    def add(self, test, build, step_name=None, port_name=None):
+    def add(self,
+            test: str,
+            build: Build,
+            step_name: str,
+            port_name: Optional[str] = None):
         """Adds an entry for baselines to download for some set of tests.
 
         Args:

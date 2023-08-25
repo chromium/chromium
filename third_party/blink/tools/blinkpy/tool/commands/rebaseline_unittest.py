@@ -404,22 +404,26 @@ class TestRebaseline(BaseTestCase):
     def test_rebaseline_test_passes_on_all_builders(self):
         self.tool.results_fetcher.set_results(
             Build('MOCK Win7'),
-            WebTestResults.from_json({
-                'tests': {
-                    'userscripts': {
-                        'first-test.html': {
-                            'expected': 'REBASELINE',
-                            'actual': 'PASS'
-                        }
-                    }
-                }
-            }))
+            WebTestResults.from_json(
+                {
+                    'tests': {
+                        'userscripts': {
+                            'first-test.html': {
+                                'expected': 'PASS',
+                                'actual': 'PASS',
+                            },
+                        },
+                    },
+                },
+                step_name='blink_web_tests (with patch)'))
 
-        self._write(self.test_expectations_path,
-                    'Bug(x) userscripts/first-test.html [ Failure ]\n')
+        self._write(
+            self.test_expectations_path, '# results: [ Failure ]\n'
+            'userscripts/first-test.html [ Failure ]\n')
         test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('userscripts/first-test.html',
-                              Build('MOCK Win7'))
+                              Build('MOCK Win7'),
+                              'blink_web_tests (with patch)')
         self.command.rebaseline(self.options(), test_baseline_set)
         self.tool.main.assert_not_called()
 
@@ -867,9 +871,11 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
             }))
         test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('userscripts/skipped-test.html',
-                              Build('MOCK Mac10.11'))
+                              Build('MOCK Mac10.11'),
+                              'blink_web_tests (with patch)')
         test_baseline_set.add('userscripts/skipped-test.html',
-                              Build('MOCK Win7'))
+                              Build('MOCK Win7'),
+                              'blink_web_tests (with patch)')
 
         self.command.rebaseline(self.options(), test_baseline_set)
 
@@ -903,7 +909,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
             }))
         test_baseline_set = TestBaselineSet(self.tool.builders)
         test_baseline_set.add('userscripts/flaky-test.html',
-                              Build('MOCK Mac10.11'))
+                              Build('MOCK Mac10.11'),
+                              'blink_web_tests (with patch)')
 
         self.command.rebaseline(self.options(), test_baseline_set)
 
@@ -937,7 +944,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
                 }
             }))
         test_baseline_set.add('userscripts/all-pass.html',
-                              Build('MOCK Mac10.11'))
+                              Build('MOCK Mac10.11'),
+                              'blink_web_tests (with patch)')
 
         self.command.rebaseline(self.options(), test_baseline_set)
 
@@ -976,7 +984,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
                         }
                     }
                 }))
-            test_baseline_set.add('userscripts/all-pass.html', Build(builder))
+            test_baseline_set.add('userscripts/all-pass.html', Build(builder),
+                                  'blink_web_tests (with patch)')
 
         self.command.rebaseline(self.options(), test_baseline_set)
 
@@ -1120,18 +1129,21 @@ class TestBaselineSetTest(unittest.TestCase):
 
     def test_add_and_iter_tests(self):
         test_baseline_set = TestBaselineSet(self.host.builders)
-        test_baseline_set.add('a/x.html', Build('MOCK Trusty'))
-        test_baseline_set.add('a/y.html', Build('MOCK Trusty'))
-        test_baseline_set.add('a/z.html', Build('MOCK Trusty'))
+        test_baseline_set.add('a/x.html', Build('MOCK Trusty'),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('a/y.html', Build('MOCK Trusty'),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('a/z.html', Build('MOCK Trusty'),
+                              'blink_web_tests (with patch)')
         test_baseline_set.add('a/z.html', Build('MOCK Win10'),
                               'blink_web_tests (with patch)')
         self.assertEqual(list(test_baseline_set), [
-            ('a/x.html', Build(builder_name='MOCK Trusty'), None,
-             'test-linux-trusty'),
-            ('a/y.html', Build(builder_name='MOCK Trusty'), None,
-             'test-linux-trusty'),
-            ('a/z.html', Build(builder_name='MOCK Trusty'), None,
-             'test-linux-trusty'),
+            ('a/x.html', Build(builder_name='MOCK Trusty'),
+             'blink_web_tests (with patch)', 'test-linux-trusty'),
+            ('a/y.html', Build(builder_name='MOCK Trusty'),
+             'blink_web_tests (with patch)', 'test-linux-trusty'),
+            ('a/z.html', Build(builder_name='MOCK Trusty'),
+             'blink_web_tests (with patch)', 'test-linux-trusty'),
             ('a/z.html', Build(builder_name='MOCK Win10'),
              'blink_web_tests (with patch)', 'test-win-win10'),
         ])
@@ -1144,19 +1156,23 @@ class TestBaselineSetTest(unittest.TestCase):
 
     def test_str_basic(self):
         test_baseline_set = TestBaselineSet(self.host.builders)
-        test_baseline_set.add('a/x.html', Build('MOCK Mac10.12'))
+        test_baseline_set.add('a/x.html', Build('MOCK Mac10.12'),
+                              'blink_web_tests (with patch)')
         test_baseline_set.add('a/x.html', Build('MOCK Win10'),
                               'blink_web_tests (with patch)')
-        self.assertRegex(str(test_baseline_set),
-                         'a/x.html: .*, None, test-mac-mac10.12')
+        self.assertRegex(
+            str(test_baseline_set),
+            'a/x.html: .*, blink_web_tests \(with patch\), test-mac-mac10\.12')
         self.assertRegex(
             str(test_baseline_set),
             'a/x.html: .*, blink_web_tests \(with patch\), test-win-win10')
 
     def test_getters(self):
         test_baseline_set = TestBaselineSet(self.host.builders)
-        test_baseline_set.add('a/x.html', Build('MOCK Mac10.12'))
-        test_baseline_set.add('a/x.html', Build('MOCK Win10'))
+        test_baseline_set.add('a/x.html', Build('MOCK Mac10.12'),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('a/x.html', Build('MOCK Win10'),
+                              'blink_web_tests (with patch)')
         self.assertEqual(test_baseline_set.all_tests(), ['a/x.html'])
         self.assertEqual(
             test_baseline_set.build_port_pairs('a/x.html'),
@@ -1166,12 +1182,13 @@ class TestBaselineSetTest(unittest.TestCase):
     def test_non_prefix_mode(self):
         test_baseline_set = TestBaselineSet(self.host.builders)
         # This test does not exist in setUp.
-        test_baseline_set.add('wpt/foo.html', Build('some-wpt-bot'))
+        test_baseline_set.add('wpt/foo.html', Build('some-wpt-bot'),
+                              'blink_web_tests (with patch)')
         # But it should still appear in various getters since no test lookup is
         # done when prefix_mode=False.
-        self.assertEqual(
-            list(test_baseline_set),
-            [('wpt/foo.html', Build('some-wpt-bot'), None, 'linux-trusty')])
+        self.assertEqual(list(test_baseline_set),
+                         [('wpt/foo.html', Build('some-wpt-bot'),
+                           'blink_web_tests (with patch)', 'linux-trusty')])
         self.assertEqual(test_baseline_set.all_tests(), ['wpt/foo.html'])
         self.assertEqual(test_baseline_set.build_port_pairs('wpt/foo.html'),
                          [(Build('some-wpt-bot'), 'linux-trusty')])

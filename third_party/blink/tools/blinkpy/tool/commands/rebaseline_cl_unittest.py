@@ -876,26 +876,40 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
                 'port_name': 'foo-foo12',
                 'specifiers': ['Foo12', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Foo45': {
                 'port_name': 'foo-foo45',
                 'specifiers': ['Foo45', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Bar3': {
                 'port_name': 'bar-bar3',
                 'specifiers': ['Bar3', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
             'MOCK Bar4': {
                 'port_name': 'bar-bar4',
                 'specifiers': ['Bar4', 'Release'],
                 'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                },
             },
         })
         test_baseline_set = TestBaselineSet(self.tool.builders)
-        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100))
-        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200))
+        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Bar4', 200),
+                              'blink_web_tests (with patch)')
         self.command.fill_in_missing_results(test_baseline_set)
         self.assertEqual(
             sorted(test_baseline_set.build_port_pairs('one/flaky-fail.html')),
@@ -909,6 +923,58 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
             'INFO: For one/flaky-fail.html:\n',
             'INFO: Using "MOCK Bar4" build 200 for bar-bar3.\n',
             'INFO: Using "MOCK Foo12" build 100 for foo-foo45.\n',
+        ])
+
+    def test_fill_in_missing_results_partition_by_steps(self):
+        self.tool.builders = BuilderList({
+            'MOCK Foo12': {
+                'port_name': 'foo-foo12',
+                'specifiers': ['Foo12', 'Release'],
+                'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                },
+            },
+            'MOCK Foo45': {
+                'port_name': 'foo-foo45',
+                'specifiers': ['Foo45', 'Release'],
+                'is_try_builder': True,
+                'steps': {
+                    'blink_web_tests (with patch)': {},
+                    'blink_wpt_tests (with patch)': {},
+                },
+            },
+        })
+        test_baseline_set = TestBaselineSet(self.tool.builders)
+        test_baseline_set.add('one/flaky-fail.html', Build('MOCK Foo12', 100),
+                              'blink_web_tests (with patch)')
+        test_baseline_set.add('two/image-fail.html', Build('MOCK Foo45', 200),
+                              'blink_wpt_tests (with patch)')
+        self.command.fill_in_missing_results(test_baseline_set)
+        self.assertEqual(
+            sorted(test_baseline_set.runs_for_test('one/flaky-fail.html')),
+            [
+                # Do not add this test to `blink_wpt_tests`.
+                (Build('MOCK Foo12',
+                       100), 'blink_web_tests (with patch)', 'foo-foo12'),
+                (Build('MOCK Foo12',
+                       100), 'blink_web_tests (with patch)', 'foo-foo45'),
+            ])
+        self.assertEqual(
+            sorted(test_baseline_set.runs_for_test('two/image-fail.html')),
+            [
+                # Do not add this test to `blink_web_tests`.
+                (Build('MOCK Foo45',
+                       200), 'blink_wpt_tests (with patch)', 'foo-foo12'),
+                (Build('MOCK Foo45',
+                       200), 'blink_wpt_tests (with patch)', 'foo-foo45'),
+            ])
+        self.assertLog([
+            'INFO: For one/flaky-fail.html:\n',
+            'INFO: Using "MOCK Foo12" build 100 for foo-foo45.\n',
+            'INFO: For two/image-fail.html:\n',
+            'INFO: Using "MOCK Foo45" build 200 for foo-foo12.\n',
         ])
 
     def test_explicit_builder_list(self):

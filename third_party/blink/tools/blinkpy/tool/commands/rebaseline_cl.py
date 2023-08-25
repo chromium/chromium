@@ -386,7 +386,8 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             _log.warning('Unexpected retry summary content:\n%s', content)
             return None
 
-    def fill_in_missing_results(self, test_baseline_set):
+    def fill_in_missing_results(
+            self, test_baseline_set: TestBaselineSet) -> TestBaselineSet:
         """Adds entries, filling in results for missing jobs.
 
         For each test prefix, if there is an entry missing for some port,
@@ -397,21 +398,38 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         is an entry for the "win-win11" port, then an entry might be added
         for "win-win10" using the results from "win-win11".
         """
-        all_ports = {
-            self._tool.builders.port_name_for_builder_name(b)
-            for b in self.selected_try_bots
-        }
-        for test in test_baseline_set.all_tests():
-            build_port_pairs = test_baseline_set.build_port_pairs(test)
-            missing_ports = all_ports - {p for _, p in build_port_pairs}
-            if not missing_ports:
-                continue
-            _log.info('For %s:', test)
-            for port in sorted(missing_ports):
-                build = self._choose_fill_in_build(port, build_port_pairs)
-                _log.info('Using "%s" build %d for %s.', build.builder_name,
-                          build.build_number, port)
-                test_baseline_set.add(test, build, port_name=port)
+        # Group tasks by step, since not all steps run the same tests (e.g., we
+        # should not fill in WPT tests in a `blink_web_tests` step).
+        tasks_by_step = collections.defaultdict(set)
+        for task in test_baseline_set:
+            tasks_by_step[task.step_name].add(task)
+        for step_name, tasks in tasks_by_step.items():
+            all_ports = {
+                self._tool.builders.port_name_for_builder_name(builder)
+                for builder in self.selected_try_bots if step_name in
+                self._tool.builders.step_names_for_builder(builder)
+            }
+            build_ports_by_test = collections.defaultdict(set)
+            for task in tasks:
+                build_ports_by_test[task.test].add(
+                    (task.build, task.port_name))
+            for test in sorted(build_ports_by_test):
+                build_port_pairs = build_ports_by_test[test]
+                missing_ports = all_ports - {
+                    port
+                    for _, port in build_port_pairs
+                }
+                if not missing_ports:
+                    continue
+                _log.info('For %s:', test)
+                for port in sorted(missing_ports):
+                    build = self._choose_fill_in_build(port, build_port_pairs)
+                    _log.info('Using "%s" build %d for %s.',
+                              build.builder_name, build.build_number, port)
+                    test_baseline_set.add(test,
+                                          build,
+                                          step_name,
+                                          port_name=port)
         return test_baseline_set
 
     def _choose_fill_in_build(self, target_port, build_port_pairs):
